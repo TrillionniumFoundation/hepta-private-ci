@@ -1,4 +1,5 @@
 """Behavioral regressions for exact-revision Cargo impact selection."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -25,44 +26,81 @@ class SelectionTests(unittest.TestCase):
         )
 
     def test_reverse_transitive_closure_not_all_packages(self):
-        result = ci.select_packages(["codex-rs/leaf/src/lib.rs"], self.graph, self.graph)
-        self.assertEqual(result, {"packages": ["host", "leaf", "owner"],
-                                 "full_workspace": False,
-                                 "changed_packages": ["leaf"], "reasons": []})
+        result = ci.select_packages(
+            ["codex-rs/leaf/src/lib.rs"], self.graph, self.graph
+        )
+        self.assertEqual(
+            result,
+            {
+                "packages": ["host", "leaf", "owner"],
+                "full_workspace": False,
+                "changed_packages": ["leaf"],
+                "reasons": [],
+            },
+        )
 
     def test_does_not_run_dependencies_own_unrelated_tests(self):
-        result = ci.select_packages(["codex-rs/host/src/lib.rs"], self.graph, self.graph)
+        result = ci.select_packages(
+            ["codex-rs/host/src/lib.rs"], self.graph, self.graph
+        )
         self.assertEqual(result["packages"], ["host"])
 
     def test_dev_edge_selects_direct_consumer_not_its_downstream(self):
-        graph = ci.Graph(self.graph.owners, frozenset({("leaf", "owner", True),
-                                                      ("owner", "host", False)}))
-        self.assertEqual(ci.select_packages(["codex-rs/leaf/tests/a.rs"], graph, graph)["packages"],
-                         ["leaf", "owner"])
+        graph = ci.Graph(
+            self.graph.owners,
+            frozenset({("leaf", "owner", True), ("owner", "host", False)}),
+        )
+        self.assertEqual(
+            ci.select_packages(["codex-rs/leaf/tests/a.rs"], graph, graph)["packages"],
+            ["leaf", "owner"],
+        )
 
     def test_normal_edge_dominates_parallel_dev_edge(self):
-        graph = ci.Graph(self.graph.owners, self.graph.edges | {("leaf", "owner", True)})
-        self.assertEqual(ci.select_packages(["codex-rs/leaf/src/lib.rs"], graph, graph)["packages"],
-                         ["host", "leaf", "owner"])
+        graph = ci.Graph(
+            self.graph.owners, self.graph.edges | {("leaf", "owner", True)}
+        )
+        self.assertEqual(
+            ci.select_packages(["codex-rs/leaf/src/lib.rs"], graph, graph)["packages"],
+            ["host", "leaf", "owner"],
+        )
 
     def test_removed_dependency_edge_is_not_lost(self):
         after = ci.Graph(self.graph.owners, frozenset())
-        self.assertEqual(ci.select_packages(["codex-rs/leaf/Cargo.toml"], self.graph, after)["packages"],
-                         ["host", "leaf", "owner"])
+        self.assertEqual(
+            ci.select_packages(["codex-rs/leaf/Cargo.toml"], self.graph, after)[
+                "packages"
+            ],
+            ["host", "leaf", "owner"],
+        )
 
     def test_removed_package_is_not_passed_to_cargo(self):
-        after = ci.Graph({k: v for k, v in self.graph.owners.items() if v != "leaf"}, frozenset())
-        self.assertEqual(ci.select_packages(["codex-rs/leaf/src/lib.rs"], self.graph, after)["packages"],
-                         ["host", "owner"])
+        after = ci.Graph(
+            {k: v for k, v in self.graph.owners.items() if v != "leaf"}, frozenset()
+        )
+        self.assertEqual(
+            ci.select_packages(["codex-rs/leaf/src/lib.rs"], self.graph, after)[
+                "packages"
+            ],
+            ["host", "owner"],
+        )
 
     def test_same_directory_package_rename_keeps_old_consumers(self):
         after = ci.Graph(self.graph.owners | {"codex-rs/leaf": "new-leaf"}, frozenset())
-        self.assertEqual(ci.select_packages(["codex-rs/leaf/Cargo.toml"], self.graph, after)["packages"],
-                         ["host", "new-leaf", "owner"])
+        self.assertEqual(
+            ci.select_packages(["codex-rs/leaf/Cargo.toml"], self.graph, after)[
+                "packages"
+            ],
+            ["host", "new-leaf", "owner"],
+        )
 
     def test_shared_unknown_and_build_inputs_fall_back(self):
-        for path in ("codex-rs/Cargo.lock", "codex-rs/owner/build.rs", "assets/table.bin",
-                     ".github/workflows/test.yml", "scripts/hepta_ci_scope.py"):
+        for path in (
+            "codex-rs/Cargo.lock",
+            "codex-rs/owner/build.rs",
+            "assets/table.bin",
+            ".github/workflows/test.yml",
+            "scripts/hepta_ci_scope.py",
+        ):
             with self.subTest(path=path):
                 result = ci.select_packages([path], self.graph, self.graph)
                 self.assertTrue(result["full_workspace"])
@@ -85,13 +123,19 @@ class GitGraphTests(unittest.TestCase):
         self.git("init", "-q")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
-        self.write("codex-rs/Cargo.toml", '''[workspace]
+        self.write(
+            "codex-rs/Cargo.toml",
+            """[workspace]
 members = ["leaf", "owner", "host", "unrelated"]
 [workspace.dependencies]
 renamed = { package = "leaf", path = "leaf" }
-''')
+""",
+        )
         for name in ("leaf", "owner", "host", "unrelated"):
-            self.write(f"codex-rs/{name}/Cargo.toml", f'[package]\nname = "{name}"\nversion = "0.1.0"\n')
+            self.write(
+                f"codex-rs/{name}/Cargo.toml",
+                f'[package]\nname = "{name}"\nversion = "0.1.0"\n',
+            )
             self.write(f"codex-rs/{name}/src/lib.rs", "pub fn value() -> u32 { 1 }\n")
         self.base = self.commit()
 
@@ -110,14 +154,20 @@ renamed = { package = "leaf", path = "leaf" }
 
     def test_workspace_alias_optional_target_and_build_dependencies(self):
         with (self.root / "codex-rs/owner/Cargo.toml").open("a") as stream:
-            stream.write('[target.\'cfg(windows)\'.dependencies]\nrenamed = { workspace = true, optional = true }\n')
+            stream.write(
+                "[target.'cfg(windows)'.dependencies]\nrenamed = { workspace = true, optional = true }\n"
+            )
         with (self.root / "codex-rs/host/Cargo.toml").open("a") as stream:
             stream.write('[build-dependencies]\nowner = { path = "../owner" }\n')
         head = self.commit()
         graph = ci.graph(self.root, head)
-        self.assertEqual(graph.edges, {("leaf", "owner", False), ("owner", "host", False)})
-        self.assertEqual(ci.select_packages(["codex-rs/leaf/src/lib.rs"], graph, graph)["packages"],
-                         ["host", "leaf", "owner"])
+        self.assertEqual(
+            graph.edges, {("leaf", "owner", False), ("owner", "host", False)}
+        )
+        self.assertEqual(
+            ci.select_packages(["codex-rs/leaf/src/lib.rs"], graph, graph)["packages"],
+            ["host", "leaf", "owner"],
+        )
 
     def test_git_diff_is_zero_delimited_and_base_is_exact(self):
         self.write("codex-rs/leaf/src/a\nfile.rs", "// changed\n")
@@ -127,12 +177,24 @@ renamed = { package = "leaf", path = "leaf" }
         self.assertTrue(ci.plan(self.root, "f" * 40, head)["full_workspace"])
 
     def test_glob_members_and_excludes(self):
-        self.write("codex-rs/Cargo.toml", '[workspace]\nmembers = ["*"]\nexclude = ["unrelated"]\n')
+        self.write(
+            "codex-rs/Cargo.toml",
+            '[workspace]\nmembers = ["*"]\nexclude = ["unrelated"]\n',
+        )
         head = self.commit()
-        self.assertEqual(set(ci.graph(self.root, head).owners.values()), {"leaf", "owner", "host"})
+        self.assertEqual(
+            set(ci.graph(self.root, head).owners.values()), {"leaf", "owner", "host"}
+        )
 
     def test_cli_rejects_dirty_or_wrong_checkout(self):
-        command = [sys.executable, str(SCRIPT), "--root", str(self.root), "--base", self.base]
+        command = [
+            sys.executable,
+            str(SCRIPT),
+            "--root",
+            str(self.root),
+            "--base",
+            self.base,
+        ]
         wrong = subprocess.run(command + ["--tested", "f" * 40], capture_output=True)
         self.assertNotEqual(wrong.returncode, 0)
         clean = subprocess.run(command + ["--tested", self.base], capture_output=True)
@@ -157,11 +219,19 @@ class DocumentInputTests(unittest.TestCase):
         self.git("init", "-q")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
-        self.write("codex-rs/Cargo.toml", '[workspace]\nmembers=["leaf","host","other"]\n')
+        self.write(
+            "codex-rs/Cargo.toml", '[workspace]\nmembers=["leaf","host","other"]\n'
+        )
         for name in ("leaf", "host", "other"):
-            self.write(f"codex-rs/{name}/Cargo.toml", f'[package]\nname="{name}"\nversion="0.1.0"\n')
+            self.write(
+                f"codex-rs/{name}/Cargo.toml",
+                f'[package]\nname="{name}"\nversion="0.1.0"\n',
+            )
             self.write(f"codex-rs/{name}/src/lib.rs", "pub fn value() -> u32 { 1 }\n")
-        self.write("codex-rs/host/Cargo.toml", '[package]\nname="host"\nversion="0.1.0"\n[dependencies]\nleaf={path="../leaf"}\n')
+        self.write(
+            "codex-rs/host/Cargo.toml",
+            '[package]\nname="host"\nversion="0.1.0"\n[dependencies]\nleaf={path="../leaf"}\n',
+        )
         self.doc = "docs/modules/example/TECHNICAL.md"
         self.write(self.doc, "# Module\n")
         self.base = self.commit()
@@ -193,7 +263,10 @@ class DocumentInputTests(unittest.TestCase):
         self.assertEqual(result["packages"], [])
 
     def test_embedded_markdown_still_selects_its_consumer(self):
-        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!("../../../' + self.doc + '");\n')
+        self.write(
+            "codex-rs/leaf/src/lib.rs",
+            'const DOC: &str = include_str!("../../../' + self.doc + '");\n',
+        )
         base = self.commit()
         self.write(self.doc, "# Compiled input changed\n")
         result = ci.plan(self.root, base, self.commit())
@@ -201,33 +274,58 @@ class DocumentInputTests(unittest.TestCase):
         self.assertEqual(result["packages"], ["host", "leaf"])
 
     def test_removed_include_edge_keeps_former_consumer(self):
-        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!("../../../' + self.doc + '");\n')
+        self.write(
+            "codex-rs/leaf/src/lib.rs",
+            'const DOC: &str = include_str!("../../../' + self.doc + '");\n',
+        )
         base = self.commit()
         self.write("codex-rs/leaf/src/lib.rs", "// include removed\n")
         self.write(self.doc, "# Updated\n")
-        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+        self.assertEqual(
+            ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"]
+        )
 
     def test_rust_includes_follow_external_rust_sources(self):
-        self.write("codex-rs/leaf/src/lib.rs", 'include!("../../../shared/helper.rs");\n')
-        self.write("shared/helper.rs", 'const DOC: &str = include_str!("../' + self.doc + '");\n')
+        self.write(
+            "codex-rs/leaf/src/lib.rs", 'include!("../../../shared/helper.rs");\n'
+        )
+        self.write(
+            "shared/helper.rs",
+            'const DOC: &str = include_str!("../' + self.doc + '");\n',
+        )
         base = self.commit()
         self.write(self.doc, "# Transitive input\n")
-        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+        self.assertEqual(
+            ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"]
+        )
 
     def test_raw_multiline_include_and_filename_newline(self):
-        self.write("codex-rs/leaf/src/a\nfile.rs", 'const DOC: &str = include_str! (\nr##"../../../' + self.doc + '"##\n);\n')
+        self.write(
+            "codex-rs/leaf/src/a\nfile.rs",
+            'const DOC: &str = include_str! (\nr##"../../../' + self.doc + '"##\n);\n',
+        )
         base = self.commit()
         self.write(self.doc, "# Raw-string input\n")
-        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+        self.assertEqual(
+            ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"]
+        )
 
     def test_computed_include_is_conservative_per_consumer(self):
-        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!(concat!(env!("ROOT"), "/guide.md"));\n')
+        self.write(
+            "codex-rs/leaf/src/lib.rs",
+            'const DOC: &str = include_str!(concat!(env!("ROOT"), "/guide.md"));\n',
+        )
         base = self.commit()
         self.write(self.doc, "# Potential computed input\n")
-        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+        self.assertEqual(
+            ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"]
+        )
 
     def test_unrelated_workspace_does_not_force_all_packages(self):
-        self.write("apps/independent/src/lib.rs", 'const X: &str = include_str!(concat!(env!("ROOT"), "/x"));\n')
+        self.write(
+            "apps/independent/src/lib.rs",
+            'const X: &str = include_str!(concat!(env!("ROOT"), "/x"));\n',
+        )
         base = self.commit()
         self.write(self.doc, "# Plain prose\n")
         self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], [])
@@ -239,7 +337,10 @@ class DocumentInputTests(unittest.TestCase):
     def test_embedded_catalog_has_real_dependency(self):
         path = "docs/modules/MODULES.json"
         self.write(path, "{}\n")
-        self.write("codex-rs/leaf/src/lib.rs", 'const C: &str = include_str!("../../../' + path + '");\n')
+        self.write(
+            "codex-rs/leaf/src/lib.rs",
+            'const C: &str = include_str!("../../../' + path + '");\n',
+        )
         base = self.commit()
         self.write(path, '{"modules":[]}\n')
         result = ci.plan(self.root, base, self.commit())
@@ -261,19 +362,34 @@ class DocumentInputTests(unittest.TestCase):
         scope_script = SCRIPT.with_name("hepta_ci_scope.py")
         result = subprocess.run(
             [sys.executable, str(scope_script), "--base", self.base, "--head", head],
-            cwd=self.root, capture_output=True, text=True, check=True,
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=True,
         )
         self.assertFalse(json.loads(result.stdout)["scope"]["native"])
 
     def test_outer_scope_cannot_skip_an_embedded_document(self):
-        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!("../../../' + self.doc + '");\n')
+        self.write(
+            "codex-rs/leaf/src/lib.rs",
+            'const DOC: &str = include_str!("../../../' + self.doc + '");\n',
+        )
         base = self.commit()
         self.write(self.doc, "# Compiled input changed\n")
         head = self.commit()
         result = subprocess.run(
-            [sys.executable, str(SCRIPT.with_name("hepta_ci_scope.py")),
-             "--base", base, "--head", head],
-            cwd=self.root, capture_output=True, text=True, check=True,
+            [
+                sys.executable,
+                str(SCRIPT.with_name("hepta_ci_scope.py")),
+                "--base",
+                base,
+                "--head",
+                head,
+            ],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=True,
         )
         self.assertTrue(json.loads(result.stdout)["scope"]["native"])
 

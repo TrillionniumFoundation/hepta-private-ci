@@ -22,21 +22,44 @@ class GitObservationIsolationTests(unittest.TestCase):
 
     def observe(self):
         self.assertEqual(self.subject.current_source_base(), self.identity)
-        self.assertTrue(self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base()))
+        self.assertTrue(
+            self.subject.verify_source_identity(
+                self.fixture.rows["alpha"],
+                ["src/alpha"],
+                self.subject.current_source_base(),
+            )
+        )
 
     def reject_changed_source(self):
         with self.assertRaises((ValueError, subprocess.CalledProcessError)):
-            self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base())
+            self.subject.verify_source_identity(
+                self.fixture.rows["alpha"],
+                ["src/alpha"],
+                self.subject.current_source_base(),
+            )
 
     def test_ambient_repository_worktree_and_index_redirects_are_ignored(self):
-        for key in ("GIT_DIR", "GIT_COMMON_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE",
-                    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES"):
-            with self.subTest(key=key), patch.dict(os.environ, {key: "/missing/git-identity"}):
+        for key in (
+            "GIT_DIR",
+            "GIT_COMMON_DIR",
+            "GIT_WORK_TREE",
+            "GIT_INDEX_FILE",
+            "GIT_OBJECT_DIRECTORY",
+            "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+        ):
+            with (
+                self.subTest(key=key),
+                patch.dict(os.environ, {key: "/missing/git-identity"}),
+            ):
                 self.observe()
 
     def test_ambient_pathspec_modes_cannot_hide_a_dirty_source(self):
-        for key in ("GIT_LITERAL_PATHSPECS", "GIT_GLOB_PATHSPECS",
-                    "GIT_NOGLOB_PATHSPECS", "GIT_ICASE_PATHSPECS"):
+        for key in (
+            "GIT_LITERAL_PATHSPECS",
+            "GIT_GLOB_PATHSPECS",
+            "GIT_NOGLOB_PATHSPECS",
+            "GIT_ICASE_PATHSPECS",
+        ):
             with self.subTest(key=key), patch.dict(os.environ, {key: "1"}):
                 self.observe()
                 self.fixture.write("src/alpha/lib.rs", "changed\n")
@@ -47,11 +70,14 @@ class GitObservationIsolationTests(unittest.TestCase):
 
     def test_config_environment_cannot_install_a_monitor(self):
         marker = self.root / "unexpected-monitor"
-        with patch.dict(os.environ, {
-            "GIT_CONFIG_COUNT": "1",
-            "GIT_CONFIG_KEY_0": "core.fsmonitor",
-            "GIT_CONFIG_VALUE_0": f"touch {marker}",
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "core.fsmonitor",
+                "GIT_CONFIG_VALUE_0": f"touch {marker}",
+            },
+        ):
             self.observe()
         self.assertFalse(marker.exists())
 
@@ -59,9 +85,13 @@ class GitObservationIsolationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             config = Path(directory) / "gitconfig"
             config.write_text("this is deliberately not Git config\n", encoding="utf-8")
-            with patch.dict(os.environ, {
-                "GIT_CONFIG_GLOBAL": str(config), "GIT_CONFIG_SYSTEM": str(config),
-            }):
+            with patch.dict(
+                os.environ,
+                {
+                    "GIT_CONFIG_GLOBAL": str(config),
+                    "GIT_CONFIG_SYSTEM": str(config),
+                },
+            ):
                 self.observe()
 
     def test_repository_monitor_is_disabled_without_executing_it(self):
@@ -83,20 +113,32 @@ class GitObservationIsolationTests(unittest.TestCase):
         actual_tree = self.fixture.git("rev-parse", "HEAD^{tree}")
         self.fixture.git("replace", current, old)
         # Ordinary Git now sees the replacement; the verifier must not.
-        self.assertEqual(self.fixture.git("rev-parse", "HEAD^{tree}"), self.identity["tree"])
-        self.assertEqual(self.subject.current_source_base(), {"commit": current, "tree": actual_tree})
+        self.assertEqual(
+            self.fixture.git("rev-parse", "HEAD^{tree}"), self.identity["tree"]
+        )
+        self.assertEqual(
+            self.subject.current_source_base(), {"commit": current, "tree": actual_tree}
+        )
         self.reject_changed_source()
 
     def test_index_shortcuts_cannot_hide_a_dirty_witness(self):
-        for flag, reset in (("--assume-unchanged", "--no-assume-unchanged"),
-                            ("--skip-worktree", "--no-skip-worktree")):
+        for flag, reset in (
+            ("--assume-unchanged", "--no-assume-unchanged"),
+            ("--skip-worktree", "--no-skip-worktree"),
+        ):
             with self.subTest(flag=flag):
                 self.fixture.git("update-index", flag, "src/alpha/lib.rs")
                 self.fixture.write("src/alpha/lib.rs", "hidden mutation\n")
                 self.assertEqual(self.fixture.git("diff", "--name-only"), "")
                 try:
-                    with self.assertRaisesRegex(ValueError, "candidate index hides tracked paths"):
-                        self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base())
+                    with self.assertRaisesRegex(
+                        ValueError, "candidate index hides tracked paths"
+                    ):
+                        self.subject.verify_source_identity(
+                            self.fixture.rows["alpha"],
+                            ["src/alpha"],
+                            self.subject.current_source_base(),
+                        )
                 finally:
                     self.fixture.git("update-index", reset, "src/alpha/lib.rs")
                     self.fixture.write("src/alpha/lib.rs", "pub fn calculate() {}\n")
@@ -107,8 +149,14 @@ class GitObservationIsolationTests(unittest.TestCase):
         self.fixture.commit("unrelated source")
         self.fixture.git("update-index", "--skip-worktree", "other.txt")
         with self.assertRaisesRegex(ValueError, "candidate index hides tracked paths"):
-            self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base())
-        self.assertTrue(self.fixture.git("ls-files", "-v", "other.txt").startswith("S "))
+            self.subject.verify_source_identity(
+                self.fixture.rows["alpha"],
+                ["src/alpha"],
+                self.subject.current_source_base(),
+            )
+        self.assertTrue(
+            self.fixture.git("ls-files", "-v", "other.txt").startswith("S ")
+        )
 
 
 if __name__ == "__main__":

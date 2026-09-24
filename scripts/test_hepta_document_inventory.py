@@ -50,7 +50,15 @@ class DocumentInventoryTests(unittest.TestCase):
             self.verify(["README.md", "docs/missing.md"])
 
     def test_noncanonical_paths_are_rejected(self):
-        for path in ("/tmp/outside", "../outside", "docs/../README.md", "docs//file.md", "docs/*.md", ".git/config", "docs/\x00.md"):
+        for path in (
+            "/tmp/outside",
+            "../outside",
+            "docs/../README.md",
+            "docs//file.md",
+            "docs/*.md",
+            ".git/config",
+            "docs/\x00.md",
+        ):
             with self.subTest(path=path), self.assertRaises(SystemExit):
                 self.verify(["README.md", path])
 
@@ -63,7 +71,9 @@ class DocumentInventoryTests(unittest.TestCase):
                 link.symlink_to(target)
             except (OSError, NotImplementedError):
                 self.skipTest("symlink creation is unavailable")
-            with self.assertRaisesRegex(SystemExit, "canonical path escapes repository"):
+            with self.assertRaisesRegex(
+                SystemExit, "canonical path escapes repository"
+            ):
                 self.verify(["README.md", "docs/escape.md"])
 
     def test_actual_registered_inventory_is_valid(self):

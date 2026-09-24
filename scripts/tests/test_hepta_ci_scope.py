@@ -10,7 +10,11 @@ from scripts.hepta_ci_scope import GROUPS, changed_paths, select
 
 class ScopeTests(unittest.TestCase):
     def test_readme_and_ordinary_prose_do_not_prepare_native_dependencies(self):
-        self.assertFalse(select(["README.md", "docs/modules/inference.control/TECHNICAL.md"])["native"])
+        self.assertFalse(
+            select(["README.md", "docs/modules/inference.control/TECHNICAL.md"])[
+                "native"
+            ]
+        )
 
     def test_inference_local_change_does_not_run_browser_learning_or_objective(self):
         scope = select(["codex-rs/hepta-infer-core/src/durable_control.rs"])
@@ -31,11 +35,13 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["full_repo"])
 
     def test_runtime_module_abi_stays_on_lifecycle_boundary(self):
-        scope = select([
-            "codex-rs/hepta-control-plane/src/module_runtime.rs",
-            "codex-rs/hepta-supervisor/src/module_runtime.rs",
-            "codex-rs/hepta-fleet/src/module_catalog.rs",
-        ])
+        scope = select(
+            [
+                "codex-rs/hepta-control-plane/src/module_runtime.rs",
+                "codex-rs/hepta-supervisor/src/module_runtime.rs",
+                "codex-rs/hepta-fleet/src/module_catalog.rs",
+            ]
+        )
         self.assertTrue(scope["lifecycle"])
         self.assertTrue(scope["native"])
         self.assertFalse(scope["inference"])
@@ -45,7 +51,10 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["full_repo"])
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
-        for path in ["codex-rs/hepta-types/src/lib.rs", "codex-rs/hepta-agentd/src/state.rs"]:
+        for path in [
+            "codex-rs/hepta-types/src/lib.rs",
+            "codex-rs/hepta-agentd/src/state.rs",
+        ]:
             with self.subTest(path=path):
                 scope = select([path])
                 self.assertTrue(all(scope[key] for key in GROUPS))
@@ -82,7 +91,11 @@ class ScopeTests(unittest.TestCase):
             self.assertFalse(scope[group])
 
     def test_unknown_or_executable_document_selects_full(self):
-        for path in ["docs/check.rs", "scripts/new-verifier.py", ".github/workflows/new.yml"]:
+        for path in [
+            "docs/check.rs",
+            "scripts/new-verifier.py",
+            ".github/workflows/new.yml",
+        ]:
             with self.subTest(path=path):
                 scope = select([path])
                 self.assertTrue(all(scope[key] for key in GROUPS))
@@ -95,7 +108,12 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(select(["codex-rs/core/prompt.md"])["native"])
 
     def test_rename_keeps_source_and_destination_groups(self):
-        scope = select(["codex-rs/hepta-infer-core/src/old.rs", "codex-rs/hepta-learning-ledger/src/new.rs"])
+        scope = select(
+            [
+                "codex-rs/hepta-infer-core/src/old.rs",
+                "codex-rs/hepta-learning-ledger/src/new.rs",
+            ]
+        )
         self.assertTrue(scope["inference"] and scope["learning"])
 
     def test_effectful_retirement_keeps_lifecycle_and_effect_tests(self):
@@ -112,7 +130,14 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["full_repo"])
 
     def test_bad_paths_fail_instead_of_selecting_nothing(self):
-        for path in ["", "../README.md", "/README.md", "docs/../foo.md", "docs\\foo.md", "docs/a\0.md"]:
+        for path in [
+            "",
+            "../README.md",
+            "/README.md",
+            "docs/../foo.md",
+            "docs\\foo.md",
+            "docs/a\0.md",
+        ]:
             with self.subTest(path=path), self.assertRaises(ValueError):
                 select([path])
 
@@ -124,8 +149,16 @@ class ScopeTests(unittest.TestCase):
     def test_git_diff_covers_real_rename_and_deleted_path(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+
             def git(*args):
-                return subprocess.check_output(["git", "-C", directory, *args], stderr=subprocess.DEVNULL).decode().strip()
+                return (
+                    subprocess.check_output(
+                        ["git", "-C", directory, *args], stderr=subprocess.DEVNULL
+                    )
+                    .decode()
+                    .strip()
+                )
+
             git("init", "-q")
             git("config", "user.name", "Scope Test")
             git("config", "user.email", "scope@localhost")

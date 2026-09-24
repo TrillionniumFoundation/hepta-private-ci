@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Exercise the real Git diagnostics and preserve conflict/failure distinctions."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -30,9 +31,19 @@ class IntegrationFeedbackTests(unittest.TestCase):
 
     def git(self, *args):
         return subprocess.run(
-            ["git", "--no-replace-objects", "-c", "user.name=Integration fixture",
-             "-c", "user.email=fixture@example.invalid", *args],
-            cwd=self.repo, check=True, capture_output=True, text=True,
+            [
+                "git",
+                "--no-replace-objects",
+                "-c",
+                "user.name=Integration fixture",
+                "-c",
+                "user.email=fixture@example.invalid",
+                *args,
+            ],
+            cwd=self.repo,
+            check=True,
+            capture_output=True,
+            text=True,
         ).stdout.strip()
 
     def write(self, name, value):
@@ -56,9 +67,21 @@ class IntegrationFeedbackTests(unittest.TestCase):
 
     def invoke(self, source, target, *extra):
         return subprocess.run(
-            ["python3", str(SCRIPT), "--root", str(self.repo), "--source", source,
-             "--target", target, "--output", str(self.root / "out"), *extra],
-            capture_output=True, text=True,
+            [
+                "python3",
+                str(SCRIPT),
+                "--root",
+                str(self.repo),
+                "--source",
+                source,
+                "--target",
+                target,
+                "--output",
+                str(self.root / "out"),
+                *extra,
+            ],
+            capture_output=True,
+            text=True,
         )
 
     def test_clean_merge_keeps_checkout_and_binds_exact_trees(self):
@@ -79,7 +102,10 @@ class IntegrationFeedbackTests(unittest.TestCase):
         self.assertFalse(report["mergeable"])
         self.assertEqual(report["conflicts"], ["record.txt"])
         self.assertEqual({stage["stage"] for stage in report["stages"]}, {1, 2, 3})
-        contents = {(self.root / "out/conflict-blobs" / row["object"]).read_bytes() for row in report["stages"]}
+        contents = {
+            (self.root / "out/conflict-blobs" / row["object"]).read_bytes()
+            for row in report["stages"]
+        }
         self.assertEqual(contents, {b"base\n", b"source\n", b"target\n"})
         self.assertEqual(self.git("status", "--porcelain"), "")
 
@@ -97,7 +123,14 @@ class IntegrationFeedbackTests(unittest.TestCase):
         self.write("link", "before\n")
         self.write("removed", "before\n")
         source = self.commit()
-        names = ["[x]*.txt", ":(exclude)record.txt", "a\tb.txt", "a\nb.txt", "中文.txt", "nested/file"]
+        names = [
+            "[x]*.txt",
+            ":(exclude)record.txt",
+            "a\tb.txt",
+            "a\nb.txt",
+            "中文.txt",
+            "nested/file",
+        ]
         for name in names:
             self.write(name, "after\n")
         (self.repo / "executable").chmod(0o755)
@@ -108,18 +141,34 @@ class IntegrationFeedbackTests(unittest.TestCase):
         self.git("checkout", "--quiet", "--detach", source)
         report = subject.diagnose(self.repo, source, target)
         expected = [
-            {"path": name, "mode": "100644", "type": "blob",
-             "object": self.git("rev-parse", f"{target}:{name}")}
+            {
+                "path": name,
+                "mode": "100644",
+                "type": "blob",
+                "object": self.git("rev-parse", f"{target}:{name}"),
+            }
             for name in names
         ]
-        expected.extend([
-            {"path": "executable", "mode": "100755", "type": "blob",
-             "object": self.git("rev-parse", f"{target}:executable")},
-            {"path": "link", "mode": "120000", "type": "blob",
-             "object": self.git("rev-parse", f"{target}:link")},
-            {"path": "removed", "deleted": True},
-        ])
-        self.assertEqual(report["entries"], sorted(expected, key=lambda row: row["path"]))
+        expected.extend(
+            [
+                {
+                    "path": "executable",
+                    "mode": "100755",
+                    "type": "blob",
+                    "object": self.git("rev-parse", f"{target}:executable"),
+                },
+                {
+                    "path": "link",
+                    "mode": "120000",
+                    "type": "blob",
+                    "object": self.git("rev-parse", f"{target}:link"),
+                },
+                {"path": "removed", "deleted": True},
+            ]
+        )
+        self.assertEqual(
+            report["entries"], sorted(expected, key=lambda row: row["path"])
+        )
 
     def test_gitlink_is_a_commit_not_a_blob(self):
         source = self.base
@@ -128,9 +177,17 @@ class IntegrationFeedbackTests(unittest.TestCase):
         target = self.git("rev-parse", "HEAD")
         self.git("checkout", "--quiet", "--detach", source)
         report = subject.diagnose(self.repo, source, target)
-        self.assertEqual(report["entries"], [
-            {"path": "submodule", "mode": "160000", "type": "commit", "object": source}
-        ])
+        self.assertEqual(
+            report["entries"],
+            [
+                {
+                    "path": "submodule",
+                    "mode": "160000",
+                    "type": "commit",
+                    "object": source,
+                }
+            ],
+        )
 
     def test_git_process_count_does_not_grow_with_changed_files(self):
         counts = []
@@ -184,7 +241,9 @@ class IntegrationFeedbackTests(unittest.TestCase):
         with tarfile.open(self.root / "out/source.tar.gz") as archive:
             self.assertIn("record.txt", archive.getnames())
             self.assertNotIn("untracked-secret", archive.getnames())
-            self.assertFalse(any(name.startswith(".git/") for name in archive.getnames()))
+            self.assertFalse(
+                any(name.startswith(".git/") for name in archive.getnames())
+            )
 
     def test_output_directory_cannot_be_overwritten(self):
         (self.root / "out").mkdir()

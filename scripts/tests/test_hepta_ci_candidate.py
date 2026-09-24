@@ -28,7 +28,9 @@ class CandidatePlanTests(unittest.TestCase):
         self.source = self.git("rev-parse", "HEAD")
 
     def git(self, *args):
-        return subprocess.check_output(["git", *args], stderr=subprocess.PIPE, text=True).strip()
+        return subprocess.check_output(
+            ["git", *args], stderr=subprocess.PIPE, text=True
+        ).strip()
 
     def merge(self, *, changed=False, reverse_parents=False):
         if changed:
@@ -38,18 +40,24 @@ class CandidatePlanTests(unittest.TestCase):
         parents = [self.base, self.source]
         if reverse_parents:
             parents.reverse()
-        merge = self.git("commit-tree", tree, "-p", parents[0], "-p", parents[1], "-m", "merge")
+        merge = self.git(
+            "commit-tree", tree, "-p", parents[0], "-p", parents[1], "-m", "merge"
+        )
         self.git("reset", "--hard", merge)
         return merge
 
     def test_source_always_executes_native_checks(self):
-        plan = candidate_plan(source=self.source, tested=self.source, lane="source-head")
+        plan = candidate_plan(
+            source=self.source, tested=self.source, lane="source-head"
+        )
         self.assertTrue(plan["native_execution_required"])
         self.assertFalse(plan["requires_source_head_success"])
 
     def test_identical_merge_reuses_tree_only_with_required_source_success(self):
         merge = self.merge()
-        plan = candidate_plan(source=self.source, tested=merge, base=self.base, lane="base-merge")
+        plan = candidate_plan(
+            source=self.source, tested=merge, base=self.base, lane="base-merge"
+        )
         self.assertFalse(plan["native_execution_required"])
         self.assertTrue(plan["requires_source_head_success"])
         self.assertEqual(plan["source_tree"], plan["tested_tree"])
@@ -69,7 +77,9 @@ class CandidatePlanTests(unittest.TestCase):
 
     def test_different_merge_tree_requires_real_tests_not_only_compile(self):
         merge = self.merge(changed=True)
-        plan = candidate_plan(source=self.source, tested=merge, base=self.base, lane="base-merge")
+        plan = candidate_plan(
+            source=self.source, tested=merge, base=self.base, lane="base-merge"
+        )
         self.assertTrue(plan["native_execution_required"])
         self.assertFalse(plan["requires_source_head_success"])
 
@@ -81,7 +91,9 @@ class CandidatePlanTests(unittest.TestCase):
     def test_parent_order_is_part_of_exact_merge_identity(self):
         merge = self.merge(reverse_parents=True)
         with self.assertRaisesRegex(ValueError, "parents"):
-            candidate_plan(source=self.source, tested=merge, base=self.base, lane="base-merge")
+            candidate_plan(
+                source=self.source, tested=merge, base=self.base, lane="base-merge"
+            )
 
     def test_source_lane_cannot_test_a_different_commit(self):
         merge = self.merge()
@@ -89,9 +101,21 @@ class CandidatePlanTests(unittest.TestCase):
             candidate_plan(source=self.source, tested=merge, lane="source-head")
 
     def test_invalid_identity_and_unknown_lane_fail_before_git(self):
-        for overrides in [{"source": "HEAD"}, {"lane": "unknown"}, {"lane": "base-merge"}]:
-            args = {"source": self.source, "tested": self.source, "lane": "source-head", **overrides}
-            with self.subTest(overrides=overrides), patch("scripts.hepta_ci_candidate.git") as git:
+        for overrides in [
+            {"source": "HEAD"},
+            {"lane": "unknown"},
+            {"lane": "base-merge"},
+        ]:
+            args = {
+                "source": self.source,
+                "tested": self.source,
+                "lane": "source-head",
+                **overrides,
+            }
+            with (
+                self.subTest(overrides=overrides),
+                patch("scripts.hepta_ci_candidate.git") as git,
+            ):
                 with self.assertRaises(ValueError):
                     candidate_plan(**args)
                 git.assert_not_called()
