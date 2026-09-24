@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "cryptographic and durable test fixtures use labelled fail-fast setup assertions"
+)]
+
 use std::fs::File;
 use std::path::PathBuf;
 

@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "test fixture construction must fail immediately with a precise setup label"
+)]
+
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
