@@ -2,10 +2,11 @@
 //! comparison and bounded preference primitives, with a separately versioned
 //! native shadow covariance regression profile.
 //!
-//! This crate is authority-free: an advisory recommendation or local solver
-//! receipt is never an operation, independent convergence certificate,
-//! selection, promotion, release or external effect. Durable projection storage
-//! remains activation-gated even when its source implementation is present.
+//! Mathematical evaluations and local solver receipts are deny-all advisory
+//! evidence: they are never operations, independent convergence certificates,
+//! selections, promotions, releases or external effects. The separately named
+//! authenticated owner may consume externally issued final-use grants for its
+//! durable projection mutations; it cannot mint or widen those grants.
 
 #![forbid(unsafe_code)]
 
@@ -70,6 +71,7 @@ pub use model::ScalarizationProfile;
 pub use model::SubjectClass;
 pub use model::UtilityContribution;
 pub use model::UtilityProfile;
+pub use owner::NduAuthenticatedEvaluationReceiptV1;
 pub use owner::NduAuthenticatedOwnerV1;
 pub use owner::NduOwnerContextV1;
 pub use owner::NduOwnerError;
