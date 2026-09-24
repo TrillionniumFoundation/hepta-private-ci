@@ -113,6 +113,21 @@ The target [HNMF contract](../../hnmf/TECHNICAL.md) and
 [migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
 retain current source, wire and capability states.
 
+### Owner-derived terminal Cell baseline
+
+[owner_terminal.rs](../../../codex-rs/hepta-bellman-operator/src/owner_terminal.rs)
+freezes and fits one constant-state terminal-value table from authenticated
+LedgerWriter decisions and terminal outcomes. It resolves the bounded frozen
+source set through the replay-built digest index, preserves source sequence, and
+revalidates correction/revocation before fitting. Mixed state/objective/action
+sets, units, incomplete results and insufficient per-action support reject.
+
+The payload uses the existing artifact registry and pinned loader.
+[terminal_cell_owner.rs](../../../codex-rs/hepta-agentd/tests/terminal_cell_owner.rs)
+exercises evidence, freeze, fit, persistence, reload, a later generation and
+withdrawal. This is a deterministic table baseline, not a Laya backend, general
+Bellman solver, causal policy-improvement proof or deployment selection.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
