@@ -1,0 +1,42 @@
+name: Reviewer source bridge
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: contains(github.event.head_commit.message, 'ci: export reviewer workspace')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Export exact workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          archive="$RUNNER_TEMP/reviewer-source-${GITHUB_SHA}.tar.gz"
+          tar --exclude=.git -czf "$archive" .
+          sha256sum "$archive" > "$archive.sha256"
+          printf 'archive=%s\n' "$archive" >> "$GITHUB_ENV"
+
+      - name: Upload exact workspace
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-source-${{ github.sha }}
+          path: |
+            ${{ env.archive }}
+            ${{ env.archive }}.sha256
+          if-no-files-found: error
+          retention-days: 1
