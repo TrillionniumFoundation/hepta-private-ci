@@ -265,7 +265,25 @@ impl NduProjectionStoreV1 {
         })
     }
 
+    /// Compatibility entry for first selection. Replacement callers must use
+    /// `select_projection_if_current` with the exact current predecessor.
     pub fn select_projection(
+        &mut self,
+        operation_identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        projection_digest: Digest32,
+    ) -> Result<NduProjectionEntryV1, NduProjectionStoreError> {
+        self.select_projection_if_current(
+            operation_identity_digest,
+            objective_digest,
+            subject_digest,
+            None,
+            projection_digest,
+        )
+    }
+
+    pub fn select_projection_if_current(
         &mut self,
         operation_identity_digest: Digest32,
         objective_digest: Digest32,
@@ -274,7 +292,7 @@ impl NduProjectionStoreV1 {
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionStoreError> {
         self.commit(|journal| {
-            journal.select_projection(
+            journal.select_projection_if_current(
                 operation_identity_digest,
                 objective_digest,
                 subject_digest,
