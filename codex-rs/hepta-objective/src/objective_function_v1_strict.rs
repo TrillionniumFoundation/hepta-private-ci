@@ -1,6 +1,6 @@
 //! Strict canonical ObjectiveFunctionV1 protocol projection.
 //!
-//! This module is the exported protocol boundary.  It revalidates the complete
+//! This module is the exported protocol boundary. It revalidates the complete
 //! source/receipt relationship, enforces semantic set invariants on decode and
 //! offers an authenticated product entrypoint that re-runs admission and native
 //! compilation before publishing protocol bytes.
@@ -184,7 +184,7 @@ struct ResourceEndowmentWireV1 {
 /// Encode a frozen admission into canonical protocol bytes.
 ///
 /// This entrypoint re-computes every source field represented by the admission
-/// receipt or protocol projection.  Product callers that possess the original
+/// receipt or protocol projection. Product callers that possess the original
 /// authenticated context must use [`encode_authenticated_objective_function_v1`]
 /// so the complete admission and native lowering are independently replayed.
 pub fn encode_objective_function_v1(
@@ -250,9 +250,11 @@ fn validate_projection_binding(
     let deadline_unix_micros = source
         .deadline
         .as_deref()
-        .map(parse_utc_micros)
-        .transpose()
-        .ok_or(ObjectiveFunctionV1Error::ProjectionMismatch("deadline timestamp"))?;
+        .map(|value| {
+            parse_utc_micros(value)
+                .ok_or(ObjectiveFunctionV1Error::ProjectionMismatch("deadline timestamp"))
+        })
+        .transpose()?;
 
     if intent_digest != source.intent_digest
         || intent_digest != admission.intent_digest
@@ -381,7 +383,7 @@ fn encode_validated(
     forbidden_action_classes.sort();
     forbidden_action_classes.dedup();
 
-    // ObjectiveFunctionV1 carries millisecond deadlines.  Flooring is the
+    // ObjectiveFunctionV1 carries millisecond deadlines. Flooring is the
     // conservative deterministic projection: it never grants time beyond the
     // exact microsecond deadline retained in the admission/run-start record.
     let deadline_unix_ms = admission.deadline_unix_micros.map(|value| value / 1_000);
@@ -559,7 +561,9 @@ fn validate_wire(value: &ObjectiveFunctionWireV1) -> Result<(), ObjectiveFunctio
         stable_id(&constraint.axis, "constraint.axis")?;
         stable_id(&constraint.evidence_source, "constraint.evidenceSource")?;
         relation(&constraint.relation)?;
-        constraint_class_rank(&constraint.class);
+        if constraint_class_rank(&constraint.class) == u8::MAX {
+            return Err(ObjectiveFunctionV1Error::InvalidField("constraint.class"));
+        }
         unique(
             &mut semantic_ids,
             &constraint.id,
@@ -605,7 +609,6 @@ fn validate_wire(value: &ObjectiveFunctionWireV1) -> Result<(), ObjectiveFunctio
         ));
     }
 
-    let mut forbidden = BTreeSet::new();
     for action in &value.forbidden_action_classes {
         stable_id(action, "forbiddenActionClasses")?;
         if action == "abstain" || allowed.contains(action.as_str()) {
@@ -613,7 +616,6 @@ fn validate_wire(value: &ObjectiveFunctionWireV1) -> Result<(), ObjectiveFunctio
                 "allowed/forbidden actions",
             ));
         }
-        forbidden.insert(action.as_str());
     }
 
     for dimension in &value.soft_utility_dimensions {
