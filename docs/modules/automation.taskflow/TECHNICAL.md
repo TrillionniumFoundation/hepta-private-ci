@@ -440,22 +440,31 @@ Implemented convergence sequence:
 
 No second TaskFlow engine or scheduler is admitted by this work package.
 
-### Planned circuit extension sequence
+### Circuit extension sequence
 
-Existing package state covers only its previously described scope. Planned circuit
-extensions are separately marked in `docs/delivery/WORK_PACKAGES.json`:
+The first source slice is now implemented in `codex-rs/hepta-automation/src/neural_circuit.rs`.
+`NeuralCircuitCandidateV1` freezes a circuit version, exact predecessor, routing-policy
+digest, parameter-bundle digest, resource-profile digest and bounded typed roles. It
+compiles onto the existing TaskFlow definition owner and returns a receipt binding both
+digests; it creates no executor, store or authority. `validate_circuit_successor_v1`
+requires version+1 and the exact predecessor digest and rejects capability widening, so
+a circuit cannot silently turn a routing/parameter update into a new authority surface.
+The V1 compiler deliberately reuses TaskFlow's acyclic/reachability/terminal checks.
 
-1. Freeze the circuit/run/trigger/owner vocabulary and legacy V1 conformance cases.
-2. Implement a versioned adapter over existing definitions/run/outbox owners with
-   deterministic operators and bounded event starts, waits, branches and joins.
-3. Bind actual DecisionCells and organ ports through the existing product/inference
+Remaining circuit work is narrower and stays on the existing owners:
+
+1. Bind actual DecisionCells and organ ports through the existing product/inference
    path; persist effect-relevant choices and exercise cross-owner crash recovery.
-4. Add declared bounded feedback, subcircuits, cancellation and resource fairness;
+2. Add declared bounded feedback, subcircuits, cancellation and resource fairness;
    never enable general cycles by removing V1 checks.
-5. Evaluate shared reusable retrieval circuits under the four task conditions;
+3. Evaluate shared reusable retrieval circuits under the four task conditions;
    compare cell-only, routing/termination and joint updates against no-change.
-6. Admit next-generation structural changes only after state/operation migration,
+4. Admit next-generation structural changes only after state/operation migration,
    current revocation, compatible bundle and independent outcome qualification.
+
+The source-level candidate/compilation slice is not runtime activation: `OrganCall` and
+`WaitJoin` remain restricted roles mapped onto the existing TaskFlow execution model,
+and no external effect is enabled merely because a candidate compiles.
 
 Circuit Runtime is a responsibility evolution, not an instruction to create a
 second crate/daemon/store. Keep TaskFlow names/legacy APIs until real consumers
