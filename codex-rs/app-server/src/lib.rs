@@ -28,6 +28,7 @@ use std::sync::atomic::Ordering;
 use crate::analytics_utils::analytics_events_client_from_config;
 use crate::config_manager::ConfigManager;
 use crate::connection_cleanup::ConnectionCleanupTasks;
+use crate::extensions::HeptaExtensionBindings;
 use crate::message_processor::MessageProcessor;
 use crate::message_processor::MessageProcessorArgs;
 use crate::outgoing_message::ConnectionId;
@@ -1167,16 +1168,18 @@ pub async fn run_main_with_transport_options(
             remote_control_handle: Some(remote_control_handle.clone()),
             plugin_startup_tasks: runtime_options.plugin_startup_tasks,
             turn_queue_capacity: runtime_options.turn_queue_capacity,
-            hepta_cognitive_runtime: runtime_options.hepta_cognitive_runtime.clone(),
-            hepta_cognitive_production_mutation: runtime_options
-                .hepta_cognitive_production_mutation
-                .clone(),
-            hepta_local_turn_lifecycle_enabled: runtime_options.hepta_local_turn_lifecycle_enabled,
-            hepta_local_development_policy: runtime_options.hepta_local_development_policy,
-            hepta_qualification_turn_writer_enabled: runtime_options
-                .hepta_qualification_turn_writer_enabled,
-            hepta_qualification_turn_writer: runtime_options.hepta_qualification_turn_writer,
-            hepta_prompt_runtime_host: runtime_options.hepta_prompt_runtime_host,
+            hepta: HeptaExtensionBindings {
+                cognitive_runtime: runtime_options.hepta_cognitive_runtime.clone(),
+                cognitive_production_mutation: runtime_options
+                    .hepta_cognitive_production_mutation
+                    .clone(),
+                local_turn_lifecycle_enabled: runtime_options.hepta_local_turn_lifecycle_enabled,
+                local_development_policy: runtime_options.hepta_local_development_policy,
+                qualification_turn_writer_enabled: runtime_options
+                    .hepta_qualification_turn_writer_enabled,
+                qualification_turn_writer: runtime_options.hepta_qualification_turn_writer,
+                prompt_runtime_host: runtime_options.hepta_prompt_runtime_host,
+            },
         }));
         let mut thread_created_rx = processor.thread_created_receiver();
         let mut running_turn_count_rx = processor.subscribe_running_assistant_turn_count();

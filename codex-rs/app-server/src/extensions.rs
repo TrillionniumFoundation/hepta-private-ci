@@ -37,6 +37,44 @@ use crate::outgoing_message::ThreadScopedOutgoingMessageSender;
 use crate::thread_state::ThreadListenerCommand;
 use crate::thread_state::ThreadStateManager;
 
+#[derive(Clone)]
+pub(crate) struct HeptaExtensionBindings {
+    pub(crate) cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    pub(crate) cognitive_production_mutation:
+        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
+    pub(crate) local_turn_lifecycle_enabled: bool,
+    pub(crate) local_development_policy:
+        Option<codex_hepta_memory::LocalDevelopmentLifecyclePolicy>,
+    pub(crate) qualification_turn_writer_enabled: bool,
+    pub(crate) qualification_turn_writer:
+        Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    pub(crate) prompt_runtime_host: Option<codex_hepta_prompt_extension::PromptRuntimeHost>,
+}
+
+impl HeptaExtensionBindings {
+    pub(crate) fn absent() -> Self {
+        Self {
+            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
+            cognitive_production_mutation: None,
+            local_turn_lifecycle_enabled: false,
+            local_development_policy: None,
+            qualification_turn_writer_enabled: false,
+            qualification_turn_writer: None,
+            prompt_runtime_host: None,
+        }
+    }
+
+    pub(crate) fn validated(mut self) -> Self {
+        self.qualification_turn_writer = qualification_turn_writer_capability(
+            self.qualification_turn_writer_enabled,
+            self.local_development_policy.as_ref(),
+            &self.cognitive_runtime,
+            self.qualification_turn_writer.take(),
+        );
+        self
+    }
+}
+
 pub(crate) struct ThreadExtensionDependencies {
     pub(crate) event_sink: Arc<dyn ExtensionEventSink>,
     pub(crate) auth_manager: Arc<AuthManager>,
@@ -50,27 +88,8 @@ pub(crate) struct ThreadExtensionDependencies {
     pub(crate) http_client_factory: HttpClientFactory,
     /// Process-scoped queue shared by idle dispatch and app-server requests.
     pub(crate) queue_service: Option<Arc<QueuedItemService>>,
-    /// Exact per-agent capability supplied by the owning process. Plain Codex
-    /// uses `Absent`; an owning agent may degrade to sanitized `Unavailable`.
-    pub(crate) hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
-    pub(crate) hepta_cognitive_production_mutation:
-        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
-    /// Explicit local-development-only lifecycle journal capability. Plain
-    /// Codex and production-facing embeddings keep this false.
-    pub(crate) hepta_local_turn_lifecycle_enabled: bool,
-    /// Positive gate for explicit local-development lifecycle ownership.
-    /// Invalid/absent policies keep lifecycle registration disabled.
-    pub(crate) hepta_local_development_policy:
-        Option<codex_hepta_memory::LocalDevelopmentLifecyclePolicy>,
-    /// Explicit qualification-only gate for the host-owned turn writer.
-    pub(crate) hepta_qualification_turn_writer_enabled: bool,
-    /// Optional host capability carrying complete, already-bound lifecycle
-    /// inputs.  `None` is the normal and production-facing state.
-    pub(crate) hepta_qualification_turn_writer:
-        Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
-    /// Optional host-owned source-bound prompt attachment capability. Plain
-    /// Codex keeps this absent; no registry/runtime authority is inferred.
-    pub(crate) hepta_prompt_runtime_host: Option<codex_hepta_prompt_extension::PromptRuntimeHost>,
+    /// Hepta-owned optional capabilities cross the App Server at one composition boundary.
+    pub(crate) hepta: HeptaExtensionBindings,
 }
 
 /// Apply the complete qualification writer gate at the app-server boundary.
@@ -114,14 +133,17 @@ where
         git_attribution_base_url,
         http_client_factory,
         queue_service,
-        hepta_cognitive_runtime,
-        hepta_cognitive_production_mutation,
-        hepta_local_turn_lifecycle_enabled,
-        hepta_local_development_policy,
-        hepta_qualification_turn_writer_enabled,
-        hepta_qualification_turn_writer,
-        hepta_prompt_runtime_host,
+        hepta,
     } = dependencies;
+    let HeptaExtensionBindings {
+        cognitive_runtime: hepta_cognitive_runtime,
+        cognitive_production_mutation: hepta_cognitive_production_mutation,
+        local_turn_lifecycle_enabled: hepta_local_turn_lifecycle_enabled,
+        local_development_policy: hepta_local_development_policy,
+        qualification_turn_writer_enabled: hepta_qualification_turn_writer_enabled,
+        qualification_turn_writer: hepta_qualification_turn_writer,
+        prompt_runtime_host: hepta_prompt_runtime_host,
+    } = hepta.validated();
     let mut builder = ExtensionRegistryBuilder::<Config>::with_event_sink(Arc::clone(&event_sink));
     if let Some(queue_service) = queue_service {
         codex_queue_extension::install(&mut builder, queue_service);

@@ -55,6 +55,7 @@ use crate::config_manager::ConfigManager;
 use crate::error_code::OVERLOADED_ERROR_CODE;
 use crate::error_code::internal_error;
 use crate::error_code::invalid_request;
+use crate::extensions::HeptaExtensionBindings;
 use crate::message_processor::ConnectionSessionState;
 use crate::message_processor::MessageProcessor;
 use crate::message_processor::MessageProcessorArgs;
@@ -488,13 +489,7 @@ async fn start_uninitialized(args: InProcessStartArgs) -> IoResult<InProcessClie
                 remote_control_handle: None,
                 plugin_startup_tasks: crate::PluginStartupTasks::Start,
                 turn_queue_capacity: None,
-                hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
-                hepta_cognitive_production_mutation: None,
-                hepta_local_turn_lifecycle_enabled: false,
-                hepta_local_development_policy: None,
-                hepta_qualification_turn_writer_enabled: false,
-                hepta_qualification_turn_writer: None,
-                hepta_prompt_runtime_host: None,
+                hepta: HeptaExtensionBindings::absent(),
             }));
             let mut thread_created_rx = processor.thread_created_receiver();
             let session = Arc::new(ConnectionSessionState::new());
