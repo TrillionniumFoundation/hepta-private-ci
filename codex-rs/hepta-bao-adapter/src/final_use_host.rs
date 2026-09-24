@@ -11,6 +11,7 @@ use std::fmt;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::FinalUseApprovalVerifier;
@@ -22,6 +23,9 @@ use codex_hepta_contracts::SignedFinalUseApproval;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
 
+use crate::BaoAuthBusAdmission;
+use crate::BaoAuthBusError;
+use crate::BaoAuthBusEvidenceProvider;
 use crate::BaoClient;
 use crate::BaoClientError;
 use crate::BaoReadRequest;
@@ -36,8 +40,9 @@ pub struct RegisteredBaoConsumer {
 }
 
 impl fmt::Debug for RegisteredBaoConsumer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("RegisteredBaoConsumer")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("RegisteredBaoConsumer")
             .field("id", &self.id)
             .field("callback", &"[TRUSTED CALLBACK]")
             .finish()
@@ -69,8 +74,9 @@ pub struct BaoFinalUseHost {
 }
 
 impl fmt::Debug for BaoFinalUseHost {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BaoFinalUseHost")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("BaoFinalUseHost")
             .field("authority", &self.authority)
             .field("approval_verifier", &self.approval_verifier)
             .field("revocation_verifier", &self.revocation_verifier)
@@ -125,6 +131,22 @@ impl BaoFinalUseHost {
         Ok(())
     }
 
+    fn approved_consumer(
+        &self,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        consumer_id: &str,
+    ) -> Result<BaoConsumerCallback, BaoFinalUseHostError> {
+        self.ensure_revocation_fresh()?;
+        self.approval_verifier
+            .verify(grant, approval)
+            .map_err(BaoFinalUseHostError::Control)?;
+        self.consumers
+            .get(consumer_id)
+            .cloned()
+            .ok_or(BaoFinalUseHostError::UnregisteredConsumer)
+    }
+
     /// Apply one independently signed revocation head. The feed signature is
     /// checked before the durable authority owner sees the head; the authority
     /// itself enforces epoch/revision monotonicity and same-epoch superset rules.
@@ -148,13 +170,9 @@ impl BaoFinalUseHost {
         Ok(receipt)
     }
 
-    /// Production composition boundary. The request's signed `consumer_id`
-    /// selects one pre-enrolled callback; callers cannot substitute a closure at
-    /// the callsite. Independent operator approval is verified before any
-    /// provider dispatch. Freshness is checked again at the registered consumer
-    /// entry after provider I/O, so a feed that expires while the network call is
-    /// in flight cannot release a secret. The lower-level client performs the
-    /// claim/network/digest/final-delivery authority fencing.
+    /// Registered final-use boundary without quota composition. This remains a
+    /// bounded source integration path; product callers that reserve quota must
+    /// use `consume_kv_v2_with_authbus` below.
     pub async fn consume_kv_v2(
         &self,
         client: &BaoClient,
@@ -162,15 +180,7 @@ impl BaoFinalUseHost {
         approval: &SignedFinalUseApproval,
         request: &BaoReadRequest,
     ) -> Result<BaoSecretReceipt, BaoFinalUseHostError> {
-        self.ensure_revocation_fresh()?;
-        self.approval_verifier
-            .verify(grant, approval)
-            .map_err(BaoFinalUseHostError::Control)?;
-        let consumer = self
-            .consumers
-            .get(&request.consumer_id)
-            .cloned()
-            .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
+        let consumer = self.approved_consumer(grant, approval, &request.consumer_id)?;
         match client
             .consume_kv_v2_guarded(&self.authority, grant, request, move |secret| {
                 self.ensure_revocation_fresh()?;
@@ -185,6 +195,42 @@ impl BaoFinalUseHost {
             Err(error) => Err(error),
         }
     }
+
+    /// Canonical quota-controlled product entry. The caller cannot substitute a
+    /// closure: the signed `consumer_id` selects a host-enrolled callback. The
+    /// independent approval and live revocation feed are checked before AuthBus
+    /// reservation, and revocation freshness is checked again at consumer entry.
+    /// Once AuthBus marks dispatch attempted, timeout, authority drift or a
+    /// consumer-entry failure remain indeterminate and retain the reservation.
+    pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
+        &self,
+        client: &BaoClient,
+        authbus: &AuthBusAuthorityHost,
+        admission: &BaoAuthBusAdmission,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        request: &BaoReadRequest,
+        evidence: &mut E,
+    ) -> Result<BaoSecretReceipt, BaoProductHostError> {
+        let consumer = self
+            .approved_consumer(grant, approval, &request.consumer_id)
+            .map_err(BaoProductHostError::Host)?;
+        client
+            .consume_kv_v2_with_authbus(
+                authbus,
+                admission,
+                &self.authority,
+                grant,
+                request,
+                evidence,
+                move |secret| {
+                    self.ensure_revocation_fresh().map_err(|_| ())?;
+                    consumer(secret)
+                },
+            )
+            .await
+            .map_err(BaoProductHostError::AuthBus)
+    }
 }
 
 fn consumer_id(value: &str) -> bool {
@@ -194,7 +240,7 @@ fn consumer_id(value: &str) -> bool {
         && value != ".."
         && value
             .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b"_-.:".contains(&b))
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:".contains(&byte))
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -211,11 +257,27 @@ pub enum BaoFinalUseHostError {
 }
 
 impl fmt::Display for BaoFinalUseHostError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{self:?}")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
     }
 }
 impl std::error::Error for BaoFinalUseHostError {}
+
+#[derive(Debug)]
+pub enum BaoProductHostError {
+    Host(BaoFinalUseHostError),
+    AuthBus(BaoAuthBusError),
+}
+
+impl fmt::Display for BaoProductHostError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Host(error) => write!(formatter, "host admission failed: {error}"),
+            Self::AuthBus(error) => write!(formatter, "AuthBus product path failed: {error}"),
+        }
+    }
+}
+impl std::error::Error for BaoProductHostError {}
 
 #[cfg(all(test, unix))]
 mod tests {
