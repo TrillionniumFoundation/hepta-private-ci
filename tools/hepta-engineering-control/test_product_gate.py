@@ -222,16 +222,16 @@ class ProductGateTests(unittest.TestCase):
                 "DOC-2-DEFAULT-BRANCH-SELECTION",
             ],
         )
-        self.assertTrue(receipt["workerLifecycleObserved"])
+        self.assertTrue(receipt["workerLifecycleFixtureExecuted"])
         self.assertEqual(
             receipt["workerLifecycle"]["reopenedState"], "completed_observed"
         )
-        self.assertTrue(receipt["integrationReconciliationObserved"])
+        self.assertTrue(receipt["integrationReconciliationFixtureExecuted"])
         self.assertEqual(
             receipt["integrationReconciliation"]["reopenedState"],
             "ready_external_merge",
         )
-        self.assertTrue(receipt["reopenRecoveryObserved"])
+        self.assertTrue(receipt["reopenRecoveryFixtureExecuted"])
         self.assertFalse(receipt["mergeAuthority"])
         self.assertFalse(receipt["releaseAuthority"])
 

@@ -250,7 +250,7 @@ class IntegrationControllerTests(unittest.TestCase):
                     current_base_commit=self.base_commit,
                     current_base_tree=self.base_tree,
                     terminal_outcome="merged_observed",
-                    terminal_receipt=self.terminal_receipt(),
+                    terminal_receipt=self.terminal_receipt(observed=self.now + 5),
                     trust_store=self.trust,
                     now_ns=self.now + 5,
                 )
@@ -498,7 +498,7 @@ class IntegrationControllerTests(unittest.TestCase):
                     generation.revision,
                 )
                 self.assertEqual(store.audit_anchor(), anchor)
-                with self.assertRaisesRegex(ValueError, "integration_item_terminal"):
+                with self.assertRaisesRegex(ValueError, "integration_terminal_receipt_binding"):
                     reconcile_integration_item(
                         store,
                         "queue-a",

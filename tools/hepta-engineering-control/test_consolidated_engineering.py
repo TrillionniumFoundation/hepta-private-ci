@@ -371,19 +371,10 @@ class CandidateSequenceTests(unittest.TestCase):
 
         envelope = self.fixture.envelope()
         candidate = generate_candidates(envelope, ())[0]
+        unexpected_ref = self.fixture.root / ".git" / "refs" / "heads" / "unexpected"
         command = self.fixture.success_check(
-            "import subprocess; subprocess.run("
-            + repr(
-                [
-                    "git",
-                    "-C",
-                    str(self.fixture.root),
-                    "update-ref",
-                    "refs/heads/unexpected",
-                    "HEAD",
-                ]
-            )
-            + ", check=True)"
+            "from pathlib import Path; "
+            + f"Path({str(unexpected_ref)!r}).write_text({self.fixture.base_commit!r} + '\\n')"
         )
         with self.assertRaisesRegex(EngineeringError, "source_tree_mutated"):
             sandbox_candidate(self.fixture.root, envelope, candidate, (command,))
