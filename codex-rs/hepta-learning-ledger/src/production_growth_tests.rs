@@ -1,6 +1,8 @@
 //! Opt-in target-host curve for the actual signed product writer. Timing is
 //! observational, never an acceptance threshold; recovery and exact replay are
 //! asserted at every history size. Signature creation is outside append timing.
+//! Dataset-freeze observations reuse this SAME fully persisted signed history;
+//! one independently observed outcome makes its current dataset well-defined.
 use super::*;
 use std::time::Instant;
 
@@ -55,8 +57,18 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
     let original = writer
         .append_decision(Digest32::ZERO, first.clone(), &signed, 50)
         .unwrap();
-    let mut predecessor = original.chain_digest;
-    let mut committed = 1;
+    let observed = outcome("growth-outcome", "growth-value", None, 100);
+    let observer_evidence = sign(
+        writer.verifier(),
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &outcome_signing_payload_v2(&observed),
+    );
+    let mut predecessor = writer
+        .append_outcome(original.chain_digest, observed, &observer_evidence, 50)
+        .unwrap()
+        .chain_digest;
+    let mut committed = 2;
     for records in [64_usize, 256, 1024, 4096] {
         let cpu_before = process_cpu_ticks();
         let mut append_samples = Vec::with_capacity(records - committed);
@@ -90,6 +102,42 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
                 .unwrap();
             lookup_samples.push(started.elapsed().as_nanos());
         }
+        let plan = DatasetFreezePlanV2 {
+            snapshot_id: id("growth-dataset"),
+            objective_digest: digest("objective"),
+            inclusion_policy_digest: digest("inclusion-policy"),
+        };
+        let payload = writer.dataset_freeze_signing_payload(&plan).unwrap();
+        let evaluator_evidence = sign(
+            writer.verifier(),
+            "evaluator",
+            LearningEvidenceRoleV1::Evaluator,
+            &payload,
+        );
+        let mut freeze_samples = Vec::with_capacity(32);
+        let rss_before_freeze_kib = process_rss_kib();
+        for _ in 0..32 {
+            let started = Instant::now();
+            let dataset = writer
+                .freeze_dataset(plan.clone(), &evaluator_evidence, 50)
+                .unwrap();
+            freeze_samples.push(started.elapsed().as_nanos());
+            assert_eq!(dataset.snapshot.source_record_digests.len(), records);
+            assert_eq!(dataset.snapshot.pending_outcomes as usize, records - 2);
+        }
+        println!(
+            concat!(
+                "HEPTA_FREEZE_GROWTH_V1 {{\"records\":{},\"samples\":32,",
+                "\"freeze_p50_ns\":{},\"freeze_p95_ns\":{},\"freeze_p99_ns\":{},",
+                "\"rss_before_freeze_kib\":{},\"rss_after_freeze_kib\":{}}}"
+            ),
+            records,
+            percentile_ns(&mut freeze_samples, 50),
+            percentile_ns(&mut freeze_samples, 95),
+            percentile_ns(&mut freeze_samples, 99),
+            optional_number(rss_before_freeze_kib),
+            optional_number(process_rss_kib()),
+        );
         let frontier = writer.witness_frontier().unwrap();
         assert_eq!(frontier.anchor.sequence, records as u64);
         let before_disk = fixture.file("ledger").metadata().unwrap().len();
