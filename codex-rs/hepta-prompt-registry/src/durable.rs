@@ -80,6 +80,12 @@ impl DurablePromptRegistry {
         directory: &Path,
         maximum_records: usize,
     ) -> Result<Self, DurableRegistryError> {
+        // Validate caller policy before touching the state directory. A rejected
+        // first open must not leave a lock sentinel that makes a corrected retry
+        // look like a previously initialized store whose manifest disappeared.
+        if maximum_records == 0 {
+            return Err(DurableRegistryError::Core(Error::ZeroCapacity));
+        }
         let (mut store, stored) = Store::open(directory)?;
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
@@ -1012,6 +1018,8 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
                 || factor.lifecycle != Lifecycle::Admitted
                 || !active_profiles.insert((
                     binding.factor_id.clone(),
+                    binding.model_id.clone(),
+                    binding.model_version.clone(),
                     binding.model_digest,
                     binding.tokenizer_digest,
                     binding.template_digest,

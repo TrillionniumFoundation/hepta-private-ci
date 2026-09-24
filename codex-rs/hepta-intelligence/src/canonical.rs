@@ -579,10 +579,17 @@ pub fn decide_boundary(
         CanonicalPortDecisionV1::Selected {
             candidate_id,
             propensity,
-        } => AdvisoryDecisionV1::Selected {
-            candidate_id: candidate_id.clone(),
-            propensity: *propensity,
-        },
+        } => {
+            if propensity.raw() == 0 {
+                return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                    "selected propensity",
+                ));
+            }
+            AdvisoryDecisionV1::Selected {
+                candidate_id: candidate_id.clone(),
+                propensity: *propensity,
+            }
+        }
         CanonicalPortDecisionV1::Abstained => AdvisoryDecisionV1::Abstained,
         CanonicalPortDecisionV1::SlowPath => AdvisoryDecisionV1::SlowPath,
         CanonicalPortDecisionV1::Continue => {
@@ -613,6 +620,23 @@ pub fn decide_boundary(
         decision_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn require_legal_selection(
+    legal: &LegalActionCandidateSetV1,
+    intuition: &CanonicalPortReceiptV1,
+) -> Result<(), CanonicalIntelligenceError> {
+    if let CanonicalPortDecisionV1::Selected { candidate_id, .. } = &intuition.decision
+        && !legal
+            .candidates
+            .iter()
+            .any(|candidate| candidate.candidate_id == *candidate_id)
+    {
+        return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+            "selected candidate",
+        ));
+    }
+    Ok(())
 }
 
 pub fn assemble_context(
@@ -709,6 +733,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         CanonicalStageV1::IntuitionDecided,
         |ports: &mut P, input| ports.decide_intuition(input)
     );
+    require_legal_selection(&legal, &intuition)?;
     let decision = decide_boundary(&request.run_id, legal.candidate_set_digest, &intuition)?;
 
     match decision.decision {

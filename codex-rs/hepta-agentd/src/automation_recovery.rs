@@ -52,7 +52,7 @@ pub(crate) async fn reconcile_one(
     if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
         return Ok(true);
     }
-    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
+    let Some(work) = store.next_pending_occurrence_work().await? else {
         return Ok(false);
     };
     reconcile_work(store, state, identity, work, now_ms).await?;
@@ -392,14 +392,10 @@ async fn pending_exact(
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
-        .pending_occurrence_work(1024)
+        .pending_occurrence_work_exact(task_id, occurrence)
         .await?
-        .into_iter()
-        .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
         .ok_or_else(|| {
-            AgentdError::Protocol(
-                "automation occurrence is not in the recovery frontier".to_string(),
-            )
+            AgentdError::Protocol("automation occurrence is not pending recovery".to_string())
         })
 }
 

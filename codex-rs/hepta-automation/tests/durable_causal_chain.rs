@@ -862,3 +862,71 @@ async fn reopen_rejects_tampered_canonical_occurrence_identity() {
         Err(AutomationError::Corrupt)
     ));
 }
+
+#[tokio::test]
+async fn durable_recovery_cursor_rotates_past_a_long_running_occurrence() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    let first = draft(
+        "019153a4-3088-7000-a56a-9b1964f75a01",
+        AutomationSchedule::Once,
+        100,
+    );
+    let second = draft(
+        "019153a4-3088-7000-a56a-9b1964f75a02",
+        AutomationSchedule::Once,
+        200,
+    );
+    store.create_task(&first).await.expect("first task");
+    store.create_task(&second).await.expect("second task");
+    assert!(matches!(
+        scheduler.tick(100).await.expect("first tick"),
+        AutomationTick::Submitted { .. }
+    ));
+    assert!(matches!(
+        scheduler.tick(200).await.expect("second tick"),
+        AutomationTick::Submitted { .. }
+    ));
+
+    let selected_first = store
+        .next_pending_occurrence_work()
+        .await
+        .expect("first recovery selection")
+        .expect("first pending occurrence");
+    // Drop the scheduler's retained handle and reopen the actual owner. Discovery
+    // progress must survive process-lifetime state loss, not just one handle.
+    drop(scheduler);
+    store.close().await;
+    drop(store);
+    let store = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen owner");
+    let selected_second = store
+        .next_pending_occurrence_work()
+        .await
+        .expect("second recovery selection")
+        .expect("second pending occurrence");
+    assert_ne!(
+        selected_first.occurrence.task_id, selected_second.occurrence.task_id,
+        "one long-running occurrence must not monopolize every recovery pass"
+    );
+    assert_eq!(
+        [
+            selected_first.occurrence.task_id,
+            selected_second.occurrence.task_id,
+        ]
+        .into_iter()
+        .collect::<std::collections::BTreeSet<_>>(),
+        [first.task_id, second.task_id]
+            .into_iter()
+            .collect::<std::collections::BTreeSet<_>>()
+    );
+}

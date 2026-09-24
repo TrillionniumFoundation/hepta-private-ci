@@ -316,7 +316,7 @@ Schema v16 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v16. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. A binary that does not understand schema v16 must not replace the current owner against an upgraded store.
+Migrations are additive from v3 through v20. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. Migrations v17-v19 retain kernel-operation deduplication, timer lifecycle and converged owner metadata. Migration v20 adds the owner-local recovery cursor. Agentd selects pending work through `next_pending_occurrence_work`; known task/occurrence identities use `pending_occurrence_work_exact`, never the first 1024 records. Discovery progress is not effect authority. A binary that does not understand schema v20 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -351,7 +351,7 @@ Current source bounds include:
 
 - schedule catch-up ceiling <=1024 occurrences;
 - Calendar V2 timezone transition profile <=512 transitions and bounded calendar search <=1032 candidate days;
-- occurrence recovery query <=1024 rows;
+- diagnostic recovery page <=1024 rows; product recovery uses one durable round-robin selection and exact known-identity lookup;
 - Agentd terminal observation is bounded to <=16 pages × 100 persisted turns per recovery pass; when more history remains, the opaque `next_cursor` is persisted under exact-CAS and the next pass resumes there. A known turn can therefore age beyond 1600 recent turns without permanent invisibility or unbounded full-history materialization;
 - one historical occurrence reconciliation plus at most one new scheduler admission per Agentd tick;
 - TaskFlow graph/step bounds inherited from the existing TaskFlow ledger/outbox.

@@ -222,13 +222,15 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-intelligence/src/canonical_tests.rs](../../../codex-rs/hepta-intelligence/src/canonical_tests.rs): first-class NDU/seven-owner order, abstention, post-call generation drift, key rotation, wrong-owner receipt and candidate closure.
+- [codex-rs/hepta-intelligence/src/canonical_tests.rs](../../../codex-rs/hepta-intelligence/src/canonical_tests.rs): first-class NDU/seven-owner order, abstention, post-call generation drift, key rotation, wrong-owner receipt, duplicate rejection, legal-set membership and positive selected propensity.
 - [codex-rs/hepta-agentd/src/intelligence_product_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_product_tests.rs): real owner APIs, signed-currentness tamper rejection, exact Agentd admit/context/dispatch/terminal lifecycle, durable Decision -> independent Outcome, acknowledged reopen/idempotent retry, final-use revocation race, missing owner and total timeout.
 - [codex-rs/hepta-agent-protocol/src/lib.rs](../../../codex-rs/hepta-agent-protocol/src/lib.rs): strict/bounded run-lifecycle wire round trip and proof that admission time is not client supplied.
 - [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs) and native-run-control tests: physical turn terminal/cancellation/indeterminate semantics. Exact intelligence-bound real-process execution remains an exact-candidate product-E2E requirement.
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs): compatibility durable evaluated-shadow regression.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence -p codex-hepta-agentd`. The command is a test invocation, not a stored result. Exact-head and deterministic-merge workflow receipts, skips and target-host measurements must be inspected before elevating the claim boundary.
+
+The default package run does not enable `qualification-legacy-learning-write`. Decision/Outcome append and reopen cases behind that feature are qualification-only evidence; they do not prove that the normal Agentd binary has composed a production `LedgerWriter`. A configured runner without a concrete host-owned invocation provider likewise does not prove daemon product execution.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

@@ -336,7 +336,11 @@ pub fn validate_circuit_successor_v1(
     if current.circuit_id != successor.circuit_id {
         return Err(invalid("circuit successor changes stable circuit identity"));
     }
-    if successor.version != current.version.saturating_add(1) {
+    let expected_version = current
+        .version
+        .checked_add(1)
+        .ok_or_else(|| invalid("circuit version space is exhausted"))?;
+    if successor.version != expected_version {
         return Err(invalid("circuit successor version is not monotone by one"));
     }
     if successor.predecessor_digest.as_ref() != Some(&current.circuit_digest) {
@@ -543,6 +547,47 @@ mod tests {
         )
         .expect("widened successor shape");
         assert!(validate_circuit_successor_v1(&current, &widened).is_err());
+    }
+
+    #[test]
+    fn exhausted_version_space_rejects_same_version_successor() {
+        let current = NeuralCircuitCandidateV1::new(
+            "circuit-max-version",
+            u32::MAX,
+            Some(digest("prior-version")),
+            "observe",
+            vec![
+                CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
+                CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
+                CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
+            ],
+            vec![
+                CircuitEdgeV1::new("observe", "success"),
+                CircuitEdgeV1::new("observe", "failure"),
+            ],
+            Vec::new(),
+            digest("route-max"),
+            digest("parameters-max"),
+            digest("resources-max"),
+        )
+        .expect("current max-version circuit");
+        let successor = NeuralCircuitCandidateV1::new(
+            "circuit-max-version",
+            u32::MAX,
+            Some(current.circuit_digest.clone()),
+            "observe",
+            current.nodes.clone(),
+            current.edges.clone(),
+            Vec::new(),
+            digest("route-max-next"),
+            digest("parameters-max-next"),
+            digest("resources-max-next"),
+        )
+        .expect("same-version candidate remains structurally valid");
+        assert!(matches!(
+            validate_circuit_successor_v1(&current, &successor),
+            Err(TaskFlowError::Invalid(message)) if message.contains("exhausted")
+        ));
     }
 
     #[test]

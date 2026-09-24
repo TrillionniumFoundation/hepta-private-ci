@@ -325,3 +325,50 @@ fn malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes() {
         );
     }
 }
+
+#[test]
+fn distinct_model_versions_remain_reopenable() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
+    owner
+        .commit(|core| add_payload(core, 0))
+        .must("first profile");
+
+    let current = owner.registry().must("current");
+    let mut second = current
+        .realization_bindings
+        .get(&id("realization:0"))
+        .must("first binding")
+        .clone();
+    let payload = current
+        .realization_payloads
+        .get(&id("realization:0"))
+        .must("first payload")
+        .to_vec();
+    second.realization_id = id("realization:second-version");
+    second.model_version = "v2".into();
+    owner
+        .register_realization_payload_v2(second, payload, None)
+        .must("second model version");
+    let expected = owner.registry().must("registry").clone();
+    drop(owner);
+
+    let reopened = DurablePromptRegistry::open_state_dir(&path, 64).must("reopen");
+    assert_eq!(reopened.registry().must("registry"), &expected);
+}
+
+#[test]
+fn rejected_first_configuration_leaves_directory_retryable() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir(&path, 0),
+        Err(DurableRegistryError::Core(Error::ZeroCapacity))
+    ));
+    assert!(!path.join("registry.lock").exists());
+    assert!(!path.join("registry.json").exists());
+
+    let owner = DurablePromptRegistry::open_state_dir(&path, 64).must("corrected retry");
+    assert_eq!(owner.registry().must("registry").revision().get(), 1);
+}

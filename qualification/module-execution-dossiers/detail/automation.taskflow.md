@@ -40,7 +40,7 @@ An unknown effect blocks dependent steps. Compensation is another separately aut
 
 ## 5. Capacity and performance profile
 
-Current hard bounds include <=1024 recovery/due frontier records per owner query, <=1024 catch-up occurrences per configured window, <=512 timezone transitions per Calendar V2 profile, <=1032 bounded calendar-day probes, TaskFlow's registered graph/step bounds, and <=16 pages of 100 persisted turns for one terminal-observation scan. Agentd still admits at most one new scheduler occurrence per tick and reconciles at most one historical occurrence per tick. No busy-loop retry or unlimited backlog is introduced.
+Current hard bounds include <=1024 recovery/due frontier records per owner query, <=1024 catch-up occurrences per configured window, <=512 timezone transitions per Calendar V2 profile, <=1032 bounded calendar-day probes, TaskFlow's registered graph/step bounds, and <=16 pages of 100 persisted turns for one terminal-observation scan. Agentd still admits at most one new scheduler occurrence per tick and reconciles at most one historical occurrence per tick. Schema v20 retains the discovery cursor across reopen; exact task/occurrence lookup is independent of the diagnostic page. No busy-loop retry or unlimited backlog is introduced.
 
 Pilot ceilings remain design/qualification inputs, not deployment measurements. Bind selected-host latency, backlog, restore and saturation evidence before activation.
 
@@ -67,7 +67,7 @@ The implementation intentionally reuses:
 - the existing App Server `thread/queue/reconcile` stable-client-id primitive;
 - the kernel-owned durable `FinalUseAuthority` for external effect admission.
 
-No second scheduler, TaskFlow engine, queue writer, authority issuer or terminality oracle was introduced. Rollback must preserve schema v16 records or use a binary that understands Calendar V2, frozen legacy schedule revisions, legacy dispatch-unknown reconciliation evidence, provider reconciliation history, and terminal-observer cursor progress; older binaries must not replace the owner against an upgraded store.
+No second scheduler, TaskFlow engine, queue writer, authority issuer or terminality oracle was introduced. Rollback must preserve schema v20 records or use a binary that understands Calendar V2, frozen legacy schedule revisions, legacy dispatch-unknown reconciliation evidence, provider reconciliation history, and terminal-observer cursor progress; older binaries must not replace the owner against an upgraded store.
 
 Source implementation does not by itself authorize a concrete external provider, deployment, operator acceptance, canary, promotion or release.
 

@@ -26,8 +26,11 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
+use sqlx::migrate::Migrate;
 use tokio::sync::Mutex;
 use tokio::sync::Notify;
+
+static AUTOMATION_MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const AGENT_IDS: [&str; 5] = [
     "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
@@ -944,117 +947,58 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
 async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     let fixture = FleetFixture::new(1);
     let layout = &fixture.layouts[0];
-    let store = AutomationStore::open(layout).await.expect("open v2 store");
-    let task = draft(
-        "019153a4-3088-7000-a56a-9b1964f7500e",
-        AutomationSchedule::Once,
-        100,
-    );
-    store.create_task(&task).await.expect("create legacy task");
-    let database_path = store.path().to_path_buf();
-    store.close().await;
-
-    // Reduce the fresh database to the observable v1 shape while retaining
-    // SQLx's v1 migration row.  Reopening must execute the real 0002 migration,
-    // not a test-only schema shortcut.
+    std::fs::create_dir_all(layout.automation_root()).expect("automation root");
+    let database_path = layout.automation_root().join("automation_1.sqlite3");
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
         .open_durable_evidence_pool(&database_path)
         .await
-        .expect("open legacy pool");
-    // Keep the schema rewind on one connection so each DDL statement sees
-    // the preceding change, and publish the complete v1 fixture atomically.
-    let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
-    sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
-        .execute(&mut *rewind)
+        .expect("open historical v1 pool");
+    let mut connection = pool.acquire().await.expect("historical owner connection");
+    connection
+        .ensure_migrations_table("_sqlx_migrations")
         .await
-        .expect("drop v2 index");
-    sqlx::query("DROP TABLE automation_dispatch_outcomes")
-        .execute(&mut *rewind)
+        .expect("historical migration journal");
+    let migration = AUTOMATION_MIGRATOR
+        .iter()
+        .find(|migration| migration.version == 1)
+        .expect("v1 migration");
+    connection
+        .apply("_sqlx_migrations", migration)
         .await
-        .expect("drop v2 table");
-    // The current opener applies the full durable causal-chain schema.
-    // Remove every post-v1 object in reverse dependency order, then rewind the
-    // migration ledger so reopening exercises the real v1 -> latest path.
-    for statement in [
-        "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
-        "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
-        "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",
-        "DROP VIEW IF EXISTS automation_occurrence",
-        "DROP VIEW IF EXISTS automation_schedule",
-        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_required_insert",
-        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_no_update",
-        "DROP TRIGGER IF EXISTS automation_task_default_policy",
-        "DROP TABLE IF EXISTS taskflow_effect_dispatch_reconciliations",
-        "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
-        "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
-        "DROP TABLE IF EXISTS automation_calendar_schedule_versions",
-        "DROP TABLE IF EXISTS automation_occurrence_events",
-        "DROP TABLE IF EXISTS taskflow_step_outbox",
-        "DROP TABLE IF EXISTS automation_occurrence_lifecycle",
-        "DROP TABLE IF EXISTS automation_schedule_metadata",
-    ] {
-        sqlx::query(statement)
-            .execute(&mut *rewind)
-            .await
-            .expect("drop post-v1 causal object");
-    }
-    sqlx::query("DROP TRIGGER taskflow_events_no_update")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop TaskFlow event update trigger");
-    sqlx::query("DROP TRIGGER taskflow_events_no_delete")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop TaskFlow event delete trigger");
-    sqlx::query("DROP TRIGGER taskflow_definitions_no_update")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop TaskFlow definition update trigger");
-    sqlx::query("DROP TRIGGER taskflow_definitions_no_delete")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop TaskFlow definition delete trigger");
-    sqlx::query("DROP TABLE taskflow_events")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop TaskFlow events");
-    sqlx::query("DROP TABLE taskflow_runs")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop TaskFlow runs");
-    sqlx::query("DROP TABLE taskflow_definitions")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop TaskFlow definitions");
-    sqlx::query("ALTER TABLE automation_runs DROP COLUMN schedule_revision")
-        .execute(&mut *rewind)
-        .await
-        .expect("remove v14 run revision from v1 fixture");
-    sqlx::query("DELETE FROM _sqlx_migrations WHERE version >= 2")
-        .execute(&mut *rewind)
-        .await
-        .expect("rewind migration ledger");
-    sqlx::query("DROP TRIGGER automation_meta_no_update")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop immutable trigger for rewind");
-    sqlx::query("UPDATE automation_meta SET schema_version = 1 WHERE singleton = 1")
-        .execute(&mut *rewind)
-        .await
-        .expect("rewind metadata version");
+        .expect("apply real v1 schema");
+
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f7500e",
+        AutomationSchedule::Once,
+        100,
+    );
     sqlx::query(
-        "CREATE TRIGGER automation_meta_no_update
-         BEFORE UPDATE ON automation_meta
-         BEGIN
-             SELECT RAISE(ABORT, 'automation owner metadata is immutable');
-         END",
+        "INSERT INTO automation_meta (singleton, schema_version, owner_agent_id)
+         VALUES (1, 1, ?)",
     )
-    .execute(&mut *rewind)
+    .bind(layout.agent_id().as_str())
+    .execute(&mut *connection)
     .await
-    .expect("restore immutable trigger");
-    rewind.commit().await.expect("commit legacy schema rewind");
+    .expect("historical owner metadata");
+    sqlx::query(
+        "INSERT INTO automation_tasks (
+             task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
+             state, next_run_at_ms, next_occurrence, created_at_ms, updated_at_ms
+         ) VALUES (?, ?, ?, ?, 'once', NULL, 'enabled', ?, 1, ?, ?)",
+    )
+    .bind(task.task_id.to_string())
+    .bind(layout.agent_id().as_str())
+    .bind(&task.thread_id)
+    .bind(&task.prompt)
+    .bind(i64::try_from(task.first_run_at_ms).expect("first run fits sqlite"))
+    .bind(i64::try_from(task.created_at_ms).expect("created time fits sqlite"))
+    .bind(i64::try_from(task.created_at_ms).expect("created time fits sqlite"))
+    .execute(&mut *connection)
+    .await
+    .expect("insert real v1 task");
+    drop(connection);
     pool.close().await;
 
     let migrated = AutomationStore::open(layout)

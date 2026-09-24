@@ -61,14 +61,12 @@ impl PagedRetrievalOwnerCutV1 {
         }
 
         let mut cursor = None;
-        let mut page_heads = RETRIEVAL_PAGE_HEADS.min(MAX_LANE_C_SNAPSHOT_PAGE_HEADS);
+        let mut page_heads = u32::try_from(
+            RETRIEVAL_PAGE_HEADS.min(MAX_LANE_C_SNAPSHOT_PAGE_HEADS),
+        )
+        .map_err(|_| CognitiveStoreError::Invalid("retrieval page bound overflow".to_string()))?;
         let mut selected = BTreeMap::<StableId, MemoryRecord>::new();
-        let mut identity: Option<(
-            StableId,
-            CognitiveOwnerFrontiers,
-            i64,
-            Digest32,
-        )> = None;
+        let mut identity: Option<(StableId, CognitiveOwnerFrontiers, i64, Digest32)> = None;
 
         loop {
             let page = loop {
