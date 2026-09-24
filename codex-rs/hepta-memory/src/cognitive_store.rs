@@ -58,6 +58,7 @@ const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const COGNITIVE_ACTIVE_DB_POINTER: &str = ".cognitive-active-v1";
 const COGNITIVE_STORE_LOCK_FILENAME: &str = ".cognitive-store.lock";
 const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
+const MAX_COGNITIVE_ROOT_ENTRIES_FOR_ACTIVE_RESOLUTION: usize = 4_096;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
@@ -1491,7 +1492,33 @@ fn valid_recovered_database_filename(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
+fn legacy_database_path_if_no_recovered_generation(
+    root: &Path,
+) -> Result<PathBuf, CognitiveStoreError> {
+    let mut entries = 0usize;
+    for entry in fs::read_dir(root).map_err(unavailable)? {
+        let entry = entry.map_err(unavailable)?;
+        entries = entries.saturating_add(1);
+        if entries > MAX_COGNITIVE_ROOT_ENTRIES_FOR_ACTIVE_RESOLUTION {
+            return Err(CognitiveStoreError::Corrupt(
+                "cognitive root exceeds the bounded active-generation inventory".to_string(),
+            ));
+        }
+        if entry
+            .file_name()
+            .to_str()
+            .is_some_and(valid_recovered_database_filename)
+        {
+            return Err(CognitiveStoreError::Corrupt(
+                "cognitive active database pointer is missing while recovered generations exist"
+                    .to_string(),
+            ));
+        }
+    }
+    Ok(root.join(COGNITIVE_DB_FILENAME))
+}
+
+pub(crate) fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
 
     #[cfg(unix)]
@@ -1506,7 +1533,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
         {
             Ok(file) => file,
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-                return Ok(root.join(COGNITIVE_DB_FILENAME));
+                return legacy_database_path_if_no_recovered_generation(root);
             }
             Err(error) => return Err(unavailable(error)),
         };
@@ -1526,7 +1553,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
     let pointer_file = match File::open(&pointer) {
         Ok(file) => file,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            return Ok(root.join(COGNITIVE_DB_FILENAME));
+            return legacy_database_path_if_no_recovered_generation(root);
         }
         Err(error) => return Err(unavailable(error)),
     };

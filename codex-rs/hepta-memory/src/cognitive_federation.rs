@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -25,6 +26,7 @@ use crate::RetrievalCandidate;
 use crate::RetrievalRequest;
 use crate::RevalidationStatus;
 use crate::cognitive_path::canonical_path_without_redirection;
+use crate::cognitive_store::resolve_active_database_path;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
@@ -35,7 +37,6 @@ pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
 const FEDERATION_REFRESH_TIMEOUT: Duration = Duration::from_secs(2);
 
-const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const CAPABILITY_ID_PREFIX: &str = "federation:v1:";
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -558,6 +559,7 @@ impl CognitiveStore {
 #[derive(Clone)]
 pub struct FederatedMemoryReader {
     owner: Arc<CognitiveStore>,
+    owner_root: PathBuf,
     capability: FederationCapability,
 }
 
@@ -570,9 +572,50 @@ impl FederatedMemoryReader {
         if owner_layout.agent_id() == consumer_agent_id {
             return Ok(Vec::new());
         }
-        let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
+        let owner_root = owner_layout.cognitive_root().to_path_buf();
+        let database_path = resolve_active_database_path(&owner_root)?;
+        Self::discover_database_generation(
+            owner_layout,
+            consumer_agent_id,
+            now_unix_seconds,
+            owner_root,
+            database_path,
+            true,
+        )
+        .await
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn discover_retired_generation_for_test(
+        owner_layout: &HeptaAgentLayout,
+        database_path: PathBuf,
+        consumer_agent_id: &AgentId,
+        now_unix_seconds: i64,
+    ) -> Result<Vec<Self>, CognitiveStoreError> {
+        Self::discover_database_generation(
+            owner_layout,
+            consumer_agent_id,
+            now_unix_seconds,
+            owner_layout.cognitive_root().to_path_buf(),
+            database_path,
+            false,
+        )
+        .await
+    }
+
+    async fn discover_database_generation(
+        owner_layout: &HeptaAgentLayout,
+        consumer_agent_id: &AgentId,
+        now_unix_seconds: i64,
+        owner_root: PathBuf,
+        database_path: PathBuf,
+        require_current: bool,
+    ) -> Result<Vec<Self>, CognitiveStoreError> {
         let pool = open_read_only_pool(&database_path).await?;
         verify_read_only_store(&pool, owner_layout.agent_id()).await?;
+        if require_current {
+            ensure_discovery_generation_current(&owner_root, &database_path)?;
+        }
         let rows = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e
@@ -583,6 +626,9 @@ impl FederatedMemoryReader {
         .fetch_all(&pool)
         .await
         .map_err(unavailable)?;
+        if require_current {
+            ensure_discovery_generation_current(&owner_root, &database_path)?;
+        }
         let owner = Arc::new(CognitiveStore::from_read_only_pool(
             pool,
             owner_layout.agent_id().clone(),
@@ -604,6 +650,7 @@ impl FederatedMemoryReader {
             {
                 readers.push(Self {
                     owner: Arc::clone(&owner),
+                    owner_root: owner_root.clone(),
                     capability: event.capability,
                 });
             }
@@ -617,8 +664,21 @@ impl FederatedMemoryReader {
         Ok(readers)
     }
 
+    #[cfg(test)]
+    pub(crate) async fn close_for_recovery_test(self) {
+        self.owner.pool.close().await;
+    }
+
     pub fn capability(&self) -> &FederationCapability {
         &self.capability
+    }
+
+    pub(crate) fn owner_database_path(&self) -> &Path {
+        self.owner.path()
+    }
+
+    fn ensure_current_owner_generation(&self) -> Result<(), CognitiveStoreError> {
+        ensure_discovery_generation_current(&self.owner_root, self.owner.path())
     }
 
     pub async fn retrieve(
@@ -760,6 +820,7 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         now_unix_seconds: i64,
     ) -> Result<Option<FederationRevalidationDrift>, CognitiveStoreError> {
+        self.ensure_current_owner_generation()?;
         if access.agent_id != self.capability.consumer_agent_id {
             return Ok(Some(FederationRevalidationDrift::Consumer));
         }
@@ -776,6 +837,7 @@ impl FederatedMemoryReader {
         .fetch_optional(&self.owner.pool)
         .await
         .map_err(unavailable)?;
+        self.ensure_current_owner_generation()?;
         let Some(row) = row else {
             return Ok(Some(FederationRevalidationDrift::CapabilityMissing));
         };
@@ -807,6 +869,19 @@ impl FederatedMemoryReader {
         }
         Ok(None)
     }
+}
+
+fn ensure_discovery_generation_current(
+    owner_root: &Path,
+    opened_database_path: &Path,
+) -> Result<(), CognitiveStoreError> {
+    let current_database_path = resolve_active_database_path(owner_root)?;
+    if current_database_path != opened_database_path {
+        return Err(CognitiveStoreError::AccessDenied(
+            "memory federation reader is bound to a retired owner generation".to_string(),
+        ));
+    }
+    Ok(())
 }
 
 #[derive(Clone)]

@@ -468,3 +468,112 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     assert_eq!(coverage.truncated_peers, 1);
     assert_eq!(coverage.omitted_peer_candidates, 0);
 }
+
+#[tokio::test]
+async fn bounded_discovery_retains_completed_outcomes_when_one_owner_stalls() {
+    let futures: Vec<std::pin::Pin<Box<dyn std::future::Future<Output = &'static str> + Send>>> = vec![
+        Box::pin(async { "healthy-a" }),
+        Box::pin(async {
+            std::future::pending::<()>().await;
+            "never"
+        }),
+        Box::pin(async { "healthy-b" }),
+    ];
+    let (mut completed, unresolved) = super::cognitive_runtime::collect_bounded_discovery_outcomes(
+        futures,
+        std::time::Duration::from_millis(25),
+    )
+    .await;
+    completed.sort_unstable();
+    assert_eq!(completed, vec!["healthy-a", "healthy-b"]);
+    assert_eq!(unresolved, 1);
+}
+#[tokio::test]
+async fn product_v2_keeps_healthy_owner_when_another_discovery_fails() {
+    let temp = TempDir::new().expect("temp dir");
+    let healthy_owner_id = agent_id(94);
+    let bad_owner_id = agent_id(95);
+    let consumer_id = agent_id(96);
+    let healthy_layout = layout(&temp, &healthy_owner_id);
+    let bad_layout = layout(&temp, &bad_owner_id);
+    let consumer_layout = layout(&temp, &consumer_id);
+    let healthy_owner = CognitiveStore::open(&healthy_layout)
+        .await
+        .expect("healthy owner store");
+    let consumer = CognitiveStore::open(&consumer_layout)
+        .await
+        .expect("consumer store");
+    let owner_access = CognitiveAccess::agent_private(healthy_owner_id.clone());
+    let citation = healthy_owner
+        .append_source(
+            &owner_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "healthy-federation-source",
+                "Healthy federation evidence survives another owner failure.",
+            ),
+        )
+        .await
+        .expect("healthy source");
+    healthy_owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "healthy-federation-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Healthy federation evidence survives another owner failure.",
+                    citation,
+                ),
+            },
+        )
+        .await
+        .expect("healthy memory");
+    let consumer_workspace = workspace("healthy-federation-consumer");
+    healthy_owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("healthy grant");
+    std::fs::create_dir_all(bad_layout.cognitive_root()).expect("bad owner root");
+    std::fs::write(
+        bad_layout.cognitive_root().join("cognitive_1.sqlite3"),
+        b"not-a-sqlite-database",
+    )
+    .expect("bad owner database");
+
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+        .with_federation_sources(consumer_id.clone(), vec![bad_layout, healthy_layout]);
+    let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+    let (batch, coverage) = runtime
+        .retrieve_product_federated(
+            &access,
+            &RetrievalRequest::new("Healthy federation evidence", 150),
+        )
+        .await
+        .expect("healthy owner result with explicit failure coverage");
+    assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.candidates[0].source_agent_id, healthy_owner_id);
+    assert_eq!(
+        batch.candidates[0].candidate.memory.content,
+        "Healthy federation evidence survives another owner failure."
+    );
+    assert_eq!(coverage.requested_peers, 2);
+    assert_eq!(coverage.completed_peers, 1);
+    assert_eq!(coverage.failed_peers, 1);
+    assert_eq!(coverage.failures.discovery_unavailable, 1);
+    assert_eq!(coverage.failures.deadline_or_cancelled, 0);
+    assert_eq!(coverage.failures.authority_rejected, 0);
+    assert_eq!(coverage.failures.integrity_rejected, 0);
+    assert_eq!(coverage.failures.transport_unavailable, 0);
+}

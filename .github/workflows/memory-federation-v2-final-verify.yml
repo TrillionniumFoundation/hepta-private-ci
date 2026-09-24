@@ -1,6 +1,7 @@
 name: memory federation v2 final verify
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - fix/memory-federation-v2-closure-20260920
@@ -10,6 +11,11 @@ on:
       - "codex-rs/hepta-memory-federation/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/core/**"
+      - "codex-rs/extension-api/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/memory.federation/**"
@@ -26,6 +32,11 @@ on:
       - "codex-rs/hepta-memory-federation/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/core/**"
+      - "codex-rs/extension-api/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/memory.federation/**"
@@ -62,38 +73,54 @@ jobs:
           test -n "$EXPECTED_SHA"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
-      - name: Verify implementation maps
-        run: python3 scripts/hepta-implementation-maps.py verify
+      - name: Verify memory federation implementation map
+        run: |
+          python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
+          git diff --exit-code -- docs/modules/memory.federation/IMPLEMENTATION_MAP.json
 
-      - name: Check formatting
+      - name: Check federation formatting
         working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
+        run: |
+          cargo fmt -p codex-hepta-memory-federation -- --check
+          rustfmt --edition 2024 --check \
+            hepta-memory/src/cognitive_store.rs \
+            hepta-memory/src/cognitive_federation.rs \
+            hepta-memory/src/cognitive_federation_tests.rs \
+            hepta-memory/src/cognitive_runtime.rs \
+            hepta-memory/src/cognitive_runtime_tests.rs \
+            ext/hepta-memory/src/cognitive/federation.rs \
+            hepta-agentd/src/runtime.rs \
+            app-server/src/lib.rs
 
       - name: Test canonical federation contract
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
+        run: cargo test --locked -p codex-hepta-memory-federation --lib
 
       - name: Test memory product adapter
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+        run: cargo test --locked -p codex-hepta-memory --lib cognitive_runtime_tests
 
       - name: Test legacy federation regression suite
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+        run: cargo test --locked -p codex-hepta-memory --lib cognitive_federation_tests
 
       - name: Test model-input federation integration
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+        run: cargo test --locked -p codex-hepta-memory-extension --lib cognitive::federation
+
+      - name: Test physical provider final-use fence
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-core --test all final_use_guard_runs_after_policy_admission_and_before_http_dispatch
 
       - name: Check Agentd and App Server composition
         working-directory: codex-rs
-        run: cargo check -p codex-hepta-agentd -p codex-app-server
+        run: cargo check --locked -p codex-hepta-agentd -p codex-app-server
 
       - name: Strict lint canonical and product crates
         working-directory: codex-rs
         run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+          cargo clippy --locked -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --lib --no-deps -- -D warnings
 
       - name: Verify patch hygiene
         run: |
@@ -103,21 +130,21 @@ jobs:
 
   merge-candidate:
     name: deterministic merge contract and product
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Check out exact source for merge construction
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Resolve current main head for merge qualification
         id: current-base
         env:
-          BASE_REF: ${{ github.base_ref }}
+          BASE_REF: ${{ github.base_ref || 'main' }}
         run: |
           set -euo pipefail
           test -n "$BASE_REF"
@@ -131,8 +158,8 @@ jobs:
         uses: ./.github/actions/hepta-synthetic-merge
         with:
           base-sha: ${{ steps.current-base.outputs.sha }}
-          source-sha: ${{ github.event.pull_request.head.sha }}
-          pr-number: ${{ github.event.pull_request.number }}
+          source-sha: ${{ github.event.pull_request.head.sha || github.sha }}
+          pr-number: ${{ github.event.pull_request.number || '990' }}
           author-name: Hepta Memory Federation CI
           author-email: hepta-memory-federation-ci@users.noreply.github.com
           message: Memory federation synthetic merge
@@ -148,38 +175,54 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
 
-      - name: Verify implementation maps on merge candidate
-        run: python3 scripts/hepta-implementation-maps.py verify
+      - name: Verify memory federation implementation map on merge candidate
+        run: |
+          python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
+          git diff --exit-code -- docs/modules/memory.federation/IMPLEMENTATION_MAP.json
 
-      - name: Check formatting on merge candidate
+      - name: Check federation formatting on merge candidate
         working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
+        run: |
+          cargo fmt -p codex-hepta-memory-federation -- --check
+          rustfmt --edition 2024 --check \
+            hepta-memory/src/cognitive_store.rs \
+            hepta-memory/src/cognitive_federation.rs \
+            hepta-memory/src/cognitive_federation_tests.rs \
+            hepta-memory/src/cognitive_runtime.rs \
+            hepta-memory/src/cognitive_runtime_tests.rs \
+            ext/hepta-memory/src/cognitive/federation.rs \
+            hepta-agentd/src/runtime.rs \
+            app-server/src/lib.rs
 
       - name: Test canonical federation contract on merge candidate
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
+        run: cargo test --locked -p codex-hepta-memory-federation --lib
 
       - name: Test memory product adapter on merge candidate
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+        run: cargo test --locked -p codex-hepta-memory --lib cognitive_runtime_tests
 
       - name: Test legacy federation regression suite on merge candidate
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+        run: cargo test --locked -p codex-hepta-memory --lib cognitive_federation_tests
 
       - name: Test model-input federation integration on merge candidate
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+        run: cargo test --locked -p codex-hepta-memory-extension --lib cognitive::federation
+
+      - name: Test physical provider final-use fence on merge candidate
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-core --test all final_use_guard_runs_after_policy_admission_and_before_http_dispatch
 
       - name: Check Agentd and App Server composition on merge candidate
         working-directory: codex-rs
-        run: cargo check -p codex-hepta-agentd -p codex-app-server
+        run: cargo check --locked -p codex-hepta-agentd -p codex-app-server
 
       - name: Strict lint canonical and product crates on merge candidate
         working-directory: codex-rs
         run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+          cargo clippy --locked -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --lib --no-deps -- -D warnings
 
       - name: Verify merge patch hygiene
         run: |

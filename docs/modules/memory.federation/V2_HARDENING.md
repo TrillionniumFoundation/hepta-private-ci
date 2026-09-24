@@ -52,7 +52,7 @@ After transport returns a terminal response and before evidence is admitted, the
 
 States are `Current`, `Revoked` and `StaleGeneration`. Every observation also carries the live authority expiry. A `Current` observation is invalid if already expired, and the engine rejects any lease whose expiry exceeds the live authority horizon. The post-I/O observation time may not regress behind the preflight observation.
 
-A post-I/O `Revoked` or `StaleGeneration` state remains terminally observable for provenance, but all remote evidence items are suppressed. The final result expiry is additionally capped by the post-I/O live authority expiry. The authority-observation digest binds that expiry and the state, so downstream code cannot replace the final live horizon without invalidating the result.
+A post-I/O `Revoked` or `StaleGeneration` state remains terminally observable for provenance, but all remote evidence items are suppressed. For the local owner-store adapter, “generation” includes the validated active cognitive-database generation selected by the memory owner, not only the capability counters. Discovery opens the owner-controlled active path; the query generation digest includes that generation; preflight and post-I/O rediscovery require the same path; and the reader checks again before and after capability reads. A recovery publication therefore retires old readers even while the predecessor SQLite file remains present. The final result expiry is additionally capped by the post-I/O live authority expiry. The authority-observation digest binds that expiry and the state, so downstream code cannot replace the final live horizon without invalidating the result.
 
 ## 4. Interruptible single-attempt transport
 
@@ -76,18 +76,19 @@ Production Agentd composition uses `CognitiveRuntime::AvailableFederatedV2`. The
 
 For each physical federated recall:
 
-1. concurrently rediscover currently active capabilities from the bounded owner-candidate set;
-2. deterministically sort/deduplicate and cap admitted sources at the existing federation source limit, while recording peer truncation and owner-candidate omission;
-3. build a query and lease bound to consumer, peer, scope, purpose, capability generation/revision, query digest, nonce and deadline;
-4. perform canonical live-authority preflight and require `Current` before dispatch;
-5. execute the owner read through `FederationTransportV2`, interruptible at `min(query_deadline, lease_expiry)`;
-6. seal and verify the remote response digest;
-7. rediscover the current owner capability after I/O;
-8. admit evidence only if the final live authority observation is current;
-9. deterministically aggregate requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure counts;
-10. batch-revalidate the prepared attachment at physical model-request assembly: bindings from the same owner/capability share one SQLite read snapshot, the whole batch shares one bounded product deadline, and different owners remain independent federation snapshots; after the batch completes, read the wall clock again and reject if any capability crossed its expiry or the clock regressed; timeout, stale generation, revocation, expiry crossing or owner unavailability drops the federated proposal fail-closed. This fence is evaluated after provider-attempt admission and before transport entry; under the repository-wide dispatch contract it does not claim retroactive cancellation authority over an already admitted effect.
+1. resolve every local candidate through the memory owner's validated active-database pointer and concurrently rediscover currently active capabilities from the bounded owner-candidate set;
+2. collect completed discoveries under a bounded discovery horizon, retaining healthy results while unfinished or failed owners become explicit failed-discovery coverage;
+3. deterministically sort/deduplicate and cap admitted sources at the existing federation source limit, while recording peer truncation and owner-candidate omission;
+4. build a query and lease bound to consumer, peer, scope, purpose, capability generation/revision, active owner-database generation, query digest, nonce and deadline;
+5. perform canonical live-authority preflight and require `Current` before dispatch;
+6. execute the owner read through `FederationTransportV2`, interruptible at `min(query_deadline, lease_expiry)`;
+7. seal and verify the remote response digest;
+8. rediscover the current owner capability after I/O;
+9. admit evidence only if the final live authority observation is current;
+10. deterministically aggregate requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure counts;
+11. batch-revalidate the prepared attachment at physical model-request assembly: bindings from the same owner/capability share one SQLite read snapshot, the whole batch shares one bounded product deadline, and different owners remain independent federation snapshots; after the batch completes, read the wall clock again and reject if any capability crossed its expiry or the clock regressed; timeout, stale generation, revocation, expiry crossing or owner unavailability drops the federated proposal fail-closed. This fence is evaluated after provider-attempt admission and before transport entry; under the repository-wide dispatch contract it does not claim retroactive cancellation authority over an already admitted effect.
 
-The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations. Admitted peer attempts are polled concurrently under the same total deadline; completion order never controls result ordering.
+The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations. The current local profile uses a two-second total horizon and reserves one second for incremental discovery; any unfinished owner is dropped with explicit unavailable coverage while completed healthy owners continue. Admitted peer attempts are polled concurrently under the remaining total deadline; completion order never controls result ordering.
 
 ## 6. Legacy compatibility boundary
 
@@ -115,7 +116,9 @@ failures.transport_unavailable
 
 A failed peer is not converted into a successful empty result. `Partial + []` also remains `Partial`; an incomplete peer response with zero returned items must not be relabeled as a valid empty result. Peer-cap truncation and pre-discovery owner-candidate omission are reported separately from failures. Typed failure counts remain bound into the canonical result digest where a result exists and into the prepared product attachment/source binding at aggregation. Partial coverage remains visible in the combined local+federated model-input payload.
 
-A successfully observed owner layout with no active grant remains only an enrollment candidate and does not consume a requested-peer slot. An active grant is enrolled only when its consumer-workspace digest exactly matches the requesting `FederationConsumerAccess`; a grant for another workspace never becomes a queried peer and no transport attempt is made. If the owner capability store cannot be observed at all, enrollment status is indeterminate rather than equivalent to "no grant": the product caller reserves a bounded failed slot from the same <=16 peer budget. Likewise, a terminal transport whose post-I/O authority becomes revoked or generation-stale contributes failed aggregate coverage even though the transport itself completed.
+A successfully observed owner layout with no active grant remains only an enrollment candidate and does not consume a requested-peer slot. An active grant is enrolled only when its consumer-workspace digest exactly matches the requesting `FederationConsumerAccess`; a grant for another workspace never becomes a queried peer and no transport attempt is made. If the owner capability store cannot be observed before the discovery horizon, enrollment status is indeterminate rather than equivalent to "no grant": the product caller reserves a bounded failed slot from the same <=16 peer budget and still retains healthy owner discoveries that completed in time. Likewise, a terminal transport whose post-I/O authority becomes revoked or generation-stale contributes failed aggregate coverage even though the transport itself completed.
+
+Recovery does not create a compatibility exception. A predecessor SQLite file may remain available for audit, but it is no longer an eligible owner generation after the validated active pointer changes. Existing readers are fenced on their next pre/post capability check; newly discovered readers open only the current generation. Revoke, correction and forget mutations committed to the recovered owner therefore dominate predecessor grants and evidence.
 
 ## 8. Verification matrix
 
@@ -141,6 +144,10 @@ The focused V2 suite includes adversarial cases for:
 - duplicate remote record identity;
 - result digest binding the post-I/O authority observation;
 - owner capability discovery failure remaining explicit bounded failed coverage;
+- one stalled discovery preserving already completed healthy owner outcomes within the shared budget;
+- a bad owner coexisting with one successful owner while coverage reports one completion and one discovery failure;
+- recovered-owner revocation preventing predecessor discovery, retrieval and final-use revalidation;
+- recovered-owner correction and forget operations fencing predecessor readers and exposing only the current corrected evidence;
 - wrong-workspace grants never entering queried coverage or transport dispatch;
 - revoked/stale terminal attempts contributing failed aggregate coverage;
 - combined local+federated model input preserving the federation coverage vector;
@@ -155,7 +162,7 @@ Required product qualification additionally includes Agentd composition, owner c
 
 ## 9. Frontier semantics and remaining external gates
 
-The in-process product adapter acquires `observed_frontier` from the **same SQLite read snapshot** that produces the candidate set. In the current local adapter this value is the exact-scope count of immutable `memory_revisions` rows. Because those rows are append-only under the owner schema, the count is a bounded local monotone observation and correctly permits `0` for an actually empty scope; a non-empty response may not fabricate a zero frontier. It is **not** an exact equality cut digest, an independently retained rollback witness, or remote-host authentication. Capability generation/revision remains independently bound through the query/lease and live authority observations.
+The in-process product adapter first resolves the memory owner's validated active database generation and then acquires `observed_frontier` from the **same SQLite read snapshot** that produces the candidate set. The active generation filename is separately bound into the query generation vector and checked again at authority and final-use boundaries. In the current local adapter the frontier value is the exact-scope count of immutable `memory_revisions` rows. Because those rows are append-only under the owner schema, the count is a bounded local monotone observation and correctly permits `0` for an actually empty scope; a non-empty response may not fabricate a zero frontier. It is **not** an exact equality cut digest, an independently retained rollback witness, or remote-host authentication. Capability generation/revision remains independently bound through the query/lease and live authority observations.
 
 For cross-process or multi-host federation, transport qualification must carry and authenticate a canonical owner cut witness (for example the existing Lane-C cut-digest semantics or an explicitly registered successor) together with remote peer identity. The local revision count must not be promoted into that role.
 

@@ -2,6 +2,8 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use crate::CognitiveAccess;
+use crate::CognitiveRecoveryRequirement;
+use crate::CognitiveRuntime;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
@@ -13,6 +15,7 @@ use crate::FederationConsumerAccess;
 use crate::FederationGrantRequest;
 use crate::FederationGrantScope;
 use crate::FederationRevalidationDrift;
+use crate::ForgetMemoryDraft;
 use crate::MemoryDraft;
 use crate::RetrievalRequest;
 use crate::cognitive_test_support::agent_id;
@@ -20,6 +23,37 @@ use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::memory_revision;
 use crate::cognitive_test_support::source;
 use crate::cognitive_test_support::workspace;
+
+struct FederationRecoveryVerifier;
+
+impl crate::ProductionAuthorityVerifier for FederationRecoveryVerifier {
+    fn verify(
+        &self,
+        authority: &crate::ProductionAuthorityLease,
+        expected_agent: &codex_hepta_contracts::AgentId,
+    ) -> Result<(), String> {
+        if &authority.agent_id == expected_agent {
+            Ok(())
+        } else {
+            Err("federation recovery authority owner mismatch".to_string())
+        }
+    }
+}
+
+fn federation_recovery_authority(
+    owner: &codex_hepta_contracts::AgentId,
+) -> crate::ProductionAuthorityLease {
+    crate::ProductionAuthorityLease::from_verified_parts(
+        owner.clone(),
+        codex_hepta_contracts::Sha256Digest::for_bytes(b"federation-recovery-grant"),
+        17,
+        23,
+        u64::MAX,
+        crate::ProductionAuthorityToken::from_verified_bytes(b"federation-recovery-fence".to_vec())
+            .expect("valid federation recovery token"),
+    )
+    .expect("valid federation recovery authority")
+}
 
 #[tokio::test]
 async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
@@ -426,4 +460,354 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
             assert!(batch.candidates.is_empty());
         }
     }
+}
+
+#[tokio::test]
+async fn recovered_owner_revocation_fences_predecessor_readers() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(90);
+    let consumer_id = agent_id(91);
+    let owner_layout = layout(&temp, &owner_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let owner_access = CognitiveAccess::agent_private(owner_id.clone());
+    let citation = owner
+        .append_source(
+            &owner_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "recovery-federation-source",
+                "Recovered federation evidence.",
+            ),
+        )
+        .await
+        .expect("owner source");
+    owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "recovery-federation-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Recovered federation evidence.",
+                    citation,
+                ),
+            },
+        )
+        .await
+        .expect("owner memory");
+    let consumer_workspace = workspace("recovery-federation-consumer");
+    let capability = owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant before recovery");
+    let old_reader = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+        .await
+        .expect("discover predecessor")
+        .pop()
+        .expect("predecessor reader");
+    let consumer_access =
+        FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace.clone());
+    let old_batch = old_reader
+        .retrieve(
+            &consumer_access,
+            &RetrievalRequest::new("Recovered federation", 150),
+        )
+        .await
+        .expect("predecessor retrieval");
+    assert_eq!(old_batch.candidates.len(), 1);
+    let old_binding = old_batch.candidates[0].revalidation.clone();
+    let retained = owner.recovery_anchor().await.expect("current owner cut");
+    let predecessor_path = owner.path().to_path_buf();
+    old_reader.close_for_recovery_test().await;
+    owner.pool.close().await;
+    drop(owner);
+
+    let authority = federation_recovery_authority(&owner_id);
+    let recovered = CognitiveStore::open_with_recovery(
+        &owner_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&retained),
+        &authority,
+        &FederationRecoveryVerifier,
+    )
+    .await
+    .expect("recover current owner generation");
+    assert_ne!(recovered.path(), predecessor_path.as_path());
+    recovered
+        .revoke_federated_recall(&owner_access, &capability, 151)
+        .await
+        .expect("revoke on recovered generation");
+
+    assert!(
+        FederatedMemoryReader::discover(&owner_layout, &consumer_id, 152)
+            .await
+            .expect("discover current generation")
+            .is_empty()
+    );
+    let retired_reader = FederatedMemoryReader::discover_retired_generation_for_test(
+        &owner_layout,
+        predecessor_path,
+        &consumer_id,
+        152,
+    )
+    .await
+    .expect("bind retired owner generation")
+    .pop()
+    .expect("retired reader");
+    assert!(matches!(
+        retired_reader
+            .retrieve(
+                &consumer_access,
+                &RetrievalRequest::new("Recovered federation", 152),
+            )
+            .await,
+        Err(CognitiveStoreError::AccessDenied(_))
+    ));
+    assert!(matches!(
+        retired_reader
+            .revalidate(&consumer_access, &old_binding, 152)
+            .await,
+        Err(CognitiveStoreError::AccessDenied(_))
+    ));
+    let consumer_store = CognitiveStore::open(&layout(&temp, &consumer_id))
+        .await
+        .expect("consumer store");
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer_store))
+        .with_federation_sources(consumer_id.clone(), vec![owner_layout.clone()]);
+    let (batch, coverage) = runtime
+        .retrieve_product_federated(
+            &consumer_access,
+            &RetrievalRequest::new("Recovered federation", 152),
+        )
+        .await
+        .expect("product retrieval after recovered revoke");
+    assert!(batch.candidates.is_empty());
+    assert_eq!(coverage.requested_peers, 0);
+    assert_eq!(coverage.completed_peers, 0);
+    assert_eq!(coverage.failed_peers, 0);
+
+    std::fs::remove_file(owner_layout.cognitive_root().join(".cognitive-active-v1"))
+        .expect("remove recovered owner pointer for rollback regression");
+    assert!(matches!(
+        FederatedMemoryReader::discover(&owner_layout, &consumer_id, 153).await,
+        Err(CognitiveStoreError::Corrupt(_))
+    ));
+}
+
+#[tokio::test]
+async fn recovered_owner_revision_and_forget_fence_predecessor_reader() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(92);
+    let consumer_id = agent_id(93);
+    let owner_layout = layout(&temp, &owner_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let owner_access = CognitiveAccess::agent_private(owner_id.clone());
+    let correction_source = owner
+        .append_source(
+            &owner_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "recovery-correction-source",
+                "Predecessor recovery state needs correction.",
+            ),
+        )
+        .await
+        .expect("correction source");
+    let forgotten_source = owner
+        .append_source(
+            &owner_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "recovery-forget-source",
+                "Predecessor recovery state must be forgotten.",
+            ),
+        )
+        .await
+        .expect("forget source");
+    let corrected_memory = owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "recovery-corrected-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Predecessor recovery state needs correction.",
+                    correction_source.clone(),
+                ),
+            },
+        )
+        .await
+        .expect("memory to correct");
+    let forgotten_memory = owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "recovery-forgotten-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Predecessor recovery state must be forgotten.",
+                    forgotten_source.clone(),
+                ),
+            },
+        )
+        .await
+        .expect("memory to forget");
+    let consumer_workspace = workspace("recovery-revision-consumer");
+    owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant before recovery");
+    let old_reader = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+        .await
+        .expect("discover predecessor")
+        .pop()
+        .expect("predecessor reader");
+    let consumer_access =
+        FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace.clone());
+    let old_batch = old_reader
+        .retrieve(
+            &consumer_access,
+            &RetrievalRequest::new("Predecessor recovery state", 150),
+        )
+        .await
+        .expect("predecessor retrieval");
+    assert_eq!(old_batch.candidates.len(), 2);
+    let old_bindings = old_batch
+        .candidates
+        .iter()
+        .map(|candidate| candidate.revalidation.clone())
+        .collect::<Vec<_>>();
+    let retained = owner.recovery_anchor().await.expect("current owner cut");
+    let predecessor_path = owner.path().to_path_buf();
+    old_reader.close_for_recovery_test().await;
+    owner.pool.close().await;
+    drop(owner);
+
+    let authority = federation_recovery_authority(&owner_id);
+    let recovered = CognitiveStore::open_with_recovery(
+        &owner_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&retained),
+        &authority,
+        &FederationRecoveryVerifier,
+    )
+    .await
+    .expect("recover current owner generation");
+    let mut corrected = memory_revision(
+        CognitiveScope::AgentPrivate,
+        "Current corrected recovery state.",
+        correction_source,
+    );
+    corrected.valid_from_unix_seconds = 151;
+    recovered
+        .correct_memory(&owner_access, &corrected_memory.id.memory_id, 1, &corrected)
+        .await
+        .expect("correct on recovered generation");
+    recovered
+        .forget_memory(
+            &owner_access,
+            &forgotten_memory.id.memory_id,
+            1,
+            &ForgetMemoryDraft {
+                scope: CognitiveScope::AgentPrivate,
+                reason: "recovery_forget".to_string(),
+                valid_from_unix_seconds: 151,
+                citations: vec![forgotten_source],
+            },
+        )
+        .await
+        .expect("forget on recovered generation");
+
+    let retired_reader = FederatedMemoryReader::discover_retired_generation_for_test(
+        &owner_layout,
+        predecessor_path,
+        &consumer_id,
+        152,
+    )
+    .await
+    .expect("bind retired owner generation")
+    .pop()
+    .expect("retired reader");
+    assert!(matches!(
+        retired_reader
+            .retrieve(
+                &consumer_access,
+                &RetrievalRequest::new("Predecessor recovery state", 152),
+            )
+            .await,
+        Err(CognitiveStoreError::AccessDenied(_))
+    ));
+    for binding in &old_bindings {
+        assert!(matches!(
+            retired_reader
+                .revalidate(&consumer_access, binding, 152)
+                .await,
+            Err(CognitiveStoreError::AccessDenied(_))
+        ));
+    }
+    let fresh_reader = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 152)
+        .await
+        .expect("discover recovered owner")
+        .pop()
+        .expect("current reader");
+    let fresh_batch = fresh_reader
+        .retrieve(
+            &consumer_access,
+            &RetrievalRequest::new("recovery state", 152),
+        )
+        .await
+        .expect("current retrieval");
+    let contents = fresh_batch
+        .candidates
+        .iter()
+        .map(|candidate| candidate.candidate.memory.content.as_str())
+        .collect::<Vec<_>>();
+    assert_eq!(contents, vec!["Current corrected recovery state."]);
+    assert!(contents.iter().all(|content| {
+        !content.contains("needs correction") && !content.contains("must be forgotten")
+    }));
+
+    let consumer_store = CognitiveStore::open(&layout(&temp, &consumer_id))
+        .await
+        .expect("consumer store");
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer_store))
+        .with_federation_sources(consumer_id, vec![owner_layout]);
+    let (product_batch, coverage) = runtime
+        .retrieve_product_federated(
+            &consumer_access,
+            &RetrievalRequest::new("recovery state", 152),
+        )
+        .await
+        .expect("product retrieval from recovered owner");
+    assert_eq!(coverage.completed_peers, 1);
+    assert_eq!(coverage.failed_peers, 0);
+    assert_eq!(product_batch.candidates.len(), 1);
+    assert_eq!(
+        product_batch.candidates[0].candidate.memory.content,
+        "Current corrected recovery state."
+    );
 }
