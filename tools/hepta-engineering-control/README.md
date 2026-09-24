@@ -1,7 +1,7 @@
 # Hepta engineering control
 
 The canonical implementation is `control_engineering_v2`. It provides exact-source
-envelope admission, durable SQLite v9 work coordination, resource-aware orchestration,
+envelope admission, durable SQLite v10 work coordination, resource-aware orchestration,
 atomic candidate change sets, strong sandbox qualification, mutation testing, sealed
 integration evidence and fail-closed external production-control contracts. The legacy
 `hepta_engineering_control.py` module is compatibility-only for historical fixtures
@@ -58,6 +58,10 @@ control or host enrollment. Tests run as an unprivileged user.
 Every child-protocol response is bound to its generation and monotonically
 increasing transport sequence. The client validates the complete response shape
 and value before publishing it; the public response dictionaries are unchanged.
+The session admits at most 256 requests and uses a bounded inactivity deadline that
+is renewed only after a completely validated response. Long valid ledgers therefore
+do not fail merely because cumulative durable commits exceed one startup-era wall-clock
+window, while a stalled or indeterminate channel remains bounded and poisoned.
 A missing, malformed or mismatched acknowledgement poisons that client. Close it,
 construct a new client with the current independently retained frontier, then
 reconcile the original stable operation ID. Do not dispatch it again to discover
@@ -80,8 +84,34 @@ post-upgrade-write preservation tests remain part of the same suite.
 
 ## Durable worker lifecycle
 
-The canonical v2 path now persists resource-aware orchestration plans, authenticated worker registrations and fenced claims in SQLite v9. Claims require the worker selected by the durable plan plus an active path lease. Signed heartbeats maintain liveness; only infrastructure/time-out failures may be retried within the bounded attempt budget; semantic failures are terminal. A worker-reported success is not predecessor completion until an independent CI completion receipt is observed.
+The canonical v2 path persists resource-aware orchestration plans, authenticated Worker
+registrations, fenced claims and cross-generation capacity reservations in SQLite v10.
+Planning subtracts active reservations and the final claim/reservation commit is atomic, so
+stale plans and multiple connections cannot overbook a Worker. Signed heartbeats maintain
+liveness; only infrastructure/time-out failures may be retried within the bounded attempt
+budget, while semantic failure is terminal. A Worker-reported success is not predecessor
+completion until an independent CI completion receipt is observed.
 
-`EngineeringControlProduct` is the named product owner composition used by the repository product gate. The historical `hepta_engineering_control.py` remains compatibility-only and must not be used as a canonical native mapping.
+`EngineeringControlProduct` is the named product owner composition used by the repository
+product gate. Its `startup_reconcile` entrypoint expires/reconciles persisted claims and
+releases abandoned capacity before new work is admitted. The historical
+`hepta_engineering_control.py` remains compatibility-only and must not be used as a
+canonical native mapping.
 
-The canonical v2 owner also persists integration queue generations and item revisions in SQLite v9. Candidate/review/CI observations may advance only to `ready_external_merge`; base drift invalidates the queue generation, and an external merge system remains responsible for any merge or terminal merge observation.
+The canonical owner also persists integration queue generations and item revisions in
+SQLite v10. Candidate/review/CI observations bind the complete source/base/queue/owner
+context and may advance only to `ready_external_merge`; a separately authenticated
+terminal observer records the durable merged/failed observation. Base drift before a
+terminal observation invalidates the queue generation.
+
+Measure an exact target host without weakening the sandbox denominator:
+
+```sh
+PYTHONPATH=tools/hepta-engineering-control \
+  python3 -m control_engineering_v2.qualification_profile \
+    --repository . --iterations 7 --sandbox-mode strong \
+    --output /tmp/control-engineering-host-profile.json
+```
+
+The profile records SQLite, recovery, backup/restore, disk-full rollback and complete
+sandbox costs with all authority fields false.
