@@ -52,6 +52,7 @@ impl NativeShellRuntime {
         &mut self,
         manifest: &EndpointManifest,
     ) -> Result<SessionIncarnation, ShellError> {
+        self.journal.ensure_healthy()?;
         manifest.validate()?;
         if let Some(previous) = self.session.take() {
             self.backend.close(&previous)?;
@@ -151,6 +152,7 @@ impl NativeShellRuntime {
         &mut self,
         request: PlatformRequest,
     ) -> Result<PlatformReceipt, ShellError> {
+        self.journal.ensure_healthy()?;
         let session = self.require_session()?.clone();
         let view = self.require_view()?.clone();
         validate_stable_id(&request.subject_id, "subject_id")?;
@@ -175,7 +177,8 @@ impl NativeShellRuntime {
         let key = OperationKey::new(&session, &request.operation_id)?;
 
         if let Some(existing) = self.journal.find(&key).cloned() {
-            if existing.subject_id != request.subject_id
+            if existing.endpoint_id != session.endpoint_id
+                || existing.subject_id != request.subject_id
                 || existing.displayed_revision != request.displayed_revision
                 || existing.action != action
                 || existing.payload_digest != payload_digest
@@ -275,6 +278,7 @@ impl NativeShellRuntime {
     }
 
     pub fn reconcile_pending(&mut self) -> Result<Vec<PlatformReceipt>, ShellError> {
+        self.journal.ensure_healthy()?;
         let pending: Vec<OperationRecord> = self.journal.pending().cloned().collect();
         let mut receipts = Vec::with_capacity(pending.len());
         for record in pending {

@@ -1,5 +1,7 @@
+use std::collections::HashSet;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read as _;
 use std::io::Write as _;
 
 use atomic_write_file::AtomicWriteFile;
@@ -95,6 +97,7 @@ impl OperationRecord {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct JournalFile {
     schema: String,
     operations: Vec<OperationRecord>,
@@ -104,6 +107,7 @@ struct JournalFile {
 pub struct OperationJournal {
     path: PathBuf,
     operations: Vec<OperationRecord>,
+    failed: bool,
     _lock: File,
 }
 
@@ -137,6 +141,7 @@ impl OperationJournal {
             return Ok(Self {
                 path,
                 operations: Vec::new(),
+                failed: false,
                 _lock: lock,
             });
         }
@@ -147,7 +152,15 @@ impl OperationJournal {
                 "operation journal exceeds {MAX_JOURNAL_BYTES} bytes"
             )));
         }
-        let bytes = std::fs::read(&path)?;
+        let mut bytes = Vec::new();
+        File::open(&path)?
+            .take(MAX_JOURNAL_BYTES + 1)
+            .read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > MAX_JOURNAL_BYTES {
+            return Err(ShellError::State(
+                "operation journal read exceeded byte limit".to_owned(),
+            ));
+        }
         let state: JournalFile = serde_json::from_slice(&bytes)?;
         if state.schema != JOURNAL_SCHEMA {
             return Err(ShellError::State(
@@ -159,12 +172,19 @@ impl OperationJournal {
                 "operation journal exceeds {MAX_OPERATION_RECORDS} records"
             )));
         }
+        let mut keys = HashSet::with_capacity(state.operations.len());
         for operation in &state.operations {
             operation.validate()?;
+            if !keys.insert(operation.key.clone()) {
+                return Err(ShellError::State(
+                    "duplicate operation identity in journal".to_owned(),
+                ));
+            }
         }
         Ok(Self {
             path,
             operations: state.operations,
+            failed: false,
             _lock: lock,
         })
     }
@@ -187,12 +207,24 @@ impl OperationJournal {
         &self.operations
     }
 
+    /// Failed persistence requires reopen and reconciliation, never replay.
+    pub fn ensure_healthy(&self) -> Result<(), ShellError> {
+        if self.failed {
+            return Err(ShellError::State(
+                "journal persistence is indeterminate; reopen and reconcile".to_owned(),
+            ));
+        }
+        Ok(())
+    }
+
     pub fn upsert(&mut self, record: OperationRecord) -> Result<(), ShellError> {
+        self.ensure_healthy()?;
         record.validate()?;
         let mut next = self.operations.clone();
         if let Some(index) = next.iter().position(|existing| existing.key == record.key) {
             let existing = &next[index];
-            if existing.subject_id != record.subject_id
+            if existing.endpoint_id != record.endpoint_id
+                || existing.subject_id != record.subject_id
                 || existing.displayed_revision != record.displayed_revision
                 || existing.action != record.action
                 || existing.payload_digest != record.payload_digest
@@ -201,6 +233,11 @@ impl OperationJournal {
             {
                 return Err(ShellError::State(
                     "operation identity was reused with changed semantics".to_owned(),
+                ));
+            }
+            if existing.phase == OperationPhase::Terminal && existing != &record {
+                return Err(ShellError::State(
+                    "terminal operation observation is immutable".to_owned(),
                 ));
             }
             if !phase_transition_allowed(existing.phase, record.phase) {
@@ -218,32 +255,26 @@ impl OperationJournal {
             }
             next.push(record);
         }
-        self.persist(&next)?;
+        if let Err(error) = self.persist(&next) {
+            self.failed = true;
+            return Err(error);
+        }
         self.operations = next;
         Ok(())
     }
 
     pub fn compact_terminal(&mut self, keep_latest: usize) -> Result<(), ShellError> {
+        self.ensure_healthy()?;
         let terminal_count = self
             .operations
             .iter()
             .filter(|record| record.phase == OperationPhase::Terminal)
             .count();
-        if terminal_count <= keep_latest {
-            return Ok(());
+        if terminal_count > keep_latest {
+            return Err(ShellError::State(
+                "terminal retirement requires a durable deduplication frontier".to_owned(),
+            ));
         }
-        let mut next = self.operations.clone();
-        let mut remove = terminal_count - keep_latest;
-        next.retain(|record| {
-            if remove > 0 && record.phase == OperationPhase::Terminal {
-                remove -= 1;
-                false
-            } else {
-                true
-            }
-        });
-        self.persist(&next)?;
-        self.operations = next;
         Ok(())
     }
 

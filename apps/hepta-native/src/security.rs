@@ -302,7 +302,7 @@ impl KernelFinalUseGate {
     ) -> Result<T, ShellError> {
         self.refresh_revocations()?;
         self.authority
-            .with_verified_use(permit.token, &permit.binding, consumer)
+            .with_verified_effect(permit.token, &permit.binding, consumer)
             .map_err(|error| {
                 ShellError::Security(format!("kernel final-use revalidation: {error}"))
             })

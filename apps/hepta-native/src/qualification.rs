@@ -32,7 +32,6 @@ use crate::model::PlatformPayload;
 use crate::model::PlatformRequest;
 use crate::model::SessionIncarnation;
 use crate::model::TerminalStatus;
-use crate::model::sha256_bytes;
 use crate::model::sha256_hex;
 use crate::platform::PermissionDecision;
 use crate::platform::PlatformAdapter;

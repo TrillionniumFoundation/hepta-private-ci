@@ -158,6 +158,7 @@ impl UpdateManager {
         package_path: &Path,
         backend_protocol_version: u32,
     ) -> Result<PendingUpdateV1, ShellError> {
+        let _lock = lock_update_root(&self.root)?;
         manifest.validate(backend_protocol_version)?;
         self.trusted_keys.verify_message(
             &manifest.key_id,
@@ -189,7 +190,7 @@ impl UpdateManager {
                 ));
             }
             persist_json_atomic(&self.root.join("last-rollback.json"), &existing)?;
-            self.clear_pending()?;
+            self.clear_pending_locked()?;
         }
         let staged_dir = self.root.join("staged");
         std::fs::create_dir_all(&staged_dir)?;
@@ -222,10 +223,31 @@ impl UpdateManager {
         }
         let pending: PendingUpdateV1 = serde_json::from_slice(&std::fs::read(path)?)?;
         validate_pending(&pending)?;
+        // Expired admitted requests may recover, but cannot freshly activate.
+        self.trusted_keys.verify_message(
+            &pending.manifest.key_id,
+            &pending.manifest.signature_base64,
+            pending.manifest.signing_message().as_bytes(),
+        )?;
         Ok(Some(pending))
     }
 
     pub fn clear_pending(&self) -> Result<(), ShellError> {
+        let _lock = lock_update_root(&self.root)?;
+        if self.load_pending()?.is_some_and(|pending| {
+            !matches!(
+                pending.status,
+                PendingUpdateStatus::Staged | PendingUpdateStatus::RolledBack
+            )
+        }) {
+            return Err(ShellError::Update(
+                "cannot erase unresolved activation or recovery state".to_owned(),
+            ));
+        }
+        self.clear_pending_locked()
+    }
+
+    fn clear_pending_locked(&self) -> Result<(), ShellError> {
         let path = self.pending_path();
         if path.exists() {
             std::fs::remove_file(&path)?;
@@ -248,6 +270,7 @@ impl UpdateManager {
     }
 
     pub fn rollback_unconfirmed(&self) -> Result<bool, ShellError> {
+        let _lock = lock_update_root(&self.root)?;
         let Some(mut pending) = self.load_pending()? else {
             return Ok(false);
         };
@@ -288,6 +311,25 @@ impl UpdateManager {
                 "native update predecessor backup digest mismatch",
             );
         }
+        let current_digest = match digest_file(&target) {
+            Ok(digest) => digest,
+            Err(_) => {
+                return recovery_required(
+                    &self.pending_path(),
+                    &mut pending,
+                    "cannot identify installed binary before rollback",
+                );
+            }
+        };
+        if current_digest != pending.manifest.package_digest
+            && current_digest != pending.manifest.predecessor_digest
+        {
+            return recovery_required(
+                &self.pending_path(),
+                &mut pending,
+                "rollback refused: installed binary is neither candidate nor predecessor",
+            );
+        }
         if let Err(error) = copy_and_sync(&backup, &target) {
             let message = format!("native update rollback copy failed: {error}");
             return recovery_required(&self.pending_path(), &mut pending, &message);
@@ -309,18 +351,27 @@ impl UpdateManager {
     }
 
     pub fn confirm_current_digest(&self, running_binary: &Path) -> Result<bool, ShellError> {
+        let _lock = lock_update_root(&self.root)?;
         let Some(pending) = self.load_pending()? else {
             return Ok(false);
         };
         if !matches!(pending.status, PendingUpdateStatus::ActivatedUnconfirmed) {
             return Ok(false);
         }
+        let target = pending.target_path.as_ref().ok_or_else(|| {
+            ShellError::Update("pending activation lacks target identity".to_owned())
+        })?;
+        if std::fs::canonicalize(running_binary)? != std::fs::canonicalize(target)? {
+            return Err(ShellError::Update(
+                "confirmation binary is not the installed target".to_owned(),
+            ));
+        }
         if digest_file(running_binary)? != pending.manifest.package_digest {
             return Err(ShellError::Update(
                 "running binary does not match the pending update digest".to_owned(),
             ));
         }
-        self.clear_pending()?;
+        self.clear_pending_locked()?;
         Ok(true)
     }
 }
@@ -336,6 +387,10 @@ pub fn activate_staged_update(
             "updater paths must be absolute".to_owned(),
         ));
     }
+    let root = pending_path
+        .parent()
+        .ok_or_else(|| ShellError::Update("pending update has no parent directory".to_owned()))?;
+    let _lock = lock_update_root(root)?;
     let mut pending: PendingUpdateV1 = serde_json::from_slice(&std::fs::read(pending_path)?)?;
     validate_pending(&pending)?;
     if pending.status != PendingUpdateStatus::Staged {
@@ -572,4 +627,31 @@ fn sync_parent_directory(path: &Path) -> Result<(), ShellError> {
 #[cfg(not(unix))]
 fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
     Ok(())
+}
+
+// Shared by GUI transitions and the updater helper; never held across GUI life.
+fn lock_update_root(root: &Path) -> Result<File, ShellError> {
+    let path = root.join("update-owner.lock");
+    match std::fs::symlink_metadata(&path) {
+        Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_file() => {
+            return Err(ShellError::Security(
+                "update owner lock is not a regular file".to_owned(),
+            ));
+        }
+        Ok(_) => {}
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true).write(true).create(true).truncate(false);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt as _;
+        options.mode(0o600);
+    }
+    let file = options.open(path)?;
+    file.try_lock().map_err(|_| {
+        ShellError::Update("another native update transition is in progress".to_owned())
+    })?;
+    Ok(file)
 }

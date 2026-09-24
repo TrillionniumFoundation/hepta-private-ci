@@ -81,7 +81,12 @@ fn reopened_snapshot_rejects_duplicate_operation_keys() {
         "operations": [record.clone(), record],
     });
     std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
-    assert!(OperationJournal::open(&path).unwrap_err().to_string().contains("duplicate"));
+    assert!(
+        OperationJournal::open(&path)
+            .unwrap_err()
+            .to_string()
+            .contains("duplicate")
+    );
 }
 
 #[test]
@@ -91,7 +96,8 @@ fn reopened_snapshot_rejects_unknown_critical_fields() {
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.upsert(prepared()).unwrap();
     drop(journal);
-    let mut state: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    let mut state: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
     state["critical_future_semantics"] = true.into();
     std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
     assert!(OperationJournal::open(&path).is_err());
@@ -107,7 +113,10 @@ fn failed_persistence_fences_owner_until_reopen() {
     journal.upsert(record.clone()).unwrap();
     std::fs::rename(&path, &backup).unwrap();
     std::fs::create_dir(&path).unwrap();
-    let invoking = OperationRecord { phase: OperationPhase::Invoking, ..record.clone() };
+    let invoking = OperationRecord {
+        phase: OperationPhase::Invoking,
+        ..record.clone()
+    };
     assert!(journal.upsert(invoking.clone()).is_err());
     std::fs::remove_dir(&path).unwrap();
     std::fs::rename(&backup, &path).unwrap();
@@ -131,7 +140,10 @@ fn cleanup_cannot_forget_deduplication_identity() {
     assert_eq!(std::fs::read(&path).unwrap(), before);
     journal.compact_terminal(1).unwrap();
     drop(journal);
-    assert_eq!(OperationJournal::open(&path).unwrap().find(&record.key), Some(&record));
+    assert_eq!(
+        OperationJournal::open(&path).unwrap().find(&record.key),
+        Some(&record)
+    );
 }
 
 #[test]
@@ -153,7 +165,10 @@ fn invoking_cannot_regress_to_prepared() {
     let mut journal = OperationJournal::open(root.path().join("operations.json")).unwrap();
     let record = prepared();
     journal.upsert(record.clone()).unwrap();
-    let invoking = OperationRecord { phase: OperationPhase::Invoking, ..record.clone() };
+    let invoking = OperationRecord {
+        phase: OperationPhase::Invoking,
+        ..record.clone()
+    };
     journal.upsert(invoking.clone()).unwrap();
     assert!(journal.upsert(record).is_err());
     assert_eq!(journal.find(&invoking.key), Some(&invoking));
