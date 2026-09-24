@@ -8,9 +8,11 @@ import {
   WorkerFrameDecoder,
   buildWorkerFrame,
   encodeWorkerFrame,
+  workerPayloadDigest,
 } from "./worker-protocol.js";
 
 const DIGEST = /^[0-9a-f]{64}$/;
+const ZERO_DIGEST = "0".repeat(64);
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
 const MAX_ABANDONED_RESPONSES = 1024;
 
@@ -30,6 +32,32 @@ function expectedDigest(value, name) {
     throw new TypeError(`${name} must be a lowercase SHA-256 digest`);
   }
   return value;
+}
+
+function validateOperationObservation(observed, input) {
+  const observation = requireRecord(observed, "worker operation observation");
+  if (observation.operationId !== input.operationId) {
+    throw new TypeError("worker operation observation crossed operation identity");
+  }
+  const expectedPayloadDigest = workerPayloadDigest(input);
+  if (observation.operationPayloadDigest !== expectedPayloadDigest) {
+    throw new TypeError("worker operation observation crossed payload identity");
+  }
+  if (
+    !Number.isSafeInteger(observation.observedPageGeneration) ||
+    observation.observedPageGeneration < 0
+  ) {
+    throw new TypeError("worker operation observation page generation is invalid");
+  }
+  if (
+    observation.observedDocumentDigest !== null &&
+    (typeof observation.observedDocumentDigest !== "string" ||
+      !DIGEST.test(observation.observedDocumentDigest) ||
+      observation.observedDocumentDigest === ZERO_DIGEST)
+  ) {
+    throw new TypeError("worker operation observation document digest is invalid");
+  }
+  return observation;
 }
 
 function requestId(kind, semanticId) {
@@ -355,14 +383,16 @@ export class SubprocessBrowserDriver {
     let crossed = false;
     let resolveBoundary;
     const boundary = new Promise((resolve) => { resolveBoundary = resolve; });
-    const response = this.#client.request("dispatch", input.operationId, input, {
-      signal,
-      onDispatched: () => {
-        if (crossed) return;
-        crossed = true;
-        resolveBoundary();
-      },
-    });
+    const response = this.#client
+      .request("dispatch", input.operationId, input, {
+        signal,
+        onDispatched: () => {
+          if (crossed) return;
+          crossed = true;
+          resolveBoundary();
+        },
+      })
+      .then((observed) => validateOperationObservation(observed, input));
     let earlyError = null;
     const settled = response.then(
       () => "resolved",
@@ -392,7 +422,8 @@ export class SubprocessBrowserDriver {
 
   async reconcile(input, { signal } = {}) {
     this.#requireSession(input);
-    return this.#client.request("reconcile", input.operationId, input, { signal });
+    const observed = await this.#client.request("reconcile", input.operationId, input, { signal });
+    return validateOperationObservation(observed, input);
   }
 
   async stop(input, { signal } = {}) {

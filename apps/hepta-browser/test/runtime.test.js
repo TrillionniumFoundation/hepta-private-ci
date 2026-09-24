@@ -152,10 +152,14 @@ test("opens, observes, reconciles indeterminate action, and closes", async () =>
   const { host } = await preparedHost();
   const effect = await host.navigateOrAct(operation());
   assert.equal(effect.status, "indeterminate");
-  await assert.rejects(
-    host.closeProfile({ profileId: "profile.1", principalId: "principal.1", generation: 1 }),
-    /requiring reconciliation/,
-  );
+  const fenced = await host.closeProfile({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+  });
+  assert.equal(fenced.executionStopped, true);
+  assert.equal(fenced.retired, false);
+  assert.equal(fenced.unresolvedOperationCount, 1);
   const terminal = await host.reconcileOperation(operation());
   assert.equal(terminal.status, "succeeded");
   assert.equal(terminal.terminalObserved, true);
@@ -213,7 +217,7 @@ test("reconciliation and cleanup remain available after grant and deadline expir
   now = 20_000;
   await assert.rejects(
     host.navigateOrAct(operation({ operationId: "operation.new" })),
-    /profile grant has expired/,
+    /profile grant has expired|execution is fenced/,
   );
   const terminal = await host.reconcileOperation(operation());
   assert.equal(terminal.status, "succeeded");
@@ -223,6 +227,50 @@ test("reconciliation and cleanup remain available after grant and deadline expir
     generation: 1,
   });
   assert.equal(closed.terminalObserved, true);
+});
+
+test("physical profile lease fences and stops the worker at expiry", async () => {
+  let now = 1_000;
+  let scheduled = null;
+  const fakeDriver = driver();
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: authority(),
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => now,
+    setTimer(callback, delayMs) {
+      scheduled = { callback, delayMs };
+      return scheduled;
+    },
+    clearTimer(handle) {
+      if (scheduled === handle) scheduled = null;
+    },
+    driverCallTimeoutMs: 50,
+  });
+  await host.openProfile(input());
+  assert.equal(scheduled.delayMs, 9_000);
+  now = 10_000;
+  const callback = scheduled.callback;
+  callback();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(fakeDriver.stopCalls, 1);
+  await assert.rejects(
+    host.admitEffectGrant({
+      profileId: "profile.1",
+      principalId: "principal.1",
+      generation: 1,
+      effectGrant: effectGrant({ grantDigest: "6".repeat(64) }),
+    }),
+    /expired|fenced/,
+  );
+  const result = await host.closeProfile({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+  });
+  assert.equal(result.executionStopped, true);
+  assert.equal(result.retired, true);
+  assert.equal(fakeDriver.stopCalls, 1);
 });
 
 test("typed action bytes are bound to final payload digest and destination", async () => {
@@ -312,8 +360,10 @@ test("profile serialization prevents close racing an in-flight effect", async ()
   assert.equal(fakeDriver.stopCalls, 0);
   release();
   await effect;
-  await assert.rejects(close, /requiring reconciliation/);
-  assert.equal(fakeDriver.stopCalls, 0);
+  const fenced = await close;
+  assert.equal(fenced.executionStopped, true);
+  assert.equal(fenced.retired, false);
+  assert.equal(fakeDriver.stopCalls, 1);
 });
 
 test("driver timeout aborts dispatch and preserves an indeterminate operation", async () => {

@@ -24,6 +24,8 @@ export class BrowserProfileHost {
   #authority;
   #journal;
   #clock;
+  #setTimer;
+  #clearTimer;
   #driverCallTimeoutMs;
   #profiles = new Map();
   #openingProfiles = new Set();
@@ -34,6 +36,12 @@ export class BrowserProfileHost {
     authority,
     journal,
     clock = () => Date.now(),
+    setTimer = (callback, delayMs) => {
+      const handle = setTimeout(callback, delayMs);
+      handle.unref?.();
+      return handle;
+    },
+    clearTimer = (handle) => clearTimeout(handle),
     driverCallTimeoutMs = DEFAULT_DRIVER_CALL_TIMEOUT_MS,
   }) {
     requireRecord(driver, "driver");
@@ -53,11 +61,16 @@ export class BrowserProfileHost {
       }
     }
     if (typeof clock !== "function") throw new TypeError("clock must be a function");
+    if (typeof setTimer !== "function" || typeof clearTimer !== "function") {
+      throw new TypeError("profile lease scheduler must provide setTimer and clearTimer");
+    }
     positiveInteger(driverCallTimeoutMs, "driverCallTimeoutMs");
     this.#driver = driver;
     this.#authority = authority;
     this.#journal = journal;
     this.#clock = clock;
+    this.#setTimer = setTimer;
+    this.#clearTimer = clearTimer;
     this.#driverCallTimeoutMs = driverCallTimeoutMs;
   }
 
@@ -123,8 +136,14 @@ export class BrowserProfileHost {
           allowedOrigins,
           effectGrants,
           operations: new Map(),
+          fenced: false,
+          stopped: false,
+          stopReason: null,
+          stopError: null,
+          leaseTimer: null,
         };
         this.#profiles.set(profileId, state);
+        this.#scheduleLease(state);
         return freezeResult({
           kind: "BrowserSessionV1",
           profileId,
@@ -216,12 +235,8 @@ export class BrowserProfileHost {
     requireRecord(input, "input");
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
-      const state = this.#profile(input, true);
-      const { operationId, requestSemantics, requestDigest } = admitNewOperation(
-        state,
-        input,
-        this.#clock(),
-      );
+      const state = this.#profile(input, false);
+      const operationId = stableId(input.operationId, "operationId");
       let prior = state.operations.get(operationId);
       if (!prior) {
         const durable = await this.#journal.getOperation(
@@ -229,10 +244,15 @@ export class BrowserProfileHost {
           state.generation,
           operationId,
         );
-        if (durable) prior = this.#entryFromDurable(durable, requestSemantics);
+        if (durable) {
+          prior = this.#entryFromDurable(
+            durable,
+            this.#requestSemanticsFromDurableInput(state, input, durable),
+          );
+        }
       }
       if (prior) {
-        if (prior.requestDigest !== requestDigest) {
+        if (prior.requestDigest !== reconciliationRequestDigest(state, input, prior.semantics)) {
           throw new TypeError("operation identity was reused with changed semantics");
         }
         if (!state.operations.has(operationId) && !prior.receipt.terminalObserved) {
@@ -240,6 +260,12 @@ export class BrowserProfileHost {
         }
         return prior.receipt;
       }
+      this.#assertNewEffectAllowed(state);
+      const { requestSemantics, requestDigest } = admitNewOperation(
+        state,
+        input,
+        this.#clock(),
+      );
       if (this.#activeOperationCount(state) >= MAX_OUTSTANDING_OPERATIONS) {
         throw new TypeError("profile operation capacity is exhausted");
       }
@@ -440,7 +466,13 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({ ...durable, ...receipt });
+      await this.#journal.recordObservation({
+        ...durable,
+        status: receipt.status,
+        outcomeDigest: receipt.outcomeDigest,
+        terminalObserved: receipt.terminalObserved,
+        observationReason: receipt.observationReason,
+      });
       return receipt;
     });
   }
@@ -450,38 +482,39 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, false);
+      await this.#stopState(state, "explicit_close");
       const durable = await this.#journal.listOperations(
         state.profileId,
         state.generation,
       );
-      if (
-        durable.some((entry) => entry.terminalObserved !== true) ||
-        [...state.operations.values()].some((entry) => !entry.receipt.terminalObserved)
-      ) {
-        throw new TypeError("profile has indeterminate browser effects requiring reconciliation");
-      }
-      const observed = requireRecord(
-        await this.#callDriver(
-          "stop",
-          {
-            profileId: state.profileId,
-            processId: state.processId,
-            generation: state.generation,
-          },
-          this.#clock() + this.#driverCallTimeoutMs,
-        ),
-        "driver stop observation",
+      const unresolvedIds = new Set(
+        durable
+          .filter((entry) => entry.terminalObserved !== true)
+          .map((entry) => entry.operationId),
       );
-      if (observed.stopped !== true) throw new TypeError("driver did not observe profile stop");
-      this.#profiles.delete(state.profileId);
+      for (const [operationId, entry] of state.operations) {
+        if (!entry.receipt.terminalObserved) unresolvedIds.add(operationId);
+      }
+      const retired = unresolvedIds.size === 0;
+      if (retired) this.#profiles.delete(state.profileId);
       return freezeResult({
-        kind: "BrowserProfileClosedV1",
+        kind: retired ? "BrowserProfileClosedV1" : "BrowserProfileFencedV1",
         profileId: state.profileId,
         processId: state.processId,
         generation: state.generation,
         terminalObserved: true,
+        executionStopped: true,
+        retired,
+        unresolvedOperationCount: unresolvedIds.size,
+        stopReason: state.stopReason,
       });
     });
+  }
+
+  #assertNewEffectAllowed(state) {
+    if (this.#clock() >= state.expiresAtMs || state.fenced || state.stopped) {
+      throw new TypeError("profile grant has expired or execution is fenced");
+    }
   }
 
   #profile(input, requireLiveGrant) {
@@ -494,10 +527,53 @@ export class BrowserProfileHost {
     if (input.generation !== state.generation) {
       throw new TypeError("profile generation mismatch");
     }
-    if (requireLiveGrant && this.#clock() >= state.expiresAtMs) {
-      throw new TypeError("profile grant has expired");
-    }
+    if (requireLiveGrant) this.#assertNewEffectAllowed(state);
     return state;
+  }
+
+  #scheduleLease(state) {
+    if (state.leaseTimer !== null || state.fenced || state.stopped) return;
+    const remaining = Math.max(0, state.expiresAtMs - this.#clock());
+    const delayMs = Math.min(remaining, 2_147_483_647);
+    state.leaseTimer = this.#setTimer(() => {
+      state.leaseTimer = null;
+      void exclusive(this.#locks, state.profileId, async () => {
+        if (this.#profiles.get(state.profileId) !== state || state.stopped) return;
+        if (this.#clock() < state.expiresAtMs) {
+          this.#scheduleLease(state);
+          return;
+        }
+        try {
+          await this.#stopState(state, "profile_expired");
+        } catch (error) {
+          state.stopError = String(error?.message ?? error).slice(0, 512);
+        }
+      });
+    }, delayMs);
+  }
+
+  async #stopState(state, reason) {
+    state.fenced = true;
+    state.stopReason ??= reason;
+    if (state.leaseTimer !== null) {
+      this.#clearTimer(state.leaseTimer);
+      state.leaseTimer = null;
+    }
+    if (state.stopped) return;
+    const observed = requireRecord(
+      await this.#callDriver(
+        "stop",
+        {
+          profileId: state.profileId,
+          processId: state.processId,
+          generation: state.generation,
+        },
+        this.#clock() + this.#driverCallTimeoutMs,
+      ),
+      "driver stop observation",
+    );
+    if (observed.stopped !== true) throw new TypeError("driver did not observe profile stop");
+    state.stopped = true;
   }
 
   #activeOperationCount(state) {
