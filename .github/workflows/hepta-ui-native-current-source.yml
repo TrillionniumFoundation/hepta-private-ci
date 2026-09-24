@@ -1,0 +1,166 @@
+name: ui.native current-source convergence
+
+on:
+  push:
+    branches: [work/ui-native-current-source-20260925]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-current-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  freeze:
+    if: github.ref == 'refs/heads/work/ui-native-current-source-20260925'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      candidate: ${{ steps.freeze.outputs.candidate }}
+      base: ${{ steps.freeze.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/ui-native-current-source-20260925
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Refuse candidate drift
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Install pinned toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Materialize reviewed current-owner changes
+        run: python apps/hepta-native/tools/prepare_current_source.py --prepare
+      - name: Format candidate and freeze its lock
+        run: |
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          if test -f apps/hepta-native/CURRENT_SOURCE.json; then
+            cargo +1.95.0 metadata --manifest-path apps/hepta-native/Cargo.toml --locked --format-version 1 > /dev/null
+          else
+            cargo +1.95.0 generate-lockfile --manifest-path apps/hepta-native/Cargo.toml
+          fi
+          python apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
+      - name: Commit only native candidate files and publish without force
+        id: freeze
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(gh api repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/work/ui-native-current-source-20260925 --jq .object.sha)" = "$EXPECTED_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- apps/hepta-native
+          git add -f -- apps/hepta-native/Cargo.lock
+          if ! git diff --cached --quiet; then
+            git commit -s -m 'ui.native: freeze current-owner port and native dependency lock'
+          fi
+          python apps/hepta-native/tools/prepare_current_source.py --sync-metadata
+          git add -- docs/modules/ui.native qualification/module-execution-dossiers/NATIVE_BINDINGS.json qualification/module-execution-dossiers/detail/ui.native.md
+          if ! git diff --cached --quiet; then
+            git commit -s -m 'docs(ui.native): bind candidate source identities and remaining gates'
+          fi
+          test -z "$(git status --porcelain)"
+          gh auth setup-git
+          git push origin HEAD:refs/heads/work/ui-native-current-source-20260925
+          echo "candidate=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+
+  qualify:
+    needs: freeze
+    name: native-${{ matrix.os }}-${{ matrix.source }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+        source: [head, merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.freeze.outputs.candidate }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and deterministic merge
+        env:
+          CANDIDATE: ${{ needs.freeze.outputs.candidate }}
+          BASE: ${{ needs.freeze.outputs.base }}
+          SOURCE: ${{ matrix.source }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          if test "$SOURCE" = merge; then
+            tree=$(git merge-tree --write-tree "$BASE" "$CANDIDATE")
+            export GIT_AUTHOR_NAME='native-qualification' GIT_AUTHOR_EMAIL='native-qualification@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z' GIT_COMMITTER_DATE='2000-01-01T00:00:00Z'
+            merge=$(printf '%s\n' 'deterministic ui.native qualification merge' | git commit-tree "$tree" -p "$BASE" -p "$CANDIDATE")
+            git checkout --detach "$merge"
+          fi
+          mkdir -p native-evidence
+          git rev-parse HEAD HEAD^{tree} > native-evidence/source.txt
+          printf '%s\n%s\n%s\n' "$CANDIDATE" "$BASE" "$SOURCE" >> native-evidence/source.txt
+          python apps/hepta-native/tools/prepare_current_source.py
+      - name: Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
+      - name: Install pinned toolchain
+        id: toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Strict format
+        id: format
+        run: cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+      - name: Strict Clippy
+        id: lint
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
+      - name: Native tests (independent of lint result)
+        id: tests
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
+      - name: Release-binary fault qualification
+        id: faults
+        if: ${{ !cancelled() && steps.tests.outcome == 'success' }}
+        run: |
+          cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml --locked --release --bins
+          binary=apps/hepta-native/target/release/hepta-native
+          if test '${{ runner.os }}' = Windows; then binary="${binary}.exe"; fi
+          "$binary" --self-test > native-evidence/self-test.json
+          "$binary" --qualification-e2e > native-evidence/faults.json
+      - name: Save actual gate outcomes (never promotion authority)
+        if: always()
+        env:
+          FORMAT_RESULT: ${{ steps.format.outcome }}
+          LINT_RESULT: ${{ steps.lint.outcome }}
+          TEST_RESULT: ${{ steps.tests.outcome }}
+          FAULT_RESULT: ${{ steps.faults.outcome }}
+        run: |
+          mkdir -p native-evidence
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('native-evidence/results.json').write_text(json.dumps({
+              'schema': 'hepta.ui.native.candidate-checks.v1',
+              'checks': {k: os.environ[k] for k in ['FORMAT_RESULT', 'LINT_RESULT', 'TEST_RESULT', 'FAULT_RESULT']},
+              'physicalHostAcceptance': False,
+              'releaseAuthorized': False,
+          }, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ui-native-${{ matrix.os }}-${{ matrix.source }}-${{ needs.freeze.outputs.candidate }}
+          path: native-evidence/
+          if-no-files-found: error
+          retention-days: 14

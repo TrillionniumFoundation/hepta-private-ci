@@ -1,271 +1,110 @@
 # ui.native technical development guide
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
+**Module:** `ui.native`  
+**Owner / deputy:** `ui-platform` / `accessibility`  
+**Primary lane:** `LANE-B-RUNTIME`  
+**Candidate:** `work/ui-native-current-source-20260925`  
+**Status:** current-source port and qualification candidate; not production accepted.
+
+## 1. Source identity
+
+The candidate starts at main `7ddbfac88525196e7a4b31387ceae194958275f5` and
+materializes the actual Rust app root from historical #830
+`3198549d80d6c59887b82e2c50018ab818217c53`. No history-only merge is treated as
+source delivery. Existing current kernel/runtime owners are not replaced.
+
+The executable development guide is
+[`apps/hepta-native/DEVELOPMENT.md`](../../../apps/hepta-native/DEVELOPMENT.md).
+The old guide is retained under an explicitly historical filename. Its old
+Windows authority and product-closure statements are not current claims.
+
+## 2. Mission, ownership and non-goals
+
+Provide native presentation and bounded local OS adapters over existing
+runtime owner contracts. The UI cannot issue authority, write domain stores,
+select its own generated update, or turn CI evidence into release authority.
+Canonical module/contract/ownership registries remain normative. Local shell
+journal records are not backend domain facts or a second execution spine.
+
+## 3. Current implementation and interfaces
+
+`apps/hepta-native/src/main.rs` is the candidate desktop bootstrap.
+`runtime.rs` implements `connect_runtime`, `refresh_runtime_view`,
+`request_platform_capability` and `reconcile_pending`. `updater.rs` implements
+signed staging, activation, recovery and installed-binary confirmation.
+`backend.rs`, `platform.rs`, `security.rs`, `session_store.rs`, and `ui.rs`
+provide the concrete adapter and presentation components.
+
+The JavaScript shell driver is not the current product entrypoint in this
+candidate. Global source bindings are refreshed after the reviewed adaptations
+and lock are committed, rather than pointing at removed JavaScript symbols.
+
+## 4. Concurrency and durability
+
+The Rust runtime owns its mutable request values and session/view state.
+Operation identity and immutable semantics include session incarnation, ID,
+endpoint, subject, displayed revision, action, serialized payload and grant.
+`Prepared` and `Invoking` are durable before platform entry. Uncertain effects
+reconcile without blind replay. Terminal observations are immutable; duplicate
+recovered keys and unknown journal fields are rejected by the reviewed port.
+Persistence failure fences that owner until reopen. Terminal deletion is not
+allowed without a durable deduplication retirement mechanism.
+
+## 5. Authorization
+
+Consume current `kernel.authority` final-use types and synchronous-effect fence.
+OS permission remains an additional ceiling, never authority. Keep revocation
+and exact payload checks before actual use. Do not restore obsolete owner
+implementations to satisfy a desktop platform build.
+
+## 6. Updates and recovery
+
+Use independently signed, stable-channel manifests, package/target digests,
+selector/generator separation and exact installed predecessor admission.
+The separate updater shares a transition lock with GUI update mutations.
+Pending recovery verifies its admitted signature; rollback cannot overwrite an
+unrelated current binary. Unresolved activation/recovery cannot be erased by
+`clear_pending`. Confirmation binds the actual installed target and its digest.
+The detailed state machine and unqualified failure cuts are in DEVELOPMENT.md.
+
+## 7. Product caller and remaining integration
+
+Current main's gateway does not yet provide the keyring-authenticated contract
+required by the recovered Rust backend. This is a repository-controlled
+integration blocker. A fixture backend or operator-written fake health result
+cannot establish ordinary daemon/client product composition.
+
+Current non-Unix kernel final-use persistence, bounded launcher waits, UI-thread
+responsiveness, safe terminal retirement, full pending-state/path trust and
+physical installed-package lifecycle are not yet accepted. These are not all
+external certificate issues.
+
+## 8. Verification
+
+The current-source workflow first commits the adapted sources and native lock,
+then runs exact-head and deterministic-merge matrices on Linux/macOS/Windows.
+It records actual checked-out SHA/tree, source candidate, base and outcomes.
+Missing, failed or skipped steps cannot establish a pass. Strict lint and native
+tests have independent feedback. Generated fingerprints prove file identity,
+not behavioral correctness.
+
+The added journal regression source covers conflicting terminals, endpoint
+identity, duplicate replay snapshots, unknown fields, I/O failure isolation,
+retained deduplication, session generations and monotonic dispatch phases.
+Existing Rust runtime/security/update tests remain required. Detailed commands
+are in DEVELOPMENT.md and use `--locked` after lock preparation.
+
+## 9. Accessibility, performance and external gates
+
+AccessKit presence is not screen-reader acceptance. Actual packaged keyboard
+navigation, screen-reader state, IME, Chinese rendering, multi-monitor DPI,
+startup/RSS/latency and long-running resource ceilings require observed runs.
+Independent signing/notarization, release-channel custody and operator
+acceptance remain separately governed and false until independently observed.
 
-**Module:** `ui.native`
+## 10. Completion vocabulary
 
-**Owner:** `ui-platform`
-
-**Deputy:** `accessibility`
-
-**Lifecycle:** `target`
-
-**Source status:** `existing_bound`
-
-**Bootstrap work package:** `UI-NATIVE-1-SHELL`
-
-This stable document is the implementation guide for `ui.native`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
-
-## 1. Identity, mission and ownership
-
-Provide the native shell and accessibility layer over the same typed runtime boundary.
-
-The primary owner `ui-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `accessibility` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `presentation`, kind `native`, state model `ephemeral` and architecture role `presentation` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
-
-## 2. Source binding and implementation status
-
-Declared exclusive target roots:
-
-- `apps/hepta-native`
-
-Existing declared roots at this exact source snapshot:
-
-- `apps/hepta-native`
-
-Non-authoritative implementation evidence roots:
-
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The registered primary source is [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js); observed identifiers include `buildNativeIntent`, `observeNativeOutcome`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) for the implemented subset and remaining product work.
-
-## 3. Boundary, responsibilities and non-goals
-
-Direct dependencies:
-
-- `runtime.agentd`
-
-Authoritative write domains:
-
-None.
-
-Explicitly denied capabilities:
-
-- `authority_issuance`
-- `direct_store_write`
-
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
-
-## 4. Internal architecture and component decomposition
-
-The bounded components are:
-
-- `native shell`
-- `generated protocol client`
-- `lifecycle and update controller`
-- `accessibility adapter`
-
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
-
-## 5. Contracts, ports and compatibility
-
-Produced contracts:
-
-None.
-
-Consumed contracts:
-
-- `DomainRead::runtime_health_observationV1`
-- `ModulePort::runtime.agentd::ui.native`
-
-Critical protocol schemas:
-
-None.
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
-
-## 6. Data authority, persistence and migrations
-
-Owned authoritative or rebuildable domains:
-
-None.
-
-Read-only data dependencies:
-
-- `runtime_health_observation`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
-
-## 7. Runtime, concurrency and transaction model
-
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md).
-
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
-
-## 8. Failure semantics, recovery and rollback
-
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
-
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
-
-## 9. Security, privacy and threat controls
-
-Owned threat entries:
-
-None.
-
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
-
-## 10. Performance, capacity and hot-path policy
-
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js) and the linked implementation components.
-
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
-
-## 11. Observability and operations
-
-Native-shell adapter library around injected backend, OS-permission and updater ports. It is not yet a selected packaged OS application. Framework/platform matrix, signing/notarization/keychain and real updater trust roots remain required implementation/deployment work; no empty wrapper command establishes those capabilities.
-
-Current operating and state-format references:
-
-- [docs/modules/ui.native/IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
-
-## 12. Verification and qualification
-
-Current focused test sources (source references, not pass receipts):
-
-- [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js); named case: `native intent requires exact payload binding`.
-- [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js); named case: `executes a final-payload-bound platform request`.
-
-From the repository root, run `node --test apps/hepta-native/test/native.test.js apps/hepta-native/test/shell-runtime.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
-
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
-
-## 13. Implementation sequence and work packages
-
-Applicable work packages:
-
-- `UI-NATIVE-1-SHELL`
-- `UI-V5`
-
-The bootstrap package is `UI-NATIVE-1-SHELL`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
-
-## 14. Activation, compatibility and retirement
-
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
-
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
-
-## 15. Definition of module completion
-
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `ui.native`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `UI-NATIVE-1-SHELL`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `ui-platform` / `accessibility`.
-- Allowed write paths:
-- `apps/hepta-native/**`
-- Development predecessors:
-- `P0.8B-READINESS`
-- `UI-V5`
-- Activation predecessors:
-- `P0.8B-READINESS`
-- `UI-V5`
-- Required deliverables:
-- `exact_source_identity`
-- `static_verification`
-- `focused_tests`
-- `clean_worktree`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `UI-V5`
-
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `independent_source_preparation`.
-- Owner/deputy: `ui-platform` / `accessibility`.
-- Allowed write paths:
-- `apps/hepta-control-ui/**`
-- `apps/hepta-native/**`
-- Development predecessors:
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- Activation predecessors:
-- `P0.8B-READINESS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-## 16. V8.2 pre-coding implementation-readiness overlay
-
-The canonical readiness overlay binds `ui.native` to primary lane `LANE-B-RUNTIME`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-## 17. Source implementation receipt
-
-The bootstrap source-location obligation for `ui.native` is implemented by work package `UI-NATIVE-1-SHELL` in:
-
-- `apps/hepta-native`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Source location, implemented mapping, product composition, exact-candidate
+qualification, physical host acceptance and release are separate states.
+This candidate must not claim productionImplementation, productExecutionProved,
+activation or release merely because Rust files and workflows are present.
