@@ -43,3 +43,77 @@ jobs:
             ${{ env.archive }}.sha256
           if-no-files-found: error
           retention-days: 1
+
+  ledger-native-export:
+    name: Export pinned ledger verification environment (diagnostic)
+    if: contains(github.event.head_commit.message, '[ledger-native-export]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - name: Check out exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Install existing pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Isolate dependency cache and bind toolchain
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component clippy --component rustfmt --component rust-src
+          mkdir -p "$RUNNER_TEMP/ledger-portable-cargo" "$RUNNER_TEMP/ledger-portable-output"
+          printf 'CARGO_HOME=%s\n' "$RUNNER_TEMP/ledger-portable-cargo" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/ledger-portable-target" >> "$GITHUB_ENV"
+          { git rev-parse HEAD HEAD^{tree}; rustc --version; cargo --version; just --version; cargo nextest --version; uname -sm; } > "$RUNNER_TEMP/ledger-portable-output/environment.txt"
+
+      - name: Execute exact-source ledger tests and warm dependencies
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-learning-ledger --retries 0 --test-threads 2 2>&1 | tee "$RUNNER_TEMP/ledger-portable-output/ledger-tests.log"
+
+      - name: Export only toolchain, dependencies and credential-free Git objects
+        if: always()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ledger-portable-output"
+          mkdir -p "$out/bin" "$CARGO_HOME/registry" "$CARGO_HOME/git"
+          toolchain="$(rustc --print sysroot)"
+          tar -C "$toolchain" -czf "$out/rust-toolchain.tar.gz" bin lib
+          cp "$(command -v just)" "$out/bin/just"
+          cp "$(command -v cargo-nextest)" "$out/bin/cargo-nextest"
+          tar -C "$out" -czf "$out/test-tools.tar.gz" bin
+          # This fresh CARGO_HOME contains dependency material only. Never export
+          # HOME, Cargo credentials, runner environment variables or Git config.
+          tar -C "$CARGO_HOME" --exclude=config --exclude=config.toml --exclude=credentials --exclude=credentials.toml -czf "$out/cargo-dependencies.tar.gz" registry git
+          git bundle create "$out/source.bundle" HEAD
+          (cd "$out" && sha256sum rust-toolchain.tar.gz test-tools.tar.gz cargo-dependencies.tar.gz source.bundle > SHA256SUMS)
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Upload diagnostic environment
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-ledger-native-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ledger-portable-output/*.tar.gz
+            ${{ runner.temp }}/ledger-portable-output/source.bundle
+            ${{ runner.temp }}/ledger-portable-output/SHA256SUMS
+            ${{ runner.temp }}/ledger-portable-output/*.txt
+            ${{ runner.temp }}/ledger-portable-output/*.log
+          if-no-files-found: error
+          retention-days: 1
