@@ -139,6 +139,15 @@ impl VerifiedLearningEvidenceV1 {
     }
 }
 
+/// A verified distribution constrains every subsequent admission, including
+/// verifier clones. This is deliberately not part of the stable trust digest.
+#[derive(Clone, Copy, Debug)]
+struct DistributionAdmissionWindow {
+    effective_at: u64,
+    expires_at: u64,
+    root_revoked_at: Option<u64>,
+}
+
 #[derive(Clone, Debug)]
 pub struct LearningEvidenceVerifierV1 {
     scope_digest: Digest32,
@@ -146,6 +155,7 @@ pub struct LearningEvidenceVerifierV1 {
     authority_epoch: u64,
     trust_digest: Digest32,
     signers: BTreeMap<StableId, TrustedLearningSignerV1>,
+    admission_window: Option<DistributionAdmissionWindow>,
 }
 
 impl LearningEvidenceVerifierV1 {
@@ -219,6 +229,7 @@ impl LearningEvidenceVerifierV1 {
             authority_epoch: trust.authority_epoch,
             trust_digest: Digest32::of_bytes(&bytes),
             signers,
+            admission_window: None,
         })
     }
 
@@ -242,6 +253,22 @@ impl LearningEvidenceVerifierV1 {
         self.authority_epoch
     }
 
+    /// Called only after the distribution signature, scope, generation and
+    /// root window have passed activation. Bare compatibility verifiers retain
+    /// their existing behavior; product writers require an activated verifier.
+    pub(crate) fn bind_distribution_window(
+        &mut self,
+        effective_at: u64,
+        expires_at: u64,
+        root_revoked_at: Option<u64>,
+    ) {
+        self.admission_window = Some(DistributionAdmissionWindow {
+            effective_at,
+            expires_at,
+            root_revoked_at,
+        });
+    }
+
     pub fn verify(
         &self,
         expected_role: LearningEvidenceRoleV1,
@@ -249,6 +276,14 @@ impl LearningEvidenceVerifierV1 {
         payload: &[u8],
         now: u64,
     ) -> Result<VerifiedLearningEvidenceV1, SignedEvidenceError> {
+        if let Some(window) = self.admission_window {
+            if now < window.effective_at || now > window.expires_at {
+                return Err(SignedEvidenceError::ValidityWindow);
+            }
+            if window.root_revoked_at.is_some_and(|at| now >= at) {
+                return Err(SignedEvidenceError::Revoked);
+            }
+        }
         if payload.len() > MAX_PAYLOAD_BYTES {
             return Err(SignedEvidenceError::PayloadLimit);
         }
@@ -291,6 +326,19 @@ impl LearningEvidenceVerifierV1 {
                 &Signature::from_bytes(&evidence.signature),
             )
             .map_err(|_| SignedEvidenceError::InvalidSignature)?;
+        // A cached verified value must not outlive the distribution that
+        // admitted it when role-separation checks consume it later.
+        let (issued_at, expires_at, revoked_at) = match self.admission_window {
+            Some(window) => (
+                evidence.issued_at.max(window.effective_at),
+                evidence.expires_at.min(window.expires_at),
+                match (signer.revoked_at, window.root_revoked_at) {
+                    (Some(signer), Some(root)) => Some(signer.min(root)),
+                    (signer, root) => signer.or(root),
+                },
+            ),
+            None => (evidence.issued_at, evidence.expires_at, signer.revoked_at),
+        };
         Ok(VerifiedLearningEvidenceV1 {
             principal: signer.principal.clone(),
             controller_id: signer.controller_id.clone(),
@@ -298,9 +346,9 @@ impl LearningEvidenceVerifierV1 {
             trust_digest: self.trust_digest,
             objective_digest: self.objective_digest,
             payload_digest: evidence.payload_digest,
-            issued_at: evidence.issued_at,
-            expires_at: evidence.expires_at,
-            revoked_at: signer.revoked_at,
+            issued_at,
+            expires_at,
+            revoked_at,
         })
     }
 }

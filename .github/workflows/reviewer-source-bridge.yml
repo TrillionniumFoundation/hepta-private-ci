@@ -44,120 +44,75 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  ledger-native-export:
-    name: Export pinned ledger verification environment (diagnostic)
-    if: contains(github.event.head_commit.message, '[ledger-native-export]')
+  ledger-source-verification:
+    name: Ledger continuation (${{ matrix.source }})
+    if: contains(github.event.head_commit.message, '[ledger-verify]')
     runs-on: ubuntu-24.04
     timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [source-head, synthetic-merge]
     env:
-      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_BUILD_JOBS: "2"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
-      - name: Check out exact source without credentials
+      - name: Check out the exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Install existing pinned test tools
+      - name: Bind source identity and ordered-parent merge
+        shell: bash
+        env:
+          SOURCE_MODE: ${{ matrix.source }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ledger-verification"
+          mkdir -p "$out"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          if [[ "$SOURCE_MODE" == synthetic-merge ]]; then
+            git fetch --no-tags origin main
+            base=$(git rev-parse FETCH_HEAD)
+            git checkout --detach "$base"
+            git -c user.name=ledger-review -c user.email=ledger-review@invalid merge --no-ff --no-commit "$GITHUB_SHA"
+            tree=$(git write-tree)
+            merge=$(GIT_AUTHOR_NAME=ledger-review GIT_AUTHOR_EMAIL=ledger-review@invalid GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_NAME=ledger-review GIT_COMMITTER_EMAIL=ledger-review@invalid GIT_COMMITTER_DATE=2000-01-01T00:00:00Z git commit-tree "$tree" -p "$base" -p "$GITHUB_SHA" -m 'deterministic ledger verification merge')
+            git checkout --detach "$merge"
+            printf 'base=%s\n' "$base" > "$out/base.txt"
+          fi
+          { printf 'candidate=%s\n' "$GITHUB_SHA"; git rev-parse HEAD HEAD^{tree}; git rev-list --parents -n 1 HEAD; } > "$out/source.txt"
+      - name: Install pinned repository tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-
-      - name: Isolate dependency cache and bind toolchain
+      - name: Existing package regressions including new trust cases
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component clippy --component rustfmt --component rust-src
-          mkdir -p "$RUNNER_TEMP/ledger-portable-cargo" "$RUNNER_TEMP/ledger-portable-output"
-          printf 'CARGO_HOME=%s\n' "$RUNNER_TEMP/ledger-portable-cargo" >> "$GITHUB_ENV"
-          printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/ledger-portable-target" >> "$GITHUB_ENV"
-          { git rev-parse HEAD HEAD^{tree}; rustc --version; cargo --version; just --version; cargo nextest --version; uname -sm; } > "$RUNNER_TEMP/ledger-portable-output/environment.txt"
-
-      - name: Execute exact-source ledger tests and warm dependencies
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          just test --locked -p codex-hepta-learning-ledger --retries 0 --test-threads 2 2>&1 | tee "$RUNNER_TEMP/ledger-portable-output/ledger-tests.log"
-
-      - name: Export only toolchain, dependencies and credential-free Git objects
+          just test --locked -p codex-hepta-learning-ledger --retries 0 --test-threads 2 2>&1 | tee "$RUNNER_TEMP/ledger-verification/tests.log"
+      - name: Strict all-target ledger lint
         if: always()
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/ledger-portable-output"
-          mkdir -p "$out/bin" "$CARGO_HOME/registry" "$CARGO_HOME/git"
-          toolchain="$(rustc --print sysroot)"
-          tar -C "$toolchain" -czf "$out/rust-toolchain.tar.gz" bin lib
-          cp "$(command -v just)" "$out/bin/just"
-          cp "$(command -v cargo-nextest)" "$out/bin/cargo-nextest"
-          tar -C "$out" -czf "$out/test-tools.tar.gz" bin
-          # This fresh CARGO_HOME contains dependency material only. Never export
-          # HOME, Cargo credentials, runner environment variables or Git config.
-          tar -C "$CARGO_HOME" --exclude=config --exclude=config.toml --exclude=credentials --exclude=credentials.toml -czf "$out/cargo-dependencies.tar.gz" registry git
-          git bundle create "$out/source.bundle" HEAD
-          (cd "$out" && sha256sum rust-toolchain.tar.gz test-tools.tar.gz cargo-dependencies.tar.gz source.bundle > SHA256SUMS)
+          cargo clippy --locked -p codex-hepta-learning-ledger --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/ledger-verification/clippy.log"
+      - name: Formatting without mutation
+        if: always()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-learning-ledger -- --check 2>&1 | tee "$RUNNER_TEMP/ledger-verification/fmt.log"
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
-
-      - name: Upload diagnostic environment
+      - name: Retain exact-source evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: reviewer-ledger-native-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/ledger-portable-output/*.tar.gz
-            ${{ runner.temp }}/ledger-portable-output/source.bundle
-            ${{ runner.temp }}/ledger-portable-output/SHA256SUMS
-            ${{ runner.temp }}/ledger-portable-output/*.txt
-            ${{ runner.temp }}/ledger-portable-output/*.log
+          name: ledger-verification-${{ github.sha }}-${{ matrix.source }}
+          path: ${{ runner.temp }}/ledger-verification/
+          retention-days: 7
           if-no-files-found: error
-          retention-days: 1
-
-  ledger-native-repack:
-    name: Split retained diagnostic artifact for transport
-    if: contains(github.event.head_commit.message, '[ledger-native-repack]')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    permissions:
-      actions: read
-      contents: read
-    steps:
-      - name: Retrieve and verify existing exact-source artifact
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP"
-          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/10824628702/zip > native.zip
-          echo 'dca60c622c89d810e85f2cbba8fa3dddcd2449bda84307724d34677a0a4052f4  native.zip' | sha256sum --check
-          split -b 400M -d native.zip ledger-native-part-
-      - name: Retain first transport part
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: reviewer-ledger-native-c52-part-00
-          path: ${{ runner.temp }}/ledger-native-part-00
-          compression-level: 0
-          if-no-files-found: error
-          retention-days: 1
-      - name: Retain second transport part
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: reviewer-ledger-native-c52-part-01
-          path: ${{ runner.temp }}/ledger-native-part-01
-          compression-level: 0
-          if-no-files-found: error
-          retention-days: 1
-      - name: Retain final transport part
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: reviewer-ledger-native-c52-part-02
-          path: ${{ runner.temp }}/ledger-native-part-02
-          compression-level: 0
-          if-no-files-found: error
-          retention-days: 1

@@ -132,7 +132,7 @@ pub fn activate_learning_trust(
         return Err(LearningTrustDistributionError::InvalidGeneration);
     }
 
-    let verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
+    let mut verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
     let payload = distribution_signing_bytes(
         &signed.root_id,
         distribution,
@@ -160,6 +160,13 @@ pub fn activate_learning_trust(
         }
     }
 
+    // Activation is not a perpetual grant. Distribution expiry is already
+    // bounded by root expiry above; retain the scheduled root revocation too.
+    verifier.bind_distribution_window(
+        distribution.effective_at,
+        signed.expires_at,
+        root.revoked_at,
+    );
     let distribution_digest = digest_distribution(
         root_digest,
         &distribution.distribution_id,
@@ -292,3 +299,7 @@ impl From<SignedEvidenceError> for LearningTrustDistributionError {
 #[cfg(test)]
 #[path = "trust_distribution_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "trust_distribution_live_tests.rs"]
+mod live_tests;
