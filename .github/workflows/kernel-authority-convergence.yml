@@ -1,0 +1,70 @@
+name: Kernel authority convergence
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-authority-convergence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: work/kernel-authority-convergence-20260925
+
+      - name: Apply exact convergence patches
+        run: |
+          python3 scripts/kernel_authority_converge.py
+          python3 scripts/kernel_authority_evidence_converge.py
+
+      - name: Format changed Rust and Python syntax check
+        run: |
+          cd codex-rs
+          cargo fmt -- hepta-contracts/src/authority_lease.rs hepta-contracts/src/final_use.rs hepta-contracts/src/final_use_tests.rs
+          cd ..
+          python3 -m py_compile qualification/kernel-authority/verify.py
+          python3 -m py_compile qa/b4-no-bypass/test_kernel_authority_closed_world.py
+
+      - name: Verify evidence and closed-world caller truth
+        run: |
+          python3 qualification/kernel-authority/verify.py self-test
+          python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
+
+      - name: Test and lint kernel authority package
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-contracts --locked
+          cargo clippy -p codex-hepta-contracts --all-targets --locked -- -D warnings
+          cargo fmt --check
+
+      - name: Check patch cleanliness
+        run: git diff --check
+
+      - name: Commit converged candidate
+        run: |
+          if git diff --quiet; then
+            echo "Candidate already converged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CALLERS.toml \
+            codex-rs/hepta-contracts/src/authority_lease.rs \
+            codex-rs/hepta-contracts/src/final_use.rs \
+            codex-rs/hepta-contracts/src/final_use_tests.rs \
+            qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json \
+            qa/b4-no-bypass/test_kernel_authority_closed_world.py \
+            qualification/kernel-authority/verify.py
+          git commit -m "fix(kernel.authority): close authority and evidence regressions"
+          git push origin HEAD:work/kernel-authority-convergence-20260925
