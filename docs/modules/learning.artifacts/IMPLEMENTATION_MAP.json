@@ -327,6 +327,66 @@
       "designOperation": "load_selected_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "read_current_selected_payload",
+      "nativeSymbol": "read_current_selected_payload",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_registry_transition.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_current_selected_payload",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "publish_revocation",
+      "nativeSymbol": "publish_revocation",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_registry_transition.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_revocation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "persist_selected_descriptor",
+      "nativeSymbol": "persist_selected_descriptor",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_selected_descriptor.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "persist_selected_descriptor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "read_selected_descriptor",
+      "nativeSymbol": "read_selected_descriptor",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_selected_descriptor.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_selected_descriptor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
     }
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",

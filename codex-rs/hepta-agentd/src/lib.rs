@@ -43,6 +43,7 @@ mod qualification_writer;
 mod runtime;
 mod runtime_tasks;
 mod shared_terminal_cell;
+mod shared_terminal_recovery;
 mod state;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;

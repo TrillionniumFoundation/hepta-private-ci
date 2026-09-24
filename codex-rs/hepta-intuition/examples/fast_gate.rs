@@ -104,19 +104,22 @@ const GATES: [Gate; 4] = [
     },
 ];
 
-fn main() {
+type GateResult<T> = Result<T, Box<dyn std::error::Error>>;
+
+fn main() -> GateResult<()> {
     println!(
         "candidates,iterations,p50_ns,p95_ns,p99_ns,throughput_per_s,allocations_per_decision,allocation_bytes_per_decision"
     );
     for gate in GATES {
-        run_gate(gate);
+        run_gate(gate)?;
     }
+    Ok(())
 }
 
-fn run_gate(gate: Gate) {
-    let (template, profile) = fixture(gate.candidates);
+fn run_gate(gate: Gate) -> GateResult<()> {
+    let (template, profile) = fixture(gate.candidates)?;
     for _ in 0..100 {
-        let receipt = decide_calibrated_v3(template.clone(), &profile).expect("warmup decision");
+        let receipt = decide_calibrated_v3(template.clone(), &profile)?;
         black_box(receipt.receipt_digest);
     }
 
@@ -128,8 +131,7 @@ fn run_gate(gate: Gate) {
         let count_before = ALLOCATION_COUNT.load(Ordering::Relaxed);
         let bytes_before = ALLOCATION_BYTES.load(Ordering::Relaxed);
         let started = Instant::now();
-        let receipt =
-            decide_calibrated_v3(black_box(request), &profile).expect("qualified decision");
+        let receipt = decide_calibrated_v3(black_box(request), &profile)?;
         let elapsed = started.elapsed();
         let count_after = ALLOCATION_COUNT.load(Ordering::Relaxed);
         let bytes_after = ALLOCATION_BYTES.load(Ordering::Relaxed);
@@ -146,11 +148,10 @@ fn run_gate(gate: Gate) {
         .iter()
         .map(|value| u128::from(*value))
         .sum::<u128>();
-    let throughput = if total_ns == 0 {
-        u64::MAX
-    } else {
-        u64::try_from((gate.iterations as u128 * 1_000_000_000) / total_ns).unwrap_or(u64::MAX)
-    };
+    let throughput = (gate.iterations as u128 * 1_000_000_000)
+        .checked_div(total_ns)
+        .and_then(|value| u64::try_from(value).ok())
+        .unwrap_or(u64::MAX);
     let allocations_per_decision = allocation_count / gate.iterations as u64;
     let allocation_bytes_per_decision = allocation_bytes / gate.iterations as u64;
 
@@ -194,40 +195,45 @@ fn run_gate(gate: Gate) {
         allocation_bytes_per_decision,
         gate.max_allocation_bytes
     );
+    Ok(())
 }
 
 fn percentile(values: &[u64], percentile: usize) -> u64 {
-    let index = ((values.len() - 1) * percentile + 99) / 100;
+    let index = ((values.len() - 1) * percentile).div_ceil(100);
     values[index.min(values.len() - 1)]
 }
 
-fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
+fn fixture(
+    candidate_count: usize,
+) -> GateResult<(CalibratedDecisionRequestV1, CanonicalPolicyProfileV1)> {
     let policy_digest = digest("benchmark-policy");
     let calibration_artifact_digest = digest("benchmark-calibration");
     let ood_artifact_digest = digest("benchmark-ood");
     let candidates = (0..candidate_count)
-        .map(|index| CalibratedActionCandidateV1 {
-            candidate_id: id(&format!("candidate:{index:03}")),
-            legal: true,
-            hard_veto: false,
-            utility: FixedQ32::from_raw(index as i64),
-            calibrated_confidence: ProbabilityQ32::ONE,
-            ood_score: ProbabilityQ32::ZERO,
-            assignment_probability: ProbabilityQ32::ZERO,
-            support_digest: digest(&format!("support:{index:03}")),
+        .map(|index| {
+            Ok(CalibratedActionCandidateV1 {
+                candidate_id: id(&format!("candidate:{index:03}"))?,
+                legal: true,
+                hard_veto: false,
+                utility: FixedQ32::from_raw(index as i64),
+                calibrated_confidence: ProbabilityQ32::ONE,
+                ood_score: ProbabilityQ32::ZERO,
+                assignment_probability: ProbabilityQ32::ZERO,
+                support_digest: digest(&format!("support:{index:03}")),
+            })
         })
-        .collect::<Vec<_>>();
-    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).unwrap();
-    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).unwrap();
+        .collect::<GateResult<Vec<_>>>()?;
+    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates)?;
+    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates)?;
     let request = CalibratedDecisionRequestV1 {
-        decision_id: id("benchmark-decision"),
+        decision_id: id("benchmark-decision")?,
         objective_digest: digest("benchmark-objective"),
         objective_class_digest: digest("benchmark-class"),
         state_digest: digest("benchmark-state"),
         policy_digest,
         policy_generation: 1,
         sequence: 1,
-        minimum_confidence: probability_ppm(500_000),
+        minimum_confidence: probability_ppm(500_000)?,
         maximum_ece_ppm: 50_000,
         maximum_ood_false_acceptance_ppm: 5_000,
         risk_class: RiskClass::Low,
@@ -260,23 +266,23 @@ fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPol
             generation: 1,
             valid_from_sequence: 1,
             expires_after_sequence: 1,
-            maximum_in_domain_score: probability_ppm(250_000),
+            maximum_in_domain_score: probability_ppm(250_000)?,
             measured_false_acceptance_ppm: 0,
         },
         assignment: AssignmentModeV1::Deterministic,
         candidates,
     };
     let profile = CanonicalPolicyProfileV1 {
-        profile_id: id("benchmark-profile"),
+        profile_id: id("benchmark-profile")?,
         policy_digest,
         objective_class_digest: digest("benchmark-class"),
         generation: 1,
         valid_from_sequence: 1,
         expires_after_sequence: 1,
-        minimum_confidence: probability_ppm(500_000),
+        minimum_confidence: probability_ppm(500_000)?,
         maximum_ece_ppm: 50_000,
         maximum_ood_false_acceptance_ppm: 5_000,
-        maximum_in_domain_score: probability_ppm(250_000),
+        maximum_in_domain_score: probability_ppm(250_000)?,
         risk_rule: CanonicalRiskRuleV1::HighOnlySlowPath,
         scorer: LearnedScorerContractV1 {
             model_digest: policy_digest,
@@ -290,18 +296,18 @@ fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPol
         calibration_artifact_digest,
         ood_artifact_digest,
     };
-    (request, profile)
+    Ok((request, profile))
 }
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+fn id(value: &str) -> GateResult<StableId> {
+    Ok(StableId::new(value)?)
 }
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn probability_ppm(ppm: u32) -> ProbabilityQ32 {
+fn probability_ppm(ppm: u32) -> GateResult<ProbabilityQ32> {
     let raw = (u128::from(ProbabilityQ32::ONE.raw()) * u128::from(ppm)) / 1_000_000;
-    ProbabilityQ32::from_raw(raw as u64).unwrap()
+    Ok(ProbabilityQ32::from_raw(u64::try_from(raw)?)?)
 }

@@ -155,7 +155,7 @@ fn evidence_payloads_change_when_profile_or_candidate_set_changes() {
     let completeness = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let qualification = canonical_qualification_evidence_payload_v1(&request, &profile).unwrap();
 
-    let mut changed_request = request.clone();
+    let mut changed_request = request;
     changed_request.candidates[0].utility = FixedQ32::from_raw(2);
     changed_request.completeness.candidate_set_digest =
         canonical_candidate_set_digest_v1(&changed_request.candidates).unwrap();

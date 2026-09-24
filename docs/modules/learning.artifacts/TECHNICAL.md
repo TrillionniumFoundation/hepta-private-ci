@@ -63,6 +63,32 @@ The shared durable state ceiling is `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This 
 
 Source implementation is therefore not equivalent to product activation. The crate now has a named source-composed owner service with an exclusive OS writer fence, signed writer/head authentication and bounded local CURRENT discovery. The exact candidate remains qualification-dependent; trusted deployment namespace/parent-directory durability, external CURRENT distribution transport, live selector trust enrollment/private keys, independent canary/operator acceptance/promotion/release and target-host power-loss evidence remain host/external responsibilities.
 
+### Owner-backed selected payload and restart descriptor
+
+`LearningArtifactOwnerHost::read_current_selected_payload` obtains the live signed
+CURRENT from the existing fenced owner, independently verifies selection, then
+resolves exact registered bytes. A cloned `ArtifactRegistry` or old signed view
+cannot replace that owner read. Selection remains DENY_ALL load eligibility, not
+activation, promotion, training permission or effect authority.
+
+`persist_selected_descriptor` stores the canonical signed selection in
+`transactions/<digest>.selection`; `read_selected_descriptor` verifies its bounded
+encoding, content identity and current selection on every restore. The descriptor
+limit is 16 KiB. Truncated records, trailing data, oversized identities, missing
+payloads and currentness failures are errors, not fallback or bootstrap signals.
+The consuming native composition retains the descriptor digest and independently
+retained CURRENT floor. Reopening after publication uses
+`open_with_required_current_head`; a self-consistent old backup is not a new floor.
+
+`publish_revocation` requires the live writer lease, exact next signed CURRENT,
+predecessor and authority epoch. It durably stages the immutable revoked registry
+and transition receipt before publishing that signed head. An exact retry is
+idempotent; conflicting heads are rejected. Local snapshot presence alone does
+not commit a transition. New file acknowledgements also flush their containing
+directory; unsupported directory flushing fails closed. Deployment must already
+provide a durable, trusted owner-root namespace. This change is tested on Linux,
+not a new claim of Windows/macOS power-loss qualification.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:

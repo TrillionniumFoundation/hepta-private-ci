@@ -35,6 +35,9 @@ use crate::RevalidatingCandidate;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::load_pinned_candidate;
 
+#[path = "selection_encoding.rs"]
+mod encoding;
+
 const MAX_TRUSTED_SELECTORS: usize = 32;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -135,6 +138,12 @@ pub struct VerifiedArtifactSelectionV1 {
 }
 
 impl VerifiedArtifactSelectionV1 {
+    /// The exact manifest authenticated by the independent selector and CURRENT owner.
+    #[must_use]
+    pub fn manifest(&self) -> &ArtifactManifest {
+        &self.pin.manifest
+    }
+
     #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.pin.manifest.artifact_id

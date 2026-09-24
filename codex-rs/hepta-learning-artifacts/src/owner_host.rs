@@ -53,6 +53,11 @@ use crate::write_candidate_payload_beneath;
 use crate::write_registry_head_witness_beneath;
 use crate::write_registry_snapshot_beneath;
 
+#[path = "owner_registry_transition.rs"]
+mod registry_transition;
+#[path = "owner_selected_descriptor.rs"]
+mod selected_descriptor;
+
 const MAX_TRUSTED_SIGNERS: usize = 32;
 const MAX_HEAD_RECORDS: usize = 4_096;
 const MAX_SMALL_RECORD_BYTES: usize = 16 * 1024;
@@ -575,6 +580,7 @@ impl LearningArtifactOwnerHost {
             }
             Err(error) => return Err(error.into()),
         }
+        sync_owner_directory(&self.root.join("payloads"))?;
         self.persist_checkpoint(transaction)?;
         Ok(relative)
     }
@@ -613,6 +619,7 @@ impl LearningArtifactOwnerHost {
                 }
                 Err(error) => return Err(error.into()),
             };
+        sync_owner_directory(&self.root.join("registries"))?;
         transaction.record_registry_durable(registry, receipt, withdrawal_registry, now)?;
         self.persist_checkpoint(transaction)?;
         Ok(receipt)
@@ -702,6 +709,7 @@ impl LearningArtifactOwnerHost {
             }
             Err(error) => return Err(error.into()),
         };
+        sync_owner_directory(&self.root.join("witnesses"))?;
         self.persist_signed_head_record(signed)?;
         let discovered = self
             .discover_current_head(now)?
@@ -753,6 +761,9 @@ impl LearningArtifactOwnerHost {
         if head_digest == self.verifier.trust.genesis_predecessor_head_digest {
             return Ok(ArtifactRegistry::new());
         }
+        if let Some((_, registry)) = self.transition_registry(head_digest)? {
+            return Ok(registry);
+        }
         let mut matched: Option<RegistrySnapshotReceipt> = None;
         for entry in fs::read_dir(self.root.join("transactions"))? {
             let entry = entry?;
@@ -800,6 +811,9 @@ impl LearningArtifactOwnerHost {
         &self,
         current: &VerifiedCurrentArtifactHeadV1,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
+        if let Some(receipt) = self.current_transition_receipt(current)? {
+            return Ok(receipt);
+        }
         let mut matched: Option<RegistrySnapshotReceipt> = None;
         for entry in fs::read_dir(self.root.join("transactions"))? {
             let entry = entry?;
@@ -1470,17 +1484,31 @@ fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactO
             file.write_all(bytes)
                 .and_then(|()| file.sync_all())
                 .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
-            Ok(())
+            sync_owner_directory(
+                path.parent()
+                    .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?,
+            )
         }
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
             if read_small_record(path, MAX_SMALL_RECORD_BYTES)? == bytes {
-                Ok(())
+                sync_owner_directory(
+                    path.parent()
+                        .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?,
+                )
             } else {
                 Err(ArtifactOwnerHostError::IdentityConflict)
             }
         }
         Err(error) => Err(error.into()),
     }
+}
+
+// A file acknowledgement is not a directory-entry durability acknowledgement.
+// Unsupported directory flushing fails closed rather than claiming persistence.
+fn sync_owner_directory(path: &Path) -> Result<(), ArtifactOwnerHostError> {
+    File::open(path)
+        .and_then(|directory| directory.sync_all())
+        .map_err(|_| ArtifactOwnerHostError::Indeterminate)
 }
 
 fn read_small_record(path: &Path, limit: usize) -> Result<Vec<u8>, ArtifactOwnerHostError> {

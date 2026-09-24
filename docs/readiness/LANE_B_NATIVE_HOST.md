@@ -10,7 +10,7 @@ This page describes executable behavior in the source, including gaps that requi
 | Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
 | Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
-| Automation | Agentd `AutomationScheduler` + schema-v16 `AutomationStore`/TaskFlow/step/effect ledger | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The final-use external-effect seam is durable, but concrete downstream product callers/owners remain independent authority, activation and evidence gates. |
+| Automation | Agentd `AutomationScheduler` + `AutomationStore`/TaskFlow/step/effect ledger (version from `AUTOMATION_SCHEMA_VERSION` in `hepta-automation/src/lib.rs`) | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The final-use external-effect seam is durable, but concrete downstream product callers/owners remain independent authority, activation and evidence gates. |
 | Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
 | Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | `send_observer` is a reusable state machine; no duplicate sender is started |
 
@@ -115,7 +115,11 @@ support binds owner/Memory/revision rather than just text.
 
 The native terminal Cell is one-state tabular. Its same-host Replay consumer
 resolves bounded indexed source records, trains a candidate and uses existing
-artifact persistence/loading. Withdrawal blocks later use of a loaded candidate.
+artifact persistence/loading. Independently signed selections and bounded versioned
+recovery bundles now support owner-backed restore without retraining. Every use
+checks the live artifact owner, not a supplied historical registry. Withdrawal
+closes a loaded consumer. The complete native API and rejection boundaries are in
+[runtime.agentd](../modules/runtime.agentd/TECHNICAL.md#same-host-shared-replay-composition).
 This is not Laya training, multi-source causal transfer, remote federation,
 production model selection or physical erasure of trained information.
 
@@ -136,7 +140,10 @@ bounded pages do not certify them. Bind results to an exact committed candidate.
 
 Source checks exercise real SQLite memory retrieval and withdrawal, event identity, terminality, output bounds and journal ownership/rejection. They do not establish a paid provider run, local GPU behavior, launchd deployment, homeserver behavior or long-term learning benefit. The six restored cutover/watchdog scripts pass shell syntax checks; their macOS physical scenarios require that target environment.
 
-## Validation result for this change
+## Historical validation (not current-head qualification)
+
+The results below are retained historical observations. They do not identify a
+current committed candidate and must not be used as current-head receipts.
 
 The six changed runtime libraries were built with the native App Server implementation using `just test` (the original feature-selected test build; that same implementation now compiles by default): 97 tests ran, 96 passed. The one failing pre-existing Matrix control-socket test returned `EPERM`; an independent AF_UNIX bind probe returned the same error in this execution environment. No socket restriction or test was bypassed. The new real SQLite → Lane C → NDU read/withdrawal test, worker event/terminal/output tests and durable journal locking/replay/rejection tests passed. The first high-debug link exhausted the 32 GiB workspace; after clearing generated build files, the same scoped test set completed with incremental compilation disabled and dev/test debug information disabled.
 

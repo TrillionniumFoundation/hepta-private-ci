@@ -54,7 +54,8 @@ struct Score {
 }
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+    StableId::new(value)
+        .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -63,18 +64,20 @@ fn digest(value: &str) -> Digest32 {
 
 fn probability_ppm(ppm: u32) -> ProbabilityQ32 {
     let raw = (u128::from(ProbabilityQ32::ONE.raw()) * u128::from(ppm)) / 1_000_000;
-    ProbabilityQ32::from_raw(raw as u64).unwrap()
+    ProbabilityQ32::from_raw(raw as u64)
+        .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"))
 }
 
 fn parse_model() -> LinearScorer {
-    let text = std::str::from_utf8(MODEL_BYTES).unwrap();
+    let text = std::str::from_utf8(MODEL_BYTES)
+        .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
     let get = |key: &str| -> i64 {
         let prefix = format!("{key}=");
         text.lines()
             .find_map(|line| line.strip_prefix(prefix.as_str()))
             .unwrap_or_else(|| panic!("missing {key}"))
             .parse()
-            .unwrap()
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"))
     };
     assert!(text.contains("format=hepta.intuition.linear-scorer.v1"));
     LinearScorer {
@@ -94,13 +97,17 @@ fn score(model: LinearScorer, x_q16: i64, y_q16: i64) -> Score {
     let confidence_ppm = confidence.clamp(0, 1_000_000) as u32;
     let farthest = x_q16.unsigned_abs().max(y_q16.unsigned_abs());
     let ood_score_ppm = ((u128::from(farthest) * 1_000_000)
-        / u128::try_from(model.ood_scale_q16).unwrap())
+        / u128::try_from(model.ood_scale_q16)
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}")))
     .min(1_000_000) as u32;
     let utility_q16 = i128::from(x_q16) * i128::from(model.utility_x_weight_q16)
         + i128::from(y_q16) * i128::from(model.utility_y_weight_q16);
     let utility_raw = (utility_q16 << 16) / 65_536;
     Score {
-        utility: FixedQ32::from_raw(i64::try_from(utility_raw).unwrap()),
+        utility: FixedQ32::from_raw(
+            i64::try_from(utility_raw)
+                .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}")),
+        ),
         confidence_ppm,
         ood_score_ppm,
     }
@@ -115,11 +122,18 @@ fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
         .filter(|line| !line.is_empty())
     {
         let fields = line.split(',').collect::<Vec<_>>();
-        let x: i64 = fields[1].parse().unwrap();
-        let y: i64 = fields[2].parse().unwrap();
-        let label: u64 = fields[3].parse().unwrap();
+        let x: i64 = fields[1]
+            .parse()
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
+        let y: i64 = fields[2]
+            .parse()
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
+        let label: u64 = fields[3]
+            .parse()
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
         let prediction = u64::from(score(model, x, y).confidence_ppm);
-        let bin = usize::try_from((prediction * 5 / 1_000_001).min(4)).unwrap();
+        let bin = usize::try_from((prediction * 5 / 1_000_001).min(4))
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
         bins[bin].0 += 1;
         bins[bin].1 += prediction;
         bins[bin].2 += label;
@@ -140,7 +154,8 @@ fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
         ));
     }
     (
-        u32::try_from(weighted_error / u128::from(rows)).unwrap(),
+        u32::try_from(weighted_error / u128::from(rows))
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}")),
         Digest32::of_bytes(audit.as_bytes()),
     )
 }
@@ -150,9 +165,15 @@ fn ood_false_acceptance_ppm(model: LinearScorer, maximum_in_domain_ppm: u32) -> 
     let mut false_accepts = 0_u64;
     for line in OOD_CSV.lines().skip(1).filter(|line| !line.is_empty()) {
         let fields = line.split(',').collect::<Vec<_>>();
-        let x: i64 = fields[1].parse().unwrap();
-        let y: i64 = fields[2].parse().unwrap();
-        let in_domain: u8 = fields[3].parse().unwrap();
+        let x: i64 = fields[1]
+            .parse()
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
+        let y: i64 = fields[2]
+            .parse()
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
+        let in_domain: u8 = fields[3]
+            .parse()
+            .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"));
         if in_domain == 0 {
             ood_rows += 1;
             if score(model, x, y).ood_score_ppm <= maximum_in_domain_ppm {
@@ -160,7 +181,8 @@ fn ood_false_acceptance_ppm(model: LinearScorer, maximum_in_domain_ppm: u32) -> 
             }
         }
     }
-    u32::try_from(false_accepts * 1_000_000 / ood_rows).unwrap()
+    u32::try_from(false_accepts * 1_000_000 / ood_rows)
+        .unwrap_or_else(|error| panic!("invalid frozen qualification fixture: {error:?}"))
 }
 
 fn sign(

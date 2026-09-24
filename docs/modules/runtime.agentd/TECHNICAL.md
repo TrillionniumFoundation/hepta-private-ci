@@ -142,18 +142,42 @@ this target. [HNMF](../../hnmf/TECHNICAL.md) owns contribution/learning semantic
 ### Same-host shared Replay composition
 
 [AgentdSharedReplayHostV1](../../../codex-rs/hepta-agentd/src/shared_terminal_cell.rs)
-consumes existing Memory, ledger and artifact owners. It binds Replay to the
-consumer/workspace/parameter scope, and binds each training decision to the exact
-owner/Memory/revision support rather than equal text. Train, load and prediction
-revalidate source use and frozen ledger. Load/prediction also check the supplied
-artifact-owner registry and exact bytes. The embedding owner must supply the
-current registry; this candidate API does not mint signed production CURRENT.
+consumes the existing Memory, ledger and artifact owners. Replay binds the native
+consumer, workspace and parameter scope. Training decisions bind exact
+owner/Memory/revision support, not equal text. The native builder attaches the
+fenced `LearningArtifactOwnerHost` and independent `ArtifactSelectionVerifierV1`;
+load and prediction no longer accept caller-supplied registry snapshots.
 
-The integration test uses separate source/receiver stores and covers no sharing,
-Recall-only, Replay-only, both, altered bytes/targets/workspaces, independent
-artifact revocation and support withdrawal after loading. This is an owner-path
-behavioral test, not a real-task transfer study, process-isolation proof or
-production Laya service. Selected model state and effect authority are unchanged.
+A load authenticates signed selection against the owner's live signed CURRENT,
+resolves registered payload bytes under that owner, and validates the frozen
+ledger plus current Memory grant. Following asynchronous source checks it checks
+CURRENT again. Prediction holds the artifact owner publication lock across its
+final selection check and pure table calculation. A failed or cancelled use closes
+the loaded consumer; a later call cannot revive it. These checks do not lock
+independent Memory owners against future corrections or grant external effects.
+
+The version-1 recovery bundle contains the actual table, dataset receipt, source
+identity/revision and compatibility bindings. It does not copy private Memory
+text. Its complete bytes are bound by the independently selected manifest. Limits
+are 4 MiB per bundle and 4096 source records; unknown fields, altered bytes,
+unsupported versions and mismatched producer/consumer identities are rejected.
+The old raw-table candidate interface is not an implicit recovery fallback.
+
+`persist_selected_descriptor` stores the signed selection in the existing artifact
+owner transaction directory under its content digest. A native composition must
+retain that digest and an independent CURRENT recovery floor. `restore` resolves
+that descriptor, current selection and source/ledger state; it never calls train.
+Missing/corrupt descriptors, absent payloads, changed grants, revoked artifacts
+and expired selection fail closed. Selection and writer keys remain independently
+configured; the implementation supplies no production signing keys.
+
+The integration test uses independent source/receiver stores and separate restore
+processes without passing a training candidate. It covers Recall/Replay separation,
+source identity substitution, missing/tampered bytes and descriptors, independent
+artifact revocation with a still-valid old signed view, and source withdrawal.
+It is not ordinary-daemon bootstrap, a paid-model run, Laya training, remote peer
+isolation or proof of improved learning utility. The repository-shipped canonical
+invocation provider and Circuit-to-Cell product consumer remain incomplete.
 
 ## 5. Contracts, ports and compatibility
 
