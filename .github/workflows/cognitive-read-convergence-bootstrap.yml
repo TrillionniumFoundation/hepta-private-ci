@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: cognitive-read-convergence-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   converge:
     if: "${{ github.event.head_commit.message == 'chore(cognitive.read): bootstrap convergence phase 1' }}"
@@ -17,7 +21,7 @@ jobs:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Install repository tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
