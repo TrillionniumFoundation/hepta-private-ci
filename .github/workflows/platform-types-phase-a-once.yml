@@ -1,0 +1,71 @@
+name: platform.types phase A one-shot convergence
+
+on:
+  push:
+    branches:
+      - codex/platform-types-full-convergence-20260925
+    paths:
+      - scripts/platform_types_phase_a.py
+      - .github/workflows/platform-types-phase-a-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: platform-types-phase-a-convergence
+  cancel-in-progress: true
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out convergence branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/platform-types-full-convergence-20260925
+          fetch-depth: 0
+
+      - name: Apply deterministic phase-A patch
+        run: python3 scripts/platform_types_phase_a.py
+
+      - name: Verify generated cross-language bindings
+        run: |
+          set -euo pipefail
+          python3 codex-rs/hepta-types/bindings/generate_bindings.py --check
+          python3 codex-rs/hepta-types/bindings/verify_generated.py
+          node codex-rs/hepta-types/bindings/verify_generated.mjs
+          python3 codex-rs/hepta-types/conformance/verify_vectors.py
+          node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts
+          python3 codex-rs/hepta-types/conformance/verify_rejections.py
+          node codex-rs/hepta-types/conformance/verify_rejections.mjs
+
+      - name: Verify Lane A truth and regressions
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py self-test
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
+          (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Verify platform.types native package
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-types -- --check
+
+      - name: Commit verified phase-A result
+        env:
+          BRANCH: codex/platform-types-full-convergence-20260925
+        run: |
+          set -euo pipefail
+          rm scripts/platform_types_phase_a.py
+          rm .github/workflows/platform-types-phase-a-once.yml
+          git diff --check
+          git config user.name "Hepta Platform Types Convergence"
+          git config user.email "hepta-platform-types@users.noreply.github.com"
+          git add -A
+          git commit -s -m "fix(platform.types): close binding and Lane A truth blockers"
+          git push origin "HEAD:${BRANCH}"
