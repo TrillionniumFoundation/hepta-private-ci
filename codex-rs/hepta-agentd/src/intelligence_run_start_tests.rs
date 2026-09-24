@@ -8,15 +8,28 @@ use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
-async fn durable_preparation() -> (
-    PreparedAgentdIntelligenceRunV1,
+fn durable_inputs() -> (
+    Fixture,
     RunStartRecordV1,
     RuntimeComposition,
+    tempfile::TempDir,
+    AgentdIntelligenceProductRunnerV1,
 ) {
     let (mut value, _) = signed_fixture();
     let directory = tempfile::tempdir().unwrap();
     let authority = directory.path().join("authority.json");
     let mut composition = product_test_coordinator().composition().clone();
+    composition.agent_id = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12".to_string();
+    value.inputs.objective_context.source_authentication =
+        ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
+            source_identity: id("adapter.console"),
+            source_digest: value
+                .inputs
+                .objective_envelope
+                .structured_intent
+                .provenance
+                .source_digest,
+        };
     composition.agentd_generation = value.request.snapshot.body_generation().get();
     composition.supervisor_generation = composition.agentd_generation;
     let mut fence = b"hepta:agentd:objective-fence:v1\0".to_vec();
@@ -94,6 +107,15 @@ async fn durable_preparation() -> (
         .unwrap()
         .with_evaluation_trust(trust)
         .unwrap();
+    (value, record, composition, directory, runner)
+}
+
+async fn durable_preparation() -> (
+    PreparedAgentdIntelligenceRunV1,
+    RunStartRecordV1,
+    RuntimeComposition,
+) {
+    let (value, record, composition, _directory, runner) = durable_inputs();
     let outcome = runner
         .prepare_for_composition(&composition, value.request, value.inputs)
         .await
@@ -196,3 +218,6 @@ async fn changed_run_start_or_expired_horizon_cannot_rebind_a_prepared_result() 
     );
     assert_eq!(candidate, prepared);
 }
+
+#[path = "intelligence_invocation_owner_tests.rs"]
+mod intelligence_ingress;
