@@ -1,9 +1,9 @@
 # memory.federation V2 current verification
 
 - canonical convergence branch: `work/product-convergence-20260923`
-- source candidate parent: `5fa16b2a05a365169419b49150d45ff3c9f911cd`
-- frozen source candidate: `95b8d75ab67bc4aee31bf166ec794936d5018a05`
-- frozen source tree: `cd50cd9c14adef5380e1d38a14367adc0546c7a7`
+- source candidate parent: `9d7147f7d745a8edad99fb892751da536ef1e009`
+- frozen source candidate: `2f2d84401369f2223bf20716e09719ed6ccd6ab3`
+- frozen source tree: `b69e5249f363497051e27654d555f9780e78d589`
 - PR base main at source freeze: `7ddbfac88525196e7a4b31387ceae194958275f5`
 - status: `source_candidate_local_regressions_passed_pending_exact_and_merge_execution`
 - claim boundary: read-only local product-composition candidate; `productionImplementation`, `productExecutionProved`, independent acceptance, activation, promotion and release remain false

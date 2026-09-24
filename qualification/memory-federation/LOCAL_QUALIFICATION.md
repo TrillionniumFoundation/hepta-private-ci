@@ -1,9 +1,9 @@
 # memory.federation local qualification record
 
 - module: `memory.federation`
-- source candidate: `95b8d75ab67bc4aee31bf166ec794936d5018a05`
-- source tree: `cd50cd9c14adef5380e1d38a14367adc0546c7a7`
-- product-convergence parent: `5fa16b2a05a365169419b49150d45ff3c9f911cd`
+- source candidate: `2f2d84401369f2223bf20716e09719ed6ccd6ab3`
+- source tree: `b69e5249f363497051e27654d555f9780e78d589`
+- product-convergence parent: `9d7147f7d745a8edad99fb892751da536ef1e009`
 - current main used by the PR: `7ddbfac88525196e7a4b31387ceae194958275f5`
 - local host class: shared Linux development workstation; concurrent unrelated builds were active
 - status: focused local regressions passed; this file is not target-host qualification, independent acceptance, activation or release evidence
