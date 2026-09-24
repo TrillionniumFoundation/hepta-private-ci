@@ -77,12 +77,14 @@ Agentd preserves dispatch-boundary uncertainty and accepts terminal state only f
 | `shared_terminal_cell_train` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn train(` |
 | `shared_terminal_cell_load` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn load(` |
 | `shared_terminal_cell_predict` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn predict(` |
+| `shared_terminal_cell_restore` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn restore(` |
 
 Remaining repository implementation gaps:
 
 - Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.
 - Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.
 - Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton.
+- Provide a repository-shipped authenticated canonical invocation profile and wire the actual Circuit-to-Cell normal daemon consumer. Shared Replay owner tests and cross-process restore do not establish these product paths.
 
 External evidence gates:
 
@@ -263,6 +265,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 52 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 53 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
