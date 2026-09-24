@@ -653,6 +653,7 @@ fn fixture() -> Fixture {
             intuition_request,
             context_request,
             evaluation_request,
+            signed_evaluation: None,
         },
         owners,
     }
@@ -986,3 +987,6 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         .expect("capacity restored");
     assert_eq!(ready.await.expect("new work completes"), 7);
 }
+
+#[path = "intelligence_product_signed_tests.rs"]
+mod signed;

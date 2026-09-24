@@ -21,7 +21,21 @@ impl AgentdIntelligenceProductRunnerV1 {
             )),
             authority_file,
             authority_verifier,
+            evaluation_trust: None,
         })
+    }
+
+    /// Configure trust that the host has already authenticated against its root.
+    /// No request or wire field can install an evaluator key or grant itself trust.
+    pub fn with_evaluation_trust(
+        mut self,
+        trust: codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+    ) -> Result<Self, AgentdIntelligenceProductError> {
+        if self.evaluation_trust.is_some() {
+            return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
+        }
+        self.evaluation_trust = Some(std::sync::Arc::new(trust));
+        Ok(self)
     }
 
     // The permit belongs to the worker, not the request future. Aborting a
@@ -48,7 +62,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         coordinator: &crate::AgentRunCoordinator,
         request: CanonicalIntelligenceRunRequestV1,
-        inputs: AgentdIntelligenceOwnerInputsV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let candidate_ids = request
             .legal_candidates
@@ -85,8 +99,32 @@ impl AgentdIntelligenceProductRunnerV1 {
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
+        let evaluation_session = match inputs.signed_evaluation.take() {
+            None => None,
+            Some(signed) => {
+                let trust = self
+                    .evaluation_trust
+                    .as_ref()
+                    .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
+                let mut oracle = FileBackedFreshnessOracleV1::new(
+                    authority_file.clone(),
+                    authority_verifier.clone(),
+                );
+                let owner_id = StableId::new("learning.eval")
+                    .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
+                let current_owner = oracle
+                    .current(&owner_id)
+                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+                Some(AgentdEvaluationSessionV1 {
+                    run_id: request.run_id.clone(),
+                    current_owner,
+                    trust: std::sync::Arc::clone(trust),
+                    signed,
+                })
+            }
+        };
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs);
+            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;

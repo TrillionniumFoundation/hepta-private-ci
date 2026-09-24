@@ -29,6 +29,7 @@ use codex_hepta_types::FixedQ32;
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
 pub use evaluation::AgentdEvaluationBindingV1;
+use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
 pub use evaluation::AgentdSignedEvaluationV1;
 pub use evaluation::intelligence_evaluation_binding_payload_v1;
@@ -226,6 +227,7 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub intuition_request: CalibratedDecisionRequestV1,
     pub context_request: CompilationRequest,
     pub evaluation_request: EvaluationRequest,
+    pub signed_evaluation: Option<AgentdSignedEvaluationV1>,
 }
 
 struct AgentdOwnerPortsV1 {
@@ -243,11 +245,15 @@ struct AgentdOwnerPortsV1 {
     intuition_request: Option<CalibratedDecisionRequestV1>,
     context_request: Option<CompilationRequest>,
     evaluation_request: Option<EvaluationRequest>,
+    evaluation_session: Option<AgentdEvaluationSessionV1>,
     selected_candidate: Option<StableId>,
 }
 
 impl AgentdOwnerPortsV1 {
-    fn new(value: AgentdIntelligenceOwnerInputsV1) -> Self {
+    fn new(
+        value: AgentdIntelligenceOwnerInputsV1,
+        evaluation_session: Option<AgentdEvaluationSessionV1>,
+    ) -> Self {
         Self {
             objective_envelope: Some(value.objective_envelope),
             objective_profile: Some(value.objective_profile),
@@ -263,6 +269,7 @@ impl AgentdOwnerPortsV1 {
             intuition_request: Some(value.intuition_request),
             context_request: Some(value.context_request),
             evaluation_request: Some(value.evaluation_request),
+            evaluation_session,
             selected_candidate: None,
         }
     }
@@ -531,11 +538,23 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         {
             return Err(Self::reject(input.stage, "evaluation binding"));
         }
-        let _ = request;
-        Err(Self::reject(
+        let session = Self::take(
+            &mut self.evaluation_session,
             input.stage,
-            "unsigned in-process learning evaluation is not a production ingress; signed evaluation evidence is required",
-        ))
+            "signed evaluation",
+        )?;
+        let started = Instant::now();
+        let now = wall_clock_ms().map_err(|_| Self::reject(input.stage, "evaluation clock"))?;
+        let receipt = session
+            .evaluate(input, &request.candidate_id, now)
+            .map_err(|_| Self::reject(input.stage, "signed evaluation binding or evidence"))?;
+        Self::within_budget(input, started)?;
+        Self::receipt(
+            input,
+            "learning.eval",
+            receipt,
+            CanonicalPortDecisionV1::Continue,
+        )
     }
 }
 
@@ -605,6 +624,7 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     worker_slots: std::sync::Arc<tokio::sync::Semaphore>,
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
+    evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
 }
 
 #[path = "intelligence_product_runner.rs"]
