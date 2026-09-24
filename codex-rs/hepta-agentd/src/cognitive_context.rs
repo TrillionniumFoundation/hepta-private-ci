@@ -17,7 +17,6 @@ use codex_hepta_control_plane::ObservedContextV1;
 use codex_hepta_control_plane::plan_observed_context;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalCandidateIdentityV1;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_memory::RetrievalRequest;
@@ -32,6 +31,7 @@ use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
+use crate::cognitive_retrieval_context::owner_cut::PagedRetrievalOwnerCutV1;
 
 const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
@@ -134,7 +134,6 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     }
     let mut pending_assignment = None;
 
-    let cut = store.lane_c_snapshot(&access, &scope, now).await?;
     let observation = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new(query, now))
         .await?;
@@ -148,9 +147,17 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .collect::<Result<Vec<_>, _>>()?;
     record_ids.sort();
     record_ids.dedup();
-    let admission_read = cut
+    let candidate_cut = PagedRetrievalOwnerCutV1::acquire(
+        store,
+        &access,
+        &scope,
+        now,
+        record_ids.clone(),
+    )
+    .await?;
+    let admission_read = candidate_cut
         .read_ids(ReadIdsRequestV1 {
-            snapshot_digest: cut.snapshot().snapshot_digest,
+            snapshot_digest: candidate_cut.snapshot().snapshot_digest,
             record_ids,
             fields: vec![ReadFieldV1::ContentDigest],
             maximum_encoded_bytes: MAX_ENCODED_READ_RESULT_BYTES_V2,
@@ -170,13 +177,18 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let lease_expires_unix_ms = acquired_at_unix_ms.checked_add(5_000).ok_or_else(|| {
             CognitiveStoreError::Unavailable("retrieval context lease overflow".to_string())
         })?;
+        let authoritative = candidate_cut
+            .bind_context(
+                context.generation_vector.clone(),
+                acquired_at_unix_ms,
+                lease_expires_unix_ms,
+            )
+            .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
         let execution = execute_owner_observation(
             &observation,
-            &cut,
+            &authoritative,
             context,
             Digest32::of_bytes(query.as_bytes()),
-            acquired_at_unix_ms,
-            lease_expires_unix_ms,
         )?;
         let selection_order = execution
             .recall
@@ -351,9 +363,31 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         }
     }
 
-    let selected_read = read_selected_items(&cut, &response.items)?;
-    let selected_read_binding =
-        bind_selected_read(&cut, &selected_read, expected_retrieval_context_digest);
+    // Publish an exact-ID cut for the actual returned subset. This cut can be
+    // reconstructed at physical final use without carrying the entire admitted
+    // candidate universe or imposing the legacy whole-scope history ceiling.
+    let selected_ids = response
+        .items
+        .iter()
+        .map(|item| {
+            StableId::new(item.memory_id.as_str())
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let selected_cut = PagedRetrievalOwnerCutV1::acquire(
+        store,
+        &access,
+        &scope,
+        now_seconds()?,
+        selected_ids.clone(),
+    )
+    .await?;
+    let selected_read = read_selected_items(&selected_cut, &response.items)?;
+    let selected_read_binding = bind_selected_read(
+        &selected_cut,
+        &selected_read,
+        expected_retrieval_context_digest,
+    );
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
     response.read_digest = selected_read_binding.to_string();
     let encoded_context = serde_json::to_vec(&response)
@@ -402,9 +436,20 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
 
     // A concurrent correction, deletion, changed citation, expiry or restored
     // older database must not leak a stale projection into the response.
-    store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
-        .await?;
+    let current_selected_cut = PagedRetrievalOwnerCutV1::acquire(
+        store,
+        &access,
+        &scope,
+        now_seconds()?,
+        selected_ids,
+    )
+    .await?;
+    if current_selected_cut.cut_digest() != selected_cut.cut_digest() {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive retrieval owner cut changed before publication".to_string(),
+        )
+        .into());
+    }
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         tokio::task::spawn_blocking(move || ranker.revalidate())
@@ -448,8 +493,11 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
                     .ok_or(CognitiveContextError::RetrievalLearningUnavailable)
             })
             .collect::<Result<Vec<RetrievalCandidateIdentityV1>, _>>()?;
-        let context_exposed = !delivered_candidates.is_empty();
-        let published_context_digest = if context_exposed {
+        // This is an owner-published response observation, not proof that a
+        // model consumed it. Physical consumption is established later by the
+        // inference journal's exact context digest plus native_started event.
+        let context_published = !delivered_candidates.is_empty();
+        let published_context_digest = if context_published {
             Some(Digest32::of_bytes(&serde_json::to_vec(&response).map_err(
                 |error| CognitiveStoreError::Invalid(error.to_string()),
             )?))
@@ -465,7 +513,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
                 request_id,
                 &assignment,
                 &delivered_candidates,
-                context_exposed,
+                context_published,
                 published_context_digest,
                 downstream_policy_digest,
                 delivery_propensity,
@@ -556,9 +604,21 @@ pub(crate) async fn revalidate_with_retrieval_context(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
-    let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
-        .await?;
+    let record_ids = items
+        .iter()
+        .map(|item| {
+            StableId::new(item.memory_id.as_str())
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let cut = PagedRetrievalOwnerCutV1::acquire(
+        store,
+        &access,
+        &scope,
+        now_seconds()?,
+        record_ids,
+    )
+    .await?;
     if cut.snapshot().snapshot_digest != expected_snapshot {
         return Err(CognitiveStoreError::Conflict(
             "cognitive context snapshot is stale".to_string(),
@@ -638,13 +698,11 @@ pub(crate) async fn revalidate_with_retrieval_context(
     })
 }
 
-/// Bind the selected exact-ID receipt to the complete durable owner cut.
-///
-/// The public Agentd response keeps its existing read_digest field, but that
-/// field now invalidates on source/tombstone/KG frontier drift even when the
-/// selected memory heads themselves remain byte-identical.
+/// Bind the selected exact-ID receipt to the complete candidate-directed owner
+/// cut. The binding still invalidates on memory/source/tombstone/KG frontier
+/// drift even when selected bytes remain identical.
 fn bind_selected_read(
-    cut: &DurableCognitiveSnapshot,
+    cut: &PagedRetrievalOwnerCutV1,
     read: &ReadIdsResultV1,
     retrieval_context: Option<Digest32>,
 ) -> Digest32 {
@@ -658,7 +716,7 @@ fn bind_selected_read(
 }
 
 fn read_selected_items(
-    cut: &DurableCognitiveSnapshot,
+    cut: &PagedRetrievalOwnerCutV1,
     items: &[CognitiveContextItem],
 ) -> Result<ReadIdsResultV1, CognitiveContextError> {
     let record_ids = items
