@@ -32,7 +32,7 @@ use codex_hepta_objective::admit_objective_v1;
 use codex_hepta_objective::canonical_native_objective_conflict_bytes_v1;
 use codex_hepta_objective::canonical_native_objective_semantic_bytes_v1;
 use codex_hepta_objective::compile_admitted_objective_v1;
-use codex_hepta_objective::encode_objective_function_v1;
+use codex_hepta_objective::encode_authenticated_objective_function_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -160,8 +160,13 @@ pub fn compile_and_publish_objective_run_v1(
             RunStartStoreError::ObjectiveDigestMismatch,
         ));
     }
-    let objective_function_v1 =
-        encode_objective_function_v1(&objective, envelope, profile, &receipt)?;
+    let objective_function_v1 = encode_authenticated_objective_function_v1(
+        &objective,
+        envelope,
+        profile,
+        context,
+        &receipt,
+    )?;
     if objective_function_v1.native_semantic_digest() != objective.objective.semantic_digest {
         return Err(ObjectiveRunError::Protocol(
             ObjectiveFunctionV1Error::ProjectionMismatch("native semantic identity"),
