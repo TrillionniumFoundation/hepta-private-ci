@@ -9,9 +9,10 @@ export const NUMERIC_PROFILES = Object.freeze(Object.fromEntries(SPEC.numericPro
 export const CANONICAL_DIGEST_V1 = Object.freeze(SPEC.canonicalDigestV1);
 
 export function numericProfile(profileId) {
-  const row = NUMERIC_PROFILES[profileId];
-  if (!row) throw new Error("unknown numeric profile");
-  return row;
+  if (typeof profileId !== "string" || !Object.hasOwn(NUMERIC_PROFILES, profileId)) {
+    throw new Error("unknown numeric profile");
+  }
+  return NUMERIC_PROFILES[profileId];
 }
 export function admitAuthorityWireV1(raw) {
   if (!(raw instanceof Uint8Array) || raw.length !== AUTHORITY_WIRE_V1.encodedBytes) throw new Error("authority wire V1 must be exactly one byte");
@@ -20,8 +21,8 @@ export function admitAuthorityWireV1(raw) {
 export function validateIdProfile(value, variant) {
   const encoded = UTF8.encode(value);
   if (encoded.length === 0 || encoded.length > STABLE_ID_MAX_BYTES || value.includes("\0")) throw new Error("identifier bound");
+  if (typeof variant !== "string" || !Object.hasOwn(ID_PROFILES, variant)) throw new Error("unknown identifier profile");
   const row = ID_PROFILES[variant];
-  if (!row) throw new Error("unknown identifier profile");
   if (variant === "Stable") {
     if (!/^[A-Za-z0-9._:-]+$/.test(value)) throw new Error("stable identifier grammar");
     return value;

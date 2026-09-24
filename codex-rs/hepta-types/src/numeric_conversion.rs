@@ -36,6 +36,18 @@ pub struct NumericConversionReceiptV1 {
     pub authority: NonAuthorizingPosture,
 }
 
+/// Receipt emitted only after the caller-supplied immutable registry generation
+/// admits both numeric profiles and the exact normalization definition.  This
+/// is intentionally a distinct type from the pure conversion receipt so a
+/// consumer cannot mistake deterministic arithmetic for registry admission.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RegisteredNumericConversionReceiptV1 {
+    pub conversion: NumericConversionReceiptV1,
+    pub registry_digest: Digest32,
+    pub admission_digest: Digest32,
+    pub authority: NonAuthorizingPosture,
+}
+
 /// Rescales bounded numeric signals with the target profile's rounding.
 /// Unit, shape and normalization must match exactly; this performs no unit
 /// conversion, renormalization, projection or production-profile admission.
@@ -142,13 +154,68 @@ pub fn rescale_signal_registered(
     source: &NumericSignalV1,
     target: &NumericSignalSchemaV1,
     registry: &ContractRegistryV1,
-) -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError> {
+) -> Result<(NumericSignalV1, RegisteredNumericConversionReceiptV1), NumericConversionError> {
     source.schema.validate_with_registry(registry)?;
     target.validate_with_registry(registry)?;
     if source.schema.normalization_digest != target.normalization_digest {
         return Err(NumericConversionError::NormalizationMismatch);
     }
-    rescale_signal(source, target)
+    let (output, conversion) = rescale_signal(source, target)?;
+    let registry_digest = registry
+        .registry_digest()
+        .map_err(|_| NumericConversionError::RegistryAdmission)?;
+    let admission_digest = registered_admission_digest(
+        registry_digest,
+        source.schema.normalization_digest,
+        &conversion,
+    )?;
+    let receipt = RegisteredNumericConversionReceiptV1 {
+        conversion,
+        registry_digest,
+        admission_digest,
+        authority: NonAuthorizingPosture::DENY_ALL,
+    };
+    Ok((output, receipt))
+}
+
+fn registered_admission_digest(
+    registry_digest: Digest32,
+    normalization_digest: Digest32,
+    conversion: &NumericConversionReceiptV1,
+) -> Result<Digest32, NumericConversionError> {
+    let type_id = StableId::new("platform.types:numeric-registry-admission-v1")
+        .map_err(|_| NumericConversionError::CanonicalEncoding)?;
+    let fields = [
+        CanonicalFieldV1 {
+            name: "conversion_evidence_digest",
+            value: CanonicalValueV1::Digest(conversion.evidence_digest),
+        },
+        CanonicalFieldV1 {
+            name: "normalization_digest",
+            value: CanonicalValueV1::Digest(normalization_digest),
+        },
+        CanonicalFieldV1 {
+            name: "output_digest",
+            value: CanonicalValueV1::Digest(conversion.output_digest),
+        },
+        CanonicalFieldV1 {
+            name: "registry_digest",
+            value: CanonicalValueV1::Digest(registry_digest),
+        },
+        CanonicalFieldV1 {
+            name: "source_digest",
+            value: CanonicalValueV1::Digest(conversion.source_digest),
+        },
+        CanonicalFieldV1 {
+            name: "source_profile",
+            value: CanonicalValueV1::Text(conversion.source_profile.id()),
+        },
+        CanonicalFieldV1 {
+            name: "target_profile",
+            value: CanonicalValueV1::Text(conversion.target_profile.id()),
+        },
+    ];
+    canonical_digest_v1(&type_id, 1, &fields).map_err(|_| NumericConversionError::CanonicalEncoding)
 }
 
 fn signal_digest(signal: &NumericSignalV1) -> Result<Digest32, NumericConversionError> {

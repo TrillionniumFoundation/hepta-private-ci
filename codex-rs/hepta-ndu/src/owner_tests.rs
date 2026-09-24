@@ -6,10 +6,20 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_types::ContractRegistryV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::IdProfileV1;
+use codex_hepta_types::NumericProfileDefinitionV1;
+use codex_hepta_types::NumericProfileV1;
+use codex_hepta_types::NumericSignalSchemaV1;
+use codex_hepta_types::NumericSignalV1;
+use codex_hepta_types::RegistryDefinitionV1;
+use codex_hepta_types::RegistryKindV1;
+use codex_hepta_types::SignalUnitV1;
 use codex_hepta_types::StableId;
+use codex_hepta_types::validate_id;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -26,6 +36,8 @@ use crate::AxisValue;
 use crate::ContributionSet;
 use crate::EvaluationPolicyV1;
 use crate::FeasibilityPosture;
+use crate::NduNumericAdmissionErrorV1;
+use crate::NduNumericRegistryV1;
 use crate::NduProjectionKindV1;
 use crate::RequiredOrganSet;
 use crate::UtilityContribution;
@@ -145,6 +157,46 @@ fn contributions() -> ContributionSet {
     }
 }
 
+fn numeric_registry() -> (NduNumericRegistryV1, Digest32) {
+    let normalization = RegistryDefinitionV1::new(
+        RegistryKindV1::Normalization,
+        validate_id("normalization:ndu-owner-v1", IdProfileV1::Normalization)
+            .expect("normalization ID"),
+        1,
+        "unit=utility;source=ppm;target=signed-q32-nearest-ties-even-v1",
+    )
+    .expect("normalization definition");
+    let normalization_digest = normalization.digest();
+    let registry = ContractRegistryV1::new_with_numeric_profiles(
+        vec![normalization],
+        vec![
+            NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+                .expect("source profile"),
+            NumericProfileDefinitionV1::canonical(NumericProfileV1::SignedQ32NearestTiesEven)
+                .expect("target profile"),
+        ],
+    )
+    .expect("numeric registry");
+    (
+        NduNumericRegistryV1::new(registry).expect("NDU numeric registry"),
+        normalization_digest,
+    )
+}
+
+fn numeric_signal(normalization_digest: Digest32) -> NumericSignalV1 {
+    NumericSignalV1 {
+        schema: NumericSignalSchemaV1 {
+            profile: NumericProfileV1::HnmfPpmTowardZero,
+            unit: SignalUnitV1::Utility,
+            shape: vec![1],
+            minimum_raw: -1_000_000,
+            maximum_raw: 1_000_000,
+            normalization_digest,
+        },
+        values: vec![750_000],
+    }
+}
+
 struct Fixture {
     owner: NduAuthenticatedOwnerV1,
     authority: codex_hepta_contracts::FinalUseAuthority,
@@ -201,6 +253,59 @@ fn fixture() -> Fixture {
     }
 }
 
+fn fixture_with_numeric_registry() -> (Fixture, Digest32) {
+    let store_dir = tempfile::tempdir().expect("store tempdir");
+    let authority_dir = tempfile::tempdir().expect("authority tempdir");
+    std::fs::set_permissions(store_dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private store permissions");
+    std::fs::set_permissions(authority_dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private authority permissions");
+
+    let signing = SigningKey::from_bytes(&[92; 32]);
+    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(
+        authority_dir.path(),
+        "ndu-issuer".to_string(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .expect("authority");
+    let (numeric_registry, normalization_digest) = numeric_registry();
+    let mut production_policy = policy();
+    production_policy
+        .utility_profile
+        .normalization_manifest_digest = normalization_digest;
+    let owner = NduAuthenticatedOwnerV1::open_with_numeric_registry(
+        store_dir.path(),
+        authority.clone(),
+        NduOwnerContextV1 {
+            principal_id: id("agentd-principal"),
+            owner_id: id("utility.ndu"),
+            host_generation: 8,
+            principal_scope_digest: digest("principal-scope"),
+            fence_digest: digest("host-fence"),
+            revocation_frontier_digest: digest("revocation-frontier"),
+        },
+        production_policy,
+        numeric_registry,
+    )
+    .expect("registered authenticated owner");
+    (
+        Fixture {
+            owner,
+            authority,
+            signing,
+            next_nonce: 1,
+            _store_dir: store_dir,
+            _authority_dir: authority_dir,
+        },
+        normalization_digest,
+    )
+}
+
 impl Fixture {
     fn sign(&mut self, mutation: &NduOwnerMutationV1, grant_id: &str) -> SignedFinalUseGrant {
         let binding = self.owner.final_use_binding(mutation).expect("binding");
@@ -247,6 +352,39 @@ fn owner_freezes_policy_and_evaluates_without_caller_supplied_relaxations() {
     let receipt = fixture.owner.evaluate(contributions()).expect("evaluation");
     assert!(!fixture.owner.production_policy_digest().is_zero());
     assert_eq!(receipt.base.advisory_recommendation, Some(id("work")));
+}
+
+#[test]
+fn authenticated_owner_freezes_and_consumes_registered_numeric_generation() {
+    let (fixture, normalization_digest) = fixture_with_numeric_registry();
+    let registry_digest = fixture
+        .owner
+        .numeric_registry_digest()
+        .expect("configured registry digest");
+    let admitted = fixture
+        .owner
+        .admit_utility_signal(&numeric_signal(normalization_digest))
+        .expect("registered utility admission");
+    assert_eq!(admitted.registry_digest, registry_digest);
+    assert_eq!(admitted.admission.registry_digest, registry_digest);
+    assert_eq!(admitted.axis_values.len(), 1);
+    assert_eq!(admitted.axis_values[0].axis, id("success"));
+    assert_eq!(admitted.axis_values[0].value.raw(), 3_i64 << 30);
+    assert!(!admitted.admission.admission_digest.is_zero());
+}
+
+#[test]
+fn unconfigured_owner_cannot_claim_registry_admission() {
+    let fixture = fixture();
+    assert!(fixture.owner.numeric_registry_digest().is_none());
+    assert!(matches!(
+        fixture
+            .owner
+            .admit_utility_signal(&numeric_signal(digest("production-utility-normalization"))),
+        Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::RegistryNotConfigured
+        ))
+    ));
 }
 
 #[test]

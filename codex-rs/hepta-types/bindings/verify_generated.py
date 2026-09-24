@@ -44,6 +44,20 @@ for raw in (b"\x01", b"\x80"):
         pass
     else:
         raise SystemExit("generated Python binding admitted authority grant bits")
+for profile_id in ("constructor", "toString", "__proto__", "unknown-profile"):
+    try:
+        binding.numeric_profile(profile_id)
+    except ValueError:
+        pass
+    else:
+        raise SystemExit(f"generated Python binding admitted unknown numeric profile: {profile_id}")
+for variant in ("constructor", "toString", "__proto__", "Unknown"):
+    try:
+        binding.validate_id_profile("stable-id", variant)
+    except ValueError:
+        pass
+    else:
+        raise SystemExit(f"generated Python binding admitted unknown ID profile: {variant}")
 profile = binding.numeric_profile("signed-q32-nearest-ties-even-v1")
 assert int(profile["scale"]) == 1 << 32
 assert profile["rounding"] == "nearest-ties-even"

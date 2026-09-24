@@ -56,3 +56,13 @@ fn q32_raw_scale_compatibility_does_not_imply_arithmetic_compatibility() {
         "fixed-q32-toward-zero-v1"
     );
 }
+#[test]
+fn unknown_profile_names_reject_including_javascript_prototype_names() {
+    for profile_id in ["constructor", "toString", "__proto__", "unknown-profile"] {
+        assert_eq!(
+            NumericProfileV1::from_id(profile_id),
+            Err(NumericConversionError::UnknownProfile),
+            "profile {profile_id:?} must reject",
+        );
+    }
+}

@@ -282,7 +282,24 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
         profile: NumericProfileV1::SignedQ24NearestTiesEven,
         ..source.schema.clone()
     };
-    assert!(rescale_signal_registered(&source, &target, &registry).is_ok());
+    let (registered_output, registered_receipt) =
+        checked(rescale_signal_registered(&source, &target, &registry));
+    assert_eq!(registered_output.schema, target);
+    assert_eq!(
+        registered_receipt.registry_digest,
+        checked(registry.registry_digest())
+    );
+    assert!(!registered_receipt.admission_digest.is_zero());
+    assert_eq!(
+        registered_receipt.conversion.source_profile,
+        NumericProfileV1::HnmfPpmTowardZero
+    );
+    assert_eq!(
+        registered_receipt.conversion.target_profile,
+        NumericProfileV1::SignedQ24NearestTiesEven
+    );
+    let pure_receipt = checked(rescale_signal(&source, &target)).1;
+    assert_eq!(registered_receipt.conversion, pure_receipt);
 
     let missing_target_profile = crate::ContractRegistryV1::new_with_numeric_profiles(
         registry.entries().to_vec(),
