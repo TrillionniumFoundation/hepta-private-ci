@@ -157,7 +157,8 @@ impl ContractRegistryV1 {
                 return Err(RegistryError::DuplicateDefinition);
             }
         }
-        numeric_profiles.sort_unstable_by_key(|profile| profile.profile());
+        numeric_profiles
+            .sort_unstable_by_key(super::numeric_profile::NumericProfileDefinitionV1::profile);
         for pair in numeric_profiles.windows(2) {
             if pair[0].profile() == pair[1].profile() {
                 return Err(RegistryError::DuplicateNumericProfile);

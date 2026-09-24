@@ -907,7 +907,7 @@ mod tests {
                 .sign(&update.signing_bytes().unwrap())
                 .to_bytes()
                 .to_vec(),
-            update: update,
+            update,
         };
         let feed_verifier = FinalUseRevocationFeedVerifier::new(
             "revocation-distributor".into(),

@@ -8,6 +8,7 @@
 
 use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
+use crate::AuthorityLeaseWitnessRefV1;
 use crate::AuthorityTrustError;
 use crate::SystemAuthorityClock;
 use crate::VerifiedUseBoundaryV1;
@@ -729,14 +730,16 @@ impl AuthorityLeaseVerifier {
             now_unix_ms,
         )?;
         let witness = VerifiedUseTokenWitnessV1::authority_lease(
-            self.0.owner_id.clone(),
-            token.lease.lease_id.clone(),
             state.authority_epoch,
-            token.lease.revision,
-            state.store_revision,
             now_unix_ms,
             VerifiedUseBoundaryV1::DispatchEntry,
-            authority_lease_binding_witness_sha256(expected)?,
+            AuthorityLeaseWitnessRefV1 {
+                owner_id: self.0.owner_id.clone(),
+                lease_id: token.lease.lease_id.clone(),
+                lease_revision: token.lease.revision,
+                store_revision: state.store_revision,
+                binding_sha256: authority_lease_binding_witness_sha256(expected)?,
+            },
         );
         let result = dispatch_boundary(&witness);
         drop(state);
@@ -761,14 +764,16 @@ impl AuthorityLeaseVerifier {
             now_unix_ms,
         )?;
         Ok(VerifiedUseTokenWitnessV1::authority_lease(
-            self.0.owner_id.clone(),
-            token.lease.lease_id.clone(),
             state.authority_epoch,
-            token.lease.revision,
-            state.store_revision,
             now_unix_ms,
             VerifiedUseBoundaryV1::ConsumerEntry,
-            authority_lease_binding_witness_sha256(expected)?,
+            AuthorityLeaseWitnessRefV1 {
+                owner_id: self.0.owner_id.clone(),
+                lease_id: token.lease.lease_id.clone(),
+                lease_revision: token.lease.revision,
+                store_revision: state.store_revision,
+                binding_sha256: authority_lease_binding_witness_sha256(expected)?,
+            },
         ))
     }
 

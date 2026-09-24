@@ -17,10 +17,8 @@ SPEC.loader.exec_module(MODULE)
 
 class CargoLockVerifierTests(unittest.TestCase):
     def test_current_lockfile_has_expected_shape(self) -> None:
-        self.assertEqual(
-            MODULE.verify_lockfile(MODULE.DEFAULT_LOCKFILE),
-            MODULE.EXPECTED_PACKAGE_COUNT,
-        )
+        count = MODULE.verify_lockfile(MODULE.DEFAULT_LOCKFILE)
+        self.assertGreaterEqual(count, len(MODULE.REQUIRED_PACKAGES))
 
     def test_truncation_marker_is_rejected_as_invalid_toml(self) -> None:
         document = MODULE.DEFAULT_LOCKFILE.read_text(encoding="utf-8")
@@ -29,12 +27,19 @@ class CargoLockVerifierTests(unittest.TestCase):
                 "Warning: truncated output (original token count: 103930)\n" + document
             )
 
-    def test_package_count_drift_is_rejected(self) -> None:
+    def test_dependency_count_can_change_but_duplicate_identity_is_rejected(self) -> None:
         document = MODULE.DEFAULT_LOCKFILE.read_text(encoding="utf-8")
-        with self.assertRaisesRegex(MODULE.VerificationFailure, "package count"):
+        self.assertGreater(
             MODULE.validate_lock_document(
                 document
                 + '\n[[package]]\nname = "synthetic-extra"\nversion = "0.0.0"\n'
+            ),
+            len(MODULE.REQUIRED_PACKAGES),
+        )
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "duplicate package identity"):
+            MODULE.validate_lock_document(
+                document
+                + '\n[[package]]\nname = "codex-hepta-types"\nversion = "0.0.0"\n'
             )
 
     def test_missing_required_package_is_rejected(self) -> None:

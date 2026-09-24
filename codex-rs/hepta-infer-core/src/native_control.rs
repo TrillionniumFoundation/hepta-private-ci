@@ -711,10 +711,8 @@ impl NativeJournal {
                 record.state = NativeReservationState::Cancelling;
             }
             Event::Stop { reason, .. } => {
-                if !matches!(
-                    record.state,
-                    NativeReservationState::Reserved | NativeReservationState::Dispatching
-                ) || record.turn_id.is_some()
+                if record.state != NativeReservationState::Reserved
+                    || record.turn_id.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {

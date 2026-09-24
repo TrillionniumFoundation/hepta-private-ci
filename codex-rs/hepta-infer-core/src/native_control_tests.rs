@@ -486,6 +486,7 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
     terminal.status = NativeRunStatus::Completed;
     terminal.boundary_status = NativeBoundaryStatus::Quarantined;
     terminal.terminal_observed = true;
+    terminal.codex_terminal_correlation_digest = Some("d".repeat(64));
     let settled = control.settle_native("r1", terminal.clone()).unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
     assert!(settled.cancel_requested);

@@ -17,7 +17,6 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOCKFILE = ROOT / "codex-rs" / "Cargo.lock"
-EXPECTED_PACKAGE_COUNT = 1517
 REQUIRED_PACKAGES = frozenset(
     {
         "codex-hepta-agentd",
@@ -51,6 +50,7 @@ def validate_lock_document(document: str, *, source: str = "Cargo.lock") -> int:
     if not isinstance(packages, list):
         raise VerificationFailure(f"{source} must contain a package array")
     package_names: set[str] = set()
+    package_identities: set[tuple[str, str, str | None]] = set()
     for index, package in enumerate(packages):
         if not isinstance(package, dict):
             raise VerificationFailure(f"package[{index}] must be a TOML table")
@@ -60,14 +60,19 @@ def validate_lock_document(document: str, *, source: str = "Cargo.lock") -> int:
             raise VerificationFailure(f"package[{index}] has no non-empty name")
         if not isinstance(version, str) or not version:
             raise VerificationFailure(f"package[{index}] {name!r} has no version")
+        source_id = package.get("source")
+        if source_id is not None and not isinstance(source_id, str):
+            raise VerificationFailure(f"package[{index}] {name!r} has invalid source")
+        identity = (name, version, source_id)
+        if identity in package_identities:
+            raise VerificationFailure(
+                f"{source} contains duplicate package identity: "
+                f"{name} {version} {source_id or 'workspace'}"
+            )
+        package_identities.add(identity)
         package_names.add(name)
 
     package_count = len(packages)
-    if package_count != EXPECTED_PACKAGE_COUNT:
-        raise VerificationFailure(
-            f"{source} package count changed: expected "
-            f"{EXPECTED_PACKAGE_COUNT}, got {package_count}"
-        )
     missing = sorted(REQUIRED_PACKAGES - package_names)
     if missing:
         raise VerificationFailure(

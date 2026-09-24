@@ -128,27 +128,17 @@ impl VerifiedUseTokenWitnessV1 {
     }
 
     pub(crate) fn authority_lease(
-        owner_id: String,
-        lease_id: String,
         authority_epoch: u64,
-        lease_revision: u64,
-        store_revision: u64,
         verified_at_unix_ms: u64,
         boundary: VerifiedUseBoundaryV1,
-        binding_sha256: [u8; 32],
+        reference: AuthorityLeaseWitnessRefV1,
     ) -> Self {
         Self {
             schema_version: VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION,
             authority_epoch,
             verified_at_unix_ms,
             boundary,
-            authority_ref: VerifiedUseAuthorityRefV1::AuthorityLease(AuthorityLeaseWitnessRefV1 {
-                owner_id,
-                lease_id,
-                lease_revision,
-                store_revision,
-                binding_sha256,
-            }),
+            authority_ref: VerifiedUseAuthorityRefV1::AuthorityLease(reference),
         }
     }
 }
@@ -168,14 +158,16 @@ mod tests {
     #[test]
     fn witness_round_trip_is_evidence_only_and_strict() {
         let witness = VerifiedUseTokenWitnessV1::authority_lease(
-            "security-authority".into(),
-            "lease-1".into(),
             3,
-            7,
-            12,
             100,
             VerifiedUseBoundaryV1::ConsumerEntry,
-            [9; 32],
+            AuthorityLeaseWitnessRefV1 {
+                owner_id: "security-authority".into(),
+                lease_id: "lease-1".into(),
+                lease_revision: 7,
+                store_revision: 12,
+                binding_sha256: [9; 32],
+            },
         );
         witness.validate().unwrap();
         let encoded = serde_json::to_vec(&witness).unwrap();
