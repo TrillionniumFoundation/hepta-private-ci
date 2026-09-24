@@ -1,6 +1,6 @@
 name: Reviewer Cargo cache export
 
-# Split refresh: 2026-09-25T03:08+09:00
+# Split refresh pinned to lock-consistent source: 2026-09-25T03:17+09:00
 on:
   push:
     branches:
@@ -17,12 +17,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - name: Check out exact source
+      - name: Check out lock-consistent source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: f48affb14491854915fa7a2fa4156739cf324ac6
           persist-credentials: false
           fetch-depth: 1
+
+      - name: Verify exact cache source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "f48affb14491854915fa7a2fa4156739cf324ac6"
 
       - name: Install exact Rust toolchain
         shell: bash
