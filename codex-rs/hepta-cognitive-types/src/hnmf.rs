@@ -352,10 +352,7 @@ impl SpanRangeV1 {
             }
             (ModalityKindV1::GuiState, Self::GuiNode { .. }) => Ok(()),
             (ModalityKindV1::StructuredData, Self::JsonPointer { pointer }) => {
-                if !pointer.is_empty() && !pointer.starts_with('/') {
-                    return Err(HnmfContractError::Invalid("JSON pointer"));
-                }
-                validate_bounded(pointer, MAX_PATH_BYTES, "JSON pointer")
+                validate_json_pointer_v1(pointer)
             }
             (ModalityKindV1::Sensor, Self::SensorRange { start, end, unit }) => {
                 increasing(*start, *end, "sensor range")?;
@@ -431,8 +428,11 @@ impl ModalitySpanRefV1 {
 }
 
 /// Validate a modality span against the exact current asset manifest before
-/// any asset bytes are read. This closes unit-confusion and out-of-bounds
-/// selectors without making \`cognitive.types\` an asset authority.
+/// any asset bytes are read. This closes unit-confusion and numeric
+/// out-of-bounds selectors without making \`cognitive.types\` an asset
+/// authority. AST paths, GUI node IDs and JSON pointers are structurally
+/// validated here, but their existence must be checked by the authoritative
+/// asset owner through [`validate_span_for_asset_access_v1`].
 pub fn validate_span_against_manifest_v1(
     manifest: &AssetManifestV1,
     span: &ModalitySpanRefV1,
@@ -513,6 +513,38 @@ pub fn validate_span_against_manifest_v1(
         ) if end <= sample_count && span_unit == unit => Ok(()),
         _ => Err(HnmfContractError::Invalid("span exceeds asset extent")),
     }
+}
+
+/// Authoritative existence check for symbolic selectors. Implementations remain
+/// owned by the exact asset provider; this contract library never opens assets
+/// or treats a structurally valid selector as proof that the target exists.
+pub trait AssetSelectorResolverV1 {
+    fn selector_exists(
+        &self,
+        manifest: &AssetManifestV1,
+        span: &ModalitySpanRefV1,
+    ) -> Result<bool, HnmfContractError>;
+}
+
+/// Validate a span at the asset-access boundary. Numeric ranges are completely
+/// checked by the manifest. Symbolic AST, GUI and JSON selectors additionally
+/// require the exact asset owner to affirm that the selector exists.
+pub fn validate_span_for_asset_access_v1<R: AssetSelectorResolverV1 + ?Sized>(
+    manifest: &AssetManifestV1,
+    span: &ModalitySpanRefV1,
+    resolver: &R,
+) -> Result<(), HnmfContractError> {
+    validate_span_against_manifest_v1(manifest, span)?;
+    if matches!(
+        &span.range,
+        SpanRangeV1::AstPath { .. }
+            | SpanRangeV1::GuiNode { .. }
+            | SpanRangeV1::JsonPointer { .. }
+    ) && !resolver.selector_exists(manifest, span)?
+    {
+        return Err(HnmfContractError::Missing("asset selector"));
+    }
+    Ok(())
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -821,6 +853,32 @@ pub(crate) fn validate_text(
     if value.trim().is_empty() || value.len() > maximum_bytes || value.chars().any(char::is_control)
     {
         return Err(HnmfContractError::Invalid(name));
+    }
+    Ok(())
+}
+
+fn validate_json_pointer_v1(pointer: &str) -> Result<(), HnmfContractError> {
+    validate_bounded(pointer, MAX_PATH_BYTES, "JSON pointer")?;
+    if pointer.is_empty() {
+        return Ok(());
+    }
+    if !pointer.starts_with('/') {
+        return Err(HnmfContractError::Invalid("JSON pointer"));
+    }
+    let bytes = pointer.as_bytes();
+    let mut index = 0usize;
+    while index < bytes.len() {
+        if bytes[index] == b'~' {
+            let Some(escape) = bytes.get(index + 1) else {
+                return Err(HnmfContractError::Invalid("JSON pointer escape"));
+            };
+            if !matches!(escape, b'0' | b'1') {
+                return Err(HnmfContractError::Invalid("JSON pointer escape"));
+            }
+            index += 2;
+        } else {
+            index += 1;
+        }
     }
     Ok(())
 }

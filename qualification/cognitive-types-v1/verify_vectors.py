@@ -298,6 +298,62 @@ def semantic_digest(contract: str, payload: object) -> str:
     ).hexdigest()
 
 
+def verify_negative_case(case: dict[str, object]) -> None:
+    name = case.get("name")
+    contract = case.get("contract")
+    wire = case.get("wire")
+    if not isinstance(name, str) or not isinstance(contract, str) or not isinstance(wire, str):
+        raise SystemExit("invalid negative-vector metadata")
+    envelope = json.loads(wire)
+    if canonical(envelope).decode("utf-8") != wire:
+        raise SystemExit(f"negative vector is not canonical JSON: {name}")
+    if envelope.get("contract") != contract or envelope.get("schemaVersion") != 1:
+        raise SystemExit(f"negative vector identity mismatch: {name}")
+    payload = envelope.get("payload")
+    if not isinstance(payload, dict):
+        raise SystemExit(f"negative vector payload is not an object: {name}")
+
+    if name == "duplicate-selected-event-logical-identity":
+        identities = [(row["eventId"], row["revision"]) for row in payload["selectedEvents"]]
+        invalid = len(identities) != len(set(identities))
+    elif name == "duplicate-active-node-logical-identity":
+        identities = [row["nodeId"] for row in payload["activeNodes"]]
+        invalid = len(identities) != len(set(identities))
+    elif name == "conflicting-weight-proposal-logical-identity":
+        identities = [
+            (row["sourceNodeId"], row["targetNodeId"], row["relation"])
+            for row in payload["weightProposals"]
+        ]
+        invalid = len(identities) != len(set(identities))
+    elif name == "conflicting-threshold-proposal-logical-identity":
+        identities = [row["nodeId"] for row in payload["thresholdProposals"]]
+        invalid = len(identities) != len(set(identities))
+    elif name == "duplicate-topology-node-logical-identity":
+        identities = [row["nodeId"] for row in payload["typedNodesEdges"]["nodes"]]
+        invalid = len(identities) != len(set(identities))
+    elif name == "invalid-json-pointer-escape":
+        pointer = payload["range"]["pointer"]
+        index = 0
+        invalid = False
+        while index < len(pointer):
+            if pointer[index] == "~":
+                if index + 1 >= len(pointer) or pointer[index + 1] not in "01":
+                    invalid = True
+                    break
+                index += 2
+            else:
+                index += 1
+    elif name == "retired-synapse-self-loop":
+        invalid = any(
+            row["sourceNodeId"] == row["targetNodeId"]
+            for row in payload["retiredSynapses"]
+        )
+    else:
+        raise SystemExit(f"unknown negative-vector case: {name}")
+    if not invalid:
+        raise SystemExit(f"negative vector does not exhibit its declared violation: {name}")
+
+
 def main() -> int:
     wire = (ROOT / "codex-rs/hepta-cognitive-types/src/wire.rs").read_text(
         encoding="utf-8"
@@ -309,6 +365,33 @@ def main() -> int:
         (ROOT / "docs/contracts/PROTOCOL_SCHEMAS.json").read_text(encoding="utf-8")
     )
     registered = {row["id"]: row for row in registry["protocols"]}
+
+    negative_document = json.loads(
+        (ROOT / "qualification/cognitive-types-v1/negative-vectors.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    if (
+        negative_document.get("schema")
+        != "hepta.cognitive-types.negative-vectors.v1"
+        or negative_document.get("schemaVersion") != 1
+    ):
+        raise SystemExit("invalid cognitive.types negative-vector document identity")
+    negative_cases = negative_document.get("cases")
+    if not isinstance(negative_cases, list) or len(negative_cases) != 7:
+        raise SystemExit("cognitive.types negative-vector coverage drift")
+    negative_names: set[str] = set()
+    for case in negative_cases:
+        if not isinstance(case, dict):
+            raise SystemExit("cognitive.types negative-vector case must be an object")
+        verify_negative_case(case)
+        name = case["name"]
+        if name in negative_names:
+            raise SystemExit(f"duplicate negative-vector name: {name}")
+        negative_names.add(name)
+
+    if "negative-vectors.json" not in tests:
+        raise SystemExit("Rust negative-vector harness is missing")
 
     observed: dict[str, str] = {}
     envelope_sizes: dict[str, int] = {}
@@ -339,6 +422,7 @@ def main() -> int:
             {
                 "status": "PASS_COGNITIVE_TYPES_V1_CROSS_LANGUAGE_VECTOR",
                 "vectorCount": len(VECTORS),
+                "negativeVectorCount": len(negative_cases),
                 "digests": observed,
                 "canonicalEnvelopeBytes": envelope_sizes,
             },

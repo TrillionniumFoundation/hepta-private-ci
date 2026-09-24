@@ -63,6 +63,10 @@ mod tests {
             std::any::type_name::<TopologyProposalV1>(),
             std::any::type_name::<ForgetPropagationReceiptV1>(),
         ];
-        assert!(canonical_types.iter().all(|name| name.contains("codex_hepta_cognitive_types")));
+        assert!(
+            canonical_types
+                .iter()
+                .all(|name| name.contains("codex_hepta_cognitive_types"))
+        );
     }
 }
