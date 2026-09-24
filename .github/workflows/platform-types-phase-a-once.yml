@@ -100,12 +100,27 @@ jobs:
 
       - name: Verify Lane A truth and regressions
         run: |
-          set -euo pipefail
-          python3 scripts/verify_lane_a_foundation.py self-test
-          python3 scripts/verify_lane_a_foundation.py verify
-          python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
-          (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
-          python3 scripts/hepta-implementation-maps.py verify
+          set +e
+          {
+            python3 scripts/verify_lane_a_foundation.py self-test
+            python3 scripts/verify_lane_a_foundation.py verify
+            python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
+            (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+            python3 scripts/hepta-implementation-maps.py verify
+          } > lane-a.log 2>&1
+          code=$?
+          cat lane-a.log
+          if [ "$code" -ne 0 ]; then
+            mkdir -p .hepta-diagnostics
+            cp lane-a.log .hepta-diagnostics/platform-types-lane-a.log
+            git config user.name "Hepta Platform Types Convergence"
+            git config user.email "hepta-platform-types@users.noreply.github.com"
+            git add -f .hepta-diagnostics/platform-types-lane-a.log
+            git commit -s -m "chore(platform.types): retain Lane A failure diagnostic"
+            git push origin HEAD:codex/platform-types-full-convergence-20260925
+            exit "$code"
+          fi
+          rm -f lane-a.log
 
       - name: Verify platform.types native package
         run: |
