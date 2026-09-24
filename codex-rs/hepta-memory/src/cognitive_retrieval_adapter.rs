@@ -34,6 +34,7 @@ use codex_hepta_types::StableId;
 use crate::CognitiveStoreError;
 use crate::MAX_RETRIEVAL_CHANNEL_CANDIDATES;
 use crate::MemoryRevalidationBinding;
+use crate::ObservedRetrievalCandidate;
 use crate::RetrievalChannel;
 use crate::RetrievalChannelObservation;
 use crate::RetrievalChannelRank;
@@ -43,7 +44,6 @@ use crate::RetrievalObservation;
 const OWNER_GENERATION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-owner-generation.v1";
 const OWNER_SUPPORT_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-support.v1";
 const OWNER_POLICY_ID: &str = "policy:sqlite-owner-retrieval-v2";
-const OWNER_CONTRADICTION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-contradiction-group.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RetrievalExecutionContextV1 {
@@ -212,9 +212,10 @@ pub(crate) fn generated_input_from_owner_observation(
                     &record,
                     *channel_rank,
                 ),
-                contradiction_group_digest: (semantic_channel
-                    == RetrievalChannelV1::ContradictionSupport)
-                    .then(|| owner_contradiction_group_digest(owner_observation_digest)),
+                contradiction_group_digest: exact_contradiction_group(
+                    observed,
+                    semantic_channel,
+                )?,
                 generation_vector_digest: snapshot_key.vector_digest,
             });
         }
@@ -339,6 +340,31 @@ fn exact_snapshot_record(
         })
 }
 
+fn exact_contradiction_group(
+    observed: &ObservedRetrievalCandidate,
+    channel: RetrievalChannelV1,
+) -> Result<Option<Digest32>, CognitiveStoreError> {
+    if channel != RetrievalChannelV1::ContradictionSupport {
+        return Ok(None);
+    }
+    if !observed.contradiction_groups_complete {
+        return Err(CognitiveStoreError::Conflict(
+            "contradiction relation groups are incomplete for the owner candidate".to_string(),
+        ));
+    }
+    let [group] = observed.contradiction_group_sha256s.as_slice() else {
+        return Err(CognitiveStoreError::Conflict(format!(
+            "contradiction candidate requires exactly one canonical relation group, observed {}",
+            observed.contradiction_group_sha256s.len()
+        )));
+    };
+    group.as_str().parse().map(Some).map_err(|error| {
+        CognitiveStoreError::Corrupt(format!(
+            "invalid canonical contradiction relation digest: {error}"
+        ))
+    })
+}
+
 fn reciprocal_rank_score(rank: u32) -> Result<FixedQ32, CognitiveStoreError> {
     if rank == 0 || usize::try_from(rank).unwrap_or(usize::MAX) > MAX_RETRIEVAL_CHANNEL_CANDIDATES {
         return Err(CognitiveStoreError::Corrupt(
@@ -420,13 +446,6 @@ const fn owner_channel_code(channel: RetrievalChannel) -> u8 {
         RetrievalChannel::Procedural => 5,
         RetrievalChannel::ContradictionSupport => 6,
     }
-}
-
-fn owner_contradiction_group_digest(observation_digest: Digest32) -> Digest32 {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(OWNER_CONTRADICTION_DOMAIN);
-    bytes.extend_from_slice(observation_digest.as_array());
-    Digest32::of_bytes(&bytes)
 }
 
 #[cfg(test)]
