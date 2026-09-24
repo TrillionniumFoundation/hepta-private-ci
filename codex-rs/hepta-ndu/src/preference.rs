@@ -118,7 +118,11 @@ pub enum SolveDisposition {
 pub struct NduSolverTerminationReceipt {
     pub disposition: SolveDisposition,
     pub iterations: u32,
+    /// Residual reported by the terminal emitted iteration, or by the initial
+    /// state when the solver is already converged and emits no iteration.
     pub terminal_residual_raw: i64,
+    /// Maximum residual among emitted iteration receipts. For a zero-iteration
+    /// no-op this is the validated initial residual.
     pub maximum_residual_raw: i64,
     pub projection_count: u32,
     pub predecessor_digest: Digest32,
@@ -278,7 +282,7 @@ pub fn solve_preference_target(
 
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    let mut maximum_residual_raw = initial_residual_raw;
+    let mut maximum_residual_raw = 0_i64;
 
     for iteration in 1..=MAX_ITERATIONS {
         let (next, receipt) = update_once(&state, &target, eta, iteration)?;
