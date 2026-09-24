@@ -15,6 +15,7 @@ pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
+pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;

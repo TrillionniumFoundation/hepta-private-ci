@@ -91,6 +91,8 @@ pub struct AgentdConfig {
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
+    intelligence_invocation_provider:
+        Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
 }
 
 impl AgentdConfig {
@@ -212,6 +214,7 @@ impl AgentdConfig {
             plasticity_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
+            intelligence_invocation_provider: None,
         })
     }
 
@@ -507,6 +510,28 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>> {
         self.intelligence_product_runner.clone()
+    }
+
+    /// Attach the host-owned provider that derives seven-owner inputs for the
+    /// existing ObjectiveStart product ingress.  The provider is never
+    /// constructed from request bytes.
+    pub fn with_intelligence_invocation_provider(
+        mut self,
+        provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
+    ) -> Result<Self, AgentdError> {
+        if self.intelligence_invocation_provider.is_some() {
+            return Err(AgentdError::Invalid(
+                "intelligence invocation provider already configured".to_string(),
+            ));
+        }
+        self.intelligence_invocation_provider = Some(provider);
+        Ok(self)
+    }
+
+    pub(crate) fn intelligence_invocation_provider(
+        &self,
+    ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
+        self.intelligence_invocation_provider.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

@@ -33,6 +33,8 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
+    pub(crate) intelligence_invocation:
+        std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -127,6 +129,7 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
+            intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
@@ -563,6 +566,107 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+    pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
+        self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
+    }
+
+    /// Prepare the exact durable Objective through the configured canonical
+    /// seven-owner composition, then atomically freeze its run/context identity
+    /// into the sole Agentd run coordinator. None is explicit compatibility
+    /// mode: both the runner and host-owned invocation provider must be present
+    /// before canonical execution is attempted or advertised.
+    pub(crate) async fn start_canonical_intelligence(
+        &self,
+        record: &RunStartRecordV1,
+    ) -> Result<Option<crate::AgentdIntelligenceAdmittedOutcomeV1>, AgentdError> {
+        let (Some(runner), Some(provider)) = (
+            self.intelligence_product.get(),
+            self.intelligence_invocation.get(),
+        ) else {
+            return Ok(None);
+        };
+
+        let invocation = provider.build(&self.identity, record)?;
+        invocation.validate(&self.identity, record)?;
+
+        // Freeze only the small immutable composition while holding the run
+        // lock. Owner execution is allowed to block without monopolizing run
+        // lifecycle operations.
+        let composition = self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .composition()
+            .clone();
+        let outcome = runner
+            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "canonical intelligence preparation failed: {error}"
+                ))
+            })?;
+
+        match outcome {
+            crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+                // Owner preparation is asynchronous. Revalidate the durable
+                // signed Objective and Fleet fence again after it completes,
+                // twice as the compatibility path does at its final boundary.
+                let first_now = self.require_current_run_start(record)?;
+                let second_now = self.require_current_run_start(record)?;
+                let now_ms = first_now.max(second_now);
+                let snapshot = prepared.run_snapshot();
+                let attachment = prepared.context_attachment();
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let admitted = runs
+                    .start_run(
+                        now_ms,
+                        crate::RunSnapshot {
+                            run_id: snapshot.run_id,
+                            request_digest: snapshot.request_digest,
+                            objective_digest: snapshot.objective_digest,
+                            body_digest: snapshot.body_digest,
+                            artifact_set_digest: snapshot.artifact_set_digest,
+                            authority_epoch: snapshot.authority_epoch,
+                            generation: snapshot.generation,
+                            fence_digest: snapshot.fence_digest,
+                            deadline_ms: snapshot.deadline_ms,
+                        },
+                    )
+                    .map_err(run_error)?;
+                let run_receipt = runs
+                    .attach_context(
+                        now_ms,
+                        admitted.revision,
+                        crate::ContextAttachment {
+                            run_id: attachment.run_id,
+                            request_digest: attachment.request_digest,
+                            objective_digest: attachment.objective_digest,
+                            body_digest: attachment.body_digest,
+                            artifact_set_digest: attachment.artifact_set_digest,
+                            authority_epoch: attachment.authority_epoch,
+                            generation: attachment.generation,
+                            fence_digest: attachment.fence_digest,
+                            deadline_ms: attachment.deadline_ms,
+                            context_digest: attachment.context_digest,
+                            compilation_receipt_digest: attachment.compilation_receipt_digest,
+                        },
+                    )
+                    .map_err(run_error)?;
+                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
+                    prepared,
+                    run_receipt,
+                }))
+            }
+            crate::AgentdIntelligenceProductOutcomeV1::Abstained => {
+                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained))
+            }
+            crate::AgentdIntelligenceProductOutcomeV1::SlowPath => {
+                Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath))
+            }
+        }
+    }
+
     /// Revalidate a durable run-start record against the current owner trust,
     /// current Fleet generation and exact Agentd fence, then project it into
     /// the sole daemon-owned run coordinator.
@@ -579,6 +683,13 @@ impl AgentdState {
             .ok_or_else(|| {
                 AgentdError::Protocol(format!("durable run-start {run_id} is not published"))
             })?;
+        self.start_current_run_start_record(record)
+    }
+
+    pub(crate) fn start_current_run_start_record(
+        &self,
+        record: &RunStartRecordV1,
+    ) -> Result<RunReceipt, AgentdError> {
         let now_ms = self.require_current_run_start(record)?;
         // Re-read both mutable authority domains immediately before mutation.
         // This is intentionally redundant: a trust/fleet change during the

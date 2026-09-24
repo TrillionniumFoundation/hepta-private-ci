@@ -62,6 +62,19 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         coordinator: &crate::AgentRunCoordinator,
         request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let composition = coordinator.composition().clone();
+        self.prepare_for_composition(&composition, request, inputs)
+            .await
+    }
+
+    /// Run the seven-owner preparation against one frozen Agentd composition
+    /// without retaining the run-coordinator mutex across owner execution.
+    pub async fn prepare_for_composition(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let candidate_ids = request
@@ -83,7 +96,6 @@ impl AgentdIntelligenceProductRunnerV1 {
         // Freeze the identity of the existing owner, never a new coordinator
         // or a caller-selected body/model generation. Agentd validates this
         // fence again at the actual admission and attachment boundary.
-        let composition = coordinator.composition();
         let generation = composition.agentd_generation;
         let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
         fence_bytes.extend_from_slice(composition.agent_id.as_bytes());

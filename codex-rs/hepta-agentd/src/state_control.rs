@@ -131,6 +131,16 @@ impl AgentdState {
                             .map_err(AgentdError::Protocol)?,
                     );
                 }
+                if self.canonical_intelligence_enabled() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1,
+                            1,
+                            0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 AgentdPayload::Capabilities(
                     crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Protocol)?,
                 )
@@ -204,7 +214,7 @@ impl AgentdState {
                         },
                     );
                 };
-                match host.submit(self, request, current_generation)? {
+                match host.submit(self, request, current_generation).await? {
                     crate::objective_runtime::ObjectiveStartResult::Admitted(receipt) => {
                         AgentdPayload::ObjectiveRun(receipt)
                     }
