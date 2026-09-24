@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -236,6 +236,34 @@
       "designOperation": "predict_transition",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "freeze_terminal_cell_from_owner_v1",
+      "designOperation": "freeze_terminal_cell_from_owner_v1",
+      "nativeSymbol": "pub fn freeze_terminal_cell_from_owner_v1(",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "fit_terminal_cell_from_owner_v1",
+      "designOperation": "fit_terminal_cell_from_owner_v1",
+      "nativeSymbol": "pub fn fit_terminal_cell_from_owner_v1(",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -266,8 +294,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -288,7 +316,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "921953fa91660561ffe9492582b2bca8bceffd98"
+      "object": "1a6705c8e906334df2430d5bf18febf1224ba3f9"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
@@ -308,7 +336,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
-      "object": "f9b2ce61d08e33b0a0f39e9492272ff1757376d9"
+      "object": "4ab6f3074524e87a66777e9dfbb34b1426adbe72"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/loaded.rs",
@@ -324,7 +352,7 @@
     },
     {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
-      "object": "dfe10b0b4d32b48182def5c7b13120ff6297259b"
+      "object": "9fa795685e26a6074e893d4d8ae6f514c554d2e3"
     }
   ]
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -213,6 +213,48 @@
       "nativeSymbol": "pub struct AgentdNeuronOwner",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "operation": "shared_terminal_cell_train",
+      "designOperation": "shared_terminal_cell_train",
+      "nativeSymbol": "pub async fn train(",
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "shared_terminal_cell_load",
+      "designOperation": "shared_terminal_cell_load",
+      "nativeSymbol": "pub async fn load(",
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "shared_terminal_cell_predict",
+      "designOperation": "shared_terminal_cell_predict",
+      "nativeSymbol": "pub async fn predict(",
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -284,7 +326,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "07c0dc1122372f9eb9d4be3ef4baf7b0d2ee94dd"
+      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -336,7 +378,7 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "1c6ddbdb11eccef235df6e9f6456084825580041"
+      "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
     }
   ]
 }
