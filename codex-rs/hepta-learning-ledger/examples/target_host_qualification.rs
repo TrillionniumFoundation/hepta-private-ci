@@ -210,7 +210,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         reopened.verify_active_decision_binding(&request.record_id, &request.episode_id)?;
         lookup_micros.push(elapsed_micros(started));
     }
-    let evidence = sign(reopened.verifier(), 0, &decision_signing_payload_v2(&first)?)?;
+    let evidence = sign(
+        reopened.verifier(),
+        0,
+        &decision_signing_payload_v2(&first)?,
+    )?;
     let mut retry_micros = Vec::with_capacity(32);
     for _ in 0..32 {
         let started = Instant::now();
@@ -224,8 +228,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let mut substituted = first;
     substituted.support_digest = digest("substituted-after-recovery");
-    let evidence = sign(reopened.verifier(), 0, &decision_signing_payload_v2(&substituted)?)?;
-    if reopened.append_decision(Digest32::ZERO, substituted, &evidence, NOW).is_ok() {
+    let evidence = sign(
+        reopened.verifier(),
+        0,
+        &decision_signing_payload_v2(&substituted)?,
+    )?;
+    if reopened
+        .append_decision(Digest32::ZERO, substituted, &evidence, NOW)
+        .is_ok()
+    {
         return Err("same-ID different-body retry was accepted".into());
     }
     if reopened.witness_frontier()? != frontier || directory_bytes(&root)? != storage_bytes {

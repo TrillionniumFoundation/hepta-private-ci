@@ -132,11 +132,7 @@ fn write_file(path: &Path, file: &SignedMemoryRetrievalContextFileV1) {
     }
 }
 
-fn provider(
-    root: &Path,
-    path: &Path,
-    key: &SigningKey,
-) -> FileCurrentMemoryRetrievalContextV1 {
+fn provider(root: &Path, path: &Path, key: &SigningKey) -> FileCurrentMemoryRetrievalContextV1 {
     FileCurrentMemoryRetrievalContextV1::new(
         path.to_path_buf(),
         AgentId::parse(AGENT_ID).expect("agent id"),

@@ -110,13 +110,23 @@ fn valid_window_boundaries_and_cloned_verifier_keep_the_same_limit() {
     for time in [20, 50, 90] {
         assert!(
             verifier
-                .verify(LearningEvidenceRoleV1::Generator, &evidence, b"payload", time)
+                .verify(
+                    LearningEvidenceRoleV1::Generator,
+                    &evidence,
+                    b"payload",
+                    time
+                )
                 .is_ok()
         );
     }
     for time in [19, 91] {
         assert_eq!(
-            verifier.verify(LearningEvidenceRoleV1::Generator, &evidence, b"payload", time),
+            verifier.verify(
+                LearningEvidenceRoleV1::Generator,
+                &evidence,
+                b"payload",
+                time
+            ),
             Err(SignedEvidenceError::ValidityWindow)
         );
     }

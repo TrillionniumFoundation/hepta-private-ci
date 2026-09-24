@@ -216,9 +216,7 @@ impl CognitiveStore {
         let groups = rows
             .into_iter()
             .take(MAX_CONTRADICTION_GROUPS_PER_CANDIDATE)
-            .map(|canonical_relation_id| {
-                Sha256Digest::for_bytes(canonical_relation_id.as_bytes())
-            })
+            .map(|canonical_relation_id| Sha256Digest::for_bytes(canonical_relation_id.as_bytes()))
             .collect();
         Ok((groups, complete))
     }

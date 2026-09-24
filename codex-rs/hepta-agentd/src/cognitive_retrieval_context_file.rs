@@ -271,11 +271,14 @@ impl FileCurrentMemoryRetrievalContextV1 {
 
     fn load(
         &self,
-    ) -> Result<(
-        SignedMemoryRetrievalContextFileV1,
-        RetrievalExecutionContextV1,
-        Digest32,
-    ), String> {
+    ) -> Result<
+        (
+            SignedMemoryRetrievalContextFileV1,
+            RetrievalExecutionContextV1,
+            Digest32,
+        ),
+        String,
+    > {
         let bytes = read_owner_file(&self.path, &self.owner_root)?;
         let file: SignedMemoryRetrievalContextFileV1 = serde_json::from_slice(&bytes)
             .map_err(|error| format!("invalid retrieval context JSON: {error}"))?;
@@ -452,9 +455,7 @@ fn decode_context(
             })
             .collect(),
         maximum_results: file.retrieval_policy.maximum_results,
-        minimum_total_score: FixedQ32::from_raw(
-            file.retrieval_policy.minimum_total_score_raw_q32,
-        ),
+        minimum_total_score: FixedQ32::from_raw(file.retrieval_policy.minimum_total_score_raw_q32),
         maximum_ood: ProbabilityQ32::from_raw(file.retrieval_policy.maximum_ood_raw_q32)
             .map_err(|error| format!("invalid maximum_ood_raw_q32: {error}"))?,
         minimum_distinct_channels: file.retrieval_policy.minimum_distinct_channels,
@@ -474,10 +475,7 @@ fn decode_context(
                     .iter()
                     .map(|support| {
                         Ok(EngramSupportV1 {
-                            record_id: stable_id(
-                                &support.record_id,
-                                "engram support record_id",
-                            )?,
+                            record_id: stable_id(&support.record_id, "engram support record_id")?,
                             record_revision: Revision::new(support.record_revision).map_err(
                                 |error| format!("invalid engram support revision: {error}"),
                             )?,
@@ -497,14 +495,8 @@ fn decode_context(
         .iter()
         .map(|synapse| {
             Ok(SynapseV1 {
-                source_node_id: stable_id(
-                    &synapse.source_node_id,
-                    "synapse source_node_id",
-                )?,
-                target_node_id: stable_id(
-                    &synapse.target_node_id,
-                    "synapse target_node_id",
-                )?,
+                source_node_id: stable_id(&synapse.source_node_id, "synapse source_node_id")?,
+                target_node_id: stable_id(&synapse.target_node_id, "synapse target_node_id")?,
                 relation: synapse.relation.into(),
                 weight: FixedQ32::from_raw(synapse.weight_raw_q32),
                 support_digest: digest(&synapse.support_digest, "synapse support_digest")?,
@@ -540,10 +532,7 @@ fn decode_context(
     Ok(RetrievalExecutionContextV1 {
         generation_vector,
         objective_digest: digest(&file.objective_digest, "objective_digest")?,
-        approved_context_digest: digest(
-            &file.approved_context_digest,
-            "approved_context_digest",
-        )?,
+        approved_context_digest: digest(&file.approved_context_digest, "approved_context_digest")?,
         cue_profile_digest: digest(&file.cue_profile_digest, "cue_profile_digest")?,
         retrieval_policy,
         engram_snapshot,
@@ -556,8 +545,7 @@ fn stable_id(value: &str, label: &str) -> Result<StableId, String> {
 }
 
 fn digest(value: &str, label: &str) -> Result<Digest32, String> {
-    let value =
-        Digest32::from_str(value).map_err(|error| format!("invalid {label}: {error}"))?;
+    let value = Digest32::from_str(value).map_err(|error| format!("invalid {label}: {error}"))?;
     if value.is_zero() {
         return Err(format!("invalid {label}: zero digest"));
     }
@@ -615,11 +603,13 @@ fn read_owner_file(path: &Path, owner_root: &Path) -> Result<Vec<u8>, String> {
 
     if !path.is_absolute()
         || path.parent() != Some(owner_root)
-        || owner_root.canonicalize().map_err(|error| error.to_string())? != owner_root
+        || owner_root
+            .canonicalize()
+            .map_err(|error| error.to_string())?
+            != owner_root
     {
         return Err(
-            "retrieval context file must be a direct child of the canonical owner root"
-                .to_string(),
+            "retrieval context file must be a direct child of the canonical owner root".to_string(),
         );
     }
     let root = std::fs::metadata(owner_root).map_err(|error| error.to_string())?;

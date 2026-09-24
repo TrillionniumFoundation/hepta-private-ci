@@ -147,14 +147,8 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .collect::<Result<Vec<_>, _>>()?;
     record_ids.sort();
     record_ids.dedup();
-    let candidate_cut = PagedRetrievalOwnerCutV1::acquire(
-        store,
-        &access,
-        &scope,
-        now,
-        record_ids.clone(),
-    )
-    .await?;
+    let candidate_cut =
+        PagedRetrievalOwnerCutV1::acquire(store, &access, &scope, now, record_ids.clone()).await?;
     let admission_read = candidate_cut
         .read_ids(ReadIdsRequestV1 {
             snapshot_digest: candidate_cut.snapshot().snapshot_digest,
@@ -436,14 +430,9 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
 
     // A concurrent correction, deletion, changed citation, expiry or restored
     // older database must not leak a stale projection into the response.
-    let current_selected_cut = PagedRetrievalOwnerCutV1::acquire(
-        store,
-        &access,
-        &scope,
-        now_seconds()?,
-        selected_ids,
-    )
-    .await?;
+    let current_selected_cut =
+        PagedRetrievalOwnerCutV1::acquire(store, &access, &scope, now_seconds()?, selected_ids)
+            .await?;
     if current_selected_cut.cut_digest() != selected_cut.cut_digest() {
         return Err(CognitiveStoreError::Conflict(
             "cognitive retrieval owner cut changed before publication".to_string(),
@@ -611,14 +600,8 @@ pub(crate) async fn revalidate_with_retrieval_context(
                 .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let cut = PagedRetrievalOwnerCutV1::acquire(
-        store,
-        &access,
-        &scope,
-        now_seconds()?,
-        record_ids,
-    )
-    .await?;
+    let cut = PagedRetrievalOwnerCutV1::acquire(store, &access, &scope, now_seconds()?, record_ids)
+        .await?;
     if cut.snapshot().snapshot_digest != expected_snapshot {
         return Err(CognitiveStoreError::Conflict(
             "cognitive context snapshot is stale".to_string(),

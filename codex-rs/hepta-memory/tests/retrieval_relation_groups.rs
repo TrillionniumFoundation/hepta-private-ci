@@ -40,21 +40,17 @@ async fn store(
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).expect("create fleet root");
     let fleet = std::fs::canonicalize(&fleet).expect("canonical fleet root");
-    let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix}"))
-        .expect("agent identity");
+    let owner =
+        AgentId::parse(format!("00000000-0000-4000-8000-{suffix}")).expect("agent identity");
     let layout = HeptaFleetRoot::parse(fleet)
         .expect("fleet root")
         .layout()
         .agent(&owner);
-    let store = CognitiveStore::open(&layout).await.expect("cognitive store");
+    let store = CognitiveStore::open(&layout)
+        .await
+        .expect("cognitive store");
     let access = CognitiveAccess::agent_private(owner.clone());
-    (
-        temp,
-        owner,
-        store,
-        access,
-        CognitiveScope::AgentPrivate,
-    )
+    (temp, owner, store, access, CognitiveScope::AgentPrivate)
 }
 
 async fn remember_relations(
@@ -123,8 +119,7 @@ fn execution_context(
     let common = Digest32::of_bytes(b"relation-group-integration-test");
     let generation_vector = codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1 {
         scope_id: cut.scope_id().clone(),
-        purpose_id: StableId::new("purpose:relation-group-integration-test")
-            .expect("purpose id"),
+        purpose_id: StableId::new("purpose:relation-group-integration-test").expect("purpose id"),
         memory_ledger_frontier: cut.frontiers().memory,
         knowledge_fact_frontier: cut.frontiers().knowledge_facts,
         tombstone_frontier: cut.frontiers().tombstone,
@@ -154,8 +149,7 @@ fn execution_context(
             Vec::new(),
         )
         .expect("empty engram"),
-        dynamics_policy: EngramDynamicsPolicyV1::product_default()
-            .expect("engram dynamics policy"),
+        dynamics_policy: EngramDynamicsPolicyV1::product_default().expect("engram dynamics policy"),
     }
 }
 

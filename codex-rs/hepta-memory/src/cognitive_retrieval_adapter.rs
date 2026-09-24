@@ -212,10 +212,7 @@ pub(crate) fn generated_input_from_owner_observation(
                     &record,
                     *channel_rank,
                 ),
-                contradiction_group_digest: exact_contradiction_group(
-                    observed,
-                    semantic_channel,
-                )?,
+                contradiction_group_digest: exact_contradiction_group(observed, semantic_channel)?,
                 generation_vector_digest: snapshot_key.vector_digest,
             });
         }

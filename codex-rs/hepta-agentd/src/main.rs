@@ -76,10 +76,8 @@ fn main() -> anyhow::Result<()> {
                     intelligence_authority_verifying_key.is_none(),
                     "duplicate --intelligence-authority-verifying-key"
                 );
-                intelligence_authority_verifying_key = Some(parse_verifying_key_hex(
-                    path,
-                    "intelligence authority",
-                )?);
+                intelligence_authority_verifying_key =
+                    Some(parse_verifying_key_hex(path, "intelligence authority")?);
             } else if flag == "--memory-retrieval-context-file" {
                 anyhow::ensure!(
                     memory_retrieval_context_file.is_none(),
@@ -99,10 +97,8 @@ fn main() -> anyhow::Result<()> {
                     memory_retrieval_context_verifying_key.is_none(),
                     "duplicate --memory-retrieval-context-verifying-key"
                 );
-                memory_retrieval_context_verifying_key = Some(parse_verifying_key_hex(
-                    path,
-                    "memory retrieval context",
-                )?);
+                memory_retrieval_context_verifying_key =
+                    Some(parse_verifying_key_hex(path, "memory retrieval context")?);
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),

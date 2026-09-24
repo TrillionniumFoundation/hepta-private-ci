@@ -174,9 +174,13 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
         LearningEvidenceRoleV1::Evaluator,
         LearningEvidenceRoleV1::Observer,
     ];
-    let controllers = ["generator-controller", "evaluator-controller", observer_controller];
-    let principals: [AuthenticatedPrincipalV1; 3] = std::array::from_fn(|index| {
-        AuthenticatedPrincipalV1 {
+    let controllers = [
+        "generator-controller",
+        "evaluator-controller",
+        observer_controller,
+    ];
+    let principals: [AuthenticatedPrincipalV1; 3] =
+        std::array::from_fn(|index| AuthenticatedPrincipalV1 {
             principal_id: id(&format!("principal-{index}")),
             credential_chain_digest: d(&format!("chain-{index}")),
             signing_key_digest: Digest32::of_bytes(&keys[index].verifying_key().to_bytes()),
@@ -184,8 +188,7 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
             authority_epoch: 1,
             authenticated_at: 50,
             expires_at: 250,
-        }
-    });
+        });
     let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
         scope_digest: d("scope"),
         objective_digest: evidence_objective,
@@ -244,7 +247,11 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
 
 #[test]
 fn independent_same_objective_evidence_still_succeeds() {
-    assert!(fixture(d("objective"), "observer-controller").decide().is_ok());
+    assert!(
+        fixture(d("objective"), "observer-controller")
+            .decide()
+            .is_ok()
+    );
 }
 
 #[test]

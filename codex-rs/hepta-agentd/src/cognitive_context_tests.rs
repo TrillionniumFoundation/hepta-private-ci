@@ -221,15 +221,10 @@ async fn final_use_binds_complete_owner_cut_not_only_selected_memory_bytes() {
         .iter()
         .map(|item| StableId::new(item.memory_id.as_str()).unwrap())
         .collect::<Vec<_>>();
-    let before = PagedRetrievalOwnerCutV1::acquire(
-        &store,
-        &access,
-        &scope,
-        200,
-        selected_ids.clone(),
-    )
-    .await
-    .unwrap();
+    let before =
+        PagedRetrievalOwnerCutV1::acquire(&store, &access, &scope, 200, selected_ids.clone())
+            .await
+            .unwrap();
     assert_eq!(
         before.snapshot().snapshot_digest.to_string(),
         context.snapshot_digest
@@ -251,10 +246,9 @@ async fn final_use_binds_complete_owner_cut_not_only_selected_memory_bytes() {
         )
         .await
         .unwrap();
-    let after =
-        PagedRetrievalOwnerCutV1::acquire(&store, &access, &scope, 200, selected_ids)
-            .await
-            .unwrap();
+    let after = PagedRetrievalOwnerCutV1::acquire(&store, &access, &scope, 200, selected_ids)
+        .await
+        .unwrap();
     assert_eq!(
         after.snapshot().snapshot_digest,
         before.snapshot().snapshot_digest,
