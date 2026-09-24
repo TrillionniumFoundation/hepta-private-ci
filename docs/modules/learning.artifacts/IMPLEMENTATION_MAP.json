@@ -387,6 +387,21 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "read_current_selected_manifest",
+      "nativeSymbol": "read_current_selected_manifest",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_manifest.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_current_selected_manifest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Resolve full V2 metadata from the same fenced live owner and independent selection; verify canonical bytes, compatibility projection, declared lineage and original expiry. Missing legacy metadata fails closed, with no activation authority."
     }
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
@@ -552,6 +567,22 @@
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
       "object": "3f34a0f44b473e5f66523de910b8846763b6068b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+      "object": "f42c8fe58f62f284f8959d9fd3821a228fbb6f67"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/current_artifacts.rs",
+      "object": "f8bd8e94f38b720947a4a808e7900a6d313e1232"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_process_tests.rs",
+      "object": "45475841364c2416d6192d5b43120b233bae610b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_manifest_tests.rs",
+      "object": "e6a6100ed3246cb1f511883e6cef2aff9de0a14c"
     }
   ]
 }
