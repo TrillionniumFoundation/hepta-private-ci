@@ -22,7 +22,9 @@ jobs:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 1
+          # Implementation-map migration validates retained sourceBase objects.
+          # A shallow clone makes valid historical provenance unverifiable.
+          fetch-depth: 0
 
       - name: Install repository tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
