@@ -38,7 +38,6 @@ pub(crate) struct PagedRetrievalOwnerCutV1 {
     frontiers: CognitiveOwnerFrontiers,
     snapshot: CognitiveSnapshot,
     observed_at_unix_seconds: i64,
-    owner_cut_digest: Digest32,
 }
 
 impl PagedRetrievalOwnerCutV1 {
@@ -133,12 +132,11 @@ impl PagedRetrievalOwnerCutV1 {
             })?);
         }
 
-        let (scope_id, frontiers, observed_at_unix_seconds, owner_cut_digest) =
-            identity.ok_or_else(|| {
-                CognitiveStoreError::Corrupt(
-                    "Lane C retrieval paging did not produce an owner cut".to_string(),
-                )
-            })?;
+        let (scope_id, frontiers, observed_at_unix_seconds, _) = identity.ok_or_else(|| {
+            CognitiveStoreError::Corrupt(
+                "Lane C retrieval paging did not produce an owner cut".to_string(),
+            )
+        })?;
         let generation = frontiers
             .memory
             .checked_add(1)
@@ -154,7 +152,6 @@ impl PagedRetrievalOwnerCutV1 {
             frontiers,
             snapshot,
             observed_at_unix_seconds,
-            owner_cut_digest,
         })
     }
 
@@ -162,9 +159,25 @@ impl PagedRetrievalOwnerCutV1 {
         &self.snapshot
     }
 
+    /// Stable semantic cut used in public response binding.
+    ///
+    /// The page cursor's observation timestamp is intentionally excluded so a
+    /// final-use revalidation in a later wall-clock second can prove the same
+    /// owner state. Any memory/source/tombstone/fact/KG frontier change still
+    /// invalidates the cut, and selected record changes alter the snapshot.
     pub(crate) fn cut_digest(&self) -> Digest32 {
         let mut bytes = PAGED_RETRIEVAL_CUT_DOMAIN.to_vec();
-        bytes.extend_from_slice(self.owner_cut_digest.as_array());
+        bytes.extend_from_slice(&(self.scope_id.as_str().len() as u64).to_be_bytes());
+        bytes.extend_from_slice(self.scope_id.as_str().as_bytes());
+        for value in [
+            self.frontiers.memory,
+            self.frontiers.source,
+            self.frontiers.tombstone,
+            self.frontiers.knowledge_facts,
+            self.frontiers.knowledge_graph.get(),
+        ] {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
         bytes.extend_from_slice(self.snapshot.snapshot_digest.as_array());
         Digest32::of_bytes(&bytes)
     }
