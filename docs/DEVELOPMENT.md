@@ -55,6 +55,13 @@ The command explicitly reports its limited scope. Unscoped `just fmt` and
 `just fmt-check` retain all formatter groups for repository-wide review/CI;
 a local scoped pass is never a replacement for an applicable full check.
 
+The shared Lane B qualification workflow has one existing integration owner,
+`P0.8D-VERTICAL-SLICE`, with TaskFlow and Matrix as explicit co-owners. Their
+module packages no longer independently own the same workflow file. Normal
+protected PR review applies; no unimplemented external path-lease attestation
+is required for that file. This does not waive real lease checks on other
+concurrent ownership overlaps or any runtime, effect, evaluation or release gate.
+
 Ordinary authorized development has no hard changed-path quota. Work packages
 are bounded by semantic scope, ownership, authority change, durable-domain
 impact and required tests. A coherent cross-owner change may be reviewed in one

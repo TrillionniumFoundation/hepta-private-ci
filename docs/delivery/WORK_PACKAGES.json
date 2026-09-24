@@ -6316,9 +6316,13 @@
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
         "codex-rs/hepta-agentd/**",
-        "qa/vertical-slice/**"
+        "qa/vertical-slice/**",
+        ".github/workflows/hepta-lane-b-truth.yml"
       ],
-      "coOwnerModules": [],
+      "coOwnerModules": [
+        "automation.taskflow",
+        "channel.matrix"
+      ],
       "consumesContracts": [
         "DomainRead::agent_lifecycleV1",
         "DomainRead::fleet_registryV1",
@@ -9337,8 +9341,7 @@
         "codex-rs/hepta-automation/**",
         "codex-rs/hepta-agentd/src/automation.rs",
         "codex-rs/hepta-agentd/src/automation_recovery.rs",
-        ".github/workflows/automation-taskflow-focused.yml",
-        ".github/workflows/hepta-lane-b-truth.yml"
+        ".github/workflows/automation-taskflow-focused.yml"
       ],
       "coOwnerModules": [
         "runtime.agentd"
@@ -9465,8 +9468,7 @@
         "codex-rs/hepta-matrix-sdk/**",
         "codex-rs/hepta-matrixd/**",
         "codex-rs/hepta-matrix-store/**",
-        "codex-rs/hepta-matrix-protocol/**",
-        ".github/workflows/hepta-lane-b-truth.yml"
+        "codex-rs/hepta-matrix-protocol/**"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
