@@ -12,7 +12,6 @@ use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::AgentRunCoordinator;
