@@ -390,6 +390,12 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
         failures.append(f"{mid}: exact source manifest omits mapped paths {missing}")
 
 
+def _ephemeral_untracked_artifact(path: str) -> bool:
+    """Ignore interpreter cache bytes without ignoring hidden source files."""
+    parts = Path(path).parts
+    return "__pycache__" in parts and path.endswith((".pyc", ".pyo"))
+
+
 def require_clean_candidate(
     candidate: dict[str, str], paths: list[str] | None = None
 ) -> None:
@@ -416,11 +422,15 @@ def require_clean_candidate(
         raise ValueError(
             "candidate checkout changed or is dirty; commit source before verification"
         )
-    if paths and (
-        git("status", "--porcelain=v1", "--untracked-files=all", "--", *paths)
-        or git("ls-files", "--others", "-z", "--", *paths)
-    ):
-        raise ValueError("mapped source checkout contains uncommitted evidence")
+    if paths:
+        dirty = git("status", "--porcelain=v1", "--untracked-files=all", "--", *paths)
+        untracked = [
+            path
+            for path in git("ls-files", "--others", "-z", "--", *paths).split("\0")
+            if path and not _ephemeral_untracked_artifact(path)
+        ]
+        if dirty or untracked:
+            raise ValueError("mapped source checkout contains uncommitted evidence")
 
 
 def lane_by_module():

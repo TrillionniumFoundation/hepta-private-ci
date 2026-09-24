@@ -241,6 +241,11 @@ class SourceIdentityTests(unittest.TestCase):
         self.write("src/alpha/new.rs", "pub fn ignored() {}\n")
         self.rejects("dirty|uncommitted evidence", strict=True)
 
+    def test_ignored_python_bytecode_does_not_dirty_mapped_source(self):
+        self.write(".git/info/exclude", "__pycache__/\n")
+        self.write("src/alpha/__pycache__/fixture.cpython-312.pyc", "generated cache\n")
+        self.verify(strict=True)
+
     def test_symlink_observation_cannot_hide_target_changes(self):
         self.observed()
         (self.root / "dependency-link").symlink_to("Cargo.lock")
