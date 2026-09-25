@@ -43,6 +43,10 @@ use crate::RequiredOrganSet;
 use crate::UtilityContribution;
 use crate::UtilityProfile;
 
+#[expect(
+    clippy::expect_used,
+    reason = "required setup assertions in a cfg(test) fixture, never a production path"
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid stable id")
 }
@@ -98,6 +102,10 @@ fn policy() -> NduProductionPolicyV1 {
     }
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "required setup assertions in a cfg(test) fixture, never a production path"
+)]
 fn contributions() -> ContributionSet {
     let objective = digest("objective");
     let generation = Generation::new(1).expect("generation");
@@ -157,6 +165,10 @@ fn contributions() -> ContributionSet {
     }
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "required setup assertions in a cfg(test) fixture, never a production path"
+)]
 fn numeric_registry() -> (NduNumericRegistryV1, Digest32) {
     let normalization = RegistryDefinitionV1::new(
         RegistryKindV1::Normalization,
@@ -206,6 +218,10 @@ struct Fixture {
     _authority_dir: tempfile::TempDir,
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "required setup assertions in a cfg(test) fixture, never a production path"
+)]
 fn fixture() -> Fixture {
     let store_dir = tempfile::tempdir().expect("store tempdir");
     let authority_dir = tempfile::tempdir().expect("authority tempdir");
@@ -253,6 +269,10 @@ fn fixture() -> Fixture {
     }
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "required setup assertions in a cfg(test) fixture, never a production path"
+)]
 fn fixture_with_numeric_registry() -> (Fixture, Digest32) {
     let store_dir = tempfile::tempdir().expect("store tempdir");
     let authority_dir = tempfile::tempdir().expect("authority tempdir");
@@ -307,6 +327,10 @@ fn fixture_with_numeric_registry() -> (Fixture, Digest32) {
 }
 
 impl Fixture {
+    #[expect(
+        clippy::expect_used,
+        reason = "test signing fixture must fail immediately on invalid fixture state"
+    )]
     fn sign(&mut self, mutation: &NduOwnerMutationV1, grant_id: &str) -> SignedFinalUseGrant {
         let binding = self.owner.final_use_binding(mutation).expect("binding");
         let now = SystemTime::now()
@@ -433,6 +457,10 @@ fn live_revocation_frontier_blocks_previously_signed_write() {
     ));
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "required setup assertions in a cfg(test) fixture, never a production path"
+)]
 fn fixture_with_registry(registry: NduNumericRegistryV1, normalization: Digest32) -> Fixture {
     let mut fixture = fixture();
     let directory = tempfile::tempdir().expect("registered owner root");

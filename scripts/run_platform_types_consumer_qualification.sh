@@ -21,6 +21,11 @@ run_step() {
   printf '%s\t%s\t%s\n' "$name" "$rc" "$((SECONDS-start))" >> "$RESULTS"
   if (( rc != 0 )); then failed=1; fi
 }
+# Loading a manifest from the repository root is not enough to select all
+# workspace-local Cargo/Clippy configuration. Use its canonical working directory.
+run_rust() {
+  (cd "$ROOT/codex-rs" && "$@")
+}
 run_step consumer-map python3 scripts/verify_platform_types_consumers.py
 run_step canonical-python python3 codex-rs/hepta-types/conformance/verify_vectors.py
 run_step canonical-node bash -c 'node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts'
@@ -29,7 +34,7 @@ run_step rejections-node node codex-rs/hepta-types/conformance/verify_rejections
 run_step generated-drift python3 codex-rs/hepta-types/bindings/generate_bindings.py --check
 run_step binding-python python3 codex-rs/hepta-types/bindings/verify_generated.py
 run_step binding-node node codex-rs/hepta-types/bindings/verify_generated.mjs
-run_step consumer-compile cargo check --locked --manifest-path "$MANIFEST" \
+run_step consumer-compile run_rust cargo check --locked --manifest-path "$MANIFEST" \
   -p codex-hepta-types -p codex-hepta-ndu -p codex-hepta-codex-adapter \
   -p codex-hepta-learning-ledger -p codex-hepta-supervisor --lib
 run_step types-tests just test --locked -p codex-hepta-types --all-targets --retries 0
@@ -37,8 +42,8 @@ run_step ndu-tests just test --locked -p codex-hepta-ndu --lib --retries 0
 run_step prompt-producer just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)' --retries 0
 run_step prompt-ledger just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)' --retries 0
 run_step topology-consumer just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)' --retries 0
-run_step types-lint cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets -- -D warnings
-run_step ndu-lint cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings
+run_step types-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets -- -D warnings
+run_step ndu-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings
 # Record attempts and failed checks as diagnostics, never as successful qualification.
 python3 - "$ROOT" "$EVIDENCE" "$INITIAL_HEAD" "$INITIAL_TREE" "$INITIAL_STATUS" <<'RECEIPT'
 import hashlib, json, pathlib, subprocess, sys
