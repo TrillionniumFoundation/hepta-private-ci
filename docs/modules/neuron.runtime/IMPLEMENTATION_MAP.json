@@ -18,17 +18,19 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_owner_source_compiled_not_daemon_lifecycle_composed",
+  "productCallerState": "guarded_canonical_agentd_library_owner_composed_not_selected_daemon_qualified",
   "productionWriterState": "durable_complete_result_journal_external_witness_source_implemented_not_activated",
   "operations": [
     {
       "operation": "neuron_runtime_tick",
-      "nativeSymbol": "NeuronRuntime::tick",
-      "sourcePath": "codex-rs/hepta-neuron/src/runtime.rs",
-      "state": "source_implemented_owner_not_activated",
+      "nativeSymbol": "NeuronRuntime::tick_guarded",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_admission.rs",
+      "state": "source_implemented_guarded_owner_not_deployment_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/runtime_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_admission_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_process_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "neuron_runtime_tick",
@@ -52,6 +54,11 @@
         {
           "path": "codex-rs/hepta-neuron/src/operation_store.rs",
           "symbol": "FileNeuronOperationStore",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/runtime.rs",
+          "symbol": "NeuronRuntime::query_result",
           "role": "source_declaration"
         }
       ]
@@ -197,11 +204,11 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose the compiled AgentdNeuronOwner into the normal daemon-owned runtime.agentd lifecycle with a concrete current inference.control feature owner, selected-artifact/currentness provider and actual intelligence consumer; a compiled owner boundary is not daemon activation.",
-    "Bind live revocation, queue/deadline cancellation and independently authenticated calibration/OOD evidence at the physical neuron use boundary before changing productExecutionProved.",
-    "Define an explicit migration for predecessor V1 journals that lack HPTNOP01 operation history; never initialize a replacement sidecar beside acknowledged history.",
-    "If PopulationSparseConfigV2 or DecisionCell is promoted beyond qualification, implement a separately versioned durable owner/store migration with effective base/organ/cell parameter consumption; never reinterpret V1 journal bytes as V2 state.",
-    "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation, productExecutionProved, activation or release."
+    "Install the actual authenticated startup/owner-input factory and concrete selected inference-control feature backend behind AgentdNeuronHandleV1; the guarded library path and deterministic fixture are not a qualified daemon deployment.",
+    "Bind the mandatory host admission guard to current selected model, calibration/OOD, feature/NDU/modulator and withdrawal owners, including anti-rollback restart state and inference-owner physical cancellation. Signed Intelligence snapshot checks do not alone provide all of these facts.",
+    "Implement an explicit reviewed migration for historical journals lacking the integrated binary operation store or using the alternate unqualified sidecar dialect; never initialize missing acknowledged history or reinterpret candidate bytes.",
+    "Implement separately versioned V2/DecisionCell durable migration and actual base/organ/cell parameter consumption; pure PopulationSparseConfigV2 remains qualification-only.",
+    "Run final exact-head, applicable deterministic synthetic-merge, full product/lint and selected-target-host qualification; preserve every unresolved upstream gate instead of treating filtered source tests as activation."
   ],
   "externalEvidenceGates": [
     "target-host product execution with authenticated selected model/runtime/device evidence",
@@ -223,12 +230,22 @@
   ],
   "productCallers": [
     {
-      "state": "compiled_long_lived_owner_boundary_not_daemon_activated",
+      "state": "guarded_long_lived_owner_source_implemented_not_selected_daemon_qualified",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "nativeSymbol": "AgentdNeuronOwner"
+      "nativeSymbol": "AgentdNeuronHandleV1"
     },
     {
-      "state": "typed_intelligence_caller_source_implemented",
+      "state": "canonical_library_consumes_durable_neuron_state_not_raw_sparse_vectors",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "nativeSymbol": "AgentdOwnerPortsV1::collect_neural_signal"
+    },
+    {
+      "state": "live_signed_snapshot_deadline_cancellation_guard_source_implemented",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_product.rs",
+      "nativeSymbol": "NeuronStageAdmission"
+    },
+    {
+      "state": "qualification_typed_caller_not_product_ingress",
       "sourcePath": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
       "nativeSymbol": "run_neuron_tick_v1"
     }

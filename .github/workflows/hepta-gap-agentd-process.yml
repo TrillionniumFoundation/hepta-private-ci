@@ -151,6 +151,15 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Exercise guarded durable Neuron and its canonical product caller
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked --retries 0 --lib -p codex-hepta-neuron
+          just test --locked --retries 0 --lib -p codex-hepta-agentd \
+            -E 'test(intelligence_product) | test(neuron_runtime)'
+          cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
       - name: Exercise owner and lifecycle libraries
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
