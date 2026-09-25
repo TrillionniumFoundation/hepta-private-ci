@@ -195,11 +195,11 @@ caller_markers = []
 [[boundary]]
 id = "final_use_delivery_raw"
 symbol = "FinalUseAuthority::with_verified_use"
-call_pattern = "authority\\s*\\.\\s*with_verified_use\\s*\\("
+call_pattern = '(?:authority|final_use|self\s*\.\s*authority)\s*\.\s*with_verified_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "validate_live"]
 product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
-caller_markers = ["FinalUseAuthority", "with_verified_use", "FinalUseBinding"]
+caller_markers = ["FinalUseAuthority", ".claim(", "with_verified_use"]
 
 [[boundary]]
 id = "final_use_dispatch"
