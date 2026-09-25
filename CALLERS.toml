@@ -153,6 +153,7 @@ caller_markers = ["HttpProviderEffectAdapter::new", "dispatch_with_payload", "lo
 [[boundary]]
 id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
+call_pattern = 'FinalUseAuthority\s*::\s*open_state_dir(?:_with_clock|_with_trust|_with_issuer_keys)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
 product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
