@@ -1,4 +1,4 @@
-name: Temporary objective exact-source export
+name: Temporary objective main-source export
 
 on:
   push:
@@ -9,39 +9,43 @@ permissions:
   contents: read
 
 concurrency:
-  group: temporary-objective-source-${{ github.ref }}
+  group: temporary-objective-main-source-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  export:
+  export-main:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: main
           persist-credentials: false
           fetch-depth: 0
-      - name: Bind exact source
+      - name: Bind exact main source
+        id: identity
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          expected="$(git rev-parse origin/main)"
+          test "$(git rev-parse HEAD)" = "$expected"
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
-      - name: Export source
+          printf 'sha=%s\n' "$expected" >> "$GITHUB_OUTPUT"
+      - name: Export main source
         shell: bash
         run: |
           set -euo pipefail
-          archive="$RUNNER_TEMP/hepta-objective-${{ github.sha }}.tar.gz"
+          sha="${{ steps.identity.outputs.sha }}"
+          archive="$RUNNER_TEMP/hepta-main-$sha.tar.gz"
           tar --exclude=.git --exclude=target -czf "$archive" .
           sha256sum "$archive" > "$archive.sha256"
           printf 'archive=%s\n' "$archive" >> "$GITHUB_ENV"
-      - name: Upload source
+      - name: Upload main source
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: temporary-objective-source-${{ github.sha }}
+          name: temporary-objective-main-${{ steps.identity.outputs.sha }}
           path: |
             ${{ env.archive }}
             ${{ env.archive }}.sha256
