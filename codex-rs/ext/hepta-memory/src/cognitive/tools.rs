@@ -888,6 +888,28 @@ fn store_error(error: CognitiveStoreError) -> FunctionCallError {
 
 fn mutation_error(error: ProductionCognitiveMutationError) -> FunctionCallError {
     match error {
+        ProductionCognitiveMutationError::ObservedResult(result) => {
+            if result.validate().is_err() {
+                return typed_error(
+                    "hepta_cognitive_invalid_durable_result",
+                    "the owner result failed integrity validation",
+                );
+            }
+            // This is an observation, not a new write or a reusable permission.
+            // Do not expose raw journal payloads or suggest a fresh identity.
+            FunctionCallError::RespondToModel(json!({
+                "error": {
+                    "code": "hepta_cognitive_result_already_observed",
+                    "message": "The owner returned an existing durable result; no new mutation was performed. Do not recreate it under a new operation identity.",
+                    "retryable": false,
+                    "observed_result": {
+                        "state": result.state,
+                        "operation_digest": result.operation_digest,
+                        "result_sha256": result.result_sha256,
+                    },
+                },
+            }).to_string())
+        }
         ProductionCognitiveMutationError::Store(error) => store_error(error),
         ProductionCognitiveMutationError::Authority(_) => typed_error(
             "hepta_cognitive_write_authority_rejected",
