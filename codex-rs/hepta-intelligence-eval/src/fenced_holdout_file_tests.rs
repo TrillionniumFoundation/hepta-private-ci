@@ -289,3 +289,49 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
         Some(LockedFileCasErrorV1::Rollback)
     );
 }
+
+#[test]
+fn releasing_owner_unlocks_even_when_a_transient_descriptor_remains() {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let transient = file.try_clone().expect("transient inherited descriptor");
+    let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    assert!(matches!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None),
+        Err(LockedFileCasErrorV1::Busy)
+    ));
+    drop(store);
+    let recovered = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
+        .unwrap_or_else(|error| {
+            panic!("retired owner must not remain locked through a transient duplicate: {error}")
+        });
+    drop(recovered);
+    drop(transient);
+}
+
+#[test]
+fn rejected_constructor_releases_only_its_acquired_lock() {
+    let temp = TempFile::new();
+    let mut file = temp.create();
+    file.write_all(b"not a valid store")
+        .expect("invalid fixture");
+    file.sync_all().expect("persist invalid fixture");
+    let transient = file.try_clone().expect("transient duplicate");
+    assert!(matches!(
+        LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding")),
+        Err(LockedFileCasErrorV1::AlreadyInitialized)
+    ));
+    let result = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None);
+    assert!(
+        matches!(result, Err(LockedFileCasErrorV1::MissingHeader)),
+        "failed creation leaked its file lock"
+    );
+    let probe = temp.open();
+    assert!(
+        probe.try_lock().is_ok(),
+        "failed recovery leaked its file lock"
+    );
+    probe.unlock().expect("release probe lock");
+    drop(transient);
+}

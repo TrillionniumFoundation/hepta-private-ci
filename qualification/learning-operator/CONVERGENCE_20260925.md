@@ -79,3 +79,28 @@ match the existing integrity before being admitted to a local distdir.
 6. Complete the larger real-durability workload measurements on a controlled
    host and investigate owner append/recovery costs before adding a more complex
    learner. Do not disable sync, drop records or invent a timing qualification.
+
+## Follow-up: exact-source CI and file-lock regression
+
+Source implementation commit `e61a5265bc9a33e51c084f8060064c6332c26a65`
+was published on the same PR #990 branch, with a valid GitHub signature. Lane E
+run `36152857538` executed 388 package tests successfully, but its later coverage
+step failed in `longer_divergent_history_cannot_skip_the_retained_minimum_prefix`
+with `recover store: Busy`; this was a test failure before a line-coverage result,
+not evidence of an insufficient coverage percentage.
+
+Two independent regressions then reproduced the lock-release defect: retaining
+a duplicate file descriptor after dropping the owner or rejecting a constructor
+kept the OS lock alive. Both tests failed on the old implementation. The acquired
+holdout-file guard now explicitly unlocks on both normal and failed exits, and
+never unlocks a failed contender. After the fix, the complete evaluation library
+ran 117 tests with 117 passing. The independent 85% line-coverage threshold is
+unchanged and still requires its final CI run.
+
+The real `terminal_cell_owner` integration target also completed: both normal
+owner decision/outcome/training/reload/withdrawal and shared recall/replay/
+training/signed recovery tests passed (2 passed; 2 explicitly skipped helper/
+measurement tests). The shared path includes an actual child process rejecting
+recovery under changed root-authorized learning trust and signed recovery bundles
+with legacy or substituted trust identities. This is still engineering integration,
+not the normal default Agentd learning bootstrap or live field efficacy.

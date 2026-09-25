@@ -56,8 +56,34 @@ impl fmt::Display for LockedFileCasErrorV1 {
 }
 impl StdError for LockedFileCasErrorV1 {}
 
+/// The acquiring owner explicitly releases its OS lock on every exit path.
+/// Closing one descriptor is insufficient when a concurrent fork temporarily
+/// retains another descriptor for the same open-file description.
+struct AcquiredHoldoutFile(File);
+
+impl std::ops::Deref for AcquiredHoldoutFile {
+    type Target = File;
+    fn deref(&self) -> &File {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for AcquiredHoldoutFile {
+    fn deref_mut(&mut self) -> &mut File {
+        &mut self.0
+    }
+}
+
+impl Drop for AcquiredHoldoutFile {
+    fn drop(&mut self) {
+        // Do not unlock a failed contender: this guard is constructed only
+        // after try_lock succeeds. Errors remain fail-closed for the next owner.
+        let _ = self.0.unlock();
+    }
+}
+
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: File,
+    file: AcquiredHoldoutFile,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
@@ -65,8 +91,8 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
 }
 
 impl LockedFileFinalHoldoutCasStoreV1 {
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        let mut file = acquire(file, binding)?;
         if file.metadata().map_err(io_error)?.len() != 0 {
             return Err(LockedFileCasErrorV1::AlreadyInitialized);
         }
@@ -87,18 +113,18 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     }
 
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+        let mut file = acquire(file, binding)?;
         let length = file.metadata().map_err(io_error)?.len();
         if length > MAX_BYTES {
             return Err(LockedFileCasErrorV1::Capacity);
         }
         file.seek(SeekFrom::Start(0)).map_err(io_error)?;
         let mut bytes = Vec::new();
-        (&mut file)
+        (&mut *file)
             .take(MAX_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(io_error)?;
@@ -426,7 +452,7 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<AcquiredHoldoutFile, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
@@ -436,7 +462,8 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
     file.try_lock().map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
-    })
+    })?;
+    Ok(AcquiredHoldoutFile(file))
 }
 
 fn io_error(error: io::Error) -> LockedFileCasErrorV1 {
