@@ -301,7 +301,7 @@ async fn failed_external_publication_is_reconciled_before_the_next_write() {
     let name = checkpoint.file_name().unwrap().to_str().unwrap();
     let temporary = checkpoint.parent().unwrap().join(format!(
         ".{name}.{}.{}.tmp",
-        std::process::id().unwrap(),
+        std::process::id(),
         first.generation + 1
     ));
     std::fs::write(&temporary, b"occupied temporary publication path").unwrap();
