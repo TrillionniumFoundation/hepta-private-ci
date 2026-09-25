@@ -331,7 +331,7 @@ mod tests {
     #[tokio::test]
     async fn migration_preserves_legacy_remote_control_preference_as_null() {
         let codex_home = unique_temp_dir();
-        tokio::fs::create_dir_all(&codex_home)
+        crate::runtime::test_support::create_private_test_home(&codex_home)
             .await
             .expect("create codex home");
         let old_state_migrator = Migrator {

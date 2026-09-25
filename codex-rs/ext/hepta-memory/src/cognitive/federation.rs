@@ -758,6 +758,7 @@ fn compile_explanations(
         .map(|explanation| {
             let binding = FederatedMemoryRevalidationBinding {
                 source_agent_id: explanation.source_agent_id.clone(),
+                owner_generation_sha256: explanation.owner_generation_sha256.clone(),
                 capability: explanation.capability.clone(),
                 memory: codex_hepta_memory::MemoryRevalidationBinding {
                     memory: explanation.explanation.memory.id.clone(),
@@ -847,7 +848,7 @@ fn federation_source_binding(
     let serialized = serde_json::to_vec(bindings).ok()?;
     let serialized_coverage = serde_json::to_vec(coverage).ok()?;
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v3",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),

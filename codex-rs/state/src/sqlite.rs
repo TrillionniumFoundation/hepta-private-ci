@@ -359,6 +359,16 @@ impl SqliteConfig {
 
     /// Open an existing Codex SQLite database without creating or modifying it.
     pub async fn open_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let pool = self.lazy_read_only_pool(path);
+        let connection = pool.acquire().await?;
+        drop(connection);
+        Ok(pool)
+    }
+
+    /// Construct an unopened read-only pool so a caller can install its lifetime
+    /// fence before connection I/O starts. This does not validate the database;
+    /// the caller must acquire/query it and retain its fence through pool close.
+    pub fn lazy_read_only_pool(&self, path: &Path) -> SqlitePool {
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(false)
@@ -366,8 +376,7 @@ impl SqliteConfig {
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
             .max_connections(1)
-            .connect_with(options)
-            .await
+            .connect_lazy_with(options)
     }
 }
 

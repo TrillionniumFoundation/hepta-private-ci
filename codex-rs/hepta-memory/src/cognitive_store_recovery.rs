@@ -27,6 +27,7 @@ use sqlx::ValueRef;
 
 use super::CognitiveStore;
 use super::CognitiveStoreError;
+use super::CognitiveStoreGenerationGuard;
 use super::CognitiveStoreOpenGuard;
 use super::REQUIRED_SCHEMA_OBJECTS;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
@@ -221,6 +222,9 @@ impl CognitiveStore {
         let _authority_use = verifier
             .enter_use(authority, layout.agent_id())
             .map_err(CognitiveRecoveryError::AccessDenied)?;
+        let _generation_guard =
+            CognitiveStoreGenerationGuard::acquire_exclusive_or_create(&canonical_root)
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())

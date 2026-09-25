@@ -16,6 +16,7 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_automation::AuthorizedEffectDispatch;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectError;
@@ -562,9 +563,9 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
     assert!(matches!(
         store
             .execute_authorized_taskflow_effect(
-                &authority,
                 &mut driver,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &authority,
                     intent: &effect,
                     wire_payload: b"different-provider-bytes",
                     fence: &owner,
@@ -581,9 +582,9 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
 
     store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -622,9 +623,9 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
     assert!(matches!(
         store
             .execute_authorized_taskflow_effect_async(
-                &authority,
                 &mut driver,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &authority,
                     intent: &effect,
                     wire_payload: b"wrong-payload",
                     fence: &owner,
@@ -645,9 +646,9 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
 
     let receipt = store
         .execute_authorized_taskflow_effect_async(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: b"effect-payload",
                 fence: &owner,
@@ -692,9 +693,9 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
 
     let receipt = store
         .execute_authorized_taskflow_effect_async(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: b"effect-payload",
                 fence: &owner,
@@ -743,9 +744,9 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
     assert!(matches!(
         store
             .execute_authorized_taskflow_effect(
-                &authority,
                 &mut driver,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &authority,
                     intent: &effect,
                     wire_payload: EFFECT_PAYLOAD,
                     fence: &owner,
@@ -762,9 +763,9 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
 
     let receipt = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -801,9 +802,9 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
 
     let first = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -820,9 +821,9 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
 
     let replay = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -860,9 +861,9 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
         let mut driver = CrashAfterProviderContactDriver;
         crash_store
             .execute_authorized_taskflow_effect(
-                &crash_authority,
                 &mut driver,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &crash_authority,
                     intent: &crash_effect,
                     wire_payload: EFFECT_PAYLOAD,
                     fence: &crash_owner,
@@ -895,9 +896,9 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
         RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"duplicate");
     let replay = reopened
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut must_not_dispatch,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -944,9 +945,9 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
 
     let first = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut ambiguous,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -989,9 +990,9 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
         RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"must-not-dispatch");
     let replay = reopened
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut must_not_dispatch,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -1051,9 +1052,9 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
     assert!(matches!(
         store
             .execute_authorized_taskflow_effect(
-                &authority,
                 &mut driver,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &authority,
                     intent: &effect,
                     wire_payload: EFFECT_PAYLOAD,
                     fence: &owner,
@@ -1081,9 +1082,9 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
 
     let replay = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -1114,9 +1115,9 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
 
     let receipt = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut driver,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &effect,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -1151,9 +1152,9 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
     assert!(
         store
             .execute_authorized_taskflow_effect(
-                &authority,
                 &mut must_not_dispatch,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &authority,
                     intent: &effect,
                     wire_payload: EFFECT_PAYLOAD,
                     fence: &owner,
@@ -1186,9 +1187,9 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
 
     let first = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut ambiguous,
-            codex_hepta_automation::AuthorizedEffectInvocation {
+            AuthorizedEffectDispatch {
+                authority: &authority,
                 intent: &compensation,
                 wire_payload: EFFECT_PAYLOAD,
                 fence: &owner,
@@ -1247,9 +1248,9 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     assert!(
         reopened
             .execute_authorized_taskflow_effect(
-                &authority,
                 &mut must_not_dispatch,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &authority,
                     intent: &compensation,
                     wire_payload: EFFECT_PAYLOAD,
                     fence: &owner,

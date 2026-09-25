@@ -274,6 +274,19 @@ pub struct AuthorizedEffectProviderReceipt {
     pub receipt_digest: Sha256Digest,
 }
 
+/// Named inputs for one already-claimed TaskFlow effect.
+/// All references retain the existing final-use and immutable-payload checks.
+pub struct AuthorizedEffectDispatch<'a> {
+    pub authority: &'a FinalUseAuthority,
+    pub intent: &'a AuthorizedEffectIntent,
+    pub wire_payload: &'a [u8],
+    pub fence: &'a TaskFlowFence,
+    pub signed_grant: &'a SignedFinalUseGrant,
+    pub expected_binding: &'a FinalUseBinding,
+    pub command_id: &'a str,
+    pub now_ms: u64,
+}
+
 pub struct AuthorizedEffectRequest<'a> {
     pub operation_intent: &'a OperationIntentV1,
     pub intent: &'a AuthorizedEffectIntent,
@@ -542,18 +555,6 @@ pub enum AuthorizedEffectRecoveryResult {
     Observed(Box<TaskFlowStepReceipt>),
 }
 
-/// One borrowed physical invocation. These values are checked against durable
-/// intent and final-use authority; grouping them does not confer admission.
-pub struct AuthorizedEffectInvocation<'a> {
-    pub intent: &'a AuthorizedEffectIntent,
-    pub wire_payload: &'a [u8],
-    pub fence: &'a TaskFlowFence,
-    pub signed_grant: &'a SignedFinalUseGrant,
-    pub expected_binding: &'a FinalUseBinding,
-    pub command_id: &'a str,
-    pub now_ms: u64,
-}
-
 #[derive(Debug, Error)]
 pub enum AuthorizedEffectError {
     #[error(transparent)]
@@ -655,11 +656,11 @@ impl AutomationStore {
     /// `RecoveryRequired` and cannot re-dispatch even with a fresh grant.
     pub async fn execute_authorized_taskflow_effect<D: AuthorizedEffectDriver>(
         &self,
-        authority: &FinalUseAuthority,
         driver: &mut D,
-        invocation: AuthorizedEffectInvocation<'_>,
+        dispatch: AuthorizedEffectDispatch<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
-        let AuthorizedEffectInvocation {
+        let AuthorizedEffectDispatch {
+            authority,
             intent,
             wire_payload,
             fence,
@@ -667,7 +668,7 @@ impl AutomationStore {
             expected_binding,
             command_id,
             now_ms,
-        } = invocation;
+        } = dispatch;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -880,11 +881,11 @@ impl AutomationStore {
     /// attempt reuses the same provider occurrence identity.
     pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
         &self,
-        authority: &FinalUseAuthority,
         driver: &mut D,
-        invocation: AuthorizedEffectInvocation<'_>,
+        dispatch: AuthorizedEffectDispatch<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
-        let AuthorizedEffectInvocation {
+        let AuthorizedEffectDispatch {
+            authority,
             intent,
             wire_payload,
             fence,
@@ -892,7 +893,7 @@ impl AutomationStore {
             expected_binding,
             command_id,
             now_ms,
-        } = invocation;
+        } = dispatch;
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;

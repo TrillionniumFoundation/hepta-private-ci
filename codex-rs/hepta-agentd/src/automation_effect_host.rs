@@ -14,6 +14,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
+use codex_hepta_automation::AuthorizedEffectDispatch;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectIntent;
@@ -257,9 +258,9 @@ impl AgentdAutomationEffectHost {
         };
         store
             .execute_authorized_taskflow_effect(
-                &self.authority,
                 &mut driver,
-                codex_hepta_automation::AuthorizedEffectInvocation {
+                AuthorizedEffectDispatch {
+                    authority: &self.authority,
                     intent: intent,
                     wire_payload: wire_payload,
                     fence: &fence,

@@ -610,7 +610,7 @@ mod tests {
     #[tokio::test]
     async fn init_migrates_message_only_logs_db_to_feedback_log_body_schema() {
         let codex_home = unique_temp_dir();
-        tokio::fs::create_dir_all(&codex_home)
+        crate::runtime::test_support::create_private_test_home(&codex_home)
             .await
             .expect("create codex home");
         let logs_path =
