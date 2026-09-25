@@ -300,3 +300,19 @@ races, late success/no-effect after restart, legacy terminal/archive migration,
 and signed enqueue through checkpoint recovery, ACK and a second reopen.
 Source presence, executable pass results and production qualification remain
 separate facts; see `CURRENT_IMPLEMENTATION.md` for the precise contracts.
+
+
+### Live owner-lock fencing
+
+Stable lock handles are revalidated against the current canonical path, inode,
+owner, single-link count and private file/directory permissions at every lock
+admission and around checkpoint synchronization. An observed identity failure
+permanently fences that handle; recreating a pathname or restoring permissions
+does not revive it. A fresh host must reconcile the existing durable frontier.
+A post-commit identity failure is an unacknowledged result, not a rollback or a
+reason to repeat an external effect. The local OS and private directory owner
+remain trusted; this protocol does not claim distributed lock fencing.
+
+The four `host_lock_tests.rs` regressions add live deletion/replacement,
+metadata drift, stale-handle rejection and post-commit reopening to the
+existing concurrent-owner, migration and checkpoint fault cases.
