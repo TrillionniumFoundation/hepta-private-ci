@@ -37,7 +37,8 @@
       "path": "codex-rs/hepta-ndu/src/owner.rs",
       "mustContain": [
         "pub fn evaluate(",
-        "registry.admit_utility_axes(",
+        "let admitted = registry",
+        ".admit_utility_axes(",
         "admitted.admission.admission_digest",
         "production_policy_digest_with_numeric_registry"
       ]
