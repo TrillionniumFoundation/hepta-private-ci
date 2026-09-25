@@ -345,9 +345,9 @@ impl AgentdAutomationEffectHost {
                             "reconcile authorized effect terminal observation: {error}"
                         ))
                     })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(
-                        AgentdAutomationEffectReconcileOutcome::Observed(receipt),
-                    ),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                    }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
                     )),

@@ -341,7 +341,7 @@ async fn context_reads_a_candidate_beyond_the_first_owner_page() {
         .unwrap();
     // Retrieval also has a Recency channel: an exact lexical match does not
     // imply that the other three requested slots are empty. Compare the full
-    // bounded projection with the authoritative owner's ordering, then require
+    // bounded projection with the declared RRF ordering over owner facts, then require
     // the beyond-first-page target to survive that projection exactly once.
     let observation = store
         .observe_memory_retrieval(
@@ -350,9 +350,18 @@ async fn context_reads_a_candidate_beyond_the_first_owner_page() {
         )
         .await
         .unwrap();
-    let expected = observation
-        .candidates()
-        .iter()
+    let mut ranked = observation.candidates().iter().collect::<Vec<_>>();
+    // Owner observations are identity ordered, not the public context ranking.
+    // Independently apply the baseline RRF score and stable identity tie-breaks.
+    ranked.sort_by_key(|candidate| {
+        (
+            std::cmp::Reverse(candidate.reciprocal_rank_score),
+            candidate.revalidation.memory.memory_id.as_str(),
+            candidate.revalidation.memory.revision,
+        )
+    });
+    let expected = ranked
+        .into_iter()
         .take(4)
         .map(|candidate| {
             let id = candidate.revalidation.memory.memory_id.as_str();

@@ -150,6 +150,12 @@ fn provider(root: &Path, path: &Path, key: &SigningKey) -> FileCurrentMemoryRetr
 fn signed_provider_reloads_and_rejects_revocation() {
     let temp = tempfile::tempdir().expect("temporary owner root");
     let root = temp.path().canonicalize().expect("canonical owner root");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))
+            .expect("protect owner root");
+    }
     let path = root.join("memory-retrieval-context.json");
     let key = SigningKey::from_bytes(&[7_u8; 32]);
     write_file(&path, &sign(unsigned_file(1), &key));
@@ -178,6 +184,12 @@ fn signed_provider_reloads_and_rejects_revocation() {
 fn signed_provider_rejects_rollback_and_same_revision_fork() {
     let temp = tempfile::tempdir().expect("temporary owner root");
     let root = temp.path().canonicalize().expect("canonical owner root");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))
+            .expect("protect owner root");
+    }
     let path = root.join("memory-retrieval-context.json");
     let key = SigningKey::from_bytes(&[9_u8; 32]);
     write_file(&path, &sign(unsigned_file(1), &key));
@@ -219,6 +231,12 @@ fn signed_provider_rejects_rollback_and_same_revision_fork() {
 fn signed_provider_rejects_wrong_generation_and_bad_signature() {
     let temp = tempfile::tempdir().expect("temporary owner root");
     let root = temp.path().canonicalize().expect("canonical owner root");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))
+            .expect("protect owner root");
+    }
     let path = root.join("memory-retrieval-context.json");
     let key = SigningKey::from_bytes(&[11_u8; 32]);
     let mut wrong_generation = unsigned_file(1);
