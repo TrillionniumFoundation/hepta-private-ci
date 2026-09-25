@@ -44,7 +44,8 @@
       "designOperation": "evaluate_candidates",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -86,7 +87,8 @@
       "designOperation": "evaluate_candidates_with_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
     },
     {
       "operation": "canonical_evaluation_policy_digest",
@@ -110,7 +112,8 @@
       "designOperation": "canonical_evaluation_policy_digest",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
     },
     {
       "operation": "solve_preference_target",
@@ -158,7 +161,8 @@
       "designOperation": "solve_preference_target",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
     },
     {
       "operation": "bind_solver_iteration_receipt_v1",
@@ -190,7 +194,8 @@
       "designOperation": "bind_solver_iteration_receipt_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
     },
     {
       "operation": "solve_backward_regression",
@@ -214,7 +219,8 @@
       "designOperation": "solve_backward_regression",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "985df3333fc8b7664ac867c53a9f7111e6dd999f"
     },
     {
       "operation": "convert_z_to_original_q24",
@@ -256,7 +262,8 @@
       "designOperation": "convert_z_to_original_q24",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "91e51909b9231686e8218e1f5564c3025859418b"
     },
     {
       "operation": "NduProjectionJournalV1",
@@ -301,7 +308,8 @@
       "designOperation": "NduProjectionJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "3cc7db74bac5014b1ed5a8c50c4e8da7f98bc75f"
     },
     {
       "operation": "NduProjectionStoreV1",
@@ -349,7 +357,8 @@
       "designOperation": "NduProjectionStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
     },
     {
       "operation": "admit_ndu_coefficient_profile",
@@ -375,7 +384,8 @@
       "designOperation": "admit_ndu_coefficient_profile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
     },
     {
       "operation": "project_z_estimate_to_coefficient_q24",
@@ -412,7 +422,8 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
     },
     {
       "operation": "NduAuthenticatedOwnerV1",
@@ -464,7 +475,8 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "b178fa45920c465d038d57569c4f6556a2dabc84"
     }
   ],
   "canonicalReadinessProtocols": [
@@ -528,8 +540,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "46a00e6f16d06bce80214745c94b30131199c326",
-    "tree": "cd9c31e923482e5da1d41656aa6242752ff9a4c7"
+    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -593,7 +605,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "467272b0f91d123d6fbbccd211dfb726c95965da"
+      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
     },
     {
       "path": "codex-rs/hepta-ndu",
@@ -673,7 +685,7 @@
     },
     {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
-      "object": "f9f07f9d9d11775482925b2f9907f5255fa22609"
+      "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
     }
   ]
 }
