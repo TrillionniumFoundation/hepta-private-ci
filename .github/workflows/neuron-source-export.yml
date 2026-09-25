@@ -1,0 +1,45 @@
+name: Neuron source export
+
+on:
+  push:
+    branches:
+      - tmp/neuron-runtime-source-export-20260925
+    paths:
+      - .github/workflows/neuron-source-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: tmp/neuron-runtime-source-export-20260925
+          fetch-depth: 1
+      - name: Bind exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Build source archive
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/neuron-source.tgz" \
+            codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            codex-rs/hepta-agentd \
+            codex-rs/hepta-agent-protocol \
+            codex-rs/hepta-infer-core \
+            codex-rs/hepta-infer-worker-host \
+            codex-rs/hepta-intelligence \
+            codex-rs/hepta-neuron \
+            codex-rs/hepta-types \
+            docs/modules/neuron.runtime \
+            docs/readiness/NEURON_RUNTIME_EXECUTION.md \
+            qualification/module-execution-dossiers/detail/neuron.runtime.md
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-source-${{ github.sha }}
+          path: ${{ runner.temp }}/neuron-source.tgz
+          if-no-files-found: error
+          retention-days: 1
