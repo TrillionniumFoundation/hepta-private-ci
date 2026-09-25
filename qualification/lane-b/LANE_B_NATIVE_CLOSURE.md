@@ -30,6 +30,11 @@ The exact process driver, Agentd readiness/drain acknowledgements and current-ge
 | `signed_rollback` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn apply_production_grant(` |
 | `reconcile_signed_intent` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn resolve_production_recovery(` |
 
+Remaining repository implementation gaps:
+
+- Retained signed history has a bounded fail-closed capacity; export acknowledgement and safe reclamation are not implemented.
+- Current exact-head and deterministic-merge executions must pass; source composition alone is not qualification.
+
 External evidence gates:
 
 - exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration
