@@ -33,7 +33,9 @@ impl NegotiatedDecodeBatch {
 ///
 /// The generic frame parser remains useful for offline inspection, but a live
 /// connection should use this type so a peer cannot negotiate one version and
-/// subsequently send a different frame version. Authentication of the
+/// subsequently send a different frame version. The selected version is checked
+/// at the fixed-header boundary, before body allocation or consumption, and a
+/// terminal error discards all partial bytes. Authentication of the
 /// negotiation transcript and frame bytes remains the transport/session
 /// security owner's responsibility.
 #[derive(Debug)]
@@ -47,7 +49,7 @@ impl NegotiatedStreamingDecoder {
     pub fn new(negotiated: NegotiatedWire) -> Self {
         Self {
             negotiated,
-            stream: StreamingDecoder::new(),
+            stream: StreamingDecoder::for_negotiated_version(negotiated.version),
             terminal_error: None,
         }
     }
@@ -94,7 +96,17 @@ impl NegotiatedStreamingDecoder {
         }
 
         if let Some(error) = stream_error {
-            return self.fail(admitted, NegotiatedDecodeError::Stream(error));
+            let error = match error {
+                StreamDecodeError::NegotiatedVersionMismatch {
+                    negotiated,
+                    observed,
+                } => NegotiatedDecodeError::VersionMismatch {
+                    negotiated,
+                    observed,
+                },
+                other => NegotiatedDecodeError::Stream(other),
+            };
+            return self.fail(admitted, error);
         }
 
         NegotiatedDecodeBatch {
@@ -121,6 +133,7 @@ impl NegotiatedStreamingDecoder {
         frames: Vec<DecodedEnvelope>,
         error: NegotiatedDecodeError,
     ) -> NegotiatedDecodeBatch {
+        self.stream.clear();
         self.terminal_error = Some(error.clone());
         NegotiatedDecodeBatch {
             frames,

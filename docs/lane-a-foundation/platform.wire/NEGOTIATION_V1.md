@@ -86,3 +86,13 @@ transcript and frame into the channel's authenticated transcript.
 Connection-local negotiation state is discarded on disconnect. A new
 connection negotiates again. Negotiation success is not an effect
 acknowledgement and must not cause an uncertain external effect to be replayed.
+
+### Header-first session rejection
+
+`NegotiatedStreamingDecoder` applies the selected frame version when the fixed
+54-byte HPTA header is complete, before reserving or copying its advertised
+body. A supported but unselected version returns `VersionMismatch` even when
+the peer sends no body. Completed prefix frames are returned in the same batch;
+all partial bytes are discarded and subsequent feeds retain the terminal error.
+This is connection policy, not authentication: transport/session owners still
+bind the actual peer and transcript using their existing security boundary.

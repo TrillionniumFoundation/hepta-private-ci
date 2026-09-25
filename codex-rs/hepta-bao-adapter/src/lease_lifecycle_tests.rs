@@ -207,3 +207,92 @@ fn expiry_is_durable_and_terminal_for_renewal() {
         SecretLeaseStateV1::Expired
     );
 }
+
+#[test]
+fn issue_rejects_non_active_observations_without_committing_them() {
+    for state in [
+        SecretLeaseStateV1::RenewUnknown,
+        SecretLeaseStateV1::RevokeUnknown,
+        SecretLeaseStateV1::Revoked,
+        SecretLeaseStateV1::Expired,
+    ] {
+        let (directory, mut owner) = registry();
+        let prepared = owner
+            .prepare_issue("issue:invalid".into(), [3; 32])
+            .unwrap();
+        let mut lease = active_lease();
+        lease.state = state;
+        assert_eq!(
+            owner.reconcile(
+                "issue:invalid",
+                ProviderLeaseObservationV1::IssueApplied { lease }
+            ),
+            Err(LeaseRegistryErrorV1::InvalidInput)
+        );
+        drop(owner);
+        let reopened =
+            DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+        assert_eq!(reopened.operation("issue:invalid"), Some(&prepared));
+        assert!(reopened.lease("lease:db:1").is_none());
+    }
+}
+
+#[test]
+fn unknown_and_revoked_lease_metadata_reopen_without_resurrection() {
+    for kind in [LeaseOperationKindV1::Renew, LeaseOperationKindV1::Revoke] {
+        let (directory, mut owner) = registry();
+        let path = directory.path().join("lease-registry.json");
+        owner.prepare_issue("issue:1".into(), [3; 32]).unwrap();
+        owner
+            .reconcile(
+                "issue:1",
+                ProviderLeaseObservationV1::IssueApplied {
+                    lease: active_lease(),
+                },
+            )
+            .unwrap();
+        match kind {
+            LeaseOperationKindV1::Renew => {
+                owner
+                    .prepare_renew("change:1".into(), "lease:db:1".into(), [4; 32])
+                    .unwrap();
+            }
+            LeaseOperationKindV1::Revoke => {
+                owner
+                    .prepare_revoke("change:1".into(), "lease:db:1".into(), [4; 32])
+                    .unwrap();
+            }
+            LeaseOperationKindV1::Issue => unreachable!(),
+        }
+        let operation = owner.mark_unknown("change:1").unwrap();
+        let expected = owner.lease("lease:db:1").unwrap().clone();
+        drop(owner);
+        let mut reopened = DurableLeaseRegistryV1::open(&path).unwrap();
+        assert_eq!(reopened.operation("change:1"), Some(&operation));
+        assert_eq!(reopened.lease("lease:db:1"), Some(&expected));
+        assert_eq!(
+            reopened.prepare_renew("late:1".into(), "lease:db:1".into(), [5; 32]),
+            Err(LeaseRegistryErrorV1::InvalidTransition)
+        );
+        if kind == LeaseOperationKindV1::Revoke {
+            reopened
+                .reconcile(
+                    "change:1",
+                    ProviderLeaseObservationV1::RevokeApplied {
+                        lease_id: "lease:db:1".into(),
+                        observed_at_unix_ms: 30_000,
+                        provider_metadata_sha256: [7; 32],
+                    },
+                )
+                .unwrap();
+            let revoked = reopened.lease("lease:db:1").unwrap().clone();
+            drop(reopened);
+            let mut reopened = DurableLeaseRegistryV1::open(&path).unwrap();
+            assert_eq!(reopened.lease("lease:db:1"), Some(&revoked));
+            assert_eq!(
+                reopened.prepare_renew("late:2".into(), "lease:db:1".into(), [5; 32]),
+                Err(LeaseRegistryErrorV1::InvalidTransition)
+            );
+        }
+    }
+}

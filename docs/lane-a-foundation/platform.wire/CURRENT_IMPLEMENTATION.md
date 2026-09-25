@@ -11,7 +11,7 @@ contract. The broader target architecture remains in
 | Frozen HPTA V1 framing | implemented | `WIRE_V1.md`, V1 boundary tests and frozen vector |
 | HPTA V2 metadata-bound digest | implemented | `WIRE_V2.md`, V2 mutation tests and frozen vector |
 | HPTN version/capability negotiation | implemented | `NEGOTIATION_V1.md`; effective capabilities are restricted to the selected version |
-| Negotiated session decode | implemented | `NegotiatedStreamingDecoder` rejects a frame version different from the completed HPTN negotiation |
+| Negotiated session decode | implemented | `NegotiatedStreamingDecoder` rejects a different version at the fixed header, before allocating or accepting body bytes |
 | Multi-version offline frame dispatch | implemented | `codex-rs/hepta-wire/src/frame.rs` |
 | Schema admission | implemented framework | `SchemaRegistry` admits stable IDs/version/payload bounds; registered adapters pin producer identity |
 | Typed payload serialization | implemented interface | `PayloadCodec`; each product schema supplies its strict canonical codec |
@@ -100,7 +100,8 @@ V1 payload integrity does not bind metadata. V2's frame digest binds metadata
 but is unkeyed and therefore does not authenticate a peer. `decode_frame` is a
 multi-version offline parser and intentionally does not represent connection
 negotiation; live connections use `NegotiatedStreamingDecoder` to bind the
-selected version.
+selected version. Version mismatch is terminal at the 54-byte header; it does not
+wait for the advertised body, and poisoned sessions retain no partial frame.
 
 `StreamingDecoder::push_batch` is the lossless incremental API: it can report a
 valid completed prefix and a later terminal error from the same chunk.
@@ -121,7 +122,8 @@ Current source evidence includes:
 
 - V1 and V2 unit, boundary and frozen-vector tests;
 - effective-capability, downgrade and negotiation canonicality tests;
-- negotiated-session version-mismatch and valid-prefix tests;
+- negotiated-session header-only rejection, every-split valid-prefix delivery
+  and partial-buffer release after a version mismatch;
 - schema admission tests for missing and unknown critical fields;
 - stream tests for chunking-invariant prefix delivery, true header-first
   rejection, poison state, buffer bounds and many-small-frame processing;

@@ -14,6 +14,7 @@ pub const MAX_BUFFERED_WIRE_FRAMES: usize = 2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct FrameHeader {
+    version: WireVersion,
     frame_length: usize,
 }
 
@@ -57,6 +58,7 @@ impl StreamDecodeBatch {
 #[derive(Debug)]
 pub struct StreamingDecoder {
     buffer: Vec<u8>,
+    negotiated_version: Option<WireVersion>,
     expected_frame_length: Option<usize>,
     // Historical public configuration is expressed in maximum-frame units.
     // Header-first decoding retains at most one partial frame; this budget
@@ -76,9 +78,18 @@ impl StreamingDecoder {
     pub fn new() -> Self {
         Self {
             buffer: Vec::with_capacity(WIRE_HEADER_BYTES),
+            negotiated_version: None,
             expected_frame_length: None,
             max_feed_bytes: MAX_WIRE_FRAME_BYTES * MAX_BUFFERED_WIRE_FRAMES,
             terminal_error: None,
+        }
+    }
+
+    /// Apply the session version before allocating or accepting any body bytes.
+    pub(crate) fn for_negotiated_version(version: WireVersion) -> Self {
+        Self {
+            negotiated_version: Some(version),
+            ..Self::new()
         }
     }
 
@@ -93,6 +104,7 @@ impl StreamingDecoder {
         }
         Ok(Self {
             buffer: Vec::with_capacity(WIRE_HEADER_BYTES),
+            negotiated_version: None,
             expected_frame_length: None,
             max_feed_bytes: MAX_WIRE_FRAME_BYTES
                 .checked_mul(frames)
@@ -174,6 +186,17 @@ impl StreamingDecoder {
                     Ok(header) => header,
                     Err(error) => return self.fail(decoded, error),
                 };
+                if let Some(negotiated) = self.negotiated_version
+                    && header.version != negotiated
+                {
+                    return self.fail(
+                        decoded,
+                        StreamDecodeError::NegotiatedVersionMismatch {
+                            negotiated,
+                            observed: header.version,
+                        },
+                    );
+                }
                 self.buffer
                     .reserve_exact(header.frame_length.saturating_sub(self.buffer.len()));
                 self.expected_frame_length = Some(header.frame_length);
@@ -292,7 +315,7 @@ fn inspect_header(header: &[u8]) -> Result<FrameHeader, StreamDecodeError> {
         return Err(StreamDecodeError::Magic);
     }
     let raw_version = read_u16(header, 4)?;
-    let _version = match raw_version {
+    let version = match raw_version {
         1 => WireVersion::V1,
         2 => WireVersion::V2,
         other => return Err(StreamDecodeError::Version(other)),
@@ -318,7 +341,10 @@ fn inspect_header(header: &[u8]) -> Result<FrameHeader, StreamDecodeError> {
     if frame_length > MAX_WIRE_FRAME_BYTES {
         return Err(StreamDecodeError::PayloadLength);
     }
-    Ok(FrameHeader { frame_length })
+    Ok(FrameHeader {
+        version,
+        frame_length,
+    })
 }
 
 fn read_u16(bytes: &[u8], start: usize) -> Result<u16, StreamDecodeError> {
@@ -360,10 +386,17 @@ fn read_u64(bytes: &[u8], start: usize) -> Result<u64, StreamDecodeError> {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StreamDecodeError {
     InvalidBufferFrameLimit(usize),
-    BufferLimit { attempted: usize, maximum: usize },
+    BufferLimit {
+        attempted: usize,
+        maximum: usize,
+    },
     TruncatedHeader,
     Magic,
     Version(u16),
+    NegotiatedVersionMismatch {
+        negotiated: WireVersion,
+        observed: WireVersion,
+    },
     IdentityLength,
     Generation,
     PayloadLength,
@@ -389,6 +422,15 @@ impl fmt::Display for StreamDecodeError {
             Self::Version(version) => {
                 write!(formatter, "unsupported wire stream version {version}")
             }
+            Self::NegotiatedVersionMismatch {
+                negotiated,
+                observed,
+            } => write!(
+                formatter,
+                "wire header version {} does not match negotiated version {}",
+                observed.as_u16(),
+                negotiated.as_u16()
+            ),
             Self::IdentityLength => {
                 formatter.write_str("wire stream identity length is outside bounds")
             }
