@@ -1,0 +1,127 @@
+name: Inference worker convergence apply
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/workflows/inference-worker-convergence-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-convergence-apply
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Bind the reviewed applicator
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f scripts/hepta_apply_inference_worker_convergence.py
+          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/inference-worker-convergence-apply.yml"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git cat-file -e aa2940ead13bd559dbe693d2e2e95815cc7e7f9f^{commit}
+
+      - name: Apply trusted grant and bounded local driver convergence
+        run: python3 scripts/hepta_apply_inference_worker_convergence.py
+
+      - name: Prepare native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev libssl-dev
+
+      - name: Format only the changed Rust packages
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-contracts --package codex-hepta-infer-worker-host
+          git diff --check
+
+      - name: Test final-use revalidation
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-contracts --lib
+          current_revalidation_fences_long_lived_generation_after_revocation
+          -- --exact --nocapture
+
+      - name: Test worker lifecycle and concrete local process driver
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib -- --nocapture
+
+      - name: Strict changed-package lint
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-contracts --no-deps --lib --tests -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host --no-deps --lib --tests -- -D warnings
+
+      - name: Commit validated convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -- scripts/hepta_apply_inference_worker_convergence.py \
+            .github/workflows/inference-worker-convergence-apply.yml
+          git diff --check
+          git config user.name "Hepta convergence bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add codex-rs/hepta-contracts/src/final_use.rs \
+            codex-rs/hepta-contracts/src/final_use_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/lib.rs \
+            codex-rs/hepta-infer-worker-host/src/model_worker.rs \
+            codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/model_worker_resource_lifecycle_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/local_process_driver.rs \
+            codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs \
+            scripts/hepta_apply_inference_worker_convergence.py \
+            .github/workflows/inference-worker-convergence-apply.yml
+          git commit -s -m "feat(inference.worker): authenticate and bound local execution"
+
+      - name: Rebase, revalidate and fast-forward push
+        env:
+          BRANCH: work/product-convergence-20260923
+        shell: bash
+        run: |
+          set -euo pipefail
+          validate_rebased_head() {
+            git diff --check
+            (
+              cd codex-rs
+              cargo fmt --package codex-hepta-contracts --package codex-hepta-infer-worker-host -- --check
+              cargo test --locked -p codex-hepta-contracts --lib \
+                current_revalidation_fences_long_lived_generation_after_revocation -- --exact
+              cargo test --locked -p codex-hepta-infer-worker-host --lib
+              cargo clippy --locked -p codex-hepta-contracts --no-deps --lib --tests -- -D warnings
+              cargo clippy --locked -p codex-hepta-infer-worker-host --no-deps --lib --tests -- -D warnings
+            )
+          }
+          for attempt in 1 2 3; do
+            git fetch origin "$BRANCH"
+            remote_head="$(git rev-parse FETCH_HEAD)"
+            if ! git merge-base --is-ancestor "$remote_head" HEAD; then
+              git rebase "$remote_head"
+              validate_rebased_head
+            fi
+            if git push origin "HEAD:refs/heads/$BRANCH"; then
+              exit 0
+            fi
+          done
+          echo "branch advanced during all fast-forward attempts" >&2
+          exit 1
