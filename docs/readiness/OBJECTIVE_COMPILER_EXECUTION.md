@@ -138,6 +138,20 @@ received
 
 A crash before caller publication leaves no selected objective. A partial unacknowledged active-segment tail is truncated only to the last complete validated frame; acknowledged missing history, a removed sealed segment, a missing external checkpoint for existing local history, or a checkpoint ahead of local history is never repaired as empty success. Rotation preserves one global predecessor chain. Compaction replaces only a complete expired sealed prefix with a replay index that retains run identity, authentication frontier, record and chain digests; the pending summary is written first, checkpointed by CAS second, committed third, and old segments removed last. A crash or acknowledgement loss at any of those cuts is reconciled without resurrecting an older frontier. Reusing the run identity with changed native or canonical-protocol semantics conflicts. At runtime final use, current trust, generation, fence, exact admitted deadline and canonical protocol identity are revalidated. `ObjectiveFunctionV1` floors the exact microsecond deadline to milliseconds, and Agentd uses the same conservative floor so the wire cannot extend authority. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
+### Process lease versus runtime dispatch generation
+
+The worker configuration names the Agentd process spawn lease; the persisted
+RunStart and AgentRunReceipt carry the run's runtime generation. These identities
+must not be compared as if they were the same counter. The worker captures the
+complete `ContextAttached` receipt, rechecks that unchanged owner receipt before
+preparation is committed, and accepts a new `Dispatched` acknowledgement only
+when its run, successor revision, runtime generation, fence, authority epoch,
+deadline, context and compilation digest all match that handoff. An idempotent
+acknowledgement is recovery evidence, never a second physical-send permit.
+The signed product-process fixture exercises distinct process/runtime counters;
+independent receipt-mutation regressions reject generation, fence, authority,
+deadline, revision, context, terminal and replay substitutions.
+
 ### Store writer continuity and bounded recovery decoding
 
 `DurableRunStartStore` holds a stable `.writer.lock` lease for its entire

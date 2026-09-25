@@ -405,8 +405,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "b73bc78f2994a90e0ea6ea01f8996737de65a736",
-    "tree": "7cc18582968a2f9246c70dc6f8783fec87df6194"
+    "commit": "de5cb6adbad023b2ff22c97341f925b5a6cd912d",
+    "tree": "2fed9e61ff50e4b14e281713004faa39a0551ca2"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -504,7 +504,10 @@
       "scripts/hepta-objective-target-measure.py",
       "codex-rs/hepta-agent-protocol/src/authbus.rs",
       "codex-rs/hepta-agent-protocol/src/objective_tests.rs",
-      "scripts/test_hepta_objective_target_measure.py"
+      "scripts/test_hepta_objective_target_measure.py",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs"
     ],
     "role": "product_composition_source_identity"
   },
@@ -590,15 +593,15 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_compaction.rs",
-      "object": "2b3e730ebdba6d55cd61dedec2b697d0f4a53bf9"
+      "object": "c959db0d623543bdcf9f8274320b29d12990f29e"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
-      "object": "724eb7f6675068a51c2c0ed0033d9b6f04177197"
+      "object": "fbb7f9962daa80207b2305da9e517186d4573303"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs",
-      "object": "100b9c36b2ceb7cb60f00071b23b64ac290bec8b"
+      "object": "59167c588af1bb5ccae76cf15d6d80f383c39b4c"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
@@ -606,7 +609,7 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "4fa8b04a0c0831a59e9c0a3f363d26ba24214d18"
+      "object": "f9c731b781e1729e1b126160751816954108083e"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -646,7 +649,7 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
-      "object": "c251dd241cc8ed500c8d22af23af0d0385b17e19"
+      "object": "056b891c9bb452c4651ea632ca4ae4924bb303fe"
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_json.rs",
@@ -666,15 +669,15 @@
     },
     {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
-      "object": "07da79c78d3e1883f2ff32e39f35a030f03f801d"
+      "object": "f99b2a19fa39473925e74ff553009dab39bff246"
     },
     {
       "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
-      "object": "f81023e93fd1b9db1f8408a554f427489163993b"
+      "object": "30c859585fe12a410a2b3ce4ae7a43afb0b24dfa"
     },
     {
       "path": "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
-      "object": "464bf897a2652a895fbd9510dacd462fd2aa4a2d"
+      "object": "d755dfda717c097f9680aa2d59c416cd16f53c6a"
     },
     {
       "path": "qualification/module-execution-dossiers/detail/objective.compiler.md",
@@ -682,7 +685,7 @@
     },
     {
       "path": "scripts/hepta-objective-target-measure.py",
-      "object": "d06be3dfb12305e61c22844699004dc6187c08f4"
+      "object": "b10ba3e3fe445108ce5697f9187e78f9d5bd2b33"
     }
   ]
 }

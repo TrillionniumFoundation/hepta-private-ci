@@ -402,5 +402,62 @@ class LaneDOwnerMapTests(unittest.TestCase):
                     LANE_D.load(relative)
 
 
+class ObjectiveProductOperationTests(unittest.TestCase):
+    def mapping(self) -> dict:
+        canonical = [
+            "decode_source_envelope_json_v1",
+            "validate_structure",
+            "admit_objective_v1",
+            "compile_admitted_objective_v1",
+            "encode_authenticated_objective_function_v1",
+            "decode_objective_function_v1",
+        ]
+        return {
+            "canonicalProductOperations": canonical,
+            "operations": [
+                {"operation": name}
+                for name in canonical
+                + [
+                    "canonical_objective_intent_digest_v1",
+                    "check_feasibility_v1",
+                ]
+            ]
+            + [
+                {
+                    "operation": "admit_and_compile_objective_v1",
+                    "productRole": "compatibility_not_canonical_product_path",
+                }
+            ],
+        }
+
+    def test_authenticated_projection_is_the_required_product_operation(self) -> None:
+        LANE_D.verify_objective_product_operations(self.mapping())
+
+    def test_raw_projection_cannot_replace_authenticated_projection(self) -> None:
+        mapping = self.mapping()
+        mapping["canonicalProductOperations"][4] = "encode_objective_function_v1"
+        for operation in mapping["operations"]:
+            if operation["operation"] == "encode_authenticated_objective_function_v1":
+                operation["operation"] = "encode_objective_function_v1"
+        with self.assertRaisesRegex(
+            SystemExit, "canonical operation mapping incomplete"
+        ):
+            LANE_D.verify_objective_product_operations(mapping)
+
+    def test_product_order_and_compatibility_role_cannot_drift(self) -> None:
+        mapping = self.mapping()
+        mapping["canonicalProductOperations"][2:4] = reversed(
+            mapping["canonicalProductOperations"][2:4]
+        )
+        with self.assertRaisesRegex(SystemExit, "canonical product operation order"):
+            LANE_D.verify_objective_product_operations(mapping)
+        mapping = self.mapping()
+        mapping["operations"][-1]["productRole"] = "canonical"
+        with self.assertRaisesRegex(
+            SystemExit, "convenience wrapper product-role drift"
+        ):
+            LANE_D.verify_objective_product_operations(mapping)
+
+
 if __name__ == "__main__":
     unittest.main()
