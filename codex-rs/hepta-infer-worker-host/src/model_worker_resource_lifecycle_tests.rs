@@ -205,7 +205,9 @@ fn failed_unload_retains_accounting_and_fences_both_execution_paths() {
     );
     assert_eq!(worker.driver.run_attempts, 0);
     worker.driver.fail_unload = false;
-    worker.unload_model(2_000, "model.1").expect("retry after expiry");
+    worker
+        .unload_model(2_000, "model.1")
+        .expect("retry after expiry");
     assert_eq!(worker.resident_memory_bytes(), 0);
     assert_eq!(worker.driver.unload_attempts, 2);
 }
@@ -260,8 +262,12 @@ fn cumulative_accounting_does_not_wrap_at_u64_maximum() {
     );
     assert_eq!(worker.driver.load_attempts, attempts);
     worker.driver.fail_unload = false;
-    worker.unload_model(2_000, "model.2").expect("second cleanup");
-    worker.unload_model(2_000, "model.1").expect("first cleanup");
+    worker
+        .unload_model(2_000, "model.2")
+        .expect("second cleanup");
+    worker
+        .unload_model(2_000, "model.1")
+        .expect("first cleanup");
     assert_eq!(worker.resident_memory_bytes(), 0);
 }
 
