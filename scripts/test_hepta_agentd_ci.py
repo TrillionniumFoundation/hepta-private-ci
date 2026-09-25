@@ -228,6 +228,65 @@ class WorkflowDependencyTests(unittest.TestCase):
             decoy = "run: " + prefix + " ".join(build)
             self.assertNotIn(build, workflow_commands(decoy))
 
+    def test_native_lanes_resolve_one_exact_target_graph_and_reuse_only_metadata(self):
+        metadata = "$RUNNER_TEMP/hepta-nextest-metadata.json"
+        for filename in (
+            "hepta-gap-agentd-process.yml",
+            "hepta-architecture-convergence.yml",
+        ):
+            with self.subTest(workflow=filename):
+                text = (ROOT / ".github/workflows" / filename).read_text()
+                parts = re.split(
+                    r"^  ([a-z][a-z0-9-]*):\s*$",
+                    text.split("\njobs:\n", 1)[1],
+                    flags=re.M,
+                )
+                jobs = dict(zip(parts[1::2], parts[2::2]))
+                job = (
+                    "process-qualification"
+                    if filename == "hepta-gap-agentd-process.yml"
+                    else "qualification"
+                )
+                commands = workflow_commands(jobs[job])
+                # Unwrap only the repository's actual execution recorder, never
+                # comments, echo commands or an arbitrary matching substring.
+                commands = [
+                    command[command.index("--") + 1 :]
+                    if command[:1] == ["python3"]
+                    and len(command) > 1
+                    and Path(command[1]).name == "hepta_ci_exec.py"
+                    and "--" in command
+                    else command
+                    for command in commands
+                ]
+                graph = [
+                    (index, command)
+                    for index, command in enumerate(commands)
+                    if command[:2] == ["cargo", "metadata"]
+                    and "--all-features" in command
+                ]
+                self.assertEqual(len(graph), 1)
+                graph_index, command = graph[0]
+                self.assertIn("--locked", command)
+                self.assertIn("--filter-platform", command)
+                self.assertIn(metadata, command)
+                tests = [
+                    (index, command)
+                    for index, command in enumerate(commands)
+                    if command[:2] == ["just", "test"]
+                ]
+                self.assertTrue(tests)
+                for index, command in tests:
+                    self.assertGreater(index, graph_index)
+                    self.assertEqual(
+                        command[command.index("--cargo-metadata") + 1], metadata
+                    )
+                    self.assertIn("--locked", command)
+                    self.assertEqual(command[command.index("--retries") + 1], "0")
+                    self.assertNotIn("--binaries-metadata", command)
+                    self.assertNotIn("--archive-file", command)
+                    self.assertNotIn("--manifest-path", command)
+
     def test_catalog_and_formatter_use_the_repository_toolchain_directory(self):
         for name in ("owner-formatting", "catalog-admission"):
             with self.subTest(name=name):

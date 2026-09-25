@@ -159,7 +159,10 @@ jobs:
         run: |
           set -euo pipefail
           cargo build --locked -p codex-app-server --bin codex-app-server
-          target="$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')"
+          host="$(rustc -vV | sed -n 's/^host: //p')"
+          test -n "$host"
+          cargo metadata --locked --all-features --filter-platform "$host" --format-version=1 > "$RUNNER_TEMP/hepta-nextest-metadata.json"
+          target="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["target_directory"])' "$RUNNER_TEMP/hepta-nextest-metadata.json")"
           test -x "$target/debug/codex-app-server"
           printf 'HEPTA_TEST_CODEX_EXE=%s/debug/codex-app-server\n' "$target" >> "$GITHUB_ENV"
       - name: Exercise owner and lifecycle libraries
@@ -167,7 +170,7 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --retries 0 --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
       - name: Exercise actual optional retirement and durable destination recovery
@@ -175,28 +178,28 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --retries 0 -p codex-hepta-agentd --test optional_module_restart \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --test optional_module_restart \
             --test runtime_shutdown_outcomes --test-threads=1
-          just test --locked --retries 0 -p codex-hepta-automation --test retirement_recovery \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-automation --test retirement_recovery \
             --test operation_timer_fence --test-threads=1
-          just test --locked --retries 0 -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
       - name: Exercise named plasticity and live cutover paths
         if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --retries 0 -p codex-hepta-agentd --lib \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --lib \
             plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently --test-threads=1
-          just test --locked --retries 0 -p codex-hepta-runtime \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-runtime \
             authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics --test-threads=1
       - name: Exercise writer admission and real daemon process suites
         if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
             --lib runtime::tests::qualification_ --test-threads=1
-          just test --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
             --test cognitive_product_e2e --test plasticity_process_e2e \
             --test runtime_codex_product_e2e --test supervised_two_agents \
             --test supervisord_product_e2e --test queue_capacity_product --test-threads=1
