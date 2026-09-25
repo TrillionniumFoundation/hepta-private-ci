@@ -1167,9 +1167,11 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
     );
 
     driver.join_revoker_and_leave_pending();
-    assert_eq!(
-        authority.claim(&signed, &expected),
-        Err(FinalUseError::RevocationPending),
+    assert!(
+        matches!(
+            authority.claim(&signed, &expected),
+            Err(FinalUseError::RevocationPending)
+        ),
         "a blocked revocation must stop new authority admission until the exact update retries",
     );
     driver.apply_pending_revocation();
