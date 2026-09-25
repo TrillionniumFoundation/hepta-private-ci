@@ -90,3 +90,9 @@ owner and its publication lock. It is available through `into_selected_shared`;
 it does not provide the still-missing authenticated CLI invocation factory or a
 real inference-control feature backend, and does not assert V2 migration, Laya
 activation or independently accepted empirical results.
+
+The next integration advance `694eb1b7b4c0f50847ed50be8c54a22e3a81b122`
+adds five cognitive result/caller-map changes on top of `80891ea44...`; merge
+`b5c20ef1922bcfb627ea76251a60048c04a4aeef` retains them. The fetched source
+candidate remains `4d3e4e13...`; independent review refs record both fetched heads
+without overwriting an unrelated non-fast-forward local tracking ref.
