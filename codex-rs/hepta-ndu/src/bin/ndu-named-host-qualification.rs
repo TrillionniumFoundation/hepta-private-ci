@@ -110,7 +110,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             subject,
             digest("capacity-overflow-payload"),
         )
-        .expect_err("4097th record must reject");
+        .err()
+        .ok_or("4097th record must reject")?;
     if overflow != NduProjectionJournalError::RecordLimitExceeded {
         return Err("journal capacity boundary mismatch".into());
     }
@@ -406,7 +407,7 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn percentile(values: &[u128], percentile: usize) -> u128 {
-    let index = ((values.len() - 1) * percentile + 99) / 100;
+    let index = ((values.len() - 1) * percentile).div_ceil(100);
     values[index.min(values.len() - 1)]
 }
 
