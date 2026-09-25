@@ -1,10 +1,13 @@
 #![recursion_limit = "256"]
 #![cfg(unix)]
 
+use std::collections::BTreeSet;
 use std::io::Write;
+use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 use std::time::SystemTime;
@@ -14,14 +17,27 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
-use codex_hepta_agentd::AgentCancellationDisposition;
+use codex_hepta_agentd::AgentContextAttachment;
 use codex_hepta_agentd::AgentRunPhase;
 use codex_hepta_agentd::AuthBusObjectiveBody;
 use codex_hepta_agentd::AuthBusObjectiveIngress;
 use codex_hepta_agentd::ObjectiveStartOutcome;
 use codex_hepta_agentd::authbus_objective_claims;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_evidence::HeptaEvidenceStore;
+use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::final_use_authorizer::FinalUseAuthorizerConfig;
+use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
+use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
+use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
+use codex_hepta_infer_worker_host::native_app_server::NativeBoundaryStatus;
+use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
+use codex_hepta_infer_worker_host::native_app_server::NativeRunStatus;
+use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_objective::decode_source_envelope_json_v1;
 use codex_state::SqliteConfig;
@@ -29,8 +45,18 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use serde_json::json;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
+use tokio::net::UnixListener;
+use tokio_util::sync::CancellationToken;
+use wiremock::Mock;
+use wiremock::ResponseTemplate;
+use wiremock::matchers::method;
+use wiremock::matchers::path_regex;
 
 mod support;
 
@@ -41,6 +67,26 @@ const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c31";
 const MISSING_CHECKPOINT_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c32";
 const COMPILED_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c34";
 const ISSUER_ID: &str = "issuer.objective.product";
+const MODEL: &str = "gpt-5.2";
+const AUTHORITY_SCHEMA: u32 = 1;
+const AUTHORITY_OPERATION: &str = "runtime.codex.turn_start";
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct IssuerRequest {
+    schema_version: u32,
+    operation: String,
+    binding: FinalUseBinding,
+}
+
+#[derive(Serialize)]
+#[serde(deny_unknown_fields)]
+struct IssuerResponse {
+    schema_version: u32,
+    revocations: FinalUseRevocations,
+    grant: Option<SignedFinalUseGrant>,
+    denial_reason: Option<String>,
+}
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn signed_objective_abstain_is_durable_idempotent_and_restart_safe() -> Result<()> {
@@ -120,12 +166,13 @@ async fn signed_objective_abstain_is_durable_idempotent_and_restart_safe() -> Re
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn signed_compiled_objective_enters_runtime_and_reaches_terminal_without_resurrection()
+async fn signed_compiled_objective_executes_once_reaches_terminal_and_does_not_resurrect()
 -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(COMPILED_AGENT_ID, "objective-compiled-workspace")?;
-    let model = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    let provider = responses::start_mock_server().await;
+    MockResponsesConfig::new(&provider.uri()).write(agent.layout.home_root())?;
+    mount_terminal_response(&provider).await;
     std::fs::set_permissions(
         agent.layout.home_root(),
         std::fs::Permissions::from_mode(0o700),
@@ -143,30 +190,155 @@ async fn signed_compiled_objective_enters_runtime_and_reaches_terminal_without_r
     let (control, first_health) = fleet.wait_ready(&agent, 1).await?;
     let request =
         signed_compiled_objective(&agent.agent_id, &key, 1, 1, "run.objective.compiled.1")?;
-    let receipt = admitted(control.objective_start(request).await?)?;
+    let receipt = admitted(control.objective_start(request.clone()).await?)?;
     ensure!(receipt.disposition == "compiled");
+    let execution = receipt
+        .execution
+        .clone()
+        .context("compiled objective omitted its exact execution binding")?;
+    ensure!(execution.objective_digest == receipt.objective_digest);
     let admitted_run = control
         .run_status(receipt.run_id.clone())
         .await?
         .context("compiled objective did not enter the daemon run coordinator")?;
     ensure!(admitted_run.phase == AgentRunPhase::Admitted);
 
-    let cancelled = control
-        .run_cancel(
-            receipt.run_id.clone(),
+    let context_digest = digest_hex('a');
+    let envelope_digest = digest_hex('b');
+    let attached = control
+        .run_attach_context(
             admitted_run.revision,
-            "product-e2e-cancel-before-dispatch".to_string(),
+            AgentContextAttachment {
+                run_id: receipt.run_id.clone(),
+                request_digest: execution.request_digest.clone(),
+                objective_digest: execution.objective_digest.clone(),
+                body_digest: execution.body_digest.clone(),
+                artifact_set_digest: execution.artifact_set_digest.clone(),
+                authority_epoch: execution.authority_epoch,
+                generation: execution.generation,
+                fence_digest: execution.fence_digest.clone(),
+                deadline_ms: execution.deadline_ms,
+                context_digest: context_digest.clone(),
+                compilation_receipt_digest: envelope_digest.clone(),
+            },
         )
         .await?;
-    ensure!(cancelled.disposition == AgentCancellationDisposition::CancelledBeforeDispatch);
-    ensure!(cancelled.receipt.phase == AgentRunPhase::Cancelled);
-    ensure!(cancelled.receipt.terminal_observed);
+    ensure!(attached.phase == AgentRunPhase::ContextAttached);
+
+    let authority_root = tempfile::tempdir()?;
+    std::fs::set_permissions(
+        authority_root.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    let authority_socket = authority_root.path().join("final-use.sock");
+    let listener = UnixListener::bind(&authority_socket)?;
+    std::fs::set_permissions(&authority_socket, std::fs::Permissions::from_mode(0o660))?;
+    let issuer_uid = std::fs::metadata(&authority_socket)?.uid();
+    let authority_signer = SigningKey::from_bytes(&[117; 32]);
+    let authorizer = UnixFinalUseAuthorizer::from_config(FinalUseAuthorizerConfig {
+        issuer_socket: authority_socket,
+        issuer_uid,
+        signer_id: "objective-product-authority".to_string(),
+        verifying_key: authority_signer.verifying_key().to_bytes(),
+        authority_state_dir: authority_root.path().join("authority-state"),
+        authority_epoch: 11,
+        revocation_revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+        issuer_timeout_ms: 2_000,
+    })
+    .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+    let issuer = tokio::spawn(async move { serve_one_grant(listener, authority_signer).await });
+
+    let driver = AppServerModelDriver::new(NativeWorkerConfig {
+        agentd_socket: agent.layout.agentd_control_socket().to_path_buf(),
+        agent_id: agent.agent_id.clone(),
+        generation: 1,
+        model: MODEL.to_string(),
+        timeout: Duration::from_secs(20),
+    })
+    .map_err(|error| anyhow::anyhow!(error.to_string()))?
+    .with_turn_start_authorizer(Arc::new(authorizer));
+    let journal_root = tempfile::tempdir()?;
+    let journal = journal_root
+        .path()
+        .join("objective-product-execution.journal");
+    let mut durable = DurableInferenceControl::open(&journal, 8)?;
+    let cancellation = CancellationToken::new();
+    let binding = NativeIntelligenceRunBinding {
+        run_id: receipt.run_id.clone(),
+        expected_revision: attached.revision,
+        context_digest,
+        envelope_digest,
+    };
+    let output = driver
+        .run_intelligence(
+            &mut durable,
+            NativeAdmission {
+                request_id: "objective-product-physical-turn-1".to_string(),
+                maximum_in_flight: 1,
+            },
+            "Return the exact phrase objective product e2e.".to_string(),
+            None,
+            binding.clone(),
+            &cancellation,
+        )
+        .await
+        .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+    issuer
+        .await
+        .context("final-use issuer task failed to join")??;
+    ensure!(output.status == NativeRunStatus::Completed);
+    ensure!(output.boundary_status == NativeBoundaryStatus::Succeeded);
+    ensure!(output.terminal_observed);
+    let terminal = control
+        .run_status(receipt.run_id.clone())
+        .await?
+        .context("objective run disappeared before terminal verification")?;
+    ensure!(terminal.phase == AgentRunPhase::Succeeded);
+    ensure!(terminal.terminal_observed);
+
+    // Lost response followed by a full inference-journal reopen returns the
+    // durable observation and cannot acquire another grant or send another
+    // physical provider request.
+    drop(durable);
+    let mut durable = DurableInferenceControl::open(&journal, 8)?;
+    let replay = driver
+        .run_intelligence(
+            &mut durable,
+            NativeAdmission {
+                request_id: "objective-product-physical-turn-1".to_string(),
+                maximum_in_flight: 1,
+            },
+            "Return the exact phrase objective product e2e.".to_string(),
+            None,
+            binding,
+            &cancellation,
+        )
+        .await
+        .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+    ensure!(replay == output);
+    let physical_sends = provider
+        .received_requests()
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|observed| observed.url.path().ends_with("/responses"))
+        .count();
+    ensure!(
+        physical_sends == 1,
+        "objective product sent {physical_sends} physical turns"
+    );
     assert_checkpoint(&files.objective_checkpoint_file, &agent.agent_id, 1)?;
 
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
     let (restarted, second_health) = fleet.wait_new_spawn(&agent, 1).await?;
     ensure!(second_health.process_id != first_health.process_id);
     ensure!(restarted.run_status(receipt.run_id).await?.is_none());
+    let stale = restarted
+        .objective_start(request)
+        .await
+        .expect_err("old generation objective unexpectedly resurrected after restart");
+    ensure!(stale.to_string().contains("agentd rejected request"));
     assert_checkpoint(&files.objective_checkpoint_file, &agent.agent_id, 1)?;
     Ok(())
 }
@@ -236,6 +408,77 @@ async fn existing_local_objective_run_start_history_without_external_checkpoint_
         "daemon failed for an unrelated reason: {rendered}"
     );
     ensure!(!files.objective_checkpoint_file.exists());
+    Ok(())
+}
+
+async fn mount_terminal_response(server: &wiremock::MockServer) {
+    mount_terminal_responses(server, 1).await;
+}
+
+async fn mount_terminal_responses(server: &wiremock::MockServer, expected: u64) {
+    let body = responses::sse(vec![
+        responses::ev_assistant_message("objective-product-message", "objective product e2e"),
+        responses::ev_completed("objective-product-response"),
+    ]);
+    Mock::given(method("POST"))
+        .and(path_regex(".*/responses$"))
+        .respond_with(
+            ResponseTemplate::new(200)
+                .insert_header("content-type", "text/event-stream")
+                .set_body_string(body),
+        )
+        .expect(expected)
+        .mount(server)
+        .await;
+}
+
+async fn serve_one_grant(listener: UnixListener, signer: SigningKey) -> Result<()> {
+    serve_grants(listener, signer, 1).await
+}
+
+async fn serve_grants(listener: UnixListener, signer: SigningKey, count: usize) -> Result<()> {
+    for index in 0..count {
+        let (mut stream, _) = listener.accept().await?;
+        let mut length = [0_u8; 4];
+        stream.read_exact(&mut length).await?;
+        let request_len = usize::try_from(u32::from_be_bytes(length))?;
+        ensure!((1..=16 * 1024).contains(&request_len));
+        let mut request_bytes = vec![0_u8; request_len];
+        stream.read_exact(&mut request_bytes).await?;
+        let request: IssuerRequest = serde_json::from_slice(&request_bytes)?;
+        ensure!(request.schema_version == AUTHORITY_SCHEMA);
+        ensure!(request.operation == AUTHORITY_OPERATION);
+
+        let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+        let revocations = FinalUseRevocations {
+            authority_epoch: 11,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        };
+        let nonce_byte = u8::try_from(index % 251 + 1)?;
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "objective-product-authority".to_string(),
+            authority_epoch: revocations.authority_epoch,
+            grant_id: format!("objective-product-final-use-grant-{index}"),
+            nonce: [nonce_byte; 32],
+            binding: request.binding,
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now.checked_add(60_000).context("grant expiry overflow")?,
+        };
+        let signature = signer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+        let bytes = serde_json::to_vec(&IssuerResponse {
+            schema_version: AUTHORITY_SCHEMA,
+            revocations,
+            grant: Some(SignedFinalUseGrant { grant, signature }),
+            denial_reason: None,
+        })?;
+        stream
+            .write_all(&u32::try_from(bytes.len())?.to_be_bytes())
+            .await?;
+        stream.write_all(&bytes).await?;
+        stream.flush().await?;
+    }
     Ok(())
 }
 
@@ -621,6 +864,7 @@ fn hex(bytes: &[u8]) -> String {
 #[ignore = "run only on a named target host through hepta-objective-target-measure.py"]
 async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
     let samples = product_measurement_sample_count(32, 1_000)?;
+    let execution_samples = product_execution_measurement_sample_count(4, 64)?;
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(
         "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c33",
@@ -628,6 +872,7 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
     )?;
     let model = responses::start_mock_server().await;
     MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    mount_terminal_responses(&model, u64::try_from(execution_samples)?).await;
     std::fs::set_permissions(
         agent.layout.home_root(),
         std::fs::Permissions::from_mode(0o700),
@@ -659,6 +904,7 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
         timings.push(started.elapsed().as_nanos());
         ensure!(!receipt.idempotent);
         ensure!(receipt.disposition == "explicit_abstain");
+        ensure!(receipt.execution.is_none());
         last_request = Some(request);
     }
 
@@ -670,12 +916,172 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
     )?;
     let replay_ns = replay_started.elapsed().as_nanos();
     ensure!(replay.idempotent);
+
+    let authority_root = tempfile::tempdir()?;
+    std::fs::set_permissions(
+        authority_root.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    let authority_socket = authority_root.path().join("final-use.sock");
+    let listener = UnixListener::bind(&authority_socket)?;
+    std::fs::set_permissions(&authority_socket, std::fs::Permissions::from_mode(0o660))?;
+    let issuer_uid = std::fs::metadata(&authority_socket)?.uid();
+    let authority_signer = SigningKey::from_bytes(&[119; 32]);
+    let authorizer = UnixFinalUseAuthorizer::from_config(FinalUseAuthorizerConfig {
+        issuer_socket: authority_socket,
+        issuer_uid,
+        signer_id: "objective-product-authority".to_string(),
+        verifying_key: authority_signer.verifying_key().to_bytes(),
+        authority_state_dir: authority_root.path().join("authority-state"),
+        authority_epoch: 11,
+        revocation_revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+        issuer_timeout_ms: 2_000,
+    })
+    .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+    let issuer =
+        tokio::spawn(
+            async move { serve_grants(listener, authority_signer, execution_samples).await },
+        );
+    let driver = AppServerModelDriver::new(NativeWorkerConfig {
+        agentd_socket: agent.layout.agentd_control_socket().to_path_buf(),
+        agent_id: agent.agent_id.clone(),
+        generation: 1,
+        model: MODEL.to_string(),
+        timeout: Duration::from_secs(20),
+    })
+    .map_err(|error| anyhow::anyhow!(error.to_string()))?
+    .with_turn_start_authorizer(Arc::new(authorizer));
+    let execution_root = tempfile::tempdir()?;
+    let execution_journal = execution_root
+        .path()
+        .join("objective-product-measurement.journal");
+    let mut durable = DurableInferenceControl::open(
+        &execution_journal,
+        execution_samples
+            .checked_add(1)
+            .context("execution measurement capacity overflow")?,
+    )?;
+    let cancellation = CancellationToken::new();
+    let mut execution_timings = Vec::with_capacity(execution_samples);
+    let mut last_execution = None;
+    for sample in 1..=execution_samples {
+        let sequence = u64::try_from(samples.checked_add(sample).context("sequence overflow")?)?;
+        let run_id = format!("run.objective.measure.compiled.{sequence}");
+        let request = signed_compiled_objective(&agent.agent_id, &key, 1, sequence, &run_id)?;
+        let native_request_id = format!("objective-product-measure-turn-{sequence}");
+        let prompt = "Return the exact phrase objective product e2e.".to_string();
+        let started = Instant::now();
+        let receipt = admitted(control.objective_start(request).await?)?;
+        ensure!(receipt.disposition == "compiled");
+        let execution = receipt
+            .execution
+            .context("compiled measurement omitted execution binding")?;
+        let admitted_run = control
+            .run_status(receipt.run_id.clone())
+            .await?
+            .context("compiled measurement run disappeared")?;
+        let context_digest = format!("{sequence:064x}");
+        let envelope_digest = format!(
+            "{:064x}",
+            sequence.checked_add(1_000_000).context("digest overflow")?
+        );
+        let attached = control
+            .run_attach_context(
+                admitted_run.revision,
+                AgentContextAttachment {
+                    run_id: receipt.run_id.clone(),
+                    request_digest: execution.request_digest,
+                    objective_digest: execution.objective_digest,
+                    body_digest: execution.body_digest,
+                    artifact_set_digest: execution.artifact_set_digest,
+                    authority_epoch: execution.authority_epoch,
+                    generation: execution.generation,
+                    fence_digest: execution.fence_digest,
+                    deadline_ms: execution.deadline_ms,
+                    context_digest: context_digest.clone(),
+                    compilation_receipt_digest: envelope_digest.clone(),
+                },
+            )
+            .await?;
+        let binding = NativeIntelligenceRunBinding {
+            run_id: receipt.run_id.clone(),
+            expected_revision: attached.revision,
+            context_digest,
+            envelope_digest,
+        };
+        let output = driver
+            .run_intelligence(
+                &mut durable,
+                NativeAdmission {
+                    request_id: native_request_id.clone(),
+                    maximum_in_flight: 1,
+                },
+                prompt.clone(),
+                None,
+                binding.clone(),
+                &cancellation,
+            )
+            .await
+            .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+        ensure!(output.status == NativeRunStatus::Completed);
+        ensure!(output.boundary_status == NativeBoundaryStatus::Succeeded);
+        ensure!(output.terminal_observed);
+        let terminal = control
+            .run_status(receipt.run_id)
+            .await?
+            .context("compiled measurement terminal disappeared")?;
+        ensure!(terminal.phase == AgentRunPhase::Succeeded && terminal.terminal_observed);
+        execution_timings.push(started.elapsed().as_nanos());
+        last_execution = Some((native_request_id, prompt, binding, output));
+    }
+    issuer
+        .await
+        .context("measurement final-use issuer task failed to join")??;
+
+    let (native_request_id, prompt, binding, output) =
+        last_execution.context("execution measurement produced no request")?;
+    drop(durable);
+    let mut durable = DurableInferenceControl::open(
+        &execution_journal,
+        execution_samples
+            .checked_add(1)
+            .context("execution measurement capacity overflow")?,
+    )?;
+    let execution_replay_started = Instant::now();
+    let execution_replay = driver
+        .run_intelligence(
+            &mut durable,
+            NativeAdmission {
+                request_id: native_request_id,
+                maximum_in_flight: 1,
+            },
+            prompt,
+            None,
+            binding,
+            &cancellation,
+        )
+        .await
+        .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+    let execution_replay_ns = execution_replay_started.elapsed().as_nanos();
+    ensure!(execution_replay == output);
+    let physical_sends = model
+        .received_requests()
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|observed| observed.url.path().ends_with("/responses"))
+        .count();
+    ensure!(physical_sends == execution_samples);
+
+    let durable_sequence = samples
+        .checked_add(execution_samples)
+        .context("checkpoint sequence overflow")?;
     assert_checkpoint(
         &files.objective_checkpoint_file,
         &agent.agent_id,
-        u64::try_from(samples)?,
+        u64::try_from(durable_sequence)?,
     )?;
-
     let restart_started = Instant::now();
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
     let _ = fleet.wait_new_spawn(&agent, 1).await?;
@@ -683,9 +1089,10 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
     assert_checkpoint(
         &files.objective_checkpoint_file,
         &agent.agent_id,
-        u64::try_from(samples)?,
+        u64::try_from(durable_sequence)?,
     )?;
     let (p50, p95, p99) = measured_percentiles(timings)?;
+    let (execution_p50, execution_p95, execution_p99) = measured_percentiles(execution_timings)?;
     println!(
         "OBJECTIVE_PRODUCT_MEASUREMENT={}",
         json!({
@@ -694,11 +1101,37 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
             "samples": samples,
             "latencyNanoseconds": {"p50": p50, "p95": p95, "p99": p99},
             "exactReplayNanoseconds": replay_ns,
+            "executionSamples": execution_samples,
+            "executionLatencyNanoseconds": {
+                "p50": execution_p50,
+                "p95": execution_p95,
+                "p99": execution_p99
+            },
+            "executionExactReplayNanoseconds": execution_replay_ns,
+            "physicalProviderSends": physical_sends,
+            "terminalObservations": execution_samples,
             "restartReadyNanoseconds": restart_ns,
-            "durableCheckpointSequence": samples
+            "durableCheckpointSequence": durable_sequence
         })
     );
     Ok(())
+}
+
+fn product_execution_measurement_sample_count(default: usize, maximum: usize) -> Result<usize> {
+    match std::env::var("HEPTA_OBJECTIVE_PRODUCT_EXECUTION_SAMPLES") {
+        Ok(raw) => {
+            let value = raw
+                .parse::<usize>()
+                .context("HEPTA_OBJECTIVE_PRODUCT_EXECUTION_SAMPLES must be an integer")?;
+            ensure!(
+                (1..=maximum).contains(&value),
+                "HEPTA_OBJECTIVE_PRODUCT_EXECUTION_SAMPLES must be in 1..={maximum}"
+            );
+            Ok(value)
+        }
+        Err(std::env::VarError::NotPresent) => Ok(default),
+        Err(error) => Err(error.into()),
+    }
 }
 
 fn product_measurement_sample_count(default: usize, maximum: usize) -> Result<usize> {

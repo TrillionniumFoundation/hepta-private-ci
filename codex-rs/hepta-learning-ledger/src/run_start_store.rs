@@ -413,6 +413,16 @@ impl DurableRunStartStore {
         Ok(self.history.iter().collect())
     }
 
+    /// Resolve one retained replay identity without allocating or scanning the
+    /// entire history. Entries remain available after payload compaction.
+    pub fn index_entry(
+        &self,
+        run_id: &StableId,
+    ) -> Result<Option<&RunStartIndexEntryV1>, RunStartStoreError> {
+        self.ready()?;
+        Ok(self.index.get(run_id))
+    }
+
     pub fn authentication_records(
         &self,
     ) -> Result<Vec<(&RunStartAuthenticationV1, &StableId)>, RunStartStoreError> {

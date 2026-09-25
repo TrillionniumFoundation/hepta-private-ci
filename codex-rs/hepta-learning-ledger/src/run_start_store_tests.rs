@@ -546,3 +546,61 @@ fn failed_rotation_poisons_writer_until_reopen() {
     );
     assert_eq!(store.records(), Err(RunStartStoreError::Poisoned));
 }
+
+#[test]
+fn indexed_replay_identity_survives_rotation_compaction_and_reopen() {
+    let fixture = Fixture::new("indexed-replay");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(2, checkpoint.clone()));
+    let first_record = record("run.indexed.1", 1);
+    let first = must(store.append_run_start(Digest32::ZERO, first_record.clone()));
+    let original = must(store.index_entry(&first_record.snapshot.run_id)).cloned();
+    assert!(original.is_some());
+    for sequence in 2..=9 {
+        let head = store.head_digest();
+        must(store.append_run_start(head, record(&format!("run.indexed.{sequence}"), sequence)));
+    }
+    assert_eq!(must(store.index_entry(&id("run.missing"))), None);
+    assert_eq!(must(store.compact_expired_prefix(30_000)), 4);
+    assert!(must(store.get(&first_record.snapshot.run_id)).is_none());
+    assert_eq!(
+        must(store.index_entry(&first_record.snapshot.run_id)),
+        original.as_ref()
+    );
+    drop(store);
+    let mut store = must(fixture.open(2, checkpoint));
+    assert_eq!(
+        must(store.index_entry(&first_record.snapshot.run_id)),
+        original.as_ref()
+    );
+    let replay = must(store.append_run_start(store.head_digest(), first_record.clone()));
+    assert_eq!(replay.sequence, first.sequence);
+    assert_eq!(replay.chain_digest, first.chain_digest);
+    assert_eq!(
+        replay.disposition,
+        RunStartAppendDisposition::IdempotentReplay
+    );
+    let mut changed = first_record;
+    changed.authentication.message_id = id("message.changed");
+    assert_eq!(
+        store.append_run_start(store.head_digest(), changed).err(),
+        Some(RunStartStoreError::Conflict)
+    );
+}
+
+#[test]
+fn indexed_replay_lookup_rejects_uncertain_checkpoint_state() {
+    let fixture = Fixture::new("indexed-poison");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(2, checkpoint.clone()));
+    let first = record("run.indexed.uncertain", 1);
+    checkpoint.fail_next();
+    assert_eq!(
+        store.append_run_start(Digest32::ZERO, first.clone()).err(),
+        Some(RunStartStoreError::Indeterminate)
+    );
+    assert_eq!(
+        store.index_entry(&first.snapshot.run_id).err(),
+        Some(RunStartStoreError::Poisoned)
+    );
+}

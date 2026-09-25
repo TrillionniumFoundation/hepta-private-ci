@@ -319,3 +319,40 @@ fn product_ingress_uses_the_registered_protocol_capacity() {
         48 * 1024
     );
 }
+
+#[test]
+fn compiled_admission_exposes_exact_execution_binding_but_abstain_does_not() {
+    let compiled = record("run.binding", 31, RunStartObjectiveDispositionV1::Compiled);
+    let binding = objective_execution_binding(&compiled, "compiled").expect("compiled binding");
+    assert_eq!(
+        binding.request_digest,
+        compiled.admission.admitted_source_digest.to_string()
+    );
+    assert_eq!(
+        binding.objective_digest,
+        compiled.snapshot.objective_digest.to_string()
+    );
+    assert_eq!(
+        binding.body_digest,
+        compiled.runtime_body_digest.to_string()
+    );
+    assert_eq!(
+        binding.artifact_set_digest,
+        compiled.snapshot.artifact_set_digest.to_string()
+    );
+    assert_eq!(binding.authority_epoch, compiled.snapshot.authority_epoch);
+    assert_eq!(binding.generation, compiled.snapshot.generation);
+    assert_eq!(
+        binding.fence_digest,
+        compiled.snapshot.fence_digest.to_string()
+    );
+    assert_eq!(binding.deadline_ms, 100_000);
+
+    assert!(objective_execution_binding(&compiled, "canonical_ready").is_none());
+    let abstain = record(
+        "run.abstain.binding",
+        32,
+        RunStartObjectiveDispositionV1::ExplicitAbstain,
+    );
+    assert!(objective_execution_binding(&abstain, "explicit_abstain").is_none());
+}

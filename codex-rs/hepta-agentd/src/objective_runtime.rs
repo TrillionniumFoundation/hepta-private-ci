@@ -40,6 +40,7 @@ use crate::AgentdState;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::ObjectiveRunAdmission;
+use crate::ObjectiveRunExecutionBinding;
 use crate::authbus_ingress;
 use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
@@ -325,6 +326,7 @@ impl ObjectiveRuntimeHost {
             RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
         };
 
+        let execution = objective_execution_binding(&record, disposition);
         Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
             run_id: published.run_start.run_id.to_string(),
             objective_digest: published.run_start.objective_digest.to_string(),
@@ -332,10 +334,27 @@ impl ObjectiveRuntimeHost {
             publication_digest: published.publication.record_digest.to_string(),
             chain_digest: published.publication.chain_digest.to_string(),
             disposition: disposition.to_string(),
+            execution,
             idempotent: published.publication.disposition
                 == RunStartAppendDisposition::IdempotentReplay,
         }))
     }
+}
+
+fn objective_execution_binding(
+    record: &RunStartRecordV1,
+    disposition: &str,
+) -> Option<ObjectiveRunExecutionBinding> {
+    (disposition == "compiled").then(|| ObjectiveRunExecutionBinding {
+        request_digest: record.admission.admitted_source_digest.to_string(),
+        objective_digest: record.snapshot.objective_digest.to_string(),
+        body_digest: record.runtime_body_digest.to_string(),
+        artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
+        authority_epoch: record.snapshot.authority_epoch,
+        generation: record.snapshot.generation,
+        fence_digest: record.snapshot.fence_digest.to_string(),
+        deadline_ms: record.admission.deadline_unix_micros / 1_000,
+    })
 }
 
 fn objective_payload(
@@ -513,12 +532,9 @@ fn require_replay_admission(
     }
     let exact = state
         .journal
-        .authentication_records()
+        .index_entry(run_id)
         .map_err(store_error)?
-        .into_iter()
-        .any(|(record_authentication, record_run_id)| {
-            record_authentication == authentication && record_run_id == run_id
-        });
+        .is_some_and(|entry| &entry.authentication == authentication);
     if exact {
         Ok(())
     } else {

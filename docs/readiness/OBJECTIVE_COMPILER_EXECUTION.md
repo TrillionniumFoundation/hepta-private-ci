@@ -33,6 +33,11 @@ bounded JSON bytes
 -> durable RunStart v2 record
    -> native semantic bytes + native semantic digest
    -> canonical ObjectiveFunctionV1 bytes + protocol-wire digest
+-> for compiled compatibility-path admission: ObjectiveRunExecutionBinding
+   -> exact daemon-owned request/objective/body/artifact/authority/generation/fence/deadline identity
+   -> trusted context attachment
+   -> current final-use authorization and durable physical dispatch
+   -> exactly one App Server turn and observed terminal publication
 ```
 
 No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A represented Source-V1 operator without a lossless native mapping is rejected deterministically; see `docs/modules/objective.compiler/SEMANTIC_SUPPORT.md`. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
@@ -112,7 +117,7 @@ Compilation semantics are a pure function of the authenticated source envelope, 
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. `ObjectiveAdmissionContextV1` is an owner-local trust carrier for the pure library boundary, not a standalone cryptographic authentication proof; a test or arbitrary downstream crate constructing that value does not establish a product caller. The canonical product-source caller is Agentd's signed objective ingress: current AuthBus trust authenticates the exact signed body before Agentd decodes the embedded source and constructs the owner-local admission context. `compile_and_publish_objective_run_v1` uses `encode_authenticated_objective_function_v1`, which recomputes admission and native compilation from that exact source/profile/context and rejects any source, profile, receipt or native-result drift before projection. It then appends the signed-ingress authentication fields, admission binding, owner-native objective semantic bytes/digest, canonical `ObjectiveFunctionV1` bytes/protocol digest and `RunStartSnapshotV1` to the destination-owned segmented `DurableRunStartStore` before a non-abstain run reaches `AgentRunCoordinator`. Every append and compacted-prefix transition advances an independent monotonic checkpoint outside the Agent-home rollback domain. Exact replay is idempotent; same-run native or protocol semantic drift and predecessor drift conflict; restart recovery revalidates checkpoint history and retained authentication against current trust. Legacy v1 records are readable for recovery/migration inspection but fail closed at Agentd final use because they lack canonical protocol identity. This is source composition, not deployment activation. Publication occurs only after source, intent, profile, constraint, native-objective and protocol-wire digests agree.
+The compiler owns no domain-fact store. `ObjectiveAdmissionContextV1` is an owner-local trust carrier for the pure library boundary, not a standalone cryptographic authentication proof; a test or arbitrary downstream crate constructing that value does not establish a product caller. The canonical product-source caller is Agentd's signed objective ingress: current AuthBus trust authenticates the exact signed body before Agentd decodes the embedded source and constructs the owner-local admission context. `compile_and_publish_objective_run_v1` uses `encode_authenticated_objective_function_v1`, which recomputes admission and native compilation from that exact source/profile/context and rejects any source, profile, receipt or native-result drift before projection. It then appends the signed-ingress authentication fields, admission binding, owner-native objective semantic bytes/digest, canonical `ObjectiveFunctionV1` bytes/protocol digest and `RunStartSnapshotV1` to the destination-owned segmented `DurableRunStartStore` before a non-abstain run reaches `AgentRunCoordinator`. Every append and compacted-prefix transition advances an independent monotonic checkpoint outside the Agent-home rollback domain. Exact replay is idempotent; same-run native or protocol semantic drift and predecessor drift conflict; restart recovery revalidates checkpoint history and retained authentication against current trust. Legacy v1 records are readable for recovery/migration inspection but fail closed at Agentd final use because they lack canonical protocol identity. For a compiled fallback run, the `ObjectiveStart` receipt carries an optional `ObjectiveRunExecutionBinding` copied from the exact durable record. The binding grants no effect authority; it only lets a trusted execution owner construct the exact `AgentContextAttachment`. `AppServerModelDriver::run_intelligence` then requires that same run to be `ContextAttached`, claims current final-use authority, commits durable dispatch before the physical send, marks the Agentd run dispatched, performs one App Server turn and writes the observed terminal state back to the same run. An exact durable retry returns the stored observation before any new authority claim or provider send. This is source composition, not deployment activation. Publication occurs only after source, intent, profile, constraint, native-objective and protocol-wire digests agree.
 
 ```text
 received
@@ -124,6 +129,11 @@ received
 -> feasibility_resolved
 -> compiled | conflict | rejected | unavailable
 -> published by owning caller
+-> compiled execution identity returned without effect authority
+-> context_attached
+-> final_use_authorized
+-> dispatched
+-> terminal_observed | indeterminate
 ```
 
 A crash before caller publication leaves no selected objective. A partial unacknowledged active-segment tail is truncated only to the last complete validated frame; acknowledged missing history, a removed sealed segment, a missing external checkpoint for existing local history, or a checkpoint ahead of local history is never repaired as empty success. Rotation preserves one global predecessor chain. Compaction replaces only a complete expired sealed prefix with a replay index that retains run identity, authentication frontier, record and chain digests; the pending summary is written first, checkpointed by CAS second, committed third, and old segments removed last. A crash or acknowledgement loss at any of those cuts is reconciled without resurrecting an older frontier. Reusing the run identity with changed native or canonical-protocol semantics conflicts. At runtime final use, current trust, generation, fence, exact admitted deadline and canonical protocol identity are revalidated. `ObjectiveFunctionV1` floors the exact microsecond deadline to milliseconds, and Agentd uses the same conservative floor so the wire cannot extend authority. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
@@ -187,7 +197,28 @@ The repository-owned measurement harness is `scripts/hepta-objective-target-meas
 - `OBJ-GV-012`: success predicates, terminal conditions and evidence requirements reject when their aggregate exceeds 128.
 - `OBJ-GV-013`: locale rejection, stale source and invalid/expired/missing deadlines are non-retryable for the same semantic input.
 
-Tests cover structural round trips, authenticated source/profile/context/native-result rebinding, canonical ordering and semantic uniqueness, unit conversion, conflict minimization, idempotent durable replay, segment rotation and compaction, checkpoint acknowledgement loss and rollback detection, stale/future time, conservative microsecond deadline projection/final use, source authentication, product ingress capacities, resource overflow, aggregate-bound hostility, action-slot reservation, variant-specific retry policy, redaction and property-based permutation invariance.
+Tests cover structural round trips, authenticated source/profile/context/native-result rebinding, canonical ordering and semantic uniqueness, unit conversion, conflict minimization, idempotent durable replay, segment rotation and compaction, checkpoint acknowledgement loss and rollback detection, stale/future time, conservative microsecond deadline projection/final use, source authentication, product ingress capacities, resource overflow, aggregate-bound hostility, action-slot reservation, variant-specific retry policy, redaction, property-based permutation invariance, exact compiled execution binding, context attachment, current final-use authorization, one physical App Server send, terminal publication, exact retry without resend and restart non-resurrection.
+
+
+### Replay lookup and measurement evidence boundaries
+
+`DurableRunStartStore::index_entry` resolves exact authenticated run identity from
+the existing BTreeMap index, including compacted entries, without allocating or
+scanning the full authentication history for every retry. Unknown IDs remain
+absent and indeterminate checkpoint state rejects lookup; compaction never turns
+a mismatched request into an exact replay.
+
+Compaction bounds active/retained payload segments, not lifetime metadata: the
+replay summary retains historical identities and has a 1 GiB admission bound.
+Capacity exhaustion remains explicit; unlimited retention is not claimed. The
+external checkpoint must be outside the actual backup/rollback domain, not merely
+in a different directory. A whole-host rollback of both copies is not protected by
+filesystem path separation alone.
+
+The process fixture uses the configured compiled-objective compatibility host,
+a trusted context fixture and a controlled HTTP/SSE provider. Its physical-send
+and terminal evidence must not be described as automatic seven-owner product
+composition or live-provider deployment qualification.
 
 ## 10. Implementation sequence
 

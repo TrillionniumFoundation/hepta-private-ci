@@ -119,6 +119,7 @@ pub use codex_hepta_agent_protocol::MemoryFederationCapabilitySnapshot;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
 pub use codex_hepta_agent_protocol::MemoryFederationScopeKind;
 pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
+pub use codex_hepta_agent_protocol::ObjectiveRunExecutionBinding;
 pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
 pub use codex_hepta_agent_protocol::ReadinessSnapshot;
 pub use codex_hepta_agent_protocol::SessionIngress;

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Record objective.compiler target-host latency evidence for one exact source."""
 
-from __future__ import annotations
-
 import argparse
 import json
 import os
@@ -53,6 +51,17 @@ def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
         value = json.loads(rows[0])
     except ValueError as error:
         fail(f"invalid measurement JSON for {expected_path}: {error}")
+    if not isinstance(value, dict):
+        fail("measurement JSON must be an object")
+    if type(value.get("samples")) is not int or value["samples"] <= 0:
+        fail("invalid measurement sample count")
+    if expected_path == "maximum_conflict_extraction" and (
+        type(value.get("constraintAtoms")) is not int
+        or value["constraintAtoms"] != 256
+        or type(value.get("oracleCallsPerSample")) is not int
+        or value["oracleCallsPerSample"] != 257
+    ):
+        fail("conflict measurement must cover 256 atoms and 257 oracle calls")
     if value.get("schema") != "hepta.objective-target-measurement.v1":
         fail(f"unexpected measurement schema for {expected_path}")
     if value.get("path") != expected_path:
@@ -61,7 +70,7 @@ def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
     if not isinstance(latency, dict):
         fail(f"missing latency distribution for {expected_path}")
     ordered = [latency.get(key) for key in ("p50", "p95", "p99")]
-    if not all(isinstance(item, int) and item >= 0 for item in ordered):
+    if not all(type(item) is int and item >= 0 for item in ordered):
         fail(f"invalid latency percentiles for {expected_path}")
     if ordered != sorted(ordered):
         fail(f"non-monotone latency percentiles for {expected_path}")
@@ -80,32 +89,61 @@ def parse_product_measurement(output: str) -> dict[str, Any]:
         value = json.loads(rows[0])
     except ValueError as error:
         fail(f"invalid product measurement JSON: {error}")
+    if not isinstance(value, dict):
+        fail("product measurement JSON must be an object")
     if value.get("schema") != PRODUCT_SCHEMA:
         fail("unexpected product measurement schema")
     if value.get("path") != "signed_objective_daemon_round_trip":
         fail(f"unexpected product measurement path: {value.get('path')!r}")
     samples = value.get("samples")
-    if not isinstance(samples, int) or samples <= 0:
+    if type(samples) is not int or samples <= 0:
         fail("invalid product measurement sample count")
     latency = value.get("latencyNanoseconds")
     if not isinstance(latency, dict):
         fail("missing product latency distribution")
     ordered = [latency.get(key) for key in ("p50", "p95", "p99")]
-    if not all(isinstance(item, int) and item >= 0 for item in ordered):
+    if not all(type(item) is int and item >= 0 for item in ordered):
         fail("invalid product latency percentiles")
     if ordered != sorted(ordered):
         fail("non-monotone product latency percentiles")
-    for field in ("exactReplayNanoseconds", "restartReadyNanoseconds"):
-        if not isinstance(value.get(field), int) or value[field] < 0:
+    execution_samples = value.get("executionSamples")
+    if type(execution_samples) is not int or execution_samples <= 0:
+        fail("invalid product execution sample count")
+    execution_latency = value.get("executionLatencyNanoseconds")
+    if not isinstance(execution_latency, dict):
+        fail("missing product execution latency distribution")
+    execution_ordered = [execution_latency.get(key) for key in ("p50", "p95", "p99")]
+    if not all(type(item) is int and item >= 0 for item in execution_ordered):
+        fail("invalid product execution latency percentiles")
+    if execution_ordered != sorted(execution_ordered):
+        fail("non-monotone product execution latency percentiles")
+    for field in (
+        "exactReplayNanoseconds",
+        "executionExactReplayNanoseconds",
+        "restartReadyNanoseconds",
+    ):
+        if type(value.get(field)) is not int or value[field] < 0:
             fail(f"invalid product measurement field: {field}")
-    if value.get("durableCheckpointSequence") != samples:
+    for field in (
+        "physicalProviderSends",
+        "terminalObservations",
+        "durableCheckpointSequence",
+    ):
+        if type(value.get(field)) is not int:
+            fail(f"invalid product measurement counter: {field}")
+    if value.get("physicalProviderSends") != execution_samples:
+        fail("product execution did not preserve one physical send per run")
+    if value.get("terminalObservations") != execution_samples:
+        fail("product execution did not observe every terminal")
+    if value.get("durableCheckpointSequence") != samples + execution_samples:
         fail("product checkpoint sequence does not cover every measured request")
     return value
 
 
-def run_product_fixture(samples: int) -> dict[str, Any]:
+def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_PRODUCT_MEASUREMENT_SAMPLES"] = str(samples)
+    env["HEPTA_OBJECTIVE_PRODUCT_EXECUTION_SAMPLES"] = str(execution_samples)
     started = time.monotonic_ns()
     output = command(
         "cargo",
@@ -126,6 +164,11 @@ def run_product_fixture(samples: int) -> dict[str, Any]:
     )
     harness_ns = time.monotonic_ns() - started
     measurement = parse_product_measurement(output)
+    if (
+        measurement["samples"] != samples
+        or measurement["executionSamples"] != execution_samples
+    ):
+        fail("product fixture sample count differs from requested measurement")
     measurement["harnessWallNanoseconds"] = harness_ns
     return measurement
 
@@ -150,6 +193,8 @@ def run_fixture(test_name: str, expected_path: str, samples: int) -> dict[str, A
     )
     harness_ns = time.monotonic_ns() - started
     measurement = parse_measurement(output, expected_path)
+    if measurement["samples"] != samples:
+        fail("fixture sample count differs from requested measurement")
     measurement["harnessWallNanoseconds"] = harness_ns
     return measurement
 
@@ -167,8 +212,11 @@ def self_test() -> int:
         'OBJECTIVE_PRODUCT_MEASUREMENT={"schema":"hepta.objective-product-target-measurement.v1",'
         '"path":"signed_objective_daemon_round_trip","samples":3,'
         '"latencyNanoseconds":{"p50":100,"p95":200,"p99":300},'
-        '"exactReplayNanoseconds":80,"restartReadyNanoseconds":400,'
-        '"durableCheckpointSequence":3}'
+        '"exactReplayNanoseconds":80,"executionSamples":2,'
+        '"executionLatencyNanoseconds":{"p50":150,"p95":250,"p99":350},'
+        '"executionExactReplayNanoseconds":90,"physicalProviderSends":2,'
+        '"terminalObservations":2,"restartReadyNanoseconds":400,'
+        '"durableCheckpointSequence":5}'
     )
     product = parse_product_measurement(product_fixture)
     if product["restartReadyNanoseconds"] != 400:
@@ -199,7 +247,16 @@ def measure(args: argparse.Namespace) -> int:
         "maximum_conflict_extraction",
         args.conflict_samples,
     )
-    product = run_product_fixture(args.product_samples)
+    product = run_product_fixture(args.product_samples, args.execution_samples)
+
+    # A concurrent checkout or edit during the fixtures invalidates this receipt.
+    if (
+        git("rev-parse", "HEAD") != source_sha
+        or git("rev-parse", "HEAD^{tree}") != source_tree
+    ):
+        fail("source identity changed during measurement")
+    if git("status", "--porcelain"):
+        fail("working tree changed during measurement")
 
     evidence = {
         "schema": SCHEMA,
@@ -219,6 +276,7 @@ def measure(args: argparse.Namespace) -> int:
         "interpretation": {
             "ordinaryAndConflictAreSeparate": True,
             "productIncludesSignedIngressSocketFsyncAndRestart": True,
+            "productExecutionIncludesFinalUsePhysicalSendAndTerminal": True,
             "ciRunnerIsNotProductionEvidence": True,
             "activationGranted": False,
             "releaseGranted": False,
@@ -245,6 +303,7 @@ def main() -> int:
     parser.add_argument("--ordinary-samples", type=int, default=1_000)
     parser.add_argument("--conflict-samples", type=int, default=64)
     parser.add_argument("--product-samples", type=int, default=32)
+    parser.add_argument("--execution-samples", type=int, default=4)
     parser.add_argument("--output")
     args = parser.parse_args()
 
@@ -262,6 +321,8 @@ def main() -> int:
         parser.error("--conflict-samples must be in 1..=10000")
     if not (1 <= args.product_samples <= 1_000):
         parser.error("--product-samples must be in 1..=1000")
+    if not (1 <= args.execution_samples <= 64):
+        parser.error("--execution-samples must be in 1..=64")
     return measure(args)
 
 

@@ -16,10 +16,12 @@ python3 scripts/hepta-objective-target-measure.py \
   --ordinary-samples 1000 \
   --conflict-samples 64 \
   --product-samples 32 \
+  --execution-samples 4 \
   --output /path/to/objective-target-host.json
 ```
 
-The recorder refuses a dirty tree or source SHA mismatch. It records the exact
+The recorder refuses a dirty tree or source SHA mismatch before measurement and
+rechecks the same commit/tree and cleanliness after all fixtures. It records the exact
 commit/tree, the operator-supplied host profile identifier, platform/machine,
 Rust/Cargo versions and release build profile.
 
@@ -55,15 +57,25 @@ The target-host recorder runs them in `--release` and parses their structured
 The product fixture is the real Unix Agentd process test
 `objective_product_e2e::measurement_signed_objective_daemon_round_trip`. It starts
 Supervisor and Agentd with private AuthBus trust, an independently retained AuthBus
-checkpoint, the selected objective profile and an external run-start checkpoint. It
-measures multiple signed ObjectiveStart round trips from the local control client
-through authentication, admission, compile, canonical projection and synchronous
-RunStart publication. It separately records exact-replay latency and full
-Supervisor restart-to-readiness latency, verifies the durable checkpoint covers
-every measured request, and emits one structured
-`OBJECTIVE_PRODUCT_MEASUREMENT=...` record. It does not exercise an external model
-provider because the measured terminal is intrinsic explicit abstain and grants no
-effect authority.
+checkpoint, the selected objective profile and an external run-start checkpoint.
+It records separate distributions for signed intrinsic-abstain admission and
+compiled objective execution. Compiled executions attach the exact daemon-issued
+identity to a trusted fixture context, acquire a current signed final-use grant
+through the Unix authority socket, send one physical App Server request to a local
+controlled HTTP/SSE model endpoint, and observe the terminal state.
+
+The fixture closes and reopens the inference journal before exact replay and
+requires the original result without another grant or physical send. It separately
+measures Supervisor restart-to-readiness and checks generation non-resurrection.
+Its single `OBJECTIVE_PRODUCT_MEASUREMENT=...` row includes requested and actual
+sample counts, physical sends, terminal observations and the durable checkpoint
+sequence. The recorder rejects non-integer/Boolean counters, mismatched sample
+counts, non-monotone latency distributions and incomplete worst-case conflict work.
+
+This is process-level development evidence with a controlled model and trusted
+context fixture. It is not evidence of a live model service, autonomous assembly
+of all seven canonical owner inputs, or recovery of an unpersisted canonical
+owner handoff. Those remain separate product/deployment qualification boundaries.
 
 ## 3. Evidence semantics
 
@@ -78,7 +90,8 @@ A GitHub-hosted CI runner is development evidence only. Closing
 bind this output to the selected deployment host profile, resource policy and
 candidate identity and to retain any additional CPU/RSS/IO observations required
 by that host profile. The product fixture covers normal signed ingress, socket
-round-trip, RunStart fsync, exact replay and restart recovery. Segment saturation,
+round-trip, RunStart fsync, exact replay, final-use authorization, a controlled
+physical model send, terminal observation and restart recovery. Segment saturation,
 rotation, compacted-prefix rewrite and power loss remain destructive qualification
 scenarios rather than latency-loop operations. The selected filesystem profile must
 therefore also qualify active-frame fsync, segment rename and successor creation,

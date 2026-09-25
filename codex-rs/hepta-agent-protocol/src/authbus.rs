@@ -67,6 +67,22 @@ pub struct AuthBusObjectiveIngress {
     pub body: AuthBusObjectiveBody,
 }
 
+/// Exact daemon-owned run snapshot needed by a trusted execution owner to
+/// attach its independently produced context/envelope before physical dispatch.
+/// This carries identity only and grants no effect authority.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ObjectiveRunExecutionBinding {
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
+    pub deadline_ms: u64,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ObjectiveRunAdmission {
@@ -76,6 +92,8 @@ pub struct ObjectiveRunAdmission {
     pub publication_digest: String,
     pub chain_digest: String,
     pub disposition: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub execution: Option<ObjectiveRunExecutionBinding>,
     pub idempotent: bool,
 }
 
