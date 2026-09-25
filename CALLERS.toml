@@ -347,6 +347,7 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_open_state"
 symbol = "AuthorityLeaseRegistry::open_state_dir"
+call_pattern = 'AuthorityLeaseRegistry\s*::\s*open_state_dir(?:_with_frontier_store|_with_clock|_with_trust)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn open_state_dir(", "trusted_frontier", "Store::open"]
 product_callers = []
@@ -355,6 +356,8 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_put"
 symbol = "AuthorityLeaseRegistry::put_lease"
+call_pattern = '\.\s*put_lease\s*\('
+caller_type_marker = "AuthorityLeaseRegistry"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
 product_callers = []
@@ -363,6 +366,8 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_revoke"
 symbol = "AuthorityLeaseRegistry::revoke"
+call_pattern = '\.\s*revoke\s*\('
+caller_type_marker = "AuthorityLeaseRegistry"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn revoke(", "RevocationReceipt", "reason_sha256"]
 product_callers = []
@@ -371,6 +376,8 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_prune"
 symbol = "AuthorityLeaseRegistry::prune_expired_leases"
+call_pattern = '\.\s*prune_expired_leases\s*\('
+caller_type_marker = "AuthorityLeaseRegistry"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn prune_expired_leases(", "MAX_AUTHORITY_PRUNE_BATCH", "expires_at_unix_ms"]
 product_callers = []
@@ -379,6 +386,8 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_epoch_advance"
 symbol = "AuthorityLeaseRegistry::advance_epoch"
+call_pattern = '\.\s*advance_epoch\s*\('
+caller_type_marker = "AuthorityLeaseRegistry"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn advance_epoch(", "new_authority_epoch", "next.leases.clear()"]
 product_callers = []
@@ -387,6 +396,8 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_verify_use"
 symbol = "AuthorityLeaseVerifier::verify_use"
+call_pattern = '\.\s*verify_use\s*\('
+caller_type_marker = "AuthorityLeaseVerifier"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
 product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
@@ -395,6 +406,8 @@ caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"
 [[boundary]]
 id = "authority_lease_delivery"
 symbol = "AuthorityLeaseVerifier::with_verified_use"
+call_pattern = '\.\s*with_verified_use\s*\('
+caller_type_marker = "AuthorityLeaseVerifier"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn with_verified_use", "validate_token_live_witness", "consumer()"]
 product_callers = []
@@ -411,6 +424,8 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_dispatch_raw"
 symbol = "AuthorityLeaseVerifier::with_dispatch_boundary"
+call_pattern = '\.\s*with_dispatch_boundary\s*\('
+caller_type_marker = "AuthorityLeaseVerifier"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "with_dispatch_boundary_witness", "dispatch_boundary"]
 product_callers = []
