@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "0333755fd8108cb13032d784ccd228b69ec0d35c",
+    "tree": "5ef79e98f8c72eeb96abe8eeb9143a93810ae994"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -161,7 +161,12 @@
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2_with_authbus",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+        "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+        "codex-rs/hepta-authbus/src/host.rs",
+        "codex-rs/hepta-contracts/src/final_use.rs"
+      ]
     },
     {
       "operation": "reconcile_consumption",
@@ -175,7 +180,12 @@
       "sourcePathExists": true,
       "designOperation": "reconcile_consumption",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+        "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+        "codex-rs/hepta-authbus/src/host.rs",
+        "codex-rs/hepta-contracts/src/final_use.rs"
+      ]
     },
     {
       "operation": "consumption_result",
@@ -217,5 +227,28 @@
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
   ],
-  "currentImplementationGuide": "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md"
+  "currentImplementationGuide": "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "0333755fd8108cb13032d784ccd228b69ec0d35c",
+    "tree": "5ef79e98f8c72eeb96abe8eeb9143a93810ae994"
+  },
+  "observedSourcePaths": [
+    ".github/workflows/lane-a-foundation.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-authbus",
+    "codex-rs/hepta-bao-adapter",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-types",
+    "codex-rs/http-client",
+    "codex-rs/state",
+    "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+    "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
+    "docs/modules/secrets.heptabao/TECHNICAL.md",
+    "external/HeptaBao",
+    "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+    "qualification/module-execution-dossiers/detail/secrets.heptabao.md",
+    "scripts/hepta-implementation-maps.py"
+  ]
 }
