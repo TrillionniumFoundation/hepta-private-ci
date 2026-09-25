@@ -288,6 +288,18 @@ impl DurableRunStartJournal {
         max_records: usize,
         recovery: RunStartRecovery,
     ) -> Result<Self, RunStartStoreError> {
+        Self::recover_synced(file, binding, max_records, recovery, File::sync_all)
+    }
+
+    // The synchronizer is private so a product caller cannot publish a recovered
+    // journal without a durability barrier. The seam permits I/O-failure tests.
+    fn recover_synced(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+        recovery: RunStartRecovery,
+        synchronize: impl FnOnce(&File) -> io::Result<()>,
+    ) -> Result<Self, RunStartStoreError> {
         validate_domain(binding, max_records)?;
         validate_recovery(recovery, max_records)?;
         let mut file = LockedRunStartFile::acquire(file)?;
@@ -304,10 +316,12 @@ impl DurableRunStartJournal {
             file.0
                 .set_len(cursor)
                 .map_err(|_| RunStartStoreError::Indeterminate)?;
-            file.0
-                .sync_all()
-                .map_err(|_| RunStartStoreError::Indeterminate)?;
         }
+        // A complete frame can survive process loss in the page cache even when
+        // the original writer never completed fsync. Length/checksum validity
+        // alone is not durability. Resync validated history before publishing
+        // the recovered index or permitting an idempotent acknowledgement.
+        synchronize(&file.0).map_err(|_| RunStartStoreError::Indeterminate)?;
         Ok(Self {
             file,
             records,

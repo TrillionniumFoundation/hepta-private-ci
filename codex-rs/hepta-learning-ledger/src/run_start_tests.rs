@@ -492,3 +492,92 @@ fn signed_input_codec_rejects_truncation_and_payload_tampering() {
     tampered[offset] ^= 1;
     assert!(decode_record(&tampered).is_err());
 }
+
+#[test]
+fn complete_recovery_requires_sync_before_exposing_idempotent_receipt() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let value = record("run.sync", b"original objective");
+    let appended = must(journal.append(Digest32::ZERO, value.clone()));
+    drop(journal);
+    let bytes = must(fs::read(fixture.path()));
+    let synchronized = std::cell::Cell::new(false);
+    let mut recovered = must(DurableRunStartJournal::recover_synced(
+        fixture.file(),
+        binding(),
+        16,
+        RunStartRecovery::Unacknowledged,
+        |file| {
+            assert_eq!(must(file.metadata()).len(), bytes.len() as u64);
+            file.sync_all()?;
+            synchronized.set(true);
+            Ok(())
+        },
+    ));
+    assert!(synchronized.get());
+    assert_eq!(
+        must(recovered.append(Digest32::ZERO, value)),
+        RunStartAppendReceipt {
+            disposition: RunStartAppendDisposition::IdempotentReplay,
+            ..appended
+        }
+    );
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+}
+
+#[test]
+fn complete_recovery_sync_failure_returns_no_writer_and_releases_lock() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let value = record("run.sync-failure", b"original objective");
+    let appended = must(journal.append(Digest32::ZERO, value.clone()));
+    drop(journal);
+    let bytes = must(fs::read(fixture.path()));
+    let result = DurableRunStartJournal::recover_synced(
+        fixture.file(),
+        binding(),
+        16,
+        RunStartRecovery::Unacknowledged,
+        |_| Err(io::Error::other("injected recovery fsync failure")),
+    );
+    assert!(matches!(result, Err(RunStartStoreError::Indeterminate)));
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+    let mut recovered = must(fixture.recover(RunStartRecovery::Unacknowledged));
+    assert_eq!(
+        must(recovered.append(Digest32::ZERO, value)),
+        RunStartAppendReceipt {
+            disposition: RunStartAppendDisposition::IdempotentReplay,
+            ..appended
+        }
+    );
+}
+
+#[test]
+fn invalid_anchor_is_rejected_before_recovery_sync_or_tail_repair() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let appended = must(journal.append(Digest32::ZERO, record("run.anchor", b"objective")));
+    drop(journal);
+    let mut file = fixture.file();
+    must(file.seek(SeekFrom::End(0)));
+    must(file.write_all(b"partial"));
+    drop(file);
+    let bytes = must(fs::read(fixture.path()));
+    let synchronized = std::cell::Cell::new(false);
+    let result = DurableRunStartJournal::recover_synced(
+        fixture.file(),
+        binding(),
+        16,
+        RunStartRecovery::Acknowledged(RunStartAnchor {
+            sequence: appended.sequence,
+            chain_digest: digest("wrong anchor"),
+        }),
+        |_| {
+            synchronized.set(true);
+            Ok(())
+        },
+    );
+    assert!(matches!(result, Err(RunStartStoreError::AnchorMismatch)));
+    assert!(!synchronized.get());
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+}
