@@ -345,7 +345,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "3fb164c03ccf1c657138bb8599d437fd5ac71017"
+        "blobSha": "326f76222317de30677c31b666b08094eb170b21"
       }
     ]
   },
@@ -357,8 +357,13 @@
     "codex-rs/app-server/src/request_processors/thread_processor.rs",
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host_config.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery_policy_tests.rs",
     "codex-rs/hepta-agentd/src/client.rs",
+    "codex-rs/hepta-agentd/src/error.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -367,12 +372,7 @@
     "codex-rs/hepta-automation",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types",
-    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-    "codex-rs/hepta-agentd/src/automation_recovery_policy_tests.rs",
-    "codex-rs/hepta-agentd/src/error.rs",
-    "codex-rs/hepta-agentd/src/automation_effect_host_config.rs",
-    "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs"
+    "codex-rs/hepta-types"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Independent final-use trust/revocation/clock and attested provider profiles must be provisioned and qualified on the selected host.",
@@ -413,11 +413,23 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
-      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+      "object": "a5c02539d2edebd4866ef9156d1b283f9fd5c3f2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "1915aa05557175d3d4ecde3afafa6dfcdcd91a55"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+      "object": "fb184c83794074f9dbee6c2b8fe8ed42170289d8"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
       "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "1c92125859b47e3dd0292124d4eb4af833870d87"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
@@ -425,19 +437,39 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "472a9d67b40e99344739ad2e7c32b947da51f8af"
+      "object": "40f3d9cc53fb16f24ec606fe38772d740ac6e549"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "3fb164c03ccf1c657138bb8599d437fd5ac71017"
+      "object": "326f76222317de30677c31b666b08094eb170b21"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/dispatch_recovery_cursor.rs",
+      "object": "05fe137736e28eca990e091336b1c8a4e7d38177"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      "object": "de778590c90dd9751449a2417e106f377083f5ca"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
       "object": "30166609aa7725496c9e751f2d1ef2df973c739f"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+      "object": "f6f6605e7a6803e6a9c4330548fa7139c63ccf9c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+      "object": "326b8e84307fe3c16ecfd25aa5bb5bf4b3dfe954"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/product_effect.rs",
+      "object": "825600395633b94358ee352ebf84c75b11e00730"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/product_effect_store.rs",
+      "object": "7c3e5076ae362acc683beb38ebd334774aeaf708"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
@@ -456,8 +488,20 @@
       "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
     },
     {
+      "path": "codex-rs/hepta-automation/src/threshold_circuit.rs",
+      "object": "c6eaaf9284211b021a7d7bfac439a08f1096e61d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/threshold_circuit_tests.rs",
+      "object": "d917afd14945b0205f779101fc1b085c83482ea5"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/timer_lifecycle.rs",
+      "object": "9ff5154eb6c245d14907cfbfb393f9cb5f85e17e"
+    },
+    {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "639c48ae7d201ac9c249e6c87d0e577b14e740ba"
+      "object": "eec7f92828743ee9f13847f161cb4b73af83d4ad"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
@@ -465,11 +509,19 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "e851d5f98c22ba67383390c30ca7c8e7ce8b5534"
+      "object": "47ec77282540f9de912fa9388ea6fbd6307bf15c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/product_effect.rs",
+      "object": "65f140e30640fc343eb34784e57f731581e11dde"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/threshold_circuit_capacity.rs",
+      "object": "f299040021a9354294487c54b3f416a105d28ca5"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "3c515770fbcf204cf78cdf295c3706e2533cbe7a"
+      "object": "daec5cf6e80a2fe30f0e1f4f4e1b16977d4a3546"
     }
   ]
 }
