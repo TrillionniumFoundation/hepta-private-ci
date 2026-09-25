@@ -48,6 +48,18 @@ def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
+def committed_blob(path):
+    relative = path.relative_to(ROOT).as_posix()
+    try:
+        return subprocess.check_output(
+            ["git", "show", f"HEAD:{relative}"], cwd=ROOT
+        )
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(
+            f"native source identity requires committed path: {relative}"
+        ) from error
+
+
 def require_branch():
     if git("branch", "--show-current") != BRANCH:
         raise RuntimeError(
@@ -103,7 +115,7 @@ def fingerprint(write):
             )
         names.add(integration_file)
     observed = {
-        p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        p.relative_to(ROOT).as_posix(): hashlib.sha256(committed_blob(p)).hexdigest()
         for p in sorted(names)
     }
     if write:
@@ -113,6 +125,7 @@ def fingerprint(write):
                 {
                     "schema": "hepta.ui.native.current-source.v2",
                     "baselineCommit": BASE,
+                    "baselineRole": "initial_convergence_ancestor",
                     "historicalSourceCommit": "3198549d80d6c59887b82e2c50018ab818217c53",
                     "canonicalBranch": BRANCH,
                     "files": observed,
@@ -215,9 +228,7 @@ def sync_registry_metadata():
         raise RuntimeError("native dossier index coverage mismatch")
     text = (ROOT / rows[0]["path"]).read_text(encoding="utf-8")
     rows[0]["sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
-    changes[relative] = (
-        json.dumps(data, separators=(",", ":"), ensure_ascii=False) + "\n"
-    )
+    changes[relative] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
     for relative, text in changes.items():
         (ROOT / relative).write_text(text, encoding="utf-8")
     # The exact-source metadata commit stages only these scoped registry
