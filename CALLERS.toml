@@ -452,7 +452,7 @@ forbidden = ["codex_hepta_memory::CognitiveStore", "AllowVerifier", "permit_all"
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "CognitiveStore::open"]
-forbidden = ["codex_hepta_memory::CognitiveStore"]
+forbidden = ["use codex_hepta_memory::CognitiveStore", "codex_hepta_memory::CognitiveStore::open"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/app_runtime.rs"
