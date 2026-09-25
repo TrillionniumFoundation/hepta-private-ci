@@ -60,6 +60,9 @@ use wiremock::matchers::path_regex;
 
 mod support;
 
+#[path = "objective_product_e2e/replay.rs"]
+mod replay;
+
 use support::fleet::AgentFixture;
 use support::fleet::FleetHarness;
 

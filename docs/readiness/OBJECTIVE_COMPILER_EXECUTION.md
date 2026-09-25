@@ -240,6 +240,16 @@ Tests cover structural round trips, authenticated source/profile/context/native-
 
 ### Replay lookup and measurement evidence boundaries
 
+Authenticated `ObjectiveStart` retries resolve the destination-owned exact
+publication index before fresh-source admission. The complete persisted AuthBus
+identity, including the signed body digest, must match. Live retries return the
+original run/conflict publication without recompiling against a later clock or
+appending again. New operations still obey source freshness. The replay clock is
+sampled after acquiring the writer lock; current authentication, deadline,
+generation, fence and checkpoint checks are retained. Publication lookup is not
+an effect permit, and runtime final-use authorization remains separate.
+
+
 `DurableRunStartStore::index_entry` resolves exact authenticated run identity from
 the existing BTreeMap index, including compacted entries, without allocating or
 scanning the full authentication history for every retry. Unknown IDs remain
