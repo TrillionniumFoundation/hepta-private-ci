@@ -125,7 +125,8 @@
         "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
         "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
         "codex-rs/hepta-memory/src/production_cognitive_commit_tests.rs",
-        "codex-rs/hepta-memory/src/production_cognitive_results_tests.rs"
+        "codex-rs/hepta-memory/src/production_cognitive_results_tests.rs",
+        "codex-rs/hepta-memory/src/production_cognitive_digest_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "remember_correct_forget_with_atomic_authority_and_operation_provenance",
@@ -138,6 +139,10 @@
         {
           "symbol": "cognitive_commit::commit",
           "path": "codex-rs/hepta-memory/src/production_cognitive_commit.rs"
+        },
+        {
+          "symbol": "cognitive_digest::input_digest",
+          "path": "codex-rs/hepta-memory/src/production_cognitive_digest.rs"
         }
       ]
     },
@@ -250,7 +255,8 @@
       "delegatedCallees": [],
       "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs::revocation_while_waiting_for_writer_lock_rejects_before_mutation",
-        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "codex-rs/hepta-memory/src/production_cognitive_results_tests.rs::point_in_time_only_verifier_cannot_leave_a_durable_lease_behind"
       ],
       "state": "source_implemented_qualification_pending",
       "authority": "externally_verified_final_use",
