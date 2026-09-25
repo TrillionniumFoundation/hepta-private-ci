@@ -14,10 +14,19 @@ use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerBindingV1;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerV1;
+use codex_hepta_cognitive_types::consumer::CanonicalMigrationPostureV1;
+use codex_hepta_cognitive_types::consumer::CanonicalPayloadKindV1;
+use codex_hepta_cognitive_types::consumer::bind_memory_event_consumer_v1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::CompactCheckpointV1;
 use codex_hepta_cognitive_types::lane_c::CompactionProofV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -79,6 +88,216 @@ pub struct CompactionInputRecordV2 {
     pub record: MemoryRecord,
     pub retention_priority: u32,
     pub retention_reason_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalCompactionInputV1 {
+    pub input: CompactionInputRecordV2,
+    pub event: MemoryEventV1,
+    pub consumer_binding: CanonicalConsumerBindingV1,
+}
+
+impl CanonicalCompactionInputV1 {
+    pub fn validate(
+        &self,
+        source_snapshot: &CognitiveSnapshotKeyV1,
+    ) -> Result<(), QualifiedCompactionError> {
+        source_snapshot
+            .validate()
+            .map_err(QualifiedCompactionError::Contract)?;
+        self.input
+            .record
+            .validate()
+            .map_err(|error| QualifiedCompactionError::InvalidRecord(error.to_string()))?;
+        self.event
+            .validate()
+            .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+        let lifecycle_matches = match self.input.record.state {
+            RecordState::Live => matches!(
+                &self.event.lifecycle,
+                MemoryLifecycleV1::Active | MemoryLifecycleV1::Superseded { .. }
+            ),
+            RecordState::Tombstone => {
+                matches!(&self.event.lifecycle, MemoryLifecycleV1::Tombstoned { .. })
+            }
+        };
+        if !lifecycle_matches {
+            return Err(QualifiedCompactionError::CanonicalInputMismatch(
+                self.input.record.record_id.to_string(),
+            ));
+        }
+        let citations: BTreeMap<_, _> = self
+            .input
+            .record
+            .citations
+            .iter()
+            .map(|row| (row.source_id.as_str(), row.source_digest))
+            .collect();
+        let provenance: BTreeMap<_, _> = self
+            .event
+            .provenance
+            .iter()
+            .map(|row| (row.source_id.as_str(), row.source_sha256.digest()))
+            .collect();
+        if provenance.len() != self.event.provenance.len() || citations != provenance {
+            return Err(QualifiedCompactionError::CanonicalInputMismatch(
+                self.input.record.record_id.to_string(),
+            ));
+        }
+        self.consumer_binding
+            .validate()
+            .map_err(|error| QualifiedCompactionError::CanonicalConsumer(error.to_string()))?;
+        let record_digest = self.input.record.record_digest();
+        let event_digest = canonical_contract_digest_v1(&self.event)
+            .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+        if self.consumer_binding.consumer != CanonicalConsumerV1::CompactEngine
+            || self.consumer_binding.canonical_payload_sha256.digest() != event_digest
+            || self.consumer_binding.payload_kind != CanonicalPayloadKindV1::MemoryEvent
+            || self.consumer_binding.source_identity_sha256.digest() != record_digest
+            || self.consumer_binding.source_snapshot_sha256.digest()
+                != source_snapshot.vector_digest
+            || self
+                .consumer_binding
+                .compatibility_payload_sha256
+                .map(|value| value.digest())
+                != Some(canonical_compaction_input_digest(&self.input))
+            || self.consumer_binding.migration_posture
+                != CanonicalMigrationPostureV1::CompatibilityBound
+        {
+            return Err(QualifiedCompactionError::CanonicalInputMismatch(
+                self.input.record.record_id.to_string(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+pub fn bind_canonical_compaction_input_v1(
+    operation_id: ContractIdV1,
+    source_snapshot: &CognitiveSnapshotKeyV1,
+    input: CompactionInputRecordV2,
+    event: MemoryEventV1,
+) -> Result<CanonicalCompactionInputV1, QualifiedCompactionError> {
+    input
+        .record
+        .validate()
+        .map_err(|error| QualifiedCompactionError::InvalidRecord(error.to_string()))?;
+    ensure_digest("retention_reason", input.retention_reason_digest)?;
+    let record_digest = input.record.record_digest();
+    let consumer_binding = bind_memory_event_consumer_v1(
+        operation_id,
+        CanonicalConsumerV1::CompactEngine,
+        &event,
+        record_digest,
+        source_snapshot.vector_digest,
+        Some(canonical_compaction_input_digest(&input)),
+        CanonicalMigrationPostureV1::CompatibilityBound,
+    )
+    .map_err(|error| QualifiedCompactionError::CanonicalConsumer(error.to_string()))?;
+    let value = CanonicalCompactionInputV1 {
+        input,
+        event,
+        consumer_binding,
+    };
+    value.validate(source_snapshot)?;
+    Ok(value)
+}
+
+fn canonical_compaction_input_digest(input: &CompactionInputRecordV2) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.compact.canonical-input.v1\0",
+        input.record.record_digest().as_array(),
+        &input.retention_priority.to_be_bytes(),
+        input.retention_reason_digest.as_array(),
+    ])
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalQualifiedCompactionCandidateV1 {
+    pub candidate: QualifiedCompactionCandidateV2,
+    pub input_bindings: Vec<CanonicalConsumerBindingV1>,
+    inputs: Vec<CanonicalCompactionInputV1>,
+    policy: CompactionPolicyV2,
+}
+
+impl CanonicalQualifiedCompactionCandidateV1 {
+    pub fn validate(&self) -> Result<(), QualifiedCompactionError> {
+        self.candidate.validate()?;
+        if self.inputs.len() > MAX_QUALIFIED_COMPACTION_INPUTS
+            || self.input_bindings.len() != self.inputs.len()
+        {
+            return Err(QualifiedCompactionError::CanonicalCandidateBindingMismatch);
+        }
+        let mut event_ids = BTreeSet::new();
+        for (input, binding) in self.inputs.iter().zip(&self.input_bindings) {
+            input.validate(&self.candidate.source_snapshot)?;
+            if &input.consumer_binding != binding || !event_ids.insert(&input.event.event_id) {
+                return Err(QualifiedCompactionError::CanonicalCandidateBindingMismatch);
+            }
+        }
+        let expected = build_qualified_candidate(
+            self.candidate.source_snapshot.clone(),
+            self.candidate.checkpoint.generation,
+            self.candidate.checkpoint.predecessor_digest,
+            &self.policy,
+            self.inputs
+                .iter()
+                .map(|input| input.input.clone())
+                .collect(),
+        )?;
+        if expected != self.candidate {
+            return Err(QualifiedCompactionError::CanonicalCandidateBindingMismatch);
+        }
+        let mut binding_digests = BTreeSet::new();
+        for binding in &self.input_bindings {
+            binding
+                .validate()
+                .map_err(|error| QualifiedCompactionError::CanonicalConsumer(error.to_string()))?;
+            if binding.consumer != CanonicalConsumerV1::CompactEngine
+                || binding.payload_kind != CanonicalPayloadKindV1::MemoryEvent
+                || binding.source_snapshot_sha256.digest()
+                    != self.candidate.source_snapshot.vector_digest
+                || !binding_digests.insert(binding.binding_sha256)
+            {
+                return Err(QualifiedCompactionError::CanonicalCandidateBindingMismatch);
+            }
+        }
+        Ok(())
+    }
+}
+
+pub fn build_qualified_candidate_with_canonical_events(
+    source_snapshot: CognitiveSnapshotKeyV1,
+    generation: Generation,
+    predecessor_checkpoint_digest: Option<Digest32>,
+    policy: &CompactionPolicyV2,
+    inputs: Vec<CanonicalCompactionInputV1>,
+) -> Result<CanonicalQualifiedCompactionCandidateV1, QualifiedCompactionError> {
+    if inputs.len() > MAX_QUALIFIED_COMPACTION_INPUTS {
+        return Err(QualifiedCompactionError::InputLimitExceeded);
+    }
+    for input in &inputs {
+        input.validate(&source_snapshot)?;
+    }
+    let input_bindings = inputs
+        .iter()
+        .map(|input| input.consumer_binding.clone())
+        .collect();
+    let candidate = build_qualified_candidate(
+        source_snapshot,
+        generation,
+        predecessor_checkpoint_digest,
+        policy,
+        inputs.iter().map(|input| input.input.clone()).collect(),
+    )?;
+    let value = CanonicalQualifiedCompactionCandidateV1 {
+        candidate,
+        input_bindings,
+        inputs,
+        policy: policy.clone(),
+    };
+    value.validate()?;
+    Ok(value)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -504,6 +723,10 @@ fn ensure_unique_ids(values: &[StableId]) -> Result<(), QualifiedCompactionError
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum QualifiedCompactionError {
     Contract(LaneCContractError),
+    CanonicalContract(String),
+    CanonicalConsumer(String),
+    CanonicalInputMismatch(String),
+    CanonicalCandidateBindingMismatch,
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
     InvalidRetentionLimit,

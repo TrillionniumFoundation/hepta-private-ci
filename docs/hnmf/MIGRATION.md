@@ -30,9 +30,12 @@ Canary eligibility requires future-time evaluation, old-task retention, OOD and 
 
 ## 7A. Shared experience delivery through existing owners
 
-These are planned extensions, not evidence that M0-M5 or a production writer ran.
+The four explicit shared-experience V2 type/wire contracts and the local
+`hepta-memory` owner bridge are source-implemented. This is not evidence that
+M0-M5, cross-host transport, longitudinal learning or a new production writer ran.
 Keep the current private scopes, source IDs, MemoryEventV1 fields and read-only
-federation protocol unchanged until explicit versioned contracts are admitted.
+federation protocol unchanged; V2 references existing owner revisions rather than
+reclassifying or rewriting them.
 
 | Stage | Deliverable in existing packages | Exit evidence |
 | --- | --- | --- |
@@ -54,3 +57,12 @@ in this document. No duplicate global roadmap or per-item manual gate is require
 ## 8. Rollback
 
 Rollback re-admits a compatible predecessor under the current source, deletion and revocation frontiers, then rebuilds eligible derived indexes. It never edits historical source events, restores revoked training access or revives a tainted model merely because its old snapshot was once valid. External effects are outside HNMF and cannot be declared rolled back by this migration.
+
+### V2 source-kind and final-use compatibility
+
+The V2 publication source kind distinguishes canonical event bytes from existing
+owner Memory revision/support bytes. Neither an old ID nor an old digest is renamed
+into the canonical event domain. Local source-policy bridging is not epoch-owner
+attestation, default-product activation or cross-host publication. Source read,
+training materialization and artifact adoption retain different physical-use
+observers; the source database cannot self-certify the latter two or unlearning.

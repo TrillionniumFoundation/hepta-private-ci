@@ -1586,7 +1586,10 @@
       "producedContracts": [
         "DomainRead::knowledge_fact_ledgerV1",
         "DomainRead::memory_ledgerV1",
-        "ModulePort::cognitive.store::knowledge.graph"
+        "ModulePort::cognitive.store::knowledge.graph",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceUseReceiptV2"
       ],
       "consumedContracts": [
         "CrossModalBindingV1",
@@ -1603,7 +1606,10 @@
         "CrossModalBindingV1",
         "ForgetPropagationReceiptV1",
         "MemoryEventV1",
-        "ModalitySpanRefV1"
+        "ModalitySpanRefV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceUseReceiptV2"
       ],
       "ownedDomains": [
         "knowledge_fact_ledger",
@@ -1662,13 +1668,19 @@
         "ForgetPropagationReceiptV1",
         "MemoryEventV1",
         "ModalitySpanRefV1",
-        "ModulePort::cognitive.types::cognitive.read"
+        "ModulePort::cognitive.types::cognitive.read",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceUseReceiptV2"
       ],
       "protocols": [
         "CrossModalBindingV1",
         "ForgetPropagationReceiptV1",
         "MemoryEventV1",
-        "ModalitySpanRefV1"
+        "ModalitySpanRefV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceUseReceiptV2"
       ],
       "ownedDomains": [],
       "readDomains": [],
@@ -1719,6 +1731,10 @@
         "ModulePort::cognitive.read::memory.retrieval",
         "ModulePort::knowledge.graph::memory.retrieval",
         "RecallPacketV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceSnapshotV2",
+        "SharedExperienceUseReceiptV2",
         "SynapseV1"
       ],
       "protocols": [
@@ -1727,6 +1743,10 @@
         "MemoryCueV1",
         "MemoryEventV1",
         "RecallPacketV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceSnapshotV2",
+        "SharedExperienceUseReceiptV2",
         "SynapseV1"
       ],
       "ownedDomains": [],
@@ -1959,7 +1979,8 @@
         "ModulePort::learning.ledger::learning.operator",
         "ModulePort::learning.ledger::utility.ndu",
         "OutcomeReceiptV1",
-        "OutcomeWatermarkV1"
+        "OutcomeWatermarkV1",
+        "SharedExperienceSnapshotV2"
       ],
       "consumedContracts": [
         "ContextCompilationReceiptV1",
@@ -1984,7 +2005,10 @@
         "PromptPricingReceiptV1",
         "RecallPacketV1",
         "ReplaySelectionReceiptV1",
-        "RunStartSnapshotV1"
+        "RunStartSnapshotV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceUseReceiptV2"
       ],
       "protocols": [
         "CandidateSetCompletenessReceiptV1",
@@ -2011,7 +2035,11 @@
         "PromptPricingReceiptV1",
         "RecallPacketV1",
         "ReplaySelectionReceiptV1",
-        "RunStartSnapshotV1"
+        "RunStartSnapshotV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceSnapshotV2",
+        "SharedExperienceUseReceiptV2"
       ],
       "ownedDomains": [
         "candidate_set_completeness_receipt_v1",
@@ -2093,6 +2121,10 @@
         "OutcomeWatermarkV1",
         "RandomStreamManifestV1",
         "RegularityProfileV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceSnapshotV2",
+        "SharedExperienceUseReceiptV2",
         "SupportAuditReceiptV1"
       ],
       "protocols": [
@@ -2109,6 +2141,10 @@
         "OutcomeWatermarkV1",
         "RandomStreamManifestV1",
         "RegularityProfileV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceSnapshotV2",
+        "SharedExperienceUseReceiptV2",
         "SupportAuditReceiptV1"
       ],
       "ownedDomains": [],
@@ -2214,6 +2250,7 @@
         "PromptCandidateSetReceiptV1",
         "PromptDeliveryObservationV1",
         "RandomStreamManifestV1",
+        "SharedExperienceSnapshotV2",
         "TopologyProposalV1"
       ],
       "protocols": [
@@ -2245,6 +2282,7 @@
         "PromptDeliveryObservationV1",
         "RandomStreamManifestV1",
         "RegularityProfileV1",
+        "SharedExperienceSnapshotV2",
         "SupportAuditReceiptV1",
         "TopologyProposalV1",
         "UnlearningComplianceReceiptV1"
@@ -2354,6 +2392,10 @@
         "PlasticityBatchV1",
         "PlasticityProposalV1",
         "RegularityProfileV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceSnapshotV2",
+        "SharedExperienceUseReceiptV2",
         "SupportAuditReceiptV1",
         "SynapseV1",
         "TopologyProposalV1",
@@ -2378,6 +2420,10 @@
         "PlasticityBatchV1",
         "PlasticityProposalV1",
         "RegularityProfileV1",
+        "SharedExperiencePublicationV2",
+        "SharedExperienceRevocationReceiptV2",
+        "SharedExperienceSnapshotV2",
+        "SharedExperienceUseReceiptV2",
         "SupportAuditReceiptV1",
         "SynapseV1",
         "TopologyProposalV1",

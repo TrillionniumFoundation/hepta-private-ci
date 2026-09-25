@@ -17,6 +17,11 @@ use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::build_snapshot;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerBindingV1;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerV1;
+use codex_hepta_cognitive_types::consumer::CanonicalMigrationPostureV1;
+use codex_hepta_cognitive_types::consumer::CanonicalPayloadKindV1;
+use codex_hepta_cognitive_types::consumer::bind_memory_event_consumer_v1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
 use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
@@ -221,6 +226,77 @@ pub fn bind_canonical_event_to_durable_receipt(
     binding.binding_digest = binding.compute_binding_digest();
     binding.validate()?;
     Ok(binding)
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalProductMemoryEventBindingV1 {
+    pub durable_binding: CanonicalDurableMemoryEventBindingV1,
+    pub source_identity_digest: Digest32,
+    pub consumer_binding: CanonicalConsumerBindingV1,
+}
+
+impl CanonicalProductMemoryEventBindingV1 {
+    pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
+        self.durable_binding.validate()?;
+        ensure_digest(
+            "canonical_product_source_identity",
+            self.source_identity_digest,
+        )?;
+        self.consumer_binding
+            .validate()
+            .map_err(|error| CognitiveStoreV2Error::CanonicalConsumer(error.to_string()))?;
+        if self.consumer_binding.consumer != CanonicalConsumerV1::CognitiveStore
+            || self.consumer_binding.payload_kind != CanonicalPayloadKindV1::MemoryEvent
+            || self.consumer_binding.canonical_payload_sha256.digest()
+                != self.durable_binding.event_digest
+            || self.consumer_binding.source_identity_sha256.digest() != self.source_identity_digest
+            || self.consumer_binding.source_snapshot_sha256.digest()
+                != self.durable_binding.production_receipt_digest
+            || self
+                .consumer_binding
+                .compatibility_payload_sha256
+                .map(|value| value.digest())
+                != Some(self.durable_binding.operation_digest)
+            || self.consumer_binding.migration_posture
+                != CanonicalMigrationPostureV1::CompatibilityBound
+        {
+            return Err(CognitiveStoreV2Error::CanonicalConsumerBindingMismatch);
+        }
+        Ok(())
+    }
+}
+
+/// Product-facing canonical bridge. It preserves the durable owner receipt and
+/// additionally binds the canonical event to the exact legacy operation payload,
+/// exact source content and exact committed receipt used by the product caller.
+pub fn bind_canonical_event_to_product_receipt_v1(
+    operation_id: ContractIdV1,
+    event: &MemoryEventV1,
+    production: &ProductionCognitiveMutationReceiptV1,
+) -> Result<CanonicalProductMemoryEventBindingV1, CognitiveStoreV2Error> {
+    let durable_binding = bind_canonical_event_to_durable_receipt(event, production)?;
+    let source_identity_digest = production
+        .source_content_sha256
+        .as_str()
+        .parse::<Digest32>()
+        .map_err(|_| CognitiveStoreV2Error::CanonicalDurableSourceMismatch)?;
+    let consumer_binding = bind_memory_event_consumer_v1(
+        operation_id,
+        CanonicalConsumerV1::CognitiveStore,
+        event,
+        source_identity_digest,
+        durable_binding.production_receipt_digest,
+        Some(durable_binding.operation_digest),
+        CanonicalMigrationPostureV1::CompatibilityBound,
+    )
+    .map_err(|error| CognitiveStoreV2Error::CanonicalConsumer(error.to_string()))?;
+    let result = CanonicalProductMemoryEventBindingV1 {
+        durable_binding,
+        source_identity_digest,
+        consumer_binding,
+    };
+    result.validate()?;
+    Ok(result)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1530,6 +1606,8 @@ fn validate_record_history(
 pub enum CognitiveStoreV2Error {
     Contract(LaneCContractError),
     CanonicalContract(String),
+    CanonicalConsumer(String),
+    CanonicalConsumerBindingMismatch,
     CanonicalVerificationMismatch,
     CanonicalSourceProvenanceMismatch,
     CanonicalShadowReceiptMismatch,

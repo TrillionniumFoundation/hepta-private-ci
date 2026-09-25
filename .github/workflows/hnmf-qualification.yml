@@ -3,12 +3,25 @@ name: hnmf-qualification
 on:
   pull_request:
     paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-memory/src/shared_experience.rs"
+      - "codex-rs/hepta-memory/src/shared_experience_tests.rs"
+      - "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      - "codex-rs/hepta-agentd/src/intelligence_product*.rs"
       - "docs/contracts/CONTRACTS.json"
       - "docs/contracts/PROTOCOL_SCHEMAS.json"
       - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
       - "docs/hnmf/**"
       - "qualification/cognitive-types-v1/**"
+      - "qualification/cognitive-types-v2/**"
       - "qualification/hnmf-reference/**"
       - "qualification/hnmf-contract-reference/**"
       - "qualification/hnmf-adversarial-reference/**"
@@ -19,12 +32,25 @@ on:
     branches:
       - main
     paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-memory/src/shared_experience.rs"
+      - "codex-rs/hepta-memory/src/shared_experience_tests.rs"
+      - "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      - "codex-rs/hepta-agentd/src/intelligence_product*.rs"
       - "docs/contracts/CONTRACTS.json"
       - "docs/contracts/PROTOCOL_SCHEMAS.json"
       - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
       - "docs/hnmf/**"
       - "qualification/cognitive-types-v1/**"
+      - "qualification/cognitive-types-v2/**"
       - "qualification/hnmf-reference/**"
       - "qualification/hnmf-contract-reference/**"
       - "qualification/hnmf-adversarial-reference/**"
@@ -37,117 +63,611 @@ permissions:
 
 jobs:
   canonical-contracts:
-    name: canonical cognitive.types
+    name: canonical cognitive.types (${{ matrix.candidate }})
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head", "synthetic-merge"]' || '["exact-head"]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Check out exact candidate
+        id: check_01
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record and verify immutable candidate identity
+        id: identity
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CANDIDATE_KIND: ${{ matrix.candidate }}
+        run: |
+          python3 - <<'PY_ID'
+          import json, os, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          actual = git("rev-parse", "HEAD")
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          if os.environ["CANDIDATE_KIND"] == "exact-head":
+              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
+          else:
+              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
+          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
+                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
+                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
+                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, sort_keys=True))
+          PY_ID
 
       - name: Verify HNMF closed-world registry
+        id: check_02
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: |
           python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-hnmf.py verify
 
       - name: Verify cognitive.types cross-language V1 vectors
+        id: check_03
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: python3 qualification/cognitive-types-v1/verify_vectors.py
 
+      - name: Verify cognitive.types shared-experience V2 vectors
+        id: check_04
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: python3 qualification/cognitive-types-v2/verify_vectors.py
+
       - name: Show Rust toolchain identity
+        id: check_05
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: |
           rustc --version --verbose
           cargo --version --verbose
           cargo clippy --version
 
       - name: Check canonical cognitive.types formatting
+        id: check_06
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check
 
       - name: Check canonical cognitive.types all targets
+        id: check_07
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets
 
       - name: Lint canonical cognitive.types
+        id: check_08
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings
 
       - name: Test canonical cognitive.types
+        id: check_09
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types
 
       - name: Run bounded canonical decoder fuzz smoke
+        id: check_10
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: >-
           cargo test --manifest-path codex-rs/Cargo.toml --locked
           -p codex-hepta-cognitive-types
           bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts
 
       - name: Check canonical cognitive.types fuzz harness
+        id: check_11
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets
 
+
+      - name: Preserve candidate and actual check outcomes
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        env:
+          CHECK_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY_OUT'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json")
+          receipt = json.loads(path.read_text())
+          receipt["checks"] = {key: {"outcome": val["outcome"], "conclusion": val["conclusion"]}
+                               for key, val in json.loads(os.environ["CHECK_OUTCOMES"]).items()}
+          path.write_text(json.dumps(receipt, indent=2) + "\n")
+          PY_OUT
+
+      - name: Upload candidate execution record
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hnmf-candidate.json
+          if-no-files-found: error
+
   contract-reference:
-    name: HNMF contract reference
+    name: HNMF contract reference (${{ matrix.candidate }})
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head", "synthetic-merge"]' || '["exact-head"]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Check out exact candidate
+        id: check_01
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record and verify immutable candidate identity
+        id: identity
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CANDIDATE_KIND: ${{ matrix.candidate }}
+        run: |
+          python3 - <<'PY_ID'
+          import json, os, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          actual = git("rev-parse", "HEAD")
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          if os.environ["CANDIDATE_KIND"] == "exact-head":
+              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
+          else:
+              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
+          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
+                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
+                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
+                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, sort_keys=True))
+          PY_ID
 
       - name: Check formatting
+        id: check_02
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo fmt --manifest-path qualification/hnmf-contract-reference/Cargo.toml -- --check
 
       - name: Check all targets
+        id: check_03
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo check --manifest-path qualification/hnmf-contract-reference/Cargo.toml --all-targets --locked
 
       - name: Lint strictly
+        id: check_04
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo clippy --manifest-path qualification/hnmf-contract-reference/Cargo.toml --all-targets --locked -- -D warnings
 
       - name: Test
+        id: check_05
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo test --manifest-path qualification/hnmf-contract-reference/Cargo.toml --locked
 
+
+      - name: Preserve candidate and actual check outcomes
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        env:
+          CHECK_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY_OUT'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json")
+          receipt = json.loads(path.read_text())
+          receipt["checks"] = {key: {"outcome": val["outcome"], "conclusion": val["conclusion"]}
+                               for key, val in json.loads(os.environ["CHECK_OUTCOMES"]).items()}
+          path.write_text(json.dumps(receipt, indent=2) + "\n")
+          PY_OUT
+
+      - name: Upload candidate execution record
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hnmf-candidate.json
+          if-no-files-found: error
+
   adversarial-reference:
-    name: HNMF adversarial reference
+    name: HNMF adversarial reference (${{ matrix.candidate }})
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head", "synthetic-merge"]' || '["exact-head"]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Check out exact candidate
+        id: check_01
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record and verify immutable candidate identity
+        id: identity
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CANDIDATE_KIND: ${{ matrix.candidate }}
+        run: |
+          python3 - <<'PY_ID'
+          import json, os, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          actual = git("rev-parse", "HEAD")
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          if os.environ["CANDIDATE_KIND"] == "exact-head":
+              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
+          else:
+              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
+          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
+                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
+                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
+                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, sort_keys=True))
+          PY_ID
 
       - name: Check formatting
+        id: check_02
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo fmt --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml -- --check
 
       - name: Check all targets
+        id: check_03
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo check --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --all-targets --locked
 
       - name: Lint strictly
+        id: check_04
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo clippy --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --all-targets --locked -- -D warnings
 
       - name: Test
+        id: check_05
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo test --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --locked
 
+
+      - name: Preserve candidate and actual check outcomes
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        env:
+          CHECK_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY_OUT'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json")
+          receipt = json.loads(path.read_text())
+          receipt["checks"] = {key: {"outcome": val["outcome"], "conclusion": val["conclusion"]}
+                               for key, val in json.loads(os.environ["CHECK_OUTCOMES"]).items()}
+          path.write_text(json.dumps(receipt, indent=2) + "\n")
+          PY_OUT
+
+      - name: Upload candidate execution record
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hnmf-candidate.json
+          if-no-files-found: error
+
   deterministic-reference:
-    name: HNMF deterministic reference
+    name: HNMF deterministic reference (${{ matrix.candidate }})
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head", "synthetic-merge"]' || '["exact-head"]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Check out exact candidate
+        id: check_01
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record and verify immutable candidate identity
+        id: identity
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CANDIDATE_KIND: ${{ matrix.candidate }}
+        run: |
+          python3 - <<'PY_ID'
+          import json, os, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          actual = git("rev-parse", "HEAD")
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          if os.environ["CANDIDATE_KIND"] == "exact-head":
+              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
+          else:
+              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
+          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
+                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
+                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
+                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, sort_keys=True))
+          PY_ID
 
       - name: Check formatting
+        id: check_02
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check
 
       - name: Check all targets
+        id: check_03
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked
 
-      - name: Lint with frozen legacy exemptions
+      - name: Lint strictly
+        id: check_04
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: >-
           cargo clippy --manifest-path qualification/hnmf-reference/Cargo.toml
           --all-targets --locked -- -D warnings
-          -A clippy::if_same_then_else
-          -A clippy::field_reassign_with_default
-          -A clippy::assertions_on_constants
 
       - name: Test
+        id: check_05
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked
+
+
+      - name: Preserve candidate and actual check outcomes
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        env:
+          CHECK_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY_OUT'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json")
+          receipt = json.loads(path.read_text())
+          receipt["checks"] = {key: {"outcome": val["outcome"], "conclusion": val["conclusion"]}
+                               for key, val in json.loads(os.environ["CHECK_OUTCOMES"]).items()}
+          path.write_text(json.dumps(receipt, indent=2) + "\n")
+          PY_OUT
+
+      - name: Upload candidate execution record
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hnmf-candidate.json
+          if-no-files-found: error
+
+  canonical-consumers:
+    name: canonical consumer convergence (${{ matrix.candidate }})
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head", "synthetic-merge"]' || '["exact-head"]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Check out exact candidate
+        id: check_01
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record and verify immutable candidate identity
+        id: identity
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CANDIDATE_KIND: ${{ matrix.candidate }}
+        run: |
+          python3 - <<'PY_ID'
+          import json, os, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          actual = git("rev-parse", "HEAD")
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          if os.environ["CANDIDATE_KIND"] == "exact-head":
+              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
+          else:
+              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
+          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
+                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
+                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
+                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, sort_keys=True))
+          PY_ID
+
+      - name: Check consumer formatting
+        id: check_02
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo fmt --manifest-path codex-rs/Cargo.toml
+          --package codex-hepta-cognitive-read
+          --package codex-hepta-cognitive-store
+          --package codex-hepta-memory-retrieval
+          --package codex-hepta-compact-engine
+          --package codex-hepta-intelligence -- --check
+
+      - name: Check canonical consumers
+        id: check_03
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          -p codex-hepta-cognitive-read
+          -p codex-hepta-cognitive-store
+          -p codex-hepta-memory-retrieval
+          -p codex-hepta-compact-engine
+          -p codex-hepta-intelligence
+
+      - name: Lint canonical consumers strictly
+        id: check_04
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          -p codex-hepta-cognitive-read
+          -p codex-hepta-cognitive-store
+          -p codex-hepta-memory-retrieval
+          -p codex-hepta-compact-engine
+          -p codex-hepta-intelligence -- -D warnings
+
+      - name: Test canonical consumer packages
+        id: check_05
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-cognitive-read
+          -p codex-hepta-cognitive-store
+          -p codex-hepta-memory-retrieval
+          -p codex-hepta-compact-engine
+          -p codex-hepta-intelligence
+
+
+      - name: Preserve candidate and actual check outcomes
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        env:
+          CHECK_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY_OUT'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json")
+          receipt = json.loads(path.read_text())
+          receipt["checks"] = {key: {"outcome": val["outcome"], "conclusion": val["conclusion"]}
+                               for key, val in json.loads(os.environ["CHECK_OUTCOMES"]).items()}
+          path.write_text(json.dumps(receipt, indent=2) + "\n")
+          PY_OUT
+
+      - name: Upload candidate execution record
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hnmf-candidate.json
+          if-no-files-found: error
+
+  shared-experience-owner:
+    name: shared-experience owner bridge (${{ matrix.candidate }})
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head", "synthetic-merge"]' || '["exact-head"]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Check out exact candidate
+        id: check_01
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record and verify immutable candidate identity
+        id: identity
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CANDIDATE_KIND: ${{ matrix.candidate }}
+        run: |
+          python3 - <<'PY_ID'
+          import json, os, pathlib, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          actual = git("rev-parse", "HEAD")
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          if os.environ["CANDIDATE_KIND"] == "exact-head":
+              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
+          else:
+              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
+          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
+                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
+                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
+                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, sort_keys=True))
+          PY_ID
+
+      - name: Check owner and product formatting
+        id: check_02
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo fmt --manifest-path codex-rs/Cargo.toml
+          --package codex-hepta-memory
+          --package codex-hepta-agentd -- --check
+
+      - name: Check owner bridge
+        id: check_03
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          -p codex-hepta-memory
+          -p codex-hepta-agentd
+
+      - name: Lint owner bridge strictly
+        id: check_04
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          -p codex-hepta-memory
+          -p codex-hepta-agentd -- -D warnings
+
+      - name: Test shared-experience owner
+        id: check_05
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-memory shared_experience
+
+      - name: Test Agentd product writer canonical binding
+        id: check_06
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: >-
+          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-agentd --test cognitive_store_product_writer
+
+      - name: Preserve candidate and actual check outcomes
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        env:
+          CHECK_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY_OUT'
+          import json, os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json")
+          receipt = json.loads(path.read_text())
+          receipt["checks"] = {key: {"outcome": val["outcome"], "conclusion": val["conclusion"]}
+                               for key, val in json.loads(os.environ["CHECK_OUTCOMES"]).items()}
+          path.write_text(json.dumps(receipt, indent=2) + "\n")
+          PY_OUT
+
+      - name: Upload candidate execution record
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hnmf-candidate.json
+          if-no-files-found: error
+
+  qualification-required:
+    name: HNMF qualification required
+    if: ${{ always() }}
+    needs: [canonical-contracts, contract-reference, adversarial-reference, deterministic-reference, canonical-consumers, shared-experience-owner]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all applicable candidate checks
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY_REQUIRED'
+          import json, os
+          results = json.loads(os.environ["RESULTS"])
+          bad = {name: value["result"] for name, value in results.items() if value["result"] != "success"}
+          if bad:
+              raise SystemExit(f"HNMF qualification incomplete: {bad}")
+          print("PASS_HNMF_ALL_APPLICABLE_CANDIDATES")
+          PY_REQUIRED

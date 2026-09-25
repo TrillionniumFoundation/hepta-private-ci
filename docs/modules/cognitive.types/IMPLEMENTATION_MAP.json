@@ -231,12 +231,87 @@
       "designOperation": "canonical_wire_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_consumer_binding_v1",
+      "nativeSymbol": "CanonicalConsumerBindingV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/consumer.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_consumer_binding_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sharedexperiencepublicationv2",
+      "nativeSymbol": "SharedExperiencePublicationV2",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/shared_experience.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/shared_experience_tests.rs",
+        "qualification/cognitive-types-v2/verify_vectors.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sharedexperiencepublicationv2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sharedexperiencesnapshotv2",
+      "nativeSymbol": "SharedExperienceSnapshotV2",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/shared_experience.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/shared_experience_tests.rs",
+        "qualification/cognitive-types-v2/verify_vectors.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sharedexperiencesnapshotv2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sharedexperienceusereceiptv2",
+      "nativeSymbol": "SharedExperienceUseReceiptV2",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/shared_experience.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/shared_experience_tests.rs",
+        "qualification/cognitive-types-v2/verify_vectors.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sharedexperienceusereceiptv2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sharedexperiencerevocationreceiptv2",
+      "nativeSymbol": "SharedExperienceRevocationReceiptV2",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/shared_experience.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/shared_experience_tests.rs",
+        "qualification/cognitive-types-v2/verify_vectors.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sharedexperiencerevocationreceiptv2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
     "Run exact-head package/all-target/strict-clippy and deterministic synthetic-merge qualification for this exact candidate.",
-    "Migrate registered consumers through explicit canonical V1 adapters; registry projection alone is not native consumer convergence.",
-    "Bind authenticated production consumers to the exact registered V1 wire schemas before changing product-composition claims."
+    "Execute every named normal product caller through its exact canonical consumer binding before retiring compatibility surfaces.",
+    "Qualify shared-experience cross-host transport, clean-Agent longitudinal transfer and influence-removal evidence separately from local source closure.",
+    "Bind the default product profile and authenticated owner-epoch/lineage observations before claiming full canonical/V2 product convergence."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -315,5 +390,122 @@
     "compact.engine: MemoryRecord and Lane C compaction surface",
     "intelligence.control: CognitiveSnapshot compatibility surface"
   ],
-  "canonicalConsumerConvergenceProved": false
+  "canonicalConsumerConvergenceProved": false,
+  "canonicalConsumerBindingState": "source_implemented_compatibility_bound_not_retired",
+  "canonicalConsumerBindingSourceComplete": true,
+  "canonicalConsumerBindings": [
+    {
+      "consumer": "cognitive.read",
+      "payloads": [
+        "MemoryEventV1"
+      ],
+      "entrypoint": "adapt_authoritative_read_to_canonical_v1",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
+      "legacyDisposition": "compatibility_digest_bound_currentness_revalidation_required"
+    },
+    {
+      "consumer": "cognitive.store",
+      "payloads": [
+        "MemoryEventV1"
+      ],
+      "entrypoint": "bind_canonical_event_to_product_receipt_v1",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
+      "legacyDisposition": "durable_operation_and_receipt_digest_bound"
+    },
+    {
+      "consumer": "memory.retrieval",
+      "payloads": [
+        "RecallPacketV1"
+      ],
+      "entrypoint": "adapt_generation_bound_recall_to_canonical_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "legacyDisposition": "packet_candidate_union_and_generation_cut_bound"
+    },
+    {
+      "consumer": "compact.engine",
+      "payloads": [
+        "MemoryEventV1"
+      ],
+      "entrypoint": "build_qualified_candidate_with_canonical_events",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
+      "legacyDisposition": "citation_provenance_priority_reason_and_complete_input_coverage_bound"
+    },
+    {
+      "consumer": "intelligence.control",
+      "payloads": [
+        "RecallPacketV1"
+      ],
+      "entrypoint": "prepare_intelligence_run_with_canonical_recall",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs"
+      ],
+      "legacyDisposition": "run_id_cue_and_event_snapshot_bound",
+      "productEntrypoint": "AgentdIntelligenceProductRunnerV1::prepare_with_canonical_recall",
+      "productSourcePath": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "defaultProfileProved": false
+    }
+  ],
+  "sharedExperienceV2": {
+    "state": "source_implemented_local_owner_bridge_not_activated",
+    "canonicalTypeSource": "codex-rs/hepta-cognitive-types/src/shared_experience.rs",
+    "wireSource": "codex-rs/hepta-cognitive-types/src/wire.rs",
+    "ownerBridge": "codex-rs/hepta-memory/src/shared_experience.rs",
+    "ownerTests": [
+      "codex-rs/hepta-memory/src/shared_experience_tests.rs"
+    ],
+    "contracts": [
+      "SharedExperiencePublicationV2",
+      "SharedExperienceSnapshotV2",
+      "SharedExperienceUseReceiptV2",
+      "SharedExperienceRevocationReceiptV2"
+    ],
+    "existingPrivateRecordsReinterpreted": false,
+    "newWriterCreated": false,
+    "readImpliesTraining": false,
+    "trainingImpliesArtifactUse": false,
+    "productExecutionProved": false,
+    "crossHostTransportProved": false,
+    "longitudinalTransferProved": false,
+    "fullInfluenceRemovalProved": false,
+    "ownerEpochAuthenticationProved": false,
+    "sourceDomains": [
+      "canonical_memory_event",
+      "owner_memory_revision"
+    ],
+    "sourceOwnerAttestsTrainingOrArtifactTerminal": false,
+    "negativeWireVectorCount": 14
+  },
+  "sharedExperiencePortSchemaBindings": {
+    "ModulePort::cognitive.types::cognitive.read": [
+      "SharedExperiencePublicationV2",
+      "SharedExperienceUseReceiptV2",
+      "SharedExperienceRevocationReceiptV2"
+    ],
+    "ModulePort::cognitive.types::cognitive.store": [
+      "SharedExperiencePublicationV2",
+      "SharedExperienceUseReceiptV2",
+      "SharedExperienceRevocationReceiptV2"
+    ],
+    "ModulePort::cognitive.types::learning.ledger": [
+      "SharedExperiencePublicationV2",
+      "SharedExperienceSnapshotV2",
+      "SharedExperienceUseReceiptV2",
+      "SharedExperienceRevocationReceiptV2"
+    ]
+  }
 }

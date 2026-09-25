@@ -291,6 +291,35 @@ fn canonical_shadow_read_binds_exact_authoritative_cut_and_record() {
 }
 
 #[test]
+fn canonical_product_read_binds_every_event_to_exact_legacy_cut() {
+    let read = authoritative_read_result();
+    let record = read.read_result.records()[0].clone();
+    let product = adapt_authoritative_read_to_canonical_v1(
+        contract_id("operation:canonical-read"),
+        &read,
+        vec![CanonicalReadRecordBindingV1 {
+            legacy_record_id: record.record_id.clone(),
+            legacy_record_revision: record.revision,
+            legacy_record_digest: record.record_digest(),
+            event: canonical_event(),
+        }],
+    )
+    .unwrap_or_else(|error| panic!("canonical product read: {error}"));
+    product
+        .validate()
+        .unwrap_or_else(|error| panic!("canonical product validation: {error}"));
+    assert_eq!(product.consumer_bindings.len(), 1);
+    assert!(product.consumer_bindings[0].currentness_revalidation_required);
+    assert_eq!(
+        product.consumer_bindings[0]
+            .compatibility_payload_sha256
+            .expect("legacy digest")
+            .digest(),
+        record.record_digest()
+    );
+}
+
+#[test]
 fn canonical_shadow_read_rejects_identity_provenance_and_lifecycle_drift() {
     let read = authoritative_read_result();
     let record = read.read_result.records()[0].clone();

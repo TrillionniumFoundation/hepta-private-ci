@@ -2,6 +2,7 @@ use std::collections::BTreeSet;
 
 use crate::hnmf::*;
 use crate::hnmf_learning::*;
+use crate::shared_experience::*;
 use crate::wire::*;
 
 fn id(value: &str) -> ContractIdV1 {
@@ -664,6 +665,10 @@ fn bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts() {
         let _ = decode_wire_v1::<PlasticityBatchV1>(&bytes);
         let _ = decode_wire_v1::<TopologyProposalV1>(&bytes);
         let _ = decode_wire_v1::<ForgetPropagationReceiptV1>(&bytes);
+        let _ = decode_wire_v1::<SharedExperiencePublicationV2>(&bytes);
+        let _ = decode_wire_v1::<SharedExperienceSnapshotV2>(&bytes);
+        let _ = decode_wire_v1::<SharedExperienceUseReceiptV2>(&bytes);
+        let _ = decode_wire_v1::<SharedExperienceRevocationReceiptV2>(&bytes);
     }
 }
 
@@ -949,5 +954,80 @@ fn checked_in_cross_language_negative_vectors_are_rejected() {
             error.to_string().contains(expected),
             "{name}: unexpected error {error}"
         );
+    }
+}
+
+#[test]
+fn provenance_source_revision_cannot_bind_conflicting_digests() {
+    let mut value = event();
+    let mut duplicate = value.provenance[0].clone();
+    duplicate.source_sha256 = digest('f');
+    value.provenance.push(duplicate);
+    value.provenance.sort();
+    assert_eq!(
+        value.validate(),
+        Err(HnmfContractError::DuplicateIdentity(
+            "provenanceSourceRevision"
+        ))
+    );
+    assert!(encode_wire_v1(&value).is_err());
+}
+
+#[test]
+fn structured_property_matrix_covers_all_modality_selectors() {
+    for modality in ModalityKindV1::ALL {
+        for index in 0..32u32 {
+            let mut span = text_span();
+            span.modality = modality;
+            let start = u64::from(index);
+            span.range = match modality {
+                ModalityKindV1::Text => SpanRangeV1::ByteRange {
+                    start,
+                    end: start + 1,
+                },
+                ModalityKindV1::Image => SpanRangeV1::PixelRect {
+                    x: index,
+                    y: index,
+                    width: 1,
+                    height: 1,
+                },
+                ModalityKindV1::Audio => SpanRangeV1::SampleRange {
+                    start,
+                    end: start + 1,
+                    sample_rate_hz: 48_000,
+                },
+                ModalityKindV1::Video => SpanRangeV1::FrameRange {
+                    start,
+                    end: start + 1,
+                    timebase_num: 1,
+                    timebase_den: 30,
+                },
+                ModalityKindV1::CodeAst => SpanRangeV1::AstPath {
+                    path: format!("module/nodes/{index}"),
+                },
+                ModalityKindV1::GuiState => SpanRangeV1::GuiNode {
+                    stable_node_id: id(&format!("gui:{index}")),
+                },
+                ModalityKindV1::ToolTrajectory => SpanRangeV1::EventRange {
+                    start,
+                    end: start + 1,
+                },
+                ModalityKindV1::StructuredData => SpanRangeV1::JsonPointer {
+                    pointer: format!("/keys/{index}~1item"),
+                },
+                ModalityKindV1::Sensor => SpanRangeV1::SensorRange {
+                    start,
+                    end: start + 1,
+                    unit: "kelvin".to_owned(),
+                },
+            };
+            let bytes = encode_wire_v1(&span).expect("valid modality selector");
+            assert_eq!(
+                decode_wire_v1::<ModalitySpanRefV1>(&bytes).expect("decode"),
+                span
+            );
+            span.uncertainty_ppm = PPM + 1;
+            assert!(encode_wire_v1(&span).is_err());
+        }
     }
 }

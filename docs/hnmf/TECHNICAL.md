@@ -80,7 +80,9 @@ The target HNMF composition uses the existing Nervous System to admit experience
 recall task-relevant evidence, select replay and form future skills/parameters.
 It is not a vector database renamed as a brain and not a claim that experience
 replay, neural memory or multi-actor learning is unprecedented. Existing reference
-closure does not certify the new shared-experience/product requirements.
+closure does not certify shared-experience product execution. The four V2 wire
+contracts and the local owner bridge are source-implemented, while cross-host
+transport, measured transfer benefit and governed activation remain unproved.
 
 | Logical form | Contents and interpretation | Existing owner and default sharing |
 | --- | --- | --- |
@@ -259,6 +261,11 @@ Use existing owner operations; no Agent opens another owner's writable SQLite fi
 no database files are merged, and federation gains no mutation authority. A copy
 is a derived record linked to the original revision, not a new independent fact.
 A publication is selectable for its declared use only after durable admission.
+The canonical source contracts are `SharedExperiencePublicationV2`,
+`SharedExperienceSnapshotV2`, `SharedExperienceUseReceiptV2` and
+`SharedExperienceRevocationReceiptV2`. The existing `hepta-memory` SQLite owner
+binds them to its exact-revision policy rows; the contracts do not create a new
+store or mutate the source `MemoryEventV1`.
 
 A contribution binds producer, durable shard/owner epoch, original event/revision,
 semantic content digest, policy generation, destinations and idempotent operation
@@ -625,10 +632,11 @@ promotion != release
 
 ### Shared-experience completion is separate from reference closure
 
-The original HNMF counts and reference gaps remain unchanged. The shared-experience
-requirements are planned extensions of existing packages in
-`../delivery/WORK_PACKAGES.json`, ordered in `MIGRATION.md`; earlier implemented
-package state does not certify them. SM-01..SM-10 and the clean-Agent four-arm pilot
+The original HNMF V1 protocol count and reference gaps remain unchanged. The
+shared-experience V2 type/wire source and local owner adapters are implemented as
+versioned extensions of existing packages in `../delivery/WORK_PACKAGES.json`,
+ordered in `MIGRATION.md`; source implementation does not certify product execution,
+transport, efficacy or activation. SM-01..SM-10 and the clean-Agent four-arm pilot
 are future acceptance criteria. A scoped policy/dedup/lineage example is not a
 product caller, operating-system isolation test, full unlearning proof or shared
 learning benefit. Keep local multi-owner execution, authenticated cross-host

@@ -8,6 +8,10 @@ use codex_hepta_cognitive_types::hnmf_learning::{
     PlasticityBatchV1, RecallPacketV1, ReplaySelectionReceiptV1, SynapseV1,
     TopologyProposalV1,
 };
+use codex_hepta_cognitive_types::shared_experience::{
+    SharedExperiencePublicationV2, SharedExperienceRevocationReceiptV2,
+    SharedExperienceSnapshotV2, SharedExperienceUseReceiptV2,
+};
 use codex_hepta_cognitive_types::wire::decode_wire_v1;
 use libfuzzer_sys::fuzz_target;
 
@@ -24,4 +28,8 @@ fuzz_target!(|data: &[u8]| {
     let _ = decode_wire_v1::<PlasticityBatchV1>(data);
     let _ = decode_wire_v1::<TopologyProposalV1>(data);
     let _ = decode_wire_v1::<ForgetPropagationReceiptV1>(data);
+    let _ = decode_wire_v1::<SharedExperiencePublicationV2>(data);
+    let _ = decode_wire_v1::<SharedExperienceSnapshotV2>(data);
+    let _ = decode_wire_v1::<SharedExperienceUseReceiptV2>(data);
+    let _ = decode_wire_v1::<SharedExperienceRevocationReceiptV2>(data);
 });

@@ -15,6 +15,12 @@ use std::fmt;
 use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerBindingV1;
+use codex_hepta_cognitive_types::consumer::CanonicalConsumerV1;
+use codex_hepta_cognitive_types::consumer::CanonicalMigrationPostureV1;
+use codex_hepta_cognitive_types::consumer::CanonicalPayloadKindV1;
+use codex_hepta_cognitive_types::consumer::bind_memory_event_consumer_v1;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
 use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
@@ -343,6 +349,43 @@ impl CanonicalAuthoritativeReadShadowV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalAuthoritativeReadV1 {
+    pub projection: CanonicalAuthoritativeReadShadowV1,
+    pub consumer_bindings: Vec<CanonicalConsumerBindingV1>,
+}
+
+impl CanonicalAuthoritativeReadV1 {
+    pub fn validate(&self) -> Result<(), CanonicalReadShadowError> {
+        self.projection.validate()?;
+        if self.consumer_bindings.len() != self.projection.rows.len() {
+            return Err(CanonicalReadShadowError::ConsumerBindingCountMismatch);
+        }
+        for (row, binding) in self.projection.rows.iter().zip(&self.consumer_bindings) {
+            binding
+                .validate()
+                .map_err(|error| CanonicalReadShadowError::ConsumerBinding(error.to_string()))?;
+            if binding.consumer != CanonicalConsumerV1::CognitiveRead
+                || binding.payload_kind != CanonicalPayloadKindV1::MemoryEvent
+                || binding.canonical_payload_sha256.digest() != row.event_digest
+                || binding.source_identity_sha256.digest() != row.legacy_record_digest
+                || binding.source_snapshot_sha256.digest()
+                    != self.projection.generation_vector_digest
+                || binding
+                    .compatibility_payload_sha256
+                    .map(ContractDigestV1::digest)
+                    != Some(row.legacy_record_digest)
+                || binding.migration_posture != CanonicalMigrationPostureV1::CompatibilityBound
+            {
+                return Err(CanonicalReadShadowError::ConsumerBindingMismatch(
+                    row.legacy_record_id.to_string(),
+                ));
+            }
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CanonicalReadShadowError {
     Authoritative(SnapshotProviderError),
     CanonicalContract(String),
@@ -354,6 +397,9 @@ pub enum CanonicalReadShadowError {
     EventDigestMismatch(String),
     EmptyDigest,
     BindingDigestMismatch,
+    ConsumerBinding(String),
+    ConsumerBindingCountMismatch,
+    ConsumerBindingMismatch(String),
     AuthorityGranted,
 }
 
@@ -426,6 +472,39 @@ pub fn adapt_authoritative_read_to_canonical_shadow_v1(
         authority: AuthorityPosture::DENY_ALL,
     };
     result.binding_digest = result.compute_binding_digest();
+    Ok(result)
+}
+
+/// Produce a canonical product-facing read projection whose every event is bound
+/// to the exact authoritative cut and the exact compatibility record it replaces.
+/// The returned bindings still require currentness revalidation at final use.
+pub fn adapt_authoritative_read_to_canonical_v1(
+    operation_id: ContractIdV1,
+    read: &AuthoritativeReadResultV1,
+    bindings: Vec<CanonicalReadRecordBindingV1>,
+) -> Result<CanonicalAuthoritativeReadV1, CanonicalReadShadowError> {
+    let projection = adapt_authoritative_read_to_canonical_shadow_v1(read, bindings)?;
+    let consumer_bindings = projection
+        .rows
+        .iter()
+        .map(|row| {
+            bind_memory_event_consumer_v1(
+                operation_id.clone(),
+                CanonicalConsumerV1::CognitiveRead,
+                &row.event,
+                row.legacy_record_digest,
+                projection.generation_vector_digest,
+                Some(row.legacy_record_digest),
+                CanonicalMigrationPostureV1::CompatibilityBound,
+            )
+            .map_err(|error| CanonicalReadShadowError::ConsumerBinding(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let result = CanonicalAuthoritativeReadV1 {
+        projection,
+        consumer_bindings,
+    };
+    result.validate()?;
     Ok(result)
 }
 

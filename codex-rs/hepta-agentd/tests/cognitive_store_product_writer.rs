@@ -26,7 +26,7 @@ use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::SourceDraft;
-use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
+use codex_hepta_cognitive_store::bind_canonical_event_to_product_receipt_v1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
@@ -271,11 +271,20 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         behavior_propensity_ppm: None,
         lifecycle: MemoryLifecycleV1::Active,
     };
-    let canonical_binding = bind_canonical_event_to_durable_receipt(&canonical_event, &written)?;
+    let canonical_binding = bind_canonical_event_to_product_receipt_v1(
+        ContractIdV1::new(format!("operation:{}", written.operation_digest.as_str()))?,
+        &canonical_event,
+        &written,
+    )?;
     canonical_binding.validate()?;
     assert_eq!(
-        canonical_binding.source_revision, written.write.source.revision,
+        canonical_binding.durable_binding.source_revision, written.write.source.revision,
         "canonical/durable bridge must carry the authoritative source revision"
+    );
+    assert!(
+        canonical_binding
+            .consumer_binding
+            .currentness_revalidation_required
     );
 
     let written_occurrence = format!("cognitive-mutation:{}", written.operation_digest.as_str());

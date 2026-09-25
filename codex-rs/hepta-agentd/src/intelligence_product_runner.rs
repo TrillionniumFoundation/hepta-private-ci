@@ -75,7 +75,34 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_composition_inner(composition, request, inputs, None)
+            .await
+    }
+
+    /// Use the existing seven-owner runner with an explicit canonical recall input.
+    /// The context owner must match and retain each selected event as untrusted evidence.
+    /// Source currentness must already be established by the retrieval owner; this
+    /// method does not turn an arbitrary packet into an authenticated memory source.
+    pub async fn prepare_with_canonical_recall(
+        &self,
+        coordinator: &crate::AgentRunCoordinator,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        recall: CanonicalRecallIntelligenceInputV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let composition = coordinator.composition().clone();
+        self.prepare_composition_inner(&composition, request, inputs, Some(recall))
+            .await
+    }
+
+    async fn prepare_composition_inner(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
+        recall: Option<CanonicalRecallIntelligenceInputV1>,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let candidate_ids = request
             .legal_candidates
@@ -138,7 +165,15 @@ impl AgentdIntelligenceProductRunnerV1 {
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            match recall {
+                Some(recall) => prepare_intelligence_run_with_canonical_recall(
+                    request,
+                    recall,
+                    &mut ports,
+                    &mut oracle,
+                ),
+                None => prepare_intelligence_run(request, &mut ports, &mut oracle),
+            }
         })?;
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await

@@ -780,8 +780,14 @@ impl MemoryEventV1 {
         }
 
         let mut previous_provenance: Option<&ProvenanceRefV1> = None;
+        let mut provenance_identities = BTreeSet::new();
         for provenance in &self.provenance {
             provenance.validate()?;
+            if !provenance_identities.insert((&provenance.source_id, provenance.source_revision)) {
+                return Err(HnmfContractError::DuplicateIdentity(
+                    "provenanceSourceRevision",
+                ));
+            }
             if previous_provenance.is_some_and(|previous| previous >= provenance) {
                 return Err(HnmfContractError::Invalid("provenance order"));
             }

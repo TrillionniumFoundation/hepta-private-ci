@@ -1,6 +1,19 @@
 use super::*;
 
 use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
+use codex_hepta_cognitive_types::hnmf::MemoryScopeV1;
+use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
+use codex_hepta_cognitive_types::hnmf::ModalityKindV1;
+use codex_hepta_cognitive_types::hnmf::ModalitySpanRefV1;
+use codex_hepta_cognitive_types::hnmf::ObservedIntervalV1;
+use codex_hepta_cognitive_types::hnmf::PrivacyClassV1;
+use codex_hepta_cognitive_types::hnmf::ProvenanceRefV1;
+use codex_hepta_cognitive_types::hnmf::RetentionPolicyV1;
+use codex_hepta_cognitive_types::hnmf::SpanRangeV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Revision;
 
@@ -56,6 +69,67 @@ fn record(
         predecessor_digest,
         citations: Vec::new(),
         state,
+    }
+}
+
+fn contract_id(value: &str) -> ContractIdV1 {
+    ContractIdV1::new(value).expect("contract id")
+}
+
+fn contract_digest(value: &str) -> ContractDigestV1 {
+    ContractDigestV1::from_digest(digest(value)).expect("contract digest")
+}
+
+fn canonical_event_for(record: &MemoryRecord) -> MemoryEventV1 {
+    MemoryEventV1 {
+        event_id: contract_id(&format!(
+            "event:{}:{}",
+            record.record_id,
+            record.revision.get()
+        )),
+        episode_id: contract_id("episode:compaction"),
+        scope: MemoryScopeV1::AgentPrivate {
+            agent_id: contract_id("agent:compaction"),
+        },
+        observed_interval: ObservedIntervalV1 {
+            start_unix_ms: record.revision.get(),
+            end_unix_ms: None,
+        },
+        modality_spans: vec![ModalitySpanRefV1 {
+            span_id: contract_id(&format!("span:{}", record.revision.get())),
+            modality: ModalityKindV1::Text,
+            asset_sha256: contract_digest("asset"),
+            range: SpanRangeV1::ByteRange { start: 0, end: 1 },
+            preprocessor_manifest_sha256: contract_digest("preprocessor"),
+            feature_blob_sha256: None,
+            symbolic_projection_sha256: None,
+            uncertainty_ppm: 0,
+            privacy_class: PrivacyClassV1::AgentPrivate,
+            redaction_mask_sha256: None,
+        }],
+        cross_modal_bindings: Vec::new(),
+        semantic_keys: BTreeSet::from(["compaction".to_string()]),
+        provenance: vec![ProvenanceRefV1 {
+            source_id: contract_id("source:compaction"),
+            source_revision: record.revision.get(),
+            source_sha256: contract_digest("source"),
+            observed_at_unix_ms: record.revision.get(),
+        }],
+        verification: MemoryVerificationStateV1::Verified,
+        retention_policy: RetentionPolicyV1::Persistent {
+            retain_until_unix_ms: None,
+        },
+        objective_digest: contract_digest("objective"),
+        ndu_state_digest: contract_digest("ndu"),
+        causal_parents: BTreeSet::new(),
+        temporal_neighbors: BTreeSet::new(),
+        behavior_propensity_ppm: None,
+        lifecycle: match record.state {
+            RecordState::Live => MemoryLifecycleV1::Active,
+            RecordState::Tombstone => MemoryLifecycleV1::Tombstoned {
+                reason_sha256: contract_digest("tombstone"),
+            },
+        },
     }
 }
 
@@ -227,5 +301,47 @@ fn protected_set_cannot_exceed_checkpoint_capacity() {
             vec![input(first, 1), input(second, 1)],
         ),
         Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
+    );
+}
+
+#[test]
+fn canonical_compaction_entry_binds_every_legacy_revision_to_one_event() {
+    let snapshot = snapshot_key();
+    let mut record = record("memory:canonical", 1, None, RecordState::Live);
+    record
+        .citations
+        .push(codex_hepta_cognitive_types::Citation {
+            source_id: id("source:compaction"),
+            source_digest: digest("source"),
+        });
+    let canonical = bind_canonical_compaction_input_v1(
+        contract_id("operation:compact"),
+        &snapshot,
+        input(record.clone(), 10),
+        canonical_event_for(&record),
+    )
+    .expect("canonical input");
+    let product = build_qualified_candidate_with_canonical_events(
+        snapshot,
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &policy(1, Vec::new()),
+        vec![canonical],
+    )
+    .expect("canonical candidate");
+    product.validate().expect("canonical candidate validates");
+    assert_eq!(product.input_bindings.len(), 1);
+    assert!(product.input_bindings[0].currentness_revalidation_required);
+    let mut removed = product.clone();
+    removed.input_bindings.clear();
+    assert!(
+        removed.validate().is_err(),
+        "missing canonical coverage cannot validate"
+    );
+    let mut replaced = product;
+    replaced.inputs[0].input.retention_priority += 1;
+    assert!(
+        replaced.validate().is_err(),
+        "priority belongs to the exact input binding"
     );
 }
