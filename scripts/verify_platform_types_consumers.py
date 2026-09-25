@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate the closed platform.types source-consumer qualification matrix."""
+
 from __future__ import annotations
 import json
 from pathlib import Path
@@ -42,8 +43,8 @@ def main() -> int:
         raise SystemExit("platform.types consumer matrix header/order mismatch")
     qualification = QUALIFICATION.read_text(encoding="utf-8")
     for command in (
-        'just test --locked -p codex-hepta-types --all-targets',
-        'just test --locked -p codex-hepta-ndu --lib',
+        "just test --locked -p codex-hepta-types --all-targets",
+        "just test --locked -p codex-hepta-ndu --lib",
         "just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)'",
         "just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)'",
         "just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)'",

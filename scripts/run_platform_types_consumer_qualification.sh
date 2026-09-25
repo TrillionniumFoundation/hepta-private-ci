@@ -4,6 +4,9 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 1
 MANIFEST="$ROOT/codex-rs/Cargo.toml"
+INITIAL_HEAD="$(git rev-parse HEAD)" || exit 1
+INITIAL_TREE="$(git rev-parse HEAD^{tree})" || exit 1
+INITIAL_STATUS="$(git status --porcelain --untracked-files=normal)" || exit 1
 EVIDENCE="${HEPTA_TYPES_EVIDENCE_DIR:-$ROOT/.hepta-evidence/platform-types-consumers}"
 mkdir -p "$EVIDENCE" || exit 1
 RESULTS="$EVIDENCE/results.tsv"
@@ -35,11 +38,12 @@ run_step prompt-producer just test --locked -p codex-hepta-codex-adapter --lib -
 run_step prompt-ledger just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)' --retries 0
 run_step topology-consumer just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)' --retries 0
 run_step types-lint cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets -- -D warnings
-run_step ndu-lint cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings -A deprecated
+run_step ndu-lint cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings
 # Record attempts and failed checks as diagnostics, never as successful qualification.
-python3 - "$ROOT" "$EVIDENCE" <<'RECEIPT'
+python3 - "$ROOT" "$EVIDENCE" "$INITIAL_HEAD" "$INITIAL_TREE" "$INITIAL_STATUS" <<'RECEIPT'
 import hashlib, json, pathlib, subprocess, sys
-root, evidence = map(pathlib.Path, sys.argv[1:])
+root, evidence = map(pathlib.Path, sys.argv[1:3])
+initial_head, initial_tree, initial_status = sys.argv[3:6]
 def git(*args):
     return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
 checks = []
@@ -48,14 +52,19 @@ for row in (evidence / "results.tsv").read_text().splitlines():
     log = evidence / (name + ".log")
     checks.append({"name": name, "exitCode": int(rc), "seconds": int(seconds),
                    "log": log.name, "logSha256": hashlib.sha256(log.read_bytes()).hexdigest()})
-clean = not git("status", "--porcelain", "--untracked-files=normal")
+final_head, final_tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
+unchanged = (initial_head, initial_tree) == (final_head, final_tree)
+clean = not initial_status and not git("status", "--porcelain", "--untracked-files=normal")
 passed = len(checks) == 16 and all(row["exitCode"] == 0 for row in checks)
-record = {"schema": "hepta.platform-types.consumer-execution.v1", "sourceHead": git("rev-parse", "HEAD"),
-          "sourceTree": git("rev-parse", "HEAD^{tree}"), "cleanWorktree": clean,
-          "checksPassed": passed, "qualified": passed and clean, "checks": checks,
+record = {"schema": "hepta.platform-types.consumer-execution.v1", "sourceHead": initial_head,
+          "sourceTree": initial_tree, "finalSourceHead": final_head, "finalSourceTree": final_tree,
+          "sourceUnchanged": unchanged, "cleanWorktree": clean,
+          "checksPassed": passed, "qualified": passed and clean and unchanged, "checks": checks,
           "productActivation": False, "independentAcceptance": False}
 (evidence / "execution.json").write_text(json.dumps(record, indent=2) + "\n")
 print(json.dumps({key: record[key] for key in ("sourceHead", "checksPassed", "qualified")}))
+if not unchanged:
+    raise SystemExit("candidate changed during consumer qualification")
 RECEIPT
 receipt_rc=$?
 if (( receipt_rc != 0 )); then failed=1; fi

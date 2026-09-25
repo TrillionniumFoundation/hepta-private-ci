@@ -33,12 +33,13 @@
     },
     {
       "id": "utility.ndu.registered-numeric",
-      "kind": "authenticated_owner_source_consumer",
-      "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "kind": "registered_owner_evaluation_source_consumer",
+      "path": "codex-rs/hepta-ndu/src/owner.rs",
       "mustContain": [
-        "NduNumericRegistryV1",
-        "rescale_signal_registered",
-        "NduRegisteredUtilitySignalV1"
+        "pub fn evaluate(",
+        "registry.admit_utility_axes(",
+        "admitted.admission.admission_digest",
+        "production_policy_digest_with_numeric_registry"
       ]
     },
     {

@@ -475,3 +475,17 @@ The bootstrap source-location obligation for `utility.ndu` is implemented by wor
 - `codex-rs/hepta-ndu`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Configured owner numeric admission before ordinary evaluation
+
+The existing `NduAuthenticatedOwnerV1::evaluate` path uses the frozen
+`NduNumericRegistryV1` whenever the owner was opened with a numeric registry.
+Utility contribution axes are checked against the exact policy order and admitted
+as signed-Q32 utility values through `rescale_signal_registered`. A versioned
+canonical support digest binds original evidence and the registry-admission digest;
+the existing V2 evaluation receipt therefore commits to the admitted evidence.
+The source contribution limit is checked before admission work. Missing source
+support cannot be replaced with a generated nonzero digest. The owner tests cover
+normal deterministic evaluation, missing registry definition and invalid axes.
+The ordinary registry-less owner retains compatibility semantics and does not
+claim registered admission or activated product bootstrap.

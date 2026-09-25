@@ -6,9 +6,12 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_types::CanonicalFieldV1;
+use codex_hepta_types::CanonicalValueV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NumericSignalV1;
 use codex_hepta_types::StableId;
+use codex_hepta_types::canonical_digest_v1;
 
 use crate::ContributionSet;
 use crate::EvaluationPolicyV1;
@@ -262,10 +265,45 @@ impl NduAuthenticatedOwnerV1 {
             .map_err(NduOwnerError::NumericAdmission)
     }
 
+    /// The ordinary owner evaluation path cannot bypass its configured registry.
+    /// Legacy owners opened without one retain advisory-only V2 compatibility;
+    /// their receipt does not acquire registered-admission evidence.
     pub fn evaluate(
         &self,
-        contributions: ContributionSet,
+        mut contributions: ContributionSet,
     ) -> Result<NduEvaluationReceiptV2, NduOwnerError> {
+        if contributions.contributions.len() > crate::evaluator::MAX_CONTRIBUTIONS {
+            return Err(NduError::ContributionLimitExceeded.into());
+        }
+        if let Some(registry) = &self.numeric_registry {
+            let support_type = StableId::new("utility.ndu:registered-contribution-support-v1")
+                .map_err(|_| NduOwnerError::InvalidContext("numeric support type"))?;
+            for contribution in &mut contributions.contributions {
+                // Never turn an absent source proof into a nonzero generated digest.
+                if contribution.support_digest.is_zero() {
+                    return Err(NduError::EmptySupportDigest {
+                        candidate: contribution.candidate_id.to_string(),
+                        organ: contribution.organ_id.to_string(),
+                    }
+                    .into());
+                }
+                let admitted = registry
+                    .admit_utility_axes(&self.policy.utility_profile, &contribution.utility)?;
+                let fields = [
+                    CanonicalFieldV1 {
+                        name: "source_support",
+                        value: CanonicalValueV1::Digest(contribution.support_digest),
+                    },
+                    CanonicalFieldV1 {
+                        name: "numeric_admission",
+                        value: CanonicalValueV1::Digest(admitted.admission.admission_digest),
+                    },
+                ];
+                contribution.support_digest = canonical_digest_v1(&support_type, 1, &fields)
+                    .map_err(|_| NduOwnerError::InvalidContext("numeric support encoding"))?;
+                contribution.utility = admitted.axis_values;
+            }
+        }
         evaluate_candidates_with_policy(
             contributions,
             self.policy.utility_profile.clone(),

@@ -432,3 +432,99 @@ fn live_revocation_frontier_blocks_previously_signed_write() {
         ))
     ));
 }
+
+fn fixture_with_registry(registry: NduNumericRegistryV1, normalization: Digest32) -> Fixture {
+    let mut fixture = fixture();
+    let directory = tempfile::tempdir().expect("registered owner root");
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private owner root");
+    let mut bound_policy = policy();
+    bound_policy.utility_profile.normalization_manifest_digest = normalization;
+    let owner = NduAuthenticatedOwnerV1::open_with_numeric_registry(
+        directory.path(),
+        fixture.authority.clone(),
+        fixture.owner.context().clone(),
+        bound_policy,
+        registry,
+    )
+    .expect("configured owner");
+    fixture.owner = owner;
+    fixture._store_dir = directory;
+    fixture
+}
+
+#[test]
+fn ordinary_owner_evaluate_consumes_registered_admission_and_binds_support() {
+    let (registry, normalization) = numeric_registry();
+    let fixture = fixture_with_registry(registry, normalization);
+    let source = contributions();
+    let plain = crate::evaluate_candidates_with_policy(
+        source.clone(),
+        fixture.owner.policy.utility_profile.clone(),
+        fixture.owner.policy.scalarization.clone(),
+        fixture.owner.policy.evaluation_policy.clone(),
+    )
+    .expect("plain arithmetic evaluation");
+    let admitted = fixture
+        .owner
+        .evaluate(source.clone())
+        .expect("ordinary owner evaluation");
+    assert_eq!(admitted.base.evaluated_candidates.len(), 2);
+    assert_eq!(
+        admitted.base.advisory_recommendation,
+        plain.base.advisory_recommendation
+    );
+    assert_ne!(admitted.evaluation_digest_v2, plain.evaluation_digest_v2);
+    for (registered, raw) in admitted
+        .base
+        .evaluated_candidates
+        .iter()
+        .zip(&plain.base.evaluated_candidates)
+    {
+        assert_eq!(registered.utility, raw.utility);
+        assert_ne!(registered.support_digest, raw.support_digest);
+    }
+    assert_eq!(
+        admitted,
+        fixture
+            .owner
+            .evaluate(source)
+            .expect("deterministic repeat")
+    );
+}
+
+#[test]
+fn ordinary_owner_evaluate_rejects_missing_registry_definition() {
+    let (registry, _) = numeric_registry();
+    let fixture = fixture_with_registry(registry, digest("unregistered-normalization"));
+    assert!(matches!(
+        fixture.owner.evaluate(contributions()),
+        Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::Conversion(
+                codex_hepta_types::NumericConversionError::UnknownNormalization
+            )
+        ))
+    ));
+}
+
+#[test]
+fn ordinary_owner_admission_does_not_launder_empty_support_or_wrong_axes() {
+    let (registry, normalization) = numeric_registry();
+    let fixture = fixture_with_registry(registry, normalization);
+    let mut source = contributions();
+    source.contributions[0].support_digest = Digest32::ZERO;
+    assert!(matches!(
+        fixture.owner.evaluate(source),
+        Err(NduOwnerError::Ndu(
+            crate::NduError::EmptySupportDigest { .. }
+        ))
+    ));
+    let mut source = contributions();
+    source.contributions[0].utility[0].axis = id("substituted-axis");
+    assert!(matches!(
+        fixture.owner.evaluate(source),
+        Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::AxisIdentityMismatch
+        ))
+    ));
+}

@@ -48,6 +48,12 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
+// Retain the deprecated V1 symbol for existing callers. This expectation is
+// local to its re-export; downstream uses still emit the deprecation diagnostic.
+#[expect(
+    deprecated,
+    reason = "intentional export of the deprecated V1 compatibility API"
+)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;

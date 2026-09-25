@@ -607,3 +607,17 @@ NDU's registry-aware owner API exists, but adding an owner helper alone does not
 prove daemon startup supplies an authenticated registry or that the ordinary
 seven-stage product path consumes registered numeric admission. Keep those
 composition claims pending until the actual caller and its tests are bound.
+
+### Registered numeric consumption in the existing owner evaluation
+
+`NduAuthenticatedOwnerV1::evaluate` now consumes its immutable configured registry
+on the ordinary owner entrypoint, not only through a separately called helper.
+Each bounded utility-axis vector is admitted in its existing signed-Q32
+representation, with exact axis identity and normalization. This is representation
+admission, not a reinterpretation of FixedQ32 multiplication or division rounding.
+A canonical support envelope binds the original support and registered admission
+before the existing V2 evaluator runs. Missing normalization, missing profile,
+wrong axes and absent original support reject. Registry-less legacy owners remain
+explicit advisory compatibility; their receipts are not registered admission.
+Daemon startup provisioning and external registry authentication remain product-
+owner obligations and are not established merely by this source integration.

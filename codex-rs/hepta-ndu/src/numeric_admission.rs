@@ -25,6 +25,7 @@ pub enum NduNumericAdmissionErrorV1 {
     NormalizationMismatch,
     UnitMismatch,
     AxisCountMismatch,
+    AxisIdentityMismatch,
     ShapeMismatch,
 }
 
@@ -74,6 +75,43 @@ impl NduNumericRegistryV1 {
     #[must_use]
     pub const fn registry_digest(&self) -> Digest32 {
         self.registry_digest
+    }
+
+    /// Admit the existing typed Q32 contribution surface. This checks numeric
+    /// representation and normalization, not FixedQ32 arithmetic compatibility.
+    pub(crate) fn admit_utility_axes(
+        &self,
+        profile: &UtilityProfile,
+        axes: &[AxisValue],
+    ) -> Result<NduRegisteredUtilitySignalV1, NduNumericAdmissionErrorV1> {
+        if axes.len() != profile.dimensions.len() || axes.len() > 8 {
+            return Err(NduNumericAdmissionErrorV1::AxisCountMismatch);
+        }
+        let mut values = Vec::with_capacity(axes.len());
+        for (axis, _) in &profile.dimensions {
+            let mut matches = axes.iter().filter(|value| value.axis == *axis);
+            let value = matches
+                .next()
+                .ok_or(NduNumericAdmissionErrorV1::AxisIdentityMismatch)?;
+            if matches.next().is_some() {
+                return Err(NduNumericAdmissionErrorV1::AxisIdentityMismatch);
+            }
+            values.push(value.value.raw());
+        }
+        self.admit_utility_signal(
+            profile,
+            &NumericSignalV1 {
+                schema: NumericSignalSchemaV1 {
+                    profile: NumericProfileV1::SignedQ32NearestTiesEven,
+                    unit: SignalUnitV1::Utility,
+                    shape: vec![values.len()],
+                    minimum_raw: i64::MIN,
+                    maximum_raw: i64::MAX,
+                    normalization_digest: profile.normalization_manifest_digest,
+                },
+                values,
+            },
+        )
     }
 
     pub fn admit_utility_signal(

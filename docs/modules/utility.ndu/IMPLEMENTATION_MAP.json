@@ -428,7 +428,8 @@
       "outputs": [
         "authenticated owner-local evaluation",
         "final-use-bound durable projection mutations",
-        "registry-admitted utility signals with distinct admission receipts"
+        "registry-admitted utility signals with distinct admission receipts",
+        "ordinary evaluation binds registry-admitted utility into source support and V2 receipt"
       ],
       "state": "source_implemented_authenticated_owner_and_registered_numeric_admission_candidate_not_product_activated",
       "authority": "consumes_external_final_use_only",
@@ -453,6 +454,18 @@
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
           "symbol": "unconfigured_owner_cannot_claim_registry_admission"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "ordinary_owner_evaluate_consumes_registered_admission_and_binds_support"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "ordinary_owner_evaluate_rejects_missing_registry_definition"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "ordinary_owner_admission_does_not_launder_empty_support_or_wrong_axes"
         }
       ],
       "designOperation": "NduAuthenticatedOwnerV1",
