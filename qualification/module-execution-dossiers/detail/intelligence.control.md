@@ -60,12 +60,12 @@ These are enforcement bounds, not target-host measurements. The blocking worker 
 
 Source tests now include:
 
-- `codex-rs/hepta-intelligence/src/canonical_tests.rs`: seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt and duplicate candidate rejection.
-- `codex-rs/hepta-agentd/src/intelligence_product_tests.rs`: real objective/NDU/neuron/prompt/intuition/context/evaluation APIs, Agentd dispatch proposal, real durable Decision -> independent terminal Outcome, acknowledged reopen and idempotent retry.
-- The Agentd product tests also cover missing current owner, signed-currentness substitution, final-use revocation-frontier race, exact admit/context/dispatch/terminal lifecycle and total-budget timeout before any ledger capability is exposed.
-- Agent protocol tests cover strict bounded run-lifecycle DTO round trips with owner-controlled admission time.
-- Native inference source binds physical turn dispatch and terminal/indeterminate reconciliation to the exact Agentd intelligence run; a real-process App Server E2E for the exact candidate remains required before `productExecutionProved` can become true.
-- Existing vertical/evaluated-shadow tests remain compatibility regression coverage.
+- INTEL-01: `codex-rs/hepta-intelligence/src/canonical_tests.rs` covers seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt and duplicate candidate rejection.
+- INTEL-02: `codex-rs/hepta-agentd/src/intelligence_product_tests.rs` exercises real objective/NDU/neuron/prompt/intuition/context/evaluation APIs, Agentd dispatch proposal, durable Decision -> independent terminal Outcome, acknowledged reopen and idempotent retry.
+- INTEL-03: Agentd product tests reject missing current owners, signed-currentness substitution and final-use revocation-frontier races and cover exact admit/context/dispatch/terminal lifecycle plus total-budget timeout before any ledger capability is exposed.
+- INTEL-04: agent protocol tests cover strict bounded run-lifecycle DTO round trips with owner-controlled admission time.
+- INTEL-05: native inference tests bind physical turn dispatch and terminal/indeterminate reconciliation to the exact Agentd intelligence run; a real-process App Server E2E remains required before `productExecutionProved` can become true.
+- INTEL-06: existing vertical/evaluated-shadow tests remain compatibility regression coverage.
 
 These are executable source tests. They become exact-candidate evidence only when the repository workflows execute them on the exact head and deterministic merge candidate. Target-host resource evidence remains a separate receipt.
 

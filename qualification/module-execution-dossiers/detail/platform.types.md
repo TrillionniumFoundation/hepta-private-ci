@@ -67,21 +67,33 @@ invalid calendar dates, offsets, excess precision and reversed windows reject.
 
 ## 6. Concrete verification
 
-- TYPES-01 through TYPES-08 retain the existing numeric, authority, canonical,
-  registry and generated-binding coverage.
-- TYPES-09 rejects JavaScript prototype-chain names in generated ID/profile
-  lookups and verifies the same rejection set in Python and Rust.
-- TYPES-10 covers random-stream identity/seed/counter/generator binding and
-  rejection.
-- TYPES-11 covers external-system digests, closed class values and strict UTC
-  observation time.
-- TYPES-12 covers sensor class, generation, clock, uncertainty, operating range,
-  failure policy and increasing validity window.
-- TYPES-13 proves the registered conversion receipt changes with the registry
-  generation even when pure arithmetic output is unchanged.
-- TYPES-14 proves an authenticated NDU owner without a configured registry
-  cannot claim admission, while a configured owner freezes and consumes the
-  registry digest.
+- TYPES-01: positive and negative half ties follow target-profile rounding.
+- TYPES-02: conversion digests bind profiles, normalization, shape, range, unit
+  and exact rational error bounds.
+- TYPES-03: overflow, unit/shape/range/normalization mismatch and unregistered
+  profiles fail closed.
+- TYPES-04: all eight raw authority grant bits reject before trusted posture
+  construction.
+- TYPES-05: accepted canonical vectors agree across Rust, Python and Node,
+  including integer boundaries and NFC/NFD non-normalization.
+- TYPES-06: rejection vectors cover duplicate field/key, zero schema,
+  oversize/depth, invalid bool and invalid tag.
+- TYPES-07: generated bindings regenerate without drift and consumers agree on
+  ID, authority, profile and Q32 semantics.
+- TYPES-08: registry namespace, duplicate identity/profile and aggregate byte
+  limits reject.
+- TYPES-09: JavaScript prototype-chain names reject in generated ID/profile
+  lookups, with equivalent negative cases in Python and Rust.
+- TYPES-10: random-stream identity, seed, counter and generator fields are bound
+  and invalid ranges reject.
+- TYPES-11: external-system digests, closed class values and strict UTC
+  observation time are validated.
+- TYPES-12: sensor class, generation, clock, uncertainty, operating range,
+  failure policy and increasing validity window are validated.
+- TYPES-13: registered conversion evidence changes with the registry generation
+  even when pure arithmetic output is unchanged.
+- TYPES-14: an authenticated NDU owner without a configured registry cannot
+  claim admission, while a configured owner freezes and consumes its digest.
 
 ## 7. Completion vocabulary
 
