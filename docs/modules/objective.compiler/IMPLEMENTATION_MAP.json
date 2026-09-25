@@ -405,8 +405,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "de5cb6adbad023b2ff22c97341f925b5a6cd912d",
-    "tree": "2fed9e61ff50e4b14e281713004faa39a0551ca2"
+    "commit": "3ff6ccefc0483bd3c6947a1941302bf0e257cd24",
+    "tree": "a6adbab03b4c8d3a09e55bdf650bbe9e0da3d147"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -485,8 +485,8 @@
     "RunStartCompactionManifestV1"
   ],
   "productCompositionSourceCandidate": {
-    "commit": "b3581605844729baac9cb6522e486af9746399f4",
-    "tree": "c7943ebe42481e53edd9841f83b814cc51f92759",
+    "commit": "f19d87fd1cbb76a23ee7506be9e77ea9614a1903",
+    "tree": "5020d6f45648e44fd430d1a26ffed746cd6b8833",
     "paths": [
       ".github/workflows/hepta-objective-admission.yml",
       ".github/workflows/hepta-objective-product-composition.yml",
@@ -573,11 +573,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "object": "bf6b0a389dabaa5f4381bc08dc99f3fb9ef18eb2"
+      "object": "5a8077a92ec1a30442bb755a4d6983d55f6ddc54"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
+      "object": "2031eb71d219be070259ed7feeb0831334b4ce90"
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
-      "object": "478bc23c0ba5b89cdaddcdb76670ed38a874da6e"
+      "object": "b581f7a0c72d9b58102a37e5d5b198dee28de199"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
@@ -585,7 +589,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
-      "object": "5fde852a84c1bb84000c831e1c5c2694c8d7e598"
+      "object": "ff90d2f1b7a414d746dd061970bc9f6ccc6a905d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs",
+      "object": "54a802aeec23d5bf730a1513d5ddd8daaf20ee96"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
@@ -685,7 +693,7 @@
     },
     {
       "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
-      "object": "5e2ac3cbdb57f8a1f821abdb14293aaf0d2ef4e8"
+      "object": "55e416366d885720903fd792da9506025bf28ed5"
     },
     {
       "path": "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
