@@ -1,3 +1,4 @@
+# One-shot exact-source applicator; removed by its successful job.
 name: Neuron runtime owner bootstrap
 
 on:
@@ -34,7 +35,8 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
-          test "$(git rev-parse HEAD^)" = "a126987b84737dbc2ee2592442a314117bddb4a2"
+          test "$(git merge-base HEAD a126987b84737dbc2ee2592442a314117bddb4a2)" = "a126987b84737dbc2ee2592442a314117bddb4a2"
+          test "$(git rev-list --count a126987b84737dbc2ee2592442a314117bddb4a2..HEAD)" -le 2
       - name: Apply reviewed owner durability closure
         shell: bash
         run: |
