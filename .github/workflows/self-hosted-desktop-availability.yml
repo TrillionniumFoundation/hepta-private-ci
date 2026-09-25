@@ -159,3 +159,69 @@ jobs:
             fi
           done
           test "$success" = 1
+
+  rog-recover-desktop:
+    name: Recover desktop through ROG
+    if: github.event_name == 'push'
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 10
+    steps:
+      - name: Use an existing SSH alias to restart the authorized relay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_NAME" = rog
+          remote_script="$(mktemp)"
+          cat >"$remote_script" <<'REMOTE'
+          set -euo pipefail
+          test "$(hostname)" = "qian-qi"
+          systemctl --user daemon-reload 2>/dev/null || true
+          mapfile -t units < <(
+            systemctl --user list-unit-files --no-legend 2>/dev/null \
+              | awk '{print $1}' \
+              | grep -Ei 'desktop.*commander|commander.*desktop|remote.*commander|commander.*remote' \
+              || true
+          )
+          for unit in "${units[@]}"; do systemctl --user restart "$unit"; done
+          python3 - <<'PY'
+          import os, pathlib, signal, subprocess, time
+          matches=[]
+          for proc in pathlib.Path('/proc').iterdir():
+              if not proc.name.isdigit(): continue
+              try:
+                  argv=[p.decode(errors='surrogateescape') for p in (proc/'cmdline').read_bytes().split(b'\0') if p]
+                  joined=' '.join(argv).lower()
+                  if not argv or 'actions/runner' in joined or 'github-runner' in joined: continue
+                  if any(t in joined for t in ('desktop-commander','desktop_commander','remote-desktop','remote_desktop','@wonderwhy-er/desktop-commander')):
+                      env={}
+                      for item in (proc/'environ').read_bytes().split(b'\0'):
+                          if b'=' in item:
+                              k,v=item.split(b'=',1); env[k.decode(errors='surrogateescape')]=v.decode(errors='surrogateescape')
+                      matches.append((int(proc.name),argv,env,os.readlink(proc/'cwd')))
+              except (FileNotFoundError,PermissionError,ProcessLookupError,OSError): pass
+          for pid,argv,env,cwd in matches:
+              try: os.kill(pid,signal.SIGTERM)
+              except ProcessLookupError: continue
+              for _ in range(30):
+                  if not pathlib.Path(f'/proc/{pid}').exists(): break
+                  time.sleep(.1)
+              if pathlib.Path(f'/proc/{pid}').exists(): os.kill(pid,signal.SIGKILL)
+              env.pop('RUNNER_TRACKING_ID',None); env.pop('RUNNER_TEMP',None)
+              log=open('/tmp/desktop-commander-restart.log','ab',buffering=0)
+              subprocess.Popen(argv,cwd=cwd,env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,close_fds=True)
+          print(f'restarted_existing_relays={len(matches)}')
+          PY
+          sleep 5
+          REMOTE
+
+          success=0
+          for target in p4-desktop desktop qian-qi; do
+            echo "trying configured SSH target $target"
+            if ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=accept-new \
+                "$target" 'cat > /tmp/hepta-remote-relay-recover.sh && bash /tmp/hepta-remote-relay-recover.sh' \
+                <"$remote_script"; then
+              success=1
+              break
+            fi
+          done
+          test "$success" = 1
