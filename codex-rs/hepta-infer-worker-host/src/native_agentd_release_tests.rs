@@ -7,8 +7,21 @@ use codex_hepta_agentd::{
 };
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
-fn settle(label: &str) -> (AppServerModelDriver, PathBuf, NativeRunOutput) {
-    let (driver, path) = prepared_fixture(label, true);
+fn settle(
+    label: &str,
+) -> (
+    AppServerModelDriver,
+    PathBuf,
+    NativeRunOutput,
+    tempfile::TempDir,
+) {
+    // macOS's default temp root can itself exhaust sockaddr_un.sun_path.
+    let socket_root = tempfile::Builder::new()
+        .prefix("ha-")
+        .tempdir_in("/tmp")
+        .unwrap();
+    let (driver, path) =
+        prepared_fixture_with_socket(label, true, Some(socket_root.path().join("owner.sock")));
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.native_started("r1", "turn-1".into()).unwrap();
     let output = NativeRunOutput {
@@ -29,7 +42,7 @@ fn settle(label: &str) -> (AppServerModelDriver, PathBuf, NativeRunOutput) {
     let settled = control.settle_native("r1", output.clone()).unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
     drop(control);
-    (driver, path, output)
+    (driver, path, output, socket_root)
 }
 
 fn receipt(binding: &NativeIntelligenceRunBinding) -> AgentRunReceipt {
@@ -53,7 +66,7 @@ fn receipt(binding: &NativeIntelligenceRunBinding) -> AgentRunReceipt {
 #[tokio::test]
 async fn durable_terminal_replay_releases_only_the_exact_agentd_projection() {
     for drop_release_reply in [false, true] {
-        let (driver, path, expected) = settle("release-settled");
+        let (driver, path, expected, _socket_root) = settle("release-settled");
         let mut control = DurableInferenceControl::open(&path, 8).unwrap();
         let binding = control
             .native_record("r1")
@@ -148,7 +161,7 @@ async fn durable_terminal_replay_releases_only_the_exact_agentd_projection() {
 #[tokio::test]
 async fn mismatched_or_unresolved_agentd_rows_are_never_released() {
     for field in 0..6 {
-        let (driver, path, expected) = settle("release-conflict");
+        let (driver, path, expected, _socket_root) = settle("release-conflict");
         let mut control = DurableInferenceControl::open(&path, 8).unwrap();
         let binding = control
             .native_record("r1")
