@@ -366,3 +366,13 @@ separates the measured source/merge from the subsequent compact-storage witness
 correction. It records passing native/default-product tests, failed or pending
 witness/lint/target-host qualifications, and the decision not to promote the
 incremental writer. No earlier receipt is attributed to a later source SHA.
+
+### 2026-09-26 execution continuation
+
+[The continuation record](../../../qualification/knowledge-graph/CONVERGENCE_20260926.md)
+separates baseline tests from later exact-source execution. Product final-use
+payload fields are grouped without weakening current-owner revalidation. The
+[target-host procedure](../../../qualification/knowledge-graph/TARGET_HOST.md)
+now specifies a dedicated bounded full-workload measurement profile and complete
+resource/work-accounting checks. Neither a longer measurement window nor refreshed
+source observations constitute a product latency pass or production acceptance.
