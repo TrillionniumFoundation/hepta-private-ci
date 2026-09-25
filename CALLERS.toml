@@ -103,8 +103,8 @@ id = "agentd_production_operation_runtime"
 symbol = "AgentdProductionOperationRuntimeConfig::attach"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn attach", "recovered_host.writer.verify_current_authority"]
-product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
-caller_markers = ["operations.attach", "attach_production_operations", "run_production_operation_reconciler"]
+product_callers = []
+caller_markers = []
 
 [[boundary]]
 id = "learning_artifact_owner_bootstrap"
