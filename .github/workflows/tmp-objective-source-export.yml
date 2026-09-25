@@ -1,0 +1,49 @@
+name: Temporary objective exact-source export
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-convergence-20260925
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temporary-objective-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Export source
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/hepta-objective-${{ github.sha }}.tar.gz"
+          tar --exclude=.git --exclude=target -czf "$archive" .
+          sha256sum "$archive" > "$archive.sha256"
+          printf 'archive=%s\n' "$archive" >> "$GITHUB_ENV"
+      - name: Upload source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: temporary-objective-source-${{ github.sha }}
+          path: |
+            ${{ env.archive }}
+            ${{ env.archive }}.sha256
+          if-no-files-found: error
+          retention-days: 1
