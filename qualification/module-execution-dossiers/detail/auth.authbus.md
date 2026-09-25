@@ -67,6 +67,7 @@ latency, contention, recovery and disk budgets remain measurement gates.
 - BUS-06: delayed success/no-effect survives uncertainty and reopen; evidence before dispatch is refused.
 - BUS-07: concurrent/cross-process writers and alternate witness paths are fenced; failed publication is repaired before new mutation.
 - BUS-08: version-4 terminal/archive migration preserves queryability without fabricating dispatch times.
+- BUS-09: lock identity loss permanently fences the old handle; a fresh host recovers an unacknowledged local commit using the original operation.
 - Restore: an external authority/replay witness newer than a restored database fails closed.
 - DB bypass: illegal reservation transitions and deletion of live rows are rejected by SQLite.
 - Product path: Bao TLS read binds operation identity, quota reservation, exact final-use tuple and signed terminal settlement.

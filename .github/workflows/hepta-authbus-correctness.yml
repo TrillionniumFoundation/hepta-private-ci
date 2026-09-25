@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - codex-rs/hepta-authbus/**
+      - docs/modules/auth.authbus/**
+      - docs/lane-a-foundation/auth.authbus/**
+      - qualification/module-execution-dossiers/detail/auth.authbus.md
       - codex-rs/hepta-authbus-p1-3-qualification/**
       - codex-rs/hepta-evidence/**
       - codex-rs/hepta-bao-adapter/**
@@ -23,6 +26,9 @@ on:
       - work/product-convergence-20260923
     paths:
       - codex-rs/hepta-authbus/**
+      - docs/modules/auth.authbus/**
+      - docs/lane-a-foundation/auth.authbus/**
+      - qualification/module-execution-dossiers/detail/auth.authbus.md
       - codex-rs/hepta-authbus-p1-3-qualification/**
       - codex-rs/hepta-evidence/**
       - codex-rs/hepta-bao-adapter/**
