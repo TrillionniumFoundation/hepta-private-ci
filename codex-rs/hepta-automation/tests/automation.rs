@@ -265,7 +265,7 @@ async fn prepare_direct_dispatch(
     store: &AutomationStore,
     lease: &AutomationLease,
     now_ms: u64,
-) -> Result<(), AutomationError> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let occurrence = store.materialize_occurrence(lease, now_ms).await?;
     store
         .prepare_occurrence_taskflow(&occurrence, lease, now_ms, 60_000)
