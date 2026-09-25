@@ -24,13 +24,10 @@ fn symlinks_and_fifos_do_not_cross_the_input_boundary() {
     std::os::unix::fs::symlink(&path, &link).unwrap();
     assert!(read_json_file::<serde_json::Value>(&link, 1024).is_err());
     let fifo = root.path().join("fifo");
-    rustix::fs::mknodat(
-        rustix::fs::CWD,
-        &fifo,
-        rustix::fs::FileType::Fifo,
-        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-        0,
-    )
-    .unwrap();
+    let created = std::process::Command::new("mkfifo")
+        .arg(&fifo)
+        .status()
+        .unwrap();
+    assert!(created.success());
     assert!(read_json_file::<serde_json::Value>(&fifo, 1024).is_err());
 }

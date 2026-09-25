@@ -127,7 +127,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
         let now = now_unix_ms()?.max(1);
         let session = SessionIncarnation {
             endpoint_id: manifest.endpoint_id.clone(),
-            session_id: format!("native.{}", sha256_hex(&session_nonce)),
+            session_id: format!("native.{}", sha256_hex(session_nonce)),
             generation: now,
         };
         session.validate()?;
