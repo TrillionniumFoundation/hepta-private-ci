@@ -93,7 +93,10 @@ async fn signed_objective_abstain_is_durable_idempotent_and_restart_safe() -> Re
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_ID, "objective-product-workspace")?;
     let model = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    MockResponsesConfig::new(&model.uri())
+        .with_model(MODEL)
+        .disable_feature(codex_features::Feature::Plugins)
+        .write(agent.layout.home_root())?;
     std::fs::set_permissions(
         agent.layout.home_root(),
         std::fs::Permissions::from_mode(0o700),
@@ -171,7 +174,10 @@ async fn signed_compiled_objective_executes_once_reaches_terminal_and_does_not_r
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(COMPILED_AGENT_ID, "objective-compiled-workspace")?;
     let provider = responses::start_mock_server().await;
-    MockResponsesConfig::new(&provider.uri()).write(agent.layout.home_root())?;
+    MockResponsesConfig::new(&provider.uri())
+        .with_model(MODEL)
+        .disable_feature(codex_features::Feature::Plugins)
+        .write(agent.layout.home_root())?;
     mount_terminal_response(&provider).await;
     std::fs::set_permissions(
         agent.layout.home_root(),
@@ -352,7 +358,10 @@ async fn existing_local_objective_run_start_history_without_external_checkpoint_
         "objective-missing-checkpoint-workspace",
     )?;
     let model = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    MockResponsesConfig::new(&model.uri())
+        .with_model(MODEL)
+        .disable_feature(codex_features::Feature::Plugins)
+        .write(agent.layout.home_root())?;
     std::fs::set_permissions(
         agent.layout.home_root(),
         std::fs::Permissions::from_mode(0o700),
@@ -427,7 +436,10 @@ async fn mount_terminal_responses(server: &wiremock::MockServer, expected: u64) 
                 .insert_header("content-type", "text/event-stream")
                 .set_body_string(body),
         )
-        .expect(expected)
+        // Exact counts are asserted on the successful execution path below.
+        // Only enforce the upper bound on drop so an earlier admission error
+        // remains visible instead of being masked by a mock destructor panic.
+        .expect(0..=expected)
         .mount(server)
         .await;
 }
@@ -871,7 +883,10 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
         "objective-product-measurement-workspace",
     )?;
     let model = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    MockResponsesConfig::new(&model.uri())
+        .with_model(MODEL)
+        .disable_feature(codex_features::Feature::Plugins)
+        .write(agent.layout.home_root())?;
     mount_terminal_responses(&model, u64::try_from(execution_samples)?).await;
     std::fs::set_permissions(
         agent.layout.home_root(),

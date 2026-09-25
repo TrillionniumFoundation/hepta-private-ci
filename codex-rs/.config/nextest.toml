@@ -102,3 +102,21 @@ filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_cur
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+
+# The outer watchdog covers two bounded daemon lifecycles; runtime readiness
+# deadlines and exact physical-send/terminal assertions remain unchanged.
+[test-groups.objective-product-processes]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & binary(objective_product_e2e)'
+test-group = 'objective-product-processes'
+slow-timeout = { period = "30s", terminate-after = 8 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-ledger) & (test(unacknowledged_partial_tail_recovers_exact_predecessor_at_every_cut) | test(product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen))'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0

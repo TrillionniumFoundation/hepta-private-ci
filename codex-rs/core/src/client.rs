@@ -3088,8 +3088,10 @@ fn map_response_stream(
     map_response_events(
         upstream_request_id,
         api_stream,
-        session_telemetry,
-        inference_trace_attempt,
+        ResponseEventTelemetry {
+            session_telemetry,
+            inference_trace_attempt,
+        },
         provider,
         provider_attempt,
         redact_provider_errors,
@@ -3097,11 +3099,15 @@ fn map_response_stream(
     )
 }
 
+struct ResponseEventTelemetry {
+    session_telemetry: SessionTelemetry,
+    inference_trace_attempt: InferenceTraceAttempt,
+}
+
 fn map_response_events<S>(
     upstream_request_id: Option<String>,
     api_stream: S,
-    session_telemetry: SessionTelemetry,
-    inference_trace_attempt: InferenceTraceAttempt,
+    telemetry: ResponseEventTelemetry,
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
@@ -3113,6 +3119,10 @@ where
         + Send
         + 'static,
 {
+    let ResponseEventTelemetry {
+        session_telemetry,
+        inference_trace_attempt,
+    } = telemetry;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();
