@@ -115,12 +115,21 @@ jobs:
         run: python3 scripts/hepta_ci_v8.py
 
       - name: Check formatting without rewriting the candidate
+        id: format
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
         run: >-
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/hepta-worker-records/format.json" --
           cargo fmt -p codex-hepta-infer-worker-host -- --check
+
+      - name: Publish format failure diagnostics before native execution
+        if: ${{ always() && steps.format.outcome == 'failure' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-worker-format-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-worker-records/format.json*
+          if-no-files-found: error
 
       - name: Run original and resource-lifecycle behavior regressions
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.native.outcome == 'success' }}
