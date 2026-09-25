@@ -608,3 +608,74 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
         Err(AuthBusOutboxError::Capacity)
     ));
 }
+
+#[tokio::test]
+async fn signed_outbox_external_publish_before_local_promotion_recovers_exact_delivery() {
+    let temp = TempDir::new().unwrap();
+    let sqlite = config(temp.path());
+    let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let initial = ReplayCheckpoint {
+        generation: 1,
+        digest: store.authbus_replay_frontier_digest().await.unwrap(),
+    };
+    store
+        .initialize_authbus_restore_checkpoint(initial)
+        .await
+        .unwrap();
+    let queued = enqueue(&store, 1).await;
+    let published = store
+        .pending_authbus_restore_checkpoint()
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(published.generation, initial.generation + 1);
+    // External persistence is represented by retaining the exact witness across
+    // closing every SQLite connection, without acknowledging it locally.
+    store.pool.close().await;
+    let reopened = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    assert_eq!(
+        reopened.authbus_restore_checkpoint().await.unwrap(),
+        Some(initial)
+    );
+    assert_eq!(
+        reopened
+            .reconcile_authbus_restore_checkpoint(published)
+            .await
+            .unwrap(),
+        None
+    );
+    assert_eq!(
+        reopened.authbus_restore_checkpoint().await.unwrap(),
+        Some(published)
+    );
+    assert_eq!(enqueue(&reopened, 1).await, queued);
+    let delivery = claim(&reopened, queued.delivery_id, 60_000).await.unwrap();
+    assert_eq!(delivery.payload, b"payload");
+    let (issuer, _) = fixture(1, u64::MAX);
+    let acknowledgement = Digest32::of_bytes(b"stable consumer receipt");
+    reopened
+        .ack_authbus_delivery(&issuer, &delivery.lease, acknowledgement)
+        .await
+        .unwrap();
+    reopened.pool.close().await;
+    let recovered = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    assert_eq!(
+        recovered
+            .reconcile_authbus_restore_checkpoint(published)
+            .await
+            .unwrap(),
+        None
+    );
+    let terminal = recovered
+        .authbus_delivery_status(queued.delivery_id)
+        .await
+        .unwrap();
+    assert_eq!(
+        (terminal.state, terminal.acknowledgement),
+        (AuthBusDeliveryState::Acked, Some(acknowledgement))
+    );
+    assert!(matches!(
+        claim(&recovered, queued.delivery_id, 60_000).await,
+        Err(AuthBusOutboxError::Unavailable)
+    ));
+}

@@ -344,8 +344,9 @@ const RESERVATION_FRONTIER_SQL: &str =
             principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
             hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
             hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
-            hex(updated_at_ms)||'|'||COALESCE(hex(dispatch_digest),'-')||'|'||
-            COALESCE(hex(terminal_evidence),'-')||'|'||COALESCE(hex(observed_cost),'-')||'|'||
+            hex(updated_at_ms)||'|'||COALESCE(hex(dispatched_at_ms),'-')||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
             COALESCE(hex(settlement_digest),'-')
      FROM authbus_quota_reservation ORDER BY reservation_id";
 
@@ -354,8 +355,9 @@ const ARCHIVE_FRONTIER_SQL: &str =
             principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
             hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
             hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
-            hex(updated_at_ms)||'|'||COALESCE(hex(dispatch_digest),'-')||'|'||
-            COALESCE(hex(terminal_evidence),'-')||'|'||COALESCE(hex(observed_cost),'-')||'|'||
+            hex(updated_at_ms)||'|'||COALESCE(hex(dispatched_at_ms),'-')||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
             COALESCE(hex(settlement_digest),'-')||'|'||hex(archived_at_ms)
      FROM authbus_quota_reservation_archive ORDER BY reservation_id";
 

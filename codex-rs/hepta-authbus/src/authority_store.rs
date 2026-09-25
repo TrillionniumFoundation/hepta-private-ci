@@ -18,7 +18,7 @@ const MAX_POLICIES: i64 = 4096;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone)]
-pub struct AuthBusAuthorityStore {
+pub(crate) struct AuthBusAuthorityStore {
     pub(crate) pool: SqlitePool,
 }
 

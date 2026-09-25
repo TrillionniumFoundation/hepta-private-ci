@@ -6,12 +6,12 @@ use sqlx::Transaction;
 
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityStore;
+use crate::IssuerPurpose;
 use crate::PolicyEffect;
 use crate::QuotaReservation;
 use crate::QuotaSnapshot;
 use crate::ReservationState;
 use crate::Settlement;
-use crate::SettlementIssuerRegistration;
 use crate::SettlementStatus;
 use crate::SignedSettlementEvidence;
 use crate::TrustedTimeSample;
@@ -23,6 +23,7 @@ use crate::authority_store::storage;
 use crate::authority_store::u64_bytes;
 use crate::quota_store::load_quota;
 use crate::quota_store::load_reservation;
+use crate::trust_store::load_issuer;
 
 impl AuthBusAuthorityStore {
     pub async fn mark_dispatch_attempted(
@@ -62,13 +63,16 @@ impl AuthBusAuthorityStore {
         }
         reservation.state = ReservationState::DispatchAttempted;
         reservation.dispatch_digest = Some(dispatch_digest);
+        reservation.dispatched_at_ms = Some(time.wall_time_ms);
         reservation.revision = next_revision(reservation.revision)?;
         reservation.updated_at_ms = time.wall_time_ms;
         sqlx::query(
             "UPDATE authbus_quota_reservation SET state = 'dispatch_attempted',
-             dispatch_digest = ?, revision = ?, updated_at_ms = ? WHERE reservation_id = ?",
+             dispatch_digest = ?, dispatched_at_ms = ?, revision = ?, updated_at_ms = ?
+             WHERE reservation_id = ?",
         )
         .bind(dispatch_digest.as_array().as_slice())
+        .bind(u64_bytes(time.wall_time_ms).as_slice())
         .bind(u64_bytes(reservation.revision).as_slice())
         .bind(u64_bytes(reservation.updated_at_ms).as_slice())
         .bind(reservation_id.as_str())
@@ -182,7 +186,6 @@ impl AuthBusAuthorityStore {
 
     pub async fn settle(
         &self,
-        issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
@@ -212,13 +215,26 @@ impl AuthBusAuthorityStore {
         ) {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
+        let issuer = load_issuer(
+            &mut tx,
+            IssuerPurpose::Settlement,
+            &evidence.claims.issuer_id,
+            evidence.claims.key_epoch,
+        )
+        .await?;
         let authenticated = evidence.authenticate(
-            issuer,
+            &issuer,
             &reservation.reservation_id,
             &reservation.operation_id,
             time.wall_time_ms,
         )?;
-        if authenticated.claims().observed_at_ms < reservation.updated_at_ms {
+        let dispatched_at_ms =
+            reservation
+                .dispatched_at_ms
+                .ok_or(AuthBusAuthorityError::CorruptState(
+                    "reservation is missing its dispatch boundary",
+                ))?;
+        if authenticated.claims().observed_at_ms < dispatched_at_ms {
             return Err(AuthBusAuthorityError::InvalidSettlementEvidence);
         }
         if authenticated.claims().observed_cost > reservation.amount {

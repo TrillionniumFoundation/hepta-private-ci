@@ -535,20 +535,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
         terminal_evidence_digest,
         time.wall_time_ms(),
     )?;
-    let issuer = match authbus
-        .settlement_issuer(&signed.claims.issuer_id, signed.claims.key_epoch)
-        .await
-    {
-        Ok(issuer) => issuer,
-        Err(error) => {
-            return Err(BaoAuthBusError::SettlementPending {
-                reservation_id: reservation.reservation_id.clone(),
-                receipt,
-                control_error: error.to_string(),
-            });
-        }
-    };
-    if let Err(error) = authbus.settle(&issuer, &signed, time).await {
+    if let Err(error) = authbus.settle(&signed, time).await {
         return Err(BaoAuthBusError::SettlementPending {
             reservation_id: reservation.reservation_id.clone(),
             receipt,

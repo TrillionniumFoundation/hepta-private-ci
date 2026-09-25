@@ -63,6 +63,9 @@ pub struct QuotaReservation {
     pub expires_at_ms: u64,
     pub created_at_ms: u64,
     pub updated_at_ms: u64,
+    /// Trusted-time boundary committed with the first physical dispatch attempt.
+    /// It is independent from later state-transition timestamps.
+    pub dispatched_at_ms: Option<u64>,
     pub dispatch_digest: Option<Digest32>,
     pub terminal_evidence: Option<Digest32>,
     pub observed_cost: Option<u64>,
