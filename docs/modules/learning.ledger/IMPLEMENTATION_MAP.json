@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "863df5e55f1624b755fed552102592c4e9e03043",
-    "tree": "ff1af51be817f88c2be473b4eac2297b1cfddcd8"
+    "commit": "468958e2763b336ce946bc4973e1fcdc88750541",
+    "tree": "2f563bc2cac6319d87ba09959a92221ca1f37119"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -337,6 +337,48 @@
           "symbol": "DatasetRecordIndex"
         }
       ]
+    },
+    {
+      "operation": "authenticated_append_identity",
+      "designOperation": "authenticated_append_identity",
+      "nativeSymbol": "LedgerWriter::authenticated_append_identity",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production_recovery.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "state": "source_implemented_historical_ack_recovery_not_daemon_handoff",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_recovery_tests.rs"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "recover_authenticated_append",
+      "designOperation": "recover_authenticated_append",
+      "nativeSymbol": "LedgerWriter::recover_authenticated_append",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production_recovery.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "state": "source_implemented_historical_ack_recovery_not_daemon_handoff",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_recovery_tests.rs"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "learning_append_identity_codec",
+      "designOperation": "learning_append_identity_codec",
+      "nativeSymbol": "LearningAppendIdentityV1",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production_recovery.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "state": "source_implemented_historical_ack_recovery_not_daemon_handoff",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_recovery_tests.rs"
+      ],
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -447,7 +489,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "4f963d5aae15066d45f0103de40f7b7f59582d30"
+      "object": "faab5b6c4be2d81d25805fa4b30775a6ea6c6cef"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -479,7 +521,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production.rs",
-      "object": "174edd58878357e0566e8189a6ecfc69753b3593"
+      "object": "d2f19fa91834022f5620f665d2576da643a084b2"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production_freeze_tests.rs",
@@ -491,7 +533,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
-      "object": "4f8580952e942794682d40e397d99a721731f562"
+      "object": "bd24c79978dbf5768a0ecc035927696d21dffad6"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/protocol.rs",
