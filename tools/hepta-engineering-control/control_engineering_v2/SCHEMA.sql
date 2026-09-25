@@ -1,4 +1,4 @@
--- Canonical engineering owner schema, version 9. Applied in one transaction.
+-- Canonical engineering owner schema, version 10. Applied in one transaction.
 
 CREATE TABLE IF NOT EXISTS work_envelopes(
   envelope_id TEXT PRIMARY KEY,
@@ -91,6 +91,25 @@ CREATE INDEX IF NOT EXISTS idx_worker_claims_assignment
   ON worker_claims(generation_id, package_id, state, attempt);
 CREATE INDEX IF NOT EXISTS idx_worker_claims_worker
   ON worker_claims(worker_id, state, heartbeat_deadline_unix_ns);
+
+CREATE TABLE IF NOT EXISTS worker_capacity_reservations(
+  claim_id TEXT PRIMARY KEY
+    REFERENCES worker_claims(claim_id) DEFERRABLE INITIALLY DEFERRED,
+  worker_id TEXT NOT NULL REFERENCES worker_registrations(worker_id),
+  capacity_units INTEGER NOT NULL CHECK(capacity_units BETWEEN 1 AND 1000000),
+  state TEXT NOT NULL CHECK(state IN ('active','released')),
+  reserved_unix_ns INTEGER NOT NULL,
+  released_unix_ns INTEGER,
+  release_reason TEXT,
+  semantic_digest TEXT NOT NULL,
+  CHECK(
+    (state='active' AND released_unix_ns IS NULL AND release_reason IS NULL)
+    OR
+    (state='released' AND released_unix_ns IS NOT NULL AND release_reason IS NOT NULL)
+  )
+);
+CREATE INDEX IF NOT EXISTS idx_worker_capacity_reservations_active
+  ON worker_capacity_reservations(worker_id, state, reserved_unix_ns);
 
 CREATE TABLE IF NOT EXISTS worker_heartbeat_observations(
   claim_id TEXT NOT NULL REFERENCES worker_claims(claim_id),

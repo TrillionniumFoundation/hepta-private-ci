@@ -178,10 +178,11 @@
         "OrchestrationTests.test_infeasible_high_score_does_not_consume_assignment_slot",
         "OrchestrationTests.test_completion_cannot_predate_or_outlive_its_owner_generation",
         "OrchestrationTests.test_resource_planner_rejects_package_outside_envelope",
-        "OrchestrationTests.test_package_owner_self_attestation_cannot_complete_predecessor"
+        "OrchestrationTests.test_package_owner_self_attestation_cannot_complete_predecessor",
+        "WorkerLifecycleTests.test_cross_generation_capacity_is_atomic_persistent_and_released_once"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "assignment/integration-order/merge-queue proposals only"
+      "capabilityCeiling": "assignment/integration-order/merge-queue proposals bound to the exact active cross-generation Worker-capacity frontier; final claim admission remains atomic in the owner"
     },
     {
       "designOperation": "atomic_candidate_changeset",
@@ -266,10 +267,11 @@
         "ProductGateTests.test_missing_canonical_work_package_registry_fails_closed",
         "ProductGateTests.test_tampered_canonical_engineering_package_fails_closed",
         "ProductGateTests.test_product_receipt_pair_binds_both_exact_lanes",
-        "ProductGateTests.test_product_receipt_pair_rejects_tamper_and_lane_drift"
+        "ProductGateTests.test_product_receipt_pair_rejects_tamper_and_lane_drift",
+        "EngineeringControlProductTests.test_product_startup_reconciles_stale_claim_and_allows_bounded_retry"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "exact-source/base-merge product execution receipt proving the full composed worker/reopen/integration state-machine path with explicit CI reference fixtures; independent completion/review/merge observations are not proved"
+      "capabilityCeiling": "exact-source/base-merge product execution receipt proving startup recovery, full composed worker/reopen path and separately signed terminal integration observation with explicit CI reference fixtures; external independence and merge/deployment authority are not proved"
     },
     {
       "designOperation": "verify_product_receipt_pair",
@@ -292,10 +294,12 @@
         "WorkerLifecycleTests.test_claim_heartbeat_worker_result_and_independent_completion",
         "WorkerLifecycleTests.test_timeout_requeues_but_semantic_failure_never_retries",
         "WorkerLifecycleTests.test_claim_requires_registered_assigned_worker_and_fenced_lease",
-        "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen"
+        "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen",
+        "WorkerLifecycleTests.test_cross_generation_capacity_is_atomic_persistent_and_released_once",
+        "EngineeringControlProductTests.test_product_startup_reconciles_stale_claim_and_allows_bounded_retry"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "durable SQLite v9 worker registration/lease/claim/heartbeat/result/completion lifecycle with bounded retry, immutable accepted completion receipt digest, and revision/audit-stable acknowledgement-loss replay; no worker self-completion or merge authority"
+      "capabilityCeiling": "durable SQLite v10 registration/lease/claim/capacity/heartbeat/result/completion lifecycle; cross-generation capacity is atomically reserved/released, startup recovery is bounded and acknowledgement-loss replay is stable; no Worker self-completion or merge authority"
     },
     {
       "designOperation": "durable_worker_registration",
@@ -316,10 +320,11 @@
       "tests": [
         "WorkerLifecycleTests.test_claim_requires_registered_assigned_worker_and_fenced_lease",
         "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen",
-        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation"
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
+        "WorkerLifecycleTests.test_cross_generation_capacity_is_atomic_persistent_and_released_once"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "fenced durable assignment claim with acknowledgement-loss replay; no self-completion"
+      "capabilityCeiling": "fenced durable assignment claim plus persistent cross-generation capacity reservation in one immediate transaction; acknowledgement-loss replay cannot double reserve"
     },
     {
       "designOperation": "durable_worker_heartbeat",
@@ -344,7 +349,7 @@
         "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "signed worker result is durable but success remains non-terminal until independent completion observation"
+      "capabilityCeiling": "signed Worker result is durable but success remains non-terminal until independent completion observation; leaving active execution releases capacity once without deleting result identity"
     },
     {
       "designOperation": "durable_worker_completion_observation",
@@ -380,10 +385,11 @@
         "IntegrationControllerTests.test_identical_observation_retry_is_revision_stable_noop",
         "IntegrationControllerTests.test_terminal_retry_is_idempotent_but_conflicting_terminal_is_rejected",
         "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
-        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path"
+        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path",
+        "IntegrationControllerTests.test_signed_stage_receipt_is_bound_to_complete_owner_source_base_and_queue_context"
       ],
       "state": "source_implemented_authenticated_stage_boundary",
-      "capabilityCeiling": "signed candidate/review/CI observations reach ready_external_merge; terminal outcomes require a separate authenticated observer"
+      "capabilityCeiling": "fully context-bound candidate/review/CI observations reach ready_external_merge; a separately authenticated full-context terminal observer may persist merged/failed, but receives no merge authority"
     },
     {
       "designOperation": "named_product_owner_composition",
@@ -393,16 +399,17 @@
       "tests": [
         "EngineeringControlProductTests.test_named_product_owner_composes_repository_store_and_plan",
         "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
-        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path"
+        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path",
+        "EngineeringControlProductTests.test_product_startup_reconciles_stale_claim_and_allows_bounded_retry"
       ],
       "state": "source_implemented_product_execution_pending",
-      "capabilityCeiling": "named SQLite v9 durable product owner composing planning, fenced worker lifecycle and integration reconciliation; CI product execution is fixture-bound and grants no independent acceptance/merge/release/deployment authority"
+      "capabilityCeiling": "named SQLite v10 durable owner composing planning, capacity reservations, startup reconciliation, fenced worker lifecycle and terminal integration reconciliation; CI execution remains fixture-bound and grants no independent acceptance/merge/release/deployment authority"
     },
     {
       "designOperation": "authenticated_integration_stage_reconciliation",
       "nativeModule": "control_engineering_v2.integration_controller",
       "nativeSymbol": "observe_integration_stage",
-      "ownerSymbol": "observe_integration_stage → reconcile_integration_item",
+      "ownerSymbol": "observe_integration_stage \u2192 reconcile_integration_item",
       "tests": [
         "IntegrationControllerTests.test_raw_reconciliation_is_not_a_package_root_product_surface",
         "IntegrationControllerTests.test_authenticated_stage_observations_gate_product_readiness_projection",
@@ -413,10 +420,11 @@
         "IntegrationControllerTests.test_identical_observation_retry_is_revision_stable_noop",
         "IntegrationControllerTests.test_repeated_base_drift_is_revision_stable_noop",
         "IntegrationControllerTests.test_review_and_ci_cannot_precede_candidate_binding",
-        "IntegrationControllerTests.test_terminal_retry_is_idempotent_but_conflicting_terminal_is_rejected"
+        "IntegrationControllerTests.test_terminal_retry_is_idempotent_but_conflicting_terminal_is_rejected",
+        "IntegrationControllerTests.test_signed_stage_receipt_is_bound_to_complete_owner_source_base_and_queue_context"
       ],
       "state": "source_implemented_authenticated_stage_boundary",
-      "capabilityCeiling": "signed role-bound candidate→review→CI stage observations may advance durable base-bound state only up to ready_external_merge; GitHub review observation is not independent acceptance, identical retries are revision/audit-stable no-ops, and terminal merge/failure still requires a separately authenticated observer"
+      "capabilityCeiling": "signed role-bound observations must bind queue/orchestration/envelope digests, source/tree, integration base and owner context; stages reach ready_external_merge only, terminal merge/failure remains separately authenticated and immutable"
     },
     {
       "designOperation": "github_reviewer_identity_observation",
@@ -428,6 +436,64 @@
       ],
       "state": "source_implemented_live_ci_execution_pending",
       "capabilityCeiling": "real GitHub reviewer identity observation only; never independent acceptance"
+    },
+    {
+      "designOperation": "validate_engineering_store_schema",
+      "nativeModule": "control_engineering_v2.control_plane",
+      "nativeSymbol": "EngineeringStore._validate_schema_objects",
+      "ownerSymbol": "EngineeringStore",
+      "tests": [
+        "OwnerTransactionTests.test_current_schema_missing_column_is_rejected_at_open",
+        "OwnerTransactionTests.test_current_schema_constraint_drift_is_rejected_at_open",
+        "OwnerTransactionTests.test_schema_version_metadata_disagreement_is_rejected_at_open",
+        "OwnerTransactionTests.test_schema_v5_adds_current_owner_tables_through_v10"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "startup validation/quarantine only; exact schema, integrity, foreign keys, capacity consistency and audit are checked before requests, with no silent repair"
+    },
+    {
+      "designOperation": "reserve_worker_capacity",
+      "nativeModule": "control_engineering_v2.worker_lifecycle",
+      "nativeSymbol": "claim_assignment / worker_capacity_usage",
+      "ownerSymbol": "EngineeringStore.worker_capacity_reservations",
+      "tests": [
+        "WorkerLifecycleTests.test_cross_generation_capacity_is_atomic_persistent_and_released_once"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "one local SQLite owner atomically enforces registered Worker capacity across generations/connections/restart; multi-host authority remains external"
+    },
+    {
+      "designOperation": "recover_worker_lifecycle",
+      "nativeModule": "control_engineering_v2.worker_lifecycle",
+      "nativeSymbol": "recover_worker_lifecycle",
+      "ownerSymbol": "EngineeringControlProduct.startup_reconcile",
+      "tests": [
+        "EngineeringControlProductTests.test_product_startup_reconciles_stale_claim_and_allows_bounded_retry"
+      ],
+      "state": "source_implemented_product_execution_pending",
+      "capabilityCeiling": "startup-only reconciliation of persisted heartbeat/registration/lease/envelope facts; no blind redispatch, completion fabrication or external effect authority"
+    },
+    {
+      "designOperation": "bind_integration_observation_context",
+      "nativeModule": "control_engineering_v2.integration_controller",
+      "nativeSymbol": "integration_context_binding",
+      "ownerSymbol": "EngineeringStore integration queue/envelope/orchestration rows",
+      "tests": [
+        "IntegrationControllerTests.test_signed_stage_receipt_is_bound_to_complete_owner_source_base_and_queue_context"
+      ],
+      "state": "source_implemented_authenticated_stage_boundary",
+      "capabilityCeiling": "recomputes immutable queue/source/base/owner context for signature verification only; it grants no review, merge or release authority"
+    },
+    {
+      "designOperation": "measure_target_host_profile",
+      "nativeModule": "control_engineering_v2.qualification_profile",
+      "nativeSymbol": "build_host_profile",
+      "ownerSymbol": "exact-lane strong-sandbox CI runner",
+      "tests": [
+        "QualificationProfileTests.test_fixture_profile_measures_owner_recovery_failure_and_sandbox_boundaries"
+      ],
+      "state": "source_implemented_live_ci_execution_pending",
+      "capabilityCeiling": "bounded exact-host database/recovery/backup/failure/sandbox measurements only; every authority and deployment-acceptance field remains false"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -457,7 +523,8 @@
     "tools/hepta-engineering-control/test_product_gate.py",
     "tools/hepta-engineering-control/test_worker_lifecycle.py",
     "tools/hepta-engineering-control/test_product_runtime.py",
-    "tools/hepta-engineering-control/test_integration_controller.py"
+    "tools/hepta-engineering-control/test_integration_controller.py",
+    "tools/hepta-engineering-control/test_qualification_profile.py"
   ],
   "implementationMap": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
   "mappingSourceIdentityMode": "exact_blob"

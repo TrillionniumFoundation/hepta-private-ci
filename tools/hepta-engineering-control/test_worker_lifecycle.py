@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from pathlib import Path
 import tempfile
@@ -23,6 +24,7 @@ from control_engineering_v2 import (
     register_worker,
     semantic_digest,
     submit_worker_result,
+    worker_capacity_usage,
 )
 from control_engineering_v2.control_plane import DENIED_AUTHORITIES
 
@@ -50,12 +52,12 @@ class WorkerLifecycleTests(unittest.TestCase):
             }
         )
 
-    def register(self, store):
+    def register(self, store, capacity_units=4):
         value = WorkerRegistrationReceipt(
             "worker-a",
             "worker-key",
             ("python",),
-            4,
+            capacity_units,
             ("src",),
             "engineering_worker_identity",
             "identity-key",
@@ -413,6 +415,129 @@ class WorkerLifecycleTests(unittest.TestCase):
                         heartbeat_ttl_ns=1_000_000_000,
                         now_ns=self.now + 16,
                     )
+
+    def test_cross_generation_capacity_is_atomic_persistent_and_released_once(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "engineering.sqlite3"
+            with EngineeringStore(path) as store:
+                self.register(store, capacity_units=1)
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                plans = []
+                for index in range(2):
+                    package_id = f"package-{index}"
+                    package_path = f"src/{package_id}"
+                    generation_id = f"generation-{index}"
+                    plan = plan_engineering_work(
+                        store,
+                        self.envelope,
+                        (
+                            EngineeringWorkPackage(
+                                0,
+                                package_id,
+                                (),
+                                (package_path,),
+                                required_skills=("python",),
+                                capacity_units=1,
+                                ci_units=1,
+                                review_roles=("architecture",),
+                            ),
+                        ),
+                        (WorkerProfile("worker-a", ("python",), 1, ("src",)),),
+                        (),
+                        self.trust,
+                        EngineeringCapacity(1, (ReviewCapacity("architecture", 1),)),
+                        generation_id=generation_id,
+                        now_ns=self.now + index,
+                    )
+                    self.assertEqual(len(plan.assignments), 1)
+                    store.acquire_path_lease(
+                        f"lease-{index}",
+                        self.envelope.envelope_id,
+                        "worker-a",
+                        (package_path,),
+                        authority_epoch=1,
+                        expires_unix_ns=self.now + 8_000_000_000,
+                        now_ns=self.now + index + 2,
+                    )
+                    plans.append((generation_id, package_id, f"lease-{index}"))
+
+            def claim(value):
+                generation_id, package_id, lease_id = value
+                with EngineeringStore(path) as store:
+                    try:
+                        result = claim_assignment(
+                            store,
+                            generation_id,
+                            package_id,
+                            "worker-a",
+                            lease_id,
+                            heartbeat_ttl_ns=100,
+                            now_ns=self.now + 10,
+                        )
+                        return ("claimed", result.claim_id, generation_id)
+                    except ValueError as error:
+                        return (str(error), "", generation_id)
+
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                outcomes = list(executor.map(claim, plans))
+            self.assertEqual(
+                sorted(row[0] for row in outcomes),
+                ["claimed", "worker_capacity_exhausted"],
+            )
+            winner = next(row for row in outcomes if row[0] == "claimed")
+            loser = next(row for row in outcomes if row[0] != "claimed")
+
+            with EngineeringStore(path) as reopened:
+                usage = worker_capacity_usage(reopened, "worker-a")
+                self.assertEqual((usage.reserved_units, usage.available_units), (1, 0))
+                blocked_plan = plan_engineering_work(
+                    reopened,
+                    self.envelope,
+                    (
+                        EngineeringWorkPackage(
+                            0,
+                            "package-blocked",
+                            (),
+                            ("src/package-blocked",),
+                            required_skills=("python",),
+                            capacity_units=1,
+                            ci_units=1,
+                            review_roles=("architecture",),
+                        ),
+                    ),
+                    (WorkerProfile("worker-a", ("python",), 1, ("src",)),),
+                    (),
+                    self.trust,
+                    EngineeringCapacity(1, (ReviewCapacity("architecture", 1),)),
+                    generation_id="generation-blocked",
+                    now_ns=self.now + 20,
+                )
+                self.assertEqual(blocked_plan.assignments, ())
+                self.assertEqual(
+                    dict(blocked_plan.blocked)["package-blocked"],
+                    "worker_skill_or_capacity",
+                )
+                self.assertEqual(
+                    expire_stale_claims(reopened, now_ns=self.now + 111),
+                    (winner[1],),
+                )
+                self.assertEqual(
+                    expire_stale_claims(reopened, now_ns=self.now + 112),
+                    (),
+                )
+                usage = worker_capacity_usage(reopened, "worker-a")
+                self.assertEqual((usage.reserved_units, usage.available_units), (0, 1))
+                retry = claim_assignment(
+                    reopened,
+                    loser[2],
+                    next(value[1] for value in plans if value[0] == loser[2]),
+                    "worker-a",
+                    next(value[2] for value in plans if value[0] == loser[2]),
+                    heartbeat_ttl_ns=1_000_000_000,
+                    now_ns=self.now + 113,
+                )
+                self.assertEqual(retry.state, "claimed")
+                self.assertEqual(worker_capacity_usage(reopened, "worker-a").reserved_units, 1)
 
     def test_claim_requires_registered_assigned_worker_and_fenced_lease(self):
         with tempfile.TemporaryDirectory() as temporary:
