@@ -275,6 +275,7 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Build exact-source native runtime executable
+        id: runtime_binary
         shell: bash
         run: |
           set -euo pipefail
@@ -287,7 +288,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-product.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E 'test(native_)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-product.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E 'test(native_) | test(final_use_authorizer::)'
+      - name: Require the real Agentd product witness independently
+        if: always() && steps.identity.outcome == 'success' && steps.runtime_binary.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-agentd-witness.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E 'test(real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)'
       - name: Check strict native product lint independently
         if: always() && steps.identity.outcome == 'success'
         shell: bash
