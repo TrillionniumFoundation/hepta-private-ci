@@ -189,6 +189,28 @@ def verify(root: Path = ROOT) -> int:
         maps[module] = row
         roots[module] = resolved_roots
 
+    # Delegated source ownership is repository-wide rather than lane-local.
+    # Resolve only the explicitly named registered owner and retain the same
+    # canonical-root checks used for Lane B owners.
+    from hepta_module_source_roots import resolve_source_roots
+
+    registered = load(root / "docs/modules/MODULES.json").get("modules")
+    need(isinstance(registered, list) and registered, "registered module owners")
+    owner_modules = {
+        entry.get("id"): entry
+        for entry in registered
+        if isinstance(entry, dict) and isinstance(entry.get("id"), str)
+    }
+    need(len(owner_modules) == len(registered), "duplicate or invalid module owner")
+    for module, row in maps.items():
+        for item in row.get("operations", []):
+            for delegate in item.get("delegatedCallees", []):
+                owner = delegate.get("ownerModule") if isinstance(delegate, dict) else None
+                need(owner in owner_modules, f"{module}: unregistered delegated owner")
+                if owner not in roots:
+                    roots[owner] = resolve_source_roots(root, owner_modules[owner])
+                    need(roots[owner], f"{module}: delegated owner has no resolved roots")
+
     operations = tests = delegates = 0
     for module, row in maps.items():
         items = row.get("operations")

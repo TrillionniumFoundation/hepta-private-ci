@@ -543,7 +543,7 @@
   },
   "repositoryControlledGaps": [
     "Complete durable product Decision/Outcome append and process-loss reconciliation, then exercise the daemon-prepared binding through the physical App Server caller; the authenticated ObjectiveStart-to-canonical-run route is now source-wired.",
-    "Make ambiguous Decision/Outcome append recovery survive Agentd process loss; PendingIntelligenceLedgerAppendV1 is currently only an in-memory replay object.",
+    "Compose authenticated LedgerWriter Decision/Outcome persistence and process-loss reconciliation; the historical raw-V1 pending replay seam is qualification-only and not a product path.",
     "Obtain current exact-head and deterministic synthetic-merge green receipts for this candidate; prior candidate receipts are provenance only.",
     "Run the real Agentd/App Server intelligence-bound product E2E, including turn/start lost-ack, dependency outage, restart and revocation races.",
     "Qualify target-host hard resource termination; the pure in-process cognition worker discards late results but spawn_blocking cannot terminate a running blocking stage."
