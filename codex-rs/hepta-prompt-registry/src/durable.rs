@@ -1121,18 +1121,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         if realization.active
             && (factor.source != FactorSource::GovernedInternal
                 || factor.lifecycle != Lifecycle::Admitted
-                || !active_profiles.insert((
-                    binding.factor_id.clone(),
-                    binding.model_id.clone(),
-                    binding.model_version.clone(),
-                    binding.model_digest,
-                    binding.tokenizer_digest,
-                    binding.template_digest,
-                    binding.tool_schema_digest,
-                    binding.context_profile_digest,
-                    binding.locale_id.clone(),
-                    binding.role,
-                )))
+                || !active_profiles.insert(binding.profile_key()))
         {
             return Err(DurableRegistryError::Corrupt);
         }

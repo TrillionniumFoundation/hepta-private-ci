@@ -788,3 +788,47 @@ fn guarded_precommit_storage_full_aborts_pending_without_changing_predecessor() 
         .register_factor(factor(1))
         .must("retry after proven precommit failure");
 }
+
+#[test]
+fn unsafe_checkpoint_parent_is_rejected_before_initial_registry_creation() {
+    use std::os::unix::fs::PermissionsExt;
+    let temp = tempfile::tempdir().must("temp");
+    let root = temp.path().join("registry");
+    let shared = temp.path().join("shared-checkpoints");
+    std::fs::create_dir(&shared).must("shared parent");
+    std::fs::set_permissions(&shared, std::fs::Permissions::from_mode(0o755))
+        .must("non-private checkpoint parent");
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+            &root,
+            &shared.join("checkpoint.json"),
+            "agent:test",
+            64,
+        ),
+        Err(DurableRegistryError::UnsafeRecoveryCheckpoint)
+    ));
+    assert!(
+        !root.exists(),
+        "invalid parent must not strand a writer lock"
+    );
+    let checkpoint = temp
+        .path()
+        .join("private-checkpoints")
+        .join("checkpoint.json");
+    drop(
+        DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+            &root,
+            &checkpoint,
+            "agent:test",
+            64,
+        )
+        .must("corrected initial open"),
+    );
+    DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &root,
+        &checkpoint,
+        "agent:test",
+        64,
+    )
+    .must("reopen corrected registry");
+}

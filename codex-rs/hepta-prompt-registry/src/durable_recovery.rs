@@ -147,6 +147,27 @@ impl RecoveryCheckpointFile {
         {
             return Err(DurableRegistryError::UnsafeRecoveryCheckpoint);
         }
+        // Reject unsafe or uncreatable parents before Store::open can create
+        // a writer-lock sentinel. This is preflight only; open revalidates the
+        // actual directory and file after acquiring the owner locks.
+        let parent = checkpoint_parent(path)?;
+        let resolved_parent = resolve_directory_for_preflight(parent)?;
+        let resolved_registry = resolve_directory_for_preflight(registry_directory)?;
+        if resolved_parent.starts_with(&resolved_registry) {
+            return Err(DurableRegistryError::UnsafeRecoveryCheckpoint);
+        }
+        #[cfg(unix)]
+        if parent.exists() {
+            use std::os::unix::fs::MetadataExt;
+            let metadata = std::fs::metadata(parent)
+                .map_err(|_| DurableRegistryError::UnsafeRecoveryCheckpoint)?;
+            if !metadata.is_dir()
+                || metadata.mode() & 0o077 != 0
+                || metadata.uid() != rustix::process::geteuid().as_raw()
+            {
+                return Err(DurableRegistryError::UnsafeRecoveryCheckpoint);
+            }
+        }
         if path.exists() && !registry_directory.join("registry.json").exists() {
             // A retained witness is not permission to create an empty replacement.
             return Err(DurableRegistryError::RecoveryCheckpointRequired);
@@ -314,6 +335,27 @@ impl RecoveryCheckpointFile {
             return Err(DurableRegistryError::UnsafeRecoveryCheckpoint);
         }
         Ok(())
+    }
+}
+
+// Resolve an existing directory or the single not-yet-created final component.
+// The later open only creates that component, never an implicit parent tree.
+fn resolve_directory_for_preflight(path: &Path) -> Result<PathBuf, DurableRegistryError> {
+    match path.canonicalize() {
+        Ok(resolved) => Ok(resolved),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            let parent = path
+                .parent()
+                .ok_or(DurableRegistryError::UnsafeRecoveryCheckpoint)?;
+            let name = path
+                .file_name()
+                .ok_or(DurableRegistryError::UnsafeRecoveryCheckpoint)?;
+            Ok(parent
+                .canonicalize()
+                .map_err(|_| DurableRegistryError::UnsafeRecoveryCheckpoint)?
+                .join(name))
+        }
+        Err(_) => Err(DurableRegistryError::UnsafeRecoveryCheckpoint),
     }
 }
 
