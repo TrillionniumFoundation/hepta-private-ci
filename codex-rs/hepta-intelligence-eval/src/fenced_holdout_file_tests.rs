@@ -353,7 +353,7 @@ fn streaming_replay_matches_original_full_prefix_oracle_and_rejections() {
     payloads.push(
         encode_fence(&HoldoutWriterFenceV1 {
             generation: 2,
-            ..fence.clone()
+            ..fence
         })
         .unwrap(),
     );
