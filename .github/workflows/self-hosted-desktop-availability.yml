@@ -17,8 +17,8 @@ on:
 permissions: {}
 
 concurrency:
-  group: self-hosted-desktop-availability
-  cancel-in-progress: true
+  group: self-hosted-desktop-availability-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   runner-probe:
