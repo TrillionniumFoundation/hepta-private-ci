@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c4d4bae86171ddcadb71bd2153cba42394b692df",
-    "tree": "2c6d034f72696ee5674261c617364fa6284ab679"
+    "commit": "053788400b3fa88b3d14e7e6c05e47a4b532f0ad",
+    "tree": "3d1b5d772ded01126c607295e6d9b890e227b147"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -460,8 +460,8 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "c4d4bae86171ddcadb71bd2153cba42394b692df",
-    "tree": "2c6d034f72696ee5674261c617364fa6284ab679",
+    "commit": "053788400b3fa88b3d14e7e6c05e47a4b532f0ad",
+    "tree": "3d1b5d772ded01126c607295e6d9b890e227b147",
     "interpretation": "Reviewed source composition for signed lifecycle, durable bounded fault recovery, independent release caller and host qualification. This observation is not an execution or deployment receipt."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
@@ -488,7 +488,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "499abd27d7be990d0320b032a0a79009442e7731"
+      "object": "7cc1a4bc757d4172177fa071095340738ad07dde"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/authority_signer.rs",
@@ -516,15 +516,15 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "object": "4a33441c87abebed9eca623bee07922bca958cb8"
+      "object": "68c0bf6941612d5a0023401a8bdf6081b62bbb83"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_signed_tests.rs",
-      "object": "78a35bb85094982091a9b993eca11f9eb075b1f9"
+      "object": "0535750b496f4d162237bf82fd9ff47fa077cab8"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
-      "object": "3891e0310b2d2b169ee45f410622bbb33e87533e"
+      "object": "1d4084796b2764078f6b774cfc7ebd8b5c04600d"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
@@ -532,11 +532,11 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
-      "object": "c83b2add7f21279644f91197c7be3e26f988a5ed"
+      "object": "fe1ea4d2b1652d7e79f151b907efa0722310c0d5"
     },
     {
       "path": "codex-rs/hepta-supervisor/tests/production_release_product.rs",
-      "object": "1a57ddaa5cd354b6b4e710dacff748808399a8a9"
+      "object": "1eadc1fdee58c60f1807eb4c8984797eddff53a2"
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
