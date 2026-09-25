@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e22745b324507462bfce21aae9acc73ae2724d37",
-    "tree": "33cfe0bf392910a33643ac0c94ed294c22ca3456"
+    "commit": "ec174290e6ca75790325447a90f62b81d405fec2",
+    "tree": "944c85aafbd3874ad59c0302905d656aa3d4e46b"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -163,7 +163,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-      "object": "2379d7a33ac80ccb60fa381373537b5dcfac6b54"
+      "object": "e297663440c65cd80820cb8ee8f09f416286f174"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -267,7 +267,7 @@
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
-      "object": "43802ae3b7c27f212d9b9a0b2e246a61b62c2b00"
+      "object": "a9383f986ff4ee6dec483fa816eb2a0717d26c95"
     }
   ],
   "productCallers": [
@@ -285,7 +285,7 @@
     },
     {
       "role": "control_protocol",
-      "blobSha": "2379d7a33ac80ccb60fa381373537b5dcfac6b54",
+      "blobSha": "e297663440c65cd80820cb8ee8f09f416286f174",
       "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "nativeSymbol": "CognitiveContextRevalidate {"
     },
@@ -314,8 +314,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "e22745b324507462bfce21aae9acc73ae2724d37",
-    "tree": "33cfe0bf392910a33643ac0c94ed294c22ca3456"
+    "commit": "ec174290e6ca75790325447a90f62b81d405fec2",
+    "tree": "944c85aafbd3874ad59c0302905d656aa3d4e46b"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
