@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -75,6 +76,15 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        Self::new_with_prompt_registry_recovery(identity, registry, event_capacity, None)
+    }
+
+    pub(crate) fn new_with_prompt_registry_recovery(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        prompt_registry_recovery_checkpoint: Option<&Path>,
+    ) -> Result<Self, AgentdError> {
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
@@ -110,9 +120,12 @@ impl AgentdState {
         .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");
+        let prompt_registry_owner_id = format!("agentd:{}:prompt.registry", identity.agent_id);
         let prompt_runtime_root = identity.run_root.join("prompt-runtime");
         let prompt_pipeline = crate::AgentdPromptPipelineOwner::open_state_dirs(
             &prompt_registry_root,
+            prompt_registry_recovery_checkpoint,
+            &prompt_registry_owner_id,
             &prompt_runtime_root,
             crate::prompt_runtime::AGENTD_PROMPT_REGISTRY_MAX_RECORDS,
         )

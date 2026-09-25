@@ -26,6 +26,7 @@ fn main() -> anyhow::Result<()> {
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
+        let mut prompt_registry_recovery_checkpoint = None;
         let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
         let mut automation_effect_host = None;
@@ -99,6 +100,12 @@ fn main() -> anyhow::Result<()> {
                 );
                 memory_retrieval_context_verifying_key =
                     Some(parse_verifying_key_hex(path, "memory retrieval context")?);
+            } else if flag == "--prompt-registry-recovery-checkpoint-file" {
+                anyhow::ensure!(
+                    prompt_registry_recovery_checkpoint.is_none(),
+                    "duplicate --prompt-registry-recovery-checkpoint-file"
+                );
+                prompt_registry_recovery_checkpoint = Some(PathBuf::from(path));
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
@@ -188,6 +195,9 @@ fn main() -> anyhow::Result<()> {
         }
         if let Some(path) = automation_effect_host {
             config = config.with_automation_effect_host_file(path.into());
+        }
+        if let Some(path) = prompt_registry_recovery_checkpoint {
+            config = config.with_prompt_registry_recovery_checkpoint_file(path)?;
         }
         if let Some(path) = objective_profile {
             config = config.with_objective_profile_file(path.into());
