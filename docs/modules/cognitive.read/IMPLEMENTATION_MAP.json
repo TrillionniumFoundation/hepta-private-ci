@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "863df5e55f1624b755fed552102592c4e9e03043",
-    "tree": "ff1af51be817f88c2be473b4eac2297b1cfddcd8"
+    "commit": "c26652eb7c284e942a191bcfc484063efdb10ec2",
+    "tree": "25044995fa5f48810ff331640c263e243ae0c04b"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -245,11 +245,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "object": "bda22dd1e1c6e3bfecf15b438fcb0220b25ee630"
+      "object": "8ec352581930d9c4ea6955ee116d182c6119f57a"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
-      "object": "ecb4fe8ef5799f20c7824dd4bbc93d9e86024939"
+      "object": "b152aabcd10af9f4e3601428a72df565b06af8cc"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
@@ -257,7 +257,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "e96da1855228f1bb27c3aec7431631e5018e89ac"
+      "object": "db58fdc9dc01fe795ca3a65db4f131e9fbddd7ba"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -309,7 +309,7 @@
     },
     {
       "role": "durable_pre_turn_stop",
-      "blobSha": "bda22dd1e1c6e3bfecf15b438fcb0220b25ee630",
+      "blobSha": "8ec352581930d9c4ea6955ee116d182c6119f57a",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
       "nativeSymbol": "pub fn stop_native_before_turn_start("
     }
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "863df5e55f1624b755fed552102592c4e9e03043",
-    "tree": "ff1af51be817f88c2be473b4eac2297b1cfddcd8"
+    "commit": "c26652eb7c284e942a191bcfc484063efdb10ec2",
+    "tree": "25044995fa5f48810ff331640c263e243ae0c04b"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
