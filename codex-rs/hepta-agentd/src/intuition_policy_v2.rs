@@ -155,7 +155,6 @@ impl AgentdIntuitionPolicyHostV2 {
         Ok(())
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub(crate) fn decide(
         &self,
         agent_id: &AgentId,
