@@ -85,10 +85,12 @@ The registered upstream port remains
 backend requires a signed `hepta.endpoint-manifest.v1`, protocol compatibility,
 loopback address and OS-keyring bearer account.
 
-The current gateway requires exactly one authenticated bearer header on every
-route and reports `native_auth=keyring_bearer_v1`. It remains loopback-only and
-read-only. Missing, wrong or duplicate credentials are rejected before runtime
-facts are returned. The gateway admits at most 64 concurrent connections and
+The product native client requires an explicitly signed protocol-v2 endpoint,
+one bounded request MAC and a verified response MAC. It reports
+`native_auth=keyring_mac_v2`, remains loopback-only and read-only, and never
+falls back to sending the keyring secret as a bearer. Missing, wrong, duplicate,
+expired or replayed proofs are rejected before runtime facts are consumed.
+Legacy bearer clients remain a separately identified compatibility surface. The gateway admits at most 64 concurrent connections and
 drops overload before spawning a request task. The gateway does not issue
 final-use authority.
 
@@ -303,3 +305,30 @@ the canonical candidate. `CURRENT_SOURCE.json`, implementation maps and
 registries provide source navigation and identity. Retained exact-head and
 synthetic-merge artifacts provide execution evidence. Physical acceptance and
 release require separate evidence and are not inferred from this section.
+
+
+### Current transport and startup refinement
+
+The product native client explicitly selects authenticated-read subprotocol v2:
+`codex-rs/hepta-contracts/src/native_gateway.rs` owns the MAC byte contract;
+`codex-rs/hepta-native-gateway/src/native_mac.rs` verifies time, incarnation and
+single-use request nonces; `apps/hepta-native/src/native_http.rs` verifies response
+MAC/status/body with bounded framing and one total deadline. Legacy bearer clients
+are a separate compatibility surface, never the native product fallback.
+
+`launch_config.rs` provides ordinary installed-app configuration and bounded
+`--check-connection` diagnostics. `startup.rs` records actual authenticated
+GUI-startup observations; these do not establish independent or physical-host
+acceptance. `update_handoff.rs` plus the existing updater/runtime owner bind normal
+new-process readiness to frozen arguments, running binary, PID, session and view.
+Static self-test or successful exit alone cannot confirm an update. `Confirmed`
+remains queryable, and failed or unobserved startup remains recoverable.
+
+Tests: native gateway shared/adapter proofs; `backend_security.rs`,
+`file_input.rs`, `launch_config.rs`, `update_handoff.rs`, `update_product.rs` and
+the existing journal/runtime/security suites. `linux_product_qualification.py`
+executes a verified unpacked GUI, real keyring and normal gateway against a
+private owner-format fixture. Exact-candidate execution, physical accessibility,
+real IME/multi-monitor DPI, target-host long-run and independent release/signing
+remain distinct evidence gates. See `apps/hepta-native/DEVELOPMENT.md` and
+`docs/modules/ui.native/GATEWAY_V2.md` for the current concrete contracts.

@@ -25,6 +25,9 @@ INTEGRATION_FILES = (
     ROOT / "codex-rs/Cargo.toml",
     ROOT / "codex-rs/Cargo.lock",
     ROOT / "codex-rs/hepta-contracts/Cargo.toml",
+    ROOT / "codex-rs/hepta-contracts/src/lib.rs",
+    ROOT / "codex-rs/hepta-contracts/src/native_gateway.rs",
+    ROOT / "codex-rs/hepta-contracts/src/native_gateway_tests.rs",
     ROOT / "codex-rs/hepta-contracts/src/authority_lease.rs",
     ROOT / "codex-rs/hepta-contracts/src/final_use.rs",
     ROOT / "codex-rs/hepta-contracts/src/final_use_control.rs",
@@ -61,10 +64,17 @@ def committed_blob(path):
 
 
 def require_branch():
-    if git("branch", "--show-current") != BRANCH:
-        raise RuntimeError(
-            "metadata writes are restricted to the named native candidate"
-        )
+    branch = git("branch", "--show-current")
+    if branch == BRANCH:
+        return
+    if not branch and subprocess.run(
+        ["git", "merge-base", "--is-ancestor", f"refs/remotes/origin/{BRANCH}", "HEAD"],
+        cwd=ROOT, check=False,
+    ).returncode == 0:
+        return
+    raise RuntimeError(
+        "metadata writes require the named native candidate or its isolated detached continuation"
+    )
 
 
 def prepare():

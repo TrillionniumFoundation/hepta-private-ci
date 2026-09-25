@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+mod native_mac;
+
 use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -229,6 +231,8 @@ impl Drop for ConnectionSlot {
 
 struct GatewayAuth {
     bearer_token: Zeroizing<String>,
+    server_incarnation: [u8; 32],
+    seen_nonces: std::sync::Mutex<std::collections::BTreeMap<[u8; 32], u64>>,
 }
 
 impl std::fmt::Debug for GatewayAuth {
@@ -240,8 +244,12 @@ impl std::fmt::Debug for GatewayAuth {
 impl GatewayAuth {
     fn new(token: String) -> Result<Self> {
         validate_bearer_token(&token)?;
+        let mut server_incarnation = [0; 32];
+        getrandom::fill(&mut server_incarnation).context("generate gateway incarnation")?;
         Ok(Self {
             bearer_token: Zeroizing::new(token),
+            server_incarnation,
+            seen_nonces: std::sync::Mutex::new(std::collections::BTreeMap::new()),
         })
     }
 
@@ -448,9 +456,26 @@ async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
 
 fn route_request(request: &[u8], runtime: &HeptaRuntime, auth: &GatewayAuth) -> Result<Vec<u8>> {
     let request = std::str::from_utf8(request).context("HTTP request is not UTF-8")?;
-    if !auth.authorizes(request) {
+    let proof = match native_mac::authenticate(request, auth) {
+        Ok(proof) => proof,
+        Err(_) => return Ok(unauthorized_response()),
+    };
+    if proof.is_none() && !auth.authorizes(request) {
         return Ok(unauthorized_response());
     }
+    let response = route_authenticated_request(request, runtime, auth, proof.as_ref())?;
+    match proof {
+        Some(proof) => native_mac::sign_response(response, &proof, auth),
+        None => Ok(response),
+    }
+}
+
+fn route_authenticated_request(
+    request: &str,
+    runtime: &HeptaRuntime,
+    auth: &GatewayAuth,
+    proof: Option<&codex_hepta_contracts::native_gateway::NativeGatewayRequestV2>,
+) -> Result<Vec<u8>> {
     let first_line = request
         .lines()
         .next()
@@ -475,10 +500,19 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime, auth: &GatewayAuth) -> 
     }
     let path = target.split('?').next().unwrap_or(target);
     match path {
+        "/healthz" if proof.is_some() => Ok(response(
+            "200 OK",
+            "application/json; charset=utf-8",
+            &serde_json::to_vec(&serde_json::json!({
+                "product": "hepta", "status": "ok", "native_auth": "keyring_mac_v2",
+                "native_protocol_version": 2,
+                "native_incarnation": codex_hepta_contracts::native_gateway::native_gateway_incarnation_hex(&auth.server_incarnation),
+            }))?,
+        )),
         "/healthz" => Ok(response(
             "200 OK",
             "application/json; charset=utf-8",
-            br#"{"product":"hepta","status":"ok","native_auth":"keyring_bearer_v1"}"#,
+            br#"{"product":"hepta","status":"ok","native_auth":"keyring_bearer_v1","native_protocol_version":1}"#,
         )),
         "/api/hepta/runtime" => match runtime_representation(request) {
             RuntimeRepresentation::Json => match runtime.status_json() {
@@ -745,6 +779,7 @@ mod tests {
             + 4;
         let health_value: serde_json::Value = serde_json::from_slice(&health[health_body..])?;
         assert_eq!(health_value["native_auth"], "keyring_bearer_v1");
+        assert_eq!(health_value["native_protocol_version"], 1);
         let status = route_request(
             &authorized_test_request("GET /api/hepta/runtime HTTP/1.1", ""),
             &runtime,

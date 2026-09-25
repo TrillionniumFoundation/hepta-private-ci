@@ -3673,6 +3673,7 @@ dependencies = [
  "codex-utils-cargo-bin",
  "ed25519-dalek",
  "getrandom 0.4.2",
+ "hmac 0.12.1",
  "pretty_assertions",
  "rustix 1.1.4",
  "serde",
@@ -4011,6 +4012,7 @@ name = "codex-hepta-native-gateway"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "codex-hepta-contracts",
  "codex-hepta-paths",
  "codex-hepta-runtime",
  "codex-hepta-wire",

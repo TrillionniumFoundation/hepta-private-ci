@@ -18,7 +18,7 @@ session references and the updater state machine.
 
 Repository source now composes:
 
-- signed endpoint discovery and OS-keyring bearer authentication;
+- signed endpoint discovery and OS-keyring mutual MAC v2 authentication (no secret on the wire);
 - the read-only authenticated native gateway;
 - session/generation/operation semantic fencing;
 - durable `Prepared -> Invoking -> Indeterminate/Terminal` recovery;
@@ -37,3 +37,11 @@ Source composition is not production acceptance. Platform signing and
 notarization, installed notification identity, physical screen-reader/IME/DPI
 acceptance, target-host performance, independent selection and release remain
 separate gates and stay false until independently observed.
+
+
+Ordinary installed launch supports `--config /absolute/config.json` or the
+platform user configuration directory. `--check-connection` verifies the real
+signed endpoint, keyring, gateway and coherent view without opening a window;
+it is not update readiness. The product requires a signed protocol-v2 endpoint.
+See `DEVELOPMENT.md` and `docs/modules/ui.native/GATEWAY_V2.md` for migration,
+configuration, exact limits, normal-process update confirmation and test commands.

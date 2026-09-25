@@ -309,6 +309,9 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
+        // Windows does not allow replacing a file held without delete sharing.
+        // Close the synced staging handle, not the exclusive authority lock.
+        drop(file);
         replace_state(&self.root)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
@@ -366,6 +369,8 @@ impl Store {
                 .map_err(|_| FinalUseError::Unavailable)?;
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        // Keep the owner lock; release only this synced staging handle.
+        drop(file);
         replace_claims(&self.root)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }

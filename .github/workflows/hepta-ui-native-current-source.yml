@@ -124,7 +124,9 @@ jobs:
           sudo apt-get install -y \
             libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
             libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
-            libgl1-mesa-dev libssl-dev desktop-file-utils
+            libgl1-mesa-dev libssl-dev desktop-file-utils \
+            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
+            python3-cryptography fonts-noto-cjk
       - name: Install pinned Rust toolchain
         id: toolchain
         continue-on-error: true
@@ -247,6 +249,24 @@ jobs:
           "$binary" --qualification-e2e > native-evidence/packaged-faults.json
           end=$(python3 -c 'import time; print(time.monotonic_ns())')
           echo "elapsed_ms=$(( (end-start)/1000000 ))" >> "$GITHUB_OUTPUT"
+      - name: Build existing standalone gateway for installed product qualification
+        id: gateway_product
+        if: always() && runner.os == 'Linux' && steps.toolchain.outcome == 'success'
+        continue-on-error: true
+        run: |
+          cargo +1.95.0 build --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway --bin hepta-native-gateway --release
+      - name: Exercise ordinary installed Linux product with real keyring and gateway
+        id: linux_product
+        if: always() && runner.os == 'Linux' && steps.package.outcome == 'success' && steps.gateway_product.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- \
+            python3 apps/hepta-native/tools/linux_product_qualification.py \
+              --package-root native-package/extracted/HeptaNative.AppDir \
+              --gateway apps/hepta-native/target/release/hepta-native-gateway \
+              --out-dir native-evidence/ordinary-linux-product
       - name: Record actual outcomes and measurements
         if: always()
         env:
@@ -263,6 +283,8 @@ jobs:
           FAULTS: ${{ steps.faults.outcome }}
           PACKAGE: ${{ steps.package.outcome }}
           PACKAGED_SMOKE: ${{ steps.packaged_smoke.outcome }}
+          GATEWAY_PRODUCT: ${{ steps.gateway_product.outcome }}
+          LINUX_PRODUCT: ${{ steps.linux_product.outcome }}
           RELEASE_MS: ${{ steps.release.outputs.elapsed_ms }}
           PACKAGE_MS: ${{ steps.package.outputs.elapsed_ms }}
           SMOKE_MS: ${{ steps.packaged_smoke.outputs.elapsed_ms }}
@@ -274,7 +296,7 @@ jobs:
           checks = {name: os.environ.get(name, '') for name in [
               'LINUX_DEPS', 'TOOLCHAIN', 'LOCKS', 'APP_FORMAT', 'OWNER_FORMAT',
               'APP_LINT', 'OWNER_LINT', 'APP_TESTS', 'OWNER_TESTS', 'RELEASE',
-              'FAULTS', 'PACKAGE', 'PACKAGED_SMOKE']}
+              'FAULTS', 'PACKAGE', 'PACKAGED_SMOKE', 'GATEWAY_PRODUCT', 'LINUX_PRODUCT']}
           artifacts = {}
           for path in sorted(Path('native-package').glob('*.zip')):
               artifacts[path.name] = {
@@ -328,6 +350,8 @@ jobs:
           FAULTS: ${{ steps.faults.outcome }}
           PACKAGE: ${{ steps.package.outcome }}
           PACKAGED_SMOKE: ${{ steps.packaged_smoke.outcome }}
+          GATEWAY_PRODUCT: ${{ steps.gateway_product.outcome }}
+          LINUX_PRODUCT: ${{ steps.linux_product.outcome }}
         run: |
           set -euo pipefail
           test "$TOOLCHAIN" = success
@@ -342,4 +366,8 @@ jobs:
           test "$FAULTS" = success
           test "$PACKAGE" = success
           test "$PACKAGED_SMOKE" = success
-          if test "$RUNNER_OS" = Linux; then test "$LINUX_DEPS" = success; fi
+          if test "$RUNNER_OS" = Linux; then
+            test "$LINUX_DEPS" = success
+            test "$GATEWAY_PRODUCT" = success
+            test "$LINUX_PRODUCT" = success
+          fi

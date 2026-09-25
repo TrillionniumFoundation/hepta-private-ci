@@ -151,7 +151,7 @@ impl TrustedKeySet {
                 "trusted key set path must be absolute".to_owned(),
             ));
         }
-        let file: KeySetFile = serde_json::from_slice(&std::fs::read(path)?)?;
+        let file: KeySetFile = crate::file_input::read_json_file(path, 64 * 1024)?;
         if file.schema != "hepta.native-trusted-keys.v1" || file.keys.is_empty() {
             return Err(ShellError::Security(
                 "trusted native key set schema or key population is invalid".to_owned(),
@@ -222,7 +222,7 @@ impl KernelFinalUseAuthorityConfigV1 {
                 "kernel final-use authority config path must be absolute".to_owned(),
             ));
         }
-        let config: Self = serde_json::from_slice(&std::fs::read(path)?)?;
+        let config: Self = crate::file_input::read_json_file(path, 64 * 1024)?;
         if config.schema != "hepta.native-final-use-authority.v1" {
             return Err(ShellError::Security(
                 "unsupported kernel final-use authority config schema".to_owned(),

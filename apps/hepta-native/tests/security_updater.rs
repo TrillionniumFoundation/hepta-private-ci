@@ -210,7 +210,7 @@ fn kernel_final_use_reloads_revocation_before_os_entry() {
 }
 
 #[test]
-fn signed_update_stages_activates_and_confirms_with_predecessor_backup() {
+fn signed_update_stages_activates_but_arbitrary_path_cannot_confirm() {
     let temp = private_tempdir();
     let (signing, keys, key_path) = key_fixture(temp.path());
     let package = temp.path().join("next.bin");
@@ -253,8 +253,20 @@ fn signed_update_stages_activates_and_confirms_with_predecessor_backup() {
     let keys = TrustedKeySet::from_path(&key_path).unwrap();
     activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap();
     assert_eq!(digest_file(&target).unwrap(), package_digest);
-    assert!(manager.confirm_current_digest(&target).unwrap());
-    assert!(!manager.pending_path().exists());
+    let args = vec![
+        "--endpoint-manifest".into(),
+        "manifest".into(),
+        "--trusted-keys".into(),
+        "keys".into(),
+        "--state-dir".into(),
+        "state".into(),
+    ];
+    let handoff = manager.prepare_restart(&args).unwrap();
+    assert!(manager.validate_running_handoff(&handoff).is_err());
+    assert_eq!(
+        manager.load_pending().unwrap().unwrap().status,
+        PendingUpdateStatus::ActivatedUnconfirmed
+    );
 }
 
 #[test]

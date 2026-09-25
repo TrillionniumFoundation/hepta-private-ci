@@ -86,10 +86,11 @@ impl PlatformPolicy {
     }
 }
 
-#[derive(Debug, Clone)]
 pub struct SystemPlatformAdapter {
     policy: PlatformPolicy,
     active_launchers: Arc<AtomicUsize>,
+    // X11/Wayland clipboard ownership lasts only while the handle remains alive.
+    clipboard: Option<Clipboard>,
 }
 
 impl SystemPlatformAdapter {
@@ -97,6 +98,7 @@ impl SystemPlatformAdapter {
         Self {
             policy,
             active_launchers: Arc::new(AtomicUsize::new(0)),
+            clipboard: None,
         }
     }
 
@@ -154,8 +156,14 @@ impl PlatformAdapter for SystemPlatformAdapter {
         }
         match payload {
             PlatformPayload::CopyText { text } => {
-                let mut clipboard = Clipboard::new()
-                    .map_err(|error| ShellError::Platform(format!("open clipboard: {error}")))?;
+                if self.clipboard.is_none() {
+                    self.clipboard = Some(Clipboard::new().map_err(|error| {
+                        ShellError::Platform(format!("open clipboard: {error}"))
+                    })?);
+                }
+                let clipboard = self.clipboard.as_mut().ok_or_else(|| {
+                    ShellError::Platform("clipboard owner is unavailable".to_owned())
+                })?;
                 clipboard
                     .set_text(text.clone())
                     .map_err(|error| ShellError::Platform(format!("write clipboard: {error}")))?;

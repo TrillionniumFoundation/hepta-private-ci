@@ -56,12 +56,16 @@ flight. The worker locks the same `NativeShellRuntime`; it is not a second owner
 or execution spine. Competing effect/update buttons remain disabled until the
 single task resolves.
 
-The read-only `codex-hepta-native-gateway` remains the runtime adapter. It is
-loopback-only, accepts no mutation route and requires one bounded
-`Authorization: Bearer ...` value loaded from OS keyring service
-`hepta.native.gateway.v1`. `/healthz` must report
-`native_auth=keyring_bearer_v1`; unauthenticated, duplicate-header, wrong-token
-and legacy unauthenticated responses fail closed.
+The read-only `codex-hepta-native-gateway` remains the runtime adapter. The
+native product uses **protocol 2 / `keyring_mac_v2`**, not bearer disclosure.
+A fresh request nonce, exact route, short validity window and authenticated
+server incarnation bind each request; the response proof binds the originating
+request, status and full body. Both directions use the existing keyring secret
+without placing that secret on the wire. Unknown/missing proofs or a signed
+manifest for another version fail closed before session construction.
+See [the exact v2 wire contract](../../docs/modules/ui.native/GATEWAY_V2.md).
+Legacy bearer consumers remain separate and cannot be a fallback for this GUI.
+Every accepted connection receives a fresh CSPRNG-derived session incarnation.
 
 The UI never becomes the writer of runtime, model, memory, authority or release
 facts. `codex-rs/hepta-private-state` is a Windows durability/ACL implementation
@@ -85,7 +89,7 @@ The release directory contains:
 - `hepta-native-credential` — keyring capability provision/delete helper; and
 - `hepta-native-updater` — separate replacement/rollback helper.
 
-### 3.2 Provision the loopback bearer
+### 3.2 Provision the loopback shared capability
 
 Choose a bounded stable account name and provision it once through the OS
 keyring. The helper prints the account and token digest, never the bearer:
@@ -95,7 +99,18 @@ apps/hepta-native/target/release/hepta-native-credential \
   provision gateway.local
 ```
 
-Run the existing Hepta binary with the same account:
+The same owner is available through the existing Hepta binary or a thin,
+standalone gateway entry. The latter does not create state or another owner:
+
+```sh
+cargo +1.95.0 build --manifest-path codex-rs/Cargo.toml --locked \
+  -p codex-hepta-native-gateway --bin hepta-native-gateway
+codex-rs/target/debug/hepta-native-gateway \
+  --listen 127.0.0.1:7373 --state-root /absolute/owner-provisioned-state \
+  --auth-keyring-account gateway.local
+```
+
+The existing Hepta invocation is:
 
 ```sh
 hepta --serve-ui \
@@ -116,7 +131,7 @@ The GUI requires absolute paths to:
 
 - a trusted Ed25519 public-key set;
 - a signed `hepta.endpoint-manifest.v1` binding endpoint ID, loopback address,
-  protocol version, keyring account, issue/expiry times and key ID; and
+  protocol version **2**, keyring account, issue/expiry times and key ID; and
 - a private state directory.
 
 The endpoint account must be the same account provisioned above. The final
@@ -153,6 +168,47 @@ apps/hepta-native/target/release/hepta-native \
 Omitting `--final-use-authority` preserves read-only product startup and causes
 effect requests to end as no-dispatch rejection. Local flags are ceilings, not
 authority: they never replace a valid, current, exact-binding final-use grant.
+
+### 3.4 Ordinary launch configuration and diagnostics
+
+The installed desktop entry can now read an operator-owned JSON config rather
+than requiring terminal-only bootstrap. Use `--config /absolute/config.json`, or
+launch without arguments to read the platform default:
+
+- Linux: `$XDG_CONFIG_HOME/hepta-native/config.json`, otherwise
+  `$HOME/.config/hepta-native/config.json`;
+- macOS: `$HOME/Library/Application Support/HeptaNative/config.json`;
+- Windows: `%APPDATA%/HeptaNative/config.json`.
+
+```json
+{
+  "endpoint_manifest": "/absolute/config/endpoint-v2.json",
+  "trusted_keys": "/absolute/config/trusted-keys.json",
+  "state_dir": "/absolute/private/hepta-native-state",
+  "allow_clipboard": false,
+  "allow_notifications": false,
+  "allowed_roots": []
+}
+```
+
+Optional `final_use_authority`, `updater_helper` and `font_file` values are
+absolute paths. JSON is bounded to 64 KiB, rejects unknown fields and never
+follows a final-component symlink/reparse point. A FIFO cannot hold startup
+indefinitely. The expanded effective configuration is frozen into the restart
+handoff; changing the original config file cannot silently change the pending
+update's authority or endpoint.
+
+`hepta-native --config /absolute/config.json --check-connection` executes normal
+signature/keyring/gateway/session/view bootstrap and closes the session without
+creating a GUI. Its redacted observation explicitly says `gui_observed=false`.
+It is not a static smoke test, and it is not sufficient to confirm an update.
+
+A normal GUI emits `last-startup.json` only after an authenticated coherent view
+and its GUI frame callback. This records elapsed time, session, view revision and
+digests, not domain payloads. A callback is not physical rendering, screen-reader
+acceptance or release evidence; those fields remain false. Optional local CJK
+font fallback is loaded from `--font-file` or known system locations, with a
+32-MiB bound. Font files are not embedded in or redistributed with this project.
 
 ## 4. Operation identity, concurrency and recovery
 
@@ -236,18 +292,35 @@ platform, architecture, backend protocol, evidence digest, independent selector
 and generator, issue/expiry times and signing key. Selection and generation
 principals must differ.
 
-The GUI verifies and stages the package in a private directory, writes pending
-state atomically and exits before invoking the independent updater helper. The
-helper re-verifies manifest and package, confirms the installed predecessor,
-backs it up and replaces through a temporary file. Activation remains
-`ActivatedUnconfirmed` until the new process confirms its running executable
-digest.
+The GUI verifies/stages the package, atomically records pending state and closes
+before the independent updater begins. The helper re-verifies the signed package
+and installed predecessor, preserves executable permissions, and replaces via
+atomic copy. A separate runner lock serializes activation/startup recovery; the
+existing short state-transition lock remains the transaction owner.
 
-Recovery uses a shared transition lock and authenticated pending state. It may
-restore only the admitted predecessor over the admitted candidate. An unrelated
-newer installed binary is never overwritten by stale recovery. Missing or bad
-predecessor evidence, rollback failure or destroyed recovery evidence becomes
-durable `RecoveryRequired`; public cleanup cannot erase unresolved state.
+`ActivatedUnconfirmed` is **not** cleared by `--self-test`, exit code zero or a
+caller-supplied file digest. The helper restarts the normal product with frozen
+arguments and a random, argument-bound handoff. The new process must authenticate
+its endpoint, retrieve a coherent runtime view and enter the GUI callback. Only
+that installed process can persist `Confirmed` with its actual PID, session,
+view identity and candidate digest. Linux hashes `/proc/self/exe` to bind the
+loaded inode rather than a replacement at the same path. The helper observes
+that exact receipt and acknowledges over a private inherited pipe. Parent loss
+before acknowledgement or a 35-second watchdog ends the unconfirmed child.
+
+The helper's readiness budget is 30 seconds. Failure or early process exit,
+including exit code zero, requires observed child termination before rollback.
+Missing/bad predecessor evidence, copy failure or unsafe reads become durable
+`RecoveryRequired`; unresolved state cannot be cleared. An unrelated newer
+installed binary is not overwritten by stale recovery. A rolled-back predecessor
+is relaunched explicitly; an already-running candidate cannot continue normally
+after its on-disk binary has been rolled back. Confirmed records remain queryable
+and duplicate helper invocation does not reinstall the candidate.
+
+Platform signing and notarization are separate from these source mechanics.
+The gateway and endpoint manifest must remain compatible across rollback. The
+v2 endpoint change is explicit: an old v1-only GUI needs an independently selected
+v1 configuration, not an automatic downgrade of the security boundary.
 
 ## 7. Development, lock and package commands
 
@@ -327,3 +400,27 @@ Repository source and CI cannot self-issue:
 
 These remain false until separately observed. Source composition, green CI and
 an unsigned package must never be used as substitutes for them.
+
+## 10. Native graph and ordinary Linux product qualification
+
+Local tests use nextest through the repository recipe. The standalone native
+graph has its own config, avoiding workspace-only package selectors:
+
+```sh
+just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --all-targets \
+  --config-file ../apps/hepta-native/.config/nextest.toml --retries 0
+```
+
+`tools/linux_product_qualification.py` requires an isolated `dbus-run-session`
+and Xvfb environment. It uses the verified extracted unsigned package, real
+keyring provisioning, the normal gateway entry opening a private schema-v5
+owner-format fixture, ordinary connection diagnostics, and two real GUI starts.
+It checks visible-window creation, keyboard-event delivery, fresh sessions and
+unchanged owner database/snapshot bytes. It deletes its random test keyring
+account and secret fixture material. This is an executable CI qualification
+case, not physical screen-reader/IME/DPI/long-run or independent acceptance.
+
+New negative suites cover server spoofing, response substitution, version drift,
+request replay, bounded HTTP/JSON, argument-bound restart, zero-exit-without-
+readiness, rollback failure and executable permissions. Keep exact-head and
+synthetic-merge receipts separate and never count skipped tests as passes.

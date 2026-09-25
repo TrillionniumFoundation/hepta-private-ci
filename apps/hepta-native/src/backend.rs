@@ -1,10 +1,4 @@
-use std::io::Read as _;
-use std::io::Write as _;
 use std::net::SocketAddr;
-use std::net::TcpStream;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
-use std::time::Duration;
 
 use serde_json::Value;
 
@@ -13,10 +7,6 @@ use crate::model::EndpointManifest;
 use crate::model::SessionIncarnation;
 use crate::model::sha256_hex;
 use crate::security::now_unix_ms;
-
-const MAX_HTTP_RESPONSE_BYTES: usize = 1024 * 1024;
-const HTTP_TIMEOUT: Duration = Duration::from_secs(3);
-static SESSION_COUNTER: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Debug, Clone)]
 pub struct AuthenticatedRuntimeStatus {
@@ -32,7 +22,8 @@ pub trait BackendAdapter: Send {
 
 pub struct LoopbackGatewayBackend {
     address: SocketAddr,
-    bearer_token: String,
+    bearer_token: zeroize::Zeroizing<String>,
+    server_incarnation: [u8; 32],
 }
 
 impl LoopbackGatewayBackend {
@@ -45,59 +36,18 @@ impl LoopbackGatewayBackend {
         validate_bearer_token(&bearer_token)?;
         Ok(Self {
             address,
-            bearer_token,
+            bearer_token: zeroize::Zeroizing::new(bearer_token),
+            server_incarnation: [0; 32],
         })
     }
 
     fn get_json(&self, path: &str) -> Result<AuthenticatedRuntimeStatus, ShellError> {
-        let mut stream = TcpStream::connect_timeout(&self.address, HTTP_TIMEOUT)
-            .map_err(|error| ShellError::Backend(format!("connect gateway: {error}")))?;
-        stream
-            .set_read_timeout(Some(HTTP_TIMEOUT))
-            .map_err(|error| ShellError::Backend(format!("set gateway read timeout: {error}")))?;
-        stream
-            .set_write_timeout(Some(HTTP_TIMEOUT))
-            .map_err(|error| ShellError::Backend(format!("set gateway write timeout: {error}")))?;
-        let request = format!(
-            "GET {path} HTTP/1.1\r\nHost: {}\r\nAccept: application/json\r\nAuthorization: Bearer {}\r\nConnection: close\r\n\r\n",
-            self.address, self.bearer_token
-        );
-        stream
-            .write_all(request.as_bytes())
-            .map_err(|error| ShellError::Backend(format!("write gateway request: {error}")))?;
-        let mut response = Vec::with_capacity(4096);
-        let mut limited = stream.take((MAX_HTTP_RESPONSE_BYTES + 1) as u64);
-        limited
-            .read_to_end(&mut response)
-            .map_err(|error| ShellError::Backend(format!("read gateway response: {error}")))?;
-        if response.len() > MAX_HTTP_RESPONSE_BYTES {
-            return Err(ShellError::Backend(
-                "gateway response exceeded native bound".to_owned(),
-            ));
-        }
-        let header_end = response
-            .windows(4)
-            .position(|window| window == b"\r\n\r\n")
-            .ok_or_else(|| ShellError::Backend("gateway response is missing headers".to_owned()))?;
-        let headers = std::str::from_utf8(&response[..header_end]).map_err(|error| {
-            ShellError::Backend(format!("gateway headers are not UTF-8: {error}"))
-        })?;
-        if !headers
-            .lines()
-            .next()
-            .is_some_and(|line| line.contains(" 200 "))
-        {
-            return Err(ShellError::Backend(format!(
-                "gateway returned non-success response: {}",
-                headers.lines().next().unwrap_or("missing status")
-            )));
-        }
-        let body = &response[header_end + 4..];
-        let value = serde_json::from_slice(body).map_err(ShellError::from)?;
-        Ok(AuthenticatedRuntimeStatus {
-            value,
-            body_digest: sha256_hex(body),
-        })
+        crate::native_http::get_json(
+            self.address,
+            self.bearer_token.as_bytes(),
+            path,
+            self.server_incarnation,
+        )
     }
 }
 
@@ -118,7 +68,13 @@ fn validate_bearer_token(value: &str) -> Result<(), ShellError> {
 
 impl BackendAdapter for LoopbackGatewayBackend {
     fn connect(&mut self, manifest: &EndpointManifest) -> Result<SessionIncarnation, ShellError> {
+        self.server_incarnation = [0; 32];
         manifest.validate()?;
+        if manifest.protocol_version
+            != codex_hepta_contracts::native_gateway::NATIVE_GATEWAY_PROTOCOL_V2
+        {
+            return Err(ShellError::Security("product native gateway requires a signed protocol-v2 manifest; bearer-only fallback is disabled".into()));
+        }
         let manifest_address: SocketAddr = manifest
             .address
             .parse()
@@ -131,17 +87,47 @@ impl BackendAdapter for LoopbackGatewayBackend {
         let health = self.get_json("/healthz")?;
         if health.value.get("product").and_then(Value::as_str) != Some("hepta")
             || health.value.get("status").and_then(Value::as_str) != Some("ok")
-            || health.value.get("native_auth").and_then(Value::as_str) != Some("keyring_bearer_v1")
+            || health.value.get("native_auth").and_then(Value::as_str) != Some("keyring_mac_v2")
         {
             return Err(ShellError::Backend(
                 "gateway health identity is not the expected Hepta product".to_owned(),
             ));
         }
-        let counter = SESSION_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let observed_protocol = health
+            .value
+            .get("native_protocol_version")
+            .and_then(Value::as_u64)
+            .ok_or_else(|| {
+                ShellError::Backend(
+                    "gateway health is missing the native protocol version".to_owned(),
+                )
+            })?;
+        if observed_protocol != u64::from(manifest.protocol_version) {
+            return Err(ShellError::Backend(format!(
+                "gateway native protocol version mismatch: manifest={}, observed={observed_protocol}",
+                manifest.protocol_version
+            )));
+        }
+
+        self.server_incarnation =
+            codex_hepta_contracts::native_gateway::parse_native_gateway_incarnation(
+                health
+                    .value
+                    .get("native_incarnation")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| {
+                        ShellError::Backend("gateway lacks its authenticated incarnation".into())
+                    })?,
+            )
+            .map_err(|e| ShellError::Security(e.to_string()))?;
+        let mut session_nonce = [0_u8; 32];
+        getrandom::fill(&mut session_nonce).map_err(|error| {
+            ShellError::Security(format!("generate native session incarnation: {error}"))
+        })?;
         let now = now_unix_ms()?.max(1);
         let session = SessionIncarnation {
             endpoint_id: manifest.endpoint_id.clone(),
-            session_id: format!("native.{}.{}.{}", std::process::id(), now, counter),
+            session_id: format!("native.{}", sha256_hex(&session_nonce)),
             generation: now,
         };
         session.validate()?;
@@ -149,10 +135,16 @@ impl BackendAdapter for LoopbackGatewayBackend {
     }
 
     fn runtime_status(&mut self) -> Result<AuthenticatedRuntimeStatus, ShellError> {
+        if self.server_incarnation == [0; 32] {
+            return Err(ShellError::Backend(
+                "gateway must authenticate before reading runtime state".into(),
+            ));
+        }
         self.get_json("/api/hepta/runtime")
     }
 
     fn close(&mut self, _session: &SessionIncarnation) -> Result<(), ShellError> {
+        self.server_incarnation = [0; 32];
         Ok(())
     }
 }

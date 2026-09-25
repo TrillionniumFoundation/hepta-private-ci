@@ -317,6 +317,23 @@ impl NativeShellRuntime {
         Ok(receipts)
     }
 
+    pub fn record_startup(
+        &self,
+        recorder: crate::startup::StartupRecorder,
+    ) -> Result<(), ShellError> {
+        self.journal.ensure_healthy()?;
+        recorder.record(self.require_session()?, self.require_view()?)
+    }
+
+    pub fn confirm_update_ready(
+        &self,
+        updater: &crate::updater::UpdateManager,
+        handoff: &crate::update_handoff::UpdateHandoff,
+    ) -> Result<(), ShellError> {
+        self.journal.ensure_healthy()?;
+        updater.confirm_running_process(handoff, self.require_session()?, self.require_view()?)
+    }
+
     pub fn pending_operations(&self) -> Vec<PlatformReceipt> {
         self.journal
             .pending()

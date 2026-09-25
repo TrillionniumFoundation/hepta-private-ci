@@ -1,14 +1,9 @@
 use std::fs::File;
-use std::io::Read as _;
-use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
 
-use atomic_write_file::AtomicWriteFile;
 use serde::Deserialize;
 use serde::Serialize;
-use sha2::Digest as _;
-use sha2::Sha256;
 
 use crate::error::ShellError;
 use crate::model::validate_digest;
@@ -19,7 +14,12 @@ use crate::security::now_unix_ms;
 
 const UPDATE_SCHEMA: &str = "hepta.native-update.v1";
 const PENDING_SCHEMA: &str = "hepta.native-pending-update.v1";
-const MAX_PACKAGE_BYTES: u64 = 512 * 1024 * 1024;
+use crate::update_handoff::{UpdateHandoff, UpdateReadiness};
+pub use crate::update_storage::digest_file;
+use crate::update_storage::{
+    MAX_PACKAGE_BYTES, copy_and_sync, lock_update_root, lock_update_runner, persist_json_atomic,
+    sync_parent_directory,
+};
 const PRODUCT_UPDATE_CHANNEL: &str = "stable";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -115,6 +115,7 @@ pub enum PendingUpdateStatus {
     RollbackStarted,
     RolledBack,
     RecoveryRequired,
+    Confirmed,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -130,6 +131,10 @@ pub struct PendingUpdateV1 {
     pub transition_unix_ms: u64,
     #[serde(default)]
     pub recovery_reason: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub handoff: Option<UpdateHandoff>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub readiness: Option<UpdateReadiness>,
 }
 
 #[derive(Debug, Clone)]
@@ -190,13 +195,16 @@ impl UpdateManager {
             ));
         }
         if let Some(existing) = self.load_pending()? {
-            if existing.status != PendingUpdateStatus::RolledBack {
+            if !matches!(
+                existing.status,
+                PendingUpdateStatus::RolledBack | PendingUpdateStatus::Confirmed
+            ) {
                 return Err(ShellError::Update(
                     "an unresolved native update already exists; reconcile it before staging another"
                         .to_owned(),
                 ));
             }
-            persist_json_atomic(&self.root.join("last-rollback.json"), &existing)?;
+            persist_json_atomic(&self.root.join("last-update-result.json"), &existing)?;
             self.clear_pending_locked()?;
         }
         let staged_dir = self.root.join("staged");
@@ -218,6 +226,8 @@ impl UpdateManager {
             status: PendingUpdateStatus::Staged,
             transition_unix_ms: now_unix_ms()?,
             recovery_reason: None,
+            handoff: None,
+            readiness: None,
         };
         persist_json_atomic(&self.pending_path(), &pending)?;
         Ok(pending)
@@ -229,7 +239,7 @@ impl UpdateManager {
         if !path.exists() {
             return Ok(None);
         }
-        let pending: PendingUpdateV1 = serde_json::from_slice(&std::fs::read(path)?)?;
+        let pending: PendingUpdateV1 = crate::file_input::read_json_file(&path, 64 * 1024)?;
         validate_pending(&pending)?;
         // Expired admitted requests may recover, but cannot freshly activate.
         self.trusted_keys.verify_message(
@@ -246,7 +256,9 @@ impl UpdateManager {
         if self.load_pending()?.is_some_and(|pending| {
             !matches!(
                 pending.status,
-                PendingUpdateStatus::Staged | PendingUpdateStatus::RolledBack
+                PendingUpdateStatus::Staged
+                    | PendingUpdateStatus::RolledBack
+                    | PendingUpdateStatus::Confirmed
             )
         }) {
             return Err(ShellError::Update(
@@ -272,7 +284,9 @@ impl UpdateManager {
             return Ok(false);
         };
         match pending.status {
-            PendingUpdateStatus::Staged | PendingUpdateStatus::RolledBack => Ok(false),
+            PendingUpdateStatus::Staged
+            | PendingUpdateStatus::RolledBack
+            | PendingUpdateStatus::Confirmed => Ok(false),
             PendingUpdateStatus::ActivationStarted
             | PendingUpdateStatus::ActivatedUnconfirmed
             | PendingUpdateStatus::RollbackStarted
@@ -316,7 +330,17 @@ impl UpdateManager {
                 "native update predecessor backup is unavailable",
             );
         }
-        if digest_file(&backup)? != pending.manifest.predecessor_digest {
+        let backup_digest = match digest_file(&backup) {
+            Ok(digest) => digest,
+            Err(error) => {
+                return recovery_required(
+                    &self.pending_path(),
+                    &mut pending,
+                    &format!("predecessor backup could not be read safely: {error}"),
+                );
+            }
+        };
+        if backup_digest != pending.manifest.predecessor_digest {
             return recovery_required(
                 &self.pending_path(),
                 &mut pending,
@@ -362,30 +386,67 @@ impl UpdateManager {
         Ok(true)
     }
 
-    pub fn confirm_current_digest(&self, running_binary: &Path) -> Result<bool, ShellError> {
+    /// Serialize helper orchestration and ordinary startup recovery. Short state
+    /// transactions still use the separate owner lock.
+    pub fn lock_runner(&self) -> Result<File, ShellError> {
         self.private_root.verify()?;
+        lock_update_runner(&self.root)
+    }
+
+    pub fn prepare_restart(&self, arguments: &[String]) -> Result<UpdateHandoff, ShellError> {
         let _lock = lock_update_root(&self.root)?;
-        let Some(pending) = self.load_pending()? else {
-            return Ok(false);
-        };
-        if !matches!(pending.status, PendingUpdateStatus::ActivatedUnconfirmed) {
-            return Ok(false);
-        }
-        let target = pending.target_path.as_ref().ok_or_else(|| {
-            ShellError::Update("pending activation lacks target identity".to_owned())
-        })?;
-        if std::fs::canonicalize(running_binary)? != std::fs::canonicalize(target)? {
+        let mut pending = self
+            .load_pending()?
+            .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
+        if pending.status != PendingUpdateStatus::ActivatedUnconfirmed {
             return Err(ShellError::Update(
-                "confirmation binary is not the installed target".to_owned(),
+                "restart requires activated-unconfirmed state".into(),
             ));
         }
-        if digest_file(running_binary)? != pending.manifest.package_digest {
+        let handoff = UpdateHandoff::issue(arguments)?;
+        pending.handoff = Some(handoff.clone());
+        persist_json_atomic(&self.pending_path(), &pending)?;
+        Ok(handoff)
+    }
+
+    pub fn validate_running_handoff(&self, handoff: &UpdateHandoff) -> Result<(), ShellError> {
+        let pending = self
+            .load_pending()?
+            .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
+        validate_running_handoff(&pending, handoff)
+    }
+
+    pub(crate) fn confirm_running_process(
+        &self,
+        handoff: &UpdateHandoff,
+        session: &crate::model::SessionIncarnation,
+        view: &crate::model::RuntimeView,
+    ) -> Result<(), ShellError> {
+        let _lock = lock_update_root(&self.root)?;
+        let mut pending = self
+            .load_pending()?
+            .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
+        validate_running_handoff(&pending, handoff)?;
+        session.validate()?;
+        view.validate()?;
+        if view.session_id != session.session_id || view.session_generation != session.generation {
             return Err(ShellError::Update(
-                "running binary does not match the pending update digest".to_owned(),
+                "update readiness has mixed session identity".into(),
             ));
         }
-        self.clear_pending_locked()?;
-        Ok(true)
+        pending.readiness = Some(UpdateReadiness {
+            process_id: std::process::id(),
+            session: session.clone(),
+            view_digest: view.digest.clone(),
+            view_revision: view.revision,
+            binary_digest: pending.manifest.package_digest.clone(),
+        });
+        transition_pending(
+            &self.pending_path(),
+            &mut pending,
+            PendingUpdateStatus::Confirmed,
+            None,
+        )
     }
 }
 
@@ -404,7 +465,7 @@ pub fn activate_staged_update(
         .parent()
         .ok_or_else(|| ShellError::Update("pending update has no parent directory".to_owned()))?;
     let _lock = lock_update_root(root)?;
-    let mut pending: PendingUpdateV1 = serde_json::from_slice(&std::fs::read(pending_path)?)?;
+    let mut pending: PendingUpdateV1 = crate::file_input::read_json_file(pending_path, 64 * 1024)?;
     validate_pending(&pending)?;
     if pending.status != PendingUpdateStatus::Staged {
         return Err(ShellError::Update(format!(
@@ -459,7 +520,20 @@ pub fn activate_staged_update(
         )?;
         return Err(error);
     }
-    if digest_file(target_path)? != pending.manifest.package_digest {
+    let installed = match digest_file(target_path) {
+        Ok(digest) => digest,
+        Err(error) => {
+            rollback_after_activation_failure(
+                pending_path,
+                &mut pending,
+                target_path,
+                &backup,
+                &format!("installed candidate could not be read after replacement: {error}"),
+            )?;
+            return Err(error);
+        }
+    };
+    if installed != pending.manifest.package_digest {
         let reason = "installed native update digest mismatch after replacement";
         rollback_after_activation_failure(
             pending_path,
@@ -487,6 +561,27 @@ fn validate_pending(pending: &PendingUpdateV1) -> Result<(), ShellError> {
             "pending native update record is invalid".to_owned(),
         ));
     }
+    if pending.status == PendingUpdateStatus::Confirmed {
+        let ready = pending
+            .readiness
+            .as_ref()
+            .ok_or_else(|| ShellError::Update("confirmed update lacks product readiness".into()))?;
+        if pending.handoff.is_none()
+            || ready.process_id == 0
+            || ready.view_revision == 0
+            || ready.binary_digest != pending.manifest.package_digest
+        {
+            return Err(ShellError::Update(
+                "confirmed update readiness is not bound to the candidate".into(),
+            ));
+        }
+        ready.session.validate()?;
+        validate_digest(&ready.view_digest, "update readiness view digest")?;
+    } else if pending.readiness.is_some() {
+        return Err(ShellError::Update(
+            "non-confirmed update contains a readiness claim".into(),
+        ));
+    }
     let activated = !matches!(pending.status, PendingUpdateStatus::Staged);
     if activated
         && (!pending
@@ -512,6 +607,11 @@ fn transition_pending(
     recovery_reason: Option<String>,
 ) -> Result<(), ShellError> {
     pending.status = status;
+    if status == PendingUpdateStatus::RolledBack {
+        // The admitted predecessor may implement the original v1 pending schema.
+        pending.handoff = None;
+        pending.readiness = None;
+    }
     pending.transition_unix_ms = now_unix_ms()?;
     pending.recovery_reason = recovery_reason;
     persist_json_atomic(pending_path, pending)
@@ -546,7 +646,7 @@ fn rollback_after_activation_failure(
         PendingUpdateStatus::RollbackStarted,
         Some(reason.to_owned()),
     )?;
-    if !backup.is_file() || digest_file(backup)? != pending.manifest.predecessor_digest {
+    if !matches!(digest_file(backup), Ok(digest) if digest == pending.manifest.predecessor_digest) {
         return recovery_required(
             pending_path,
             pending,
@@ -560,7 +660,7 @@ fn rollback_after_activation_failure(
             &format!("activation failed and predecessor rollback copy failed: {error}"),
         );
     }
-    if digest_file(target)? != pending.manifest.predecessor_digest {
+    if !matches!(digest_file(target), Ok(digest) if digest == pending.manifest.predecessor_digest) {
         return recovery_required(
             pending_path,
             pending,
@@ -575,97 +675,28 @@ fn rollback_after_activation_failure(
     )
 }
 
-pub fn digest_file(path: &Path) -> Result<String, ShellError> {
-    let mut file = File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buffer = [0_u8; 64 * 1024];
-    let mut total = 0_u64;
-    loop {
-        let read = file.read(&mut buffer)?;
-        if read == 0 {
-            break;
-        }
-        total = total.saturating_add(read as u64);
-        if total > MAX_PACKAGE_BYTES {
-            return Err(ShellError::Update(format!(
-                "file exceeds {MAX_PACKAGE_BYTES} bytes"
-            )));
-        }
-        hasher.update(&buffer[..read]);
-    }
-    let digest = hasher.finalize();
-    let mut out = String::with_capacity(64);
-    for byte in digest {
-        use std::fmt::Write as _;
-        let _ = write!(&mut out, "{byte:02x}");
-    }
-    Ok(out)
-}
-
-fn copy_and_sync(source: &Path, destination: &Path) -> Result<(), ShellError> {
-    if let Some(parent) = destination.parent() {
-        std::fs::create_dir_all(parent)?;
-    }
-    let mut source_file = File::open(source)?;
-    let mut destination_file = AtomicWriteFile::open(destination)?;
-    std::io::copy(&mut source_file, &mut destination_file)?;
-    destination_file.flush()?;
-    destination_file.sync_all()?;
-    destination_file.commit()?;
-    sync_parent_directory(destination)?;
-    Ok(())
-}
-
-fn persist_json_atomic(path: &Path, value: &impl Serialize) -> Result<(), ShellError> {
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent)?;
-    }
-    let bytes = serde_json::to_vec(value)?;
-    let mut file = AtomicWriteFile::open(path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    file.commit()?;
-    sync_parent_directory(path)?;
-    Ok(())
-}
-
-#[cfg(unix)]
-fn sync_parent_directory(path: &Path) -> Result<(), ShellError> {
-    if let Some(parent) = path.parent() {
-        File::open(parent)?.sync_all()?;
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
-    Ok(())
-}
-
-// Shared by GUI transitions and the updater helper; never held across GUI life.
-fn lock_update_root(root: &Path) -> Result<File, ShellError> {
-    let _private_root = PrivateStateRoot::open_existing(root.to_path_buf())?;
-    let path = root.join("update-owner.lock");
-    match std::fs::symlink_metadata(&path) {
-        Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_file() => {
-            return Err(ShellError::Security(
-                "update owner lock is not a regular file".to_owned(),
-            ));
-        }
-        Ok(_) => {}
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-        Err(error) => return Err(error.into()),
-    }
-    let mut options = std::fs::OpenOptions::new();
-    options.read(true).write(true).create(true).truncate(false);
-    #[cfg(unix)]
+fn validate_running_handoff(
+    pending: &PendingUpdateV1,
+    handoff: &UpdateHandoff,
+) -> Result<(), ShellError> {
+    if pending.status != PendingUpdateStatus::ActivatedUnconfirmed
+        || pending.handoff.as_ref() != Some(handoff)
     {
-        use std::os::unix::fs::OpenOptionsExt as _;
-        options.mode(0o600);
+        return Err(ShellError::Update(
+            "startup does not match the pending update handoff".into(),
+        ));
     }
-    let file = options.open(path)?;
-    file.try_lock().map_err(|_| {
-        ShellError::Update("another native update transition is in progress".to_owned())
-    })?;
-    Ok(file)
+    let running = std::env::current_exe()?;
+    let target = pending
+        .target_path
+        .as_ref()
+        .ok_or_else(|| ShellError::Update("activation lacks target identity".into()))?;
+    if std::fs::canonicalize(&running)? != std::fs::canonicalize(target)?
+        || crate::update_storage::running_binary_digest()? != pending.manifest.package_digest
+    {
+        return Err(ShellError::Update(
+            "only the installed candidate process may confirm startup".into(),
+        ));
+    }
+    Ok(())
 }
