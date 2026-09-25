@@ -135,10 +135,18 @@ fn checkpoint_events(
     maximum_in_flight: usize,
 ) -> Result<Vec<Event>, Error> {
     let request_id = record.request.request_id.clone();
-    let mut events = vec![Event::Reserve {
-        request: record.request.clone(),
-        maximum_in_flight,
-    }];
+    let initial = match &record.prepared_input {
+        Some(input) => Event::ReservePrepared {
+            request: record.request.clone(),
+            maximum_in_flight,
+            input: input.clone(),
+        },
+        None => Event::Reserve {
+            request: record.request.clone(),
+            maximum_in_flight,
+        },
+    };
+    let mut events = vec![initial];
     if let Some(dispatch) = &record.dispatch {
         events.push(Event::Dispatch {
             request_id: request_id.clone(),
