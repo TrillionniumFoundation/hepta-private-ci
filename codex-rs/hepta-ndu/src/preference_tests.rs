@@ -276,6 +276,7 @@ fn impossible_local_receipt_invariants_are_rejected() {
         residual_raw: 0,
         projection_count: 0,
         state_digest: Digest32::of_bytes(b"state"),
+        source: None,
     };
 
     assert_eq!(

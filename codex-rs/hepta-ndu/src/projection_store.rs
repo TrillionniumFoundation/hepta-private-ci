@@ -425,9 +425,10 @@ fn persist_image(
         return Err(error.into());
     }
 
-    if let Err(error) = persistence.rename(&temp_path, &journal_path) {
-        let _ = fs::remove_file(&temp_path);
-        return Err(error.into());
+    // A failed acknowledgement does not prove that replacement did not occur.
+    // Preserve the candidate and fence this handle until reopen reconciles disk.
+    if persistence.rename(&temp_path, &journal_path).is_err() {
+        return Err(NduProjectionStoreError::Indeterminate);
     }
 
     persistence

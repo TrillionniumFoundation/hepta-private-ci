@@ -34,6 +34,7 @@ enum FaultStage {
     Write,
     FileSync,
     Rename,
+    RenameAfterCommit,
     DirectorySync,
 }
 
@@ -61,7 +62,11 @@ impl ProjectionPersistenceV1 for FaultPersistence {
         if self.stage == FaultStage::Rename {
             return Err(io::Error::other("injected NDU rename failure"));
         }
-        self.real.rename(from, to)
+        self.real.rename(from, to)?;
+        if self.stage == FaultStage::RenameAfterCommit {
+            return Err(io::Error::other("injected lost rename acknowledgement"));
+        }
+        Ok(())
     }
 
     fn sync_parent(&self, root: &Path) -> io::Result<()> {
@@ -308,8 +313,43 @@ fn full_capacity_envelope_preserves_revocation_and_restart_recovery() {
         ));
     }
 
-    let reopened = must(NduProjectionStoreV1::open(&root.0));
+    let mut reopened = must(NduProjectionStoreV1::open(&root.0));
     assert_eq!(must(reopened.entries()).len(), MAX_RECORDS / 2 + 1);
+    must(journal.revoke_projection(
+        digest("capacity-revocation"),
+        objective,
+        subject,
+        first_projection,
+    ));
+    for index in 1..(MAX_RECORDS / 2 - 2) {
+        must(journal.revoke_projection(
+            digest(&format!("capacity-revocation-{index}")),
+            objective,
+            subject,
+            digest(&format!("capacity-projection-{index}")),
+        ));
+    }
+    // The prefix fixture is semantic history, not a claim of 2048 disk writes.
+    must(reopened.restore_backup(&journal.export_bytes()));
+    drop(reopened);
+    for index in (MAX_RECORDS / 2 - 2)..(MAX_RECORDS / 2) {
+        let mut store = must(NduProjectionStoreV1::open(&root.0));
+        let identity = digest(&format!("capacity-revocation-{index}"));
+        let projection = digest(&format!("capacity-projection-{index}"));
+        let expected = must(journal.revoke_projection(identity, objective, subject, projection));
+        assert_eq!(
+            must(store.revoke_projection(identity, objective, subject, projection)),
+            expected
+        );
+        // Exact retry is idempotent even after the last available slot is used.
+        assert_eq!(
+            must(store.revoke_projection(identity, objective, subject, projection)),
+            expected
+        );
+    }
+    let reopened = must(NduProjectionStoreV1::open(&root.0));
+    assert_eq!(must(reopened.entries()).len(), MAX_RECORDS);
+    assert_eq!(must(reopened.entries()), journal.entries());
     assert_eq!(
         must(reopened.selected_projection_digest(objective, subject)),
         None
@@ -348,12 +388,14 @@ fn persistence_failpoints_reconcile_at_real_durability_boundaries() {
         FaultStage::Write,
         FaultStage::FileSync,
         FaultStage::Rename,
+        FaultStage::RenameAfterCommit,
         FaultStage::DirectorySync,
     ] {
         let root = TempRoot::new(match stage {
             FaultStage::Write => "fail-write",
             FaultStage::FileSync => "fail-file-sync",
             FaultStage::Rename => "fail-rename",
+            FaultStage::RenameAfterCommit => "fail-rename-after-commit",
             FaultStage::DirectorySync => "fail-directory-sync",
         });
         {
@@ -383,7 +425,10 @@ fn persistence_failpoints_reconcile_at_real_durability_boundaries() {
             )
             .expect_err("injected persistence failure must surface");
 
-        if stage == FaultStage::DirectorySync {
+        if matches!(
+            stage,
+            FaultStage::Rename | FaultStage::RenameAfterCommit | FaultStage::DirectorySync
+        ) {
             assert_eq!(error, NduProjectionStoreError::Indeterminate);
             assert!(store.is_indeterminate());
             assert_eq!(
@@ -401,7 +446,10 @@ fn persistence_failpoints_reconcile_at_real_durability_boundaries() {
         drop(store);
         let reopened = must(NduProjectionStoreV1::open(&root.0));
         assert!(!reopened.is_indeterminate());
-        if stage == FaultStage::DirectorySync {
+        if matches!(
+            stage,
+            FaultStage::RenameAfterCommit | FaultStage::DirectorySync
+        ) {
             assert_eq!(must(reopened.entries()).len(), 1);
         } else {
             assert!(must(reopened.entries()).is_empty());

@@ -144,3 +144,42 @@ fn expired_coefficient_profile_rejects_projection() {
         NduCoefficientProfileError::Expiry
     );
 }
+
+#[test]
+fn projection_numeric_mutation_rejects_even_with_original_metadata()
+-> Result<(), Box<dyn std::error::Error>> {
+    let covariance = covariance();
+    let conversion = conversion();
+    let admitted = admit_ndu_coefficient_profile(
+        specification(&covariance, &conversion),
+        &covariance,
+        &conversion,
+    )?;
+    let estimate = ZEstimateV1 {
+        z: vec![vec![3.0, -1.0]],
+        covariance_profile_digest: covariance.digest(),
+        condition_estimate: 1.0,
+        increment_eigenvalue_lower_estimate: 1.0,
+        maximum_relative_residual: 0.0,
+        evidence_digest: digest("numeric-integrity"),
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    let projection =
+        project_z_estimate_to_coefficient_q24(&estimate, &admitted, &conversion, 5_000)?;
+    super::validate_ndu_coefficient_projection_v1(&admitted, &projection)?;
+    for column in 0..2 {
+        let mut changed = projection.clone();
+        changed.q24_raw[0][column] ^= 1;
+        assert_eq!(
+            super::validate_ndu_coefficient_projection_v1(&admitted, &changed),
+            Err(NduCoefficientProfileError::ProfileMismatch)
+        );
+    }
+    let mut wrong_shape = projection;
+    wrong_shape.q24_raw[0].push(0);
+    assert_eq!(
+        super::validate_ndu_coefficient_projection_v1(&admitted, &wrong_shape),
+        Err(NduCoefficientProfileError::Dimension)
+    );
+    Ok(())
+}

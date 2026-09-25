@@ -8,6 +8,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -187,6 +188,11 @@ fn fixture_with_host_generation(host_generation: u64) -> Fixture {
     )
     .expect("authority");
 
+    let revocation_frontier_digest = Digest32::from_array(
+        authority
+            .revocation_head_sha256()
+            .expect("current revocation head digest"),
+    );
     let owner = NduAuthenticatedOwnerV1::open(
         store_dir.path(),
         authority.clone(),
@@ -196,7 +202,7 @@ fn fixture_with_host_generation(host_generation: u64) -> Fixture {
             host_generation,
             principal_scope_digest: digest("principal-scope"),
             fence_digest: digest("host-fence"),
-            revocation_frontier_digest: digest("revocation-frontier"),
+            revocation_frontier_digest,
         },
         policy(),
     )
@@ -409,4 +415,254 @@ fn live_revocation_frontier_blocks_previously_signed_write() {
             codex_hepta_contracts::FinalUseError::Revoked
         ))
     ));
+}
+
+#[test]
+fn unrelated_head_advance_rejects_a_stale_owner_context() {
+    let mut fixture = fixture();
+    let mutation = append_mutation("frontier-advanced");
+    let signed = fixture.sign(&mutation, "grant-frontier-advanced");
+    fixture
+        .authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .expect("advance unrelated head");
+    assert!(matches!(
+        fixture.owner.apply_mutation(&signed, mutation),
+        Err(NduOwnerError::RevocationFrontierMismatch)
+    ));
+}
+
+#[test]
+fn head_bound_product_selection_rejects_aba_without_consuming_grant()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = fixture();
+    for label in ["first", "second"] {
+        let mutation = append_mutation(label);
+        let signed = fixture.sign(&mutation, &format!("append-{label}"));
+        fixture.owner.apply_mutation(&signed, mutation)?;
+    }
+    let first = digest("first-projection");
+    let second = digest("second-projection");
+    let initial = select_mutation("initial-a", None, first);
+    let grant = fixture.sign(&initial, "initial-a");
+    fixture.owner.apply_mutation(&grant, initial)?;
+    let old_head = fixture.owner.journal_head_digest()?;
+    let stale = select_mutation("stale-b", Some(first), second);
+    let mut stale_grant = fixture.sign(&stale, "stale-b");
+    stale_grant.grant.binding = fixture.owner.final_use_binding_at_head(&stale, old_head)?;
+    stale_grant.signature = fixture
+        .signing
+        .sign(&stale_grant.grant.signing_bytes()?)
+        .to_bytes()
+        .to_vec();
+    for (label, previous, selected) in [("current-b", first, second), ("returned-a", second, first)]
+    {
+        let mutation = select_mutation(label, Some(previous), selected);
+        let grant = fixture.sign(&mutation, label);
+        fixture.owner.apply_mutation(&grant, mutation)?;
+    }
+    assert_eq!(
+        fixture
+            .owner
+            .selected_projection_digest(digest("objective"), digest("subject"))?,
+        Some(first)
+    );
+    assert_ne!(fixture.owner.journal_head_digest()?, old_head);
+    let capacity = fixture.authority.capacity()?;
+    assert!(matches!(
+        fixture
+            .owner
+            .apply_mutation_at_head(&stale_grant, stale, old_head),
+        Err(NduOwnerError::JournalHeadMismatch)
+    ));
+    assert_eq!(fixture.authority.capacity()?, capacity);
+    Ok(())
+}
+
+#[test]
+fn head_bound_commit_can_be_queried_after_lost_ack_and_reopen()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = fixture();
+    let mutation = append_mutation("lost-ack");
+    let head = fixture.owner.journal_head_digest()?;
+    let mut grant = fixture.sign(&mutation, "lost-ack");
+    grant.grant.binding = fixture.owner.final_use_binding_at_head(&mutation, head)?;
+    grant.signature = fixture
+        .signing
+        .sign(&grant.grant.signing_bytes()?)
+        .to_bytes()
+        .to_vec();
+    let entry = fixture
+        .owner
+        .apply_mutation_at_head(&grant, mutation.clone(), head)?;
+    assert!(matches!(
+        fixture.owner.apply_mutation_at_head(&grant, mutation, head),
+        Err(NduOwnerError::JournalHeadMismatch)
+    ));
+    let current_head = fixture.owner.journal_head_digest()?;
+    let capacity = fixture.authority.capacity()?;
+    assert!(matches!(
+        fixture
+            .owner
+            .apply_mutation_at_head(&grant, append_mutation("lost-ack"), current_head),
+        Err(NduOwnerError::OperationAlreadyCommitted)
+    ));
+    assert_eq!(fixture.authority.capacity()?, capacity);
+    let context = fixture.owner.context().clone();
+    let root = fixture._store_dir.path().to_path_buf();
+    drop(fixture.owner);
+    let reopened = NduAuthenticatedOwnerV1::open(root, fixture.authority, context, policy())?;
+    assert_eq!(
+        reopened.mutation_result(entry.identity_digest)?,
+        Some(entry)
+    );
+    Ok(())
+}
+
+#[test]
+fn durable_owner_binding_rejects_policy_and_principal_substitution()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = fixture();
+    let context = fixture.owner.context().clone();
+    let root = fixture._store_dir.path().to_path_buf();
+    drop(fixture.owner);
+    let mut changed = policy();
+    changed.utility_profile.profile_id = id("substituted-policy");
+    assert!(matches!(
+        NduAuthenticatedOwnerV1::open(&root, fixture.authority.clone(), context.clone(), changed),
+        Err(NduOwnerError::InvalidContext(_))
+    ));
+    let mut wrong = context.clone();
+    wrong.principal_id = id("another-principal");
+    assert!(matches!(
+        NduAuthenticatedOwnerV1::open(&root, fixture.authority.clone(), wrong, policy()),
+        Err(NduOwnerError::InvalidContext(_))
+    ));
+    let mut next_generation = context;
+    next_generation.host_generation += 1;
+    next_generation.fence_digest = digest("next-generation-fence");
+    let reopened =
+        NduAuthenticatedOwnerV1::open(root, fixture.authority, next_generation, policy())?;
+    assert_eq!(reopened.journal_head_digest()?, Digest32::ZERO);
+    Ok(())
+}
+
+#[test]
+fn stale_direct_owner_cannot_publish_an_authenticated_evaluation()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = fixture();
+    fixture.authority.update_revocations(FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 2,
+        revoked_grant_ids: BTreeSet::new(),
+    })?;
+    assert!(matches!(
+        fixture.owner.evaluate(contributions()),
+        Err(NduOwnerError::RevocationFrontierMismatch)
+    ));
+    Ok(())
+}
+
+#[test]
+fn product_lifecycle_is_rechecked_at_actual_mutation_entry()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = fixture();
+    let mutation = append_mutation("late-fence");
+    let identity = mutation.identity_digest();
+    let head = fixture.owner.journal_head_digest()?;
+    let mut grant = fixture.sign(&mutation, "late-fence");
+    grant.grant.binding = fixture.owner.final_use_binding_at_head(&mutation, head)?;
+    grant.signature = fixture
+        .signing
+        .sign(&grant.grant.signing_bytes()?)
+        .to_bytes()
+        .to_vec();
+    assert!(matches!(
+        fixture
+            .owner
+            .apply_mutation_at_head_guarded(&grant, mutation, head, || Err(
+                NduOwnerError::InvalidContext("product lifecycle fence")
+            )),
+        Err(NduOwnerError::InvalidContext("product lifecycle fence"))
+    ));
+    assert_eq!(fixture.owner.journal_head_digest()?, head);
+    assert_eq!(fixture.owner.mutation_result(identity)?, None);
+    Ok(())
+}
+
+#[test]
+fn pending_owner_binding_recovers_only_an_empty_store() -> Result<(), Box<dyn std::error::Error>> {
+    let fixture = fixture();
+    let context = fixture.owner.context().clone();
+    let root = fixture._store_dir.path().to_path_buf();
+    drop(fixture.owner);
+    std::fs::remove_file(root.join("owner-binding.v1"))?;
+    std::fs::write(root.join("owner-binding.v1.tmp"), b"interrupted-bootstrap")?;
+    let reopened = NduAuthenticatedOwnerV1::open(&root, fixture.authority, context, policy())?;
+    assert_eq!(reopened.journal_head_digest()?, Digest32::ZERO);
+    assert!(!root.join("owner-binding.v1.tmp").exists());
+    assert_eq!(std::fs::metadata(root.join("owner-binding.v1"))?.len(), 32);
+    Ok(())
+}
+
+#[test]
+fn missing_owner_binding_never_adopts_committed_history() -> Result<(), Box<dyn std::error::Error>>
+{
+    let mut fixture = fixture();
+    let mutation = append_mutation("bound-history");
+    let grant = fixture.sign(&mutation, "bound-history");
+    fixture.owner.apply_mutation(&grant, mutation)?;
+    let context = fixture.owner.context().clone();
+    let root = fixture._store_dir.path().to_path_buf();
+    drop(fixture.owner);
+    std::fs::remove_file(root.join("owner-binding.v1"))?;
+    assert!(matches!(
+        NduAuthenticatedOwnerV1::open(root, fixture.authority, context, policy()),
+        Err(NduOwnerError::InvalidContext(
+            "unbound historical store requires migration"
+        ))
+    ));
+    Ok(())
+}
+
+#[test]
+fn mutation_effect_fences_authority_updates_until_durable_entry_returns()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = fixture();
+    let mutation = append_mutation("effect-fence");
+    let identity = mutation.identity_digest();
+    let head = fixture.owner.journal_head_digest()?;
+    let mut grant = fixture.sign(&mutation, "effect-fence");
+    grant.grant.binding = fixture.owner.final_use_binding_at_head(&mutation, head)?;
+    grant.signature = fixture
+        .signing
+        .sign(&grant.grant.signing_bytes()?)
+        .to_bytes()
+        .to_vec();
+    let authority = fixture.authority.clone();
+    let update = FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 2,
+        revoked_grant_ids: BTreeSet::from(["effect-fence".to_string()]),
+    };
+    let entry = fixture
+        .owner
+        .apply_mutation_at_head_guarded(&grant, mutation, head, || {
+            assert_eq!(
+                authority.update_revocations(update.clone()),
+                Err(FinalUseError::DispatchInProgress)
+            );
+            Ok(())
+        })?;
+    assert_eq!(fixture.owner.mutation_result(identity)?, Some(entry));
+    authority.update_revocations(update)?;
+    assert!(matches!(
+        fixture.owner.evaluate(contributions()),
+        Err(NduOwnerError::RevocationFrontierMismatch)
+    ));
+    Ok(())
 }
