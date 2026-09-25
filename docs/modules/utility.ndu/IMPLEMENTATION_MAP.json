@@ -13,8 +13,8 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
-  "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
+  "productCallerState": "read_only_established_named_local_deterministic_process_candidate_production_trust_pending",
+  "productionWriterState": "named_local_deterministic_writer_candidate_production_activation_pending",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -185,6 +185,18 @@
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
           "symbol": "solver_receipt_cannot_be_rebound_to_another_subject"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "original_solve_context_cannot_be_replaced_after_numerical_execution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "unbound_legacy_solver_step_cannot_gain_original_context_after_the_fact"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solve_input_digest_binds_actual_target_and_eta_with_unchanged_claimed_context"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -466,7 +478,7 @@
       ],
       "state": "source_implemented_authenticated_owner_candidate_not_product_activated",
       "authority": "consumes_external_final_use_only",
-      "nonClaim": "utility.ndu never mints authority; named product bootstrap, selected writer enrollment and target-host activation remain external",
+      "nonClaim": "Named local-deterministic Agentd entry consumes external signatures; protected clock/off-host rollback frontier, independent acceptance and production activation remain unproved.",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
@@ -487,6 +499,42 @@
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
           "symbol": "selection_grant_binds_expected_predecessor_and_stale_selection_rejects"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "unrelated_head_advance_rejects_a_stale_owner_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "head_bound_product_selection_rejects_aba_without_consuming_grant"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "head_bound_commit_can_be_queried_after_lost_ack_and_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "durable_owner_binding_rejects_policy_and_principal_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "stale_direct_owner_cannot_publish_an_authenticated_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "product_lifecycle_is_rechecked_at_actual_mutation_entry"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "pending_owner_binding_recovers_only_an_empty_store"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "missing_owner_binding_never_adopts_committed_history"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "mutation_effect_fences_authority_updates_until_durable_entry_returns"
         }
       ],
       "designOperation": "NduAuthenticatedOwnerV1",
@@ -506,8 +554,92 @@
           "path": "codex-rs/hepta-ndu/src/projection_store.rs",
           "symbol": "NduProjectionStoreV1",
           "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
+          "symbol": "bind_owner",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
+          "symbol": "evaluation_source_context_digest",
+          "role": "source_declaration"
         }
       ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "validate_ndu_coefficient_projection_v1",
+      "nativeSymbol": "codex_hepta_ndu::validate_ndu_coefficient_projection_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
+      "inputs": [
+        "AdmittedNduCoefficientProfileV1",
+        "NduCoefficientProjectionV1 including actual Q24 matrix"
+      ],
+      "outputs": [
+        "integrity-valid projection or explicit rejection"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+          "symbol": "projection_numeric_mutation_rejects_even_with_original_metadata"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "numeric_payload_replacement_cannot_reuse_solver_or_independent_evidence"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "every_q24_coordinate_and_projection_source_is_integrity_bound"
+        }
+      ],
+      "designOperation": "validate_ndu_coefficient_projection_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+          "symbol": "canonical_ndu_stochastic_solver_digest_v1",
+          "role": "product_consumer"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "solve_preference_target_with_context_v1",
+      "nativeSymbol": "codex_hepta_ndu::solve_preference_target_with_context_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
+      "inputs": [
+        "PreferenceState",
+        "target AxisValue set",
+        "eta",
+        "NduIterationContextV1 frozen before execution"
+      ],
+      "outputs": [
+        "PreferenceState",
+        "NduSolverTerminationReceipt",
+        "source-bound NduSolverIterationReceipt list"
+      ],
+      "state": "source_implemented_context_bound_existing_kernel",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "original_solve_context_cannot_be_replaced_after_numerical_execution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "unbound_legacy_solver_step_cannot_gain_original_context_after_the_fact"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solve_input_digest_binds_actual_target_and_eta_with_unchanged_claimed_context"
+        }
+      ],
+      "designOperation": "solve_preference_target_with_context_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
       "sourcePathExists": true
     }
   ],
@@ -525,8 +657,8 @@
     "deterministicKernel": "candidate_implemented",
     "preferenceStateInvariants": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
-    "durableProjectionStore": "candidate_implemented_not_activated",
-    "authenticatedOwnerBoundary": "candidate_implemented_not_product_composed",
+    "durableProjectionStore": "candidate_with_named_local_writer_and_head_cas",
+    "authenticatedOwnerBoundary": "candidate_composed_in_named_local_process_production_trust_pending",
     "productionPolicySemanticBinding": "candidate_implemented",
     "legacyEvaluatorCallerPolicy": "candidate_implemented",
     "stochasticCoordinateQ24Conversion": "candidate_implemented",
@@ -541,7 +673,9 @@
     "requestLocalReadOnlyCaller": "established",
     "authenticatedProductionCaller": "not_established",
     "activationState": "not_established",
-    "releaseState": "not_established"
+    "releaseState": "not_established",
+    "localDeterministicProcess": "implemented_pending_exact_candidate_execution",
+    "numericProjectionIntegrity": "producer_consumer_canonical_validation_source_implemented"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -577,7 +711,7 @@
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
-    "Compose NduAuthenticatedOwnerV1 in a named authenticated product bootstrap with a selected NduProjectionStoreV1 and host-managed current fence/revocation feed before changing authenticated production product execution or writer activation claims.",
+    "Qualify the named normal Agentd local-deterministic process and complete an independently protected clock/off-host-frontier production bootstrap before changing production execution/activation claims.",
     "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
     "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
     "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
@@ -603,23 +737,36 @@
       "nonClaim": "request-local read-only/planning composition is not the authenticated production NDU owner/caller"
     },
     "authenticatedOwnerSource": {
-      "state": "candidate_implemented_not_product_composed",
+      "state": "candidate_named_local_process_composed_production_trust_pending",
       "callSurface": "codex_hepta_ndu::NduAuthenticatedOwnerV1",
       "authorityModel": "consumes host-owned FinalUseAuthority; binds principal, owner, host generation, fence, revocation frontier, frozen production policy and exact mutation",
-      "nonClaim": "source candidate is not a named product bootstrap, selected writer, target-host activation or release"
+      "nonClaim": "Explicit local-deterministic process profile is not protected-time/off-host-frontier production trust, independent acceptance or activation."
     },
     "stochasticConsumerSource": {
       "state": "candidate_implemented_in_intelligence_control_not_product_activated",
       "callSurface": "codex_hepta_intelligence::admit_ndu_stochastic_candidate_v1",
       "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient"
+    },
+    "localDeterministicProcess": {
+      "state": "candidate_implemented_pending_exact_candidate_execution",
+      "callChain": [
+        "codex-hepta-agentd::main",
+        "load_ndu_process_bootstrap_v1",
+        "AgentdConfig::with_ndu_owner_host",
+        "AgentdState::attach_ndu_owner",
+        "AgentdNduOwnerHostV1::control",
+        "NduAuthenticatedOwnerV1::apply_mutation_at_head_guarded"
+      ],
+      "authority": "external_signed_final_use_with_independent_fresh_signed_revocation_feed",
+      "nonClaim": "Uses explicit local system-clock/local-authority baseline; no off-host anti-rollback, independent efficacy or release claim."
     }
   },
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
-    "baselineMainCommit": "7ddbfac88525196e7a4b31387ceae194958275f5",
+    "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "implementationCommit": "17c88dc62340574ababb61220dec7b1672469a9d",
     "branch": "codex/utility-ndu-deterministic-closure",
-    "scope": "deterministic residual receipts, bounded persistence and revocation reserve, selection predecessor CAS, authenticated evaluation provenance, strict qualification and named-host receipt candidate",
+    "scope": "residual semantics, bounded persistence and safe revocations, full-journal/selection CAS, authenticated original context, stable durable owner binding, named normal Agentd local process, numeric coefficient payload integrity, independent exact-candidate suites",
     "exactHeadQualification": "pending_current_candidate_workflows",
     "namedHostQualification": "pending_current_candidate_receipts"
   },
@@ -628,6 +775,70 @@
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "nativeSymbol": "AgentdOwnerPortsV1::evaluate_utility",
       "state": "named_agentd_read_only_owner_port_established_authenticated_owner_not_composed"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
+      "nativeSymbol": "load_ndu_process_bootstrap_v1",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
+          "symbol": "signed_feed_advance_during_admission_rejects_physical_mutation"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_owner.rs",
+      "nativeSymbol": "AgentdNduOwnerHostV1",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_control.rs",
+      "nativeSymbol": "AgentdNduOwnerHostV1::control",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "AgentdState::response",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/client.rs",
+      "nativeSymbol": "AgentdClient::ndu_control",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "nativeSymbol": "NduControlRequestV1",
+      "state": "bounded_existing_socket_transport_no_authority"
     }
   ],
   "sourceObjects": [
