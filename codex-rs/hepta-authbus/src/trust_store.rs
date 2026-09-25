@@ -238,7 +238,7 @@ async fn insert_issuer(
     .map_err(|error| {
         if error
             .as_database_error()
-            .is_some_and(|database| database.is_unique_violation())
+            .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
         {
             AuthBusAuthorityError::AlreadyExists
         } else {

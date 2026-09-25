@@ -297,18 +297,7 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5))
-            .log_statements(LevelFilter::Off);
-        SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
+        open_durable_authority_pool(path).await
     }
 
     /// Checkpoint a private recovery candidate after all validation handles close.
@@ -380,4 +369,33 @@ impl SqliteConfig {
             .connect_with(options)
             .await
     }
+}
+
+/// Shared connection primitive for independently owned authoritative stores.
+/// This configures WAL/FULL and foreign keys, but owns no domain facts or migrations.
+pub async fn open_durable_authority_pool(path: &Path) -> Result<SqlitePool, Error> {
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect_with(options)
+        .await
+}
+
+/// A one-connection, process-local schema oracle. No authority data is copied here.
+pub async fn open_schema_reference_pool() -> Result<SqlitePool, Error> {
+    let options = SqliteConnectOptions::new()
+        .in_memory(true)
+        .foreign_keys(true)
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(options)
+        .await
 }

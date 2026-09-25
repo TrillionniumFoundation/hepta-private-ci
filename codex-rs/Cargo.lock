@@ -3532,6 +3532,7 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -3585,6 +3586,7 @@ dependencies = [
  "http 1.4.0",
  "pretty_assertions",
  "rcgen",
+ "rustix 1.1.4",
  "rustls",
  "serde",
  "serde_json",

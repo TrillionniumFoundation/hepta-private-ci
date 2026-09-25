@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.bao.dynamic-contract-probe.v1",
+  "providerCommit": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
+  "serverSha256": "09408f64d26cb86133b7610e58893bc2d20cc64559301d005751b172615b5472",
+  "providerFixtureSha256": "af5f4a3ad81f20f98bf2e327e1af35f75a53d016361002e1a8a989829e18c8c4",
+  "checks": [
+    {
+      "name": "kv_control_write",
+      "status": 200
+    },
+    {
+      "name": "kv_control_read",
+      "status": 200
+    },
+    {
+      "name": "sys/mounts/probe-db",
+      "method": "POST",
+      "status": 501,
+      "responseSha256": "05966866115ae9c1c037a252c949c6aec14c576bb70ce490be7a038559cb13e2"
+    },
+    {
+      "name": "probe-db/creds/synthetic-readonly",
+      "method": "GET",
+      "status": 404,
+      "responseSha256": "ca943783d67e0fde878be9eb79bcfeaa638add3f5013fc3a4d82b718032d6526"
+    },
+    {
+      "name": "sys/leases/lookup",
+      "method": "POST",
+      "status": 404,
+      "responseSha256": "ca943783d67e0fde878be9eb79bcfeaa638add3f5013fc3a4d82b718032d6526"
+    },
+    {
+      "name": "sys/leases/renew",
+      "method": "POST",
+      "status": 404,
+      "responseSha256": "ca943783d67e0fde878be9eb79bcfeaa638add3f5013fc3a4d82b718032d6526"
+    },
+    {
+      "name": "sys/leases/revoke",
+      "method": "POST",
+      "status": 404,
+      "responseSha256": "ca943783d67e0fde878be9eb79bcfeaa638add3f5013fc3a4d82b718032d6526"
+    }
+  ],
+  "dynamicLeaseExecutionProved": false,
+  "productionAuthority": false,
+  "status": "blocked_provider_contract",
+  "explanation": "Endpoint probes and healthy KV control are not dynamic issue/renew/revoke acceptance."
+}

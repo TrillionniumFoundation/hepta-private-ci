@@ -31,8 +31,8 @@ signing key. The host pins the public key, epoch and revocation head; request
 JSON must never supply or replace these trust inputs.
 
 After the network response and digest/version validation, the kernel checks
-current time, epoch and revocation again. The synchronous consumer executes
-under that revocation lock. It must be bounded, must not reenter the authority,
+current time, epoch and revocation again. The final live-authority check linearizes entry, and the lock is released before
+the synchronous consumer executes. The consumer must be bounded,
 and must not copy secret bytes into model context, logs or receipts. Response
 buffers and decoded secret strings are zeroized on drop; TLS/HTTP libraries
 may retain internal copies, so this is not a locked-memory guarantee.
@@ -195,3 +195,23 @@ client dependency migration, which requires its own current-head CI check.
 The full formatter was also blocked at the Bazel/Starlark step because
 `dotslash` was unavailable; Rust and Python formatting completed. These open
 workspace gates remain separate from the bounded integration results.
+
+## Current durable product ingress and migration
+
+The schema-3 owner and registered AuthBus ingress are documented in
+[`LEASE_OWNER_V3.md`](../../docs/modules/secrets.heptabao/LEASE_OWNER_V3.md).
+Use `RegisteredBaoConsumer::for_operations`, not a closure-only registration, for
+`BaoFinalUseHost::consume_kv_v2_with_authbus`. Supply the single owner registry;
+use `consumption_result` and `reconcile_consumption` for original-identity recovery.
+No recovery path automatically re-fetches or redispatches a secret.
+
+The owner now requires 0700 directories and 0600 single-link files. Historical
+schema-1/2 operation results that cannot be proved return
+`LegacyRequalificationRequired`; they are not reconstructed from the latest lease.
+A `DeliveryPrepared` receipt is not proof of consumer entry or success.
+
+Current native checks: `python3 codex-rs/hepta-bao-adapter/qa/qualify.py
+--expected-sha <HEAD> --candidate-role source-head --output <evidence-dir>`.
+The historical recorded results below/above remain bound only to their original
+candidates. The independent jobs retain failed checks instead of skipping tests
+when another module's documentation fails.

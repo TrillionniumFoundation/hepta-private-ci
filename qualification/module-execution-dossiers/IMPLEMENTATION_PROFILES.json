@@ -403,8 +403,8 @@
       "guide": "docs/modules/secrets.heptabao/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/secrets.heptabao.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "Target: request_secret_lease(reference,grant,operation); renew(lease,grant); revoke(lease,grant). Current adapter: BaoClient::consume_kv_v2 reads one string field at one exact version into a trusted consumer; it does not implement lease lifecycle APIs.",
-      "stateAndEncoding": "External authority owns values/leases. Local metadata is provider identity,lease reference,consumer scope,expiry,rotation generation and revocation state. Sealed caches are TTL-bound and excluded from datasets/exports.",
+      "apiContract": "Exact KV read; registered AuthBus consumption and recovery; schema-3 metadata lease owner. Provider-native dynamic lease dispatch is not qualified.",
+      "stateAndEncoding": "One owner-private schema-3 registry retains immutable lease/consumption results, generation fences and a durable time frontier. No provider credential or secret value is stored.",
       "linearizationAndRecovery": "Final provider request consumes payload-bound authority. Lost acknowledgement is reconciled with provider lease identity. Rotation invalidates caches; old backups cannot reset revocation.",
       "algorithmAndBounds": "Metadata<=16 KiB; one typed external operation per request; bounded renewals/TTL. Freeze external source/API pin and instance identity; no ambient provider fallback.",
       "acceptanceOracle": "Canary secret never occurs in logs/errors/receipts/datasets. Rotation plus restart rejects old generation. Provider timeout remains unknown instead of minting another unrestricted lease.",
@@ -420,19 +420,64 @@
           {
             "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
             "symbol": "binding"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+            "symbol": "prepare_issue"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+            "symbol": "prepare_renew"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+            "symbol": "prepare_revoke"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+            "symbol": "mark_unknown"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+            "symbol": "reconcile"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+            "symbol": "expire_at"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+            "symbol": "operation_result"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+            "symbol": "consume_kv_v2_with_authbus"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+            "symbol": "reconcile_consumption"
+          },
+          {
+            "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+            "symbol": "consumption_result"
           }
         ],
-        "stateAndRecovery": "BaoReadRequest binds one mount/path/version/string field, expected digest and consumer identity. The client owns no secret database or lease registry: it uses pinned direct HTTPS, a 1 MiB response cap, zeroizing buffers and kernel-owned durable nonce/revocation state.",
+        "stateAndRecovery": "One owner-private schema-3 registry retains immutable lease/consumption results, generation fences and a durable time frontier. No provider credential or secret value is stored.",
         "testFiles": [
           "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "codex-rs/hepta-bao-adapter/qa/real_service_smoke.py"
+          "codex-rs/hepta-bao-adapter/qa/real_service_smoke.py",
+          "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+          "codex-rs/hepta-bao-adapter/tests/final_use_host.rs"
         ],
         "runtimeDocuments": [
-          "codex-rs/hepta-bao-adapter/README.md"
+          "codex-rs/hepta-bao-adapter/README.md",
+          "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md"
         ],
         "remainingWork": [
-          "request_secret_lease, renew and revoke in section 2 are target operations, not implemented adapter APIs. The external HeptaBao service owns its own wider capabilities and must be assessed at its own source pin.",
-          "Bind the real registered host consumer; the callback and trust configuration are trusted host inputs. Existing recorded tests are tied to their recorded candidates, not this documentation revision."
+          "Qualify dynamic provider lease endpoints at the fixed external source pin.",
+          "Select and activate the actual protected product-process consumer.",
+          "Complete proved NotApplied compensation and pre-reservation recovery without redispatch.",
+          "Require exact-head and synthetic-merge execution evidence; acceptance and release remain ungranted."
         ]
       }
     },

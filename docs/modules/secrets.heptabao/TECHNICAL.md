@@ -16,6 +16,14 @@
 
 This stable document is the implementation guide for `secrets.heptabao`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+## Current candidate implementation contract
+
+The current lease schema, immutable results, writer fencing, bounded capacity,
+registered AuthBus product ingress and recovery semantics are specified in
+[LEASE_OWNER_V3.md](LEASE_OWNER_V3.md). This current contract supersedes older
+metadata-only lifecycle descriptions where they differ. Provider-native dynamic
+lease dispatch and normal daemon activation remain unqualified.
+
 ## 1. Identity, mission and ownership
 
 Bridge governed secret leases and metadata to the external HeptaBao authority without returning raw secrets in receipts.

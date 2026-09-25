@@ -33,3 +33,6 @@ rcgen = { workspace = true }
 rustls = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "net", "io-util", "time"] }
 tokio-rustls = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }

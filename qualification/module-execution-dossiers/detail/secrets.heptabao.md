@@ -50,3 +50,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **Source tests:** [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs), [codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs), [codex-rs/hepta-bao-adapter/qa/real_service_smoke.py](../../../codex-rs/hepta-bao-adapter/qa/real_service_smoke.py). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-bao-adapter/README.md](../../../codex-rs/hepta-bao-adapter/README.md).
 - **Remaining work:** provider-native `request_secret_lease`, `renew` and `revoke` network dispatch are not enabled yet. The repository compatibility matrix still marks `leases_dynamic_secrets` as blocking `partial`; the adapter therefore stops at durable prepared/unknown/reconciled lifecycle ownership rather than fabricating an unqualified provider API. The external HeptaBao service owns its wider capabilities and must be assessed at its exact source pin. Bind the real registered host consumer; the callback and trust configuration are trusted host inputs. Existing recorded tests are tied to their recorded candidates, not this documentation revision.
+
+## 9. Current schema-3 convergence contract
+
+The [current lease-owner contract](../../../docs/modules/secrets.heptabao/LEASE_OWNER_V3.md)
+defines the actual storage protocol and source-composed registered AuthBus path.
+`BaoFinalUseHost::consume_kv_v2_with_authbus` binds the host callback, approval,
+quota and durable consumption history. `reconcile_consumption` queries the original
+registered observer and reservation without provider redispatch. Product-process
+activation and provider-native dynamic lease qualification remain separate gaps.

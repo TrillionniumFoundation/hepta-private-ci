@@ -1,7 +1,17 @@
+fn private_directory() -> tempfile::TempDir {
+    let directory = tempfile::tempdir().unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    }
+    directory
+}
+
 use super::*;
 
 fn registry() -> (tempfile::TempDir, DurableLeaseRegistryV1) {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_directory();
     let path = directory.path().join("lease-registry.json");
     let registry = DurableLeaseRegistryV1::open(path).unwrap();
     (directory, registry)
@@ -184,7 +194,7 @@ fn expiry_is_durable_and_terminal_for_renewal() {
 
 #[test]
 fn unique_writer_rejects_parallel_open_and_allows_handoff() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_directory();
     let path = directory.path().join("lease-registry.json");
     let first = DurableLeaseRegistryV1::open(&path).unwrap();
     assert_eq!(
@@ -197,7 +207,7 @@ fn unique_writer_rejects_parallel_open_and_allows_handoff() {
 
 #[test]
 fn issue_result_binds_operation_to_provider_lease_across_restart() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_directory();
     let path = directory.path().join("lease-registry.json");
     let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
     seed_active_lease(&mut registry);
@@ -215,7 +225,7 @@ fn issue_result_binds_operation_to_provider_lease_across_restart() {
 
 #[test]
 fn unknown_and_confirmed_revoke_persist_and_reopen() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_directory();
     let path = directory.path().join("lease-registry.json");
     let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
     seed_active_lease(&mut registry);
@@ -231,11 +241,7 @@ fn unknown_and_confirmed_revoke_persist_and_reopen() {
         SecretLeaseStateV1::RenewUnknown
     );
     reopened
-        .prepare_revoke(
-            "op:revoke:persist".into(),
-            "lease:db:1".into(),
-            [33; 32],
-        )
+        .prepare_revoke("op:revoke:persist".into(), "lease:db:1".into(), [33; 32])
         .unwrap();
     reopened.mark_unknown("op:revoke:persist").unwrap();
     reopened
@@ -298,7 +304,7 @@ fn one_inflight_renew_and_generation_fence_reject_stale_observation() {
                 provider_metadata_sha256: [38; 32],
             },
         ),
-        Err(LeaseRegistryErrorV1::InvalidTransition)
+        Err(LeaseRegistryErrorV1::ObservationMismatch)
     );
     let lease = registry.lease("lease:db:1").unwrap();
     assert_eq!(lease.expires_at_unix_ms, 200_000);
@@ -314,11 +320,7 @@ fn revoke_terminal_cannot_be_revived_by_late_renew_observation() {
         .unwrap();
     registry.mark_unknown("op:renew:unknown").unwrap();
     registry
-        .prepare_revoke(
-            "op:revoke:terminal".into(),
-            "lease:db:1".into(),
-            [40; 32],
-        )
+        .prepare_revoke("op:revoke:terminal".into(), "lease:db:1".into(), [40; 32])
         .unwrap();
     registry.mark_unknown("op:revoke:terminal").unwrap();
     registry
@@ -380,7 +382,7 @@ fn expiry_terminal_cannot_be_revived_by_late_renew_observation() {
 
 #[test]
 fn legacy_v1_store_migrates_without_inventing_ambiguous_provider_facts() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_directory();
     let path = directory.path().join("lease-registry.json");
     let lease = active_lease();
     let legacy = serde_json::json!({
@@ -397,30 +399,38 @@ fn legacy_v1_store_migrates_without_inventing_ambiguous_provider_facts() {
         "leases": { "lease:db:1": lease }
     });
     std::fs::write(&path, serde_json::to_vec(&legacy).unwrap()).unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+    }
 
     let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
-    let result = registry.operation_result("op:legacy:issue").unwrap();
-    assert_eq!(result.operation.lease_id.as_deref(), Some("lease:db:1"));
-    assert!(!result.operation.legacy_binding_incomplete);
+    assert_eq!(
+        registry.operation_result("op:legacy:issue"),
+        Err(LeaseRegistryErrorV1::LegacyRequalificationRequired)
+    );
+    assert!(
+        registry
+            .operation("op:legacy:issue")
+            .unwrap()
+            .lease_id
+            .is_none()
+    );
     registry
-        .prepare_renew(
-            "op:post-migration".into(),
-            "lease:db:1".into(),
-            [46; 32],
-        )
+        .prepare_renew("op:post-migration".into(), "lease:db:1".into(), [46; 32])
         .unwrap();
     drop(registry);
 
-    let stored: serde_json::Value =
-        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(stored["schema_version"], 2);
+    let stored: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert_eq!(stored["schema_version"], 3);
     assert!(stored["revision"].as_u64().unwrap() >= 2);
     DurableLeaseRegistryV1::open(&path).unwrap();
 }
 
 #[test]
 fn capacity_rejection_preserves_previous_committed_image() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_directory();
     let path = directory.path().join("lease-registry.json");
     let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
     registry
@@ -451,11 +461,7 @@ fn capacity_rejection_preserves_previous_committed_image() {
     drop(registry);
 
     let reopened = DurableLeaseRegistryV1::open(&path).unwrap();
-    assert!(
-        reopened
-            .operation("op:durable:before-capacity")
-            .is_some()
-    );
+    assert!(reopened.operation("op:durable:before-capacity").is_some());
 }
 
 #[derive(Debug)]
@@ -483,10 +489,7 @@ impl LeaseRegistryPersistenceV1 for FailParentSyncOnce {
     }
 
     fn sync_parent(&self, parent: &Path) -> std::io::Result<()> {
-        if self
-            .fail
-            .swap(false, std::sync::atomic::Ordering::SeqCst)
-        {
+        if self.fail.swap(false, std::sync::atomic::Ordering::SeqCst) {
             Err(std::io::Error::other("injected parent sync uncertainty"))
         } else {
             self.inner.sync_parent(parent)
@@ -496,7 +499,7 @@ impl LeaseRegistryPersistenceV1 for FailParentSyncOnce {
 
 #[test]
 fn post_rename_uncertainty_fences_writer_until_reopen() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_directory();
     let path = directory.path().join("lease-registry.json");
     drop(DurableLeaseRegistryV1::open(&path).unwrap());
 
@@ -519,4 +522,234 @@ fn post_rename_uncertainty_fences_writer_until_reopen() {
 
     let reopened = DurableLeaseRegistryV1::open(&path).unwrap();
     assert!(reopened.operation("op:indeterminate").is_some());
+}
+
+#[test]
+fn completed_issue_retry_and_duplicate_observation_return_original_result() {
+    let (_directory, mut registry) = registry();
+    seed_active_lease(&mut registry);
+    let before = registry.operation_result("op:seed:issue").unwrap();
+    let retried = registry
+        .prepare_issue("op:seed:issue".into(), before.operation.semantic_sha256)
+        .unwrap();
+    assert_eq!(retried, before.operation);
+    let revision = registry.state.revision;
+    let duplicate = registry
+        .reconcile(
+            "op:seed:issue",
+            ProviderLeaseObservationV1::IssueApplied {
+                lease: active_lease(),
+            },
+        )
+        .unwrap();
+    assert_eq!(duplicate, before.operation);
+    assert_eq!(registry.state.revision, revision);
+    let mut changed = active_lease();
+    changed.consumer_id = "other-consumer".into();
+    assert_eq!(
+        registry.reconcile(
+            "op:seed:issue",
+            ProviderLeaseObservationV1::IssueApplied { lease: changed }
+        ),
+        Err(LeaseRegistryErrorV1::ObservationMismatch)
+    );
+}
+
+#[test]
+fn original_result_survives_later_renew_revoke_and_restart() {
+    let (directory, mut registry) = registry();
+    seed_active_lease(&mut registry);
+    let issued = registry.operation_result("op:seed:issue").unwrap();
+    registry
+        .prepare_renew("op:later:renew".into(), "lease:db:1".into(), [80; 32])
+        .unwrap();
+    registry
+        .reconcile(
+            "op:later:renew",
+            ProviderLeaseObservationV1::RenewApplied {
+                lease_id: "lease:db:1".into(),
+                observed_at_unix_ms: 20_000,
+                expires_at_unix_ms: 120_000,
+                renewable: true,
+                provider_metadata_sha256: [81; 32],
+            },
+        )
+        .unwrap();
+    let renewed = registry.operation_result("op:later:renew").unwrap();
+    registry
+        .prepare_revoke("op:later:revoke".into(), "lease:db:1".into(), [82; 32])
+        .unwrap();
+    registry
+        .reconcile(
+            "op:later:revoke",
+            ProviderLeaseObservationV1::RevokeApplied {
+                lease_id: "lease:db:1".into(),
+                observed_at_unix_ms: 30_000,
+                provider_metadata_sha256: [83; 32],
+            },
+        )
+        .unwrap();
+    drop(registry);
+    let reopened =
+        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+    assert_eq!(reopened.operation_result("op:seed:issue").unwrap(), issued);
+    assert_eq!(
+        reopened.operation_result("op:later:renew").unwrap(),
+        renewed
+    );
+    assert_eq!(
+        reopened.lease("lease:db:1").unwrap().state,
+        SecretLeaseStateV1::Revoked
+    );
+}
+
+#[test]
+fn ordered_provider_renewal_may_shorten_remaining_ttl() {
+    let (_directory, mut registry) = registry();
+    seed_active_lease(&mut registry);
+    registry
+        .prepare_renew("op:shorter".into(), "lease:db:1".into(), [84; 32])
+        .unwrap();
+    registry
+        .reconcile(
+            "op:shorter",
+            ProviderLeaseObservationV1::RenewApplied {
+                lease_id: "lease:db:1".into(),
+                observed_at_unix_ms: 20_000,
+                expires_at_unix_ms: 40_000,
+                renewable: true,
+                provider_metadata_sha256: [85; 32],
+            },
+        )
+        .unwrap();
+    assert_eq!(
+        registry.lease("lease:db:1").unwrap().expires_at_unix_ms,
+        40_000
+    );
+}
+
+#[test]
+fn expiration_time_frontier_is_durable_and_cannot_roll_back() {
+    let (directory, mut registry) = registry();
+    seed_active_lease(&mut registry);
+    assert_eq!(registry.expire_at(20_000).unwrap(), 0);
+    drop(registry);
+    let mut registry =
+        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+    assert_eq!(
+        registry.expire_at(19_999),
+        Err(LeaseRegistryErrorV1::InvalidTransition)
+    );
+    registry
+        .prepare_renew("op:stale-time".into(), "lease:db:1".into(), [86; 32])
+        .unwrap();
+    assert_eq!(
+        registry.reconcile(
+            "op:stale-time",
+            ProviderLeaseObservationV1::RenewApplied {
+                lease_id: "lease:db:1".into(),
+                observed_at_unix_ms: 19_999,
+                expires_at_unix_ms: 80_000,
+                renewable: true,
+                provider_metadata_sha256: [87; 32]
+            }
+        ),
+        Err(LeaseRegistryErrorV1::ObservationMismatch)
+    );
+}
+
+#[test]
+fn missing_initialized_registry_is_not_silently_reset() {
+    let (directory, registry) = registry();
+    drop(registry);
+    let path = directory.path().join("lease-registry.json");
+    std::fs::remove_file(&path).unwrap();
+    assert_eq!(
+        DurableLeaseRegistryV1::open(&path).unwrap_err(),
+        LeaseRegistryErrorV1::CorruptState
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn state_files_are_private_and_hardlinks_are_rejected() {
+    use std::os::unix::fs::PermissionsExt;
+    let (directory, registry) = registry();
+    drop(registry);
+    let path = directory.path().join("lease-registry.json");
+    assert_eq!(
+        std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+        0o600
+    );
+    std::fs::hard_link(&path, directory.path().join("alias.json")).unwrap();
+    assert_eq!(
+        DurableLeaseRegistryV1::open(&path).unwrap_err(),
+        LeaseRegistryErrorV1::Unavailable
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn removed_writer_lock_fences_original_owner() {
+    let (directory, mut registry) = registry();
+    std::fs::remove_file(directory.path().join("lease-registry.json.lock")).unwrap();
+    assert_eq!(
+        registry.prepare_issue("op:must-fence".into(), [88; 32]),
+        Err(LeaseRegistryErrorV1::Fenced)
+    );
+}
+
+#[test]
+fn uncertain_commit_cannot_be_retried_as_confirmed_success() {
+    let (directory, registry) = registry();
+    drop(registry);
+    let path = directory.path().join("lease-registry.json");
+    let mut registry =
+        DurableLeaseRegistryV1::open_with_persistence(&path, Arc::new(FailParentSyncOnce::new()))
+            .unwrap();
+    assert_eq!(
+        registry.prepare_issue("op:uncertain:same".into(), [89; 32]),
+        Err(LeaseRegistryErrorV1::CommitIndeterminate)
+    );
+    assert_eq!(
+        registry.prepare_issue("op:uncertain:same".into(), [89; 32]),
+        Err(LeaseRegistryErrorV1::Fenced)
+    );
+    assert_eq!(
+        registry.operation_result("op:uncertain:same"),
+        Err(LeaseRegistryErrorV1::Fenced)
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn writer_lock_child() {
+    let Ok(path) = std::env::var("HEPTA_BAO_WRITER_TEST_PATH") else {
+        return;
+    };
+    assert_eq!(
+        DurableLeaseRegistryV1::open(path).unwrap_err(),
+        LeaseRegistryErrorV1::WriterBusy
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn writer_lock_is_exclusive_across_processes() {
+    let (directory, _registry) = registry();
+    let prefix = module_path!()
+        .split("::")
+        .skip(1)
+        .collect::<Vec<_>>()
+        .join("::");
+    let status = std::process::Command::new(std::env::current_exe().unwrap())
+        .arg("--exact")
+        .arg(format!("{prefix}::writer_lock_child"))
+        .env(
+            "HEPTA_BAO_WRITER_TEST_PATH",
+            directory.path().join("lease-registry.json"),
+        )
+        .status()
+        .unwrap();
+    assert!(status.success());
 }

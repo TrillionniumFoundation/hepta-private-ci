@@ -24,6 +24,9 @@ pub use final_use_host::BaoFinalUseHost;
 pub use final_use_host::BaoFinalUseHostError;
 pub use final_use_host::BaoProductHostError;
 pub use final_use_host::RegisteredBaoConsumer;
+pub use final_use_host::{
+    BaoConsumerObservationV1, BaoConsumerObserverCallback, BaoOperationConsumerCallback,
+};
 pub use https_consumer::BaoAuthBusAdmission;
 pub use https_consumer::BaoAuthBusError;
 pub use https_consumer::BaoAuthBusEvidenceProvider;
@@ -42,6 +45,7 @@ pub use lease_lifecycle::LeaseRegistryErrorV1;
 pub use lease_lifecycle::ProviderLeaseObservationV1;
 pub use lease_lifecycle::SecretLeaseMetadataV1;
 pub use lease_lifecycle::SecretLeaseStateV1;
+pub use lease_lifecycle::{BaoConsumptionOperationV1, BaoConsumptionStateV1};
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
