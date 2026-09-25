@@ -22,37 +22,35 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn new() -> Self {
-        let temp = tempfile::tempdir().expect("temp root");
-        let root = temp.path().canonicalize().expect("canonical temp root");
-        let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
-        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+    fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        let temp = tempfile::tempdir()?;
+        let root = temp.path().canonicalize()?;
+        let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
+        let registry = FleetRegistry::initialize(fleet_root.clone())?;
         let workspace = root.join("workspace");
-        std::fs::create_dir(&workspace).expect("workspace");
-        let workspace = workspace.canonicalize().expect("canonical workspace");
+        std::fs::create_dir(&workspace)?;
+        let workspace = workspace.canonicalize()?;
         let manifest = AgentManifest::new(
-            AgentId::parse(AGENT_ID).expect("agent id"),
-            WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
+            AgentId::parse(AGENT_ID)?,
+            WorkspaceBinding::new(workspace, &fleet_root)?,
             ResourceBudget::local_default(),
-        )
-        .expect("manifest");
-        let layout = registry.register(manifest).expect("register agent").layout;
-        Self {
+        )?;
+        let layout = registry.register(manifest)?.layout;
+        Ok(Self {
             _temp: temp,
             layout,
-        }
+        })
     }
 }
 
-fn fence(generation: u64) -> TaskFlowFence {
-    TaskFlowFence::new(
-        AgentId::parse(AGENT_ID).expect("agent id"),
+fn fence(generation: u64) -> Result<TaskFlowFence, Box<dyn std::error::Error>> {
+    Ok(TaskFlowFence::new(
+        AgentId::parse(AGENT_ID)?,
         "agentd.automation-effect",
         generation,
         generation,
         format!("effect-fence-{generation}"),
-    )
-    .expect("fence")
+    )?)
 }
 
 fn request(generation: u64, provider: &str) -> ProductEffectPreparationRequestV1 {
@@ -72,15 +70,25 @@ fn request(generation: u64, provider: &str) -> ProductEffectPreparationRequestV1
 
 #[tokio::test]
 async fn product_prepare_is_durable_idempotent_and_freezes_the_claimed_step() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let request = request(1, "provider-effect:v1:original");
     let prepared = store
-        .prepare_product_effect_v1(&request, &fence(1), 100, 60_000)
+        .prepare_product_effect_v1(
+            &request,
+            &fence(1).expect("valid fence fixture"),
+            100,
+            60_000,
+        )
         .await
         .expect("prepare product effect");
     let replay = store
-        .prepare_product_effect_v1(&request, &fence(1), 101, 60_000)
+        .prepare_product_effect_v1(
+            &request,
+            &fence(1).expect("valid fence fixture"),
+            101,
+            60_000,
+        )
         .await
         .expect("idempotent prepare");
     assert_eq!(replay, prepared);
@@ -96,7 +104,7 @@ async fn product_prepare_is_durable_idempotent_and_freezes_the_claimed_step() {
             &prepared.intent.run_id,
             &prepared.intent.step_id,
             prepared.intent.attempt,
-            &fence(1),
+            &fence(1).expect("valid fence fixture"),
         )
         .await
         .expect("read step")
@@ -121,11 +129,16 @@ async fn product_prepare_is_durable_idempotent_and_freezes_the_claimed_step() {
 
 #[tokio::test]
 async fn product_prepare_rejects_semantic_substitution_but_retains_original_profile() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let original = request(1, "provider-effect:v1:original");
     let prepared = store
-        .prepare_product_effect_v1(&original, &fence(1), 100, 60_000)
+        .prepare_product_effect_v1(
+            &original,
+            &fence(1).expect("valid fence fixture"),
+            100,
+            60_000,
+        )
         .await
         .expect("prepare product effect");
 
@@ -133,14 +146,24 @@ async fn product_prepare_rejects_semantic_substitution_but_retains_original_prof
     changed_payload.payload_digest = Sha256Digest::for_bytes(b"substituted-provider-wire");
     assert!(matches!(
         store
-            .prepare_product_effect_v1(&changed_payload, &fence(2), 200, 60_000)
+            .prepare_product_effect_v1(
+                &changed_payload,
+                &fence(2).expect("valid fence fixture"),
+                200,
+                60_000
+            )
             .await,
         Err(TaskFlowError::Conflict(_))
     ));
 
     let rotated_host = request(2, "provider-effect:v1:rotated");
     let replay = store
-        .prepare_product_effect_v1(&rotated_host, &fence(2), 200, 60_000)
+        .prepare_product_effect_v1(
+            &rotated_host,
+            &fence(2).expect("valid fence fixture"),
+            200,
+            60_000,
+        )
         .await
         .expect("original preparation survives host rotation");
     assert_eq!(replay, prepared);
@@ -150,7 +173,7 @@ async fn product_prepare_rejects_semantic_substitution_but_retains_original_prof
 
 #[tokio::test]
 async fn interrupted_preparation_keeps_original_semantics_and_resumes_same_claim() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let pool = codex_state::open_durable_sqlite_pool(store.path(), 1)
         .await
@@ -160,7 +183,12 @@ async fn interrupted_preparation_keeps_original_semantics_and_resumes_same_claim
     let original = request(1, "provider:original");
     assert!(
         store
-            .prepare_product_effect_v1(&original, &fence(1), 100, 60_000)
+            .prepare_product_effect_v1(
+                &original,
+                &fence(1).expect("valid fence fixture"),
+                100,
+                60_000
+            )
             .await
             .is_err()
     );
@@ -174,7 +202,12 @@ async fn interrupted_preparation_keeps_original_semantics_and_resumes_same_claim
     changed.payload_digest = Sha256Digest::for_bytes(b"replacement after crash");
     assert!(
         store
-            .prepare_product_effect_v1(&changed, &fence(1), 101, 60_000)
+            .prepare_product_effect_v1(
+                &changed,
+                &fence(1).expect("valid fence fixture"),
+                101,
+                60_000
+            )
             .await
             .is_err()
     );
@@ -184,7 +217,12 @@ async fn interrupted_preparation_keeps_original_semantics_and_resumes_same_claim
         .expect("remove fault");
     pool.close().await;
     let resumed = store
-        .prepare_product_effect_v1(&original, &fence(1), 102, 60_000)
+        .prepare_product_effect_v1(
+            &original,
+            &fence(1).expect("valid fence fixture"),
+            102,
+            60_000,
+        )
         .await
         .expect("resume original step");
     assert_eq!(resumed, reserved);
@@ -235,7 +273,7 @@ async fn mutable_preparation_cannot_change_provider_key_or_burn_the_valid_grant(
             })
         }
     }
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let now = u64::try_from(
         SystemTime::now()
@@ -245,7 +283,12 @@ async fn mutable_preparation_cannot_change_provider_key_or_burn_the_valid_grant(
     )
     .expect("millis");
     let prepared = store
-        .prepare_product_effect_v1(&request(1, "provider:original"), &fence(1), now, 60_000)
+        .prepare_product_effect_v1(
+            &request(1, "provider:original"),
+            &fence(1).expect("valid fence fixture"),
+            now,
+            60_000,
+        )
         .await
         .expect("prepare");
     let binding = prepared.intent.final_use_binding().expect("binding");
@@ -299,7 +342,7 @@ async fn mutable_preparation_cannot_change_provider_key_or_burn_the_valid_grant(
                     authority: &authority,
                     intent: &forged.intent,
                     wire_payload: b"exact-provider-wire",
-                    fence: &fence(1),
+                    fence: &fence(1).expect("valid fence fixture"),
                     signed_grant: &signed,
                     expected_binding: &binding,
                     command_id: "effect-command",
@@ -318,7 +361,7 @@ async fn mutable_preparation_cannot_change_provider_key_or_burn_the_valid_grant(
                 authority: &authority,
                 intent: &prepared.intent,
                 wire_payload: b"exact-provider-wire",
-                fence: &fence(1),
+                fence: &fence(1).expect("valid fence fixture"),
                 signed_grant: &signed,
                 expected_binding: &binding,
                 command_id: "effect-command",
@@ -332,10 +375,15 @@ async fn mutable_preparation_cannot_change_provider_key_or_burn_the_valid_grant(
 
 #[tokio::test]
 async fn expired_uncontacted_preparation_reclaims_with_same_key_and_new_attempt() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let original = store
-        .prepare_product_effect_v1(&request(1, "provider:original"), &fence(1), 100, 10)
+        .prepare_product_effect_v1(
+            &request(1, "provider:original"),
+            &fence(1).expect("valid fence fixture"),
+            100,
+            10,
+        )
         .await
         .expect("prepare");
     store.close().await;
@@ -343,7 +391,12 @@ async fn expired_uncontacted_preparation_reclaims_with_same_key_and_new_attempt(
         .await
         .expect("reopen");
     let next = reopened
-        .prepare_product_effect_v1(&request(2, "provider:original"), &fence(2), 200, 60_000)
+        .prepare_product_effect_v1(
+            &request(2, "provider:original"),
+            &fence(2).expect("valid fence fixture"),
+            200,
+            60_000,
+        )
         .await
         .expect("reclaim uncontacted preparation");
     assert_eq!(next.intent.attempt, 2);
