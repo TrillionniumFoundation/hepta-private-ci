@@ -62,3 +62,43 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 }
+
+impl<D: ProcessDriver> Supervisor<D> {
+    /// After Prepared publication may have happened, no ordinary rejection or
+    /// continued unfenced replacement is permitted, including on another I/O error.
+    pub(crate) fn fence_failed_signed_publication(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        intent: &crate::signed_intent::SignedSupervisorIntent,
+        now: std::time::Instant,
+    ) -> SupervisorError {
+        slot.release_change = None;
+        slot.deferred_agent_action = None;
+        slot.restart_pending = false;
+        slot.restart_not_before = None;
+        if let Some(runtime) = slot.runtime.as_mut() {
+            runtime.fenced = true;
+            runtime.healthy = false;
+            if !matches!(runtime.phase, crate::runtime::RuntimePhase::Killing) {
+                runtime.phase = crate::runtime::RuntimePhase::Stopping { deadline: now };
+            }
+        }
+        if let Ok(recovery) = intent.with_status(SignedIntentStatus::RecoveryRequired) {
+            slot.signed_intent = Some(recovery.clone());
+            if let Ok(record) = self.record(agent_id) {
+                let _ = write_intent(record.layout.run_root(), &recovery);
+                if let Some(transaction) = slot.release_transaction.as_ref()
+                    && !transaction.phase.terminal()
+                    && let Ok(transaction) =
+                        transaction.with_phase(ReleaseTransactionPhase::RecoveryRequired)
+                {
+                    slot.release_transaction = Some(transaction.clone());
+                    let _ = write_release_transaction(record.layout.run_root(), &transaction);
+                }
+            }
+        }
+        let _ = self.kill_matrix_now(agent_id, slot);
+        SupervisorError::SignedIntentRecoveryRequired(agent_id.clone())
+    }
+}

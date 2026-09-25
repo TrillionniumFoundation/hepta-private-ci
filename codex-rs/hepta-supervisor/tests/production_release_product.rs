@@ -224,15 +224,20 @@ requires_openai_auth = false
 
     eprintln!("product-stage: forward signed grant, lose ACK and kill caller");
     let mut ack_proxy = ack_loss_proxy::AckLossProxy::start(
-        &root, registry.layout().supervisor_socket().to_path_buf(),
-    ).await?;
-    ack_proxy.crash_caller_after_forward(&request_path, &journal_path).await?;
+        &root,
+        registry.layout().supervisor_socket().to_path_buf(),
+    )
+    .await?;
+    ack_proxy
+        .crash_caller_after_forward(&request_path, &journal_path)
+        .await?;
 
     // This is a fresh caller process reading the durable journal. It may query
     // the Supervisor result, but must never send the signed mutation again.
     eprintln!("product-stage: recover signed grant");
     let recovered =
-        run_release_controller("recover", &ack_proxy.root, &request_path, &journal_path, 30).await?;
+        run_release_controller("recover", &ack_proxy.root, &request_path, &journal_path, 30)
+            .await?;
     ensure!(
         recovered.status == ProductionReleaseCallerStatusV1::Committed,
         "recovered caller status was {:?}",
@@ -279,7 +284,10 @@ requires_openai_auth = false
         client.snapshot(agent_id.clone()).await?.process_id == target_status.process_id,
         "duplicate caller request replaced the process again"
     );
-    ensure!(ack_proxy.signed_request_count() == 1, "caller recovery replayed the original signed request");
+    ensure!(
+        ack_proxy.signed_request_count() == 1,
+        "caller recovery replayed the original signed request"
+    );
     eprintln!("product-stage: signed rollback through independent caller");
     let context = client.production_mutation_context(agent_id.clone()).await?;
     let rollback_h7 = signed_h7_envelope(

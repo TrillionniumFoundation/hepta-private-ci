@@ -10,7 +10,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-import signal
 import subprocess
 import sys
 import time
@@ -98,11 +97,15 @@ def main() -> int:
                 try:
                     code = process.wait(timeout=args.command_timeout)
                 except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGKILL)
-                    process.wait()
-                    raise
-                item.update(exit_code=code, status="passed" if code == 0 else "failed")
-                statuses[name] = code == 0
+                    # Never kill Cargo/Rust jobs because a lock or overloaded
+                    # host delayed them. Preserve the deadline miss and await
+                    # completion/fixture-owned cleanup with its actual exit.
+                    item["deadline_exceeded"] = True
+                    save()
+                    code = process.wait()
+                passed = code == 0 and not item.get("deadline_exceeded", False)
+                item.update(exit_code=code, status="passed" if passed else "failed")
+                statuses[name] = passed
         except (OSError, subprocess.TimeoutExpired) as error:
             item.update(status="failed", error=str(error))
             statuses[name] = False

@@ -688,40 +688,36 @@ impl<D: ProcessDriver> Supervisor<D> {
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             if write_intent(record.layout.run_root(), &intent).is_err() {
-                // A rename may have succeeded before directory sync failed.
-                // Retain the fence even when durable publication is uncertain.
-                slot.signed_intent = Some(
-                    intent
-                        .with_status(SignedIntentStatus::RecoveryRequired)
-                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+                return Err(
+                    supervisor.fence_failed_signed_publication(agent_id, slot, &intent, now)
                 );
-                return Err(SupervisorError::SignedIntentRecoveryRequired(
-                    agent_id.clone(),
-                ));
             }
             Self::set_control_revision_for_slot(slot, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
-            if let Err(error) = supervisor.upgrade_slot(
-                agent_id,
-                slot,
-                target,
-                now,
-                explicit_rollback,
-                Some((grant.digest().clone(), expected_authority_epoch)),
-            ) {
-                let recovery = intent
-                    .with_status(SignedIntentStatus::RecoveryRequired)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                let _ = write_intent(record.layout.run_root(), &recovery);
-                slot.signed_intent = Some(recovery);
-                return Err(error);
+            if supervisor
+                .upgrade_slot(
+                    agent_id,
+                    slot,
+                    target,
+                    now,
+                    explicit_rollback,
+                    Some((grant.digest().clone(), expected_authority_epoch)),
+                )
+                .is_err()
+            {
+                return Err(
+                    supervisor.fence_failed_signed_publication(agent_id, slot, &intent, now)
+                );
             }
             let queued = intent
                 .with_status(SignedIntentStatus::Queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &queued)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            if write_intent(record.layout.run_root(), &queued).is_err() {
+                return Err(
+                    supervisor.fence_failed_signed_publication(agent_id, slot, &intent, now)
+                );
+            }
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
                 grant,

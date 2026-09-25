@@ -321,3 +321,69 @@ fn explicit_stop_interrupts_queued_release_without_spawning_after_recovery()
     }
     Ok(())
 }
+
+#[test]
+fn signed_transaction_publication_failure_after_prepared_is_recovery_required()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = admitted_release(&fleet, &fleet.first, "post-prepared-source")?;
+    let target = admitted_release(&fleet, &fleet.first, "post-prepared-target")?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start_release(&fleet.first, source.clone(), now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let record = fleet.registry.load_agent(&fleet.first)?;
+    let (envelope, h7_verifier) =
+        signed_h7_envelope(codex_hepta_memory::H7SignedArtifactTransition::Reload);
+    let signer =
+        crate::H7H89ProductionGrantSigner::from_seed("post-prepared-authority", 9, [9; 32])
+            .expect("signer");
+    let verifier = crate::H7H89ProductionGrantVerifier::new_with_h7_verifier(
+        "post-prepared-authority",
+        9,
+        signer.verifying_key(),
+        h7_verifier,
+    )
+    .expect("verifier");
+    let grant = signer
+        .sign(
+            &fleet.first,
+            source.identity(),
+            target.identity(),
+            crate::H7H89ProductionTransition::Upgrade,
+            &envelope,
+            0,
+            record.lifecycle.generation,
+            77,
+            100,
+            200,
+        )
+        .expect("grant");
+    let transaction_path = record
+        .layout
+        .run_root()
+        .join(crate::release_transaction::RELEASE_TRANSACTION_FILE);
+    std::fs::create_dir(&transaction_path)?;
+    let error = supervisor
+        .apply_production_grant(&fleet.first, &grant, &envelope, &verifier, 77, 150, now)
+        .expect_err("transaction publication must fail");
+    assert!(matches!(
+        error,
+        SupervisorError::SignedIntentRecoveryRequired(_)
+    ));
+    let intent = crate::signed_intent::read_intent(record.layout.run_root())
+        .expect("intent readable")
+        .expect("Prepared crossed");
+    assert_eq!(intent.status, SignedIntentStatus::RecoveryRequired);
+    let snapshot = supervisor.snapshot(&fleet.first).expect("fenced slot");
+    assert!(snapshot.runtime_fenced && !snapshot.healthy);
+    assert!(!snapshot.release_change_pending);
+    assert_eq!(snapshot.control_revision, 1);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.counts(&fleet.first).2, 1);
+    std::fs::remove_dir(transaction_path)?;
+    Ok(())
+}
