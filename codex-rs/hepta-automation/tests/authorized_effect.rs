@@ -1,8 +1,7 @@
 #![cfg(unix)]
 #![allow(
     clippy::expect_used,
-    reason = "final-use codex_hepta_automation::AuthorizedEffectDispatch;
-use integration fixtures should fail loudly"
+    reason = "final-use integration fixtures should fail loudly"
 )]
 
 use std::collections::BTreeSet;
@@ -17,6 +16,7 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_automation::AuthorizedEffectDispatch;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectError;

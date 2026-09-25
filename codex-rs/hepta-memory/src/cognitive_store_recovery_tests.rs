@@ -365,6 +365,10 @@ async fn revocation_after_preflight_before_recovery_use_prevents_publication() {
     let root = store.path().parent().expect("cognitive root").to_path_buf();
     store.pool.close().await;
     drop(store);
+    // Model an older owner layout: rejected authority must not even create
+    // its new generation marker before entering the trusted use boundary.
+    std::fs::remove_file(root.join(".cognitive-generation.lock"))
+        .expect("legacy owner without generation marker");
     let tree_before = capture_recovery_tree(&root);
     let owner_layout = layout(&temp, &owner);
     let authority = recovery_authority(&owner);
