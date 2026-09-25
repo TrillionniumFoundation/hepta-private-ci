@@ -1,8 +1,8 @@
 //! Governed prompt-factor and realization registry.
 //!
-//! The registry stores bounded identities and content digests, never executable
-//! instructions or ambient authority. External untrusted material cannot admit
-//! itself, and revocation is terminal and cascades to realizations.
+//! The registry stores governed identities and digest-bound realization payloads.
+//! Payload bytes are data, never ambient execution authority. External untrusted
+//! material cannot admit itself; revocation cascades to all its realizations.
 
 #![forbid(unsafe_code)]
 

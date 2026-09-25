@@ -1,4 +1,3 @@
-use crate::AgentdError;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
@@ -1075,7 +1074,7 @@ fn incomplete_intelligence_composition_is_rejected_before_startup() {
     for (runner, provider) in [(true, false), (false, true)] {
         assert!(matches!(
             super::require_intelligence_composition(runner, provider),
-            Err(AgentdError::Invalid(_))
+            Err(crate::AgentdError::Invalid(_))
         ));
     }
     assert!(super::require_intelligence_composition(false, false).is_ok());

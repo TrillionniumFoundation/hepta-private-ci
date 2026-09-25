@@ -21,6 +21,8 @@ use std::sync::Mutex;
 use std::sync::PoisonError;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_codex_adapter::PromptRuntimeAttachmentV1;
 use codex_hepta_codex_adapter::PromptRuntimeDeveloperFragmentV1;
@@ -42,6 +44,7 @@ use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 use codex_hepta_prompt_optimizer::canonical::enumerate_factors_v1;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
+use codex_hepta_prompt_registry::PromptModelTupleV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryObservationV1;
@@ -50,6 +53,14 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+#[path = "prompt_runtime_registry_lease.rs"]
+mod registry_lease;
+use registry_lease::PromptRegistryDeliveryLeaseV1;
+use registry_lease::PromptRegistryLeaseItemV1;
+
+#[path = "prompt_runtime_capacity.rs"]
+mod capacity;
+
 pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
 const MAX_DISPATCH_RECORDS: usize = 1024;
@@ -57,6 +68,7 @@ const MAX_TERMINAL_RECORDS: usize = 1024;
 const MAX_DURABLE_STATE_BYTES: u64 = 8 * 1024 * 1024;
 const PROMPT_RUNTIME_CAPABILITY_ID: &str = "agentd.prompt-runtime";
 const PROMPT_RUNTIME_SCHEMA: u32 = 1;
+const REGISTRY_LEASE_DOMAIN: &[u8] = b"hepta.agentd.prompt-registry-delivery-lease.v1\0";
 const STATE_FILE: &str = "prompt-runtime.json";
 const NEXT_FILE: &str = "prompt-runtime.next";
 const LOCK_FILE: &str = "prompt-runtime.lock";
@@ -73,6 +85,7 @@ pub enum AgentdPromptRuntimeError {
     InvalidModel,
     InvalidDeadline,
     SourceValidationFailed,
+    GenerationFenced,
     EmptySelection,
     UnsupportedPromptRole,
     PayloadNotUtf8,
@@ -109,6 +122,7 @@ struct PromptRuntimeKey {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 struct PromptRuntimeState {
     staged: BTreeMap<PromptRuntimeKey, PromptRuntimeAttachmentV1>,
+    registry_leases: BTreeMap<PromptRuntimeKey, PromptRegistryDeliveryLeaseV1>,
     dispatch_records: BTreeMap<String, PromptRuntimeDispatchRecordV1>,
     dispatch_order: VecDeque<String>,
     terminal_records: BTreeMap<String, PromptRuntimeTerminalRecordV1>,
@@ -175,6 +189,7 @@ impl AgentdPromptRuntimeOwner {
         turn_id: &str,
         model: &str,
         requested_deadline_ms: u64,
+        portfolio: &SelectedPromptPortfolioV1,
         compiled: &PromptRegistryCompiledContextV2,
     ) -> Result<PromptRuntimeStageDisposition, AgentdPromptRuntimeError> {
         validate_thread_id(thread_id)?;
@@ -190,7 +205,11 @@ impl AgentdPromptRuntimeOwner {
             return Err(AgentdPromptRuntimeError::EmptySelection);
         }
 
-        let mut effective_deadline_ms = requested_deadline_ms;
+        let mut effective_deadline_ms =
+            requested_deadline_ms.min(portfolio.receipt.valid_until_unix_ms);
+        if effective_deadline_ms == 0 {
+            return Err(AgentdPromptRuntimeError::InvalidDeadline);
+        }
         let mut fragments = Vec::with_capacity(compiled.selected_deliveries.len());
         for delivery in &compiled.selected_deliveries {
             if delivery.binding.role != PromptRoleV2::DeveloperInstruction {
@@ -219,6 +238,8 @@ impl AgentdPromptRuntimeOwner {
             fragments,
         )
         .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?;
+        let registry_lease =
+            PromptRegistryDeliveryLeaseV1::from_compiled(portfolio, compiled, &attachment)?;
 
         let key = PromptRuntimeKey {
             thread_id: thread_id.to_owned(),
@@ -226,7 +247,9 @@ impl AgentdPromptRuntimeOwner {
         };
         self.commit_state(|state| {
             if let Some(existing) = state.staged.get(&key) {
-                return if existing == &attachment {
+                return if existing == &attachment
+                    && state.registry_leases.get(&key) == Some(&registry_lease)
+                {
                     Ok(PromptRuntimeStageDisposition::Unchanged)
                 } else {
                     Err(AgentdPromptRuntimeError::StageConflict)
@@ -242,7 +265,8 @@ impl AgentdPromptRuntimeOwner {
             if state.staged.len() >= MAX_STAGED_TURNS {
                 return Err(AgentdPromptRuntimeError::CapacityExceeded);
             }
-            state.staged.insert(key, attachment);
+            state.staged.insert(key.clone(), attachment);
+            state.registry_leases.insert(key, registry_lease);
             Ok(PromptRuntimeStageDisposition::Inserted)
         })
     }
@@ -264,7 +288,9 @@ impl AgentdPromptRuntimeOwner {
             if has_unresolved_dispatch(state, &key) {
                 return Err(AgentdPromptRuntimeError::IndeterminatePending);
             }
-            Ok(state.staged.remove(&key).is_some())
+            let removed = state.staged.remove(&key).is_some();
+            state.registry_leases.remove(&key);
+            Ok(removed)
         })
     }
 
@@ -306,28 +332,6 @@ impl AgentdPromptRuntimeOwner {
             .len())
     }
 
-    pub fn host(self: &Arc<Self>) -> Result<PromptRuntimeHost, AgentdPromptRuntimeError> {
-        let prepare_owner = Arc::clone(self);
-        let dispatch_owner = Arc::clone(self);
-        let record_owner = Arc::clone(self);
-        PromptRuntimeHost::new(
-            PROMPT_RUNTIME_CAPABILITY_ID,
-            move |request: PromptRuntimePrepareRequest| -> PromptRuntimePrepareFuture {
-                let owner = Arc::clone(&prepare_owner);
-                Box::pin(async move { owner.prepare(request) })
-            },
-            move |record: PromptRuntimeDispatchRecordV1| -> PromptRuntimeDispatchFuture {
-                let owner = Arc::clone(&dispatch_owner);
-                Box::pin(async move { owner.record_dispatch(record) })
-            },
-            move |record: PromptRuntimeTerminalRecordV1| -> PromptRuntimeRecordFuture {
-                let owner = Arc::clone(&record_owner);
-                Box::pin(async move { owner.record(record) })
-            },
-        )
-        .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))
-    }
-
     fn ensure_available(&self) -> Result<(), AgentdPromptRuntimeError> {
         if self.poisoned.load(Ordering::Acquire) {
             return Err(AgentdPromptRuntimeError::ReopenRequired);
@@ -363,30 +367,84 @@ impl AgentdPromptRuntimeOwner {
         Ok(result)
     }
 
-    fn prepare(
+    fn prepare_source(
         &self,
         request: PromptRuntimePrepareRequest,
-    ) -> Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError> {
-        self.ensure_available().map_err(host_error)?;
-        validate_thread_id(&request.thread_id).map_err(host_error)?;
-        validate_turn_id(&request.turn_id).map_err(host_error)?;
+    ) -> Result<
+        Option<(
+            PromptRuntimeAttachmentV1,
+            Option<PromptRegistryDeliveryLeaseV1>,
+        )>,
+        AgentdPromptRuntimeError,
+    > {
+        self.ensure_available()?;
+        validate_thread_id(&request.thread_id)?;
+        validate_turn_id(&request.turn_id)?;
         let key = PromptRuntimeKey {
             thread_id: request.thread_id,
             turn_id: request.turn_id,
         };
-        let state = self.state.lock().map_err(|_| {
-            PromptRuntimeHostError::new(
-                "agentd_prompt_runtime_state_poisoned",
-                "Agentd prompt runtime state lock is poisoned",
-            )
-        })?;
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?;
         if has_unresolved_dispatch(&state, &key) {
-            return Err(PromptRuntimeHostError::new(
-                "agentd_prompt_runtime_indeterminate_pending",
-                "a provider attempt may have crossed the effect boundary and requires reconciliation",
-            ));
+            return Err(AgentdPromptRuntimeError::IndeterminatePending);
         }
-        Ok(state.staged.get(&key).cloned())
+        if !state.staged.contains_key(&key)
+            && state
+                .dispatch_records
+                .values()
+                .any(|dispatch| dispatch_key(dispatch) == key)
+        {
+            // A completed or explicitly cleared turn is not an unconfigured
+            // prompt turn. Returning None would silently bypass its history.
+            return Err(AgentdPromptRuntimeError::StageConflict);
+        }
+        Ok(state.staged.get(&key).cloned().map(|attachment| {
+            let lease = state.registry_leases.get(&key).cloned();
+            (attachment, lease)
+        }))
+    }
+
+    #[cfg(test)]
+    fn prepare(
+        &self,
+        request: PromptRuntimePrepareRequest,
+    ) -> Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError> {
+        self.prepare_source(request)
+            .map(|value| value.map(|(attachment, _)| attachment))
+            .map_err(host_error)
+    }
+
+    fn source_for_dispatch(
+        &self,
+        record: &PromptRuntimeDispatchRecordV1,
+    ) -> Result<
+        (
+            PromptRuntimeAttachmentV1,
+            Option<PromptRegistryDeliveryLeaseV1>,
+        ),
+        AgentdPromptRuntimeError,
+    > {
+        self.ensure_available()?;
+        let key = dispatch_key(record);
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?;
+        if has_unresolved_dispatch(&state, &key) {
+            return Err(AgentdPromptRuntimeError::IndeterminatePending);
+        }
+        let attachment = state
+            .staged
+            .get(&key)
+            .cloned()
+            .ok_or(AgentdPromptRuntimeError::TerminalBindingMismatch)?;
+        if !dispatch_matches_attachment(record, &attachment) {
+            return Err(AgentdPromptRuntimeError::TerminalBindingMismatch);
+        }
+        Ok((attachment, state.registry_leases.get(&key).cloned()))
     }
 
     fn record_dispatch(
@@ -458,6 +516,7 @@ impl AgentdPromptRuntimeOwner {
                     .insert(record.attempt_id.clone(), record.clone());
                 if terminal_clears_stage(&record) {
                     state.staged.remove(&key);
+                    state.registry_leases.remove(&key);
                 }
                 return Ok(());
             }
@@ -471,6 +530,7 @@ impl AgentdPromptRuntimeOwner {
             state.terminal_order.push_back(record.attempt_id.clone());
             if terminal_clears_stage(&record) {
                 state.staged.remove(&key);
+                state.registry_leases.remove(&key);
             }
             Ok(())
         })
@@ -529,12 +589,23 @@ impl fmt::Debug for AgentdPromptPipelineOwner {
 impl AgentdPromptPipelineOwner {
     pub fn open_state_dirs(
         registry_directory: &Path,
+        registry_recovery_checkpoint: Option<&Path>,
+        registry_recovery_owner_id: &str,
         runtime_directory: &Path,
         maximum_registry_records: usize,
     ) -> Result<Self, AgentdPromptPipelineError> {
-        let registry =
-            DurablePromptRegistry::open_state_dir(registry_directory, maximum_registry_records)
-                .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
+        let registry = match registry_recovery_checkpoint {
+            Some(checkpoint) => DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+                registry_directory,
+                checkpoint,
+                registry_recovery_owner_id,
+                maximum_registry_records,
+            ),
+            None => {
+                DurablePromptRegistry::open_state_dir(registry_directory, maximum_registry_records)
+            }
+        }
+        .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
         Ok(Self {
@@ -546,6 +617,168 @@ impl AgentdPromptPipelineOwner {
     #[must_use]
     pub fn runtime_owner(&self) -> Arc<AgentdPromptRuntimeOwner> {
         Arc::clone(&self.runtime)
+    }
+
+    /// Compose the only product prompt host. Preparation checks current source
+    /// state for early rejection; dispatch repeats the check while holding the
+    /// registry owner lock through durable dispatch-claim publication. A
+    /// revocation ordered before this claim therefore blocks the physical send.
+    pub fn host(
+        self: &Arc<Self>,
+        current_generation: impl Fn() -> Result<(), AgentdPromptRuntimeError> + Send + Sync + 'static,
+    ) -> Result<PromptRuntimeHost, AgentdPromptRuntimeError> {
+        let generation = Arc::new(current_generation);
+        let prepare_generation = Arc::clone(&generation);
+        let prepare_owner = Arc::clone(self);
+        let dispatch_owner = Arc::clone(self);
+        let record_owner = Arc::clone(self);
+        PromptRuntimeHost::new(
+            PROMPT_RUNTIME_CAPABILITY_ID,
+            move |request: PromptRuntimePrepareRequest| -> PromptRuntimePrepareFuture {
+                let owner = Arc::clone(&prepare_owner);
+                let generation = Arc::clone(&prepare_generation);
+                Box::pin(async move {
+                    generation().map_err(host_error)?;
+                    owner.prepare_for_provider(request)
+                })
+            },
+            move |record: PromptRuntimeDispatchRecordV1| -> PromptRuntimeDispatchFuture {
+                let owner = Arc::clone(&dispatch_owner);
+                let generation = Arc::clone(&generation);
+                Box::pin(async move {
+                    owner.admit_provider_dispatch_with_fence(record, || generation())
+                })
+            },
+            move |record: PromptRuntimeTerminalRecordV1| -> PromptRuntimeRecordFuture {
+                let owner = Arc::clone(&record_owner);
+                Box::pin(async move { owner.runtime.record(record) })
+            },
+        )
+        .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))
+    }
+
+    fn prepare_for_provider(
+        &self,
+        request: PromptRuntimePrepareRequest,
+    ) -> Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError> {
+        let Some((attachment, lease)) = self.runtime.prepare_source(request).map_err(host_error)?
+        else {
+            return Ok(None);
+        };
+        let lease = lease.ok_or_else(|| {
+            PromptRuntimeHostError::new(
+                "agentd_prompt_registry_lease_missing",
+                "staged prompt predates registry-currentness enforcement and cannot be sent",
+            )
+        })?;
+        let registry = self.registry.lock().map_err(|_| {
+            PromptRuntimeHostError::new(
+                "agentd_prompt_registry_state_poisoned",
+                "prompt registry owner lock is poisoned",
+            )
+        })?;
+        let now_unix_ms = current_unix_ms().map_err(host_error)?;
+        lease
+            .validate_current(&registry, &attachment, now_unix_ms)
+            .map_err(host_error)?;
+        Ok(Some(attachment))
+    }
+
+    #[cfg(test)]
+    fn admit_provider_dispatch(
+        &self,
+        record: PromptRuntimeDispatchRecordV1,
+    ) -> Result<(), PromptRuntimeHostError> {
+        self.admit_provider_dispatch_with_fence(record, || Ok(()))
+    }
+
+    fn admit_provider_dispatch_with_fence(
+        &self,
+        record: PromptRuntimeDispatchRecordV1,
+        current_generation: impl Fn() -> Result<(), AgentdPromptRuntimeError>,
+    ) -> Result<(), PromptRuntimeHostError> {
+        record.validate().map_err(|error| {
+            PromptRuntimeHostError::new("agentd_prompt_runtime_dispatch_invalid", error.to_string())
+        })?;
+        let (attachment, lease) = self
+            .runtime
+            .source_for_dispatch(&record)
+            .map_err(host_error)?;
+        let lease = lease.ok_or_else(|| {
+            PromptRuntimeHostError::new(
+                "agentd_prompt_registry_lease_missing",
+                "staged prompt predates registry-currentness enforcement and cannot be sent",
+            )
+        })?;
+        // Keep this owner lock until the durable dispatch claim succeeds. All
+        // registry lifecycle writes use the same mutex, defining the send versus
+        // revocation order without a query-then-send gap.
+        let registry = self.registry.lock().map_err(|_| {
+            PromptRuntimeHostError::new(
+                "agentd_prompt_registry_state_poisoned",
+                "prompt registry owner lock is poisoned",
+            )
+        })?;
+        // Check the existing Agentd/Fleet lifecycle under the same registry
+        // fence; a live factor is not permission for a retired Agent generation.
+        current_generation().map_err(host_error)?;
+        // The caller timestamp precedes async scheduling and lock acquisition.
+        // Re-read time under the registry lock, including queued expiry; a clock
+        // rollback must not make an old dispatch claim current again.
+        let now_unix_ms = current_unix_ms().map_err(host_error)?;
+        if now_unix_ms < record.dispatched_unix_ms {
+            return Err(host_error(AgentdPromptRuntimeError::InvalidDeadline));
+        }
+        lease
+            .validate_current(&registry, &attachment, now_unix_ms)
+            .map_err(host_error)?;
+        // A duplicate durable record is useful for observation deduplication,
+        // but never a second permission to cross the physical send boundary.
+        // Serialize this decision with all product admissions using this lock.
+        if self
+            .runtime
+            .dispatch_record(&record.attempt_id)
+            .map_err(host_error)?
+            .is_some()
+        {
+            return Err(host_error(AgentdPromptRuntimeError::IndeterminatePending));
+        }
+        self.runtime.record_dispatch(record.clone())?;
+        // fsync and publication can themselves wait beyond the deadline or an
+        // Agent-generation fence. We are still inside the physical policy hook:
+        // no provider send has been permitted yet, so this is a definite local
+        // NotDispatched observation, never fabricated provider success.
+        let generation_after_commit = current_generation();
+        let observed_unix_ms = current_unix_ms().map_err(host_error)?;
+        if observed_unix_ms < record.dispatched_unix_ms {
+            // With an untrusted clock relationship retain the unresolved claim;
+            // do not fabricate a future terminal timestamp to resolve it.
+            return Err(host_error(AgentdPromptRuntimeError::InvalidDeadline));
+        }
+        let rejected = generation_after_commit.err().or_else(|| {
+            (observed_unix_ms >= lease.valid_until_unix_ms)
+                .then_some(AgentdPromptRuntimeError::InvalidDeadline)
+        });
+        if let Some(error) = rejected {
+            self.runtime.record(PromptRuntimeTerminalRecordV1 {
+                compilation_id: record.compilation_id,
+                context_attachment_digest: record.context_attachment_digest,
+                context_payload_digest: record.context_payload_digest,
+                source_binding_digest: record.source_binding_digest,
+                thread_id: record.thread_id,
+                turn_id: record.turn_id,
+                attempt_id: record.attempt_id,
+                request_binding_id: record.request_binding_id,
+                provider_request_digest: record.provider_request_digest,
+                outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched,
+                end_turn: None,
+                terminal_reason_code: Some("prompt_final_admission_expired_or_fenced".to_owned()),
+                delivery_observation: None,
+                observed_unix_ms,
+            })?;
+            return Err(host_error(error));
+        }
+        Ok(())
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.
@@ -589,6 +822,7 @@ impl AgentdPromptPipelineOwner {
                 turn_id,
                 model,
                 requested_deadline_ms,
+                portfolio,
                 &compiled,
             )
             .map_err(AgentdPromptPipelineError::Stage)
@@ -654,6 +888,7 @@ fn has_unresolved_dispatch(state: &PromptRuntimeState, key: &PromptRuntimeKey) -
 
 fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeError> {
     if state.staged.len() > MAX_STAGED_TURNS
+        || state.registry_leases.len() > state.staged.len()
         || state.dispatch_records.len() > MAX_DISPATCH_RECORDS
         || state.terminal_records.len() > MAX_TERMINAL_RECORDS
         || state.dispatch_order.len() != state.dispatch_records.len()
@@ -665,6 +900,18 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
         attachment
             .validate()
             .map_err(|_| AgentdPromptRuntimeError::CorruptState)?;
+    }
+    for (key, lease) in &state.registry_leases {
+        let attachment = state
+            .staged
+            .get(key)
+            .ok_or(AgentdPromptRuntimeError::CorruptState)?;
+        lease
+            .validate()
+            .map_err(|_| AgentdPromptRuntimeError::CorruptState)?;
+        if lease.attachment_source_binding_digest != attachment.source_binding_digest {
+            return Err(AgentdPromptRuntimeError::CorruptState);
+        }
     }
 
     let dispatch_order = state
@@ -719,7 +966,13 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
         if unresolved && finalized_keys.contains(&key) {
             return Err(AgentdPromptRuntimeError::CorruptState);
         }
-        let stage_required = unresolved || !finalized_keys.contains(&key);
+        if finalized_keys.contains(&key) && state.staged.contains_key(&key) {
+            return Err(AgentdPromptRuntimeError::CorruptState);
+        }
+        // Explicit cleanup of a definitively observed, non-final turn is safe:
+        // its retained dispatch history prevents restaging or a no-prompt retry.
+        // Possible sends still require their original stage for reconciliation.
+        let stage_required = unresolved || state.staged.contains_key(&key);
         if stage_required {
             let Some(staged) = state.staged.get(&key) else {
                 return Err(AgentdPromptRuntimeError::CorruptState);
@@ -765,6 +1018,46 @@ struct StoredStage {
     thread_id: String,
     turn_id: String,
     attachment: StoredAttachment,
+    /// Schema-1 states written before currentness enforcement omit this field.
+    /// They remain inspectable but the product host refuses to send them.
+    #[serde(default)]
+    registry_lease: Option<StoredRegistryLease>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StoredRegistryLease {
+    compile_snapshot_digest: [u8; 32],
+    compatible_set_digest: [u8; 32],
+    portfolio_receipt_digest: [u8; 32],
+    generation_vector_digest: [u8; 32],
+    model_tuple: StoredPromptModelTuple,
+    valid_until_unix_ms: u64,
+    attachment_source_binding_digest: [u8; 32],
+    selected: Vec<StoredRegistryLeaseItem>,
+    lease_digest: [u8; 32],
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StoredPromptModelTuple {
+    model_id: String,
+    model_version: String,
+    model_digest: [u8; 32],
+    tokenizer_digest: [u8; 32],
+    template_digest: [u8; 32],
+    tool_schema_digest: [u8; 32],
+    context_profile_digest: [u8; 32],
+    locale_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StoredRegistryLeaseItem {
+    factor_id: String,
+    realization_id: String,
+    binding_digest: [u8; 32],
+    payload_digest: [u8; 32],
 }
 
 #[derive(Serialize, Deserialize)]
@@ -828,6 +1121,8 @@ struct PromptRuntimeStore {
     root: PathBuf,
     _lock: File,
     #[cfg(test)]
+    metadata_limit: std::sync::atomic::AtomicU64,
+    #[cfg(test)]
     fail_directory_sync_after_rename_once: AtomicBool,
 }
 
@@ -848,6 +1143,8 @@ impl PromptRuntimeStore {
         let store = Self {
             root: directory.to_path_buf(),
             _lock: lock,
+            #[cfg(test)]
+            metadata_limit: std::sync::atomic::AtomicU64::new(MAX_DURABLE_STATE_BYTES),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: AtomicBool::new(false),
         };
@@ -874,9 +1171,11 @@ impl PromptRuntimeStore {
         let stored = stored_state(state);
         let bytes =
             serde_json::to_vec(&stored).map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
-            return Err(AgentdPromptRuntimeError::CapacityExceeded);
-        }
+        #[cfg(test)]
+        let limit = self.metadata_limit.load(Ordering::Acquire);
+        #[cfg(not(test))]
+        let limit = MAX_DURABLE_STATE_BYTES;
+        capacity::admit(state, bytes.len(), limit)?;
         let next_path = self.root.join(NEXT_FILE);
         let mut next = OpenOptions::new()
             .create(true)
@@ -911,6 +1210,7 @@ fn stored_state(state: &PromptRuntimeState) -> StoredPromptRuntimeState {
                 thread_id: key.thread_id.clone(),
                 turn_id: key.turn_id.clone(),
                 attachment: stored_attachment(attachment),
+                registry_lease: state.registry_leases.get(key).map(stored_registry_lease),
             })
             .collect(),
         dispatches: state
@@ -945,7 +1245,16 @@ fn restore_state(
             turn_id: stored_stage.turn_id,
         };
         let attachment = restore_attachment(stored_stage.attachment)?;
-        if state.staged.insert(key, attachment).is_some() {
+        let registry_lease = stored_stage
+            .registry_lease
+            .map(restore_registry_lease)
+            .transpose()?;
+        if state.staged.insert(key.clone(), attachment).is_some() {
+            return Err(AgentdPromptRuntimeError::CorruptState);
+        }
+        if let Some(lease) = registry_lease
+            && state.registry_leases.insert(key, lease).is_some()
+        {
             return Err(AgentdPromptRuntimeError::CorruptState);
         }
     }
@@ -975,6 +1284,80 @@ fn restore_state(
     }
     validate_state(&state)?;
     Ok(state)
+}
+
+fn stored_registry_lease(value: &PromptRegistryDeliveryLeaseV1) -> StoredRegistryLease {
+    StoredRegistryLease {
+        compile_snapshot_digest: value.compile_snapshot_digest.into_array(),
+        compatible_set_digest: value.compatible_set_digest.into_array(),
+        portfolio_receipt_digest: value.portfolio_receipt_digest.into_array(),
+        generation_vector_digest: value.generation_vector_digest.into_array(),
+        model_tuple: StoredPromptModelTuple {
+            model_id: value.model_tuple.model_id.to_string(),
+            model_version: value.model_tuple.model_version.clone(),
+            model_digest: value.model_tuple.model_digest.into_array(),
+            tokenizer_digest: value.model_tuple.tokenizer_digest.into_array(),
+            template_digest: value.model_tuple.template_digest.into_array(),
+            tool_schema_digest: value.model_tuple.tool_schema_digest.into_array(),
+            context_profile_digest: value.model_tuple.context_profile_digest.into_array(),
+            locale_id: value.model_tuple.locale_id.to_string(),
+        },
+        valid_until_unix_ms: value.valid_until_unix_ms,
+        attachment_source_binding_digest: value.attachment_source_binding_digest.into_array(),
+        selected: value
+            .selected
+            .iter()
+            .map(|item| StoredRegistryLeaseItem {
+                factor_id: item.factor_id.to_string(),
+                realization_id: item.realization_id.to_string(),
+                binding_digest: item.binding_digest.into_array(),
+                payload_digest: item.payload_digest.into_array(),
+            })
+            .collect(),
+        lease_digest: value.lease_digest.into_array(),
+    }
+}
+
+fn restore_registry_lease(
+    stored: StoredRegistryLease,
+) -> Result<PromptRegistryDeliveryLeaseV1, AgentdPromptRuntimeError> {
+    let value = PromptRegistryDeliveryLeaseV1 {
+        compile_snapshot_digest: Digest32::from_array(stored.compile_snapshot_digest),
+        compatible_set_digest: Digest32::from_array(stored.compatible_set_digest),
+        portfolio_receipt_digest: Digest32::from_array(stored.portfolio_receipt_digest),
+        generation_vector_digest: Digest32::from_array(stored.generation_vector_digest),
+        model_tuple: PromptModelTupleV2 {
+            model_id: parse_id(stored.model_tuple.model_id)?,
+            model_version: stored.model_tuple.model_version,
+            model_digest: Digest32::from_array(stored.model_tuple.model_digest),
+            tokenizer_digest: Digest32::from_array(stored.model_tuple.tokenizer_digest),
+            template_digest: Digest32::from_array(stored.model_tuple.template_digest),
+            tool_schema_digest: Digest32::from_array(stored.model_tuple.tool_schema_digest),
+            context_profile_digest: Digest32::from_array(stored.model_tuple.context_profile_digest),
+            locale_id: parse_id(stored.model_tuple.locale_id)?,
+        },
+        valid_until_unix_ms: stored.valid_until_unix_ms,
+        attachment_source_binding_digest: Digest32::from_array(
+            stored.attachment_source_binding_digest,
+        ),
+        selected: stored
+            .selected
+            .into_iter()
+            .map(|item| {
+                Ok(PromptRegistryLeaseItemV1 {
+                    factor_id: parse_id(item.factor_id)?,
+                    realization_id: parse_id(item.realization_id)?,
+                    binding_digest: Digest32::from_array(item.binding_digest),
+                    payload_digest: Digest32::from_array(item.payload_digest),
+                })
+            })
+            .collect::<Result<Vec<_>, AgentdPromptRuntimeError>>()?,
+        lease_digest: Digest32::from_array(stored.lease_digest),
+    };
+    value
+        .validate()
+        .map_err(|_| AgentdPromptRuntimeError::CorruptState)?;
+    Ok(value)
 }
 
 fn stored_attachment(value: &PromptRuntimeAttachmentV1) -> StoredAttachment {
@@ -1213,6 +1596,20 @@ fn sync_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
 #[cfg(not(unix))]
 fn sync_state_directory(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
+}
+
+fn current_unix_ms() -> Result<u64, AgentdPromptRuntimeError> {
+    let value = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdPromptRuntimeError::Unavailable)?
+        .as_millis();
+    u64::try_from(value).map_err(|_| AgentdPromptRuntimeError::Unavailable)
+}
+
+fn push_runtime_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    bytes.extend_from_slice(&u64::try_from(raw.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(raw);
 }
 
 fn validate_thread_id(thread_id: &str) -> Result<(), AgentdPromptRuntimeError> {

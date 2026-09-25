@@ -105,10 +105,21 @@ pub(crate) fn app_server_runtime_options_for_agent(
     cognitive_runtime: CognitiveRuntime,
     production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
+    let prompt_generation = Arc::downgrade(&state);
     let prompt_runtime_host = state
         .prompt_pipeline_owner()
-        .runtime_owner()
-        .host()
+        .host(move || {
+            let state = prompt_generation
+                .upgrade()
+                .ok_or(crate::AgentdPromptRuntimeError::GenerationFenced)?;
+            if !state
+                .automation_admission_ready()
+                .map_err(|_| crate::AgentdPromptRuntimeError::GenerationFenced)?
+            {
+                return Err(crate::AgentdPromptRuntimeError::GenerationFenced);
+            }
+            Ok(())
+        })
         .map_err(std::io::Error::other)?;
     let graceful_drain = state.app_server_drain_handle();
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);

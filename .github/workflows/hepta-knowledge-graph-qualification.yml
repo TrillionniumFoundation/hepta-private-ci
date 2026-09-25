@@ -45,7 +45,9 @@ permissions:
 
 concurrency:
   group: hepta-knowledge-graph-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Let the pinned candidate finish; later pushes must not starve qualification.
+  # Existing PR grouping keeps a bounded queue. Receipts remain SHA-specific.
+  cancel-in-progress: false
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
