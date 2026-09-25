@@ -20,6 +20,9 @@ use tempfile::TempDir;
 #[tokio::test]
 #[ignore = "explicit local fan-out measurement with real SQLite owners"]
 async fn federation_product_local_capacity_measurement() {
+    let records_per_peer = std::env::var("HEPTA_FEDERATION_MEASUREMENT_RECORDS")
+        .map_or(8, |value| value.parse::<usize>().expect("record count"));
+    assert!((1..=128).contains(&records_per_peer));
     let temp = TempDir::new().expect("temporary owners");
     let consumer_id = agent_id(240);
     let consumer = CognitiveStore::open(&layout(&temp, &consumer_id))
@@ -34,7 +37,7 @@ async fn federation_product_local_capacity_measurement() {
         let owner_layout = layout(&temp, &owner_id);
         let store = CognitiveStore::open(&owner_layout).await.expect("owner");
         let owner_access = CognitiveAccess::agent_private(owner_id);
-        for record in 0..8 {
+        for record in 0..records_per_peer {
             let key = format!("capacity-{record}");
             let citation = store
                 .append_source(
@@ -119,17 +122,44 @@ async fn federation_product_local_capacity_measurement() {
         }
         recall_us.sort_unstable();
         final_use_us.sort_unstable();
+        let database_bytes: u64 = owners
+            .iter()
+            .map(|owner| {
+                std::fs::metadata(owner.path())
+                    .expect("owner database size")
+                    .len()
+            })
+            .sum();
+        let wal_bytes: u64 = owners
+            .iter()
+            .map(|owner| {
+                let mut path = owner.path().as_os_str().to_os_string();
+                path.push("-wal");
+                std::fs::metadata(std::path::PathBuf::from(path)).map_or(0, |m| m.len())
+            })
+            .sum();
+        let peak_rss_kib = std::fs::read_to_string("/proc/self/status")
+            .ok()
+            .and_then(|status| {
+                status
+                    .lines()
+                    .find(|line| line.starts_with("VmHWM:"))
+                    .and_then(|line| line.split_whitespace().nth(1))
+                    .and_then(|value| value.parse::<u64>().ok())
+            });
         println!(
             "FEDERATION_LOCAL_MEASUREMENT {}",
             serde_json::json!({
                 "profile":"local-sqlite-debug-smoke-not-production-slo",
-                "peers":count,"records_per_peer":8,"samples":100,
+                "peers":count,"records_per_peer":records_per_peer,"samples":100,
                 "recall_us":recall_us,"final_use_us":final_use_us,
                 "recall_p50_us":recall_us[49],"recall_p95_us":recall_us[94],
                 "recall_p99_us":recall_us[98],"recall_max_us":recall_us[99],
                 "final_use_p50_us":final_use_us[49],"final_use_p95_us":final_use_us[94],
                 "final_use_p99_us":final_use_us[98],"final_use_max_us":final_use_us[99],
-                "all_peers_completed":true,"failed_peers":0
+                "all_peers_completed":true,"failed_peers":0,
+                "database_bytes":database_bytes,"wal_bytes":wal_bytes,"peak_rss_kib":peak_rss_kib,
+                "os":std::env::consts::OS,"arch":std::env::consts::ARCH
             })
         );
     }
