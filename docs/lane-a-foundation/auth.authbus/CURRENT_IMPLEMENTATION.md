@@ -97,8 +97,9 @@ The following are not established by this candidate:
 
 - a production deployment of independently governed trusted-time/checkpoint and
   issuer-key services;
-- a production-durable `kernel.operations` transaction owner. AuthBus binds the
-  supplied stable operation ID but does not replace that owner;
+- qualification of restart recovery across the existing `kernel.operations`
+  durable transaction owner and both AuthBus owners. AuthBus binds the supplied
+  stable operation ID but does not replace the operation owner;
 - generic provider/effect coverage beyond the registered Agentd signed-text and
   Bao KV-v2 read paths;
 - distributed multi-host AuthBus ownership or consensus;
@@ -112,10 +113,12 @@ settlement issuer registration.
 The external checkpoint file hardening currently relies on Unix ownership,
 single-link, private-directory and fsync semantics.
 
-The Bao path consumes a caller-provided stable operation identity because the
-repository's current `kernel.operations` implementation is still a bounded
-in-memory reference model. This candidate therefore proves AuthBus binding to
-that identity, not durable cross-owner operation-ledger closure.
+The Bao path consumes a caller-provided stable operation identity. The repository
+already exposes `DurableOperationStore` in `kernel.operations` as a
+production-oriented SQLite owner alongside explicitly separate reference
+models. AuthBus tests prove binding to the supplied identity; they do not alone
+qualify crash/restart recovery across that existing operation owner and both
+AuthBus owners.
 
 Queue acceptance is not provider/model terminality. AuthBus receipts and policy
 decisions do not grant final-use authority. An indeterminate reservation is not
