@@ -223,6 +223,18 @@ pub struct DurableInferenceControl {
     poisoned: bool,
 }
 
+impl Drop for DurableInferenceControl {
+    fn drop(&mut self) {
+        // Closing one descriptor does not release an open-file-description lock
+        // while a forked child or another duplicate still holds that description.
+        // No writer escapes this owner. Release data first, then the stable
+        // ownership lock, so a successor cannot overlap a still-locked old image.
+        // On unlock failure, closing the descriptors remains the safe fallback.
+        let _ = self.file.unlock();
+        let _ = self._writer_lock.unlock();
+    }
+}
+
 impl DurableInferenceControl {
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {

@@ -168,3 +168,33 @@ fn active_count_survives_unknown_outcome_reopen_and_terminal_refinement() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn owner_drop_releases_locks_held_by_duplicate_descriptors() {
+    let path = path("owner-drop-duplicates");
+    let mut owner = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut owner, "held");
+    let records = owner.native.records.clone();
+    // A forked child can briefly retain these open file descriptions until exec.
+    // Duplicates must not keep a retired owner locked, nor unlock its successor.
+    let data = owner.file.try_clone().unwrap();
+    let lock = owner._writer_lock.try_clone().unwrap();
+    assert_eq!(
+        DurableInferenceControl::open(&path, 8).unwrap_err(),
+        Error::WriterUnavailable
+    );
+    drop(owner);
+    let successor = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(successor.native.records, records);
+    drop(data);
+    drop(lock);
+    assert_eq!(
+        DurableInferenceControl::open(&path, 8).unwrap_err(),
+        Error::WriterUnavailable
+    );
+    drop(successor);
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native.records, records);
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
