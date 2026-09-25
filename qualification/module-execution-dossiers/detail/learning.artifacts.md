@@ -134,30 +134,30 @@ directory sync, writer fencing and indeterminate I/O reconciliation.
 
 The canonical Lane E case IDs are:
 
-- **ART-01:** create-only ID reuse with different bytes conflicts; identical
+- `ART-01`: create-only ID reuse with different bytes conflicts; identical
   retry remains bounded/idempotent where specified.
-- **ART-02:** crash after bytes sync but before completed publication yields a
+- `ART-02`: crash after bytes sync but before completed publication yields a
   partial/orphan candidate, never an acknowledged or selected artifact.
-- **ART-03:** corrupt/incomplete/mixed-generation payload is refused by a new
+- `ART-03`: corrupt/incomplete/mixed-generation payload is refused by a new
   loading process.
-- **ART-04:** rollback to a revoked or incompatible predecessor fails safely
+- `ART-04`: rollback to a revoked or incompatible predecessor fails safely
   even if an old backup once marked it selected.
-- **ART-05:** scoped V3 admission binds authority-domain, registry, scope and
+- `ART-05`: scoped V3 admission binds authority-domain, registry, scope and
   exact withdrawal head; a concurrent withdrawal invalidates the old admission.
-- **ART-06:** lifecycle state is append-only and role-separated; historical
+- `ART-06`: lifecycle state is append-only and role-separated; historical
   replay survives later actor expiry while new expired-actor mutation fails.
-- **ART-07:** publication follows only `Prepared -> PayloadDurable ->
+- `ART-07`: publication follows only `Prepared -> PayloadDurable ->
   RegistryDurable -> WitnessDurable -> Acknowledged`; crash recovery or a
   withdrawal race cannot skip phases.
-- **ART-08:** scoped withdrawal and lifecycle auxiliary histories round-trip
+- `ART-08`: scoped withdrawal and lifecycle auxiliary histories round-trip
   through exact create-only durable snapshots and reject mismatched receipts.
-- **ART-09:** sensor cores are first-class `ArtifactKind::SensorCore` records in
+- `ART-09`: sensor cores are first-class `ArtifactKind::SensorCore` records in
   the one physical `ArtifactRegistry`; the typed sensor-core read domain is
   rebuilt from that head and reflects revocation without a second writer.
-- **ART-10:** iteration bookkeeping is bounded, replayable and monotonic and
+- `ART-10`: iteration bookkeeping is bounded, replayable and monotonic and
   cannot turn proposal/evidence records into selection, merge, promotion or
   release authority.
-- **ART-11:** the named `LearningArtifactOwnerService` is the unique registered
+- `ART-11`: the named `LearningArtifactOwnerService` is the unique registered
   product caller of the fenced `LearningArtifactOwnerHost`; it executes the
   complete durable publication saga, returns stable terminal retries, reopens
   only from independently authenticated CURRENT, rejects restored old heads and
@@ -166,7 +166,7 @@ The canonical Lane E case IDs are:
   `VerifiedCurrentRegistryViewV1` values issued after signed CURRENT + exact
   snapshot verification; a bare `File + RegistrySnapshotReceipt` is not a
   product currentness interface.
-- **ART-12:** selector verification is a separate Ed25519 trust domain bound to
+- `ART-12`: selector verification is a separate Ed25519 trust domain bound to
   the exact artifact-owner trust snapshot; selector keys may not equal
   writer/head authority keys or the artifact producer identity. The signed
   selection binds exact CURRENT witness/trust/head plus artifact kind,

@@ -70,7 +70,7 @@ class ProductGateTests(unittest.TestCase):
         source_tree = "e" * 40
         merge_tree = "d" * 40
         receipt = {
-            "schema": "hepta.control-engineering-product-execution.v4",
+            "schema": product_gate.PRODUCT_EXECUTION_SCHEMA,
             "mode": lane,
             "ciIdentity": {
                 "repository": product_gate.EXPECTED_REPOSITORY,
@@ -130,13 +130,39 @@ class ProductGateTests(unittest.TestCase):
                 "independentlyObservedCompletion": False,
                 "completionEvidenceClass": "ci_reference_hmac_fixture",
                 "trustClass": "ci_reference_hmac_fixture",
+                "initialStartupRecovery": {
+                    "observed_unix_ns": 1,
+                    "heartbeat_expired_claims": [],
+                    "reconciled_claims": [],
+                    "active_claims": [],
+                    "awaiting_completion_claims": [],
+                    "active_capacity_reservations": 0,
+                },
+                "startupRecovery": {
+                    "observed_unix_ns": 1,
+                    "heartbeat_expired_claims": [],
+                    "reconciled_claims": [],
+                    "active_claims": [],
+                    "awaiting_completion_claims": [],
+                    "active_capacity_reservations": 0,
+                },
+                "reopenedStartupRecovery": {
+                    "observed_unix_ns": 1,
+                    "heartbeat_expired_claims": [],
+                    "reconciled_claims": [],
+                    "active_claims": [],
+                    "awaiting_completion_claims": [],
+                    "active_capacity_reservations": 0,
+                },
             },
             "integrationReconciliation": {
                 "queueGenerationId": "queue-a",
                 "baseCommit": base,
                 "baseTree": "7" * 40,
                 "state": "ready_external_merge",
-                "reopenedState": "ready_external_merge",
+                "terminalState": "terminal_merged",
+                "reopenedTerminalState": "terminal_merged",
+                "contextDigest": "8" * 64,
                 "mergeAuthority": False,
                 "observationEvidenceClass": "ci_reference_digest_fixture",
                 "externalObservationProved": False,
@@ -224,12 +250,18 @@ class ProductGateTests(unittest.TestCase):
         )
         self.assertTrue(receipt["workerLifecycleFixtureExecuted"])
         self.assertEqual(
+            receipt["workerLifecycle"]["initialStartupRecovery"][
+                "active_capacity_reservations"
+            ],
+            0,
+        )
+        self.assertEqual(
             receipt["workerLifecycle"]["reopenedState"], "completed_observed"
         )
         self.assertTrue(receipt["integrationReconciliationFixtureExecuted"])
         self.assertEqual(
-            receipt["integrationReconciliation"]["reopenedState"],
-            "ready_external_merge",
+            receipt["integrationReconciliation"]["reopenedTerminalState"],
+            "terminal_merged",
         )
         self.assertTrue(receipt["reopenRecoveryFixtureExecuted"])
         self.assertFalse(receipt["mergeAuthority"])
@@ -417,6 +449,7 @@ class ProductGateTests(unittest.TestCase):
             expected_base_sha="b" * 40,
             expected_pull_request_number=780,
         )
+        self.assertEqual(pair["schema"], product_gate.PRODUCT_RECEIPT_PAIR_SCHEMA)
         self.assertEqual(
             pair["sourceProductReceiptDigest"], source["receiptDigest"]
         )
@@ -442,6 +475,29 @@ class ProductGateTests(unittest.TestCase):
         )
 
     def test_product_receipt_pair_rejects_tamper_and_lane_drift(self):
+        source = self.product_receipt("source-head")
+        merge = self.product_receipt("base-merge")
+        source["schema"] = "hepta.control-engineering-product-execution.v4"
+        source["receiptDigest"] = hashlib.sha256(
+            json.dumps(
+                {key: value for key, value in source.items() if key != "receiptDigest"},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        with self.assertRaisesRegex(ValueError, "product_receipt_identity"):
+            product_gate.verify_product_receipt_pair(
+                source,
+                merge,
+                expected_repository=product_gate.EXPECTED_REPOSITORY,
+                expected_repository_id=product_gate.EXPECTED_REPOSITORY_ID,
+                expected_run_id=42,
+                expected_run_attempt=3,
+                expected_source_sha="a" * 40,
+                expected_base_sha="b" * 40,
+                expected_pull_request_number=780,
+            )
+
         source = self.product_receipt("source-head")
         merge = self.product_receipt("base-merge")
         source["testedTree"] = "0" * 40

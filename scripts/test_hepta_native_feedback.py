@@ -45,6 +45,29 @@ def shell(name: str) -> str:
     return "\n".join(line[10:] if line else "" for line in lines) + "\n"
 
 
+def engineering_step(name: str) -> str:
+    text = WORKFLOW.read_text(encoding="utf-8").split(
+        "  engineering-sandbox:\n", 1
+    )[1].split("  os-evidence:\n", 1)[0]
+    match = re.search(r"^      - name: " + re.escape(name) + r"\n", text, re.M)
+    if match is None:
+        raise AssertionError(f"missing engineering-sandbox step: {name}")
+    following = re.search(r"^      - ", text[match.end():], re.M)
+    end = match.end() + following.start() if following else len(text)
+    return text[match.start():end]
+
+
+def engineering_shell(name: str) -> str:
+    block = engineering_step(name)
+    marker = "        run: |\n"
+    if marker not in block:
+        raise AssertionError(f"expected engineering-sandbox shell for {name}")
+    lines = block.split(marker, 1)[1].splitlines()
+    if not all(not line or line.startswith("          ") for line in lines):
+        raise AssertionError("unexpected engineering-sandbox shell indentation")
+    return "\n".join(line[10:] if line else "" for line in lines) + "\n"
+
+
 class NativeFeedbackPolicyTests(unittest.TestCase):
     def test_native_feedback_precedes_document_gate(self):
         text = WORKFLOW.read_text()
@@ -112,6 +135,20 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
         self.assertNotIn(
             "cargo check", text
         )  # Do not compile everything twice just for ordering.
+
+    def test_engineering_sandbox_binds_the_actual_matrix_candidate(self):
+        synthetic = engineering_step("Construct deterministic sandbox merge candidate")
+        binding = engineering_step("Bind exact engineering sandbox candidate identity")
+        self.assertIn("id: sandbox-synthetic", synthetic)
+        self.assertIn(
+            "TESTED_SHA: ${{ steps.sandbox-synthetic.outputs.sha || env.SOURCE_SHA }}",
+            binding,
+        )
+        self.assertIn("HEPTA_CI_LANE: ${{ matrix.lane }}", binding)
+        script = engineering_shell("Bind exact engineering sandbox candidate identity")
+        self.assertIn('test "$(git rev-parse HEAD)" = "$TESTED_SHA"', script)
+        self.assertIn("printf 'TESTED_SHA=%s\\n'", script)
+        self.assertIn("printf 'HEPTA_CI_LANE=%s\\n'", script)
 
     def test_records_and_raw_output_are_both_uploaded(self):
         text = WORKFLOW.read_text()
@@ -253,6 +290,46 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.calls(), [])
+
+    def test_engineering_sandbox_identity_shell_binds_source_and_merge_lanes(self):
+        output = self.root / "engineering-github-env"
+
+        def invoke(**extra):
+            output.write_text("")
+            result = subprocess.run(
+                [
+                    "bash",
+                    "-c",
+                    engineering_shell("Bind exact engineering sandbox candidate identity"),
+                ],
+                cwd=self.repo,
+                env={**self.env, "GITHUB_ENV": str(output), **extra},
+                text=True,
+                capture_output=True,
+                timeout=20,
+            )
+            return result, output.read_text()
+
+        source, source_env = invoke(MERGE_SHA="")
+        self.assertEqual(source.returncode, 0, source.stderr)
+        self.assertEqual(
+            source_env,
+            f"TESTED_SHA={self.head}\nHEPTA_CI_LANE=source-head\n",
+        )
+
+        self.merge_fixture()
+        merge, merge_env = invoke()
+        self.assertEqual(merge.returncode, 0, merge.stderr)
+        self.assertEqual(
+            merge_env,
+            f"TESTED_SHA={self.env['TESTED_SHA']}\nHEPTA_CI_LANE=base-merge\n",
+        )
+        fallback, fallback_env = invoke(
+            TESTED_SHA=self.env["SOURCE_SHA"],
+            MERGE_SHA="",
+        )
+        self.assertNotEqual(fallback.returncode, 0)
+        self.assertEqual(fallback_env, "")
 
     def test_metadata_failure_is_retained_and_not_called_a_test_pass(self):
         result = self.invoke(
