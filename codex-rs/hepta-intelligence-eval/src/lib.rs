@@ -180,7 +180,7 @@ pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
+pub use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
@@ -356,7 +356,7 @@ fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[Stabl
         bytes.extend_from_slice(metric.support_digest.as_array());
     }
     for id in failed {
-        push_id(&mut bytes, id);
+        push_id(bytes, id);
     }
     Digest32::of_bytes(&bytes)
 }
