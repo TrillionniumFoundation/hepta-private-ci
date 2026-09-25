@@ -320,6 +320,20 @@ pub fn qualify(
     keys: (&SigningKey, &SigningKey),
     now: u64,
 ) -> Qualified {
+    qualify_with_sink(case, verifier, generator, evaluator, keys, now, |_| {
+        Box::new(DurableSink(tempfile::tempfile().unwrap()))
+    })
+}
+
+pub fn qualify_with_sink(
+    case: QualificationCase,
+    verifier: &LearningEvidenceVerifierV1,
+    generator: AuthenticatedPrincipalV1,
+    evaluator: AuthenticatedPrincipalV1,
+    keys: (&SigningKey, &SigningKey),
+    now: u64,
+    sink_for_payload: impl FnOnce(&[u8]) -> Box<dyn ProductQualificationEvidenceSinkV1>,
+) -> Qualified {
     let mut f = fixture(case.objective, case.candidate);
     f.cross_fold.dataset_digest = case.dataset;
     f.cross_fold.baseline_id = case.baseline;
@@ -369,6 +383,17 @@ pub fn qualify(
             &evaluation_signing_payload_v2(&bundle, &f.roles).unwrap(),
         ),
     };
+    let publication_payload = runner
+        .qualification_publication_payload(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            verifier,
+            now,
+        )
+        .unwrap();
+    let mut sink = sink_for_payload(&publication_payload);
     let receipt = runner
         .qualify_and_persist(
             &temporal,
@@ -377,7 +402,7 @@ pub fn qualify(
             ProductTimingEvidenceV1::Qualification,
             verifier,
             now,
-            &mut DurableSink(tempfile::tempfile().unwrap()),
+            sink.as_mut(),
         )
         .unwrap();
     assert_eq!(

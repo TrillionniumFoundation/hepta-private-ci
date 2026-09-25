@@ -149,6 +149,7 @@ pub use product_runner::ProductTemporalEvaluationReceiptV1;
 pub use product_runner::ProductTimingEvidenceV1;
 pub use product_runner::TemporalComparisonInputsV1;
 pub use product_runner::freeze_product_evaluation_plan_v1;
+pub use product_runner::product_qualification_publication_payload_v1;
 pub use self_evolution_selection::PreparedSelfEvolutionSelectionV1;
 pub use self_evolution_selection::SelfEvolutionSelectionError;
 pub use self_evolution_selection::SelfEvolutionSelectionPolicyV1;
