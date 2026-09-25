@@ -905,6 +905,54 @@
         }
       ],
       "sourceBlob": "697270c8421503a6313e4bfb4b878843de65fc2a"
+    },
+    {
+      "operation": "serve_product",
+      "designOperation": "serve_product",
+      "nativeSymbol": "serve_product",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_service.py",
+      "state": "source_implemented",
+      "authority": "none",
+      "sourcePathExists": true,
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_service.py"
+        }
+      ],
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "restore_product_plan",
+      "designOperation": "restore_product_plan",
+      "nativeSymbol": "EngineeringControlProduct.plan_state",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "state": "source_implemented",
+      "authority": "none",
+      "sourcePathExists": true,
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_service.py"
+        }
+      ],
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "observe_external_completion",
+      "designOperation": "observe_external_completion",
+      "nativeSymbol": "EngineeringControlProduct.observe_external_completion",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "state": "source_implemented",
+      "authority": "none",
+      "sourcePathExists": true,
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_service.py"
+        }
+      ],
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -944,8 +992,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
-    "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548"
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -960,6 +1008,11 @@
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
       "nativeSymbol": "main",
       "state": "explicit_dual_lane_qualification_cli_not_worker_merge_authority"
+    },
+    {
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_service.py",
+      "nativeSymbol": "serve_product",
+      "state": "bounded_posix_product_process_not_independent_acceptance"
     }
   ],
   "sourceObjects": [
