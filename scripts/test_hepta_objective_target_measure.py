@@ -144,6 +144,24 @@ class MeasurementTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 measure.run_product_fixture(3, 3)
 
+    def test_filesystem_identity_uses_longest_mount_and_marks_memory_storage(self):
+        mounts = "24 1 8:1 / / rw - ext4 /dev/sda1 rw\n25 24 0:32 / /tmp rw - tmpfs tmpfs rw\n26 25 8:2 / /tmp/disk rw - ext4 /dev/sdb1 rw\n"
+        memory = measure.filesystem_context(Path("/tmp/fixture"), mounts)
+        disk = measure.filesystem_context(Path("/tmp/disk/fixture"), mounts)
+        self.assertEqual(
+            (memory["filesystemType"], memory["memoryBacked"]), ("tmpfs", True)
+        )
+        self.assertEqual(
+            (disk["mountPoint"], disk["memoryBacked"]), ("/tmp/disk", False)
+        )
+        self.assertFalse(memory["storageQualificationProved"])
+        self.assertFalse(disk["storageQualificationProved"])
+
+    def test_missing_mount_identity_never_implies_storage_qualification(self):
+        value = measure.filesystem_context(Path("/tmp/fixture"), "malformed\n")
+        self.assertFalse(value["mountIdentityAvailable"])
+        self.assertFalse(value["storageQualificationProved"])
+
 
 if __name__ == "__main__":
     unittest.main()

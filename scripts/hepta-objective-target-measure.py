@@ -8,6 +8,7 @@ import platform
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -225,6 +226,57 @@ def self_test() -> int:
     return 0
 
 
+def filesystem_context(root: Path, mountinfo: str) -> dict:
+    """Describe the actual fixture filesystem without claiming storage acceptance."""
+    root = root.resolve()
+    selected = None
+    for line in mountinfo.splitlines():
+        fields = line.split()
+        try:
+            separator = fields.index("-")
+            if separator < 6 or len(fields) <= separator + 1:
+                continue
+            encoded = fields[4]
+            for escape, decoded in (
+                ("\\040", " "),
+                ("\\011", "\t"),
+                ("\\012", "\n"),
+                ("\\134", "\\"),
+            ):
+                encoded = encoded.replace(escape, decoded)
+            mount = Path(encoded)
+            if not root.is_relative_to(mount):
+                continue
+            entry = {
+                "mountPoint": str(mount),
+                "filesystemType": fields[separator + 1],
+                "deviceId": fields[2],
+            }
+            if selected is None or len(mount.parts) > len(
+                Path(selected["mountPoint"]).parts
+            ):
+                selected = entry
+        except (ValueError, IndexError):
+            continue
+    result = {
+        "temporaryRoot": str(root),
+        "mountIdentityAvailable": selected is not None,
+    }
+    if selected is not None:
+        result.update(selected)
+        result["memoryBacked"] = selected["filesystemType"] in {"tmpfs", "ramfs"}
+    result["storageQualificationProved"] = False
+    return result
+
+
+def current_filesystem_context() -> dict:
+    try:
+        mountinfo = Path("/proc/self/mountinfo").read_text(encoding="utf-8")
+    except OSError:
+        mountinfo = ""
+    return filesystem_context(Path(tempfile.gettempdir()), mountinfo)
+
+
 def measure(args: argparse.Namespace) -> int:
     source_sha = git("rev-parse", "HEAD")
     source_tree = git("rev-parse", "HEAD^{tree}")
@@ -270,6 +322,7 @@ def measure(args: argparse.Namespace) -> int:
             "python": platform.python_version(),
             "rustc": rustc,
             "cargo": cargo,
+            "fixtureFilesystem": current_filesystem_context(),
         },
         "buildProfile": "release",
         "measurements": [ordinary, conflict, product],
@@ -278,6 +331,8 @@ def measure(args: argparse.Namespace) -> int:
             "productIncludesSignedIngressSocketFsyncAndRestart": True,
             "productExecutionIncludesFinalUsePhysicalSendAndTerminal": True,
             "ciRunnerIsNotProductionEvidence": True,
+            "controlledModelProviderAndContextFixture": True,
+            "storageQualificationProved": False,
             "activationGranted": False,
             "releaseGranted": False,
         },

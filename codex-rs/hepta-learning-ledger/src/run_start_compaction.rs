@@ -19,6 +19,34 @@ use super::RunStartStoreError;
 use super::create_private;
 use super::sync_directory;
 
+const SUMMARY_FRAME_BYTES: usize = 8 + 32 + 1 + 40 + 32 + 40 + 32 + 4 + 32;
+// Three nonempty length-prefixed IDs, authentication, chain identity, and the
+// smaller conflict variant. Check before any attacker-controlled reservation.
+const MIN_INDEX_ENTRY_BYTES: usize = 3 * 5 + 3 * 8 + 2 * 32 + 64 + 8 + 2 * 32 + 1 + 8;
+
+fn encoded_compacted_length(entries: &[RunStartIndexEntryV1]) -> Result<usize, RunStartStoreError> {
+    if entries.is_empty() || entries.len() > MAX_RUN_START_SEGMENTS * 4096 {
+        return Err(RunStartStoreError::Capacity);
+    }
+    entries
+        .iter()
+        .try_fold(SUMMARY_FRAME_BYTES, |total, entry| {
+            let kind_bytes = match entry.kind {
+                RunStartIndexKindV1::Run { .. } => 1 + 8 + 8 + 32 + 1,
+                RunStartIndexKindV1::Conflict { .. } => 1 + 8,
+            };
+            let entry_bytes = 236
+                + entry.run_id.as_str().len()
+                + entry.authentication.issuer_id.as_str().len()
+                + entry.authentication.message_id.as_str().len()
+                + kind_bytes;
+            total
+                .checked_add(entry_bytes)
+                .filter(|size| *size as u64 <= MAX_COMPACTED_BYTES)
+                .ok_or(RunStartStoreError::Capacity)
+        })
+}
+
 pub(super) fn load_compacted_prefix(
     root: &Path,
     binding: Digest32,
@@ -68,12 +96,17 @@ fn encode_compacted_prefix(
     binding: Digest32,
     compacted: &CompactedPrefix,
 ) -> Result<Vec<u8>, RunStartStoreError> {
+    let encoded_length = encoded_compacted_length(&compacted.entries)?;
     validate_compacted_entries(compacted.prefix, &compacted.entries)?;
     let semantic = compacted_semantic_digest(binding, compacted.prefix, &compacted.entries)?;
     if semantic != compacted.digest {
         return Err(RunStartStoreError::Corrupt);
     }
-    let mut bytes = COMPACTED_MAGIC.to_vec();
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(encoded_length)
+        .map_err(|_| RunStartStoreError::Capacity)?;
+    bytes.extend_from_slice(COMPACTED_MAGIC);
     push_digest(&mut bytes, binding);
     match compacted.pending_previous {
         Some((prefix, digest)) => {
@@ -108,8 +141,7 @@ fn decode_compacted_prefix(
     bytes: &[u8],
     binding: Digest32,
 ) -> Result<CompactedPrefix, RunStartStoreError> {
-    const MINIMUM: usize = 8 + 32 + 1 + 40 + 32 + 40 + 32 + 4 + 32;
-    if bytes.len() < MINIMUM || bytes.len() as u64 > MAX_COMPACTED_BYTES {
+    if bytes.len() < SUMMARY_FRAME_BYTES || bytes.len() as u64 > MAX_COMPACTED_BYTES {
         return Err(RunStartStoreError::Corrupt);
     }
     let (payload, supplied_checksum) = bytes.split_at(bytes.len() - 32);
@@ -132,7 +164,13 @@ fn decode_compacted_prefix(
     if count == 0 || count > MAX_RUN_START_SEGMENTS * 4096 {
         return Err(RunStartStoreError::Capacity);
     }
-    let mut entries = Vec::with_capacity(count);
+    if count > reader.0.len() / MIN_INDEX_ENTRY_BYTES {
+        return Err(RunStartStoreError::Corrupt);
+    }
+    let mut entries = Vec::new();
+    entries
+        .try_reserve_exact(count)
+        .map_err(|_| RunStartStoreError::Capacity)?;
     for _ in 0..count {
         entries.push(decode_index_entry(&mut reader)?);
     }
@@ -165,6 +203,7 @@ pub(super) fn compacted_semantic_digest(
     prefix: RunStartAnchor,
     entries: &[RunStartIndexEntryV1],
 ) -> Result<Digest32, RunStartStoreError> {
+    encoded_compacted_length(entries)?;
     let mut bytes = b"hepta.run-start.compacted.v1\0".to_vec();
     push_digest(&mut bytes, binding);
     push_anchor(&mut bytes, prefix);

@@ -298,3 +298,15 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 - `codex-rs/hepta-objective`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+### RunStart rotation writer fence (2026-09-25)
+
+The destination-owned segmented store now retains a directory writer lease
+across active-file close/rename/create and compaction. Same-process and
+cross-process regression probes must reject a competing writer at those cuts;
+reopening after the original owner exits preserves the exact run and chain.
+Compacted summary count/length validation precedes allocation. The authoritative
+protocol and retained-index capacity boundary are specified in
+`../../readiness/OBJECTIVE_COMPILER_EXECUTION.md`; neither a passing local test
+nor filesystem metadata grants target-host acceptance or activation.

@@ -302,7 +302,10 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::rotates_at_capacity_and_reopens_one_global_chain"
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::rotates_at_capacity_and_reopens_one_global_chain",
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::writer_lease_survives_active_segment_release_and_handoff",
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::writer_lease_fences_another_process_during_rotation",
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::non_regular_directory_writer_lease_is_rejected_before_history_mutation"
       ],
       "state": "source_implemented_qualification_pending",
       "authority": "none",
@@ -317,7 +320,8 @@
       "delegatedCallees": [],
       "tests": [
         "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::expired_prefix_compacts_to_checkpoint_bound_replay_index",
-        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::committed_compaction_cannot_be_replaced_by_older_valid_summary"
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::committed_compaction_cannot_be_replaced_by_older_valid_summary",
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::compacted_count_must_fit_authenticated_payload_before_allocation"
       ],
       "state": "source_implemented_qualification_pending",
       "authority": "none",

@@ -481,3 +481,257 @@ fn microsecond_deadline_has_conservative_millisecond_projection() {
             .map(|value| value / 1_000)
     );
 }
+
+#[test]
+fn authenticated_projection_rejects_each_source_field_mutation() {
+    type Mutation = fn(&mut ObjectiveSourceEnvelopeV1);
+    let cases: &[(&str, Mutation)] = &[
+        ("request", |s| s.request_id.push('x')),
+        ("scope", |s| {
+            s.principal_scope_digest = test_digest("changed scope")
+        }),
+        ("schema", |s| {
+            s.input_schema_digest = test_digest("changed schema")
+        }),
+        ("locale", |s| s.locale = "en-GB".to_string()),
+        ("trust", |s| {
+            s.source_trust_class = ObjectiveSourceTrustV1::UntrustedEvidence
+        }),
+        ("observation", |s| {
+            s.observed_at = "2026-09-08T10:00:01Z".to_string()
+        }),
+        ("deadline", |s| {
+            s.deadline = Some("2026-09-08T10:05:00.000001Z".to_string())
+        }),
+        ("success.id", |s| {
+            s.structured_intent.success_predicates[0]
+                .predicate_id
+                .push('x')
+        }),
+        ("success.unit", |s| {
+            s.structured_intent.success_predicates[0].unit.push('x')
+        }),
+        ("success.comparator", |s| {
+            s.structured_intent.success_predicates[0].comparator =
+                ObjectivePredicateComparatorV1::Equal
+        }),
+        ("success.bound", |s| {
+            s.structured_intent.success_predicates[0].bound_q32 += 1
+        }),
+        ("success.evidence", |s| {
+            s.structured_intent.success_predicates[0]
+                .evidence_source_id
+                .push('x')
+        }),
+        ("success.terminal", |s| {
+            s.structured_intent.success_predicates[0].terminal = true
+        }),
+        ("terminal.id", |s| {
+            s.structured_intent.terminal_conditions[0]
+                .predicate_id
+                .push('x')
+        }),
+        ("terminal.unit", |s| {
+            s.structured_intent.terminal_conditions[0].unit.push('x')
+        }),
+        ("terminal.comparator", |s| {
+            s.structured_intent.terminal_conditions[0].comparator =
+                ObjectivePredicateComparatorV1::GreaterThanOrEqual
+        }),
+        ("terminal.bound", |s| {
+            s.structured_intent.terminal_conditions[0].bound_q32 -= 1
+        }),
+        ("terminal.evidence", |s| {
+            s.structured_intent.terminal_conditions[0]
+                .evidence_source_id
+                .push('x')
+        }),
+        ("terminal.flag", |s| {
+            s.structured_intent.terminal_conditions[0].terminal = false
+        }),
+        ("constraint.id", |s| {
+            s.structured_intent.constraints[0].constraint_id.push('x')
+        }),
+        ("constraint.unit", |s| {
+            s.structured_intent.constraints[0].unit.push('x')
+        }),
+        ("constraint.comparator", |s| {
+            s.structured_intent.constraints[0].comparator = ObjectiveConstraintComparatorV1::Equal
+        }),
+        ("constraint.bound", |s| {
+            s.structured_intent.constraints[0].bound_q32 += 1
+        }),
+        ("constraint.evidence", |s| {
+            s.structured_intent.constraints[0]
+                .evidence_source_id
+                .push('x')
+        }),
+        ("constraint.terminal", |s| {
+            s.structured_intent.constraints[0].terminal = true
+        }),
+        ("legal actions", |s| {
+            s.structured_intent.legal_action_classes.clear()
+        }),
+        ("forbidden actions", |s| {
+            s.structured_intent.forbidden_action_classes.clear()
+        }),
+        ("confirmation actions", |s| {
+            s.structured_intent
+                .confirmation_action_classes
+                .push("read".to_string())
+        }),
+        ("soft.id", |s| {
+            s.structured_intent.soft_dimensions[0]
+                .dimension_id
+                .push('x')
+        }),
+        ("soft.unit", |s| {
+            s.structured_intent.soft_dimensions[0].unit.push('x')
+        }),
+        ("soft.direction", |s| {
+            s.structured_intent.soft_dimensions[0].direction = ObjectiveSoftDirectionV1::Minimize
+        }),
+        ("soft.minimum", |s| {
+            s.structured_intent.soft_dimensions[0].minimum_weight_q32 += 1
+        }),
+        ("soft.maximum", |s| {
+            s.structured_intent.soft_dimensions[0].maximum_weight_q32 -= 1
+        }),
+        ("evidence.id", |s| {
+            s.structured_intent.evidence_requirements[0]
+                .requirement_id
+                .push('x')
+        }),
+        ("evidence.source", |s| {
+            s.structured_intent.evidence_requirements[0]
+                .evidence_source_id
+                .push('x')
+        }),
+        ("evidence.confidence", |s| {
+            s.structured_intent.evidence_requirements[0].minimum_confidence_ppm -= 1
+        }),
+        ("evidence.terminal", |s| {
+            s.structured_intent.evidence_requirements[0].terminal = false
+        }),
+        ("resource.time", |s| {
+            s.structured_intent.resources.time_micros += 1
+        }),
+        ("resource.tokens", |s| {
+            s.structured_intent.resources.token_count += 1
+        }),
+        ("resource.compute", |s| {
+            s.structured_intent.resources.compute_micros += 1
+        }),
+        ("resource.memory", |s| {
+            s.structured_intent.resources.memory_bytes += 1
+        }),
+        ("resource.network", |s| {
+            s.structured_intent.resources.network_bytes += 1
+        }),
+        ("resource.effects", |s| {
+            s.structured_intent.resources.external_effect_count += 1
+        }),
+        ("risk.class", |s| {
+            s.structured_intent.risk.risk_class = ObjectiveRiskClassV1::High
+        }),
+        ("risk.abstention", |s| {
+            s.structured_intent.risk.abstention_rule.push('x')
+        }),
+        ("risk.rollback", |s| {
+            s.structured_intent.risk.rollback_class = ObjectiveRollbackClassV1::Irreversible
+        }),
+        ("risk.compensation", |s| {
+            s.structured_intent.risk.compensation_required = true
+        }),
+        ("source digest", |s| {
+            s.structured_intent.provenance.source_digest = test_digest("changed source")
+        }),
+        ("normalization", |s| {
+            s.structured_intent.provenance.normalization_profile_digest =
+                test_digest("changed normalization")
+        }),
+    ];
+    let (profile, source, context, receipt, compiled) = compile_fixture();
+    for (name, mutate) in cases {
+        let mut changed = source.clone();
+        mutate(&mut changed);
+        assert_ne!(changed, source, "mutation {name} must change the fixture");
+        // Even a newly recomputed request digest cannot reuse the old receipt
+        // and native result. Exercise the semantic relationship, not only a
+        // stale digest-field mismatch.
+        if let Ok(digest) = canonical_objective_intent_digest_v1(&changed) {
+            changed.intent_digest = digest;
+        }
+        assert!(
+            encode_authenticated_objective_function_v1(
+                &compiled, &changed, &profile, &context, &receipt,
+            )
+            .is_err(),
+            "accepted source mutation {name}"
+        );
+    }
+}
+
+#[test]
+fn authenticated_projection_preserves_equivalent_source_ordering() {
+    let mut profile = profile();
+    profile.actions.push(ObjectiveActionProfileV1 {
+        source_action_class: "inspect".to_string(),
+        action_id: id("action.inspect"),
+    });
+    profile.constraints.push(ObjectiveConstraintProfileV1 {
+        source_constraint_id: "latency.second.ceiling".to_string(),
+        expected_unit: "micros".to_string(),
+        class: ConstraintClass::Task,
+        axis: id("latency.second.micros"),
+    });
+    let mut source = source();
+    source
+        .structured_intent
+        .legal_action_classes
+        .push("inspect".to_string());
+    let mut second = source.structured_intent.constraints[0].clone();
+    second.constraint_id = "latency.second.ceiling".to_string();
+    source.structured_intent.constraints.push(second);
+    source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("intent");
+    let context = context(&profile, &source);
+    let outcome = admit_and_compile_objective_v1(&source, &profile, &context).expect("admitted");
+    let compiled = outcome.compile_result.expect("compiled");
+    let receipt = outcome.receipt;
+    let expected = encode_authenticated_objective_function_v1(
+        &compiled, &source, &profile, &context, &receipt,
+    )
+    .expect("original artifact");
+    let original = source.clone();
+    source.structured_intent.legal_action_classes.reverse();
+    source.structured_intent.constraints.reverse();
+    assert_ne!(
+        source, original,
+        "permutation must change the input ordering"
+    );
+    let actual = encode_authenticated_objective_function_v1(
+        &compiled, &source, &profile, &context, &receipt,
+    )
+    .expect("equivalent reordered source");
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn decoder_accepts_exact_action_and_soft_weight_boundaries() {
+    for weight in [0, FixedQ32::ONE.raw()] {
+        let mut value = wire();
+        value.soft_utility_dimensions[0].weight_q32 = weight;
+        value.allowed_action_classes = std::iter::once(ActionWireV1 {
+            id: "abstain".to_string(),
+            confirmation: "not_required".to_string(),
+        })
+        .chain((0..127).map(|index| ActionWireV1 {
+            id: format!("action.{index:03}"),
+            confirmation: "not_required".to_string(),
+        }))
+        .collect();
+        let encoded = bytes(&value);
+        let decoded = decode_objective_function_v1(&encoded).expect("inclusive boundary");
+        assert_eq!(decoded.canonical_bytes(), encoded);
+    }
+}

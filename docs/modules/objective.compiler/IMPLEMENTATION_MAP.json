@@ -227,7 +227,19 @@
         },
         {
           "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
-          "symbol": "signed_compiled_objective_enters_runtime_and_reaches_terminal_without_resurrection"
+          "symbol": "signed_compiled_objective_executes_once_reaches_terminal_and_does_not_resurrect"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "authenticated_projection_rejects_each_source_field_mutation"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "authenticated_projection_preserves_equivalent_source_ordering"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_accepts_exact_action_and_soft_weight_boundaries"
         }
       ],
       "designOperation": "encode_authenticated_objective_function_v1",

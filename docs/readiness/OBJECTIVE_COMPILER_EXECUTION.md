@@ -138,6 +138,30 @@ received
 
 A crash before caller publication leaves no selected objective. A partial unacknowledged active-segment tail is truncated only to the last complete validated frame; acknowledged missing history, a removed sealed segment, a missing external checkpoint for existing local history, or a checkpoint ahead of local history is never repaired as empty success. Rotation preserves one global predecessor chain. Compaction replaces only a complete expired sealed prefix with a replay index that retains run identity, authentication frontier, record and chain digests; the pending summary is written first, checkpointed by CAS second, committed third, and old segments removed last. A crash or acknowledgement loss at any of those cuts is reconciled without resurrecting an older frontier. Reusing the run identity with changed native or canonical-protocol semantics conflicts. At runtime final use, current trust, generation, fence, exact admitted deadline and canonical protocol identity are revalidated. `ObjectiveFunctionV1` floors the exact microsecond deadline to milliseconds, and Agentd uses the same conservative floor so the wire cannot extend authority. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
+### Store writer continuity and bounded recovery decoding
+
+`DurableRunStartStore` holds a stable `.writer.lock` lease for its entire
+lifetime, including recovery, active-segment rotation, checkpoint publication
+and prefix compaction. The lease is acquired before inspecting or mutating
+history and released only after the segment and checkpoint handles close.
+The lock file is never renamed or removed during normal operation. A competing
+instance or process must receive `Busy` even at the cut where the active segment
+has been closed and its successor does not yet exist.
+
+The compacted replay-index decoder checks the encoded entry count against both
+the registered count ceiling and the remaining frame bytes before reserving
+memory. Encoding preflights the count and complete encoded length against the
+same ceiling before constructing a summary. Reaching the replay-index ceiling
+remains an explicit capacity limit, not permission to discard deduplication or
+authentication history. A selected deployment still needs an acknowledged
+archive/retirement policy before exceeding that limit.
+
+The regression suite includes cross-process writer takeover at rotation,
+normal handoff after owner drop, malformed-count recovery with a valid checksum,
+49 independent source-field mutations with recomputed intent digests, genuine
+multi-entry source permutations, and inclusive action/soft-weight boundaries.
+These source tests do not establish independent deployment acceptance.
+
 ## 6. Error taxonomy and fallback
 
 The only canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:

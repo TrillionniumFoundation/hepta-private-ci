@@ -18,6 +18,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::run_start::DurableRunStartJournal;
+use crate::run_start::LockedRunStartFile;
 use crate::run_start::RunStartAnchor;
 use crate::run_start::RunStartAppendDisposition;
 use crate::run_start::RunStartAppendReceipt;
@@ -32,6 +33,7 @@ use crate::run_start::RunStartRecovery;
 use crate::run_start::RunStartStoreError;
 
 const ACTIVE_FILE: &str = "active.bin";
+const WRITER_FILE: &str = ".writer.lock";
 const LEGACY_FILE: &str = "journal.bin";
 const SEGMENT_DIRECTORY: &str = "segments";
 const SEGMENT_PREFIX: &str = "segment-";
@@ -135,6 +137,8 @@ pub struct DurableRunStartStore {
     history: Vec<RunStartIndexEntryV1>,
     anchors: BTreeMap<u64, Digest32>,
     poisoned: bool,
+    // Drop last: directory ownership must outlive active/checkpoint teardown.
+    _writer: LockedRunStartFile,
 }
 
 impl DurableRunStartStore {
@@ -175,6 +179,22 @@ impl DurableRunStartStore {
         checkpoint: Box<dyn RunStartCheckpointOwnerV1>,
     ) -> Result<Self, RunStartStoreError> {
         prepare_directory(&root)?;
+        // A segment lock alone leaves a takeover window during rotation and
+        // cannot serialize compaction/recovery. Never rename or unlink this
+        // stable lock file; its lease covers the complete directory lifecycle.
+        let writer_path = root.join(WRITER_FILE);
+        let writer_file = match create_private(&writer_path) {
+            Ok(file) => {
+                file.sync_all()?;
+                sync_directory(&root)?;
+                file
+            }
+            Err(RunStartStoreError::Io(std::io::ErrorKind::AlreadyExists)) => {
+                open_regular(&writer_path)?
+            }
+            Err(error) => return Err(error),
+        };
+        let writer = LockedRunStartFile::acquire(writer_file)?;
         let segments_root = root.join(SEGMENT_DIRECTORY);
         prepare_directory(&segments_root)?;
         migrate_legacy_active(&root, &segments_root)?;
@@ -289,6 +309,7 @@ impl DurableRunStartStore {
             history,
             anchors,
             poisoned: false,
+            _writer: writer,
         };
         store.reconcile_checkpoint()?;
         cleanup_paths(&overlap_paths)?;

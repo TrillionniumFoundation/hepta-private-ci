@@ -73,7 +73,11 @@ sequence. The recorder rejects non-integer/Boolean counters, mismatched sample
 counts, non-monotone latency distributions and incomplete worst-case conflict work.
 
 This is process-level development evidence with a controlled model and trusted
-context fixture. It is not evidence of a live model service, autonomous assembly
+context fixture. The controlled fixture disables plugin provisioning to avoid unrelated network
+startup work. The recorder includes the actual temporary-filesystem mount/type;
+memory-backed and disk-backed runs must not be pooled into the same storage
+qualification result. Neither successful timing nor filesystem identification
+grants storage qualification. It is not evidence of a live model service, autonomous assembly
 of all seven canonical owner inputs, or recovery of an unpersisted canonical
 owner handoff. Those remain separate product/deployment qualification boundaries.
 

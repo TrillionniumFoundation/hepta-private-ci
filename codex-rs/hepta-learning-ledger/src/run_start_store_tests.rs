@@ -604,3 +604,125 @@ fn indexed_replay_lookup_rejects_uncertain_checkpoint_state() {
         Some(RunStartStoreError::Poisoned)
     );
 }
+
+#[test]
+fn writer_lease_survives_active_segment_release_and_handoff() {
+    let fixture = Fixture::new("writer-gap");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(1, checkpoint.clone()));
+    let first_record = record("run.writer.1", 1);
+    let first = must(store.append_run_start(Digest32::ZERO, first_record.clone()));
+    // Reproduce the rotation cut after the active file lock is released.
+    drop(store.active.take());
+    assert!(matches!(
+        fixture.open(1, checkpoint.clone()),
+        Err(RunStartStoreError::Busy)
+    ));
+    drop(store);
+    let mut reopened = must(fixture.open(1, checkpoint.clone()));
+    assert_eq!(must(reopened.get(&id("run.writer.1"))), Some(&first_record));
+    let second = must(reopened.append_run_start(first.chain_digest, record("run.writer.2", 2)));
+    assert_eq!(second.sequence, 2);
+    assert!(matches!(
+        fixture.open(1, checkpoint),
+        Err(RunStartStoreError::Busy)
+    ));
+}
+
+#[test]
+fn writer_lease_fences_another_process_during_rotation() {
+    const CHILD_ROOT: &str = "HEPTA_RUN_START_WRITER_PROBE_ROOT";
+    if let Some(root) = std::env::var_os(CHILD_ROOT) {
+        let opened = DurableRunStartStore::open(
+            PathBuf::from(root),
+            digest("binding"),
+            1,
+            Box::new(MemoryCheckpoint::new(RunStartAnchor::ZERO)),
+        );
+        assert!(matches!(opened, Err(RunStartStoreError::Busy)));
+        return;
+    }
+    let fixture = Fixture::new("writer-process");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(1, checkpoint.clone()));
+    let first = must(store.append_run_start(Digest32::ZERO, record("run.process.1", 1)));
+    let head = store.head_anchor();
+    drop(store.active.take());
+    let sealed_name = must(super::segment_filename(RunStartAnchor::ZERO, head));
+    must(fs::rename(
+        fixture.root.join("active.bin"),
+        fixture.root.join("segments").join(sealed_name),
+    ));
+    let output = must(
+        std::process::Command::new(must(std::env::current_exe()))
+            .args([
+                "--exact",
+                "run_start::store::tests::writer_lease_fences_another_process_during_rotation",
+                "--nocapture",
+            ])
+            .env(CHILD_ROOT, &fixture.root)
+            .output(),
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("running 1 test"),
+        "writer probe must actually execute"
+    );
+    assert!(
+        output.status.success(),
+        "writer subprocess failed: {} {}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!fixture.root.join("active.bin").exists());
+    drop(store);
+    let mut reopened = must(fixture.open(1, checkpoint));
+    assert_eq!(reopened.head_anchor(), head);
+    let second = must(reopened.append_run_start(first.chain_digest, record("run.process.2", 2)));
+    assert_eq!(second.sequence, 2);
+}
+
+#[test]
+fn non_regular_directory_writer_lease_is_rejected_before_history_mutation() {
+    let fixture = Fixture::new("writer-not-regular");
+    must(fs::create_dir(fixture.root.join(super::WRITER_FILE)));
+    assert!(matches!(
+        fixture.open(1, MemoryCheckpoint::new(RunStartAnchor::ZERO)),
+        Err(RunStartStoreError::NotRegular)
+    ));
+    assert!(!fixture.root.join("active.bin").exists());
+    assert!(!fixture.root.join("segments").exists());
+}
+
+#[test]
+fn compacted_count_must_fit_authenticated_payload_before_allocation() {
+    let fixture = Fixture::new("compacted-count");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(1, checkpoint.clone()));
+    let first = must(store.append_run_start(Digest32::ZERO, record("run.count.1", 1)));
+    must(store.append_run_start(first.chain_digest, record("run.count.2", 2)));
+    must(store.compact_expired_prefix(100_000));
+    drop(store);
+    let path = fixture.root.join("compacted-v1.bin");
+    let original = must(fs::read(&path));
+    const COUNT_OFFSET: usize = 8 + 32 + 1 + 40 + 32 + 40 + 32;
+    for (count, expected) in [
+        (0_u32, RunStartStoreError::Capacity),
+        (4096, RunStartStoreError::Corrupt),
+        (4_194_305, RunStartStoreError::Capacity),
+    ] {
+        let mut bytes = original.clone();
+        bytes[COUNT_OFFSET..COUNT_OFFSET + 4].copy_from_slice(&count.to_be_bytes());
+        let payload_len = bytes.len() - 32;
+        let checksum = Digest32::of_bytes(&bytes[..payload_len]);
+        bytes[payload_len..].copy_from_slice(checksum.as_array());
+        must(fs::write(&path, bytes));
+        let error = fixture
+            .open(1, checkpoint.clone())
+            .err()
+            .expect("invalid summary count");
+        assert_eq!(error, expected);
+    }
+    must(fs::write(&path, original));
+    let reopened = must(fixture.open(1, checkpoint));
+    assert!(must(reopened.index_entry(&id("run.count.1"))).is_some());
+}
