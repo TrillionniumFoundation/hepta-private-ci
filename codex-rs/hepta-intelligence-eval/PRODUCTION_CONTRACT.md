@@ -96,6 +96,23 @@ baseline metric intervals are derived from sealed `TemporalEvaluationReceipt`
 and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
 `MetricGateV1` intervals. The runner builds the signed qualification bundle itself and returns success only after `ProductQualificationEvidenceSinkV1` returns a nonzero durable publication digest. The resulting `ProductQualificationReceiptV1` has a private integrity seal and binds the candidate, evaluator, objective, dataset, snapshot set, claim scope, signed decision and durable publication.
 
+## Terminal receipt integrity profile
+
+The current product receipt digest domain is
+`hepta.intelligence-eval.product-qualification.v4`; its private seal domain is
+`hepta.intelligence-eval.product-qualification-receipt.v2`. In addition to the
+execution, candidate, principals, objective, dataset, snapshots, scope and
+publication, it binds the complete terminal decision: evaluation/candidate/baseline
+identities, disposition, ordered failed metrics, evidence, trust, authentication
+and deny-all authority. Retaining an old opaque decision digest does not permit
+changing any of these fields. Consumer signing payloads incorporate the current
+product digest and must reject a modified receipt before requesting a signature.
+
+Historical v3/v1 product digests/seals are not accepted as this profile. Recovery
+must use the preserved original signed inputs and authoritative publication/holdout
+identity; do not bless old mutable conclusions, change plans, consume a different
+holdout or turn a read-only historical result into a current-use authorization.
+
 ## Canonical product consumer
 
 The repository's current signed consumer is

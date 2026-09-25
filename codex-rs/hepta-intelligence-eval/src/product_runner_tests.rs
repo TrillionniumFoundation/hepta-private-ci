@@ -571,6 +571,44 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     );
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
 
+    // Each independent mutation must invalidate the terminal receipt, even when
+    // the opaque estimator/authentication digests are deliberately left intact.
+    let mutations: [fn(&mut ProductQualificationReceiptV1); 7] = [
+        |r| {
+            r.decision.decision.disposition = match r.decision.decision.disposition {
+                crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
+                    crate::IndependentEvaluationDispositionV1::Ineligible
+                }
+                _ => crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+            }
+        },
+        |r| {
+            r.decision
+                .decision
+                .failed_metrics
+                .push(id("substituted-metric"))
+        },
+        |r| r.decision.decision.baseline_id = id("substituted-baseline"),
+        |r| r.decision.decision.evaluation_id = id("substituted-evaluation"),
+        |r| r.decision.decision.evidence_digest = digest("substituted-evidence"),
+        |r| r.decision.trust_digest = digest("substituted-trust"),
+        |r| r.decision.authentication_digest = digest("substituted-authentication"),
+    ];
+    for (index, mutate) in mutations.into_iter().enumerate() {
+        let mut changed = qualified.clone();
+        mutate(&mut changed);
+        assert!(
+            changed.validate_integrity().is_err(),
+            "accepted mutation {index}"
+        );
+        assert!(
+            changed
+                .verify_signed_bundle_current(&bundle, &fixture.roles, &evidence, &verifier, 50,)
+                .is_err(),
+            "consumer accepted mutation {index}"
+        );
+    }
+
     let mut changed_generator = qualified;
     changed_generator.generator.principal_id = id("substituted-generator");
     assert!(changed_generator.validate_integrity().is_err());

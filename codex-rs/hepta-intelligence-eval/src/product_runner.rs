@@ -584,14 +584,15 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    // V4 binds the complete terminal decision object, not only the decision's
+    // opaque evidence digest. Older V3 receipts fail closed and must be
+    // requalified because their mutable disposition/identity fields were not
+    // covered by the product receipt seal.
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
         receipt.dataset_digest,
-        receipt.decision.decision.evidence_digest,
-        receipt.decision.trust_digest,
-        receipt.decision.authentication_digest,
         receipt.publication_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
@@ -604,13 +605,33 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
         EvaluationClaimScopeV1::SystemLongitudinal => 1,
     });
     push_ids(&mut bytes, &receipt.snapshot_ids);
+    push_signed_evaluation_decision(&mut bytes, &receipt.decision);
     bytes.push(u8::from(receipt.authority.grants_any()));
-    bytes.push(u8::from(receipt.decision.decision.authority.grants_any()));
     Digest32::of_bytes(&bytes)
 }
 
+fn push_signed_evaluation_decision(bytes: &mut Vec<u8>, decision: &SignedEvaluationDecisionV1) {
+    push_id(bytes, &decision.decision.evaluation_id);
+    push_id(bytes, &decision.decision.candidate_id);
+    push_id(bytes, &decision.decision.baseline_id);
+    bytes.push(match decision.decision.disposition {
+        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        crate::IndependentEvaluationDispositionV1::Ineligible => 1,
+        crate::IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(bytes, &decision.decision.failed_metrics);
+    for digest in [
+        decision.decision.evidence_digest,
+        decision.trust_digest,
+        decision.authentication_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.push(u8::from(decision.decision.authority.grants_any()));
+}
+
 fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v2".to_vec();
     bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
     bytes.extend_from_slice(receipt.evidence_digest.as_array());
     Digest32::of_bytes(&bytes)
