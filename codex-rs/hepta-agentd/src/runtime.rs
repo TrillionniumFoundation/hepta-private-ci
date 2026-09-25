@@ -77,6 +77,7 @@ pub async fn run(
     let retrieval_learning = config.cognitive_retrieval_learning();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let intuition_policy_host = config.intuition_policy_host();
+    let ndu_owner_host = config.ndu_owner_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
     let (identity, registry, writer_lock) = config.into_parts();
@@ -99,6 +100,9 @@ pub async fn run(
         state.intuition_policy.set(host).map_err(|_| {
             AgentdError::Invalid("intuition policy host already attached".to_string())
         })?;
+    }
+    if let Some(host) = ndu_owner_host {
+        state.attach_ndu_owner(host)?;
     }
     if let Some(ranker) = ranker {
         state

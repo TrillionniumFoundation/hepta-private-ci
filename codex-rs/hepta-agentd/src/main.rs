@@ -17,6 +17,8 @@ fn main() -> anyhow::Result<()> {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
+        let mut ndu_descriptor: Option<PathBuf> = None;
+        let mut ndu_descriptor_digest: Option<Digest32> = None;
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
@@ -32,7 +34,23 @@ fn main() -> anyhow::Result<()> {
             let path = args
                 .next()
                 .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
-            if flag == "--authbus-trust-file" {
+            if flag == "--ndu-bootstrap-descriptor" {
+                anyhow::ensure!(ndu_descriptor.is_none(), "duplicate NDU descriptor");
+                ndu_descriptor = Some(path.into());
+            } else if flag == "--ndu-bootstrap-descriptor-digest" {
+                anyhow::ensure!(
+                    ndu_descriptor_digest.is_none(),
+                    "duplicate NDU descriptor digest"
+                );
+                let value = path
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("NDU digest must be UTF-8"))?;
+                ndu_descriptor_digest = Some(
+                    value
+                        .parse()
+                        .map_err(|error| anyhow::anyhow!("invalid NDU digest: {error}"))?,
+                );
+            } else if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
             } else if flag == "--plasticity-bootstrap-descriptor" {
@@ -180,6 +198,20 @@ fn main() -> anyhow::Result<()> {
             ),
         }
 
+        match (ndu_descriptor, ndu_descriptor_digest) {
+            (Some(path), Some(digest)) => {
+                let host = codex_hepta_agentd::load_ndu_process_bootstrap_v1(
+                    &path,
+                    digest,
+                    config.identity(),
+                )?;
+                config = config.with_ndu_owner_host(host)?;
+            }
+            (None, None) => {}
+            _ => anyhow::bail!(
+                "NDU descriptor and independently pinned digest must be supplied together"
+            ),
+        }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
     })

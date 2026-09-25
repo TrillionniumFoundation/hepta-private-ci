@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod ndu;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -28,6 +29,11 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use ndu::NduCommittedEntryV1;
+pub use ndu::NduControlRequestV1;
+pub use ndu::NduControlResultV1;
+pub use ndu::NduMutationOperationV1;
+pub use ndu::NduMutationV1;
 
 use std::path::PathBuf;
 
@@ -571,6 +577,9 @@ impl AgentdRequest {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    NduControl {
+        request: NduControlRequestV1,
+    },
     Capabilities,
     Health,
     Lifecycle,
@@ -734,6 +743,7 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    NduControl(NduControlResultV1),
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),

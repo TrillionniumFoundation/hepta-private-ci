@@ -547,3 +547,71 @@ fn withdrawal_frontier_change_invalidates_previously_admitted_artifact() {
         ))
     ));
 }
+
+#[test]
+fn numeric_payload_replacement_cannot_reuse_solver_or_independent_evidence() {
+    let mut fixture = fixture();
+    let original = fixture.projection.clone();
+    fixture.projection.q24_raw[0][0] += 1;
+    assert_eq!(fixture.projection.output_digest, original.output_digest);
+    assert_eq!(
+        canonical_ndu_stochastic_solver_digest_v1(
+            &fixture.coefficient_profile,
+            &fixture.projection
+        ),
+        Err(NduStochasticAdmissionError::ProjectionMismatch),
+    );
+    let current_view = verified_current_view(&fixture, 50);
+    let request = NduStochasticAdmissionRequestV1 {
+        artifact_admission: &fixture.artifact_admission,
+        current_withdrawal_head: fixture.withdrawal_registry.snapshot().head_digest,
+        coefficient_profile: &fixture.coefficient_profile,
+        projection: &fixture.projection,
+        convergence: &fixture.convergence,
+        well_posedness: &fixture.well_posedness,
+        objective_class_digest: digest("objective-class"),
+        operating_domain_digest: digest("operating-domain"),
+        expected_compatibility_digest: digest("ndu-runtime-compatibility"),
+    };
+    assert_eq!(
+        admit_ndu_stochastic_candidate_v1(&mut fixture.candidate, current_view, request, 50),
+        Err(NduStochasticAdmissionError::ProjectionMismatch),
+    );
+}
+
+#[test]
+fn every_q24_coordinate_and_projection_source_is_integrity_bound() {
+    let fixture = fixture();
+    for row in 0..fixture.projection.q24_raw.len() {
+        for column in 0..fixture.projection.q24_raw[row].len() {
+            let mut substituted = fixture.projection.clone();
+            substituted.q24_raw[row][column] ^= 1;
+            assert_eq!(
+                canonical_ndu_stochastic_solver_digest_v1(
+                    &fixture.coefficient_profile,
+                    &substituted
+                ),
+                Err(NduStochasticAdmissionError::ProjectionMismatch)
+            );
+        }
+    }
+    for field in 0..3 {
+        let mut substituted = fixture.projection.clone();
+        match field {
+            0 => substituted.source_evidence_digest = digest("substituted-source"),
+            1 => substituted.conversion_receipt_digest = digest("substituted-conversion"),
+            _ => substituted.output_digest = digest("substituted-output"),
+        }
+        assert_eq!(
+            canonical_ndu_stochastic_solver_digest_v1(&fixture.coefficient_profile, &substituted),
+            Err(NduStochasticAdmissionError::ProjectionMismatch)
+        );
+    }
+    assert!(
+        canonical_ndu_stochastic_solver_digest_v1(
+            &fixture.coefficient_profile,
+            &fixture.projection
+        )
+        .is_ok()
+    );
+}
