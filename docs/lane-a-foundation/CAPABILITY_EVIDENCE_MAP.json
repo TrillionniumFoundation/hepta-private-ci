@@ -1528,17 +1528,22 @@
         {
           "path": "codex-rs/hepta-agentd/src/config.rs",
           "mustContain": [
-            "pub fn with_production_operations",
-            "production_operations: None",
+            "production_operations: None"
+          ],
+          "requiredIdentifiers": [
+            "with_production_operations",
             "take_production_operations"
           ]
         },
         {
           "path": "codex-rs/hepta-agentd/src/runtime.rs",
           "mustContain": [
+            "production-operation-reconciler"
+          ],
+          "requiredIdentifiers": [
             "attach_production_operations",
             "run_production_operation_reconciler",
-            "production-operation-reconciler"
+            "RuntimeTasks"
           ]
         },
         {
@@ -1551,19 +1556,27 @@
         },
         {
           "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
-          "mustContain": [
-            "impl AgentdProductionOperationRuntimeConfig",
-            "pub(crate) async fn attach(",
-            "verify_current_authority().await?"
+          "requiredIdentifiers": [
+            "AgentdProductionOperationRuntimeConfig",
+            "attach",
+            "verify_current_authority"
           ]
         }
       ],
       "positiveTests": [
         {
-          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
-          "mustContain": [
-            "cleanup_never_polls_the_join_handle_already_consumed_by_select",
-            "operations_task.is_finished()"
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+          "requiredIdentifiers": [
+            "cancelled_observation_keeps_completion_identity",
+            "shutdown_listener_error_does_not_detach_live_tasks",
+            "cooperative_shutdown_precedes_forced_abort"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+          "requiredIdentifiers": [
+            "observed_required_failure_cannot_become_cancelled_success",
+            "shutdown_listener_failure_is_latched_across_reentry"
           ]
         }
       ],

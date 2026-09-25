@@ -32,25 +32,35 @@ class ExpectedCandidateTests(unittest.TestCase):
         self.assertEqual(result["status"], "PASS_HEPTA_IMPLEMENTATION_MAPS")
 
     def test_expected_source_is_not_the_historical_map_anchor(self):
-        with self.assertRaisesRegex(SystemExit, "does not match expected source"):
+        with (
+            patch.object(self.subject, "load", wraps=self.subject.load) as load,
+            self.assertRaises(SystemExit),
+        ):
             self.cli("verify", "--expected-sha", self.fixture.anchor["commit"])
+        load.assert_not_called()
 
     def test_same_tree_different_commit_still_rejects_wrong_event(self):
         before = self.subject.current_source_base()
         self.fixture.git("commit", "--allow-empty", "-qm", "new candidate event")
         after = self.subject.current_source_base()
         self.assertEqual(before["tree"], after["tree"])
-        with self.assertRaisesRegex(SystemExit, "does not match expected source"):
+        with (
+            patch.object(self.subject, "load", wraps=self.subject.load) as load,
+            self.assertRaises(SystemExit),
+        ):
             self.cli("verify", "--expected-sha", before["commit"])
+        load.assert_not_called()
 
     def test_short_ref_empty_and_noncanonical_sha_reject(self):
         current = self.subject.current_source_base()["commit"]
         for value in ("", "HEAD", current[:12], current.upper(), "g" * 40):
             with (
                 self.subTest(value=value),
-                self.assertRaisesRegex(SystemExit, "full lowercase commit SHA"),
+                patch.object(self.subject, "load", wraps=self.subject.load) as load,
+                self.assertRaises(SystemExit),
             ):
                 self.cli("verify", "--expected-sha", value)
+            load.assert_not_called()
 
     def test_correct_sha_does_not_bypass_dirty_source_rejection(self):
         current = self.subject.current_source_base()["commit"]

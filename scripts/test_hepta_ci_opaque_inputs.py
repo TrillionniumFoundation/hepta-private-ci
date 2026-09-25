@@ -236,16 +236,21 @@ class PreflightDiagnosticTests(unittest.TestCase):
         return result, calls
 
     def assert_all_suites(self, calls):
-        self.assertEqual(
-            [line.split()[-1] for line in calls],
-            [
-                "test_hepta_workspace.py",
-                "test_hepta_implementation_identity.py",
-                "test_hepta_ci_dependency_scaling.py",
-                "test_hepta_ci_nested_inputs.py",
-                "test_hepta_ci_opaque_inputs.py",
-            ],
-        )
+        observed = [line.split()[-1] for line in calls]
+        mandatory = {
+            "test_hepta_integrity_checkout.py",
+            "test_hepta_workspace.py",
+            "test_hepta_implementation_identity.py",
+            "test_hepta_ci_dependency_scaling.py",
+            "test_hepta_ci_nested_inputs.py",
+            "test_hepta_ci_opaque_inputs.py",
+        }
+        self.assertEqual(len(observed), len(set(observed)), "duplicate suite execution")
+        self.assertTrue(mandatory <= set(observed), set(observed))
+        scripts = Path(__file__).resolve().parent
+        for name in observed:
+            self.assertEqual(Path(name).name, name)
+            self.assertTrue((scripts / name).is_file(), name)
 
     def test_all_cheap_suites_run_when_successful(self):
         result, calls = self.run_preflight("no-matching-suite")
@@ -253,15 +258,15 @@ class PreflightDiagnosticTests(unittest.TestCase):
         self.assert_all_suites(calls)
 
     def test_early_middle_and_last_failures_are_not_hidden(self):
-        for suite in (
-            "test_hepta_workspace.py",
-            "test_hepta_ci_dependency_scaling.py",
-            "test_hepta_ci_opaque_inputs.py",
-        ):
+        baseline, expected_calls = self.run_preflight("no-matching-suite")
+        self.assertEqual(baseline.returncode, 0, baseline.stderr)
+        self.assert_all_suites(expected_calls)
+        suites = [line.split()[-1] for line in expected_calls]
+        for suite in (suites[0], suites[len(suites) // 2], suites[-1]):
             with self.subTest(suite=suite):
                 result, calls = self.run_preflight(suite)
                 self.assertNotEqual(result.returncode, 0)
-                self.assert_all_suites(calls)
+                self.assertEqual(calls, expected_calls)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "qualification/module-execution-dossiers"))
-from native_source_bindings import BindingError, observe_native_bindings
+from native_source_bindings import BindingError, identifiers, observe_native_bindings
 
 LANE = ROOT / "docs/lane-a-foundation"
 MATRIX_PATH = LANE / "MODULE_TRUTH_MATRIX.json"
@@ -108,7 +108,30 @@ def read_text(path: Path) -> str:
 def validate_anchor(owner: str, item: Any, root: Path = ROOT) -> None:
     if not isinstance(item, dict) or not isinstance(item.get("path"), str):
         raise VerificationError(f"{owner}: invalid source/test anchor")
-    source = read_text(root / item["path"])
+    path = root / item["path"]
+    if not path.resolve().is_relative_to(root.resolve()):
+        raise VerificationError(f"{owner}: source/test anchor escapes repository")
+    source = read_text(path)
+    if "requiredIdentifiers" in item:
+        symbols = item["requiredIdentifiers"]
+        if (
+            not isinstance(symbols, list)
+            or not symbols
+            or any(
+                not isinstance(symbol, str)
+                or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", symbol) is None
+                for symbol in symbols
+            )
+            or len(symbols) != len(set(symbols))
+        ):
+            raise VerificationError(f"{owner}: invalid requiredIdentifiers")
+        # Navigation binds code tokens, not formatting or explanatory prose.
+        # This is not a compiler or a receipt that the named test executed.
+        missing = set(symbols) - identifiers(path, source.encode("utf-8"))
+        if missing:
+            raise VerificationError(
+                f"{owner}: missing code identifiers {sorted(missing)!r} in {item['path']}"
+            )
     for field, required in (("mustContain", True), ("mustNotContain", False)):
         needles = item.get(field, [])
         if not isinstance(needles, list) or not all(
@@ -230,7 +253,9 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
         or value.get("sourceCodeCommitRole") != "provenance_only_non_authoritative"
         or value.get("candidateBinding") != "runtime_head_tree_and_source_blob_receipt"
         or not isinstance(rows, list)
-        or not all(isinstance(row, dict) and isinstance(row.get("module"), str) for row in rows)
+        or not all(
+            isinstance(row, dict) and isinstance(row.get("module"), str) for row in rows
+        )
         or not has_exact_module_membership([row["module"] for row in rows])
     ):
         raise VerificationError("Lane A native-binding header/module set mismatch")
@@ -319,13 +344,26 @@ def validate_wire_vector(root: Path = ROOT) -> None:
 
 
 def validate_source_specific(root: Path = ROOT) -> None:
+    # The crate now exports both reference models and the real SQLite owner.
+    # Its introductory prose is not an executable contract. Native operation
+    # tests own transactional semantics; these tokens only bind navigation.
+    validate_anchor(
+        "kernel.operations/current-exports",
+        {
+            "path": "codex-rs/hepta-operations/src/lib.rs",
+            "requiredIdentifiers": [
+                "OperationLedger",
+                "Outbox",
+                "ReferenceAuthorityWitness",
+                "DurableOperationStore",
+                "DestinationDedupeStore",
+            ],
+        },
+        root,
+    )
     required = {
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
-        "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
-        ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",
             "not a cryptographic credential",
