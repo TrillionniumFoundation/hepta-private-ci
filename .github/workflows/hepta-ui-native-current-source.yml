@@ -105,6 +105,8 @@ jobs:
               git commit-tree "$tree" -p "$BASE" -p "$CANDIDATE")
             git checkout --detach "$merge"
           fi
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          test -z "$(git status --porcelain)"
           mkdir -p native-evidence
           {
             printf 'candidate=%s\n' "$CANDIDATE"
@@ -113,8 +115,6 @@ jobs:
             printf 'checkout=%s\n' "$(git rev-parse HEAD)"
             printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
           } > native-evidence/source.txt
-          python3 apps/hepta-native/tools/prepare_current_source.py
-          test -z "$(git status --porcelain)"
       - name: Install Linux native dependencies
         id: linux_deps
         if: runner.os == 'Linux'
