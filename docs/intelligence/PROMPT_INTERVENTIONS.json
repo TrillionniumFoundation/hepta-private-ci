@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.prompt-intervention-registry.v2",
+  "schemaVersion": 2,
+  "documentClass": "canonical_registry",
+  "authorityScope": "prompt_factor_realization_pricing_portfolio_timing_trust_and_claim_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "terminology": {
+    "controlledMechanism": [
+      "Prompt Intervention",
+      "Context Intervention"
+    ],
+    "attackTerm": "Prompt Injection Attack"
+  },
+  "sourcesOfTruth": {
+    "factorAndRealization": "prompt.registry",
+    "interactionProjection": "knowledge.graph",
+    "causalExposureAndOutcome": "learning.ledger",
+    "selection": "prompt.optimizer"
+  },
+  "lifecycleStates": [
+    "registered",
+    "candidate_assigned",
+    "compiled",
+    "delivered",
+    "delivery_rejected",
+    "position_observed",
+    "outcome_observed",
+    "causal_effect_estimated",
+    "revoked",
+    "retired"
+  ],
+  "nonEquivalence": [
+    "assigned != compiled",
+    "compiled != delivered",
+    "delivered != internal_attention",
+    "correlation != causal_effect"
+  ],
+  "factorClasses": [
+    "objective_anchor",
+    "hard_constraint_reminder",
+    "inspect_before_mutate",
+    "evidence_before_claim",
+    "freshness_check",
+    "contradiction_check",
+    "citation_check",
+    "minimal_diff",
+    "failure_diagnosis",
+    "alternative_hypothesis",
+    "verification_checklist",
+    "abstain_on_insufficient_evidence",
+    "output_schema"
+  ],
+  "realizationBinding": [
+    "factorId",
+    "modelId",
+    "modelVersion",
+    "tokenizerDigest",
+    "systemTemplateDigest",
+    "toolSchemaDigest",
+    "locale",
+    "messageRole",
+    "payloadDigest",
+    "tokenCostUpperBound",
+    "contextProfile",
+    "expiry"
+  ],
+  "trustedInstructionChannels": [
+    "system_policy",
+    "developer_policy",
+    "signed_objective",
+    "registered_prompt_factor"
+  ],
+  "evidenceOnlyChannels": [
+    "user_content",
+    "web_content",
+    "email_content",
+    "document_content",
+    "tool_output",
+    "retrieved_memory"
+  ],
+  "security": {
+    "untrustedUpgradeToInstructionAllowed": false,
+    "roleBoundaryPreserved": true,
+    "secretMaterialAllowed": false,
+    "externalTextCanMintAuthority": false
+  },
+  "pricing": {
+    "payoff": "causal_incremental_recursive_utility",
+    "costs": [
+      "tokens",
+      "latency",
+      "context_crowding",
+      "instruction_interference",
+      "privacy",
+      "instability",
+      "future_context_option_value"
+    ],
+    "hardConstraintsTradable": false
+  },
+  "portfolio": {
+    "boundedTokenBudget": true,
+    "models": [
+      "complement",
+      "substitute",
+      "conflict",
+      "requires",
+      "dominates",
+      "redundant",
+      "supersedes"
+    ],
+    "diminishingReturnsRequired": true
+  },
+  "timing": {
+    "decisionType": "sequential_real_option",
+    "boundaries": [
+      "request_accepted",
+      "objective_compiled",
+      "before_planning",
+      "before_candidate_generation",
+      "before_model_or_tool_dispatch",
+      "after_observation",
+      "after_failure_or_uncertainty_spike",
+      "before_irreversible_mutation",
+      "before_verification",
+      "before_final_response",
+      "before_compact_or_handoff"
+    ],
+    "midGenerationMutationAllowed": false
+  },
+  "causalEvaluation": {
+    "completeCandidateSet": true,
+    "loggedAssignmentPropensity": true,
+    "noInterventionBaseline": true,
+    "singleAndPairwiseAblation": true,
+    "timingAblation": true,
+    "modelVersionIsolation": true,
+    "futureTimeHoldout": true
+  },
+  "currentClaim": "P0_STATIC_CONTEXT",
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

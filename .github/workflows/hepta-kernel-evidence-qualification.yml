@@ -1,0 +1,150 @@
+name: Kernel evidence qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-evidence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "docs/modules/kernel.evidence/**"
+      - "docs/lane-a-foundation/kernel.evidence/**"
+      - "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json"
+      - "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
+      - "qualification/kernel-evidence/**"
+      - "qualification/module-execution-dossiers/detail/kernel.evidence.md"
+      - "scripts/lane_a_foundation_core.py"
+      - ".github/workflows/hepta-kernel-evidence-qualification.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    name: Kernel evidence exact source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Run exact-source qualification commands
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          HEPTA_CI_LANE: source-head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          records="$RUNNER_TEMP/kernel-evidence"
+          mkdir -p "$records"
+          python3 scripts/hepta_ci_exec.py --output "$records/evidence-tests.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
+          python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
+          python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" --             python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify
+          python3 - <<'PY' > "$records/candidate.json"
+          import json, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          print(json.dumps({
+              "schemaVersion": 1,
+              "kind": "kernel_evidence_exact_source",
+              "commit": git("rev-parse", "HEAD"),
+              "tree": git("rev-parse", "HEAD^{tree}"),
+              "parents": git("rev-list", "--parents", "-n", "1", "HEAD").split()[1:],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Retain exact-source receipts
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: kernel-evidence-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/kernel-evidence/*.json
+          if-no-files-found: error
+          retention-days: 90
+
+  merge-candidate:
+    name: Kernel evidence deterministic merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta kernel evidence CI
+          author-email: hepta-kernel-evidence-ci@users.noreply.github.com
+          message: Synthetic kernel evidence merge
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Run synthetic-merge qualification commands
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          TESTED_SHA: ${{ steps.merge.outputs.sha }}
+          HEPTA_CI_LANE: base-merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "${{ steps.merge.outputs.tree }}"
+          records="$RUNNER_TEMP/kernel-evidence"
+          mkdir -p "$records"
+          python3 scripts/hepta_ci_exec.py --output "$records/evidence-tests.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
+          python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
+          python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" --             python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify
+          python3 - <<'PY' > "$records/candidate.json"
+          import json, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          parts = git("rev-list", "--parents", "-n", "1", "HEAD").split()
+          print(json.dumps({
+              "schemaVersion": 1,
+              "kind": "kernel_evidence_synthetic_merge",
+              "commit": parts[0],
+              "tree": git("rev-parse", "HEAD^{tree}"),
+              "parents": parts[1:],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Retain synthetic-merge receipts
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: kernel-evidence-merge-${{ steps.merge.outputs.sha }}
+          path: ${{ runner.temp }}/kernel-evidence/*.json
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,366 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "automation.taskflow",
+  "sourceMaturity": "native_durable_taskflow_execution_boundary",
+  "declaredRoots": [
+    "codex-rs/hepta-automation"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-automation"
+  ],
+  "stateOwnerDisposition": "Owns durable legacy and Calendar V2 schedule revisions, deterministic occurrence identity, claim, TaskFlow run/step orchestration, provider-attempt/reconciliation evidence, and terminal occurrence projection without owning downstream domain effects.",
+  "terminalObserverDisposition": "Agentd observes the existing App Server persisted-turn terminal state for Codex activity; registered external effect owners supply their own terminal/reconciliation receipts through the final-use-authorized durable step seam.",
+  "operations": [
+    {
+      "designOperation": "register_schedule",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+        "symbol": "pub async fn create_calendar_task_v2(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+          "kind": "calendar_v2_dst_tzdb_revision",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/automation.rs",
+          "kind": "legacy_schedule_compatibility",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+          "kind": "real_agentd_calendar_v2_capability_negotiation_and_product_control",
+          "command": "cargo test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers"
+        }
+      ],
+      "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records; Agentd advertises automation.calendar_v2@1.0 and generation-fences the typed creation call.",
+      "operation": "register_schedule",
+      "nativeSymbol": "pub async fn create_calendar_task_v2(",
+      "sourcePath": "codex-rs/hepta-automation/src/schedule_v2.rs",
+      "sourcePathExists": true,
+      "productCallers": [
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AgentdMethod::AutomationCreateCalendarV2",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "typed_product_client",
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "symbol": "pub async fn automation_create_calendar_v2(",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "sourceBlob": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+    },
+    {
+      "designOperation": "materialize_due",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/scheduler.rs",
+        "symbol": "pub async fn tick(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/scheduler.rs",
+          "kind": "scheduler_and_recovery",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+          "kind": "calendar_due_materialization",
+          "command": "cargo test -p codex-hepta-automation"
+        }
+      ],
+      "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives canonical UTC occurrence identity from the authoritative schedule profile, and commits TaskFlow step intent before App Server or external-provider contact.",
+      "operation": "materialize_due",
+      "nativeSymbol": "pub async fn tick(",
+      "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+    },
+    {
+      "designOperation": "claim_occurrence",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+        "symbol": "pub async fn materialize_occurrence(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/store.rs",
+          "symbol": "pub async fn claim_due(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "kind": "deterministic_occurrence_and_generation_fence",
+          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+          "kind": "restart_reconciliation_identity",
+          "command": "cargo test -p codex-hepta-automation"
+        }
+      ],
+      "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/token fence; safe reclaim preserves occurrence/client identity, while unresolved provider contact remains quarantined.",
+      "operation": "claim_occurrence",
+      "nativeSymbol": "pub async fn materialize_occurrence(",
+      "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+    },
+    {
+      "designOperation": "execute_step",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "symbol": "pub async fn execute_authorized_taskflow_effect",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+          "symbol": "pub async fn record_taskflow_step(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+          "symbol": "pub async fn execute_authorized_taskflow_effect_async",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+          "kind": "canonical_final_use_intent_binding",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+          "kind": "durable_indeterminate_terminal_reconciliation",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "kind": "durable_step_and_terminal_propagation",
+          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+          "kind": "final_use_provider_at_most_once_and_recovery",
+          "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+        }
+      ],
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
+      "operation": "execute_step",
+      "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
+      "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "sourcePathExists": true,
+      "productCallers": [],
+      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
+      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "selected-host Agentd/App Server execution receipt for the composed durable causal path",
+    "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
+    "real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification",
+    "independent acceptance, activation, promotion and release evidence"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "repositoryControlledProductCompositionGapsClosed": false,
+    "calendarV2ProductControlComplete": true,
+    "externalEffectProductCompositionComplete": false,
+    "agedTurnRecoveryLivenessGapClosed": true,
+    "terminalObserverPerPassBounded": true,
+    "terminalObserverDurableContinuation": true,
+    "externalEffectAsyncBridgeComplete": true,
+    "externalEffectExactWireBindingComplete": true,
+    "externalEffectDurableRecoveryIdentityComplete": true,
+    "implementedOperationMappingComplete": true
+  },
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+  "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
+  "owner": "automation-platform",
+  "deputy": "agent-runtime",
+  "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-automation"
+  ],
+  "observedAtHead": {
+    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "exactSourceEvidence": {
+    "kind": "path_blob_manifest_v1",
+    "entries": [
+      {
+        "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+        "blobSha": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/scheduler.rs",
+        "blobSha": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      }
+    ]
+  },
+  "observedSourcePaths": [
+    "CALLERS.toml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
+    "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/client.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+    "codex-rs/hepta-automation",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-operations",
+    "codex-rs/hepta-types"
+  ],
+  "repositoryControlledProductCompositionGaps": [
+    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
+  ],
+  "sourceObservationRequirements": {
+    "policy": "candidate_or_exact_observation_v1",
+    "rustWorkspaceBuildInputs": [
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock"
+    ],
+    "verifier": "scripts/hepta-implementation-maps.py::verify_source_identity",
+    "regression": "scripts/test_hepta_module_source_roots.py::SourceRootTests::test_exact_rust_observation_requires_workspace_manifest_and_lock",
+    "semantics": "Any strict exact observation whose resolved source roots enter codex-rs must include the root Cargo workspace manifest and lockfile; omission is a verification failure."
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service.rs",
+      "nativeSymbol": "spawn_automation_service",
+      "state": "default_optional_scheduler_with_owner_retirement"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
+      "nativeSymbol": "run_automation_scheduler",
+      "state": "existing_app_server_queue_owner_consumer"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation.rs",
+      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_service.rs",
+      "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "object": "08afc2c6c333974567385a9f5630e0b6b71a6fbd"
+    },
+    {
+      "path": "codex-rs/hepta-automation",
+      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+      "object": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/scheduler.rs",
+      "object": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "object": "176b5c7200bea7d07d6642440d1f03c37209cef3"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+      "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+    },
+    {
+      "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+    }
+  ]
+}

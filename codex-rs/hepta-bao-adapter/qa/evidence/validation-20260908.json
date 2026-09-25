@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.bao.validation-status.v1",
+  "service_source_commit": "b798e88c98a7a9ab93a50abc1502c0a869233fda",
+  "rust_toolchain": "1.98.0 (repository pins 1.95.0)",
+  "real_service": {
+    "status": "pass",
+    "checks": 20,
+    "evidence": "real-consumer-20260908.json",
+    "consumer_sha256": "124c508766dfcd0627b72f9974270983e681f3735d7974152ad605a690f736b9",
+    "issuer_sha256": "e8bc24cb8d8d2fa1b63121b94690d666d47497e41a0649542c7219f346da083a",
+    "scope": "pre-approved-HTTP-client migration binary; this result is not a test of the later transport change"
+  },
+  "source_linked_targeted": {
+    "passed_cases": 28,
+    "runs": "27 passed; timed-out test-server cleanup corrected; remaining timeout case passed on targeted rerun",
+    "clippy_all_targets": "passed; pre-existing provider_effect.rs:970 some_filter warning under Rust 1.98",
+    "scope": "actual repository sources in an isolated manifest preserving direct dependency features; not a full-workspace locked build; pre-approved-HTTP-client migration sources",
+    "fixture_fixes": "private directory permissions; cancel timeout test server; fallible test helpers for repository lint"
+  },
+  "normal_workspace_just_test": {
+    "status": "blocked_space",
+    "packages": [
+      "codex-hepta-contracts",
+      "codex-hepta-bao-adapter",
+      "codex-hepta-supervisor"
+    ],
+    "command": "just test --locked -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-hepta-supervisor",
+    "compiler_errors_observed": 0,
+    "compilation_units_started": 363,
+    "tests_executed": 0,
+    "exit_code": 130,
+    "reason": "shared filesystem remained full; interrupted with Ctrl-C after dependency compilation, before Nextest execution",
+    "production_authority_bins": "normal workspace build not started; source-linked issuer build and actual issuer process already verified"
+  },
+  "cargo_lock": {
+    "status": "updated by normal cargo metadata",
+    "added_dependency_edges": 17,
+    "changed_package_versions_sources_or_checksums": 0,
+    "approved_http_client_followup": {
+      "added_dependency_edges": 3,
+      "removed_dependency_edges": 1,
+      "changed_package_versions_sources_or_checksums": 0,
+      "sha256": "e76a0780896341e3dc702ae45cfcbf8ec363ea6d5c234a6b6ff2600be5792d30"
+    }
+  },
+  "bazel_lock": {
+    "status": "local blocked; independent old-source CI passed; current transport change requires new-head CI",
+    "automatic_approval_rejection": "Bazel lock update attempted telemetry.aspect.build with an unknown metadata payload that was not authorized",
+    "safer_retry": "official DO_NOT_TRACK=1 and ASPECT_TOOLS_TELEMETRY=-all supplied through task-local repo_env",
+    "safer_retry_errors": [
+      "LLVM archive bsdtar extraction could not set user=1001/group=1001 (Invalid argument)",
+      "network approval was cancelled before a decision was returned"
+    ],
+    "module_lock_modified": false,
+    "independent_old_source_ci": {
+      "source_commit": "20ede7c31dfc162bf231d50c875416f3d83714dc",
+      "workflow_run_id": 34169739488,
+      "artifact_id": 10035325245,
+      "artifact_sha256": "eae0f352ff21f3444fc6180b7ab1ee9b67ce76cd99fe198eebb7504f2032f660",
+      "check_update_check_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "checked_mode": "mod deps --lockfile_mode=error",
+      "module_lock_git_blob": "b563f19f51fff22a4cddcb3cd1a043192befbf84",
+      "lock_diff": false,
+      "scope": "old source only; excludes approved HTTP client dependency migration"
+    }
+  },
+  "format": {
+    "rust": "passed",
+    "python": "passed",
+    "full_just_fmt": "blocked only at Bazel/Starlark formatter: dotslash unavailable"
+  },
+  "documentation": {
+    "module_closed_world": "pass (40 modules)",
+    "readiness": "pass",
+    "global_document_verifier": "pass (PASS_HEPTA_DEVELOPMENT_DOCS_V8)"
+  },
+  "production_rollout": false,
+  "complete_openbao_replacement": false,
+  "approved_http_client_followup": {
+    "status": "completed with six reproduced pre-existing shared-client test failures",
+    "direct_reqwest_dependency": false,
+    "deny_policy_modified": false,
+    "new_test": "isolated subprocess with real TLS: polluted OTel header injection, ambient CA and proxy, redirect and plaintext refusal, diagnostic redaction",
+    "existing_regressions": "adapter TLS, response bound, post-header timeout, authority/consumer delivery behavior",
+    "cargo_deny": "not installed locally; exact current-head CI required",
+    "normal_workspace_just_test": {
+      "command": "just test --locked -p codex-http-client -p codex-hepta-contracts -p codex-hepta-bao-adapter",
+      "exit_code": 100,
+      "tests_executed": 243,
+      "passed": 237,
+      "failed": 6,
+      "skipped": 0,
+      "passed_by_binary": {
+        "codex-hepta-bao-adapter": 18,
+        "codex-hepta-contracts": 132,
+        "codex-http-client": 77,
+        "codex-http-client::ca_env": 10
+      },
+      "new_isolation_test": "pass"
+    },
+    "failed_tests": [
+      "route_aware_client_pool::tests::request_failures_classify_real_untrusted_certificate_handshakes",
+      "route_aware_client_pool::tls_fallback_tests::does_not_retry_a_non_replayable_streaming_request",
+      "route_aware_client_pool::tls_fallback_tests::retries_a_native_tls_protocol_failure_once_with_rustls",
+      "route_aware_client_pool::tls_fallback_tests::retries_a_tls_protocol_failure_when_request_url_contains_certificate_markers",
+      "route_aware_client_pool::tls_fallback_tests::retries_a_native_tls_failure_after_another_request_caches_rustls",
+      "route_aware_client_pool::tls_fallback_tests::successful_rustls_fallback_replays_the_request_and_reuses_the_destination"
+    ],
+    "prior_source_control": {
+      "commit": "91bcc46b0a28064c209470d56bc7b4dddbc8713c",
+      "checkout": "independent worktree; current source files unchanged",
+      "inherited_environment": {
+        "passed": 0,
+        "failed": 6
+      },
+      "test_process_without_SSL_CERT_FILE_and_CODEX_CA_CERTIFICATE": {
+        "passed": 0,
+        "failed": 6
+      },
+      "conclusion": "same six failures reproduced before this change; root cause remains unresolved, including the CA-environment hypothesis",
+      "tree": "11a9bcde7ad45a201863c9e2f9f215a4961f0052"
+    },
+    "normal_example_build": {
+      "command": "cargo build --locked -p codex-hepta-bao-adapter --example consume_secret",
+      "exit_code": 0,
+      "consumer_sha256": "f160211f2d23df302c57e2da36b238bca5c6cfdad1723618d2d6bee22d02d69c"
+    },
+    "real_service": {
+      "status": "pass",
+      "checks": 20,
+      "evidence": "real-consumer-http-client-20260908.json",
+      "tested_source_tree_before_format": "4f1a0be353ddcb5617de193487f11c72de9c9206",
+      "scope": "fresh normal-workspace consumer; unchanged independently built issuer and reviewed Bao service binary"
+    },
+    "resolved_reqwest_owner_graph": {
+      "violations": 0,
+      "first_party_owners": [
+        "codex-code-mode",
+        "codex-hepta-matrixd",
+        "codex-http-client",
+        "codex-otel",
+        "codex-responses-api-proxy"
+      ],
+      "scope": "normal cargo metadata checked against existing deny.toml wrappers; not a cargo-deny CLI pass"
+    },
+    "post_verification": {
+      "scoped_clippy_command": "just fix -p codex-http-client -p codex-hepta-bao-adapter --locked",
+      "scoped_clippy_exit_code": 0,
+      "scoped_clippy_warnings": 0,
+      "lint_adjustment": "test-only TlsFixture type alias; no production logic changes",
+      "formatter_command": "just fmt",
+      "formatter_exit_code": 1,
+      "formatter_failure": "Bazel/Starlark formatter could not execute unavailable dotslash",
+      "rust_format": "pass",
+      "just_and_python_format": "pass",
+      "tests_rerun_after_fix_or_format": false,
+      "tested_production_source_hashes_still_match": true,
+      "scope": "final tree differs by a test-only alias/formatting and evidence/documentation; retained binary is identified by its own build tree/hash, not the final commit"
+    }
+  }
+}

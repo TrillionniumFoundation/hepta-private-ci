@@ -1,0 +1,279 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+  },
+  "laneId": "LANE-C-MEMORY",
+  "module": "context.compiler",
+  "owner": "intelligence-platform",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/context.compiler/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-context-compiler"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-context-compiler"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "legacy_v1_read_only_source_composed_verified_v2_not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "compile",
+      "nativeSymbol": "compile",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "state": "legacy_compatibility_source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/lib_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_with_requirements",
+      "nativeSymbol": "compile_with_requirements",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/requirements.rs",
+      "state": "legacy_compatibility_source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/requirements_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_with_requirements",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_candidate_bound",
+      "nativeSymbol": "compile_candidate_bound",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
+      "state": "legacy_compatibility_source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_candidate_bound",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_admission_snapshot_v2",
+      "nativeSymbol": "verify_admission_snapshot_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_attachment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_admission_snapshot_successor_v2",
+      "nativeSymbol": "verify_admission_snapshot_successor_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_attachment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_admission_v2",
+      "nativeSymbol": "verify_admission_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_v2",
+      "nativeSymbol": "compile_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "record_serialization",
+      "nativeSymbol": "record_serialization",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_attachment",
+      "nativeSymbol": "build_attachment",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_attachment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "operation": "prepare_delivery_v2",
+      "nativeSymbol": "prepare_delivery_v2",
+      "designOperation": "revalidate_attachment"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "operation": "observe_delivery",
+      "nativeSymbol": "observe_delivery",
+      "designOperation": "compile_context"
+    },
+    {
+      "operation": "wire_v2_compatibility_receipt",
+      "nativeSymbol": "encode_compilation_receipt_wire_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "state": "legacy_v1_semantics_transport_boundary_canonical_producer_enforced",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/wire_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Compose the verified V2 operations into one authenticated named product caller with the authoritative admission verifier, exact tokenizer/serializer/template/tool-schema profile, and runtime provider owner.",
+    "At the real provider boundary consume current final-use authority in the same effect-bound ceremony that binds ContextDeliveryPreparationV2 to the exact serialized payload and canonical ProviderRequestBinding before physical send.",
+    "Persist and independently resolve provider attempt/terminal evidence, then exercise revoke race, adapter death, provider indeterminate, process death and retry reconciliation without converting uncertainty into success.",
+    "Run exact-head, deterministic synthetic-merge, capacity and target-host qualification before changing productExecutionProved, activation or release."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "implementedOperationMappingComplete": true
+  },
+  "sourceRoot": [
+    "codex-rs/hepta-context-compiler"
+  ],
+  "sourceBaseMode": "module_local_strict",
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "nativeSymbol": "compile_context",
+      "state": "compiled_legacy_owner_adapter_not_verified_v2_ingress"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler",
+      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
+      "object": "52efe73b0da51c5cbb054e8cdcfe3e59e4b08ba6"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs",
+      "object": "28c5a29b1dd4108c3570c3189a8a414ae5728795"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "object": "da1711e6575e0921ec4d2ae7b305fe8013f2e775"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/lib_tests.rs",
+      "object": "c9350dda2d75a4937fd77b1310cfaa2edafa8c59"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/requirements.rs",
+      "object": "33f723317f83feec2b6e8be8c45d058f58288a7e"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/requirements_tests.rs",
+      "object": "c0b88410e0738246004ec7c9aac01da4ffc13fde"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "object": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+      "object": "49232cf8eb81a64110a3ba23e6c0abaf54830438"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "object": "6e0583a81b064eec7ceb0b785bc9a48bd801a2f1"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+      "object": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
+    },
+    {
+      "path": "docs/modules/context.compiler/TECHNICAL.md",
+      "object": "bba347eebcdf9a9e93afaf5ae26798dee368bd0e"
+    }
+  ]
+}

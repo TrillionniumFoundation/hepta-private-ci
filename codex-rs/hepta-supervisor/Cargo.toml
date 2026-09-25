@@ -1,0 +1,98 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-supervisor"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_supervisor"
+path = "src/lib.rs"
+doctest = true
+
+[features]
+default = []
+# Offline/shadow harness API; never enabled by a product dependency.
+qualification = []
+# Explicit build opt-in for externally authorized mutation; default daemons
+# remain lifecycle-only and keep signed mutation admission fail-closed.
+production-authority = []
+
+[[bin]]
+name = "hepta-supervisord"
+path = "src/main.rs"
+test = false
+
+[[bin]]
+name = "hepta-supervisor-intent-recovery"
+path = "src/bin/hepta-supervisor-intent-recovery.rs"
+test = false
+
+[[bin]]
+name = "hepta-authority-signer"
+path = "src/bin/hepta-authority-signer.rs"
+test = false
+required-features = ["production-authority"]
+
+[[bin]]
+name = "hepta-final-use-signer"
+path = "src/bin/hepta-final-use-signer.rs"
+test = false
+required-features = ["production-authority"]
+
+[[bin]]
+name = "hepta-final-use-approver"
+path = "src/bin/hepta-final-use-approver.rs"
+test = false
+required-features = ["production-authority"]
+
+[[bin]]
+name = "hepta-final-use-revocation-signer"
+path = "src/bin/hepta-final-use-revocation-signer.rs"
+test = false
+required-features = ["production-authority"]
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+base64 = { workspace = true }
+codex-hepta-agent-protocol = { workspace = true }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-control-plane = { path = "../hepta-control-plane" }
+codex-hepta-fleet = { workspace = true }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
+codex-hepta-memory = { workspace = true }
+codex-hepta-matrix-protocol = { workspace = true }
+codex-hepta-paths = { workspace = true }
+codex-hepta-types = { workspace = true }
+codex-uds = { workspace = true }
+constant_time_eq = { workspace = true }
+ed25519-dalek = { workspace = true }
+libc = { workspace = true }
+rustix = { workspace = true, features = ["process"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = [
+    "fs",
+    "io-util",
+    "macros",
+    "rt-multi-thread",
+    "signal",
+    "sync",
+    "time",
+] }
+tokio-util = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+zeroize = { workspace = true }
+
+[dev-dependencies]
+jsonschema = { version = "=0.33.0", default-features = false }
+pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.52", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }

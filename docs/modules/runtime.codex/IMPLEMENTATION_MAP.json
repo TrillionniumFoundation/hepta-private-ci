@@ -1,0 +1,359 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "runtime.codex",
+  "sourceMaturity": "native_execution_spine",
+  "declaredRoots": [
+    "codex-rs/codex-app-server",
+    "codex-rs/hepta-codex-adapter"
+  ],
+  "resolvedRoots": [
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter"
+  ],
+  "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
+  "terminalObserverDisposition": "The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.",
+  "operations": [
+    {
+      "designOperation": "open_thread",
+      "mappingClass": "resolved_alias_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "symbol": "pub(crate) async fn thread_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/thread_start.rs",
+          "kind": "product_protocol_integration",
+          "command": "just test -p codex-app-server --test all thread_start"
+        }
+      ],
+      "sourceSemantics": "Creates a protocol-visible thread through the canonical App Server handler.",
+      "operation": "open_thread",
+      "nativeSymbol": "pub(crate) async fn thread_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "submit_turn",
+      "mappingClass": "resolved_alias_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+          "kind": "product_protocol_integration",
+          "command": "just test -p codex-app-server --test all turn_start"
+        }
+      ],
+      "sourceSemantics": "Admits a turn through the single App Server execution path.",
+      "operation": "submit_turn",
+      "nativeSymbol": "pub(crate) async fn turn_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "dispatch_tool",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/core/src/tools/router.rs",
+          "symbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
+          "buildTarget": "codex-core",
+          "ownerModule": "runtime.codex"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+          "kind": "native_tool_state",
+          "command": "just test -p codex-core executed_tool_calls"
+        }
+      ],
+      "sourceSemantics": "Admits the turn at the App Server boundary; tool dispatch remains in its declared codex-core dependency and does not transfer core ownership.",
+      "operation": "dispatch_tool",
+      "nativeSymbol": "pub(crate) async fn turn_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "observe_delivery",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/core/src/codex_thread.rs",
+          "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+          "buildTarget": "codex-core",
+          "ownerModule": "runtime.codex"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+          "kind": "admission_and_delivery",
+          "command": "just test -p codex-app-server --test all turn_start"
+        }
+      ],
+      "sourceSemantics": "Admits the turn at the App Server boundary and delegates exact input admission observation to its declared codex-core dependency.",
+      "operation": "observe_delivery",
+      "nativeSymbol": "pub(crate) async fn turn_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "current runtime.codex exact-head, deterministic synthetic-merge, focused product fault-matrix, and product E2E evidence are pending for this composed candidate"
+  ],
+  "externalEvidenceGates": [
+    "independently operated final-use authority endpoint, signer-key custody, pathname plus connected-peer socket identity, trusted time/revocation distribution, and external anti-rollback recovery for replay/epoch state",
+    "authenticated target-host Agentd/App Server process, generation and socket identity",
+    "real model/provider terminal stream observation under the selected target deployment",
+    "delegated external-tool terminal observation and acknowledgement-loss qualification",
+    "independent policy/evidence for resolving or quarantining indeterminate effects when ephemeral App Server history is unavailable; no unauthenticated manual release",
+    "independent acceptance, activation/canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": false,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "implementedOperationMappingComplete": true
+  },
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "composed_candidate_exact_head_qualification_pending",
+  "productionWriterState": "existing_app_server_owner",
+  "owner": "codex-integration",
+  "deputy": "agent-runtime",
+  "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/codex-app-server",
+    "codex-rs/hepta-codex-adapter"
+  ],
+  "productionCallerBindings": [
+    {
+      "role": "production_caller",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "async fn run_once(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Named native caller sends the real App Server v2 thread/start and turn/start path. It requires independently signed final-use authority for the exact TurnStartParams binding, rechecks cancellation/deadline/Agent readiness/ingress after authority acquisition, commits the authority/request witness durably before the network await, maps typed App Server outcomes through hepta-codex-adapter, and never blindly replays an unknown acknowledgement."
+    },
+    {
+      "role": "final_use_authority_port",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "symbol": "impl TurnStartAuthorizer for UnixFinalUseAuthorizer",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Obtains an independently signed exact-binding grant over a protected Unix endpoint, synchronizes monotonic revocation state, locally claims the grant into a non-constructible VerifiedUseToken, and keeps the issuer private key outside the worker."
+    },
+    {
+      "role": "durable_reconciler",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "pub(super) async fn reconcile_existing(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Reopens the original Agent/App Server generation and uses thread/read(includeTurns=true) without submitting a new turn. Recovery requires exact stable client_user_message_id plus original UserMessage content; mismatched or duplicate matches are hard conflicts and missing history remains indeterminate."
+    },
+    {
+      "role": "durable_owner",
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "symbol": "pub struct NativeRunRecord",
+      "buildTarget": "codex-hepta-infer-core",
+      "semantics": "Persists write-ahead dispatch identity, exact runtime.codex correlation fields, authority-witness digest, unknown-outcome capacity ownership, terminal observations and legacy-compatible replay semantics."
+    }
+  ],
+  "compositionTests": [
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "command": "just test -p codex-hepta-codex-adapter",
+      "covers": [
+        "terminal status correctness",
+        "transport/thread/turn correlation",
+        "overload versus accepted-or-unknown classification",
+        "thread-read recovery conflicts"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs",
+      "command": "just test -p codex-hepta-codex-adapter",
+      "covers": [
+        "absolute deadline binding",
+        "stable exact request identity",
+        "late terminal evidence"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-core",
+      "covers": [
+        "durable write-ahead",
+        "unknown-outcome slot retention",
+        "one-shot live pre-effect abort proof",
+        "legacy replay cannot become newly qualified success"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "named caller terminal outcomes",
+        "owner authority loss",
+        "cancellation and deadline behavior",
+        "late terminal facts"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "reopen/no-replay",
+        "pre-dispatch stop",
+        "explicit pre-start rejection"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "independently signed exact-binding grant",
+        "forged grant rejection",
+        "authority denial",
+        "peer identity",
+        "revocation-head rollback rejection"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "command": "just test -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn",
+      "covers": [
+        "real Agentd and App Server process composition",
+        "named runtime.codex AppServerModelDriver caller",
+        "independently signed exact final-use grant",
+        "single physical Responses provider dispatch",
+        "durable terminal observation and correlation witness"
+      ],
+      "evidenceBoundary": "controlled mock Responses provider only; real provider and target-host identity remain external qualification gates"
+    },
+    {
+      "path": "codex-rs/core/src/tools/spec_plan_tests.rs",
+      "command": "just test -p codex-core hepta_native_inference_client_has_no_model_visible_or_registered_tools",
+      "covers": [
+        "model-only native inference topology",
+        "no MCP/connector/dynamic/core tool exposure for hepta-infer-worker"
+      ]
+    }
+  ],
+  "sourceBaseSemantics": "historical_provenance_only",
+  "exactCandidateProvenance": {
+    "mode": "verification_derived_from_checkout",
+    "commitCommand": "git rev-parse HEAD",
+    "treeCommand": "git rev-parse HEAD^{tree}",
+    "verifier": "scripts/hepta-lane-b-truth.py verify",
+    "receiptFields": [
+      "exactHead",
+      "exactTree"
+    ],
+    "hardCodedInMap": false,
+    "rationale": "A committed map cannot safely hard-code its own Git commit/tree identity without becoming self-referential. Exact candidate identity is derived and emitted from the checked-out candidate by the verifier; sourceBase remains historical provenance only."
+  },
+  "toolTopology": {
+    "nativeInferenceProfile": "model_only",
+    "denyOnlyGuard": {
+      "path": "codex-rs/core/src/tools/spec_plan.rs",
+      "symbol": "pub(crate) fn hepta_model_only_tool_router(",
+      "buildTarget": "codex-core"
+    },
+    "effectSemantics": "The hepta-infer-worker App Server profile exposes no model-visible or registered tools. dispatch_tool mappings are delegated source navigation only. Any external tool effect requires a separately authorized effect owner, final-use capability, durable operation identity, and terminal observer."
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "nativeSymbol": "run_app_server",
+      "state": "embedded_existing_app_server_spine"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/app-server",
+      "object": "b9367f7003dc4898367ab2082076ea51e2b9bed0"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "object": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_start.rs",
+      "object": "a89cc6ba53e664ca30f592ac156e57fad24bcb86"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "object": "e624887eccb92cc0be6eaceeec9c5a50da20dbc1"
+    },
+    {
+      "path": "codex-rs/codex-app-server/BINDING.json",
+      "object": "f3dec1f92ed39c2eeed2b7a97b34babb01800197"
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "object": "7272a699937ac9f5e474e2f11ee47db3d3725b8c"
+    },
+    {
+      "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+      "object": "c266d7c39056e632333bf30863a6c9f2dfcc2cb9"
+    },
+    {
+      "path": "codex-rs/core/src/tools/router.rs",
+      "object": "f8ff2cfcb8dc0daad9e88077de63a53bc18daa49"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "object": "b25375be9219be18baba2ab4d3488658d0040897"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter",
+      "object": "e1cc6d8c61c6e0d22d51a64dee3dafd0609f3dc5"
+    },
+    {
+      "path": "docs/modules/runtime.codex/TECHNICAL.md",
+      "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
+    }
+  ]
+}

@@ -1,0 +1,662 @@
+schema_version = 1
+rule = "A new public Hepta product surface requires at least one named product caller in this manifest. Caller-zero work stays outside the promotion stack; qualification-only gate callers do not count as product callers."
+candidate_base = "74004b5397b24662a87a5264a6ae80664168c7f3"
+frozen_oracle = "2f704dc7c1172cefca908852456beccf4d02a5d1"
+
+[[surface]]
+crate = "codex-hepta-governance"
+role = "product_extension"
+public_items = ["install", "install_with_mode", "GovernanceState"]
+product_callers = [
+  "codex-rs/app-server/src/extensions.rs",
+  "codex-rs/mcp-server/src/message_processor.rs",
+]
+
+[[surface]]
+crate = "codex-hepta-evidence"
+role = "durable_product_evidence"
+public_items = ["HeptaEvidenceStore", "EvidenceError"]
+product_callers = ["codex-rs/ext/hepta-governance/src/install.rs"]
+
+[[surface]]
+crate = "codex-hepta-contracts"
+role = "typed_product_contracts"
+public_items = [
+  "governance_contracts",
+  "memory_contracts",
+  "provider_contracts",
+  "canonical_digests",
+]
+product_callers = [
+  "codex-rs/ext/hepta-governance/src/lib.rs",
+  "codex-rs/ext/hepta-memory/src/extension.rs",
+  "codex-rs/hepta-evidence/src/lib.rs",
+]
+
+[[excluded]]
+crate = "codex-hepta-proof"
+reason = "Permanently retired from the vNext product: no product caller, no live production rows, and no runtime dependency. The frozen oracle and recovery bundle retain it for archaeology."
+
+[[excluded]]
+crate = "codex-hepta-channel-adapter"
+reason = "Permanently retired from the vNext product: the live deployment has no channel process or channel state, and Telegram delivery remains owned by OpenClaw rather than Hepta."
+
+[[surface]]
+crate = "codex-hepta-memory"
+role = "agent_local_versioned_memory_intelligence_and_kg"
+public_items = [
+  "CognitiveRuntime",
+  "CognitiveStore",
+  "CognitiveWriteReceipt",
+  "KgFactSetDraft",
+  "RetrievalBatch",
+  "shadow_recall",
+]
+product_callers = [
+  "codex-rs/ext/hepta-memory/src/extension.rs",
+  "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+  "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+  "codex-rs/hepta-agentd/src/runtime.rs",
+  "codex-rs/hepta-agentd/src/app_runtime.rs",
+]
+
+[[surface]]
+crate = "codex-hepta-memory-extension"
+role = "product_extension"
+public_items = ["install", "HeptaMemoryFeatureFlags", "HeptaMemoryThreadConfig"]
+product_callers = [
+  "codex-rs/app-server/src/extensions.rs",
+  "codex-rs/mcp-server/src/message_processor.rs",
+]
+
+[[surface]]
+crate = "codex-hepta-paths"
+role = "typed_product_state_paths"
+public_items = ["HeptaStateRoot", "HeptaStateLayout"]
+product_callers = [
+  "codex-rs/hepta-runtime/src/lib.rs",
+  "codex-rs/hepta-native-gateway/src/lib.rs",
+]
+
+[[surface]]
+crate = "codex-hepta-wire"
+role = "transport_neutral_versioned_wire_contract"
+public_items = ["WireEnvelopeV2"]
+product_callers = ["codex-rs/hepta-runtime/src/lib.rs"]
+
+[[surface]]
+crate = "codex-hepta-runtime"
+role = "read_only_product_runtime"
+public_items = ["HeptaRuntime", "RuntimeStatus"]
+product_callers = ["codex-rs/hepta-native-gateway/src/lib.rs"]
+
+[[surface]]
+crate = "codex-hepta-intuition"
+role = "authority_free_authenticated_policy_kernel"
+public_items = [
+  "CanonicalPolicyProfileV1",
+  "ScoringCommitmentV1",
+  "AssignmentCommitmentV1",
+  "decide_calibrated_v3",
+]
+product_callers = [
+  "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
+  "codex-rs/hepta-agentd/src/intuition_policy.rs",
+]
+
+[[surface]]
+crate = "codex-hepta-intelligence"
+role = "authenticated_intuition_policy_admission"
+public_items = [
+  "decide_authenticated_intuition_v2",
+  "IntuitionQualificationEvidenceV2",
+  "AuthenticatedIntuitionDecisionV2",
+]
+product_callers = ["codex-rs/hepta-agentd/src/intuition_policy.rs"]
+
+[[surface]]
+crate = "codex-hepta-control-plane"
+role = "read_only_compiled_in_organ_composition"
+public_items = ["OrganGraphsV1", "OrganHostV1", "TrustedReadOnlyOrganV1"]
+product_callers = ["codex-rs/hepta-runtime/src/organs.rs"]
+
+[[surface]]
+crate = "codex-hepta-types"
+role = "authority_free_identity_generation_and_digest_primitives"
+public_items = ["StableId", "Generation", "Digest32", "AuthorityPosture"]
+product_callers = [
+  "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+  "codex-rs/hepta-runtime/src/organs.rs",
+]
+
+[[surface]]
+crate = "codex-hepta-native-gateway"
+role = "loopback_read_only_product_gateway"
+public_items = [
+  "print_live_shell_contract_if_requested",
+  "run_serve_ui_if_requested",
+]
+product_callers = ["codex-rs/cli/src/main.rs"]
+
+[[excluded]]
+crate = "codex-hepta-shadow-qualification"
+reason = "Qualification-only harness; its dedicated live-trial binary is a gate caller, not a product caller or product-runtime surface."
+
+[[excluded]]
+crate = "codex-hepta-operator-acceptance"
+reason = "Qualification-only ceremony; its dedicated acceptance binary is a gate caller, not a product caller or product-runtime surface."
+
+[[qualification]]
+slice = "S2_memory_recall"
+composition = "exact_admitted_turn_and_same_thread_read_path_composed"
+admitted_parent_binding = "host thread_store + turn_store + physical provider attempt"
+mutation_writer_composed = false
+cross_thread_recall = false
+default_mode = "digest_only_shadow"
+read_only_attachment_requires = [
+  "hepta_governance",
+  "hepta_memory",
+  "hepta_memory_read_only",
+]
+persistent_telemetry = false
+otel_telemetry = false
+zero_event_interpretation = "shadow_observations_are_turn_local_and_not_persistent_telemetry"
+promotion_eligible = false
+
+[[qualification]]
+slice = "E41_authority_integration_local_20260826"
+requires = [
+  "R2_intelligence_kg_closed_loop",
+  "local_h4_durable_writer_qualification",
+]
+composition = "signed_mutation_receipt_propagation_daemon_fail_closed_and_sandbox_provider_reconcile"
+qualification_base_sha = "bc45b0937a4ecdeb194d8831aa11cc37370f856b"
+qualification_base_tree = "eb83937325c9c9ea836e1b80cc0f7fa13a74eaf9"
+tested_head_before_manifest_append = "b6a6812c5f7a13d3927f52a71579460169d5c160"
+tested_tree_before_manifest_append = "431ccc77d3536e24a0aa4dfb4c596bc67c6dffd3"
+candidate_branch = "hepta/azi2-authority-integration-20260826"
+source_binding_status = "CURRENT_RECEIPT_REQUIRED_AFTER_APPEND"
+qualification_receipt = "hepta-current-rebind-<final-head>-e41-authority-integration-20260826/authority-receipt.json"
+qualification_manifest_test = "codex-rs/hepta-contracts/src/callers_manifest_tests.rs"
+qualification_callers = [
+  "codex-rs/hepta-supervisor/src/daemon.rs",
+  "codex-rs/hepta-supervisor/src/daemon_protocol.rs",
+  "codex-rs/hepta-supervisor/src/supervisor.rs",
+  "codex-rs/model-provider/src/provider_effect.rs",
+  "codex-rs/hepta-memory/src/production_writer.rs",
+  "codex-rs/hepta-agentd/src/production_writer_host.rs",
+]
+public_surfaces = [
+  "run_supervisord_with_grant_verifier",
+  "ProductionMutationReceipt",
+  "HttpProviderEffectAdapter",
+  "ProductionDurableWriter",
+  "AgentdProductionWriterHost",
+]
+feature_gate = "codex-hepta-supervisor:production-authority"
+feature_gate_default_enabled = false
+signed_mutation_requires_external_verifier = true
+daemon_recovery_unresolved_signed_intent_fail_closed = true
+mutation_receipt_propagated_to_caller = true
+sandbox_provider_status_reconcile_qualified = true
+provider_physical_sampling_exactly_once = false
+production_caller_named = false
+production_authority = false
+production_writer = false
+effect_authority = false
+external_effect = false
+operator_acceptance = false
+promotion = false
+g5_allowed = false
+evidence_class = "LOCAL_QUALIFICATION_ONLY"
+claim_status = "BOUNDED_SEMANTIC_AND_FIXTURE"
+efficacy_status = "NOT_EVALUATED"
+approval_state = "NOT_APPROVED"
+decision = "CONTINUE_PRE_RELEASE"
+release_inputs_pending = [
+  "external_trust_root",
+  "provider_owned_status_and_signed_ack",
+  "physical_power_and_media_durability",
+  "operator_acceptance_and_promotion",
+]
+promotion_eligible = false
+
+[[qualification]]
+slice = "R2_fleet_automation_bounded"
+requires = ["R2_matrix_robrix_closed_loop"]
+qualification_base_sha = "445d1cdc50c9e86d09041b17888245b8c5937bda"
+qualification_base_tree = "2ba0062706e4bc652ee0433ef6b3b90696e3f1e3"
+evidence_head = "73ff3b438a25d88201169aed7c7c79cf5d9644a8"
+evidence_tree = "4070f421a63311c66a77d08491c4a9ab1fd52c65"
+evidence_status_sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+evidence_aggregate_sha256 = "57688579a2fe4bca6494cca8dcbc051d53f911086835be34618aafd5fda05cd7"
+evidence_authority_review_sha256 = "12130e8c31fd0e2014782136ce9ff7a35024b0c3e265eb622c67a5173123221c"
+g4_pair_receipt_sha256 = "f36ce3f41cc8734f4392070a01ac53cbdf753dee5a1bb8b352feb1bc886e8064"
+g4_pair_binding_sha256 = "8d439937b36b60e573f3887c14e99801550c0a0c995da9646ec7690222ddee5f"
+g4_pair_verification_sha256 = "206a62c39c664259792a39f98572df6f56eb3155a67d6d83caabb50249d3b7b5"
+composition = "five_agent_isolation_generation_cas_memory_grant_revoke_automation_fences_composed"
+development_status = "qualified_exact_bounded_candidate"
+qualification_manifest_test = "codex-rs/hepta-contracts/src/callers_manifest_tests.rs"
+qualification_callers = [
+  "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+  "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+  "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+  "codex-rs/hepta-agentd/src/runtime_tests.rs",
+  "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+  "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+  "codex-rs/hepta-automation/tests/automation.rs",
+]
+qualification_tests = [
+  "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+  "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+  "stale_runtime_is_fenced_without_touching_peer",
+  "stale_deferred_drain_is_generation_fenced_from_replacement_starting",
+  "successful_upgrade_and_explicit_rollback_change_only_target_agent",
+  "failed_spawn_and_failed_health_each_auto_rollback_once",
+  "recovery_closes_running_release_state_crash_window",
+  "stale_generation_is_fenced_before_cognitive_store_open",
+  "generation_change_during_open_is_fenced_before_serving",
+  "automation_generation_change_during_open_remains_fail_closed",
+  "explicit_grant_is_owner_written_consumer_read_only_and_scope_exact",
+  "revoke_is_observed_by_the_next_physical_send_revalidation",
+  "five_agents_keep_private_stores_and_only_explicit_consumers_federate",
+  "one_shot_periodic_disable_and_cancel_are_durable",
+  "restart_reclaims_same_occurrence_with_same_core_client_id_and_fences_old_lease",
+  "disabling_an_inflight_lease_never_resurrects_the_task",
+  "five_real_agents_survive_one_automation_store_failure_without_peer_stall",
+]
+qualification_lifecycle_actions = ["register", "start", "stop", "upgrade", "rollback", "grant", "revoke", "disable", "cancel", "restart"]
+product_caller_named = false
+real_agentd_process_count = 5
+source_delta_test_only = true
+g5_minimum_six_bounded_gates_complete = true
+five_agent_process_isolation = true
+generation_cas_stale_fence_qualified = true
+explicit_memory_grant_revoke_qualified = true
+automation_occurrence_client_id_idempotency_qualified = true
+stale_lease_no_resurrection_qualified = true
+store_failure_peer_liveness_qualified = true
+target_agent_only_upgrade_and_explicit_rollback_qualified = true
+target_agent_only_automatic_rollback_qualified = true
+same_fence_concurrency_has_one_winner = true
+five_agent_daemon_restart_preserves_peer_runtime = true
+owner_written_consumer_read_only_and_scope_exact = true
+revoke_revalidated_before_physical_send = true
+five_agent_private_store_and_explicit_consumer_isolation = true
+target_agent_typed_storage_quarantine = true
+four_peer_process_ids_and_readiness_unchanged = true
+four_peer_automation_store_create_list_cancel_available = true
+four_peer_normal_app_server_turns_completed = true
+general_fleet_lifecycle_qualified_in_g5 = false
+cross_agent_memory_federation_qualified_in_g5 = false
+fleet_or_automation_authority = false
+automation_authority = false
+new_general_fleet_lifecycle_surface_added = false
+new_product_fleet_lifecycle_authority_added = false
+new_automation_authority_added = false
+whole_tree_fleet_merge_allowed = false
+whole_tree_automation_merge_allowed = false
+provider_physical_sampling_exactly_once = false
+operator_acceptance_recorded = false
+promotion_eligible = false
+g5_complete = false
+g5_allowed = false
+fleet_and_automation_unfrozen = false
+
+[[qualification]]
+slice = "R2_fleet_automation_bounded_expansion_20260823"
+requires = ["R2_fleet_automation_bounded"]
+qualification_base_sha = "2f7e71b34498a4f6547b3c72070cdcdc257539ec"
+qualification_base_tree = "225e4de1e2ef60dc6495c9370105453ec5551c58"
+combined_evidence_head = "2f7e71b34498a4f6547b3c72070cdcdc257539ec"
+combined_evidence_tree = "225e4de1e2ef60dc6495c9370105453ec5551c58"
+fleet_candidate_head = "1fb2730b4884811924b1cfa77c8c89a6ef78eb84"
+fleet_candidate_tree = "d3e39d27b83c9aad47fddddc84d30932a24138dd"
+automation_candidate_head = "0ae14b5e3b7eb4c3574ef05f6870048088afb0b5"
+automation_candidate_tree = "0c2c18c152281bca31899588c4d0bd067c4f65e4"
+fleet_receipt_sha256 = "80024a0b32cf2327f17a009bf8ad8bcf7fbb37b79b3679c7baa7b00ca6a43f11"
+automation_receipt_sha256 = "6d1087dc22874ba7c30cd2106183400c4007e5b7323c89b5008e83073566fd4b"
+composition = "six_agent_target_lifecycle_plus_durable_unknown_dispatch_recovery"
+development_status = "qualified_bounded_expansion"
+qualification_manifest_test = "codex-rs/hepta-contracts/src/callers_manifest_tests.rs"
+qualification_callers = [
+  "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+  "codex-rs/hepta-agentd/src/automation.rs",
+  "codex-rs/hepta-automation/src/store.rs",
+  "codex-rs/hepta-automation/src/scheduler.rs",
+  "codex-rs/hepta-automation/tests/automation.rs",
+]
+qualification_tests = [
+  "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+  "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+  "unknown_provider_outcome_is_quarantined_across_store_recovery_until_reconciled",
+  "v1_store_migrates_atomically_to_dispatch_outcome_schema",
+  "queue_failures_after_admission_seam_are_never_dispatch_retries",
+  "dispatch_uncertain_tick_fail_stops_scheduler_until_cancelled",
+]
+evidence_only = true
+product_caller_named = false
+general_fleet_lifecycle_bounded = true
+automation_dispatch_recovery_bounded = true
+local_client_id_duplicate_fence = true
+provider_physical_sampling_exactly_once = false
+fleet_or_automation_authority = false
+automation_authority = false
+new_general_fleet_lifecycle_surface_added = false
+new_product_fleet_lifecycle_authority_added = false
+new_automation_authority_added = false
+operator_acceptance_recorded = false
+promotion_eligible = false
+g5_complete = false
+g5_allowed = false
+fleet_and_automation_unfrozen = false
+
+[[qualification]]
+slice = "R2_fleet_automation_crash_recovery_bounded_20260823"
+requires = ["R2_fleet_automation_bounded_expansion_20260823"]
+qualification_base_sha = "7c74c67df4dbc6d977d8cf7dbfbe6c6aa3ef210c"
+qualification_base_tree = "74a271b889a09b0c1ed5463cae7b668c760547e5"
+qualification_parent_sha = "2f7e71b34498a4f6547b3c72070cdcdc257539ec"
+qualification_parent_tree = "225e4de1e2ef60dc6495c9370105453ec5551c58"
+parent_to_head_diff_sha256 = "73d8038e240a850d8d4619309291aa9c49972abb34389ba134a059b2748176b7"
+crash_recovery_receipt_sha256 = "76b4bfeab8b1dbbe626b000e5172c73be6a3ee7cd90864b14234915ecba8123e"
+previous_bounded_aggregate_sha256 = "95f63aad96942eebb4ccccdabba177a487d727424182ec1c62f2a677ad59eded"
+previous_bounded_manifest_sha256 = "f096da046ad20336d7a647e77ee193d0cad6497e2f7718fff430d787dda589cb"
+composition = "durable_dispatch_intent_before_queue_seam_plus_bounded_five_and_six_agent_lifecycle"
+development_status = "qualified_exact_bounded_crash_recovery"
+qualification_manifest_test = "codex-rs/hepta-contracts/src/callers_manifest_tests.rs"
+qualification_callers = [
+  "codex-rs/hepta-automation/src/scheduler.rs",
+  "codex-rs/hepta-automation/src/store.rs",
+  "codex-rs/hepta-automation/tests/automation.rs",
+  "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+]
+qualification_tests = [
+  "pre_admission_dispatch_error_clears_intent_and_allows_next_generation_retry",
+  "successful_dispatch_upgrades_pre_admission_intent_atomically",
+  "crash_after_external_acceptance_keeps_unknown_intent_across_reopen",
+  "in_flight_unknown_intent_fences_stale_generation_and_second_claim",
+  "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+  "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+]
+evidence_only = true
+dispatch_intent_persisted_before_queue_seam = true
+pre_admission_abort_transactional = true
+pre_admission_retry_same_occurrence_and_client_id = true
+successful_dispatch_upgrades_uncertain_intent_atomically = true
+crash_after_external_acceptance_quarantined_across_reopen = true
+in_flight_unknown_fences_generation_and_second_claim = true
+five_and_six_agent_lifecycle_requalified_on_exact_head = true
+provider_physical_sampling_exactly_once = false
+fleet_or_automation_authority = false
+automation_authority = false
+operator_acceptance_recorded = false
+promotion_eligible = false
+g5_complete = false
+g5_allowed = false
+fleet_and_automation_unfrozen = false
+
+[[qualification]]
+slice = "R2_matrix_robrix_closed_loop"
+requires = [
+  "R2_codex_execution_substrate",
+  "R2_independent_dual_agent",
+  "R2_intelligence_kg_closed_loop",
+]
+qualification_base_sha = "e0c4b0bbf403af99143ad9691385aea1d4992fa0"
+composition = "dual_agent_matrix_transport_and_owner_local_robrix_control_composed"
+development_status = "qualified_exact_candidate"
+product_callers = [
+  "codex-rs/app-server/src/request_processors/thread_queue_processor.rs",
+  "codex-rs/app-server/src/request_processors/thread_delete.rs",
+  "codex-rs/core/src/thread_manager.rs",
+  "codex-rs/ext/queue/src/service.rs",
+  "codex-rs/state/src/runtime/queued_items.rs",
+  "codex-rs/thread-store/src/store.rs",
+  "codex-rs/hepta-agentd/src/config.rs",
+  "codex-rs/hepta-matrixd/src/main.rs",
+  "codex-rs/hepta-matrixd/src/runtime.rs",
+  "codex-rs/hepta-matrixd/src/lib.rs",
+  "codex-rs/hepta-matrixd/src/control.rs",
+  "codex-rs/hepta-supervisor/src/matrix.rs",
+  "codex-rs/hepta-supervisor/src/unix.rs",
+]
+robrix_product_callers = [
+  "apps/hepta-native/src/fleet_control/protocol.rs",
+  "apps/hepta-native/src/fleet_control/transport.rs",
+  "apps/hepta-native/src/fleet_control/matrixd_protocol.rs",
+  "apps/hepta-native/src/fleet_control/matrixd_transport.rs",
+  "apps/hepta-native/src/fleet_control/matrixd_view.rs",
+]
+qualification_callers = [
+  "codex-rs/app-server/tests/suite/v2/thread_queue.rs",
+  "codex-rs/app-server/tests/suite/v2/thread_delete.rs",
+  "codex-rs/core/src/thread_manager_tests.rs",
+  "codex-rs/ext/queue/tests/queue_service.rs",
+  "codex-rs/state/src/runtime/queued_items_tests.rs",
+  "codex-rs/hepta-agentd/src/config_tests.rs",
+  "codex-rs/hepta-matrixd/src/tests.rs",
+  "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+  "codex-rs/hepta-supervisor/examples/write_robrix_control_projection.rs",
+  "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+]
+qualification_tests = [
+  "real_synapse_dual_agentd_dual_matrixd_restart_and_isolation",
+  "matrix_bridge_payload_binding_suite",
+  "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+  "parent_delete_drains_prefinalize_fork_and_exposes_child_for_store_cleanup",
+  "same_id_resume_claims_runtime_before_original_delivery_is_cancelled",
+  "cancelled_unclaimed_new_startup_removes_runtime_and_materialized_store",
+  "permanent_hard_delete_fence_survives_overlapping_unclaimed_cleanup",
+  "durable_delete_operation_recovers_exact_closure_across_presealed_overlap",
+  "thread_delete_fresh_process_retries_from_durable_completed_operation",
+  "config_binds_exact_registered_agent_roots_and_workspace",
+  "robrix_control_v2_generated_projection_and_cross_parser_corpus",
+]
+qualification_lifecycle_actions = [
+  "network_disconnect",
+  "matrix_sidecar_sigkill",
+  "agent_process_sigkill",
+  "supervisor_managed_agent_restart_generation_rollover",
+  "paired_stop",
+]
+product_caller_named = true
+matrix_bridge_payload_sha256_bound = true
+required_matrix_bridge_atomic_reconcile_and_add = true
+required_matrix_bridge_durable_client_binding = true
+required_matrix_bridge_durable_dispatch_owner_fence = true
+required_thread_hard_delete_durable_operation_journal = true
+required_thread_hard_delete_managed_agentd_single_writer_topology = true
+matrix_bridge_atomic_reconcile_and_add_qualified = true
+matrix_bridge_durable_client_binding_qualified = true
+matrix_bridge_durable_dispatch_owner_fence_qualified = true
+thread_hard_delete_durable_operation_journal_qualified = true
+thread_hard_delete_managed_agentd_single_writer_topology_qualified = true
+generic_multi_app_server_hard_delete_qualified = false
+thread_hard_delete_qualification_scope = "agentd_managed_one_embedded_app_server_per_canonical_agent_home"
+matrix_bridge_client_side_queue_turn_scan_authoritative = false
+matrix_bridge_queue_and_turn_all_pages_scanned = false
+matrix_bridge_conflicting_client_id_fails_before_atomic_admission = true
+matrix_bridge_reconcile_response_revalidated = true
+matrix_bridge_exact_bound_input_scope = "text_only"
+matrix_bridge_dispatch_scope = "same_exact_head_same_host_shared_sqlite_home_exact_bindings"
+old_binary_parallel_queue_dispatch_supported = false
+stop_the_world_queue_dispatch_cutover_required = true
+unbound_queue_exact_dispatch_qualified = false
+real_synapse_feature = "real-synapse-e2e"
+real_synapse_runtime_skip_allowed = false
+real_synapse_oci_image_ref = "matrixdotorg/synapse@sha256:467a587a5052dadd5d0bf1f8d89f043cc652d5201bca510307340f8dddb6b312"
+real_synapse_version = "1.159.0"
+dual_agent_e2ee_inbound_and_outbound = true
+matrix_transaction_id_deduplicated = true
+loopback_network_disconnect_recovery = true
+matrix_sidecar_restart_recovery = true
+agent_generation_rollover = true
+dual_agent_matrix_store_and_provider_isolation = true
+final_provider_and_room_counts_frozen_after_sidecar_stop = true
+matrix_timeline_control_authority = false
+owner_local_matrixd_control_authority = true
+matrixd_control_schema_version = 2
+matrixd_control_requires_same_uid_and_exact_fence = true
+required_robrix_matrixd_control_second_local_confirmation = true
+robrix_matrixd_control_requires_second_local_confirmation = true
+robrix_supervisord_schema_version = 2
+robrix_supervisord_allowed_methods = ["health", "roster", "snapshot"]
+robrix_supervisord_lifecycle_mutation_constructors = false
+required_generated_backend_protocol_projection = true
+generated_backend_protocol_projection = true
+backend_ui_histories_unrelated = true
+bounded_ui_patch_ledger_required = true
+whole_tree_ui_merge_allowed = false
+matrix_companion_lifecycle_qualified_in_g4 = true
+general_fleet_lifecycle_qualified_in_g4 = false
+cross_agent_memory_federation_qualified_in_g4 = false
+automation_qualified_in_g4 = false
+new_general_fleet_lifecycle_surface_added = false
+new_automation_authority_added = false
+provider_physical_sampling_exactly_once = false
+operator_acceptance_recorded = false
+promotion_eligible = false
+
+[[qualification]]
+slice = "S5_evidence_summary"
+composition = "app_server_read_only_summary_and_historical_reader_composed"
+product_callers = [
+  "codex-rs/app-server/src/message_processor.rs",
+  "codex-rs/app-server/src/hepta_evidence_processor.rs",
+]
+store_open_mode = "open_existing_read_only"
+zero_event_interpretation = "an_empty_integrity_checked_existing_store_is_observed_empty; it is not proof of writer coverage or promotion readiness"
+promotion_eligible = false
+
+[[qualification]]
+slice = "legacy_surface_retirement"
+composition = "intentional_non_port_after_live_usage_audit"
+legacy_channel_adapter_retired = true
+legacy_memory_mutation_writer_retired = true
+legacy_proof_command_retired = true
+legacy_outbound_delivery_retired = true
+observed_live_outcome_rows = 0
+observed_live_effect_ack_rows = 0
+observed_live_preference_rows = 0
+recovery_source = "frozen_oracle_and_verified_complete_history_bundle"
+promotion_eligible = false
+
+[[qualification]]
+slice = "R2_codex_execution_substrate"
+composition = "feature_gated_same_turn_recovery_and_agent_local_durable_queue_composed"
+api_owner = "Codex App Server + Codex Core"
+public_api = "turn/recover"
+qualification_callers = [
+  "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+  "codex-rs/hepta-agentd/tests/queue_capacity_product.rs",
+]
+product_caller_named = false
+explicit_recovery_only = true
+same_turn_identity = true
+structured_replay_required = true
+provider_physical_sampling_exactly_once = false
+durable_thread_product_effects_require_durable_revoke = true
+ephemeral_thread_product_effects_require_in_process_revoke = true
+transport_diagnostics_may_precede_product_effect_gate = true
+persistence_fault_model = "in-process observed failures poison authority and attempt a newer Unready marker; the current process fail-stops, but if a positive marker may be durable while successor Unready fails, restart authority is unknown and unqualified"
+ephemeral_recovery_authority = "same_process_only_and_not_restart_durable"
+queue_capacity_manifest_bound = true
+queue_client_id_payload_digest_bound = true
+queue_payload_binding_scope = "QueuedItemService serialized observed queue set; raw cross-process QueueStore insertion after preflight requires a transactional SQLite binding"
+matrix_or_robrix_authority = false
+fleet_or_automation_authority = false
+promotion_eligible = false
+
+[[qualification]]
+slice = "R2_independent_dual_agent"
+requires = ["R2_codex_execution_substrate"]
+composition = "two_real_agentd_processes_with_agent_local_execution_state_composed"
+qualification_callers = [
+  "codex-rs/hepta-agentd/tests/two_agent_turn_recovery.rs",
+  "codex-rs/hepta-supervisor/src/unix_tests.rs",
+]
+product_caller_named = false
+real_agentd_process_count = 2
+agent_local_app_server_uds = true
+agent_local_codex_home = true
+agent_local_sqlite_home = true
+agent_local_durable_queue = true
+cross_agent_thread_resume_or_recovery_rejected = true
+peer_pid_and_generation_stable_during_other_agent_restart = true
+peer_in_progress_turn_and_queue_stable_during_other_agent_restart = true
+same_turn_recovery_remains_agent_local = true
+queued_dispatch_requires_recovery_terminal = true
+qualification_lifecycle_actions = ["register", "start", "kill", "restart"]
+new_fleet_lifecycle_surface_added = false
+new_product_fleet_lifecycle_authority_added = false
+cross_agent_memory_federation_authority = false
+intelligence_or_kg_authority = false
+matrix_or_robrix_authority = false
+automation_authority = false
+provider_physical_sampling_exactly_once = false
+promotion_eligible = false
+
+[[qualification]]
+slice = "R2_intelligence_kg_closed_loop"
+requires = ["R2_codex_execution_substrate", "R2_independent_dual_agent"]
+qualification_base_sha = "aafa375e925dfb1a67eba375585490883a11207c"
+composition = "named_agentd_cognitive_tool_writer_and_revalidated_provider_attachment_composed"
+product_callers = [
+  "codex-rs/hepta-agentd/src/runtime.rs",
+  "codex-rs/hepta-agentd/src/app_runtime.rs",
+  "codex-rs/app-server/src/extensions.rs",
+  "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+  "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+]
+qualification_callers = [
+  "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+]
+qualification_tests = [
+  "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+  "two_real_agentd_app_servers_never_cross_recall",
+  "cognitive_store_unavailable_fails_closed_before_provider",
+]
+qualification_lifecycle_actions = ["kill", "restart"]
+product_caller_named = true
+write_feature = "hepta_cognitive_write"
+write_feature_default_enabled = true
+agentd_product_profile_default_enabled = true
+ordinary_codex_default_enabled = false
+qualification_turn_writer_separate = true
+writer_store_unavailable_fail_closed = true
+governance_required_for_write = true
+mutation_writer_composed = true
+source_memory_revision_and_kg_projection_one_transaction = true
+immutable_revision_fact_header_required_even_when_empty = true
+exact_memory_citation_bound = true
+current_verified_active_heads_only = true
+correction_and_forget_advance_projection_generation = true
+tombstone_resurrection_rejected = true
+multi_provenance_entity_occurrences_preserved = true
+retrieval_channels = ["memory_fts", "entity_fts", "graph_one_hop", "recency"]
+retrieval_single_sqlite_snapshot = true
+physical_provider_attachment_revalidated = true
+attachment_channels_bound_to_physical_send = true
+active_ephemeral_input_forces_sensitive_http = true
+websocket_ephemeral_input_exact_conformance = false
+provider_send_linearizable_with_cognitive_mutation = false
+agent_and_workspace_scope_isolation = true
+unavailable_runtime_mutation_tools_exposed = false
+preexisting_later_stage_candidate_surfaces_present = true
+cross_agent_memory_federation_qualified_in_g3 = false
+matrix_or_robrix_qualified_in_g3 = false
+fleet_lifecycle_qualified_in_g3 = false
+automation_qualified_in_g3 = false
+new_cross_agent_memory_federation_authority_added = false
+new_matrix_or_robrix_authority_added = false
+new_fleet_lifecycle_surface_added = false
+new_product_fleet_lifecycle_authority_added = false
+new_automation_authority_added = false
+provider_physical_sampling_exactly_once = false
+legacy_persistent_kg_database_compatibility = false
+old_binary_reopen_after_migration_supported = false
+rollback_requires_pre_migration_database_snapshot = true
+whole_store_historical_reopen_scale_qualified = false
+operator_acceptance_recorded = false
+promotion_eligible = false

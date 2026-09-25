@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.consolidation-code-fix.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewedMain": "6fcf88d59b2e527d1cca59f7efbc26b273934610",
+  "sourceBranch": "codex/close-v8-blockers-20260901",
+  "sourceHead": "a33221ac258889707acdbfdbbf40dbe8fbace5b1",
+  "sourcePath": ".github/workflows/hepta-one-shot-docs-patch.yml",
+  "sourceBlob": "70043ac220ed7cc624948992889b2f063a302246",
+  "resolution": "Extract the still-missing filename-boundary correction from the retired repair transport. Do not execute its encoded payload or restore the old complete verifier. Keep every current verifier check and current source/document tree.",
+  "verifierPath": "scripts/hepta-docs.py",
+  "beforeBlob": "d98ca42a20f633637446126780f1cf24a9ff26ad",
+  "afterBlob": "a69f57a0e7d3f81bafdf851a3fa302cbc99a8d60",
+  "testPath": "scripts/test_hepta_cleanup_consumers.py",
+  "testBlob": "5ee2db66bbb42acff4c2e2249cd1cf1996e77aad",
+  "behavior": "Escape deleted basenames and match filename boundaries rather than arbitrary substrings. Exact old-path references, standalone basenames, path separators, Git object bindings and exact deletion inventory remain enforced. No scan exclusion is added.",
+  "localValidation": {
+    "originalVerifierMatchedLiveBlob": true,
+    "realGitTestsAgainstOriginal": {"testsRun": 9, "errorsIncludingSubtests": 7},
+    "realGitTestsAgainstPatched": {"testsRun": 9, "failures": 0, "errors": 0},
+    "productionSelfTest": "passed_with_added_boundary_case",
+    "pythonCompile": "passed",
+    "diffWhitespaceCheck": "passed",
+    "lockedFormatter": "not_run_offline_ruff_0_15_13_not_cached",
+    "fullCurrentRuntimeCheckout": false,
+    "fullRepositoryCiPassed": false
+  },
+  "branchDeletionPerformed": false,
+  "defaultBranchChanged": false,
+  "capabilityQualificationClaimed": false
+}

@@ -1,0 +1,795 @@
+#!/usr/bin/env python3
+"""Single fail-closed Lane B source-truth verifier and projection generator."""
+
+from __future__ import annotations
+
+import argparse
+import importlib.util
+import json
+import os
+import re
+import subprocess
+import tomllib
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
+MANIFEST = ROOT / "qualification/lane-b/LANE_B_CANDIDATE_MANIFEST.json"
+TRACE = ROOT / "qualification/lane-b/TEST_TRACEABILITY.json"
+NATIVE = ROOT / "qualification/lane-b/LANE_B_NATIVE_CLOSURE.md"
+COMPOSITION = ROOT / "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
+README = ROOT / "qualification/lane-b/README.md"
+# The reviewed lane registry owns membership and operation coverage. Do not
+# maintain another hand-edited operation list in the verifier itself.
+_LANE_INDEX = json.loads(TRUTH.read_text(encoding="utf-8"))
+MODULES = list(_LANE_INDEX["moduleOrder"])
+OPS = {entry["module"]: list(entry["operationIds"]) for entry in _LANE_INDEX["modules"]}
+OPERATION_COUNT = sum(len(operations) for operations in OPS.values())
+HEX40 = re.compile(r"[0-9a-f]{40}")
+RUNTIME_CURRENT_SOURCE_BASE = {"commit": "$CURRENT_HEAD", "tree": "$CURRENT_TREE"}
+
+
+class Invalid(ValueError):
+    pass
+
+
+def need(ok: bool, message: str) -> None:
+    if not ok:
+        raise Invalid(message)
+
+
+def pairs(items: list[tuple[str, Any]]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key, value in items:
+        need(key not in out, f"duplicate JSON key: {key}")
+        out[key] = value
+    return out
+
+
+def load(path: Path) -> dict[str, Any]:
+    label = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=pairs)
+    except Exception as exc:
+        raise Invalid(f"{label}: {exc}") from exc
+    need(isinstance(value, dict), f"{label} must be an object")
+    return value
+
+
+def dump(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n"
+
+
+def git(*args: str) -> str:
+    result = subprocess.run(["git", *args], cwd=ROOT, text=True, capture_output=True)
+    need(
+        result.returncode == 0, result.stderr.strip() or f"git {' '.join(args)} failed"
+    )
+    return result.stdout.rstrip("\n")
+
+
+def allowed(path: str, prefixes: list[str]) -> bool:
+    return any(path == prefix or path.startswith(prefix) for prefix in prefixes)
+
+
+def verify_source_base(value: Any, label: str) -> tuple[str, str]:
+    """Validate historical provenance, independently of the candidate checkout.
+
+    Module maps can advance from a newer source base than the lane's original
+    batch. Equality between those snapshots is not an implementation invariant.
+    Both must nevertheless identify real, exact trees in the current history.
+    """
+    need(
+        isinstance(value, dict) and set(value) == {"commit", "tree"},
+        f"{label}: source base",
+    )
+    commit, tree = value["commit"], value["tree"]
+    need(
+        isinstance(commit, str)
+        and bool(HEX40.fullmatch(commit))
+        and isinstance(tree, str)
+        and bool(HEX40.fullmatch(tree)),
+        f"{label}: source identity",
+    )
+    need(git("rev-parse", f"{commit}^{{tree}}") == tree, f"{label}: source tree")
+    git("merge-base", "--is-ancestor", commit, "HEAD")
+    return commit, tree
+
+
+def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str]:
+    policy = row.get("sourceIdentityPolicy", "legacy_shared_literal")
+    if policy == "candidate_or_exact_observation_v1":
+        # Do not duplicate or weaken the shared verifier's mapped-source,
+        # workspace-input, clean-checkout and historical-anchor requirements.
+        spec = importlib.util.spec_from_file_location(
+            "hepta_lane_b_canonical_source_identity",
+            Path(__file__).with_name("hepta-implementation-maps.py"),
+        )
+        need(spec is not None and spec.loader is not None, "canonical verifier loader")
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        verifier.ROOT = ROOT
+        roots = row.get("resolvedRoots")
+        need(isinstance(roots, list) and bool(roots), f"{label}: resolved roots")
+        try:
+            verifier.verify_source_identity(row, roots, verifier.current_source_base())
+        except (ValueError, OSError, subprocess.CalledProcessError) as error:
+            raise Invalid(f"{label}: canonical source identity: {error}") from error
+        return verify_source_base(row.get("sourceBase"), label)
+    if policy == "runtime_current_candidate":
+        need(
+            row.get("sourceBase") == RUNTIME_CURRENT_SOURCE_BASE,
+            f"{label}: runtime-current source base",
+        )
+        return git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
+    need(policy == "legacy_shared_literal", f"{label}: source identity policy")
+    return verify_source_base(row.get("sourceBase"), label)
+
+
+def verify_observed_source(row: dict[str, Any], module: str) -> None:
+    """Bind source observations without relying on a self-referential HEAD hash.
+
+    New maps may use a path/blob manifest.  Each mapped native source path is
+    then checked against the exact Git blob in the candidate checkout.  Legacy
+    observedAtHead records retain their historical commit-diff behavior.
+    """
+    if row.get("sourceIdentityPolicy") == "path_blob_manifest_v1":
+        evidence = row.get("exactSourceEvidence")
+        need(
+            isinstance(evidence, dict)
+            and evidence.get("kind") == "path_blob_manifest_v1",
+            f"{module}: exact source manifest",
+        )
+        entries = evidence.get("entries")
+        need(
+            isinstance(entries, list) and entries,
+            f"{module}: exact source manifest entries",
+        )
+        by_path: dict[str, str] = {}
+        root = ROOT.resolve()
+        for entry in entries:
+            need(isinstance(entry, dict), f"{module}: exact source manifest entry")
+            path = entry.get("path")
+            blob = entry.get("blobSha")
+            need(
+                isinstance(path, str)
+                and path
+                and isinstance(blob, str)
+                and bool(HEX40.fullmatch(blob)),
+                f"{module}: exact source manifest entry",
+            )
+            need(path not in by_path, f"{module}: duplicate exact source path {path}")
+            candidate = (ROOT / path).resolve()
+            need(candidate.is_relative_to(root), f"{module}: exact source path escape")
+            need(candidate.is_file(), f"{module}: missing exact source path {path}")
+            need(
+                git("rev-parse", f"HEAD:{path}") == blob,
+                f"{module}: exact source blob drift {path}",
+            )
+            by_path[path] = blob
+
+        mapped_paths = {
+            item.get("sourcePath")
+            for item in row.get("operations", [])
+            if isinstance(item, dict) and item.get("sourcePath")
+        }
+        need(
+            mapped_paths.issubset(set(by_path)),
+            f"{module}: exact source manifest omits mapped operation paths",
+        )
+        return
+
+    observed = row.get("observedAtHead")
+    if observed is None:
+        return
+    need(isinstance(observed, dict), f"{module}: observed source identity")
+    identity = {"commit": observed.get("commit"), "tree": observed.get("tree")}
+    commit, _ = verify_source_base(identity, f"{module}: observedAtHead")
+    roots = row.get("resolvedRoots")
+    need(
+        isinstance(roots, list)
+        and roots
+        and all(isinstance(path, str) and path for path in roots),
+        f"{module}: resolved roots",
+    )
+    paths = row.get("observedSourcePaths", roots)
+    need(
+        isinstance(paths, list)
+        and paths
+        and all(isinstance(path, str) and path for path in paths),
+        f"{module}: observed source paths",
+    )
+    need(
+        set(roots).issubset(set(paths)),
+        f"{module}: observed source paths omit resolved roots",
+    )
+    root = ROOT.resolve()
+    for path in paths:
+        candidate = (ROOT / path).resolve()
+        need(candidate.is_relative_to(root), f"{module}: observed source path escape")
+        need(candidate.exists(), f"{module}: missing observed source path {path}")
+    changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
+    need(not changed, f"{module}: observed source drift since {commit}")
+
+
+def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
+    index = truth.get("modules")
+    need(isinstance(index, list) and len(index) == len(MODULES), "module index")
+    verified = {verify_source_base(truth.get("sourceBase"), "lane")}
+    out = []
+    for position, entry in enumerate(index):
+        module = MODULES[position]
+        path = f"docs/modules/{module}/IMPLEMENTATION_MAP.json"
+        need(
+            entry.get("module") == module and entry.get("mapPath") == path,
+            f"{module}: index",
+        )
+        row = load(ROOT / path)
+        need(row.get("module") == module, f"{module}: map identity")
+        resolved_base = verify_module_source_base(row, module)
+        verified.add(resolved_base)
+        verify_observed_source(row, module)
+        ids = [
+            item.get("designOperation") or item.get("operation")
+            for item in row.get("operations", [])
+        ]
+        need(
+            ids == entry.get("operationIds") == OPS[module],
+            f"{module}: operation index",
+        )
+        out.append(row)
+    return out
+
+
+def trace_projection(
+    truth: dict[str, Any], maps: list[dict[str, Any]]
+) -> dict[str, Any]:
+    entries = []
+    for row in maps:
+        for item in row["operations"]:
+            entries.append(
+                {
+                    "module": row["module"],
+                    "operation": item.get("designOperation") or item.get("operation"),
+                    "map": f"docs/modules/{row['module']}/IMPLEMENTATION_MAP.json",
+                    "tests": [
+                        {"path": test["path"], "command": test["command"]}
+                        for test in item["tests"]
+                    ],
+                }
+            )
+    return {
+        "schema": "hepta.lane-b-test-traceability.v1",
+        "schemaVersion": 1,
+        "sourceBase": truth["sourceBase"],
+        "laneId": truth["laneId"],
+        "moduleCount": len(maps),
+        "operationCount": len(entries),
+        "entries": entries,
+        "claimBoundary": {
+            "testPathCoverageComplete": True,
+            "workflowExecutionRequired": True,
+            "productExecutionProvedByRegistry": False,
+            "externalEffectsProvedByRegistry": False,
+        },
+    }
+
+
+def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
+    base = truth["sourceBase"]
+    lines = [
+        "# Lane B source contracts and implementation gaps",
+        "",
+        "**Lane:** `LANE-B-RUNTIME`  ",
+        f"**Immutable source base:** `{base['commit']}` / tree `{base['tree']}`  ",
+        "**Exact candidate:** derived from Git at verification time; never hard-coded  ",
+        "**Repository-controlled scope:** documentation, operation inventory and source mapping verified; implementation gaps are reported per module  ",
+        "**External scope:** product execution, deployment, real effects and independent acceptance remain open",
+        "",
+        "## 1. Truth model",
+        "",
+        "The central truth is a closed index. Detailed module roots, ownership, terminal observers, native symbols, delegated callees, tests and external evidence gates live in each module's `IMPLEMENTATION_MAP.json`. This file and `TEST_TRACEABILITY.json` are generated from those maps. A source symbol or fixture is not deployment or external-effect evidence.",
+        "",
+    ]
+    for number, row in enumerate(maps, start=2):
+        lines += [
+            f"## {number}. `{row['module']}`",
+            "",
+            row["stateOwnerDisposition"],
+            "",
+            row["terminalObserverDisposition"],
+            "",
+            "| Operation | Class | Owner entrypoint |",
+            "|---|---|---|",
+        ]
+        for item in row["operations"]:
+            owner = item.get("ownerEntrypoint") or {
+                "path": item.get("sourcePath"),
+                "symbol": item.get("nativeSymbol"),
+            }
+            lines.append(
+                f"| `{item.get('designOperation') or item.get('operation')}` | `{item.get('mappingClass', 'owner_native')}` | `{owner.get('path')}` — `{owner.get('symbol')}` |"
+            )
+        gaps = row.get("repositoryControlledGaps", [])
+        if gaps:
+            lines += ["", "Remaining repository implementation gaps:", ""]
+            lines += [f"- {gap}" for gap in gaps]
+        lines += (
+            ["", "External evidence gates:", ""]
+            + [f"- {gate}" for gate in row["externalEvidenceGates"]]
+            + [""]
+        )
+    lines += [
+        "## 13. Cross-module acceptance boundary",
+        "",
+        f"All {OPERATION_COUNT} operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.",
+        "",
+        "Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.",
+        "",
+    ]
+    return "\n".join(line.rstrip() for line in lines)
+
+
+def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[str]:
+    need(
+        manifest.get("schema") == "hepta.lane-b-candidate-manifest.v3",
+        "manifest schema",
+    )
+    need(manifest.get("sourceBase") == truth.get("sourceBase"), "manifest source base")
+    base, tree = manifest["sourceBase"]["commit"], manifest["sourceBase"]["tree"]
+    need(bool(HEX40.fullmatch(base)) and bool(HEX40.fullmatch(tree)), "base identity")
+    need(git("rev-parse", f"{base}^{{tree}}") == tree, "base tree")
+
+    head = git("rev-parse", "HEAD")
+    synthetic = os.environ.get("HEPTA_SYNTHETIC_MERGE") == "1"
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    event = load(Path(event_path)) if event_path else {}
+    pull_request = event.get("pull_request")
+    if "pull_request" in event:
+        need(isinstance(pull_request, dict), "invalid pull-request event")
+        # GitHub's pull-request payload preserves the base SHA observed for the
+        # event and may lag the current target branch after that branch advances.
+        # The workflow resolves the current remote base ref after checkout and
+        # passes it explicitly. The event SHA remains provenance/fallback only.
+        event_base = pull_request["base"]["sha"]
+        actual_base = os.environ.get("HEPTA_CANDIDATE_BASE_SHA") or event_base
+        candidate_subject = pull_request["head"]["sha"]
+    else:
+        need(not synthetic, "synthetic merge requires pull-request event identity")
+        # Push events provide an immutable range. Local/manual verification uses
+        # an explicit base if supplied, otherwise exactly the current commit's
+        # first-parent delta, never the historical provenance baseline.
+        candidate_subject = event.get("after") or os.environ.get("GITHUB_SHA") or head
+        actual_base = (
+            event.get("before")
+            or os.environ.get("HEPTA_CANDIDATE_BASE_SHA")
+            or git("rev-parse", "HEAD^1")
+        )
+    for label, sha in (
+        ("actual base", actual_base),
+        ("candidate head", candidate_subject),
+    ):
+        need(isinstance(sha, str) and bool(HEX40.fullmatch(sha)), f"{label} identity")
+        need(
+            git("rev-parse", "--verify", f"{sha}^{{commit}}") == sha, f"{label} commit"
+        )
+    if synthetic:
+        parents = git("show", "-s", "--format=%P", "HEAD").split()
+        need(
+            parents == [actual_base, candidate_subject],
+            "synthetic merge parents differ from event",
+        )
+        merged_tree = git("merge-tree", "--write-tree", actual_base, candidate_subject)
+        need(
+            git("rev-parse", "HEAD^{tree}") == merged_tree,
+            "synthetic merge tree differs from source merge",
+        )
+    else:
+        need(head == candidate_subject, "checkout is not the event source head")
+    git("diff", "--exit-code", "HEAD", "--")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", base, candidate_subject],
+        cwd=ROOT,
+    )
+    need(ancestor.returncode == 0, "source base is not ancestor of candidate subject")
+    # A source merge is valid history. Scope is the current PR's source delta,
+    # which excludes changes added only to the target branch after divergence.
+    merge_bases = git(
+        "merge-base", "--all", actual_base, candidate_subject
+    ).splitlines()
+    need(len(merge_bases) == 1, "candidate range has no unique merge base")
+    delta = [
+        path
+        for path in git(
+            "diff",
+            "--name-only",
+            "-z",
+            "--no-renames",
+            merge_bases[0],
+            candidate_subject,
+            "--",
+        ).split("\0")
+        if path
+    ]
+
+    prefixes = manifest.get("allowedPathPrefixes")
+    need(isinstance(prefixes, list) and prefixes, "path envelope")
+    roots = []
+    for row in module_maps(truth):
+        for root in row["resolvedRoots"]:
+            need(
+                isinstance(root, str)
+                and root
+                and not Path(root).is_absolute()
+                and ".." not in Path(root).parts
+                and root != ".",
+                "invalid owner root",
+            )
+            roots.append(root.rstrip("/") + "/")
+    for prefix in prefixes:
+        need(
+            isinstance(prefix, str)
+            and prefix
+            and not Path(prefix).is_absolute()
+            and ".." not in Path(prefix).parts,
+            "invalid path envelope",
+        )
+    # The historical manifest is provenance and the Lane B scope inventory. It
+    # is not a global allowlist for every other lane in a multi-lane PR. Actual
+    # module roots cover new implementations; other lanes retain their own gates.
+    changed = [
+        path
+        for path in delta
+        if allowed(path, prefixes + roots)
+        or any(path == root.rstrip("/") for root in roots)
+    ]
+    return changed
+
+
+def verify_anchor(
+    module: str, roots: list[str], anchor: dict[str, Any], owner: bool
+) -> None:
+    need(set(anchor) >= {"role", "path", "symbol", "buildTarget"}, f"{module}: anchor")
+    path = anchor["path"]
+    if owner:
+        need(
+            any(
+                (ROOT / path).resolve().is_relative_to(root)
+                for root in package_roots(module, roots)
+            ),
+            f"{module}: owner-root escape {path}",
+        )
+    else:
+        need(isinstance(anchor.get("ownerModule"), str), f"{module}: delegated owner")
+    source = ROOT / path
+    need(source.is_file(), f"{module}: missing source {path}")
+    need(
+        anchor["symbol"] in source.read_text(encoding="utf-8"),
+        f"{module}: missing symbol {anchor['symbol']!r}",
+    )
+    need(
+        isinstance(anchor["buildTarget"], str) and anchor["buildTarget"],
+        f"{module}: build target",
+    )
+
+
+def package_roots(module: str, roots: list[str]) -> list[Path]:
+    """Resolve existing canonical aliases, without inventing another owner."""
+    resolved = []
+    for root in roots:
+        directory = (ROOT / root).resolve()
+        need(directory.is_relative_to(ROOT.resolve()), f"{module}: root escape")
+        binding_path = directory / "BINDING.json"
+        if binding_path.is_file():
+            binding = load(binding_path)
+            need(
+                binding.get("binding_mode") == "canonical_alias"
+                and binding.get("module") == module
+                and binding.get("declared_root") == root,
+                f"{module}: invalid source alias",
+            )
+            implementation = binding.get("implementation_root")
+            need(isinstance(implementation, str), f"{module}: missing alias target")
+            directory = (ROOT / implementation).resolve()
+            need(directory.is_relative_to(ROOT.resolve()), f"{module}: alias escape")
+            need(
+                (directory / "Cargo.toml").is_file(), f"{module}: alias package missing"
+            )
+        resolved.append(directory)
+    return resolved
+
+
+def delegate_matches_owner(
+    owner: str, roots: list[str], anchor: dict[str, Any]
+) -> bool:
+    """Require an owner root or an actual direct Cargo dependency.
+
+    Delegating to codex-core through app-server does not transfer ownership of
+    core to the Hepta module. A label alone must not admit an arbitrary sibling
+    package. The declared dependency path and package name must both match.
+    """
+    source = (ROOT / anchor["path"]).resolve()
+    if not source.is_relative_to(ROOT.resolve()):
+        return False
+    packages = package_roots(owner, roots)
+    if any(source.is_relative_to(directory) for directory in packages):
+        return True
+    workspace = tomllib.loads((ROOT / "codex-rs/Cargo.toml").read_text())["workspace"]
+    target = anchor["buildTarget"].split("::", 1)[0]
+    for directory in packages:
+        manifest = directory / "Cargo.toml"
+        if not manifest.is_file():
+            continue
+        package = tomllib.loads(manifest.read_text())
+        for name, dependency in package.get("dependencies", {}).items():
+            if not isinstance(dependency, dict):
+                continue
+            base = directory
+            if dependency.get("workspace") is True:
+                dependency = workspace["dependencies"].get(name, {})
+                base = ROOT / "codex-rs"
+            if not isinstance(dependency, dict) or "path" not in dependency:
+                continue
+            dependency_root = (base / dependency["path"]).resolve()
+            if not dependency_root.is_relative_to(ROOT.resolve()):
+                continue
+            dependency_manifest = dependency_root / "Cargo.toml"
+            if not dependency_manifest.is_file():
+                continue
+            declared = tomllib.loads(dependency_manifest.read_text())["package"]["name"]
+            if declared == target and source.is_relative_to(dependency_root):
+                return True
+    return False
+
+
+def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int, int]:
+    need(
+        truth.get("schema") == "hepta.lane-b-implementation-truth.v3"
+        and truth.get("schemaVersion") == 3,
+        "truth schema",
+    )
+    need(
+        truth.get("moduleOrder") == MODULES
+        and truth.get("operationCount") == OPERATION_COUNT,
+        "truth closed world",
+    )
+    claims = truth.get("claimBoundary", {})
+    positive = (
+        "documentationStructureComplete",
+        "designOperationInventoryComplete",
+        "nativeSourceMappingComplete",
+        "repositoryControlledDocumentationGapsClosed",
+        "repositoryControlledMappingGapsClosed",
+    )
+    negative = (
+        "targetDesignImplementationComplete",
+        "productionConsumerCallsitesComplete",
+        "productExecutionComplete",
+        "deploymentQualificationComplete",
+        "independentAcceptanceComplete",
+        "externalEffectsComplete",
+        "hardwareEvidenceComplete",
+        "futureWindowEfficacyComplete",
+        "allGapsClosed",
+    )
+    for key in positive:
+        need(claims.get(key) is True, f"missing closure {key}")
+    for key in negative:
+        need(claims.get(key) is False, f"unsupported claim {key}")
+    source_closed = claims.get("repositoryControlledSourceBoundaryGapsClosed")
+    need(isinstance(source_closed, bool), "source boundary completion must be explicit")
+    need(
+        not source_closed
+        or all(
+            row.get("repositoryControlledGaps") == []
+            and row.get("claimBoundary", {}).get(
+                "repositoryControlledSourceBoundaryGapsClosed"
+            )
+            is True
+            for row in maps
+        ),
+        "source boundary completion contradicts module gaps or incomplete modules",
+    )
+    roots = {row["module"]: row["resolvedRoots"] for row in maps}
+    # A runtime module can delegate to another registered lane. Resolve only
+    # the named schema owner; lane membership is not repository ownership.
+    from hepta_module_source_roots import resolve_source_roots
+
+    registered = load(ROOT / "docs/modules/MODULES.json")["modules"]
+    owner_modules = {entry["id"]: entry for entry in registered}
+    need(len(owner_modules) == len(registered), "duplicate module owner")
+    for row in maps:
+        for operation in row["operations"]:
+            for delegate in operation.get("delegatedCallees", []):
+                owner = delegate.get("ownerModule")
+                need(
+                    owner in owner_modules,
+                    f"{row['module']}: unregistered delegated owner",
+                )
+                if owner not in roots:
+                    roots[owner] = resolve_source_roots(ROOT, owner_modules[owner])
+    operations = tests = 0
+    for row in maps:
+        module = row["module"]
+        need(
+            row.get("schema") == "hepta.module-implementation-map.v3"
+            and row.get("schemaVersion") == 3,
+            f"{module}: schema",
+        )
+        gaps = row.get("repositoryControlledGaps")
+        need(
+            isinstance(gaps, list)
+            and all(isinstance(gap, str) and gap.strip() for gap in gaps),
+            f"{module}: invalid repository gaps",
+        )
+        module_closed = row.get("claimBoundary", {}).get(
+            "repositoryControlledSourceBoundaryGapsClosed"
+        )
+        need(
+            isinstance(module_closed, bool) and (not module_closed or not gaps),
+            f"{module}: source completion contradicts repository gaps",
+        )
+        need(row.get("externalEvidenceGates"), f"{module}: external gates")
+        for root in row["resolvedRoots"]:
+            need((ROOT / root).exists(), f"{module}: missing root {root}")
+        for item in row["operations"]:
+            operations += 1
+            need(
+                item.get("mappingClass", "owner_native")
+                in truth["allowedMappingClasses"],
+                f"{module}: mapping class",
+            )
+            anchor = item.get("ownerEntrypoint") or {
+                "role": "owner_entrypoint",
+                "path": item.get("sourcePath"),
+                "symbol": item.get("nativeSymbol"),
+                "buildTarget": item.get("buildTarget", "canonical-v3"),
+            }
+            verify_anchor(module, row["resolvedRoots"], anchor, True)
+            for delegate in item.get("delegatedCallees", []):
+                verify_anchor(module, row["resolvedRoots"], delegate, False)
+                owner = delegate["ownerModule"]
+                need(
+                    owner in roots
+                    and delegate_matches_owner(owner, roots[owner], delegate),
+                    f"{module}: delegate-root escape",
+                )
+            need(
+                item.get("tests"),
+                f"{module}/{item.get('designOperation') or item.get('operation')}: tests",
+            )
+            for test in item["tests"]:
+                tests += 1
+                need(
+                    (ROOT / test["path"]).is_file() and test.get("command"),
+                    f"{module}: invalid test binding",
+                )
+            need(
+                isinstance(item.get("sourceSemantics"), str)
+                and bool(item["sourceSemantics"].strip()),
+                f"{module}: source semantics",
+            )
+        for path in (
+            ROOT / f"docs/modules/{module}/TECHNICAL.md",
+            ROOT / f"qualification/module-execution-dossiers/detail/{module}.md",
+        ):
+            text = path.read_text(encoding="utf-8")
+            need(module in text, f"{module}: document {path.relative_to(ROOT)}")
+    need(operations == OPERATION_COUNT, "operation count")
+    return operations, tests
+
+
+def projections(truth: dict[str, Any], maps: list[dict[str, Any]]) -> dict[Path, str]:
+    return {
+        TRACE: dump(trace_projection(truth, maps)),
+        NATIVE: native_projection(truth, maps),
+    }
+
+
+def verify_generated(truth: dict[str, Any], maps: list[dict[str, Any]]) -> None:
+    for path, expected in projections(truth, maps).items():
+        need(
+            path.read_text(encoding="utf-8") == expected,
+            f"projection drift: {path.relative_to(ROOT)}",
+        )
+    composition = COMPOSITION.read_text(encoding="utf-8")
+    base = truth["sourceBase"]
+    need(
+        base["commit"] in composition and base["tree"] in composition,
+        "composition base",
+    )
+    need(
+        "product execution" in composition.lower()
+        and "independent acceptance" in composition.lower(),
+        "composition claims",
+    )
+    need(
+        "hepta-lane-b-truth.py verify" in README.read_text(encoding="utf-8"),
+        "README command",
+    )
+
+
+def generate(truth: dict[str, Any], maps: list[dict[str, Any]]) -> int:
+    for path, content in projections(truth, maps).items():
+        path.write_text(content, encoding="utf-8")
+    print(
+        json.dumps(
+            {"status": "GENERATED_HEPTA_LANE_B_PROJECTIONS", "files": 2}, sort_keys=True
+        )
+    )
+    return 0
+
+
+def verify() -> int:
+    truth = load(TRUTH)
+    maps = module_maps(truth)
+    changed = verify_candidate(load(MANIFEST), truth)
+    operations, tests = verify_truth(truth, maps)
+    verify_generated(truth, maps)
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_LANE_B_SOURCE_CONFORMANCE",
+                "exactHead": git("rev-parse", "HEAD"),
+                "exactTree": git("rev-parse", "HEAD^{tree}"),
+                "changedPaths": len(changed),
+                "modules": len(maps),
+                "operations": operations,
+                "testBindings": tests,
+                "sourceContractConformance": True,
+                "repositoryControlledSourceBoundaryGapsClosed": truth["claimBoundary"][
+                    "repositoryControlledSourceBoundaryGapsClosed"
+                ],
+                "modulesWithRepositoryGaps": [
+                    row["module"] for row in maps if row["repositoryControlledGaps"]
+                ],
+                "productExecutionComplete": False,
+                "externalEffectsComplete": False,
+                "independentAcceptanceComplete": False,
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def self_test() -> int:
+    need(pairs([("a", 1), ("b", 2)]) == {"a": 1, "b": 2}, "pairs")
+    try:
+        pairs([("a", 1), ("a", 2)])
+    except Invalid:
+        pass
+    else:
+        raise Invalid("duplicate key accepted")
+    need(allowed("qualification/lane-b/a", ["qualification/lane-b/"]), "allow")
+    need(not allowed("qualification/lane-c/a", ["qualification/lane-b/"]), "deny")
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_LANE_B_SOURCE_CLOSURE_SELF_TEST",
+                "modules": 11,
+                "operations": OPERATION_COUNT,
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def main() -> int:
+    command = argparse.ArgumentParser()
+    command.add_argument("command", choices=["verify", "generate", "self-test"])
+    action = command.parse_args().command
+    if action == "self-test":
+        return self_test()
+    truth = load(TRUTH)
+    maps = module_maps(truth)
+    return generate(truth, maps) if action == "generate" else verify()
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except Invalid as exc:
+        raise SystemExit(f"FAIL_HEPTA_LANE_B_SOURCE_CLOSURE: {exc}") from exc

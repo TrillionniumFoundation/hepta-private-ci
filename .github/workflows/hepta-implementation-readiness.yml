@@ -1,0 +1,104 @@
+name: Hepta pre-coding implementation readiness
+
+on:
+  pull_request:
+    paths:
+      - "docs/readiness/**"
+      - "docs/modules/MODULES.json"
+      - "docs/modules/MODULE_DOCS.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
+      - "qualification/module-execution-dossiers/**"
+      - "scripts/hepta-readiness.py"
+      - ".github/workflows/hepta-implementation-readiness.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/readiness/**"
+      - "docs/modules/MODULES.json"
+      - "docs/modules/MODULE_DOCS.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
+      - "qualification/module-execution-dossiers/**"
+      - "scripts/hepta-readiness.py"
+      - ".github/workflows/hepta-implementation-readiness.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-implementation-readiness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    name: Verify exact readiness source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify implementation-readiness closed world
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  merge-candidate:
+    name: Verify exact readiness merge candidate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out source for deterministic merge construction
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Readiness CI
+          author-email: hepta-readiness-ci@users.noreply.github.com
+          message: Synthetic readiness merge
+
+      - name: Verify synthetic merge candidate
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          # Source-head owns self-tests and generated projections; merge only
+          # needs to validate the merged tree and protected contracts.
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"

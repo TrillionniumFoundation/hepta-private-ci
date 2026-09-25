@@ -1,0 +1,74 @@
+{
+  "schema_version": 2,
+  "plan": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN-v8.0.0",
+  "candidate_identity": "resolved_by_external_exact_candidate_receipt",
+  "status": "source_candidate",
+  "source_identity_policy": {
+    "canonical_document_set_digest_required": true,
+    "canonical_repository_binding_required": true,
+    "clean_worktree_required": true,
+    "event_binding_required": true,
+    "explicit_commit_checkout_required": true,
+    "full_literal_git_oid_required": true,
+    "maximum_ttl_seconds": 604800,
+    "merge_parent_order": [
+      "base",
+      "source"
+    ],
+    "merge_tree_validation": "recomputed_with_git_merge_tree",
+    "receipt_schema": "hepta.exact-source-identity-receipt.v1",
+    "receipt_storage": "external_artifact_only",
+    "source_lineage_direct_parent_required": true,
+    "source_range_merge_commits_forbidden": true,
+    "source_range_nonempty": true,
+    "verification_worktree_read_only": true,
+    "workflow_path": ".github/workflows/hepta-consolidated-source.yml"
+  },
+  "source_roots": [
+    "apps/hepta-control-ui",
+    "codex-rs/hepta-bellman-operator",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-intuition",
+    "codex-rs/hepta-learning-artifacts",
+    "codex-rs/hepta-learning-ledger",
+    "codex-rs/hepta-ndu",
+    "codex-rs/hepta-neuron",
+    "codex-rs/hepta-objective",
+    "codex-rs/hepta-plasticity",
+    "codex-rs/hepta-prompt-optimizer",
+    "codex-rs/hepta-prompt-registry",
+    "tools/hepta-engineering-control"
+  ],
+  "required_checks": [
+    "closed_world_source_inventory",
+    "cargo_workspace_policy",
+    "rustfmt_selected_packages",
+    "selected_package_tests",
+    "selected_all_target_check",
+    "selected_strict_clippy",
+    "value_learning_vertical_slice",
+    "control_ui_tests",
+    "engineering_control_tests",
+    "clean_worktree"
+  ],
+  "authority": {
+    "runtime_authority": false,
+    "production_writer": false,
+    "production_activation": false,
+    "effect_execution": false,
+    "automatic_selection": false,
+    "automatic_promotion": false,
+    "automatic_merge": false,
+    "release_authority": false,
+    "physical_safety_qualified": false,
+    "longitudinal_efficacy_qualified": false,
+    "autonomous_propagation": false
+  },
+  "external_evidence": {
+    "independent_acceptance": "required",
+    "longitudinal_effectiveness": "not_claimed",
+    "physical_safety": "not_claimed",
+    "production_activation": "not_authorized"
+  }
+}

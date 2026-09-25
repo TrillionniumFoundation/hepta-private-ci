@@ -1,0 +1,348 @@
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::LogicalSequence;
+use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::StableId;
+
+/// Independent assertion that the logged candidate set is complete for the
+/// evaluated decision boundary.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CandidateSetCompleteness {
+    Complete,
+    Incomplete,
+}
+
+impl CandidateSetCompleteness {
+    pub(crate) const fn tag(self) -> u8 {
+        match self {
+            Self::Complete => 0,
+            Self::Incomplete => 1,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OutcomeFinality {
+    Intermediate,
+    Terminal,
+}
+
+impl OutcomeFinality {
+    pub(crate) const fn tag(self) -> u8 {
+        match self {
+            Self::Intermediate => 0,
+            Self::Terminal => 1,
+        }
+    }
+}
+
+/// Durable terminality for authenticated V2 outcomes. Pending and censored
+/// observations are explicit states and are never collapsed into zero reward.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AuthenticatedOutcomeTerminality {
+    Pending,
+    Censored,
+    Terminal,
+}
+
+impl AuthenticatedOutcomeTerminality {
+    pub(crate) const fn tag(self) -> u8 {
+        match self {
+            Self::Pending => 0,
+            Self::Censored => 1,
+            Self::Terminal => 2,
+        }
+    }
+}
+
+/// Complete decision facts required for causal and counterfactual evaluation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EpisodeDecision {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub objective_digest: Digest32,
+    pub policy_id: StableId,
+    pub candidate_ids: Vec<StableId>,
+    pub selected_candidate_id: StableId,
+    pub selected_propensity: ProbabilityQ32,
+    pub completeness: CandidateSetCompleteness,
+    pub support_digest: Digest32,
+}
+
+/// Durable retrieval-native assignment fact.
+///
+/// Candidate identities are stored as canonical 32-byte digests to retain the
+/// complete 512-candidate retrieval profile within the existing bounded
+/// learning-ledger frame. legal_candidate_indices and
+/// selected_candidate_indices index the sorted enumerated digest vector.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrievalAssignmentFact {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub cue_digest: Digest32,
+    pub policy_digest: Digest32,
+    pub source_completeness_digest: Digest32,
+    pub candidate_union_digest: Digest32,
+    pub recall_packet_digest: Digest32,
+    pub enumerated_candidate_digests: Vec<Digest32>,
+    pub legal_candidate_indices: Vec<u32>,
+    pub selected_candidate_indices: Vec<u32>,
+    /// Exact subset published by the owner to the named product consumer after
+    /// downstream learned reranking, response budget, NDU planning and final
+    /// owner/currentness fences. Provider/model attachment is proved separately
+    /// by the inference journal; this field alone does not claim model delivery.
+    pub delivered_candidate_indices: Vec<u32>,
+    /// Whether a non-empty retrieval context was published to that consumer.
+    pub context_exposed: bool,
+    /// Digest of the exact serialized CognitiveContextSnapshot returned by the
+    /// owner. The inference journal carries the same digest so a later
+    /// native_started receipt can prove actual turn/start attachment.
+    pub published_context_digest: Option<Digest32>,
+    pub omitted_by_policy_limits: u32,
+    pub assignment_propensity: ProbabilityQ32,
+    /// Exact learned policy payload that affected final delivery, when a
+    /// downstream ranker actually applied. None means HNMF/order/budget only.
+    pub downstream_policy_digest: Option<Digest32>,
+    /// Propensity of the final delivered subset under the downstream decision
+    /// path. Current deterministic rank/budget/planning paths record one.
+    pub delivery_propensity: ProbabilityQ32,
+    pub completeness: CandidateSetCompleteness,
+    /// Digest of the complete retrieval-native assignment observation.
+    pub support_digest: Digest32,
+}
+
+/// Production decision fact with authenticated generator identity and a
+/// generator-relative candidate-completeness receipt bound into the durable row.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthenticatedDecisionRecordV2 {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub run_snapshot_digest: Digest32,
+    pub objective_digest: Digest32,
+    pub policy_digest: Digest32,
+    pub generator_id: StableId,
+    pub generator_controller_id: StableId,
+    pub generator_credential_chain_digest: Digest32,
+    pub generator_signing_key_digest: Digest32,
+    pub generator_scope_digest: Digest32,
+    pub generator_authority_epoch: u64,
+    pub candidate_ids: Vec<StableId>,
+    pub selected_candidate_id: StableId,
+    pub selected_propensity: ProbabilityQ32,
+    pub candidate_completeness_digest: Digest32,
+    pub support_digest: Digest32,
+    pub authentication_digest: Digest32,
+}
+
+/// Legacy V1 outcome record retained for backward readability. Product writers
+/// use `AuthenticatedOutcomeRecordV2` so authentication, delayed-outcome state
+/// and correction lineage are durable rather than caller-local assertions.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OutcomeObservation {
+    pub record_id: StableId,
+    pub outcome_id: StableId,
+    pub episode_id: StableId,
+    pub observer_id: StableId,
+    pub value: FixedQ32,
+    pub finality: OutcomeFinality,
+    pub support_digest: Digest32,
+}
+
+/// Authenticated outcome fact persisted as one immutable ledger record.
+/// `correction_predecessor` forms a single-head lineage per episode; the ledger
+/// validates existence, same-episode ancestry and head continuity before append.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthenticatedOutcomeRecordV2 {
+    pub record_id: StableId,
+    pub outcome_id: StableId,
+    pub episode_id: StableId,
+    pub observer_id: StableId,
+    pub observer_controller_id: StableId,
+    pub observer_credential_chain_digest: Digest32,
+    pub observer_signing_key_digest: Digest32,
+    pub observer_scope_digest: Digest32,
+    pub observer_authority_epoch: u64,
+    pub observed_at: Option<u64>,
+    pub value: Option<FixedQ32>,
+    pub unit_profile_digest: Digest32,
+    pub support_digest: Digest32,
+    pub latest_observable_at: u64,
+    pub expected_delay_profile_digest: Digest32,
+    pub terminality: AuthenticatedOutcomeTerminality,
+    pub censoring_reason: Option<StableId>,
+    pub correction_predecessor: Option<StableId>,
+    pub finalized_at: Option<u64>,
+    /// Digest of the verified signed evidence admitted by the production writer.
+    pub authentication_digest: Digest32,
+}
+
+/// Legacy V1 per-target credit retained for backward readability. Product
+/// writers use `CreditAllocationBatchRecordV2` so conservation is enforced
+/// before a single durable append.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CreditAssignment {
+    pub record_id: StableId,
+    pub credit_id: StableId,
+    pub episode_id: StableId,
+    pub outcome_id: StableId,
+    pub target_artifact_id: StableId,
+    pub allocator_id: StableId,
+    pub credit: FixedQ32,
+    pub support_digest: Digest32,
+}
+
+/// Terminal observation that a compiled prompt portfolio was or was not
+/// delivered by an independent runtime observer. Indeterminate provider state
+/// is reconciled outside this event and is appended only once terminal.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryLineageV1 {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub portfolio_receipt_digest: Digest32,
+    pub support_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryObservation {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub compilation_id: StableId,
+    pub observer_id: StableId,
+    pub portfolio_receipt_digest: Digest32,
+    pub provider_request_digest: Digest32,
+    pub delivered: bool,
+    pub rejected_reason_digest: Option<Digest32>,
+    pub observed_token_positions_digest: Option<Digest32>,
+    pub truncation_observed: bool,
+    pub context_delivery_observation_digest: Digest32,
+    pub support_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CreditAllocationRecordV2 {
+    pub target_artifact_id: StableId,
+    pub credit: FixedQ32,
+}
+
+/// Atomic durable credit publication unit. All allocations and the residual are
+/// committed in one ledger frame, so readers never observe a partially written
+/// conserved batch.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CreditAllocationBatchRecordV2 {
+    pub record_id: StableId,
+    pub batch_id: StableId,
+    pub episode_id: StableId,
+    pub outcome_id: StableId,
+    pub allocator_id: StableId,
+    pub allocator_controller_id: StableId,
+    pub allocator_credential_chain_digest: Digest32,
+    pub allocator_signing_key_digest: Digest32,
+    pub allocator_scope_digest: Digest32,
+    pub allocator_authority_epoch: u64,
+    pub terminal_outcome: FixedQ32,
+    pub allocations: Vec<CreditAllocationRecordV2>,
+    pub conservation_residual: FixedQ32,
+    pub support_digest: Digest32,
+    pub authentication_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Revocation {
+    pub record_id: StableId,
+    pub target_record_id: StableId,
+    pub authority_id: StableId,
+    pub reason_digest: Digest32,
+}
+
+/// Explicit source -> frozen dataset invalidation lineage. The exact source
+/// event digest and dataset digest are persisted after the product writer verifies
+/// source membership in a self-verifying dataset receipt. `artifact_id` is a
+/// cross-owner handoff identity only; dataset -> artifact membership remains owned
+/// and verified by `learning.artifacts`.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct UnlearningLineageEventV1 {
+    pub record_id: StableId,
+    pub lineage_id: StableId,
+    pub source_record_id: StableId,
+    pub source_event_digest: Digest32,
+    pub dataset_snapshot_id: StableId,
+    pub dataset_digest: Digest32,
+    pub artifact_id: StableId,
+    pub authority_id: StableId,
+    pub reason_digest: Digest32,
+    pub authentication_digest: Digest32,
+}
+
+// Retrieval assignment facts intentionally carry a bounded 512-candidate
+// causal surface. Keep the durable event representation inline so the private
+// journal encoding and public event API do not change merely to optimize enum
+// stack size.
+#[allow(clippy::large_enum_variant)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum LedgerEvent {
+    Decision(EpisodeDecision),
+    RetrievalAssignment(RetrievalAssignmentFact),
+    Outcome(OutcomeObservation),
+    Credit(CreditAssignment),
+    PromptDelivery(PromptDeliveryObservation),
+    Revocation(Revocation),
+    AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2),
+    AuthenticatedOutcomeV2(AuthenticatedOutcomeRecordV2),
+    CreditBatchV2(CreditAllocationBatchRecordV2),
+    UnlearningLineageV1(UnlearningLineageEventV1),
+}
+
+impl LedgerEvent {
+    pub fn record_id(&self) -> &StableId {
+        match self {
+            Self::Decision(value) => &value.record_id,
+            Self::RetrievalAssignment(value) => &value.record_id,
+            Self::Outcome(value) => &value.record_id,
+            Self::Credit(value) => &value.record_id,
+            Self::PromptDelivery(value) => &value.record_id,
+            Self::Revocation(value) => &value.record_id,
+            Self::AuthenticatedDecisionV2(value) => &value.record_id,
+            Self::AuthenticatedOutcomeV2(value) => &value.record_id,
+            Self::CreditBatchV2(value) => &value.record_id,
+            Self::UnlearningLineageV1(value) => &value.record_id,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LedgerRecord {
+    pub sequence: LogicalSequence,
+    pub predecessor_chain_digest: Digest32,
+    pub event_digest: Digest32,
+    pub chain_digest: Digest32,
+    pub event: LedgerEvent,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AppendDisposition {
+    Appended,
+    IdempotentReplay,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AppendReceipt {
+    pub disposition: AppendDisposition,
+    pub sequence: LogicalSequence,
+    pub event_digest: Digest32,
+    pub chain_digest: Digest32,
+}
+
+/// Cloneable, immutable persistence payload. Restoring it always replays every
+/// invariant and verifies every chain link.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LedgerSnapshot {
+    pub(crate) records: Vec<LedgerRecord>,
+    pub head_digest: Digest32,
+}
+
+impl LedgerSnapshot {
+    #[must_use]
+    pub fn records(&self) -> &[LedgerRecord] {
+        &self.records
+    }
+}

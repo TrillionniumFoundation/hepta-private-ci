@@ -1,0 +1,1259 @@
+{
+  "schema": "hepta.script-entrypoints.v1",
+  "generatedBy": "scripts/ENTRYPOINTS.json",
+  "scripts": [
+    {
+      "script": "scripts/hepta-repository-integrity.py",
+      "callers": [
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/hepta-repository-integrity.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_cleanup_consumers.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/format.py",
+      "callers": [
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-launchd-cutover-bridge",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/hepta_source_registry_closure.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/just-shell.py",
+      "callers": [
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-state-snapshot",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/hepta-generation-pointer",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/list-bazel-clippy-targets.sh",
+      "callers": [
+        ".github/workflows/bazel.yml",
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "CI",
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-cns.py",
+      "callers": [
+        ".github/workflows/hepta-audit-remediation.yml",
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hepta-deployment-handoff.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_ci_v8.py",
+      "callers": [
+        ".github/workflows/hepta-consolidated-source.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_verify_cargo_lock.py",
+      "callers": [
+        ".github/workflows/hepta-converged-learning.yml",
+        ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/lane_a_foundation_lib.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/uv.lock",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/check_blob_size.py",
+      "callers": [
+        ".github/workflows/blob-size-policy.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-install-live-gateway",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/verify_hepta_callers.py",
+      "callers": [
+        ".github/workflows/lane-a-foundation.yml",
+        ".github/workflows/repo-checks.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_paper_evidence.py",
+      "callers": [
+        ".github/workflows/hepta-cns-embodiment.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-implementation-maps.py",
+      "callers": [
+        "scripts/hepta-module-docs.py"
+      ],
+      "entrypointKinds": [
+        "CI",
+        "indirect"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_ci_source_identity.py",
+      "callers": [
+        ".github/workflows/hepta-consolidated-source.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/verify_lane_a_foundation.py",
+      "callers": [
+        ".github/workflows/lane-a-foundation.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-module-docs.py",
+      "callers": [
+        ".github/workflows/hepta-algorithm-docs.yml",
+        ".github/workflows/hepta-audit-remediation.yml",
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hepta-converged-learning.yml",
+        ".github/workflows/hepta-deployment-handoff.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-cutover-guard",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/check-module-bazel-lock.sh",
+      "callers": [
+        ".github/workflows/bazel.yml",
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "CI",
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/verify_cargo_lock.py",
+      "callers": [
+        ".github/workflows/hepta-converged-learning.yml",
+        ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_module_status_facts.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/test-remote-env.sh",
+      "callers": [
+        ".github/workflows/rust-ci-full-nextest-platform.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-technical-receipts.py",
+      "callers": [
+        "scripts/hepta-technical-receipts.py (manual/CI integration)"
+      ],
+      "entrypointKinds": [
+        "manual",
+        "indirect"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_module_doc_metadata.py",
+      "callers": [
+        ".github/workflows/hepta-audit-remediation.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/run_tui_with_exec_server.sh",
+      "callers": [
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/readme_toc.py",
+      "callers": [
+        ".github/workflows/repo-checks.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_lane_d_scope.py",
+      "callers": [
+        ".github/workflows/hepta-consolidated-source.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-docs.py",
+      "callers": [
+        ".github/workflows/hepta-algorithm-docs.yml",
+        ".github/workflows/hepta-audit-remediation.yml",
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hepta-consolidated-source.yml",
+        ".github/workflows/hepta-converged-learning.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-technical-closure.py",
+      "callers": [
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_cleanup_history.py",
+      "callers": [
+        ".github/workflows/hepta-development-docs.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-lane-e-closure.py",
+      "callers": [
+        ".github/workflows/hepta-lane-e-gap-closure.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/list-bazel-release-targets.sh",
+      "callers": [
+        ".github/workflows/bazel.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/build_codex_package.py",
+      "callers": [
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-readiness.py",
+      "callers": [
+        ".github/workflows/hepta-converged-learning.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/stage_npm_packages.py",
+      "callers": [
+        ".github/workflows/rust-release.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_lane_b_truth.py",
+      "callers": [
+        ".github/workflows/hepta-lane-b-truth.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-hnmf.py",
+      "callers": [
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/hepta-implementation-readiness.yml",
+        ".github/workflows/hnmf-qualification.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-gap-closure.py",
+      "callers": [
+        ".github/workflows/hepta-audit-remediation.yml",
+        ".github/workflows/hepta-consolidated-source.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/asciicheck.py",
+      "callers": [
+        ".github/workflows/repo-checks.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-lane-d-semantic-conformance.py",
+      "callers": [
+        ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/start-codex-exec.sh",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/hepta-live-soak.sh",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/hepta-lane-b-truth.py",
+      "callers": [
+        ".github/workflows/hepta-lane-b-truth.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-watchdog.sh",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/test_hepta_gap_closure.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/hepta_ci_v8.py",
+      "callers": [
+        ".github/workflows/hepta-consolidated-source.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/pyproject.toml",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/verify_lane_a_pr_tuple.py",
+      "callers": [
+        ".github/workflows/lane-a-foundation.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-immutable-release-tree",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/hepta-implementation-dossiers.py",
+      "callers": [
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/debug-codex.sh",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/run_lane_a_native_qualification.sh",
+      "callers": [
+        ".github/workflows/lane-a-foundation.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-paper-evidence.py",
+      "callers": [
+        ".github/workflows/hepta-cns-embodiment.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta_module_doc_metadata.py",
+      "callers": [
+        ".github/workflows/hepta-audit-remediation.yml",
+        ".github/workflows/hepta-consolidated-source.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/verify_openbao_compatibility.py",
+      "callers": [
+        ".github/workflows/openbao-compatibility.yml",
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "CI",
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-algorithm-docs.py",
+      "callers": [
+        ".github/workflows/hepta-algorithm-docs.yml",
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/hepta-install-live-watchdog",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/lane_a_foundation_core.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/.lock",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/pyvenv.cfg",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/CACHEDIR.TAG",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/.gitignore",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/hepta-runtime-tests/canary-e2e.sh",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/test_zsh.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/test_layout.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/test_cargo.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/test_cli.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/layout.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/README.md",
+      "callers": [
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hnmf-qualification.yml",
+        ".github/workflows/repo-checks.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/codex_package/v8.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/dotslash.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/ripgrep.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/cargo.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/version.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/test_archive.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/cli.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/rg",
+      "callers": [
+        ".github/workflows/rust-release.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/codex_package/archive.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/__init__.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/zsh.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/targets.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/codex-zsh",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/install/test_install_sh.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/install/install.sh",
+      "callers": [
+        ".github/workflows/rust-release.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/install/install.ps1",
+      "callers": [
+        ".github/workflows/rust-release.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/mcp_conformance/test_official_conformance.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/run_codex_compliance.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/test_codex_compliance.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/test_review_regressions.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/regression-baseline-v1.json",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/review_regressions.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/README.md",
+      "callers": [
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hnmf-qualification.yml",
+        ".github/workflows/repo-checks.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/mcp_conformance/codex_conformance_adapter.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/server.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/test_server.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/review-regression-baseline-v1.json",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/mcp_conformance/official_conformance.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/activate.fish",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/activate.ps1",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/activate.bat",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/activate.nu",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/activate.csh",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/activate_this.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/python3",
+      "callers": [
+        ".github/workflows/Dockerfile.bazel",
+        ".github/workflows/bazel.yml",
+        ".github/workflows/blob-size-policy.yml",
+        ".github/workflows/blocking-ci.yml",
+        ".github/workflows/hepta-algorithm-docs.yml",
+        ".github/workflows/hepta-assimilation-discovery.yml",
+        ".github/workflows/hepta-audit-remediation.yml",
+        ".github/workflows/hepta-cns-embodiment.yml",
+        ".github/workflows/hepta-consolidated-source.yml",
+        ".github/workflows/hepta-contract-gate.yml",
+        ".github/workflows/hepta-converged-learning.yml",
+        ".github/workflows/hepta-deployment-handoff.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        ".github/workflows/hepta-implementation-readiness.yml",
+        ".github/workflows/hepta-lane-b-truth.yml",
+        ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+        ".github/workflows/hepta-lane-e-gap-closure.yml",
+        ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+        ".github/workflows/hepta-ndu-recursion.yml",
+        ".github/workflows/hepta-repository-integrity.yml",
+        ".github/workflows/hnmf-qualification.yml",
+        ".github/workflows/lane-a-foundation.yml",
+        ".github/workflows/openbao-compatibility.yml",
+        ".github/workflows/postmerge-ci.yml",
+        ".github/workflows/python-runtime-build.yml",
+        ".github/workflows/python-runtime-release.yml",
+        ".github/workflows/python-sdk-release.yml",
+        ".github/workflows/r2-release.yml",
+        ".github/workflows/repo-checks.yml",
+        ".github/workflows/rust-ci-full.yml",
+        ".github/workflows/rust-ci.yml",
+        ".github/workflows/rust-release.yml",
+        ".github/workflows/rusty-v8-release.yml",
+        ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+        ".github/workflows/v8-canary.yml",
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "CI",
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/.venv/bin/ruff",
+      "callers": [
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/sdk.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/.venv/bin/pydoc.bat",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/deactivate.bat",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/python",
+      "callers": [
+        ".github/workflows/bazel.yml",
+        ".github/workflows/hepta-diagnostic-source-export.yml",
+        ".github/workflows/python-sdk-release.yml",
+        ".github/workflows/repo-checks.yml",
+        ".github/workflows/rust-release-windows.yml",
+        ".github/workflows/sdk.yml",
+        "justfile"
+      ],
+      "entrypointKinds": [
+        "CI",
+        "just/make"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/.venv/bin/python3.13",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/bin/activate",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/_virtualenv.pth",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/_virtualenv.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff/__main__.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff/_find_ruff.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff/__init__.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff-0.15.13.dist-info/REQUESTED",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff-0.15.13.dist-info/RECORD",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff-0.15.13.dist-info/METADATA",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff-0.15.13.dist-info/INSTALLER",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff-0.15.13.dist-info/WHEEL",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff-0.15.13.dist-info/sboms/ruff.cyclonedx.json",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/.venv/lib/python3.13/site-packages/ruff-0.15.13.dist-info/licenses/LICENSE",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/smoke_tests/uv.lock",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/smoke_tests/conftest.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/smoke_tests/fixtures.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/smoke_tests/test_codex_package.py",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    },
+    {
+      "script": "scripts/codex_package/smoke_tests/pyproject.toml",
+      "callers": [],
+      "entrypointKinds": [
+        "manual/indirect"
+      ],
+      "status": "candidate-archive"
+    }
+  ]
+}

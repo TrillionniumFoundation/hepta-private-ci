@@ -1,0 +1,623 @@
+#!/usr/bin/env python3
+"""Closed-world verifier for the HNMF qualification package."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any
+
+try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+MODALITIES = [
+    "text",
+    "image",
+    "audio",
+    "video",
+    "code_ast",
+    "gui_state",
+    "tool_trajectory",
+    "structured_data",
+    "sensor",
+]
+
+POPULATIONS = [
+    "sensory_trace",
+    "episodic_binding",
+    "semantic_concept",
+    "procedural_skill",
+    "predictive_world",
+    "utility_salience",
+    "meta_memory",
+]
+
+PROTOCOLS = [
+    "ModalitySpanRefV1",
+    "MemoryEventV1",
+    "CrossModalBindingV1",
+    "EngramNodeV1",
+    "SynapseV1",
+    "MemoryCueV1",
+    "RecallPacketV1",
+    "OutcomeSignalV1",
+    "ReplaySelectionReceiptV1",
+    "PlasticityBatchV1",
+    "TopologyProposalV1",
+    "ForgetPropagationReceiptV1",
+]
+
+WORK_PACKAGES = [
+    "HNM-0-MULTIMODAL-CONTRACTS",
+    "HNM-1-IMMUTABLE-EVENT-LEDGER",
+    "HNM-2-HYBRID-PROJECTIONS",
+    "HNM-3-SPARSE-ENGRAM-RECALL",
+    "HNM-4-REPLAY-WORLD-PLASTICITY",
+    "HNM-5-LONGITUDINAL-UNLEARNING",
+    "HNM-6-STRUCTURAL-EVOLUTION",
+]
+
+TECHNICAL_HEADINGS = [
+    "## 1. Authority, scope and non-goals",
+    "## 2. Closed blocker model",
+    "## 3. Source-of-truth and projection hierarchy",
+    "## 4. Canonical multimodal data model",
+    "## 5. Seven functional engram populations",
+    "## 6. Fixed-point neuron dynamics",
+    "## 7. Admission and write path",
+    "## 8. Recall and contradiction path",
+    "## 9. Replay and consolidation",
+    "## 10. Eligibility, modulation and candidate plasticity",
+    "## 11. Forgetting and non-resurrection",
+    "## 12. Existing-module ownership map",
+    "## 13. Resource, performance and concurrency bounds",
+    "## 14. Security and privacy controls",
+    "## 15. Verification and acceptance",
+    "## 16. Bounded migration",
+    "## 17. Claim ladder",
+    "## 18. Work-package closure",
+]
+
+REQUIRED_FILES = [
+    "docs/hnmf/README.md",
+    "docs/hnmf/TECHNICAL.md",
+    "docs/hnmf/MIGRATION.md",
+    "docs/hnmf/HNMF.json",
+    "docs/hnmf/GAPS.json",
+    "docs/contracts/CONTRACTS.json",
+    "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+    "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+    "codex-rs/hepta-cognitive-types/src/wire.rs",
+    "codex-rs/hepta-cognitive-types/src/contract_tests.rs",
+    "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+    "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs",
+    "qualification/cognitive-types-v1/verify_vectors.py",
+    "qualification/hnmf-reference/Cargo.toml",
+    "qualification/hnmf-reference/Cargo.lock",
+    "qualification/hnmf-reference/README.md",
+    "qualification/hnmf-reference/src/lib.rs",
+    "qualification/hnmf-contract-reference/Cargo.toml",
+    "qualification/hnmf-contract-reference/README.md",
+    "qualification/hnmf-contract-reference/src/lib.rs",
+    ".github/workflows/hnmf-qualification.yml",
+]
+
+CANONICAL_RUST_TOKENS = [
+    "pub struct ModalitySpanRefV1",
+    "pub struct MemoryEventV1",
+    "pub struct CrossModalBindingV1",
+    "pub struct EngramNodeV1",
+    "pub struct SynapseV1",
+    "pub struct MemoryCueV1",
+    "pub struct RecallPacketV1",
+    "pub struct OutcomeSignalV1",
+    "pub struct ReplaySelectionReceiptV1",
+    "pub struct PlasticityBatchV1",
+    "pub struct TopologyProposalV1",
+    "pub struct ForgetPropagationReceiptV1",
+    "pub fn encode_wire_v1",
+    "pub fn decode_wire_v1",
+    "pub fn canonical_contract_digest_v1",
+    "pub fn validate_cross_modal_binding_against_event_v1",
+    "pub valid_from_unix_ms: u64",
+    "pub eligibility_ppm: i32",
+    "pub const Q16_ONE: i32 = 65_536",
+    "abstaining recall contains selected events",
+    "selectedEvent.revision",
+    "weight proposal delta",
+    "threshold proposal delta",
+]
+
+REFERENCE_RUST_TOKENS = [
+    "ModalityKindV1 as ReferenceModalityKind",
+    "EngramPopulationV1 as ReferenceEngramPopulation",
+    "PrivacyClassV1 as ReferencePrivacyClass",
+    "SynapseRelationV1 as ReferenceSynapseRelation",
+    "pub fn from_canonical",
+    "pub struct ReferenceEventFeatures",
+    "pub struct ReferenceEngramState",
+    "pub struct ReferenceSynapseState",
+    "pub struct ReferenceRecallState",
+    "pub struct ReferenceOutcomeFeatures",
+    "pub struct ReferencePlasticityProposalSet",
+    "pub enum ReferenceTopologyOperation",
+    "pub struct ReferenceForgetPlan",
+    "pub fn recall",
+    "pub fn propose_plasticity",
+    "pub fn apply_plasticity",
+    "pub fn propose_forget",
+    "pub fn apply_forget",
+    "pub fn select_replay",
+    "fn sparse_select",
+    "CURRENT_RUN_MUTATION_ALLOWED: bool = false",
+    "ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false",
+    "PRODUCTION_AUTHORITY: bool = false",
+    "EXTERNAL_EFFECTS_ALLOWED: bool = false",
+]
+
+FORBIDDEN_REFERENCE_CONTRACT_TOKENS = [
+    "pub enum ReferenceModalityKind",
+    "pub enum ReferenceEngramPopulation",
+    "pub enum ReferenceSynapseRelation",
+    "pub enum ReferencePrivacyClass",
+    "pub enum ModalityKind",
+    "pub enum EngramPopulation",
+    "pub enum SynapseRelation",
+    "pub struct MemoryEvent",
+    "pub struct EngramNode",
+    "pub struct Synapse",
+    "pub struct MemoryCue",
+    "pub struct RecallPacket",
+    "pub struct OutcomeSignal",
+    "pub struct PlasticityBatch",
+    "pub enum TopologyOperation",
+    "pub struct ForgetBatch",
+]
+
+EXPECTED_PORT_TARGETS = {
+    "ModulePort::cognitive.types::cognitive.read": "cognitive.read",
+    "ModulePort::cognitive.types::cognitive.store": "cognitive.store",
+    "ModulePort::cognitive.types::knowledge.graph": "knowledge.graph",
+    "ModulePort::cognitive.types::learning.ledger": "learning.ledger",
+}
+
+EXPECTED_LOCAL_PORT_TYPES = {
+    "ModulePort::cognitive.types::cognitive.store": [
+        "MemoryAdmissionCandidateV1",
+        "MemoryWriteIntentV1",
+        "MemoryWriteReceiptV1",
+    ],
+}
+
+EXPECTED_REGISTERED_CONSUMER_TARGETS = [
+    "cognitive.read",
+    "cognitive.store",
+    "memory.retrieval",
+    "compact.engine",
+    "intelligence.control",
+]
+
+EXPECTED_LEGACY_CONSUMER_SURFACES = [
+    "cognitive.read: MemoryRecord/CognitiveSnapshot compatibility surface",
+    "cognitive.store: MemoryRecord and Lane C local write contracts",
+    "memory.retrieval: generation_bound::RecallPacketV1 compatibility contract",
+    "compact.engine: MemoryRecord and Lane C compaction surface",
+    "intelligence.control: CognitiveSnapshot compatibility surface",
+]
+
+RUST_TESTS = [
+    "cross_modal_pattern_completion_recalls_episode",
+    "sparse_competition_is_bounded",
+    "contradiction_forces_abstention",
+    "plasticity_does_not_mutate_current_snapshot",
+    "applying_plasticity_creates_exact_next_generation",
+    "homeostasis_raises_threshold_for_active_node",
+    "eligibility_trace_decays_without_new_coactivation",
+    "modulator_is_risk_and_ood_bounded",
+    "replay_selection_enforces_source_quota",
+    "forgetting_prevents_recall_resurrection",
+    "insertion_order_does_not_change_recall",
+    "topology_proposal_cannot_self_activate",
+    "hard_bounds_fail_closed",
+]
+
+
+class DuplicateKey(ValueError):
+    """Raised for duplicate JSON object keys."""
+
+
+def object_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise DuplicateKey(key)
+        result[key] = value
+    return result
+
+
+def fail(message: str) -> None:
+    raise SystemExit(f"FAIL_HEPTA_HNMF: {message}")
+
+
+def need(condition: bool, message: str) -> None:
+    if not condition:
+        fail(message)
+
+
+def load_json(path: str) -> dict[str, Any]:
+    file_path = ROOT / path
+    try:
+        value = json.loads(
+            file_path.read_text(encoding="utf-8"), object_pairs_hook=object_pairs
+        )
+    except Exception as error:  # noqa: BLE001 - verifier reports exact parse failures.
+        fail(f"{path}: {error}")
+    need(isinstance(value, dict), f"{path}: top-level object required")
+    return value
+
+
+def false_authority(value: Any, label: str) -> None:
+    need(isinstance(value, dict), f"{label}: authority object required")
+    need(list(value) == AUTHORITY_KEYS, f"{label}: authority key order/closure")
+    need(not any(value.values()), f"{label}: positive authority is forbidden")
+
+
+def verify() -> int:
+    for path in REQUIRED_FILES:
+        need((ROOT / path).is_file(), f"missing required file {path}")
+
+    spec = load_json("docs/hnmf/HNMF.json")
+    gaps = load_json("docs/hnmf/GAPS.json")
+    contracts = load_json("docs/contracts/CONTRACTS.json")
+    protocol_schemas = load_json("docs/contracts/PROTOCOL_SCHEMAS.json")
+    implementation_map = load_json(
+        "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
+    )
+
+    need(spec.get("schema") == "hepta.hnmf.qualification.v1", "spec schema")
+    need(has_schema_version(spec, 1), "spec schema version")
+    need(spec.get("planId") == "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN", "spec plan id")
+    need(spec.get("planVersion") == "8.0.0", "spec plan version")
+    need(
+        spec.get("baselineCommit") == "70ef65a90a031ce0cc08b77b5596eb0d99edaa11",
+        "spec baseline",
+    )
+    need(spec.get("modalities") == MODALITIES, "modality closure")
+    need(
+        [item.get("id") for item in spec.get("populations", [])] == POPULATIONS,
+        "population closure",
+    )
+    need(
+        [item.get("id") for item in spec.get("protocols", [])] == PROTOCOLS,
+        "protocol closure",
+    )
+    canonical_protocols = {
+        item.get("id"): item for item in protocol_schemas.get("protocols", [])
+    }
+    contract_rows = {item.get("id"): item for item in contracts.get("contracts", [])}
+    need(
+        implementation_map.get("module") == "cognitive.types",
+        "cognitive.types implementation-map identity",
+    )
+    need(
+        implementation_map.get("canonicalTypeSource")
+        == "codex-rs/hepta-cognitive-types",
+        "canonical cognitive type source",
+    )
+    need(
+        implementation_map.get("sourceBaseSemantics")
+        == "legacy_registry_baseline_only_not_exact_head_evidence"
+        and implementation_map.get("exactCandidateIdentitySource")
+        == "exact_head_and_synthetic_merge_ci_receipts",
+        "implementation-map source identity semantics",
+    )
+    need(
+        implementation_map.get("nativeConsumerState")
+        == "registry_bound_shadow_migration",
+        "consumer state must not overclaim native convergence",
+    )
+    need(
+        implementation_map.get("registeredConsumerTargets")
+        == EXPECTED_REGISTERED_CONSUMER_TARGETS,
+        "registered consumer target closure",
+    )
+    need(
+        implementation_map.get("legacyConsumerSurfacesPresent")
+        == EXPECTED_LEGACY_CONSUMER_SURFACES,
+        "legacy consumer surface inventory",
+    )
+    need(
+        implementation_map.get("canonicalConsumerConvergenceProved") is False
+        and implementation_map.get("authenticatedProductCompositionState")
+        == "not_composed"
+        and implementation_map.get("productionImplementation") is False,
+        "consumer/product claim boundary",
+    )
+    port_bindings = implementation_map.get("portSchemaBindings")
+    need(
+        isinstance(port_bindings, dict)
+        and set(port_bindings) == set(EXPECTED_PORT_TARGETS),
+        "cognitive.types port schema binding closure",
+    )
+    canonical_protocol_ids = {
+        item.get("id") for item in protocol_schemas.get("protocols", [])
+    }
+    for port_id, target in EXPECTED_PORT_TARGETS.items():
+        expected = sorted(
+            row["id"]
+            for row in contracts.get("contracts", [])
+            if row.get("kind") == "typed_protocol"
+            and row.get("producer") == "cognitive.types"
+            and target in row.get("consumers", [])
+        )
+        actual = sorted(port_bindings.get(port_id, []))
+        need(actual == expected, port_id + " exact schema projection")
+        need(
+            set(actual) <= canonical_protocol_ids,
+            port_id + " registered schema closure",
+        )
+    need(
+        implementation_map.get("portLocalTypeBindings") == EXPECTED_LOCAL_PORT_TYPES,
+        "cognitive.types typed-local port binding closure",
+    )
+    for item in spec["protocols"]:
+        protocol_id = item["id"]
+        canonical = canonical_protocols.get(protocol_id)
+        need(canonical is not None, protocol_id + " global protocol registration")
+        required_fields = [
+            field["name"]
+            for field in canonical.get("fields", [])
+            if field.get("required")
+        ]
+        need(
+            item.get("maximumEncodedBytes") == canonical.get("maximumEncodedBytes"),
+            protocol_id + " encoded-byte bound projection",
+        )
+        need(
+            item.get("requiredFields") == required_fields,
+            protocol_id + " required-field projection",
+        )
+        contract = contract_rows.get(protocol_id)
+        need(contract is not None, protocol_id + " typed-contract registration")
+        expected_producer = (
+            "learning.plasticity"
+            if protocol_id == "TopologyProposalV1"
+            else "cognitive.types"
+        )
+        need(
+            contract.get("producer") == expected_producer,
+            protocol_id + " canonical producer",
+        )
+    need(
+        [item.get("id") for item in spec.get("workPackages", [])] == WORK_PACKAGES,
+        "work-package closure",
+    )
+    need(
+        all(item.get("state") == "closed_reference" for item in spec["workPackages"]),
+        "work-package reference state",
+    )
+    false_authority(spec.get("authorityFlags"), "spec")
+
+    source = spec.get("sourceOfTruth", {})
+    need(source.get("vectorDatabaseIsMemory") is False, "vector database authority")
+    need(
+        source.get("projectionMayMutateSourceFacts") is False,
+        "projection mutation authority",
+    )
+
+    dynamics = spec.get("dynamics", {})
+    need(dynamics.get("currentRunMutationAllowed") is False, "current-run mutation")
+    need(
+        dynamics.get("onlineTopologyActivationAllowed") is False,
+        "online topology activation",
+    )
+
+    bounds = spec.get("resourceBounds", {})
+    expected_bounds = {
+        "maximumCandidateEvents": 512,
+        "maximumNodes": 4096,
+        "maximumSynapses": 32768,
+        "maximumActiveNodes": 4096,
+        "maximumActivePerPopulation": 64,
+        "maximumRecurrentSteps": 4,
+        "maximumRecallEvents": 16,
+        "maximumActivationPaths": 32,
+        "maximumReplayCandidates": 4096,
+        "maximumReplaySelection": 256,
+        "maximumWeightDeltaPpm": 50000,
+    }
+    need(bounds == expected_bounds, "resource bounds")
+
+    defaults = spec.get("qualificationDefaults", {})
+    need(defaults.get("minimumIndependentSnapshots", 0) >= 3, "snapshot evidence floor")
+    need(defaults.get("minimumFutureCalendarWindows", 0) >= 2, "future-window floor")
+    need(defaults.get("minimumEffectiveSampleSize", 0) >= 200, "ESS floor")
+    need(
+        defaults.get("candidateLcbMustExceedBaselineUcb") is True,
+        "promotion interval rule",
+    )
+    need(
+        defaults.get("maximumDeletionResurrectionCount") == 0,
+        "deletion non-resurrection",
+    )
+    need(
+        defaults.get("maximumUnresolvedHighRiskContradictions") == 0,
+        "contradiction floor",
+    )
+
+    claims = spec.get("claimPosture", {})
+    need(claims.get("referenceContractsClosed") is True, "reference contracts claim")
+    need(claims.get("referenceAlgorithmsClosed") is True, "reference algorithms claim")
+    for key in [
+        "productionActivation",
+        "longitudinalEfficacy",
+        "functionalBiomimicry",
+        "neuromorphicMechanism",
+        "selfIterationProductionAuthority",
+    ]:
+        need(claims.get(key) is False, f"claim posture {key}")
+
+    need(gaps.get("schema") == "hepta.hnmf.gap-ledger.v1", "gap schema")
+    need(gaps.get("allReferenceGapsClosed") is True, "reference gap closure")
+    need(gaps.get("productionActivationClaimed") is False, "gap production claim")
+    gap_rows = gaps.get("gaps", [])
+    need(len(gap_rows) == 18, "gap count")
+    need(len({row.get("id") for row in gap_rows}) == 18, "gap ids")
+    need(
+        all(row.get("referenceState") == "closed_reference" for row in gap_rows),
+        "gap reference states",
+    )
+    need(
+        all(
+            row.get("productionState") == "requires_independent_activation_evidence"
+            for row in gap_rows
+        ),
+        "gap production states",
+    )
+    need(all(row.get("evidence") for row in gap_rows), "gap evidence")
+    false_authority(gaps.get("authorityFlags"), "gaps")
+
+    technical_path = "docs/hnmf/TECHNICAL.md"
+    technical = (ROOT / technical_path).read_text(encoding="utf-8")
+    need(len(technical.encode("utf-8")) >= 20_000, "technical specification too small")
+    positions = [technical.find(heading) for heading in TECHNICAL_HEADINGS]
+    need(all(position >= 0 for position in positions), "technical heading coverage")
+    need(positions == sorted(positions), "technical heading ordering")
+    need(len(set(positions)) == len(positions), "technical heading uniqueness")
+
+    migration_path = "docs/hnmf/MIGRATION.md"
+    migration = (ROOT / migration_path).read_text(encoding="utf-8")
+    for phase in ["M0", "M1", "M2", "M3", "M4", "M5"]:
+        need(f"Phase {phase}" in migration, f"migration phase {phase}")
+
+    canonical_rust = "\n".join(
+        (ROOT / path).read_text(encoding="utf-8")
+        for path in [
+            "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+            "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+            "codex-rs/hepta-cognitive-types/src/wire.rs",
+        ]
+    )
+    for token in CANONICAL_RUST_TOKENS:
+        need(token in canonical_rust, f"canonical cognitive contract token {token}")
+
+    fuzz_source = (
+        ROOT / "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
+    ).read_text(encoding="utf-8")
+    for protocol_id in PROTOCOLS:
+        need(
+            f"decode_wire_v1::<{protocol_id}>" in fuzz_source,
+            protocol_id + " fuzz decoder coverage",
+        )
+
+    rust_path = "qualification/hnmf-reference/src/lib.rs"
+    rust = (ROOT / rust_path).read_text(encoding="utf-8")
+    need(len(rust.encode("utf-8")) >= 25_000, "algorithm reference runtime too small")
+    for token in REFERENCE_RUST_TOKENS + RUST_TESTS:
+        need(token in rust, f"algorithm reference token {token}")
+    for token in FORBIDDEN_REFERENCE_CONTRACT_TOKENS:
+        need(token not in rust, f"reference redefines canonical contract token {token}")
+    need(
+        "canonical cognitive/memory contracts" in rust
+        and "codex-rs/hepta-cognitive-types" in rust,
+        "reference canonical owner declaration",
+    )
+    need(
+        "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
+    )
+
+    contract_reference = (
+        ROOT / "qualification/hnmf-contract-reference/src/lib.rs"
+    ).read_text(encoding="utf-8")
+    for token in FORBIDDEN_REFERENCE_CONTRACT_TOKENS:
+        need(
+            token not in contract_reference,
+            f"contract reference redefines canonical contract token {token}",
+        )
+    need(
+        "CANONICAL_CRATE_PATH" in contract_reference
+        and "PRODUCTION_AUTHORITY: bool = false" in contract_reference,
+        "contract reference ownership shim",
+    )
+
+    workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
+        encoding="utf-8"
+    )
+    for command in [
+        "python3 scripts/hepta-hnmf.py verify",
+        "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
+        "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
+        "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
+        "python3 qualification/cognitive-types-v1/verify_vectors.py",
+        "cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check",
+        "cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
+        "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
+        "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
+        "cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
+    ]:
+        need(command in workflow, f"workflow command {command}")
+
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_HNMF_REFERENCE_CLOSED_WORLD",
+                "modalities": len(MODALITIES),
+                "populations": len(POPULATIONS),
+                "protocols": len(PROTOCOLS),
+                "workPackages": len(WORK_PACKAGES),
+                "gaps": len(gap_rows),
+                "productionAuthority": False,
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def self_test() -> int:
+    try:
+        json.loads('{"a":1,"a":2}', object_pairs_hook=object_pairs)
+    except DuplicateKey:
+        pass
+    else:
+        fail("duplicate-key fixture")
+    need(len(MODALITIES) == 9, "modality fixture")
+    need(len(POPULATIONS) == 7, "population fixture")
+    need(len(WORK_PACKAGES) == 7, "work-package fixture")
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_HNMF_SELF_TEST",
+                "cases": [
+                    "duplicate_keys",
+                    "modalities",
+                    "populations",
+                    "work_packages",
+                ],
+                "productionAuthority": False,
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", choices=["verify", "self-test"])
+    arguments = parser.parse_args()
+    return verify() if arguments.command == "verify" else self_test()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.qualification-registry.v2",
+  "schemaVersion": 2,
+  "documentClass": "canonical_registry",
+  "authorityScope": "qualification_profile_test_fault_and_decision_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "profiles": [
+    {
+      "id": "contracts",
+      "requires": [
+        "source_identity",
+        "source_inventory",
+        "static_verification",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "mandatoryTestClasses": [
+        "schema",
+        "compatibility",
+        "negative"
+      ],
+      "requiredFaultRows": [],
+      "performanceEvidenceRequired": false,
+      "realWorldEvidenceRequired": false,
+      "independentDecisionRoles": [
+        "architecture"
+      ]
+    },
+    {
+      "id": "durable",
+      "requires": [
+        "source_identity",
+        "static_verification",
+        "fault_evidence",
+        "rollback_rehearsal"
+      ],
+      "mandatoryTestClasses": [
+        "unit",
+        "property",
+        "integration",
+        "real_process_reopen"
+      ],
+      "requiredFaultRows": [
+        "after_commit_before_return",
+        "after_send_before_ack",
+        "stale_generation",
+        "corruption"
+      ],
+      "performanceEvidenceRequired": true,
+      "realWorldEvidenceRequired": false,
+      "independentDecisionRoles": [
+        "durability"
+      ]
+    },
+    {
+      "id": "adaptive",
+      "requires": [
+        "complete_candidate_set",
+        "logged_propensity_and_support",
+        "causal_outcome_observation",
+        "support_aware_ope",
+        "future_time_holdout"
+      ],
+      "mandatoryTestClasses": [
+        "replay",
+        "ablation",
+        "OOD",
+        "subgroup",
+        "longitudinal"
+      ],
+      "requiredFaultRows": [
+        "artifact_reload",
+        "rollback"
+      ],
+      "performanceEvidenceRequired": true,
+      "realWorldEvidenceRequired": true,
+      "independentDecisionRoles": [
+        "learning",
+        "security"
+      ]
+    },
+    {
+      "id": "physical",
+      "requires": [
+        "physical_or_real_provider_evidence",
+        "fault_evidence",
+        "performance_evidence",
+        "operator_acceptance"
+      ],
+      "mandatoryTestClasses": [
+        "real_process",
+        "physical_or_provider",
+        "kill",
+        "reconcile"
+      ],
+      "requiredFaultRows": [
+        "after_send_before_ack",
+        "permission_loss",
+        "network_partition"
+      ],
+      "performanceEvidenceRequired": true,
+      "realWorldEvidenceRequired": true,
+      "independentDecisionRoles": [
+        "operator",
+        "security"
+      ]
+    },
+    {
+      "id": "documentation",
+      "requires": [
+        "source_identity",
+        "source_inventory",
+        "static_verification",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "semantic_review",
+        "independent_review"
+      ],
+      "mandatoryTestClasses": [
+        "closed_world_registry",
+        "legacy_cleanup",
+        "reference_closure",
+        "source_and_merge_identity"
+      ],
+      "requiredFaultRows": [],
+      "performanceEvidenceRequired": false,
+      "realWorldEvidenceRequired": false,
+      "independentDecisionRoles": [
+        "architecture",
+        "documentation"
+      ]
+    }
+  ],
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

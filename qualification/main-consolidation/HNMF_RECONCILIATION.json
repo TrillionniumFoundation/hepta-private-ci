@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.hnmf-branch-reconciliation.v1",
+  "incoming": "126557775d992a0e8dfe57818d1242589a7dcd33",
+  "mainBefore": "cb8fd9d52b688c8b211525e27e36898fb0c42396",
+  "incomingChangedPathCount": 30,
+  "resolution": "Retain the current single document set and reference implementation; preserve the incoming head as a merge parent after complete content reconciliation.",
+  "identicalSubtrees": {
+    "docs/hnmf": "2f2ca2cbf8344e530424fbd26ce003d6d486f9b5",
+    "qualification/hnmf-reference": "a35bb3861574da84b7813d66a136a13d493481b1",
+    "qualification/hnmf-contract-reference": "3c7d84eb7891b7478305885c1b2ae0b04da4e73d"
+  },
+  "identicalWorkflowBlob": "26bece92ba4bab9099e3aa35125eb54c68ec7cd5",
+  "adversarialReference": {
+    "incomingTree": "a0b4b421d45be7316884a90d14ab7dbe975e43a6",
+    "retainedTree": "4e5c6f7dc4be2a464c477b4a0a1ea8a21a3760e6",
+    "reviewedChangedPaths": ["src/learning.rs", "src/lib.rs", "src/recall.rs", "src/tests.rs"],
+    "resolution": "Retain formatter changes, equivalent configuration construction and compile-time assertions. No incoming algorithm, bound, test scenario or authority restriction is dropped. All other subtree entries are identical."
+  },
+  "verifier": {
+    "incomingBlob": "4efab4385966a7673f0286021118cf561bef0bd8",
+    "retainedBlob": "c246e4ed53c00ce1b726bc8c300d04438b1478d1",
+    "pythonAstEquivalent": true,
+    "bothBlobIdentitiesVerifiedLocally": true
+  },
+  "rootReadmeResolution": "Keep current main README, including the same subordinate HNMF entry and explicit no-production-authority boundary; do not restore the older global entry text.",
+  "localValidation": {
+    "scope": "Exact HNMF subtrees and verifier, reconstructed from the retained 08c017d source archive and independently matched against current Git tree/blob identities.",
+    "hnmfVerifierSelfTest": "passed",
+    "hnmfClosedWorldVerifier": "passed",
+    "rustCompilationExecuted": false,
+    "wholeRepositoryCiPassed": false
+  },
+  "allRepositoryBranchesReconciled": false,
+  "branchDeletionPerformedByThisCommit": false
+}
