@@ -239,23 +239,23 @@ impl DurableLeaseRegistryV1 {
             return Err(LeaseRegistryErrorV1::InvalidTransition);
         }
         operation.state = LeaseOperationStateV1::Unknown;
-        if let Some(lease_id) = operation.lease_id.as_ref() {
-            if let Some(lease) = next.leases.get_mut(lease_id) {
-                // Late uncertainty adds an operation fact; it never revives a lease.
-                if !matches!(
-                    lease.state,
-                    SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
-                ) {
-                    lease.state = match operation.kind {
-                        LeaseOperationKindV1::Renew
-                            if lease.state != SecretLeaseStateV1::RevokeUnknown =>
-                        {
-                            SecretLeaseStateV1::RenewUnknown
-                        }
-                        LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
-                        LeaseOperationKindV1::Issue | LeaseOperationKindV1::Renew => lease.state,
-                    };
-                }
+        if let Some(lease_id) = operation.lease_id.as_ref()
+            && let Some(lease) = next.leases.get_mut(lease_id)
+        {
+            // Late uncertainty adds an operation fact; it never revives a lease.
+            if !matches!(
+                lease.state,
+                SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+            ) {
+                lease.state = match operation.kind {
+                    LeaseOperationKindV1::Renew
+                        if lease.state != SecretLeaseStateV1::RevokeUnknown =>
+                    {
+                        SecretLeaseStateV1::RenewUnknown
+                    }
+                    LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
+                    LeaseOperationKindV1::Issue | LeaseOperationKindV1::Renew => lease.state,
+                };
             }
         }
         self.commit(next)?;
