@@ -16,6 +16,7 @@ on:
       - "scripts/hepta-implementation-maps.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/test_hepta_knowledge_graph_target_measure.py"
+      - "scripts/test_hepta_knowledge_graph_product_witness.py"
       - "qualification/knowledge-graph/**"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
@@ -35,6 +36,7 @@ on:
       - "scripts/hepta-implementation-maps.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/test_hepta_knowledge_graph_target_measure.py"
+      - "scripts/test_hepta_knowledge_graph_product_witness.py"
       - "qualification/knowledge-graph/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
 
@@ -123,6 +125,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           python3 scripts/test_hepta_knowledge_graph_target_measure.py
+          python3 scripts/test_hepta_knowledge_graph_product_witness.py
           python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
 
       - name: Check KG-owned Rust formatting

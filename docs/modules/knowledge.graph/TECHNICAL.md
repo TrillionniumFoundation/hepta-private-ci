@@ -358,3 +358,11 @@ result alone: promotion requires current exact-head and synthetic-merge
 correctness, independent full-rebuild equivalence, and a measured end-to-end
 benefit under an explicit target-host budget. No result here changes activation,
 independent acceptance or release state automatically.
+
+### Convergence evidence and remaining gates
+
+[The 2026-09-25 execution record](../../../qualification/knowledge-graph/CONVERGENCE_20260925.md)
+separates the measured source/merge from the subsequent compact-storage witness
+correction. It records passing native/default-product tests, failed or pending
+witness/lint/target-host qualifications, and the decision not to promote the
+incremental writer. No earlier receipt is attributed to a later source SHA.
