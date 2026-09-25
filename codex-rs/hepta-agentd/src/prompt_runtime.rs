@@ -694,7 +694,7 @@ impl AgentdPromptPipelineOwner {
     fn admit_provider_dispatch_with_fence(
         &self,
         record: PromptRuntimeDispatchRecordV1,
-        current_generation: impl FnOnce() -> Result<(), AgentdPromptRuntimeError>,
+        current_generation: impl Fn() -> Result<(), AgentdPromptRuntimeError>,
     ) -> Result<(), PromptRuntimeHostError> {
         record.validate().map_err(|error| {
             PromptRuntimeHostError::new("agentd_prompt_runtime_dispatch_invalid", error.to_string())
@@ -742,7 +742,42 @@ impl AgentdPromptPipelineOwner {
         {
             return Err(host_error(AgentdPromptRuntimeError::IndeterminatePending));
         }
-        self.runtime.record_dispatch(record)
+        self.runtime.record_dispatch(record.clone())?;
+        // fsync and publication can themselves wait beyond the deadline or an
+        // Agent-generation fence. We are still inside the physical policy hook:
+        // no provider send has been permitted yet, so this is a definite local
+        // NotDispatched observation, never fabricated provider success.
+        let generation_after_commit = current_generation();
+        let observed_unix_ms = current_unix_ms().map_err(host_error)?;
+        if observed_unix_ms < record.dispatched_unix_ms {
+            // With an untrusted clock relationship retain the unresolved claim;
+            // do not fabricate a future terminal timestamp to resolve it.
+            return Err(host_error(AgentdPromptRuntimeError::InvalidDeadline));
+        }
+        let rejected = generation_after_commit.err().or_else(|| {
+            (observed_unix_ms >= lease.valid_until_unix_ms)
+                .then_some(AgentdPromptRuntimeError::InvalidDeadline)
+        });
+        if let Some(error) = rejected {
+            self.runtime.record(PromptRuntimeTerminalRecordV1 {
+                compilation_id: record.compilation_id,
+                context_attachment_digest: record.context_attachment_digest,
+                context_payload_digest: record.context_payload_digest,
+                source_binding_digest: record.source_binding_digest,
+                thread_id: record.thread_id,
+                turn_id: record.turn_id,
+                attempt_id: record.attempt_id,
+                request_binding_id: record.request_binding_id,
+                provider_request_digest: record.provider_request_digest,
+                outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched,
+                end_turn: None,
+                terminal_reason_code: Some("prompt_final_admission_expired_or_fenced".to_owned()),
+                delivery_observation: None,
+                observed_unix_ms,
+            })?;
+            return Err(host_error(error));
+        }
+        Ok(())
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.

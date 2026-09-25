@@ -65,7 +65,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 | Metadata rename committed but directory acknowledgement lost | Fence owner; reopen reconciles the exact pending successor rather than overwriting it. |
 | Independent witness corruption or write uncertainty | Fence reads and writes; no automatic witness regeneration. |
 | Revocation after staging, including process reopen | Preparation and provider admission reject; no new dispatch record. |
-| Expiry while queued, stale dispatch timestamp, retired Agent generation | Revalidate actual current time and live Agentd/Fleet fence after acquiring the owner lock. |
+| Expiry while queued, stale dispatch timestamp, retired Agent generation | Revalidate actual current time and live Agentd/Fleet fence after acquiring the owner lock and after durable claim publication. A late rejection is durably NotDispatched before returning an error to the physical policy hook. |
 | Dispatch acknowledged but process exits before terminal | Keep the original unresolved attempt; reject blind retry, including duplicate use of that attempt identity. |
 | New metadata approaches logical capacity | Reject ordinary growth before consuming reserved revocation or terminal capacity. |
 

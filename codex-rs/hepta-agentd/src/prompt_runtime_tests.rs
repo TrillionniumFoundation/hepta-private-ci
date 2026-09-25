@@ -1161,3 +1161,61 @@ fn cleared_not_dispatched_turn_reopens_without_forgetting_its_attempt() {
         0
     );
 }
+
+#[test]
+fn fence_after_dispatch_persistence_records_not_dispatched_and_denies_send() {
+    let (temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
+    let attachment = pipeline
+        .prepare_for_provider(product_prepare())
+        .unwrap_or_else(|error| panic!("prepare: {error}"))
+        .unwrap_or_else(|| panic!("attachment"));
+    let mut claim = dispatch(
+        &attachment,
+        "thread:product",
+        "turn:product",
+        "attempt:late-fence",
+        "request:late-fence",
+        digest("wire:late-fence"),
+    );
+    claim.dispatched_unix_ms = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    let calls = std::sync::atomic::AtomicUsize::new(0);
+    assert!(
+        pipeline
+            .admit_provider_dispatch_with_fence(claim.clone(), || {
+                if calls.fetch_add(1, Ordering::SeqCst) == 0 {
+                    Ok(())
+                } else {
+                    Err(AgentdPromptRuntimeError::GenerationFenced)
+                }
+            })
+            .is_err()
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+    let terminal = pipeline
+        .runtime
+        .terminal_record(&claim.attempt_id)
+        .unwrap_or_else(|error| panic!("lookup: {error}"))
+        .unwrap_or_else(|| panic!("durable local terminal"));
+    assert_eq!(
+        terminal.outcome,
+        PromptRuntimeTerminalOutcomeV1::NotDispatched
+    );
+    assert!(terminal.delivery_observation.is_none());
+    assert!(pipeline.admit_provider_dispatch(claim.clone()).is_err());
+    drop(pipeline);
+    let reopened = AgentdPromptPipelineOwner::open_state_dirs(
+        &temporary.path().join("prompt-registry"),
+        Some(&temporary.path().join("prompt-registry-witness.json")),
+        "agent:test:prompt.registry",
+        &temporary.path().join("prompt-runtime"),
+        64,
+    )
+    .unwrap_or_else(|error| panic!("reopen: {error}"));
+    assert_eq!(
+        reopened
+            .runtime
+            .terminal_record(&claim.attempt_id)
+            .unwrap_or_else(|error| panic!("lookup after reopen: {error}")),
+        Some(terminal)
+    );
+}
