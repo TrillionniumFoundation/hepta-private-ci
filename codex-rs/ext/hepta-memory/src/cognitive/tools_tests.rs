@@ -803,3 +803,6 @@ fn secret_rejection_is_typed_and_stable() {
     assert!(error.contains("hepta_cognitive_secret_like_content"));
     assert!(!error.contains("do-not-store"));
 }
+
+#[path = "observed_result_tests.rs"]
+mod observed_result_tests;
