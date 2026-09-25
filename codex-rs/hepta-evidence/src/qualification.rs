@@ -452,12 +452,40 @@ impl QualificationEvidenceStore<'_> {
         message: &SignedMessage,
         envelope: &QualificationEvidenceEnvelopeV1,
     ) -> Result<EvidenceId, EvidenceError> {
+        self.append_receipt_with_current_issuer(
+            || {
+                Ok(IssuerRegistration {
+                    issuer_id: issuer.issuer_id.clone(),
+                    key_epoch: issuer.key_epoch,
+                    verifying_key: issuer.verifying_key,
+                    revoked: issuer.revoked,
+                })
+            },
+            message,
+            envelope,
+        )
+        .await
+    }
+
+    /// Resolve live issuer state only after acquiring the serialized writer
+    /// transaction. A host using mutable trust must not capture a registration
+    /// before awaiting the write lock. This applies to exact retries as well as
+    /// first publication; the existing fixed-registration API is compatibility
+    /// for callers which already own an immutable currentness boundary.
+    pub async fn append_receipt_with_current_issuer<F>(
+        &self,
+        resolve_issuer: F,
+        message: &SignedMessage,
+        envelope: &QualificationEvidenceEnvelopeV1,
+    ) -> Result<EvidenceId, EvidenceError>
+    where
+        F: FnOnce() -> Result<IssuerRegistration, EvidenceError>,
+    {
         envelope.validate().map_err(EvidenceError::InvalidRecord)?;
         let envelope_bytes = qualification_envelope_bytes(envelope)?;
         let payload_bytes = canonical_json(&envelope.payload)?;
         let payload_sha256 = Sha256Digest::for_bytes(&payload_bytes);
         let envelope_sha256 = Sha256Digest::for_bytes(&envelope_bytes);
-        let signing_identity_sha256 = Sha256Digest::for_bytes(issuer.verifying_key.as_bytes());
         let expected_scope = qualification_append_scope_digest();
         let expected_subject = qualification_subject(&envelope.candidate, envelope.issuer_role)?;
 
@@ -467,11 +495,13 @@ impl QualificationEvidenceStore<'_> {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let issuer = resolve_issuer()?;
+        let signing_identity_sha256 = Sha256Digest::for_bytes(issuer.verifying_key.as_bytes());
         let now = u64::try_from(now_millis()?)
             .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
         let authenticated = message
             .authenticate(
-                issuer,
+                &issuer,
                 expected_scope,
                 Digest32::of_bytes(&envelope_bytes),
                 now,
@@ -525,13 +555,13 @@ impl QualificationEvidenceStore<'_> {
                 .await?;
         validate_independent_decision(
             envelope,
-            issuer,
+            &issuer,
             &signing_identity_sha256,
             &candidate_evidence_set_digest,
             now,
         )?;
 
-        validate_lineage_references(&mut transaction, envelope, issuer).await?;
+        validate_lineage_references(&mut transaction, envelope, &issuer).await?;
         advance_replay(&mut transaction, &authenticated)
             .await
             .map_err(|error| {

@@ -532,31 +532,8 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         let snapshot_ids = bundle.snapshot_ids.clone();
         let claim_scope = bundle.claim_scope;
         let roles = temporal.product_plan.metric_roles.clone();
-        let decision = match timing {
-            ProductTimingEvidenceV1::Qualification => {
-                if bundle.claim_scope != EvaluationClaimScopeV1::Qualification {
-                    return Err(ProductEvaluationError::Binding("qualification scope"));
-                }
-                decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?
-            }
-            ProductTimingEvidenceV1::SystemLongitudinal {
-                timing,
-                minimum_window_micros,
-            } => {
-                if bundle.claim_scope != EvaluationClaimScopeV1::SystemLongitudinal {
-                    return Err(ProductEvaluationError::Binding("longitudinal scope"));
-                }
-                decide_with_signed_longitudinal_evidence_v3(
-                    bundle,
-                    roles,
-                    evidence,
-                    timing,
-                    minimum_window_micros,
-                    verifier,
-                    now,
-                )?
-            }
-        };
+        let decision =
+            publication::verify_qualification(bundle, roles, evidence, timing, verifier, now)?;
         let publication_digest = sink.persist(temporal.execution_digest, &decision)?;
         if publication_digest.is_zero() {
             return Err(ProductEvaluationError::Integrity("publication digest"));
@@ -1014,6 +991,10 @@ impl From<ProductEvidenceSinkErrorV1> for ProductEvaluationError {
         Self::Sink(value)
     }
 }
+
+#[path = "product_publication.rs"]
+mod publication;
+pub use publication::product_qualification_publication_payload_v1;
 
 #[cfg(test)]
 #[path = "product_runner_tests.rs"]

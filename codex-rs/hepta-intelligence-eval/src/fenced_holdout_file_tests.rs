@@ -335,3 +335,52 @@ fn rejected_constructor_releases_only_its_acquired_lock() {
     probe.unlock().expect("release probe lock");
     drop(transient);
 }
+
+#[test]
+fn streaming_replay_matches_original_full_prefix_oracle_and_rejections() {
+    let binding = digest("binding");
+    let fence = HoldoutWriterFenceV1 {
+        owner_id: id("oracle-owner"),
+        generation: 1,
+        lease_digest: digest("oracle-lease"),
+    };
+    let mut payloads = vec![encode_fence(&fence).unwrap()];
+    for index in 0..8 {
+        let mut payload = vec![EVENT_PLAN];
+        payload.extend_from_slice(&encode_holdout_plan(&plan(&format!("oracle-{index}"))).unwrap());
+        payloads.push(payload);
+    }
+    payloads.push(
+        encode_fence(&HoldoutWriterFenceV1 {
+            generation: 2,
+            ..fence.clone()
+        })
+        .unwrap(),
+    );
+    let mut incremental = ValidatedReplay::new(binding).unwrap();
+    let mut reference = None;
+    for payload in &payloads {
+        reference = Some(replay_event_reference(binding, reference, payload).unwrap());
+        let anchor = incremental.apply(payload).unwrap();
+        assert_eq!(Some(anchor), reference.as_ref().map(record_anchor));
+    }
+    assert_eq!(incremental.finish().unwrap(), reference);
+    for invalid in [
+        payloads[1].clone(),
+        payloads[0].clone(),
+        vec![255],
+        vec![EVENT_PLAN],
+    ] {
+        let mut incremental = ValidatedReplay::new(binding).unwrap();
+        for payload in &payloads {
+            incremental.apply(payload).unwrap();
+        }
+        let expected = replay_event_reference(binding, reference.clone(), &invalid).unwrap_err();
+        assert_eq!(incremental.apply(&invalid).unwrap_err(), expected);
+    }
+    let mut empty = ValidatedReplay::new(binding).unwrap();
+    assert!(
+        empty.apply(&payloads[1]).is_err(),
+        "plan without initial fence accepted"
+    );
+}

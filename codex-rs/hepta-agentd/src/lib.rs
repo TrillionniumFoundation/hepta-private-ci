@@ -25,6 +25,7 @@ mod event_buffer;
 mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
+mod intelligence_evaluation_publication;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
@@ -153,6 +154,10 @@ pub use error::AgentdError;
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
+pub use intelligence_evaluation_publication::AgentdEvaluationEvidenceSinkV1;
+pub use intelligence_evaluation_publication::evaluation_publication_envelope_payload;
+pub use intelligence_evaluation_publication::evaluation_publication_evidence_id;
+
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;

@@ -78,3 +78,13 @@ The repository cannot self-issue live outcome authentication, a product schedule
 - EVAL-06: The concrete locked-file CAS owner must replay committed history, fence failover, expose cross-process exclusion and reject restoring a backup older than the independently retained minimum anchor..
 
 - EVAL-07: SystemLongitudinal admission requires generator, evaluator and observer to be pairwise independent by principal, credential chain, signing key and controller..
+
+## Publication and recovery scope
+
+Terminal receipt seals cover complete decision semantics. The concrete Agentd
+publication sink uses the existing evidence endpoint and stable plan-bound identity;
+issuer trust is refreshed after writer-lock acquisition. Actual-file crash tests
+and real-daemon publication tests are distinct from synthetic input provenance.
+The ordinary input provider, input archive, durable original signing intent and
+complete evaluation scheduler remain repository obligations. Storage probe results
+require exact source/profile/host context and do not establish future efficacy.
