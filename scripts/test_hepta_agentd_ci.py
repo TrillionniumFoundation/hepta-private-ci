@@ -14,6 +14,8 @@ import subprocess
 import sys
 import unittest
 
+from scripts.hepta_workflow_commands import workflow_commands
+
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / ".github/scripts/check_ci_results.py"
 WORKFLOW = ROOT / ".github/workflows/hepta-gap-agentd-process.yml"
@@ -190,6 +192,41 @@ class WorkflowDependencyTests(unittest.TestCase):
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )
         self.assertNotIn("continue-on-error", process)
+
+    def test_native_fixture_build_precedes_executed_tests_and_disables_retries(self):
+        commands = workflow_commands(self.jobs["process-qualification"])
+        build = [
+            "cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-app-server",
+            "--bin",
+            "codex-app-server",
+        ]
+        build_index = commands.index(build)
+        tests = [
+            (index, command)
+            for index, command in enumerate(commands)
+            if command[:2] == ["just", "test"]
+        ]
+        self.assertTrue(tests)
+        for index, command in tests:
+            self.assertGreater(index, build_index)
+            self.assertIn("--retries", command)
+            self.assertEqual(command[command.index("--retries") + 1], "0")
+        self.assertIn(["test", "-x", "$target/debug/codex-app-server"], commands)
+        exports = [command for command in commands if command[0] == "printf"]
+        self.assertTrue(
+            any(
+                "HEPTA_TEST_CODEX_EXE=" in command[1] and "$GITHUB_ENV" in command
+                for command in exports
+            )
+        )
+        # Comments or echoed command text are not executable prerequisites.
+        for prefix in ("# ", "echo "):
+            decoy = "run: " + prefix + " ".join(build)
+            self.assertNotIn(build, workflow_commands(decoy))
 
     def test_catalog_and_formatter_use_the_repository_toolchain_directory(self):
         for name in ("owner-formatting", "catalog-admission"):

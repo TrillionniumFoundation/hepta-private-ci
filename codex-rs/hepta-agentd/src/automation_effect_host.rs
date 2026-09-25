@@ -259,13 +259,15 @@ impl AgentdAutomationEffectHost {
             .execute_authorized_taskflow_effect(
                 &self.authority,
                 &mut driver,
-                intent,
-                wire_payload,
-                &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                codex_hepta_automation::AuthorizedEffectInvocation {
+                    intent: intent,
+                    wire_payload: wire_payload,
+                    fence: &fence,
+                    signed_grant: signed_grant,
+                    expected_binding: &binding,
+                    command_id: command_id,
+                    now_ms: now_ms,
+                },
             )
             .await
             .map_err(|error| {
@@ -316,9 +318,7 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(
-                        receipt,
-                    )));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -347,9 +347,9 @@ impl AgentdAutomationEffectHost {
                             "reconcile authorized effect terminal observation: {error}"
                         ))
                     })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(
-                        AgentdAutomationEffectReconcileOutcome::Observed(Box::new(receipt)),
-                    ),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                    }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
                     )),

@@ -2,7 +2,10 @@
 //! The holdout CAS and evidence publication use real temporary files and fsync.
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
-use codex_hepta_types::{Digest32, FixedQ32, ProbabilityQ32, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::StableId;
 use ed25519_dalek::SigningKey;
 use std::io::Write;
 fn id(value: &str) -> StableId {

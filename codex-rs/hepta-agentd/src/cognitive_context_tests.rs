@@ -337,9 +337,15 @@ async fn context_reads_a_candidate_beyond_the_first_owner_page() {
     let context = read(&store, &owner, 1, target_token, 4, None)
         .await
         .unwrap();
-    assert_eq!(context.items.len(), 1);
+    // The owner fuses lexical and recency channels. An exact lexical match
+    // must rank first, but does not suppress the other eligible candidates.
+    assert_eq!(context.items.len(), 4);
     assert_eq!(&context.items[0].memory_id, target_id);
     assert_eq!(&context.items[0].content, target_token);
+    let single = read(&store, &owner, 1, target_token, 1, None)
+        .await
+        .unwrap();
+    assert_eq!(single.items, vec![context.items[0].clone()]);
     revalidate(
         &store,
         &owner,

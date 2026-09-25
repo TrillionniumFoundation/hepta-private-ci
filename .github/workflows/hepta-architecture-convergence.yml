@@ -141,6 +141,7 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Verify Cargo lock resolution and print exact resolver drift
+        id: native_resolver
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         working-directory: codex-rs
         shell: bash
@@ -165,66 +166,66 @@ jobs:
           fi
           exit "$locked_status"
       - name: Inference owner regressions and streaming digest
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
+        if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true' }}
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-core -p codex-hepta-types
           python3 scripts/hepta_inference_owner_checks.py --output-dir "$RUNNER_TEMP/hepta-command-records"
       - name: Durable operation and external-effect recovery
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true' }}
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-operations
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-automation --test retirement_recovery
       - name: Module lifecycle generations and migration rollback
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true' }}
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet module_catalog
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-fleet module_catalog
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane module_runtime
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-supervisor module_runtime
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-supervisor writer_handoff
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-types topology
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-plasticity --lib
       - name: Objective and prompt policy convergence
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
+        if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true' }}
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-objective
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-prompt-optimizer
       - name: Converged authority and browser semantics
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true' }}
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-contracts --test final_use_linearization
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd browser_servo
       - name: Shared Replay live-owner selection and process restore
         if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/shared-replay-restore.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --test terminal_cell_owner
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/shared-replay-restore.json" --minimum-tests 2 -- just test --locked --retries 0 -p codex-hepta-agentd --test terminal_cell_owner
       - name: Selected-artifact adoption and explicit rollback
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true' }}
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-intelligence-eval closure
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-intelligence-eval self_evolution_selection
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-learning-ledger
       - name: Optional service process lifecycle and executable identity
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        if: ${{ !cancelled() && steps.native_resolver.outcome == 'success' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true' }}
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-image.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd runtime_executable
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operation-timer-fence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test operation_timer_fence
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/optional-process-restart.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-image.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd runtime_executable
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operation-timer-fence.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-automation --test operation_timer_fence
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/optional-process-restart.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd --test optional_module_restart forty_first_service --no-capture
       - name: Derived-view drift
         if: steps.scope.outputs.derived == 'true'
         run: |
