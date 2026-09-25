@@ -12,6 +12,10 @@ on:
       - "scripts/lane_a_foundation_core.py"
       - "scripts/lane_a_foundation_lib.py"
       - "scripts/verify_lane_a_foundation.py"
+      - "scripts/run_lane_a_native_qualification.sh"
+      - "scripts/run_platform_types_consumer_qualification.sh"
+      - "scripts/verify_platform_types_consumers.py"
+      - "scripts/test_platform_types_consumer_qualification.py"
       - "scripts/verify_lane_a_pr_tuple.py"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_kernel_authority_map_freshness.py"
@@ -48,6 +52,11 @@ jobs:
         shell: bash
         run: python3 scripts/verify_lane_a_pr_tuple.py --event "$GITHUB_EVENT_PATH"
 
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Verify current implementation, traceability and nonclaims
         id: source_truth
         continue-on-error: true
@@ -57,6 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest scripts/test_platform_types_consumer_qualification.py
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
@@ -80,9 +90,26 @@ jobs:
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
 
+      - name: Run platform.types independent consumer matrix (source-head)
+        id: source_consumers
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        shell: bash
+        run: scripts/run_platform_types_consumer_qualification.sh
+
+      - name: Retain platform.types consumer execution (source-head)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-consumers-source-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/platform-types-consumers/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Write exact-source and native receipts
         id: source_receipts
-        if: ${{ steps.source_truth.outcome == 'success' && steps.source_native.outcome == 'success' }}
+        if: ${{ steps.source_truth.outcome == 'success' && steps.source_native.outcome == 'success' && steps.source_consumers.outcome == 'success' }}
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
@@ -114,6 +141,7 @@ jobs:
         env:
           TRUTH_OUTCOME: ${{ steps.source_truth.outcome }}
           NATIVE_OUTCOME: ${{ steps.source_native.outcome }}
+          CONSUMER_OUTCOME: ${{ steps.source_consumers.outcome }}
           RECEIPT_OUTCOME: ${{ steps.source_receipts.outcome }}
           ARTIFACT_OUTCOME: ${{ steps.source_artifacts.outcome }}
         shell: bash
@@ -121,6 +149,7 @@ jobs:
           set -euo pipefail
           test "$TRUTH_OUTCOME" = success
           test "$NATIVE_OUTCOME" = success
+          test "$CONSUMER_OUTCOME" = success
           test "$RECEIPT_OUTCOME" = success
           test "$ARTIFACT_OUTCOME" = success
 
@@ -148,6 +177,11 @@ jobs:
           author-email: hepta-lane-a-ci@users.noreply.github.com
           message: Synthetic Lane A merge
 
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Verify synthetic merge truth
         id: merge_truth
         continue-on-error: true
@@ -157,6 +191,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest scripts/test_platform_types_consumer_qualification.py
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
@@ -180,9 +215,26 @@ jobs:
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
 
+      - name: Run platform.types independent consumer matrix (synthetic-merge)
+        id: merge_consumers
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        shell: bash
+        run: scripts/run_platform_types_consumer_qualification.sh
+
+      - name: Retain platform.types consumer execution (synthetic-merge)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-consumers-synthetic-merge-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/platform-types-consumers/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Write synthetic-merge receipts
         id: merge_receipts
-        if: ${{ steps.merge_truth.outcome == 'success' && steps.merge_native.outcome == 'success' }}
+        if: ${{ steps.merge_truth.outcome == 'success' && steps.merge_native.outcome == 'success' && steps.merge_consumers.outcome == 'success' }}
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
         shell: bash
@@ -214,6 +266,7 @@ jobs:
         env:
           TRUTH_OUTCOME: ${{ steps.merge_truth.outcome }}
           NATIVE_OUTCOME: ${{ steps.merge_native.outcome }}
+          CONSUMER_OUTCOME: ${{ steps.merge_consumers.outcome }}
           RECEIPT_OUTCOME: ${{ steps.merge_receipts.outcome }}
           ARTIFACT_OUTCOME: ${{ steps.merge_artifacts.outcome }}
         shell: bash
@@ -221,5 +274,6 @@ jobs:
           set -euo pipefail
           test "$TRUTH_OUTCOME" = success
           test "$NATIVE_OUTCOME" = success
+          test "$CONSUMER_OUTCOME" = success
           test "$RECEIPT_OUTCOME" = success
           test "$ARTIFACT_OUTCOME" = success

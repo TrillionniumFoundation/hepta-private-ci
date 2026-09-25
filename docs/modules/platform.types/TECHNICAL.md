@@ -591,3 +591,19 @@ composition, deployment or external effect authority.
   target-host qualification remain false.
 - Production implementation, independent acceptance, activation and release
   remain false until their separate evidence gates pass.
+
+### Independent consumer execution diagnostics
+
+The exact-source and synthetic-merge jobs run the platform.types consumer matrix
+as a separate required step, even when another Lane A native package fails.
+`run_platform_types_consumer_qualification.sh` attempts every independent check,
+retains each exit status and log digest, and emits `execution.json` bound to the
+checked-out commit/tree and clean-worktree observation. A failed check keeps the
+aggregate failed; zero-test nextest selections are failures. Diagnostics are
+uploaded on failure and do not become successful qualification receipts.
+
+The ordinary source consumer remains distinct from configured product bootstrap:
+NDU's registry-aware owner API exists, but adding an owner helper alone does not
+prove daemon startup supplies an authenticated registry or that the ordinary
+seven-stage product path consumes registered numeric admission. Keep those
+composition claims pending until the actual caller and its tests are bound.

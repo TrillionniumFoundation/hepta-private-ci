@@ -577,7 +577,7 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
     for token in (
         "trusted-inprocess-eval = []",
         "pub mod trusted_inprocess",
-        "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;",
+        "pub use signed_evaluation::decide_with_signed_evidence_v2;",
         "pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;",
     ):
         findings.require(

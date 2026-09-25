@@ -42,7 +42,5 @@ cargo clippy --locked --manifest-path "$MANIFEST" \
   "${BIN_ARGS[@]}" \
   -- -D warnings
 
-# Platform types has current Rust and cross-language consumers outside the seven
-# foundational packages. Execute that closed matrix in both exact-head and
-# synthetic-merge Lane A jobs.
-"$ROOT/scripts/run_platform_types_consumer_qualification.sh"
+# Consumer qualification is a separate required workflow step. A failure in
+# any foundation package must not suppress the platform.types consumer matrix.

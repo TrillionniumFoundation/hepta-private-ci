@@ -42,11 +42,11 @@ def main() -> int:
         raise SystemExit("platform.types consumer matrix header/order mismatch")
     qualification = QUALIFICATION.read_text(encoding="utf-8")
     for command in (
-        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets',
-        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib',
-        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-codex-adapter --lib prompt_delivery',
-        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-learning-ledger --lib runtime_delivery',
-        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-supervisor --lib topology_candidate',
+        'just test --locked -p codex-hepta-types --all-targets',
+        'just test --locked -p codex-hepta-ndu --lib',
+        "just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)'",
+        "just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)'",
+        "just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)'",
         'cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib',
     ):
         if command not in qualification:

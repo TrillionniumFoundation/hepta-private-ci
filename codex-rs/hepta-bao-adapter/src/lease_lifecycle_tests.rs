@@ -207,3 +207,125 @@ fn expiry_is_durable_and_terminal_for_renewal() {
         SecretLeaseStateV1::Expired
     );
 }
+
+#[test]
+fn issuance_does_not_admit_terminal_or_unknown_metadata() {
+    for state in [
+        SecretLeaseStateV1::RenewUnknown,
+        SecretLeaseStateV1::RevokeUnknown,
+        SecretLeaseStateV1::Revoked,
+        SecretLeaseStateV1::Expired,
+    ] {
+        let (_directory, mut registry) = registry();
+        registry.prepare_issue("issue".into(), [3; 32]).unwrap();
+        let mut lease = active_lease();
+        lease.state = state;
+        assert_eq!(
+            registry.reconcile("issue", ProviderLeaseObservationV1::IssueApplied { lease }),
+            Err(LeaseRegistryErrorV1::InvalidInput)
+        );
+        assert!(registry.lease("lease:db:1").is_none());
+    }
+}
+
+#[test]
+fn expiry_during_unknown_renewal_survives_late_observation_and_reopen() {
+    let (directory, mut registry) = registry();
+    registry.prepare_issue("issue".into(), [3; 32]).unwrap();
+    registry
+        .reconcile(
+            "issue",
+            ProviderLeaseObservationV1::IssueApplied {
+                lease: active_lease(),
+            },
+        )
+        .unwrap();
+    registry
+        .prepare_renew("renew".into(), "lease:db:1".into(), [4; 32])
+        .unwrap();
+    registry.mark_unknown("renew").unwrap();
+    assert_eq!(registry.expire_at(61_000).unwrap(), 1);
+    registry.mark_unknown("renew").unwrap();
+    assert_eq!(
+        registry.reconcile(
+            "renew",
+            ProviderLeaseObservationV1::RenewApplied {
+                lease_id: "lease:db:1".into(),
+                observed_at_unix_ms: 30_000,
+                expires_at_unix_ms: 90_000,
+                renewable: true,
+                provider_metadata_sha256: [5; 32],
+            }
+        ),
+        Err(LeaseRegistryErrorV1::InvalidTransition)
+    );
+    registry
+        .reconcile("renew", ProviderLeaseObservationV1::NotApplied)
+        .unwrap();
+    drop(registry);
+    let reopened =
+        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+    assert_eq!(
+        reopened.lease("lease:db:1").unwrap().state,
+        SecretLeaseStateV1::Expired
+    );
+}
+
+#[test]
+fn denied_renewal_cannot_clear_another_unknown_revocation() {
+    let (_directory, mut registry) = registry();
+    registry.prepare_issue("issue".into(), [3; 32]).unwrap();
+    registry
+        .reconcile(
+            "issue",
+            ProviderLeaseObservationV1::IssueApplied {
+                lease: active_lease(),
+            },
+        )
+        .unwrap();
+    registry
+        .prepare_renew("renew".into(), "lease:db:1".into(), [4; 32])
+        .unwrap();
+    registry
+        .prepare_revoke("revoke".into(), "lease:db:1".into(), [5; 32])
+        .unwrap();
+    registry.mark_unknown("revoke").unwrap();
+    registry.mark_unknown("renew").unwrap();
+    registry
+        .reconcile("renew", ProviderLeaseObservationV1::NotApplied)
+        .unwrap();
+    assert_eq!(
+        registry.lease("lease:db:1").unwrap().state,
+        SecretLeaseStateV1::RevokeUnknown
+    );
+    registry
+        .reconcile("revoke", ProviderLeaseObservationV1::NotApplied)
+        .unwrap();
+    assert_eq!(
+        registry.lease("lease:db:1").unwrap().state,
+        SecretLeaseStateV1::Active
+    );
+}
+
+#[test]
+fn reopened_unknown_requires_matching_operation() {
+    let (directory, mut registry) = registry();
+    registry.prepare_issue("issue".into(), [3; 32]).unwrap();
+    registry
+        .reconcile(
+            "issue",
+            ProviderLeaseObservationV1::IssueApplied {
+                lease: active_lease(),
+            },
+        )
+        .unwrap();
+    let path = directory.path().join("lease-registry.json");
+    let mut state: StoredRegistryV1 =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    state.leases.get_mut("lease:db:1").unwrap().state = SecretLeaseStateV1::RenewUnknown;
+    std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
+    assert!(matches!(
+        DurableLeaseRegistryV1::open(path),
+        Err(LeaseRegistryErrorV1::CorruptState)
+    ));
+}

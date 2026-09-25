@@ -319,10 +319,9 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     *empty_legal_actions
         .pointer_mut("/structuredIntent/legalActionClasses")
         .unwrap() = json!([]);
-    let decoded = decode_source_envelope_json_v1(
-        &serde_json::to_vec(&empty_legal_actions).unwrap(),
-    )
-    .expect("empty legal action set is the valid intrinsic-abstention shape");
+    let decoded =
+        decode_source_envelope_json_v1(&serde_json::to_vec(&empty_legal_actions).unwrap())
+            .expect("empty legal action set is the valid intrinsic-abstention shape");
     assert!(decoded.structured_intent.legal_action_classes.is_empty());
 
     for (pointer, invalid) in [

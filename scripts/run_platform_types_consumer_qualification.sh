@@ -1,36 +1,62 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Every independent check runs; the aggregate remains failed if any check fails.
+set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT" || exit 1
 MANIFEST="$ROOT/codex-rs/Cargo.toml"
-
-python3 "$ROOT/scripts/verify_platform_types_consumers.py"
-python3 "$ROOT/codex-rs/hepta-types/conformance/verify_vectors.py"
-node --input-type=module < "$ROOT/codex-rs/hepta-types/conformance/verify_vectors.ts"
-python3 "$ROOT/codex-rs/hepta-types/conformance/verify_rejections.py"
-node "$ROOT/codex-rs/hepta-types/conformance/verify_rejections.mjs"
-python3 "$ROOT/codex-rs/hepta-types/bindings/generate_bindings.py" --check
-python3 "$ROOT/codex-rs/hepta-types/bindings/verify_generated.py"
-node "$ROOT/codex-rs/hepta-types/bindings/verify_generated.mjs"
-
-cargo check --locked --manifest-path "$MANIFEST" \
-  -p codex-hepta-types \
-  -p codex-hepta-ndu \
-  -p codex-hepta-codex-adapter \
-  -p codex-hepta-learning-ledger \
-  -p codex-hepta-supervisor \
-  --lib
-
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets
-# Run the complete consumer package rather than only the newly added filters;
-# otherwise a pre-existing owner or numerical regression could be hidden by a
-# green platform.types integration slice.
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-codex-adapter --lib prompt_delivery
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-learning-ledger --lib runtime_delivery
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-supervisor --lib topology_candidate
-
-# Strictly lint the new NDU library consumer while acknowledging the crate's
-# pre-existing deprecated compatibility re-export. Tests are exercised above;
-# their legacy expect/deprecation debt remains a separate package-wide signal.
-cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- \
-  -D warnings -A deprecated
+EVIDENCE="${HEPTA_TYPES_EVIDENCE_DIR:-$ROOT/.hepta-evidence/platform-types-consumers}"
+mkdir -p "$EVIDENCE" || exit 1
+RESULTS="$EVIDENCE/results.tsv"
+: > "$RESULTS"
+failed=0
+run_step() {
+  local name="$1"; shift
+  local rc=0 start=$SECONDS
+  printf '\n=== %s ===\n' "$name"
+  "$@" > "$EVIDENCE/$name.log" 2>&1 || rc=$?
+  cat "$EVIDENCE/$name.log"
+  printf '%s\t%s\t%s\n' "$name" "$rc" "$((SECONDS-start))" >> "$RESULTS"
+  if (( rc != 0 )); then failed=1; fi
+}
+run_step consumer-map python3 scripts/verify_platform_types_consumers.py
+run_step canonical-python python3 codex-rs/hepta-types/conformance/verify_vectors.py
+run_step canonical-node bash -c 'node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts'
+run_step rejections-python python3 codex-rs/hepta-types/conformance/verify_rejections.py
+run_step rejections-node node codex-rs/hepta-types/conformance/verify_rejections.mjs
+run_step generated-drift python3 codex-rs/hepta-types/bindings/generate_bindings.py --check
+run_step binding-python python3 codex-rs/hepta-types/bindings/verify_generated.py
+run_step binding-node node codex-rs/hepta-types/bindings/verify_generated.mjs
+run_step consumer-compile cargo check --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-types -p codex-hepta-ndu -p codex-hepta-codex-adapter \
+  -p codex-hepta-learning-ledger -p codex-hepta-supervisor --lib
+run_step types-tests just test --locked -p codex-hepta-types --all-targets --retries 0
+run_step ndu-tests just test --locked -p codex-hepta-ndu --lib --retries 0
+run_step prompt-producer just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)' --retries 0
+run_step prompt-ledger just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)' --retries 0
+run_step topology-consumer just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)' --retries 0
+run_step types-lint cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets -- -D warnings
+run_step ndu-lint cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings -A deprecated
+# Record attempts and failed checks as diagnostics, never as successful qualification.
+python3 - "$ROOT" "$EVIDENCE" <<'RECEIPT'
+import hashlib, json, pathlib, subprocess, sys
+root, evidence = map(pathlib.Path, sys.argv[1:])
+def git(*args):
+    return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
+checks = []
+for row in (evidence / "results.tsv").read_text().splitlines():
+    name, rc, seconds = row.split("\t")
+    log = evidence / (name + ".log")
+    checks.append({"name": name, "exitCode": int(rc), "seconds": int(seconds),
+                   "log": log.name, "logSha256": hashlib.sha256(log.read_bytes()).hexdigest()})
+clean = not git("status", "--porcelain", "--untracked-files=normal")
+passed = len(checks) == 16 and all(row["exitCode"] == 0 for row in checks)
+record = {"schema": "hepta.platform-types.consumer-execution.v1", "sourceHead": git("rev-parse", "HEAD"),
+          "sourceTree": git("rev-parse", "HEAD^{tree}"), "cleanWorktree": clean,
+          "checksPassed": passed, "qualified": passed and clean, "checks": checks,
+          "productActivation": False, "independentAcceptance": False}
+(evidence / "execution.json").write_text(json.dumps(record, indent=2) + "\n")
+print(json.dumps({key: record[key] for key in ("sourceHead", "checksPassed", "qualified")}))
+RECEIPT
+receipt_rc=$?
+if (( receipt_rc != 0 )); then failed=1; fi
+exit "$failed"
