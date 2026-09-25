@@ -1,0 +1,44 @@
+name: Recover Desktop Commander
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/workflows/remote-desktop-recover.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: remote-desktop-recover
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    name: Recover qian-qi command relay
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 10
+    steps:
+      - name: Inspect and restart Desktop Commander relay
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "host=$(hostname) user=$(id -un) home=$HOME"
+          echo "== matching processes before =="
+          ps -eo pid,ppid,etime,args | grep -Ei 'desktop.?commander|remote.?desktop|wonderwhy|mcp.*desktop' | grep -v grep || true
+          echo "== matching user services =="
+          systemctl --user list-unit-files --no-legend 2>/dev/null | grep -Ei 'desktop|commander|remote|mcp' || true
+          mapfile -t units < <(systemctl --user list-unit-files --no-legend 2>/dev/null | awk '{print $1}' | grep -Ei 'desktop.*commander|commander.*desktop|remote.*commander|commander.*remote' || true)
+          for unit in "${units[@]}"; do
+            echo "restarting user unit $unit"
+            systemctl --user restart "$unit"
+          done
+          sleep 3
+          echo "== matching processes after =="
+          ps -eo pid,ppid,etime,args | grep -Ei 'desktop.?commander|remote.?desktop|wonderwhy|mcp.*desktop' | grep -v grep || true
+          echo "== likely launch metadata =="
+          find "$HOME/.config/systemd/user" "$HOME/.local/share/systemd/user" "$HOME/.config/autostart" -maxdepth 2 -type f 2>/dev/null | grep -Ei 'desktop|commander|remote|mcp' || true
+          test "$(hostname)" = "qian-qi"
