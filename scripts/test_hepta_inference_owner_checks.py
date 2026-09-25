@@ -96,6 +96,15 @@ class InferenceOwnerCheckTests(unittest.TestCase):
         self.assertIn("always() && steps.identity.outcome == 'success'", product)
         self.assertIn('["source-head","base-merge"]', product)
 
+    def test_each_lane_pins_root_cargo_to_the_repository_toolchain(self):
+        workflow = (checks.ROOT / ".github/workflows/hepta-inference-maintenance.yml").read_text()
+        self.assertEqual(workflow.count("printf 'RUSTUP_TOOLCHAIN=%s"), 2)
+        self.assertEqual(workflow.count("cd codex-rs && rustc --version --verbose"), 2)
+        self.assertEqual(workflow.count('tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))'), 2)
+        self.assertIn("--all-targets -- -D warnings", workflow)
+        self.assertEqual(workflow.count('export RUSTUP_TOOLCHAIN="$toolchain"'), 2)
+        self.assertEqual(workflow.count('rustup toolchain install "$toolchain" --profile minimal'), 2)
+
     def test_native_runtime_is_built_and_bound_before_product_execution(self):
         workflow = (
             checks.ROOT / ".github/workflows/hepta-inference-maintenance.yml"
