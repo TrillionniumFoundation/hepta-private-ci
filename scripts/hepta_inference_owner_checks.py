@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Run the implemented inference-owner regressions through the existing CI recorder.
 
-This is the exclusive-writer/full-replay profile. Neither multi-writer delta
-replay nor history compaction is implemented by this suite; no receipt for those
-capabilities is emitted. Each real test must execute and pass, including when
+This is the exclusive-writer/current-state-checkpoint profile. Superseded
+frames are reclaimed without forgetting identities. Multi-writer delta replay
+and external archive/rollback authority are not proved by this suite. Each real test must execute and pass, including when
 another test fails. The plan is shared by architecture and maintenance CI.
 """
 
@@ -29,6 +29,31 @@ TESTS = (
     (
         "inference-process-loss",
         "process_loss_after_commit_reopens_without_duplicate_admission",
+        False,
+    ),
+    (
+        "inference-compaction-crash",
+        "compaction_crash_cuts_reopen_one_exact_state_without_duplicate_release",
+        False,
+    ),
+    (
+        "inference-writer-process",
+        "writer_exclusion_survives_compaction_and_process_handoff",
+        False,
+    ),
+    (
+        "inference-terminal-headroom",
+        "reserved_terminal_headroom_rejects_new_work_but_closes_accepted_run",
+        False,
+    ),
+    (
+        "inference-liability-drain",
+        "old_overcommitted_journal_can_release_without_admitting_new_work",
+        False,
+    ),
+    (
+        "inference-reserved-boundary",
+        "reserved_metadata_and_maximum_terminal_can_consume_their_own_headroom",
         False,
     ),
 )

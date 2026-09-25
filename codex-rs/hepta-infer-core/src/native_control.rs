@@ -12,7 +12,13 @@ use super::Error;
 use super::validate_digest;
 use super::validate_identity;
 
+#[path = "native_checkpoint.rs"]
+mod checkpoint;
+use checkpoint::record_headroom;
+
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
+pub(super) const CHECKPOINT_PREFIX: &str = "native-checkpoint-v1|";
+const TERMINAL_HEADROOM_BYTES: u64 = super::MAX_JOURNAL_LINE_BYTES as u64 + 128 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -311,7 +317,6 @@ impl DurableInferenceControl {
         if self.records.len() + self.native.records.len() >= self.capacity {
             return Err(Error::CapacityExceeded);
         }
-        self.ensure_native_dispatch_space()?;
         let id = request.request_id.clone();
         self.commit_native(
             &id,
@@ -328,7 +333,6 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
-        self.ensure_native_dispatch_space()?;
         self.commit_native(
             request_id,
             Event::Dispatch {
@@ -489,17 +493,6 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
-    fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
-        // This exclusive owner serializes active calls. Leave room for bounded
-        // dispatch/cancel metadata and the next maximal observed output before
-        // admitting a new external execution. This is not an archival policy.
-        if self.journal_bytes > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
-        {
-            return Err(Error::CapacityExceeded);
-        }
-        Ok(())
-    }
-
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
         if request_id != event.request_id() {
             return Err(Error::Conflict);
@@ -524,10 +517,22 @@ impl DurableInferenceControl {
             .remove(request_id)
             .ok_or(Error::RequestNotFound)?;
         let result = prepared.clone();
-        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
+        let previous_headroom = self
+            .native
+            .records
+            .get(request_id)
+            .map_or(0, record_headroom);
+        let next_headroom = record_headroom(&prepared);
+        let headroom_after = super::replace_headroom(
+            self.reserved_headroom_bytes,
+            previous_headroom,
+            next_headroom,
+        )?;
+        self.append_preserving_headroom(&format!("{JOURNAL_PREFIX}{json}\n"), headroom_after)?;
         self.native.records.insert(request_id.to_string(), prepared);
         self.native.maximum_in_flight = staged.maximum_in_flight;
         self.native.active_reservations = staged.active_reservations;
+        self.reserved_headroom_bytes = headroom_after;
         Ok(result)
     }
 }
@@ -772,7 +777,11 @@ impl NativeJournal {
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {
-                if record.dispatch_rejection.is_some() {
+                if record
+                    .dispatch_rejection
+                    .as_ref()
+                    .is_some_and(|rejection| rejection.retry_safe_before_admission)
+                {
                     return Err(Error::InvalidTransition);
                 }
                 apply_observation(record, output)?;
