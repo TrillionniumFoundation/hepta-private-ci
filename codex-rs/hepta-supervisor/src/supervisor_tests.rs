@@ -627,6 +627,10 @@ fn recovery_reuses_restart_claim_persisted_before_exit_finalize() -> Result<(), 
         .expect("registered agent");
     let claim = crate::restart_budget::claim_restart(
         record.layout.run_root(),
+        crate::restart_budget::RestartReleaseBinding {
+            agent_id: fleet.first.clone(),
+            release_id: codex_hepta_fleet::ReleaseId::parse("recoverable-v1")?,
+        },
         config().restart_max_attempts,
         config().restart_window,
         config().restart_backoff_base,
@@ -781,6 +785,10 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
         .clone();
     let first_claim = crate::restart_budget::claim_restart(
         record.layout.run_root(),
+        crate::restart_budget::RestartReleaseBinding {
+            agent_id: fleet.first.clone(),
+            release_id: codex_hepta_fleet::ReleaseId::parse("recoverable-v1")?,
+        },
         config().restart_max_attempts,
         config().restart_window,
         config().restart_backoff_base,
@@ -2352,6 +2360,10 @@ fn recovered_companion_budget_case(
         .expect("agent");
     crate::restart_budget::claim_restart(
         record.layout.run_root(),
+        crate::restart_budget::RestartReleaseBinding {
+            agent_id: fleet.first.clone(),
+            release_id: release_id.clone(),
+        },
         3,
         Duration::from_secs(60),
         Duration::from_millis(1),

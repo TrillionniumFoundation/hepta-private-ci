@@ -24,6 +24,7 @@ struct FakeState {
     stop_requests: usize,
     kill_requests: usize,
     kill_failures: usize,
+    stop_failures: usize,
 }
 
 pub(super) struct FakeDriver {
@@ -79,6 +80,10 @@ impl FakeControl {
 
     pub(super) fn poll_error(&self, agent_id: &AgentId) {
         self.update_latest(agent_id, |state| state.poll_error = true);
+    }
+
+    pub(super) fn fail_next_stop(&self, agent_id: &AgentId) {
+        self.update_latest(agent_id, |state| state.stop_failures = 1);
     }
 
     pub(super) fn fail_next_kill(&self, agent_id: &AgentId) {
@@ -141,6 +146,7 @@ impl ProcessDriver for FakeDriver {
                 stop_requests: 0,
                 kill_requests: 0,
                 kill_failures: usize::from(publication_fault),
+                stop_failures: 0,
             },
         );
         Ok(SpawnedProcess {
@@ -201,13 +207,13 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .stop_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let state = world.processes.get_mut(&self.id).expect("fake process");
+        state.stop_requests += 1;
+        if state.stop_failures > 0 {
+            state.stop_failures -= 1;
+            return Err(ProcessDriverError::new("injected recovery stop error"));
+        }
         Ok(())
     }
 

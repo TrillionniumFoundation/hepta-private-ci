@@ -153,8 +153,17 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         crate::restart_budget::resume_restart(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let release_id = slot
+            .active_release
+            .as_ref()
+            .map(|release| release.release_id().clone())
+            .unwrap_or(codex_hepta_fleet::ReleaseId::parse("unversioned")?);
         let claim = claim_restart(
             record.layout.run_root(),
+            crate::restart_budget::RestartReleaseBinding {
+                agent_id: agent_id.clone(),
+                release_id,
+            },
             self.config.restart_max_attempts,
             self.config.restart_window,
             self.config.restart_backoff_base,

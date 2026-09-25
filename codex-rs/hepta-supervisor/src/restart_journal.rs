@@ -149,7 +149,13 @@ impl RestartRecord {
             ));
         }
         if let Some(main) = &self.main
-            && (main.schema_version != 1
+            && (!matches!(
+                main.schema_version,
+                1 | crate::restart_budget::RESTART_BUDGET_SCHEMA_VERSION
+            ) || (main.schema_version == 1 && main.release_binding.is_some())
+                || (main.schema_version == crate::restart_budget::RESTART_BUDGET_SCHEMA_VERSION
+                    && main.pending
+                    && main.release_binding.is_none())
                 || main.window_started_unix_ms == 0
                 || (main.operator_stopped && main.pending)
                 || (main.pending_requires_spawn && !main.pending)
@@ -190,6 +196,7 @@ fn legacy_main(
         window_started_unix_ms: started,
         attempts: window.attempts,
         pending: false,
+        release_binding: None,
         operator_stopped: false,
         pending_requires_spawn: false,
         next_eligible_unix_ms: started,

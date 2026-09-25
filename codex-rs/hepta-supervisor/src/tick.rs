@@ -98,8 +98,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             Ok(record) => record,
             Err(error) => return Some(error),
         };
+        let Some(release) = slot.active_release.as_ref() else {
+            return Some(SupervisorError::NoPreviousCommand(agent_id.clone()));
+        };
         match crate::restart_budget::claim_restart(
             record.layout.run_root(),
+            crate::restart_budget::RestartReleaseBinding {
+                agent_id: agent_id.clone(),
+                release_id: release.release_id().clone(),
+            },
             self.config.restart_max_attempts,
             self.config.restart_window,
             self.config.restart_backoff_base,

@@ -21,7 +21,7 @@ The native supervisor applies one bounded automatic restart policy to the main a
 
 The restart counter is persisted in the agent run root as `supervisor-restart-budget.json`. The journal:
 
-- lives under the validated Agent run root; the main counter is per-Agent across release changes, while the companion journal explicitly binds `agent_id` and `release_id`;
+- lives under the validated Agent run root; the main counter remains per-Agent across release changes, and each new retry reservation binds its exact `agent_id` and `release_id`; the companion journal binds its independent release window;
 - stores independent main-agent and Matrix restart windows;
 - is bounded in size and digest-protected;
 - is written to a same-directory staging file, file-synchronized, and atomically published with a durable same-directory replacement;
@@ -33,6 +33,10 @@ The restart counter is persisted in the agent run root as `supervisor-restart-bu
 The canonical v2 record contains the main restart state and independent Matrix window. Main `pending` identifies a durable reserved attempt. New records set `pending_requires_spawn`: the reservation has not crossed the pre-spawn consumption barrier. `complete_restart` clears the pending reservation **before** calling the physical spawn. Repeated pre-health crashes therefore cannot reuse one pending permit indefinitely. A crash at that barrier may consume an attempt without spawning, but cannot create a free attempt.
 
 Both new boolean fields (`operator_stopped`, `pending_requires_spawn`) default to false and are omitted when false, preserving existing v2 canonical digests. Older executables reject newly present fields; do not downgrade to them as an unverified recovery shortcut. Historical pending records retain their adopted-process interpretation. New pending records resume stopping an adopted predecessor rather than incorrectly treating that predecessor as the replacement. Clock rollback is rejected before resuming a pending deadline. Corruption never resets the budget to an empty record.
+
+The outer canonical record remains version 2; the inner main restart state advances from version 1 to version 2 when an exact retry binding is persisted. Legacy inner version 1 is still readable without adding bytes to its digest. A new pending reservation requires `release_binding`; a different Agent or release cannot reuse it, even before its time window is normalized. Migration preserves acknowledged attempts and never replenishes the budget. Older executables cannot consume the new inner version as a downgrade shortcut.
+
+The retry identity is recorded atomically with the reservation before finalizing the failed process lease. After a first startup failure, no release may have reached `release_state.current` yet. Recovery can then resolve the exact retry binding against the current immutable release catalog, without guessing from configuration or publishing the failed release as selected. Withdrawn releases and mismatched owner identities fail closed. An adopted child handle is retained before any stop/kill signal; a signal failure leaves that same child tracked for bounded escalation.
 
 A persisted stop marker is checked before release-transaction resumption. It suppresses queued restarts and moves an interrupted release into the existing recovery-required protocol. An ambiguous persistence error fences the tracked child and preserves bounded termination rather than reporting ordinary success. Target-host process and filesystem fault receipts are still required for deployment qualification.
 

@@ -417,3 +417,64 @@ fn lease_publication_and_kill_failure_retain_the_physical_child() -> Result<(), 
     assert_eq!(f.control.spawn_count(&f.agent_id), 2);
     Ok(())
 }
+
+#[test]
+fn first_start_finalized_exit_retains_retry_release_across_recovery() -> Result<(), SupervisorError>
+{
+    let mut f = fixture()?;
+    f.control.crash(&f.agent_id);
+    assert_eq!(f.supervisor.tick(f.now), TickReport::default());
+    let before = f.supervisor.snapshot(&f.agent_id).expect("queued retry");
+    assert!(!before.active && before.restart_pending);
+    assert_eq!(durable_attempt(&f)?, 1);
+    f = reopen(f)?;
+    let after = f.supervisor.snapshot(&f.agent_id).expect("recovered retry");
+    assert_eq!(
+        after.active_release, before.active_release,
+        "first-start failure lost the admitted release after its process lease was finalized"
+    );
+    assert_eq!(
+        f.supervisor.tick(f.now + Duration::from_secs(1)),
+        TickReport::default()
+    );
+    assert_eq!(f.control.spawn_count(&f.agent_id), 2);
+    assert_eq!(durable_attempt(&f)?, 1);
+    Ok(())
+}
+
+#[test]
+fn failed_adoption_stop_keeps_handle_for_deadline_escalation() -> Result<(), SupervisorError> {
+    let mut f = fixture()?;
+    assert_eq!(
+        f.supervisor.tick(f.now + Duration::from_millis(11)),
+        TickReport::default()
+    );
+    assert_eq!(f.control.counts(&f.agent_id).1, 1);
+    f.control.fail_next_stop(&f.agent_id);
+    let root = HeptaFleetRoot::parse(f._temp.path().join("fleet"))
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let registry = FleetRegistry::open_existing(root)?;
+    drop(f.supervisor);
+    let (mut recovered, report) =
+        Supervisor::recover(registry, f.control.driver(), config(), f.now)?;
+    assert_eq!(report.faults.len(), 1);
+    assert!(
+        recovered
+            .snapshot(&f.agent_id)
+            .expect("adopted child")
+            .active,
+        "failed stop during adoption discarded the exact process handle"
+    );
+    assert_eq!(
+        recovered.tick(f.now + Duration::from_secs(1)),
+        TickReport::default()
+    );
+    assert_eq!(f.control.counts(&f.agent_id).2, 1);
+    f.control.crash(&f.agent_id);
+    assert_eq!(
+        recovered.tick(f.now + Duration::from_secs(2)),
+        TickReport::default()
+    );
+    assert_eq!(f.control.spawn_count(&f.agent_id), 2);
+    Ok(())
+}
