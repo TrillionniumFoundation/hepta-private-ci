@@ -97,8 +97,9 @@ The following are not established by this candidate:
 
 - a production deployment of independently governed trusted-time/checkpoint and
   issuer-key services;
-- a production-durable `kernel.operations` transaction owner. AuthBus binds the
-  supplied stable operation ID but does not replace that owner;
+- qualification of restart recovery across the existing `kernel.operations`
+  durable transaction owner and both AuthBus owners. AuthBus binds the supplied
+  stable operation ID but does not replace the operation owner;
 - generic provider/effect coverage beyond the registered Agentd signed-text and
   Bao KV-v2 read paths;
 - distributed multi-host AuthBus ownership or consensus;
@@ -112,10 +113,12 @@ settlement issuer registration.
 The external checkpoint file hardening currently relies on Unix ownership,
 single-link, private-directory and fsync semantics.
 
-The Bao path consumes a caller-provided stable operation identity because the
-repository's current `kernel.operations` implementation is still a bounded
-in-memory reference model. This candidate therefore proves AuthBus binding to
-that identity, not durable cross-owner operation-ledger closure.
+The Bao path consumes a caller-provided stable operation identity. The repository
+already exposes `DurableOperationStore` in `kernel.operations` as a
+production-oriented SQLite owner alongside explicitly separate reference
+models. AuthBus tests prove binding to the supplied identity; they do not alone
+qualify crash/restart recovery across that existing operation owner and both
+AuthBus owners.
 
 Queue acceptance is not provider/model terminality. AuthBus receipts and policy
 decisions do not grant final-use authority. An indeterminate reservation is not
@@ -200,3 +203,26 @@ including an unconfigured Codex executable. The newly added AuthBus regression
 is independent evidence; it must not be described as turning that nonexistent
 historical AuthBus test green. Execution reports must identify the exact source,
 command, selected tests, terminal result and any skipped/blocked work.
+
+
+## Live writer-lock identity
+
+Each stable database/checkpoint lock is bound to its opened inode and private
+canonical path. The host checks both identities before and after taking the OS
+locks, and before and after checkpoint synchronization. Deletion, replacement,
+additional hard links, non-private file/directory permissions or owner drift
+fence the affected handle. Restoring a name or permissions does not reactivate a
+handle that observed an unsafe identity: recovery requires a fresh host open.
+
+If the identity changes after a local operation commits, the call does not
+acknowledge a published result. A newly opened host reconciles the existing
+dirty frontier and the caller retains the original operation identity. This is
+not evidence that the local transaction rolled back, and not permission to
+redispatch an external effect. Private directories and the local OS remain
+trusted: these checks are not distributed ownership or protection against a
+privileged adversary replacing paths continuously inside filesystem calls.
+
+`host_lock_tests.rs` covers replaced and deleted database/checkpoint locks,
+permission/link drift, permanently fenced handles, safe new-owner reopening,
+and lost acknowledgement after a committed mutation. Execution evidence must
+still bind the unchanged candidate rather than these source test names.

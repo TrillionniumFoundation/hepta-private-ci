@@ -113,6 +113,44 @@ must use the preserved original signed inputs and authoritative publication/hold
 identity; do not bless old mutable conclusions, change plans, consume a different
 holdout or turn a read-only historical result into a current-use authorization.
 
+## Evidence publication and recovery
+
+`ProductEvaluationRunnerV1::qualification_publication_payload` prepares exact
+terminal bytes using the same signed admission as qualification. It produces no
+qualification receipt. The external producer signs an existing kernel.evidence
+envelope, and the host retains that original intent in its operation/outbox owner.
+`qualify_and_persist` rechecks current trust/time and requires the exact publication.
+
+`AgentdEvaluationEvidenceSinkV1` uses the ordinary Agentd evidence endpoint, AuthBus
+and SQLite. It creates no database or credentials. Publication identity is derived
+from the frozen evaluation ID in the Agent namespace. Changed terminal bytes are
+rejected; a lost response remains indeterminate and only the original signed
+intent may be retried. Success requires the expected evidence ID from the owner.
+The synchronous adapter requires a multithread runtime and bounded blocking host.
+It publishes causal qualification, not independent longitudinal acceptance.
+
+The evidence host resolves its issuer after acquiring the SQLite writer lock.
+Revocation while waiting is observed before authentication, including retries.
+That post-lock read defines admission order relative to later trust changes.
+
+Recovery tests use actual files, locks, synchronization and child-process exit.
+The real-Agentd fixture uses the actual socket and evidence database, restart and
+revocation. Its observations and identities are synthetic, not field acceptance.
+The default authenticated input provider, immutable input archive, durable signing
+outbox and evaluation scheduler still require named product integration. This
+publication adapter must not be reported as completion of those missing owners.
+
+## Storage recovery and measurement
+
+Locked-file recovery now reuses one validated semantic journal for event replay,
+while retaining checksums, plan integrity, one-use rules, monotonic fences and
+every-prefix matching against the independent minimum anchor. The disk format
+and state digests are unchanged. Full-prefix replay remains a test oracle.
+`examples/fenced_holdout_probe.rs` measures isolated storage with synthetic plans
+and refuses an existing directory. Record exact source, build profile, filesystem,
+host load and workload alongside append percentiles, memory and recovery cost.
+These measurements do not establish field or future-window efficacy.
+
 ## Canonical product consumer
 
 The repository's current signed consumer is

@@ -508,6 +508,36 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
         Ok(value) => value,
         Err(error) => panic!("qualification: {error}"),
     };
+    let proposal = runner
+        .qualification_publication_payload(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            50,
+        )
+        .unwrap();
+    assert_eq!(
+        proposal,
+        product_qualification_publication_payload_v1(
+            temporal.execution_digest,
+            &qualified.decision,
+        )
+        .unwrap()
+    );
+    assert!(
+        runner
+            .qualification_publication_payload(
+                &temporal,
+                &context,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &verifier,
+                91,
+            )
+            .is_err()
+    );
     assert!(!qualified.evidence_digest.is_zero());
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
@@ -657,3 +687,6 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
     );
     assert_eq!(fixture.provider.release_count, 0);
 }
+
+#[path = "product_recovery_tests.rs"]
+mod recovery;
