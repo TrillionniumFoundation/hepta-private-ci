@@ -77,6 +77,17 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let cancellation = tokio_util::sync::CancellationToken::new();
+        let _cancel_on_drop = cancellation.clone().drop_guard();
+        let deadline = Instant::now()
+            .checked_add(Duration::from_micros(request.budget.total_micros))
+            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        if !inputs
+            .neuron
+            .matches_run(&request.run_id, request.snapshot.body_generation().get())
+        {
+            return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
+        }
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -135,8 +146,15 @@ impl AgentdIntelligenceProductRunnerV1 {
                 })
             }
         };
+        let neuron_admission = neuron_product::NeuronStageAdmission {
+            snapshot: snapshot.clone(),
+            authority_file: authority_file.clone(),
+            authority_verifier: authority_verifier.clone(),
+            deadline,
+            cancellation,
+        };
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
+            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session, neuron_admission);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;

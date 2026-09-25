@@ -6,10 +6,12 @@
 //! fact. Only the Agentd caller, after a final currentness fence, may publish the
 //! proposal digest or append the exact Decision/Outcome event.
 //!
-//! A timed-out worker may finish pure computation later, but its result is
-//! dropped and it has no effect/ledger capability. Durable ledger uncertainty is
-//! represented explicitly and reconciled only by replaying the exact event with
-//! its original predecessor through a freshly recovered journal.
+//! The Neuron stage commits its own checkpoint and exact operation result. It
+//! does not dispatch an effect or append a learning fact. Deadline/drop cancels
+//! fresh admission before Neuron preparation; already durable preparation must
+//! reconcile as the same historical operation even if delivery is suppressed.
+//! Physical interruption of a blocked inference backend remains inference-owner
+//! responsibility. Ledger uncertainty preserves the exact event/predecessor.
 
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_intelligence::AdvisoryDecisionV1;
@@ -25,6 +27,9 @@ use codex_hepta_learning_ledger::OutcomeFinality;
 use codex_hepta_learning_ledger::OutcomeObservation;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_types::FixedQ32;
+
+#[path = "neuron_product.rs"]
+mod neuron_product;
 
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
@@ -77,10 +82,6 @@ use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::ScalarizationProfile;
 use codex_hepta_ndu::UtilityProfile;
 use codex_hepta_ndu::evaluate_candidates_with_policy;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseTick;
-use codex_hepta_neuron::sparse_tick;
 use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
@@ -220,9 +221,7 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub utility_profile: UtilityProfile,
     pub utility_scalarization: Option<ScalarizationProfile>,
     pub utility_policy: EvaluationPolicyV1,
-    pub neural_config: SparseConfig,
-    pub neural_tick: SparseTick,
-    pub neural_previous: Option<SparseCheckpoint>,
+    pub neuron: crate::AgentdNeuronInvocationV1,
     pub prompt_request: OptimizationRequest,
     pub intuition_request: CalibratedDecisionRequestV1,
     pub context_request: CompilationRequest,
@@ -238,9 +237,8 @@ struct AgentdOwnerPortsV1 {
     utility_profile: Option<UtilityProfile>,
     utility_scalarization: Option<Option<ScalarizationProfile>>,
     utility_policy: Option<EvaluationPolicyV1>,
-    neural_config: Option<SparseConfig>,
-    neural_tick: Option<SparseTick>,
-    neural_previous: Option<Option<SparseCheckpoint>>,
+    neuron: Option<crate::AgentdNeuronInvocationV1>,
+    neuron_admission: neuron_product::NeuronStageAdmission,
     prompt_request: Option<OptimizationRequest>,
     intuition_request: Option<CalibratedDecisionRequestV1>,
     context_request: Option<CompilationRequest>,
@@ -253,6 +251,7 @@ impl AgentdOwnerPortsV1 {
     fn new(
         value: AgentdIntelligenceOwnerInputsV1,
         evaluation_session: Option<AgentdEvaluationSessionV1>,
+        neuron_admission: neuron_product::NeuronStageAdmission,
     ) -> Self {
         Self {
             objective_envelope: Some(value.objective_envelope),
@@ -262,9 +261,8 @@ impl AgentdOwnerPortsV1 {
             utility_profile: Some(value.utility_profile),
             utility_scalarization: Some(value.utility_scalarization),
             utility_policy: Some(value.utility_policy),
-            neural_config: Some(value.neural_config),
-            neural_tick: Some(value.neural_tick),
-            neural_previous: Some(value.neural_previous),
+            neuron: Some(value.neuron),
+            neuron_admission,
             prompt_request: Some(value.prompt_request),
             intuition_request: Some(value.intuition_request),
             context_request: Some(value.context_request),
@@ -414,25 +412,35 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let config = Self::take(&mut self.neural_config, input.stage, "neural config")?;
-        let tick = Self::take(&mut self.neural_tick, input.stage, "neural tick")?;
-        let previous = Self::take(&mut self.neural_previous, input.stage, "neural previous")?;
-        if tick.objective_digest != input.objective_digest
-            || tick.ndu_digest != input.predecessor_digest
-        {
-            return Err(Self::reject(input.stage, "neural binding"));
-        }
+        let invocation = Self::take(&mut self.neuron, input.stage, "neuron owner invocation")?;
         let started = Instant::now();
-        let (_, receipt) = sparse_tick(&config, &tick, previous.as_ref())
-            .map_err(|_| Self::reject(input.stage, "neural tick"))?;
+        self.neuron_admission
+            .begin_stage(input.budget_micros)
+            .map_err(|_| Self::reject(input.stage, "neuron deadline"))?;
+        let result = invocation
+            .execute(input, &mut self.neuron_admission)
+            .map_err(|error| neuron_product::failure(input.stage, &error))?;
         Self::within_budget(input, started)?;
-        if receipt.authority.grants_any() {
-            return Err(Self::reject(input.stage, "neural authority"));
+        // A durable but abstaining signal is history, not permission to use a
+        // fast policy. The caller receives an explicit unavailable owner result.
+        if result.signal.abstain || result.tick.abstain || result.signal.authority.grants_any() {
+            return Err(neuron_product::failure(
+                input.stage,
+                &codex_hepta_neuron::NeuronRuntimeError::InvalidCalibration,
+            ));
         }
+        // The actual committed state, not a precomputed sparse fixture, is the
+        // state consumed by the existing intuition owner. Candidate scoring and
+        // its independent calibration remain owned by intuition.policy.
+        let intuition = self
+            .intuition_request
+            .as_mut()
+            .ok_or_else(|| Self::reject(input.stage, "intuition consumer missing"))?;
+        intuition.state_digest = result.tick.checkpoint_after;
         Self::receipt(
             input,
             "neuron.runtime",
-            receipt.checkpoint_after,
+            result.tick.checkpoint_after,
             CanonicalPortDecisionV1::Continue,
         )
     }

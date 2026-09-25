@@ -87,7 +87,6 @@ use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
-const Q24: i64 = 1 << 24;
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
 const NOW_MICROS: u64 = OBSERVED_MICROS + 1_000_000;
 
@@ -373,6 +372,7 @@ struct Fixture {
     request: CanonicalIntelligenceRunRequestV1,
     inputs: AgentdIntelligenceOwnerInputsV1,
     owners: Vec<OwnerBindingV1>,
+    neuron_control: std::sync::Arc<neuron_fixture::FixtureControl>,
 }
 
 fn fixture() -> Fixture {
@@ -454,35 +454,8 @@ fn fixture() -> Fixture {
     )
     .expect("NDU");
 
-    let model_digest = digest("model-artifact");
-    let neural_config = SparseConfig {
-        model_digest,
-        normalization_digest: digest("normalization"),
-        generation: generation(7),
-        width: 5,
-        top_k: 1,
-        temporal_decay_q24: Q24 / 2,
-        inhibition_gain_q24: 0,
-        inhibition: Vec::new(),
-        activity_decay_q24: Q24 / 2,
-        target_activity_q24: Q24 / 5,
-        threshold_rate_q24: Q24 / 10,
-        threshold_min_q24: -Q24,
-        threshold_max_q24: Q24,
-        eligibility_decay_q24: Q24 / 2,
-    };
-    let neural_tick = SparseTick {
-        scope_digest: digest("scope"),
-        objective_digest,
-        ndu_digest: ndu.evaluation_digest_v2,
-        body_digest: digest("body"),
-        input_digest: digest("approved-input"),
-        sequence: 1,
-        monotonic_micros: 1,
-        drive_q24: vec![Q24, Q24 / 2, 0, 0, 0],
-        prediction_q24: vec![0; 5],
-    };
-    let (_, neural_receipt) = sparse_tick(&neural_config, &neural_tick, None).expect("neural tick");
+    let (neuron, neuron_control) =
+        neuron_fixture::invocation(objective_digest, ndu.evaluation_digest_v2);
 
     let prompt_registry = digest("prompt-registry");
     let prompt_request = OptimizationRequest {
@@ -524,7 +497,7 @@ fn fixture() -> Fixture {
         decision_id: id("run:agentd-intelligence"),
         objective_digest,
         objective_class_digest,
-        state_digest: neural_receipt.checkpoint_after,
+        state_digest: digest("neuron-state-not-yet-produced"),
         policy_digest,
         policy_generation: 7,
         sequence: 1,
@@ -646,9 +619,7 @@ fn fixture() -> Fixture {
             utility_profile,
             utility_scalarization,
             utility_policy,
-            neural_config,
-            neural_tick,
-            neural_previous: None,
+            neuron,
             prompt_request,
             intuition_request,
             context_request,
@@ -656,6 +627,7 @@ fn fixture() -> Fixture {
             signed_evaluation: None,
         },
         owners,
+        neuron_control,
     }
 }
 
@@ -990,3 +962,6 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[path = "neuron_product_fixture.rs"]
+mod neuron_fixture;

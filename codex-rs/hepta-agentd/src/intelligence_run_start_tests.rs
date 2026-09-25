@@ -51,7 +51,7 @@ fn durable_inputs() -> (
                 signature: [1; 64],
             },
             run_id: record_id.clone(),
-            runtime_body_digest: value.inputs.neural_tick.body_digest,
+            runtime_body_digest: value.inputs.neuron.runtime_body_digest(),
             preference_state_digest: digest("preference"),
             model_tuple_digest: digest("model-tuple"),
             prompt_registry_digest: value.inputs.prompt_request.registry_snapshot_digest,

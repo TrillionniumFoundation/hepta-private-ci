@@ -183,6 +183,8 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use neuron_runtime::AgentdNeuronHandleV1;
+pub use neuron_runtime::AgentdNeuronInvocationV1;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;

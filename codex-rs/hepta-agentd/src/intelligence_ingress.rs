@@ -16,9 +16,6 @@ use codex_hepta_ndu::ContributionSet;
 use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::ScalarizationProfile;
 use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseTick;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
@@ -59,10 +56,7 @@ type UtilityOwnerV1 = dyn Fn(
         AgentdError,
     > + Send
     + Sync;
-type NeuronOwnerV1 = dyn Fn(
-        &AgentdIdentity,
-        &RunStartRecordV1,
-    ) -> Result<(SparseConfig, SparseTick, Option<SparseCheckpoint>), AgentdError>
+type NeuronOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<crate::AgentdNeuronInvocationV1, AgentdError>
     + Send
     + Sync;
 type PromptOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<OptimizationRequest, AgentdError>
@@ -142,8 +136,7 @@ impl AgentdIntelligenceInvocationV1 {
         N: Fn(
                 &AgentdIdentity,
                 &RunStartRecordV1,
-            )
-                -> Result<(SparseConfig, SparseTick, Option<SparseCheckpoint>), AgentdError>
+            ) -> Result<crate::AgentdNeuronInvocationV1, AgentdError>
             + Send
             + Sync
             + 'static,
@@ -234,14 +227,18 @@ impl AgentdIntelligenceInvocationV1 {
     ) -> Result<(), AgentdError> {
         Self::require_run_identity(identity, record)?;
         let snapshot = &record.snapshot;
-        if self.request.run_id != snapshot.run_id
+        if !self
+            .inputs
+            .neuron
+            .matches_run(&snapshot.run_id, snapshot.generation)
+            || self.request.run_id != snapshot.run_id
             || self.request.snapshot.objective_digest() != snapshot.objective_digest
             || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
             || self.request.snapshot.body_generation().get() != snapshot.generation
             || self.request.legal_candidates.state_digest != snapshot.objective_digest
             || snapshot.generation != identity.spawn_generation
             || self.request.snapshot.configuration_digest() != Self::configuration_digest(record)
-            || self.inputs.neural_tick.body_digest != record.runtime_body_digest
+            || self.inputs.neuron.runtime_body_digest() != record.runtime_body_digest
             || self.inputs.prompt_request.registry_snapshot_digest
                 != snapshot.prompt_registry_digest
             || self.inputs.objective_envelope.intent_digest != record.admission.intent_digest
@@ -286,7 +283,7 @@ impl AgentdIntelligenceInvocationProviderV1 for AuthoritativeInvocationProviderV
             (self.objective_owner)(identity, record)?;
         let (utility_contributions, utility_profile, utility_scalarization, utility_policy) =
             (self.utility_owner)(identity, record)?;
-        let (neural_config, neural_tick, neural_previous) = (self.neuron_owner)(identity, record)?;
+        let neuron = (self.neuron_owner)(identity, record)?;
         let prompt_request = (self.prompt_owner)(identity, record)?;
         let intuition_request = (self.intuition_owner)(identity, record)?;
         let context_request = (self.context_owner)(identity, record)?;
@@ -301,9 +298,7 @@ impl AgentdIntelligenceInvocationProviderV1 for AuthoritativeInvocationProviderV
                 utility_profile,
                 utility_scalarization,
                 utility_policy,
-                neural_config,
-                neural_tick,
-                neural_previous,
+                neuron,
                 prompt_request,
                 intuition_request,
                 context_request,

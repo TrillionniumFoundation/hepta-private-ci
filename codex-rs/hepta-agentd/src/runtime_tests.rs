@@ -1,3 +1,4 @@
+use crate::AgentdError;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
