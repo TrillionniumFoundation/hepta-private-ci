@@ -8,8 +8,8 @@ permissions:
   contents: write
 
 jobs:
-  recover-existing-candidate:
-    name: Recover existing context compiler worktree
+  recover-on-desktop:
+    name: Recover existing worktree on desktop
     runs-on:
       group: trillionnium-android-gpu
       labels: [self-hosted, linux, x64]
@@ -18,7 +18,6 @@ jobs:
       - name: Commit and publish the existing bounded candidate
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
           BRANCH: context-compiler-product-closure
           EXPECTED_REMOTE_SHA: ${{ github.sha }}
         run: |
@@ -29,7 +28,6 @@ jobs:
           test "$(git -C "$R" rev-parse HEAD)" = a126987b84737dbc2ee2592442a314117bddb4a2
           test -f /tmp/hepta-context-compiler-converge-20260925-JWHsTh/backup-current/working-tree.patch
           git -C "$R" diff --check
-          git -C "$R" status --short
           git -C "$R" add -A
           if ! git -C "$R" diff --cached --quiet; then
             git -C "$R" -c user.name='Hepta Context Closure' \
@@ -40,3 +38,45 @@ jobs:
           git -C "$R" push \
             --force-with-lease="refs/heads/$BRANCH:$EXPECTED_REMOTE_SHA" \
             origin "HEAD:refs/heads/$BRANCH"
+
+  recover-via-configured-ssh:
+    name: Recover desktop worktree through configured ROG SSH
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 30
+    steps:
+      - name: Locate the configured desktop alias and publish the same candidate
+        shell: bash
+        env:
+          BRANCH: context-compiler-product-closure
+          EXPECTED_REMOTE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          target=''
+          for host in qian-qi desktop hepta-desktop; do
+            if ssh -o BatchMode=yes -o ConnectTimeout=5 "$host" \
+              'test -d /tmp/hepta-context-compiler-converge-20260925-JWHsTh/repo/.git'; then
+              target="$host"
+              break
+            fi
+          done
+          test -n "$target"
+          ssh -o BatchMode=yes "$target" bash -s -- "$BRANCH" "$EXPECTED_REMOTE_SHA" <<'REMOTE'
+          set -euo pipefail
+          BRANCH="$1"
+          EXPECTED_REMOTE_SHA="$2"
+          R=/tmp/hepta-context-compiler-converge-20260925-JWHsTh/repo
+          test "$(git -C "$R" branch --show-current)" = "$BRANCH"
+          test "$(git -C "$R" rev-parse HEAD)" = a126987b84737dbc2ee2592442a314117bddb4a2
+          test -f /tmp/hepta-context-compiler-converge-20260925-JWHsTh/backup-current/working-tree.patch
+          git -C "$R" diff --check
+          git -C "$R" add -A
+          if ! git -C "$R" diff --cached --quiet; then
+            git -C "$R" -c user.name='Hepta Context Closure' \
+              -c user.email='context-closure@users.noreply.github.com' \
+              commit -s -m 'feat(context.compiler): compose verified product delivery path'
+          fi
+          gh auth setup-git
+          git -C "$R" push \
+            --force-with-lease="refs/heads/$BRANCH:$EXPECTED_REMOTE_SHA" \
+            origin "HEAD:refs/heads/$BRANCH"
+          REMOTE
