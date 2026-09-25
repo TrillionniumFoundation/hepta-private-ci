@@ -1,6 +1,7 @@
 //! Local durable admission around the actual App Server driver.
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativePreparedInputV1;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use sha2::Digest;
@@ -22,13 +23,7 @@ pub struct NativeAdmission {
 
 /// Exact Agentd intelligence handoff that must already be attached before a
 /// physical App Server turn can start.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NativeIntelligenceRunBinding {
-    pub run_id: String,
-    pub expected_revision: u64,
-    pub context_digest: String,
-    pub envelope_digest: String,
-}
+pub use codex_hepta_infer_core::durable_control::native::NativeIntelligenceInputBindingV1 as NativeIntelligenceRunBinding;
 
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
@@ -75,6 +70,44 @@ impl AppServerModelDriver {
         .await
     }
 
+    /// Recover using only the original owner-retained input. Possibly-sent
+    /// requests remain reconcile-only through run_bound; no new model decision
+    /// or turn/start is used to reconstruct historical execution.
+    pub async fn resume(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        let record = control
+            .native_record(&admission.request_id)
+            .ok_or("native request is not present in the recovered owner journal")?;
+        if record.state == NativeReservationState::Reserved {
+            return Err(
+                "resume is reconcile-only; an unsent request needs normal current admission".into(),
+            );
+        }
+        let input = record.prepared_input.clone()
+            .ok_or("historical native request has no persisted original input; explicit reconciliation is required")?;
+        if input.agentd_socket != self.config.agentd_socket
+            || u128::from(input.timeout_ms) != self.config.timeout.as_millis()
+            || record.request.principal_id != self.config.agent_id.to_string()
+            || record.request.worker_generation != self.config.generation
+            || record.request.model != self.config.model
+        {
+            return Err("resume configuration differs from the original native request".into());
+        }
+        self.run_bound(
+            control,
+            admission,
+            input.prompt,
+            input.context_query,
+            input.intelligence.as_ref(),
+            cancellation,
+        )
+        .await
+    }
+
     async fn run_bound(
         &self,
         control: &mut DurableInferenceControl,
@@ -93,6 +126,14 @@ impl AppServerModelDriver {
         {
             return Err("context query must contain 1..2048 bytes".into());
         }
+        let input = NativePreparedInputV1 {
+            schema_version: 1,
+            prompt: prompt.clone(),
+            context_query: context_query.clone(),
+            agentd_socket: self.config.agentd_socket.clone(),
+            timeout_ms: u64::try_from(self.config.timeout.as_millis())?,
+            intelligence: intelligence.cloned(),
+        };
         let request = NativeRequest {
             request_id: admission.request_id,
             principal_id: self.config.agent_id.to_string(),
@@ -106,7 +147,8 @@ impl AppServerModelDriver {
                 intelligence,
             )?,
         };
-        let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        let record =
+            control.reserve_native_prepared(request, admission.maximum_in_flight, input)?;
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }

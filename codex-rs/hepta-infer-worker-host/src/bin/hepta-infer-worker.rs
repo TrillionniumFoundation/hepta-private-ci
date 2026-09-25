@@ -28,14 +28,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut intelligence_context_digest = None;
     let mut intelligence_envelope_digest = None;
     let mut native_profile_selected = false;
+    let mut resume = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N] [--resume]\nReads one prompt from stdin; --resume instead loads original owner-journal input and only reconciles an already-dispatched request. An independent final-use authority must sign the exact turn/start binding before model dispatch."
             );
             return Ok(());
+        }
+        if flag == "--resume" {
+            resume = true;
+            continue;
         }
         let value = args.next().ok_or("missing argument value")?;
         match flag.as_str() {
@@ -84,10 +89,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
     };
     let mut prompt = String::new();
-    tokio::io::stdin()
-        .take(32 * 1024 + 1)
-        .read_to_string(&mut prompt)
-        .await?;
+    if !resume {
+        tokio::io::stdin()
+            .take(32 * 1024 + 1)
+            .read_to_string(&mut prompt)
+            .await?;
+    }
     let cancellation = CancellationToken::new();
     let signal = cancellation.clone();
     let signal_task = tokio::spawn(async move {
@@ -114,29 +121,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             return Err("all four --intelligence-* arguments must be supplied together".into());
         }
     };
-    let result = match intelligence {
-        Some(binding) => {
-            driver
-                .run_intelligence(
-                    &mut control,
-                    admission,
-                    prompt,
-                    context_query,
-                    binding,
-                    &cancellation,
-                )
-                .await
-        }
-        None => {
-            driver
-                .run(
-                    &mut control,
-                    admission,
-                    prompt,
-                    context_query,
-                    &cancellation,
-                )
-                .await
+    if resume && (context_query.is_some() || intelligence.is_some()) {
+        return Err("--resume uses the persisted context and intelligence binding; replacement input is forbidden".into());
+    }
+    let result = if resume {
+        driver.resume(&mut control, admission, &cancellation).await
+    } else {
+        match intelligence {
+            Some(binding) => {
+                driver
+                    .run_intelligence(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        binding,
+                        &cancellation,
+                    )
+                    .await
+            }
+            None => {
+                driver
+                    .run(
+                        &mut control,
+                        admission,
+                        prompt,
+                        context_query,
+                        &cancellation,
+                    )
+                    .await
+            }
         }
     };
     signal_task.abort();
