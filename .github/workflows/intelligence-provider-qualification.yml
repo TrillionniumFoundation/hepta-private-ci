@@ -114,7 +114,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/provider-evidence/clippy.json" -- cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/provider-evidence/clippy.json" -- cargo clippy --locked --no-deps -p codex-hepta-agentd --lib --tests -- -D warnings
 
       - name: Reject candidate mutation
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
