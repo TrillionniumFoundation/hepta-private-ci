@@ -468,8 +468,13 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 raise VerificationFailure(
                     f"{relative}: required marker missing: {marker!r}"
                 )
+        code = (
+            _strip_cfg_test_items(_strip_rust_non_code(text))
+            if path.suffix == ".rs"
+            else text
+        )
         for marker in _string_tuple(row, "forbidden"):
-            if marker in text:
+            if marker in code:
                 raise VerificationFailure(
                     f"{relative}: forbidden marker present: {marker!r}"
                 )

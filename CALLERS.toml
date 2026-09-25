@@ -153,7 +153,7 @@ caller_markers = ["HttpProviderEffectAdapter::new", "dispatch_with_payload", "lo
 [[boundary]]
 id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
-call_pattern = 'FinalUseAuthority\s*::\s*open_state_dir(?:_with_clock|_with_trust|_with_issuer_keys)?\s*\('
+call_pattern = "(?:FinalUseAuthority\\s*::\\s*open_state_dir(?:_with_clock|_with_trust|_with_issuer_keys)?\\s*\\(|FinalUseAuthority\\s*::\\s*recover_state_dir_with_issuer_keys\\s*\\()"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
 product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
@@ -466,7 +466,7 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
-required = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
+required = ["config.take_production_operations()", "operations.attach(Arc::clone(recovered_host)).await?", "attach_production_operations", "run_production_operation_reconciler"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
 
 [[protected_file]]
@@ -506,7 +506,7 @@ forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for Fina
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-required = ["pub struct AuthorityLeaseRegistry", "pub struct AuthorityLeaseVerifier", "pub fn open_state_dir_with_trust(", "pub fn verifier(", "pub fn verify_use(", "pub fn with_dispatch_boundary(", "pub fn deliver_authority_lease_with_witness", "pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "pub fn revoke(", "pub fn prune_expired_leases(", "retired_revisions", "AntiRollbackViolation", "pub fn advance_epoch("]
+required = ["pub struct AuthorityLeaseRegistry", "pub struct AuthorityLeaseVerifier", "pub fn open_state_dir_with_trust(", "pub fn verifier(", "pub fn verify_use(", "pub fn with_dispatch_boundary<T>(", "pub fn deliver_authority_lease_with_witness", "pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "pub fn revoke(", "pub fn prune_expired_leases(", "retired_revisions", "AntiRollbackViolation", "pub fn advance_epoch("]
 forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]
@@ -572,3 +572,8 @@ definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
 definition_markers = ["pub async fn consume_kv_v2_with_authbus", "mark_dispatch_attempted", "consume_kv_v2(authority"]
 product_callers = []
 caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+required = ["impl AgentdProductionOperationRuntimeConfig", "pub(crate) async fn attach(", "recovered_host.writer.verify_current_authority().await?", "recovered_host.production_mutation().is_none()"]
+forbidden = []

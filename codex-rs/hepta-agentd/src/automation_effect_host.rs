@@ -246,7 +246,7 @@ impl AgentdAutomationEffectHost {
         let clock: Arc<dyn AuthorityClock> = authority_trust.clone();
         let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
             authority_trust.clone();
-        let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        let authority = FinalUseAuthority::recover_state_dir_with_issuer_keys(
             &authority_root,
             config.final_use_signer_id,
             final_use_issuer_keys,
@@ -260,7 +260,7 @@ impl AgentdAutomationEffectHost {
             ))
         })?;
 
-        Ok(Self {
+        let host = Self {
             agent_id: identity.agent_id.clone(),
             provider_scope: config.provider_scope,
             destination_id: config.destination_id,
@@ -271,7 +271,11 @@ impl AgentdAutomationEffectHost {
             revocation_feed_file: config.final_use_revocation_feed_file,
             revocation_refresh: Arc::new(Mutex::new(())),
             adapter,
-        })
+        };
+        // Recover the old durable head first, then authenticate and commit the
+        // current feed through the same entry used before every effect.
+        host.refresh_revocations()?;
+        Ok(host)
     }
 
     pub(crate) async fn execute(
@@ -1258,6 +1262,77 @@ mod tests {
             .await
             .is_err()
         );
+        let witness = fixture
+            .store
+            .authorized_taskflow_effect_authority_witness(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+            )
+            .await
+            .expect("durable witness query")
+            .expect("durable entry witness");
+        drop(host);
+        let mut newer = signed_revocation_update.clone();
+        newer.update.head.revision = 2;
+        newer
+            .update
+            .head
+            .revoked_grant_ids
+            .insert(grant.grant.grant_id.clone());
+        let refreshed_now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("current feed time")
+                .as_millis(),
+        )
+        .expect("feed milliseconds");
+        newer.update.issued_at_unix_ms = refreshed_now_ms.saturating_sub(1_000);
+        newer.update.expires_at_unix_ms = refreshed_now_ms + 60_000;
+        newer.signature = revocation_signer
+            .sign(
+                &newer
+                    .update
+                    .signing_bytes()
+                    .expect("updated feed signing bytes"),
+            )
+            .to_bytes()
+            .to_vec();
+        fs::write(
+            &revocation_feed_file,
+            serde_json::to_vec(&newer).expect("updated feed JSON"),
+        )
+        .expect("advance signed feed during host downtime");
+        let recovered = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .expect("recover original frontier then apply newer signed feed");
+        assert_eq!(
+            recovered.authority.revocation_head().unwrap(),
+            newer.update.head
+        );
+        assert_eq!(
+            fixture
+                .store
+                .authorized_taskflow_effect_authority_witness(
+                    &intent.run_id,
+                    &intent.step_id,
+                    intent.attempt,
+                )
+                .await
+                .expect("recovered witness query"),
+            Some(witness)
+        );
+        let recovered_receipt = recovered
+            .execute(
+                &fixture.store,
+                &intent,
+                WIRE,
+                &grant,
+                "agentd-product-effect-dispatch",
+                now_ms + 8,
+            )
+            .await
+            .expect("observe original terminal outcome after recovery");
+        assert_eq!(recovered_receipt.receipt_digest, receipt.receipt_digest);
         server.verify().await;
     }
 }

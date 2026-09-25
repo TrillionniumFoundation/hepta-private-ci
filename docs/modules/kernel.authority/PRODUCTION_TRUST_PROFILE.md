@@ -24,6 +24,13 @@ The qualification artifact MUST identify the clock source and prove:
 A wall-clock implementation backed only by ordinary `SystemTime` is compatibility
 behavior, not production time evidence.
 
+The repository now contains one named source composition for Agentd automation:
+`AgentdFinalUseTrustStore` persists a non-decreasing wall-clock floor in an
+owner-only directory outside the Agent home rollback domain and fails closed if
+the host clock reopens behind that floor. This closes the repository-controlled
+host wiring and recovery contract, but it is not an attested clock and does not
+satisfy target-platform qualification by itself.
+
 ## 2. External anti-rollback frontier
 
 A production host MUST supply an `AuthorityFrontierStore<F>` outside the local
@@ -44,6 +51,14 @@ local replacement. If the external advance succeeds and local commit fails, the
 owner fences itself. Recovery requires an explicit operator/backend procedure; it
 must never infer that the mutation did not happen.
 
+The named Agentd automation host supplies a concrete single-writer
+`AuthorityFrontierStore<FinalUseFrontier>` outside the Agent home directory. Its
+source tests cover exact CAS conflict, restart persistence, exclusive-owner
+handoff, missing-frontier rejection and restored-local-snapshot rejection. This
+local source backend establishes the composition and failure semantics used by
+that host; a selected deployment still has to prove that the chosen filesystem,
+volume and backup domain are rollback-independent from the authority directory.
+
 ## 3. Revocation distribution and fleet freshness
 
 The repository control plane accepts only distributor-signed
@@ -62,6 +77,14 @@ A deployment still MUST supply the wire transport. Qualification MUST record the
 closed enrolled-node set, configured convergence SLA, feed lifetime, measured
 delivery/ack latency, packet-loss/partition behavior, restart catch-up behavior and
 the exact candidate digest. There is no "last known good forever" fallback.
+
+The Agentd automation host authenticates a complete signed revocation feed at
+open and refreshes that signed file before every provider dispatch. If an update
+arrives while a guarded effect is active, the authority records a process-local
+revocation-pending fence: the update returns `DispatchInProgress`, all new claims
+and entries fail with `RevocationPending`, and the exact monotonic update must be
+retried when the active effect drains. Restart re-reads the signed feed; this is
+not a replacement for deployed fleet fanout or convergence evidence.
 
 ## 4. Key custody and rotation
 
@@ -95,9 +118,13 @@ python3 qualification/kernel-authority/verify.py verify \
 
 The bundle contract is defined in
 [`qualification/kernel-authority/README.md`](../../../qualification/kernel-authority/README.md).
-Admission checks exact commit/tree identity and content-addresses every retained
-external receipt. It does not make the repository the issuer of TPM/HSM/KMS/cloud
-attestation, and a pass explicitly does not grant activation or release.
+Admission uses schema `hepta.kernel-authority-production-evidence.v2`. It checks
+exact commit/tree identity, content-addresses every retained external receipt,
+derives revocation SLA results from measured times and complete node counts, and
+requires a complete numerical capacity/fault matrix rather than trusting caller
+supplied pass booleans. It does not make the repository the issuer of
+TPM/HSM/KMS/cloud attestation, and a pass explicitly does not grant activation or
+release.
 
 ## 6. Required deployment receipt
 

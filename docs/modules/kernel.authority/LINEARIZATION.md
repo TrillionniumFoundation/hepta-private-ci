@@ -13,10 +13,12 @@ non-serializable `LeaseVerifiedUseToken`.
 lease invalidates an older token even when its former binding was identical.
 
 The successful final validation is the consumer-entry linearization point. The
-authority mutex is released before the already-selected bounded consumer runs.
-A revocation or replacement committed before that point denies entry. A change
-committed after that point is ordered after entry and does not retroactively
-undo an already-entered synchronous effect.
+verifier acquires the authority mutex before sampling the owner-bound clock, so
+a lease that expires while waiting for the mutex is denied. The mutex is
+released before the already-selected bounded consumer runs. A revocation or
+replacement committed before that point denies entry. A change committed after
+that point is ordered after entry and does not retroactively undo an
+already-entered synchronous effect.
 
 ## FinalUse delivery
 
@@ -35,6 +37,16 @@ only across that bounded local transition. The callback must only publish
 durable intent or cross an already-selected local adapter/worker boundary and
 return promptly. It must not contain network waits, provider terminal waits,
 reconciliation loops or arbitrary plugin/user code.
+
+`with_verified_effect`, `with_verified_use_async` and
+`with_verified_use_async_with_witness` instead retain an active-effect fence
+without holding the mutex over provider work. A trusted revocation update that
+finds an active effect returns `DispatchInProgress` and marks revocation
+pending. While pending, new claims and every new entry path return
+`RevocationPending`. The exact monotonic update must be retried after the active
+effect drains; successful commit clears pending. The process-local pending bit
+is not a durable feed, so a named host must re-read or otherwise retain the
+signed update across restart.
 
 ## Distribution freshness
 
@@ -57,4 +69,7 @@ remain external deployment responsibilities.
 Once a local irreversible boundary has been entered, a crash, cancellation,
 panic or lost acknowledgement is not evidence that the effect did not happen.
 Callers preserve an indeterminate outcome and reconcile using the destination
-owner's evidence before issuing replacement authority.
+owner's evidence before issuing replacement authority. The TaskFlow product
+path persists the canonical non-authorizing entry witness with the durable
+attempt before provider contact; restart uses that same attempt identity and
+never treats the witness as authority to retry.

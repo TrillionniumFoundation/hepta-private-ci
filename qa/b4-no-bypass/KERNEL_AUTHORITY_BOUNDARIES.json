@@ -37,7 +37,8 @@
         "with_verified_effect": "final_use_guarded_effect",
         "with_verified_use_async": "final_use_async_dispatch_fence",
         "with_verified_use_async_with_witness": "final_use_async_dispatch_fence",
-        "enter_verified_use": "final_use_async_entry"
+        "enter_verified_use": "final_use_async_entry",
+        "recover_state_dir_with_issuer_keys": "final_use_open_state"
       },
       "nonPrivilegedMethods": [
         "issuer_key_ids",
@@ -182,7 +183,8 @@
         "FinalUseAuthority\\s*::\\s*open_state_dir\\s*\\(",
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_trust\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\("
+        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*recover_state_dir_with_issuer_keys\\s*\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",

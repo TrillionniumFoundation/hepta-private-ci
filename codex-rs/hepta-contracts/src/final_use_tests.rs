@@ -143,7 +143,7 @@ fn async_effect_entry_rechecks_revocation_and_consumes_the_token() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert!(entered.matches(&binding));
@@ -158,7 +158,7 @@ fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert_eq!(
@@ -886,7 +886,7 @@ fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
     let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
     assert_eq!(claims.len(), 40);
 
-    let mut second = signed.clone();
+    let mut second = signed;
     second.grant.grant_id = "read-two".into();
     second.grant.nonce = [6; 32];
     second.signature = SigningKey::from_bytes(&[47; 32])
@@ -926,4 +926,137 @@ fn missing_or_truncated_claim_journal_fails_closed_on_restart() {
             FinalUseError::InvalidTrust
         );
     }
+}
+
+#[test]
+fn pending_revocation_preserves_the_observed_head_until_commit() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let mut active = Box::pin(
+        authority.with_verified_use_async(token, &binding, || async {
+            std::future::pending::<()>().await
+        }),
+    );
+    let mut context = Context::from_waker(Waker::noop());
+    assert!(matches!(active.as_mut().poll(&mut context), Poll::Pending));
+    let pending = FinalUseRevocations {
+        authority_epoch: signed.grant.authority_epoch,
+        revision: 3,
+        revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+    };
+    assert_eq!(
+        authority.update_revocations(pending.clone()),
+        Err(FinalUseError::DispatchInProgress)
+    );
+    drop(active);
+    for revision in [2, 3, 4] {
+        assert_eq!(
+            authority.update_revocations(FinalUseRevocations {
+                authority_epoch: pending.authority_epoch,
+                revision,
+                revoked_grant_ids: BTreeSet::new(),
+            }),
+            Err(FinalUseError::StaleRevocationHead)
+        );
+        assert_eq!(
+            authority.claim(&signed, &binding).unwrap_err(),
+            FinalUseError::RevocationPending
+        );
+    }
+    authority.update_revocations(pending.clone()).unwrap();
+    assert_eq!(authority.revocation_head().unwrap(), pending);
+    assert_eq!(
+        authority.claim(&signed, &binding).unwrap_err(),
+        FinalUseError::Revoked
+    );
+}
+
+#[test]
+fn recovered_key_ring_owner_preserves_nonce_history_and_rejects_rollback() {
+    let (_compatibility_owner, signed, _compatibility_directory) = fixture().unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let initial = FinalUseRevocations {
+        authority_epoch: signed.grant.authority_epoch,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let keys = vec![FinalUseIssuerTrustKey {
+        key_id: "issuer-key".into(),
+        verifying_key: SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),
+        not_before_authority_epoch: 1,
+        not_after_authority_epoch: u64::MAX,
+    }];
+    let frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&initial).unwrap(),
+    )));
+    let owner = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        directory.path(),
+        signed.grant.signer_id.clone(),
+        keys.clone(),
+        initial.clone(),
+        Arc::new(SystemAuthorityClock),
+        frontier.clone(),
+    )
+    .unwrap();
+    drop(owner.claim(&signed, &signed.grant.binding).unwrap());
+    let old_snapshot = std::fs::read(directory.path().join("authority.json")).unwrap();
+    drop(owner);
+    let newer = FinalUseRevocations {
+        authority_epoch: initial.authority_epoch,
+        revision: 2,
+        revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+    };
+    assert_eq!(
+        FinalUseAuthority::open_state_dir_with_issuer_keys(
+            directory.path(),
+            signed.grant.signer_id.clone(),
+            keys.clone(),
+            newer.clone(),
+            Arc::new(SystemAuthorityClock),
+            frontier.clone(),
+        )
+        .unwrap_err(),
+        FinalUseError::InvalidTrust
+    );
+    let recovered = FinalUseAuthority::recover_state_dir_with_issuer_keys(
+        directory.path(),
+        signed.grant.signer_id.clone(),
+        keys.clone(),
+        newer.clone(),
+        Arc::new(SystemAuthorityClock),
+        frontier.clone(),
+    )
+    .unwrap();
+    assert_eq!(recovered.revocation_head().unwrap(), initial);
+    assert_eq!(
+        recovered.claim(&signed, &signed.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    recovered.update_revocations(newer.clone()).unwrap();
+    assert_eq!(recovered.revocation_head().unwrap(), newer);
+    drop(recovered);
+    std::fs::write(directory.path().join("authority.json"), old_snapshot).unwrap();
+    assert_eq!(
+        FinalUseAuthority::recover_state_dir_with_issuer_keys(
+            directory.path(),
+            signed.grant.signer_id,
+            keys,
+            newer,
+            Arc::new(SystemAuthorityClock),
+            frontier,
+        )
+        .unwrap_err(),
+        FinalUseError::AntiRollbackViolation
+    );
+}
+
+#[test]
+fn revocation_capacity_reports_its_own_limit_not_the_nonce_limit() {
+    let (authority, _signed, _directory) = fixture().unwrap();
+    let capacity = authority.capacity().unwrap();
+    assert_eq!(capacity.max_claims, MAX_CLAIMS);
+    assert_eq!(capacity.max_revocations, MAX_REVOKED_GRANTS);
+    assert!(capacity.rollover_required_with_reserve(MAX_REVOKED_GRANTS));
 }

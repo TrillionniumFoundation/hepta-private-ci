@@ -232,6 +232,7 @@ struct Inner {
     state: Mutex<State>,
     active_dispatches: AtomicUsize,
     revocation_pending: AtomicBool,
+    pending_revocations: Mutex<Option<FinalUseRevocations>>,
     store: store::Store,
     clock: Arc<dyn AuthorityClock>,
     frontier_store: Option<Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>>,
@@ -389,6 +390,7 @@ impl FinalUseAuthority {
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
             revocation_pending: AtomicBool::new(false),
+            pending_revocations: Mutex::new(None),
             store,
             clock,
             frontier_store: None,
@@ -431,6 +433,7 @@ impl FinalUseAuthority {
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
             revocation_pending: AtomicBool::new(false),
+            pending_revocations: Mutex::new(None),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -439,7 +442,7 @@ impl FinalUseAuthority {
 
     /// Production-oriented constructor with a bounded issuer key ring,
     /// protected host time and an external anti-rollback frontier. The complete
-    /// trust-set digest is pinned in durable store schema V2. V1 single-key
+    /// trust-set digest is pinned in durable store schema V3. V1 single-key
     /// state is not silently migrated into this trust model. Deployment still
     /// must qualify the concrete clock/frontier and private-key custody.
     pub fn open_state_dir_with_issuer_keys(
@@ -450,13 +453,58 @@ impl FinalUseAuthority {
         clock: Arc<dyn AuthorityClock>,
         frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
     ) -> Result<Self, FinalUseError> {
+        Self::open_key_ring_with_trust(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            clock,
+            frontier_store,
+            false,
+        )
+    }
+
+    /// Recover existing state only after exact external-frontier verification.
+    /// `head` initializes a virgin store; it never changes an existing head.
+    /// The host must authenticate and apply a fresh feed before admitting effects.
+    pub fn recover_state_dir_with_issuer_keys(
+        directory: &std::path::Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+    ) -> Result<Self, FinalUseError> {
+        Self::open_key_ring_with_trust(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            clock,
+            frontier_store,
+            true,
+        )
+    }
+
+    fn open_key_ring_with_trust(
+        directory: &std::path::Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+        recover_persisted_head: bool,
+    ) -> Result<Self, FinalUseError> {
         if !identifier(&signer_id) || !valid_head(&head) {
             return Err(FinalUseError::InvalidTrust);
         }
         clock.now_unix_ms().map_err(map_trust_error)?;
         let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;
-        let (store, state) =
-            store::Store::open_key_ring_exact(directory, &signer_id, issuer_trust_sha256, head)?;
+        let (store, state) = if recover_persisted_head {
+            store::Store::open_key_ring_recovered(directory, &signer_id, issuer_trust_sha256, head)?
+        } else {
+            store::Store::open_key_ring_exact(directory, &signer_id, issuer_trust_sha256, head)?
+        };
         let observed = frontier_for_state(&state);
         let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
         if trusted != observed {
@@ -468,6 +516,7 @@ impl FinalUseAuthority {
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
             revocation_pending: AtomicBool::new(false),
+            pending_revocations: Mutex::new(None),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -513,7 +562,7 @@ impl FinalUseAuthority {
             used_nonces: state.used_nonces.len(),
             revoked_grants: state.head.revoked_grant_ids.len(),
             max_claims: MAX_CLAIMS,
-            max_revocations: MAX_CLAIMS,
+            max_revocations: MAX_REVOKED_GRANTS,
         })
     }
 
@@ -552,9 +601,27 @@ impl FinalUseAuthority {
         {
             return Err(FinalUseError::StaleRevocationHead);
         }
-        // Guarded provider effects and trusted revocation updates share this
-        // state lock at entry. Retry the update after effect completion/cancel.
+        // Keep the observed update, not just an admission bit: a retry may
+        // not replace an already-pending revocation with weaker semantics.
+        // Lock order is always owner state, then pending update.
+        let mut pending = self
+            .0
+            .pending_revocations
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if let Some(previous) = pending.as_ref()
+            && (head.authority_epoch < previous.authority_epoch
+                || head.revision < previous.revision
+                || (head.revision == previous.revision && &head != previous)
+                || (head.authority_epoch == previous.authority_epoch
+                    && !head
+                        .revoked_grant_ids
+                        .is_superset(&previous.revoked_grant_ids)))
+        {
+            return Err(FinalUseError::StaleRevocationHead);
+        }
         if self.0.active_dispatches.load(Ordering::Acquire) != 0 {
+            *pending = Some(head);
             self.0.revocation_pending.store(true, Ordering::Release);
             return Err(FinalUseError::DispatchInProgress);
         }
@@ -564,6 +631,7 @@ impl FinalUseAuthority {
         }
         next.head = head;
         self.persist_or_fence(&mut state, next)?;
+        *pending = None;
         self.0.revocation_pending.store(false, Ordering::Release);
         Ok(())
     }

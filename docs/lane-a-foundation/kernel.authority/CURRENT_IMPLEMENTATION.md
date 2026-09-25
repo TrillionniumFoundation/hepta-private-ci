@@ -16,8 +16,9 @@ The current candidate contains two native authority families.
 - `AuthorityLeaseRegistry` is the non-cloneable administrative capability. It owns put/replace, revoke, bounded expired-lease pruning and epoch advance.
 - `AuthorityLeaseVerifier` is a cloneable read/verify attenuation. It cannot mutate authority state.
 - a verified token is rechecked against the exact current stored lease record; replacing a lease invalidates tokens issued for an older revision;
+- lease put retries are idempotent only when both the complete lease value and the original expected predecessor revision match; identical bytes with a different predecessor are a revision conflict;
 - revocation retries are idempotent only for the same lease ID, expected revision and reason digest. The caller does not supply the revocation timestamp; the authority clock creates it once and an identical retry returns the original receipt;
-- time comes from the clock bound into the owner. Product callers do not provide arbitrary `now_unix_ms` values to verifier operations;
+- time comes from the clock bound into the owner. Product callers do not provide arbitrary `now_unix_ms` values to verifier operations; final verification acquires the owner lock first and then samples time, so a lease that expires while waiting for that lock is denied;
 - production-oriented open binds `AuthorityClock` plus an externally durable `AuthorityFrontierStore<AuthorityLeaseFrontier>`.
 
 V1 general leases are registry-authoritative online references. Serialized lease values are not self-verifying portable bearer capabilities.
@@ -26,11 +27,13 @@ V1 general leases are registry-authoritative online references. Serialized lease
 
 `src/final_use.rs` implements a separately signed, short-lived final operation grant with exact subject/destination/request/scope/payload binding, strict Ed25519 verification, durable single-use nonce burn, monotonic revocation and opaque `VerifiedUseToken`.
 
-`FinalUseAuthority::open_state_dir_with_issuer_keys` binds a bounded issuer key ring with authority-epoch activation/retirement windows. The complete ring configuration is digest-pinned in durable store schema V2; legacy schema V1 remains a separate single-key compatibility model and is not silently migrated.
+`FinalUseAuthority::open_state_dir_with_issuer_keys` binds a bounded issuer key ring with authority-epoch activation/retirement windows. The complete ring configuration is digest-pinned in durable store schema V3. Explicit V1/V2 storage layouts migrate with nonce history intact within their original trust family; single-key trust is not converted to key-ring trust.
 
 `FinalUseAuthority::open_state_dir_with_trust` binds a host clock and an external `FinalUseFrontier` CAS store for the single-key compatibility path. The frontier digest includes both the complete revocation head and claimed nonce set. Every mutation advances the external frontier before the local fsync/rename. A local snapshot restored behind that frontier fails closed.
 
 Compatibility constructors without an external frontier remain available for tests/source compatibility and are not an external anti-rollback claim.
+
+Guarded synchronous and asynchronous effects maintain an active-effect fence. If a trusted revocation update arrives while such an effect is active, the update returns `DispatchInProgress` and sets `revocation_pending`; new claims and all new consumer/dispatch entries then fail with `RevocationPending` until the exact monotonic update is retried after the active effect drains. The pending flag is process-local. A named host must durably retain or re-read the independently signed update across restart rather than treating process loss as cancellation of the revocation.
 
 ## Public symbols and source bindings
 
@@ -63,7 +66,7 @@ The grant issuer, approver and revocation distributor remain independently pinne
 
 ## Durability and activation
 
-Both local stores use owner-controlled Unix directories, no-follow opens, owner-only permissions, process locking, complete-state replacement, file fsync, rename and directory fsync. Equivalent non-Unix backends are not current.
+Both local stores use owner-controlled Unix directories, no-follow opens, owner-only permissions and process locking. The general-lease owner writes a complete bounded next-state image with file fsync, same-directory rename and directory fsync. FinalUse appends and fsyncs fixed-width nonce frames on the claim hot path; trusted head/key-ring replacement uses atomic snapshot publication and journal compaction. Equivalent non-Unix backends are not current.
 
 Local filesystem durability protects crash/restart consistency but is not an external rollback oracle. The repository defines `AuthorityFrontierStore<F>` with durable load/CAS semantics and `AuthorityClock`; production qualification still requires concrete protected implementations supplied by the selected host/platform.
 
@@ -96,7 +99,9 @@ Generic leases now also have one concrete owner-side consumer: `codex-rs/hepta-f
 
 The fleet revocation control plane is separately source-composed in `revocation_control.rs`.
 
-There is still no selected deployed product process for the Bao host or fleet authority port in this candidate. Source composition is therefore not activation and does not prove deployed product execution.
+Agentd automation is now a named source-composed FinalUse host. `AgentdAutomationEffectHost` authenticates a signed revocation feed, opens a rotating-issuer `FinalUseAuthority` with the concrete `AgentdFinalUseTrustStore`, derives the exact provider binding, durably records one effect attempt and canonical `VerifiedUseTokenWitnessV1`, and dispatches through the registered HTTP provider adapter. The trust store is single-writer state outside the Agent home rollback domain, persists a non-decreasing clock floor and exact FinalUse CAS frontier, and fails closed on owner conflict, missing frontier, clock rollback or restored local authority state. Source tests cover owner handoff, rollback rejection, slow/active effect revocation, provider response loss, restart recovery and no redispatch.
+
+There is still no selected deployed product process for the Bao host or fleet authority port, and the Agentd source host has no attested target clock, independently qualified storage/backup domain, HSM/KMS custody or operator acceptance in this candidate. Source composition is therefore not activation and does not prove deployed product execution.
 
 ## Target-only design
 
@@ -106,8 +111,9 @@ Fleet revocation transport/fanout, target-host trusted clock/frontier backends, 
 
 ## Known limits and non-claims
 
-- no selected product-process caller for the registered Bao host;
-- `runtime.fleet` now has concrete generic-lease and revocation source composition, but the other registered target ModulePorts remain uncomposed;
+- no selected deployed product process for the registered Bao host or fleet authority port;
+- Agentd automation has a named source-composed FinalUse host and durable effect/witness path, but no selected deployment profile or external target qualification;
+- `runtime.fleet` has concrete generic-lease and revocation source composition, while several registered generic ModulePorts remain target-only;
 - fleet revocation admission/convergence semantics are implemented, but no deployed wire fanout or measured production convergence/freshness SLA;
 - no qualified attested production clock or deployed rollback-resistant frontier store;
 - no qualified HSM/KMS custody, staged operator ceremony or compromise-response process;
@@ -117,19 +123,20 @@ Fleet revocation transport/fanout, target-host trusted clock/frontier backends, 
 These facts require named hosts, deployment configuration and exact-candidate evidence. Source compilation or an empty B4 caller set cannot substitute for product execution evidence.
 
 The external trust/capacity/rotation/convergence facts now have a machine-checkable
-admission format and self-test in
+schema-v2 admission format and hostile-case self-test in
 `qualification/kernel-authority/verify.py`. A real deployment bundle is accepted
-only when it is exact-candidate-bound and every referenced external receipt matches
-its retained SHA-256. Bundle admission explicitly does not grant activation or
-release.
+only when it is exact-candidate-bound, every referenced receipt matches its retained
+SHA-256, revocation delivery/ack times and node counts satisfy the declared SLA,
+and the complete numerical capacity/fault matrix passes. Bundle admission explicitly
+does not grant activation or release.
 
 ## Verification
 
 Current source tests cover, among other cases:
 
 - stale-token denial after lease replacement;
-- exact-predecessor identical put retries and exact revocation retry semantics with an authority-generated timestamp;
-- bound-clock lease verification;
+- exact-predecessor identical put retries, wrong-predecessor identical-value rejection and exact revocation retry semantics with an authority-generated timestamp;
+- bound-clock lease verification, including expiry while waiting for the final owner lock;
 - bounded expired-lease pruning;
 - external general-lease snapshot rollback detection;
 - injected FinalUse clock;
@@ -137,7 +144,10 @@ Current source tests cover, among other cases:
 - approval/feed key overlap by authority epoch;
 - signed revocation freshness, wrong-apply-receipt denial, forged-distributor convergence denial, future-ack rejection and per-key convergence acknowledgement validation;
 - registered consumer, forged independent approval and in-flight feed-expiry denial;
-- the documented VerifiedUse and dispatch linearization races.
+- the documented VerifiedUse and dispatch linearization races;
+- active-effect revocation pending, denial of new admissions, exact update retry after drain and cancellation cleanup;
+- Agentd external-trust single-writer handoff and restored-local-snapshot rejection;
+- durable TaskFlow authority witness after provider contact, response loss, restart and reconciliation without redispatch.
 
 `CALLERS.toml` and `qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json` classify the public privileged surfaces, including production trust constructors, raw verification/delivery methods, the bounded dispatch fence and lease pruning.
 
@@ -156,3 +166,18 @@ serializable authority token. These non-test callers remain registered in
 `CALLERS.toml`; their source composition does not establish product execution
 or activation. Fleet mutation uses `dispatch_authority_lease_with_witness` at
 the concrete owner boundary, retaining its canonical audit witness.
+
+## Integrated Agentd automation effect host
+
+`AgentdAutomationEffectHost` is the named normal product source path for TaskFlow provider effects. Host schema V2 requires an issuer key ring, independently signed revocation-distributor key ring and feed file, exact provider contract/binding configuration and an absolute external trust root outside Agent home. Ordinary startup rejects the compatibility constructor and uses `FinalUseAuthority::open_state_dir_with_issuer_keys` with the same `AgentdFinalUseTrustStore` as both protected clock and external frontier.
+
+Before provider contact the TaskFlow owner durably records the attempt and the canonical non-authorizing dispatch-entry witness. Provider acknowledgement, timeout or crash is observed separately. A crash or lost response never authorizes redispatch of the same attempt; restart exposes the same pending identity for provider-owned lookup/reconciliation. This closes the repository-controlled host and recovery chain but does not assert that a target clock is attested, a target volume is rollback-independent, or a provider effect has been independently accepted.
+
+### Valid restart after a signed-feed advance
+
+The normal Agentd host now recovers its stored key-ring head using
+`recover_state_dir_with_issuer_keys`, checks the exact external frontier, then
+authenticates and commits the current feed before returning from startup.
+This handles a valid feed advance during downtime without weakening the exact
+open API, refunding consumed nonces or accepting restored state behind the
+external frontier. Source tests separately retain the strict-open rejection.

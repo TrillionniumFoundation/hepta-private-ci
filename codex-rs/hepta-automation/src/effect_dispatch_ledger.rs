@@ -377,6 +377,13 @@ impl AutomationStore {
         .execute(self.taskflow_pool())
         .await;
 
+        // A failed write is not evidence of database corruption or absence.
+        // Only a constraint conflict permits inspecting an existing receipt.
+        if let Err(error) = &inserted
+            && !is_constraint(error)
+        {
+            return Err(TaskFlowError::Unavailable);
+        }
         let stored = self
             .effect_dispatch_authority_witness(run_id, step_id, attempt)
             .await?

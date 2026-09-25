@@ -46,15 +46,22 @@ holding the authority mutex across `await`.
 
 A trusted `update_revocations` call may commit before that fence is entered or
 after it leaves. While any active dispatch owns the fence, the update returns
-`FinalUseError::DispatchInProgress`; callers must retry the same monotonic
-head after the bounded provider call completes or is cancelled. A cancelled
-future drops its RAII fence. This avoids a check-before-await revocation race
-without blocking a runtime thread on a mutex held by a suspended future.
+`FinalUseError::DispatchInProgress` and marks `revocation_pending`. From that
+point, new claims and every consumer/dispatch/effect entry return
+`FinalUseError::RevocationPending`; callers must retry the same monotonic head
+after the bounded provider call completes or is cancelled. A cancelled future
+drops its RAII fence. Successful retry commits the new head and clears pending.
+This avoids a check-before-await revocation race without blocking a runtime
+thread on a mutex held by a suspended future, and it prevents a stream of new
+work from starving an already observed revocation.
 
-The active fence is intentionally not durable. If the process dies after
-provider contact, the provider effect remains indeterminate and must be
-reconciled by the durable operation/effect owner; revocation is not a rollback
-of an effect that already crossed the provider boundary.
+The active fence and pending bit are intentionally not durable. If the process
+dies after provider contact, the provider effect remains indeterminate and must
+be reconciled by the durable operation/effect owner; revocation is not a
+rollback of an effect that already crossed the provider boundary. A named host
+must retain or re-read the independently signed revocation update after restart.
+The Agentd automation host does so by verifying the configured signed feed at
+open and refreshing that file before every provider dispatch.
 
 ## Wire and signing schemas
 
@@ -102,7 +109,7 @@ does not redirect an already opened authority's writes.
 | Entry | Contents and invariant |
 | --- | --- |
 | `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON schema 2 `{schema:2, signer_id, verifying_key, head}`; maximum read 8 MiB. Schema 1 is migrated fail-closed on open. |
+| `authority.json` | JSON schema 3 `{schema:3, signer_id, trust, head}`; maximum read 8 MiB. Explicit single-key and key-ring legacy layouts migrate with their nonce history preserved; trust families are never silently converted. |
 | `authority.claims` | Fixed-width append-only replay frames `(authority_epoch:u64, nonce:[u8;32])`; synced before dispatch admission. |
 | `authority.next` | Temporary revocation/trust snapshot replacement written with owner-only permissions before rename |
 | `authority.claims.next` | Temporary compacted replay journal used on trusted head/epoch transitions |
@@ -199,17 +206,21 @@ in-process capabilities accepted by final authority boundaries. The separate
 `authorityDelta = none`: no authority API accepts it as authorization input
 and there is no conversion from a witness back into either opaque token.
 
-`deliver_final_use_with_witness`,
-`dispatch_final_use_with_witness` and
+`deliver_final_use_with_witness`, `dispatch_final_use_with_witness`,
+`with_verified_use_async_with_witness` and
 `authority_lease::deliver_authority_lease_with_witness` emit the witness only
-after the same live check that linearizes consumer/dispatch entry. The record
-binds authority family, owner/grant or lease identity, authority epoch, current
-revocation/store revision, verification time, boundary kind and a
+after the same live check that linearizes consumer/dispatch/effect entry. The
+record binds authority family, owner/grant or lease identity, authority epoch,
+current revocation/store revision, verification time, boundary kind and a
 domain-separated digest of the exact binding. Unknown fields are rejected.
 
 This closes the typed/canonical-JSON witness contract without turning an audit
 receipt into a portable bearer grant. Product code that does not need the
-serialized evidence may continue to use the opaque-token APIs.
+serialized evidence may continue to use the opaque-token APIs. The TaskFlow
+provider path uses the async witness API and commits the canonical witness with
+the durable attempt before provider contact. Crash, timeout or lost response
+therefore leaves evidence for the same attempt and requires reconciliation,
+not redispatch.
 
 ## Exact-frontier asynchronous entry
 
@@ -242,19 +253,21 @@ fetch newer data or replace protected time and the external rollback frontier.
 | `open_state_dir` | Compatibility/test open using the system clock and local durability only |
 | `open_state_dir_with_clock` | Bind an explicit host clock; still has no external rollback oracle |
 | `open_state_dir_with_trust` | Single-issuer compatibility open binding explicit clock plus external CAS frontier |
-| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V2 pins the complete trust-set digest |
+| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V3 pins the complete trust-set digest with an explicit trust-family tag |
 | `issuer_key_ids` | Read configured issuer key identifiers for audit/operations; grants no authority |
 | `frontier` | Read the current rollback-protection digest/epoch/revision projection |
-| `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
+| `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed. An active guarded effect returns `DispatchInProgress`, marks pending and requires exact retry after drain |
 | `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
 | `with_verified_use` | Revalidate, linearize entry, release the authority lock, then consume the token at the final synchronous boundary |
 | `deliver_final_use_with_witness` | Same consumer-entry check, plus a serializable non-authorizing `VerifiedUseTokenWitnessV1` |
 | `dispatch_final_use` / `with_dispatch_boundary` | Revalidate and hold the lock only across one short local irreversible dispatch boundary |
 | `dispatch_final_use_with_witness` | Same dispatch-entry fence, plus a serializable non-authorizing witness |
+| `with_verified_use_async_with_witness` | Hold the active-effect fence across one bounded async provider call and return its canonical non-authorizing entry witness |
 | `revocation_head` | Read locally trusted head; no authority or automatic feed refresh |
 | `VerifiedUseToken::enter` / `enter_verified_use` | Consume an exact-frontier token at one asynchronous effect entry; never retry authority |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use under the locally trusted head |
+| `RevocationPending` | Deny new admission/entry until the previously blocked trusted update is retried and committed |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
 | `InvalidTrust`, `AntiRollbackViolation`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner clock/frontier/configuration/storage without resetting authority implicitly |
 | `StaleRevocationHead` | Reject a rollback/inconsistent host update |
@@ -264,6 +277,24 @@ timeout, malformed/oversized replies, version mismatch and digest mismatch.
 None invokes the consumer. A callback that reports failure after entry returns
 `ConsumerIndeterminate`; it is not proof that no effect occurred. Receipts
 contain only request/body/secret digests, version and byte count.
+
+## Named Agentd automation composition
+
+The repository's normal Agentd automation host does not use the compatibility
+`open_state_dir` constructor. Host configuration V2 supplies an issuer key ring,
+a separately pinned revocation-distributor key ring and signed feed file, exact
+provider contract and an external trust root outside Agent home.
+`AgentdFinalUseTrustStore` owns that external directory under a single-writer
+lock, persists a non-decreasing wall-clock floor and the exact FinalUse frontier,
+and is passed to `open_state_dir_with_issuer_keys` as both `AuthorityClock` and
+`AuthorityFrontierStore<FinalUseFrontier>`.
+
+Startup fails closed on incomplete trust initialization, owner conflict, missing
+frontier for an initialized local authority, clock rollback or a local snapshot
+behind the external frontier. Source tests cover owner handoff and restored
+snapshot rejection. This is a concrete repository host composition, not a claim
+that the target clock is attested, the selected volume is independently
+rollback-resistant, or HSM/KMS custody has been qualified.
 
 ## Independent signer operations
 
@@ -342,3 +373,19 @@ used by automation. It and `with_verified_use_async` reject concurrent trusted
 revocation commits with `DispatchInProgress` until completion or cancellation.
 Both use the same authority owner, clock and persisted revocation state.
 The local `with_dispatch_boundary` witness APIs retain their short mutex fence.
+
+## Recovery and pending-revocation continuation
+
+The named Agentd host uses `recover_state_dir_with_issuer_keys` to load the
+existing durable head only after the full nonce/revocation frontier matches the
+external store. A bootstrap head never changes existing state in this entry.
+Before the host can be returned or admit an effect, `refresh_revocations`
+authenticates the current signed feed and applies any stronger head. The
+original `open_state_dir_with_issuer_keys` still requires an exact initial head.
+Neither path repairs a missing or rolled-back local state by resetting history.
+
+A blocked revocation records the pending head as well as an admission fence.
+An exact retry or a stronger monotonic update may commit after active effects
+drain; a same-revision substitution, older head or same-epoch removal is
+rejected. Pending state is process-local, so restart must re-read the signed
+feed; it is not a durable revocation acknowledgement.

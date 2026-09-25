@@ -2,74 +2,126 @@ name: Kernel authority convergence
 
 on:
   push:
-    branches:
-      - work/kernel-authority-convergence-20260925
+    branches: [work/kernel-authority-convergence-20260925]
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-automation/**'
+      - 'qualification/kernel-authority/**'
+      - 'qa/b4-no-bypass/**'
+      - 'CALLERS.toml'
+      - '.github/workflows/kernel-authority-convergence.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
-
 concurrency:
   group: kernel-authority-convergence-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  governance:
+  identity:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    outputs:
+      source: ${{ steps.pin.outputs.source }}
+      base: ${{ steps.pin.outputs.base }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Verify evidence and caller truth
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - id: pin
         run: |
-          python3 -m py_compile qualification/kernel-authority/verify.py
-          python3 -m py_compile qa/b4-no-bypass/test_kernel_authority_closed_world.py
-          python3 -m py_compile scripts/verify_hepta_callers.py
-          python3 qualification/kernel-authority/verify.py self-test
-          python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
-          python3 scripts/verify_hepta_callers.py
-          git diff --check
+          git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
 
-  contracts:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.95.0
-          components: rustfmt, clippy
-      - uses: taiki-e/install-action@just
-      - uses: taiki-e/install-action@cargo-nextest
-      - name: Format and test contracts
-        working-directory: codex-rs
-        run: |
-          cargo fmt --check
-          just test -p codex-hepta-contracts
-          cargo clippy -p codex-hepta-contracts --all-targets --locked -- -D warnings
-
-  product-composition:
+  qualify:
+    needs: identity
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        mode: [exact-head, synthetic-merge]
+        lane: [governance, contracts, product, host]
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_INCREMENTAL: 0
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ needs.identity.outputs.source }}
+          persist-credentials: false
+      - name: Prepare immutable candidate
+        run: |
+          python3 qualification/kernel-authority/prepare_candidate.py \
+            --mode '${{ matrix.mode }}' --base-sha '${{ needs.identity.outputs.base }}' \
+            --output "$RUNNER_TEMP/authority-evidence/identity.json"
       - uses: dtolnay/rust-toolchain@master
+        if: matrix.lane != 'governance'
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
       - uses: taiki-e/install-action@just
+        if: matrix.lane != 'governance'
       - uses: taiki-e/install-action@cargo-nextest
-      - name: Test product composition
-        working-directory: codex-rs
+        if: matrix.lane != 'governance'
+      - name: Execute every applicable check without retries
+        env:
+          LANE: ${{ matrix.lane }}
         run: |
-          just test -p codex-hepta-automation --test authorized_effect
-          just test -p codex-hepta-agentd
-          just test -p codex-hepta-prompt-registry
-          cargo clippy -p codex-hepta-automation --all-targets --locked -- -D warnings
-          cargo clippy -p codex-hepta-agentd --all-targets --locked -- -D warnings
-          cargo clippy -p codex-hepta-prompt-registry --all-targets --locked -- -D warnings
+          set +e
+          status=0
+          out="$RUNNER_TEMP/authority-evidence"
+          run() {
+            name="$1"; shift
+            "$@" 2>&1 | tee "$out/$name.log"
+            rc=${PIPESTATUS[0]}
+            echo "$rc" > "$out/$name.exit"
+            if [ "$rc" -ne 0 ]; then status=1; fi
+          }
+          case "$LANE" in
+            governance)
+              run evidence python3 qualification/kernel-authority/verify.py self-test
+              run candidate-parser python3 -m unittest discover -s qualification/kernel-authority -p "test_*.py" -v
+              run b4 python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
+              run callers python3 scripts/verify_hepta_callers.py
+              run maps python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse 'HEAD^{tree}')"
+              run whitespace git diff --check
+              ;;
+            contracts)
+              cd codex-rs
+              run format cargo fmt --check -p codex-hepta-contracts
+              run tests just test --locked -p codex-hepta-contracts --retries 0
+              run clippy cargo clippy --locked -p codex-hepta-contracts --all-targets -- -D warnings
+              ;;
+            product)
+              cd codex-rs
+              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry -p codex-hepta-fleet
+              run tests just test --locked -p codex-hepta-automation -p codex-hepta-prompt-registry -p codex-hepta-fleet --retries 0
+              run clippy cargo clippy --locked -p codex-hepta-automation -p codex-hepta-prompt-registry -p codex-hepta-fleet --all-targets -- -D warnings
+              ;;
+            host)
+              cd codex-rs
+              run format cargo fmt --check -p codex-hepta-agentd
+              run tests just test --locked -p codex-hepta-agentd --retries 0
+              run clippy cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
+              ;;
+          esac
+          exit "$status"
+      - name: Retain candidate-bound logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-authority-${{ matrix.mode }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/authority-evidence
+          if-no-files-found: error
+          retention-days: 7

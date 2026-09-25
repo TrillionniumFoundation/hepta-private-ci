@@ -123,3 +123,32 @@ Unknown critical fields, duplicate JSON keys, duplicate nodes/keys, stale
 candidate identity, missing scenarios or measurements, failed invariants,
 unsafe paths, digest mismatch, receipt-content mismatch and synthetic evidence
 all fail closed.
+
+## Candidate identity and independent check lanes
+
+`prepare_candidate.py` accepts an exact base SHA and either `exact-head` or
+`synthetic-merge`. Use it only in a disposable checkout. A merge run requires
+an initially clean detached HEAD; it preserves the source/base identities,
+constructs the merge tree without changing either branch, and fixes commit
+metadata so identical inputs reproduce the same merge commit. Evidence output
+must be outside the source tree. An attached branch or dirty checkout is rejected.
+
+The convergence workflow pins source and main once, then runs governance,
+contracts, product consumers and the Agentd host independently for both modes.
+Every command retains its actual exit status. One failed check does not hide
+subsequent checks, and no retries or lower test thresholds turn a failure green.
+Each uploaded log set contains the source, base, candidate commit and tree.
+These runs qualify repository behavior, not deployment or independent acceptance.
+
+Receipt validation compares canonical JSON types, not Python's loose numeric
+or Boolean equality. Schema versions must be integers. The verifier hashes and
+parses the same retained bytes, rejects non-finite JSON numbers, and bounds each
+JSON file to 8 MiB, the artifact set to 1,024 files and aggregate content to
+64 MiB. Reserve-alert evidence must demonstrate a positive remaining reserve;
+an alert only at zero remaining capacity does not demonstrate early warning.
+
+Run the parser/candidate regressions with:
+
+```text
+python3 -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
+```

@@ -1287,3 +1287,98 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     );
     assert_eq!(must_not_dispatch.calls, 0);
 }
+
+#[tokio::test]
+async fn witness_write_failure_preserves_attempt_and_never_contacts_provider() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "witness-write-fault");
+    let sqlite_home = codex_utils_absolute_path::AbsolutePathBuf::try_from(
+        fixture.layout.automation_root().to_path_buf(),
+    )
+    .expect("absolute fixture owner directory");
+    let fault_pool = codex_state::SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await
+        .expect("test fault connection through canonical SQLite shim");
+    sqlx::query("CREATE TRIGGER reject_test_witness BEFORE INSERT ON taskflow_effect_dispatch_authority_witnesses BEGIN SELECT RAISE(ABORT, 'injected witness write failure'); END")
+        .execute(&fault_pool).await.expect("install test fault");
+    let mut driver =
+        RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"not-dispatched");
+    let result = store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-dispatch",
+            30,
+        )
+        .await;
+    assert!(
+        matches!(
+            result,
+            Err(AuthorizedEffectError::TaskFlow(
+                codex_hepta_automation::TaskFlowError::Unavailable
+            ))
+        ),
+        "storage uncertainty must remain unavailable: {result:?}"
+    );
+    assert_eq!(driver.calls, 0);
+    assert_eq!(
+        authority
+            .claim(&signed, &expected)
+            .expect_err("nonce remains consumed"),
+        FinalUseError::AlreadyClaimed
+    );
+    assert!(
+        store
+            .authorized_taskflow_effect_authority_witness(
+                &effect.run_id,
+                &effect.step_id,
+                effect.attempt,
+            )
+            .await
+            .expect("read missing witness")
+            .is_none()
+    );
+    sqlx::query("DROP TRIGGER reject_test_witness")
+        .execute(&fault_pool)
+        .await
+        .expect("remove only test fault trigger");
+    fault_pool.close().await;
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen same owner");
+    assert!(
+        reopened
+            .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, effect.attempt,)
+            .await
+            .expect("read original attempt")
+            .is_some()
+    );
+    assert!(matches!(
+        reopened
+            .execute_authorized_taskflow_effect(
+                &authority,
+                &mut driver,
+                &effect,
+                EFFECT_PAYLOAD,
+                &owner,
+                &signed,
+                &expected,
+                "authorized-effect-dispatch",
+                31,
+            )
+            .await,
+        Err(AuthorizedEffectError::RecoveryRequired)
+    ));
+    assert_eq!(
+        driver.calls, 0,
+        "repairing storage does not authorize redispatch"
+    );
+}

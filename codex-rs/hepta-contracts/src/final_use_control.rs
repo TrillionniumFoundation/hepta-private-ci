@@ -696,20 +696,19 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
-    fn fixture() -> (
+    type ControlFixture = (
         FinalUseAuthority,
         SignedFinalUseGrant,
         tempfile::TempDir,
         SigningKey,
         SigningKey,
-    ) {
+    );
+
+    fn fixture() -> Result<ControlFixture, Box<dyn std::error::Error>> {
         let issuer = SigningKey::from_bytes(&[41; 32]);
         let approver = SigningKey::from_bytes(&[42; 32]);
         let distributor = SigningKey::from_bytes(&[43; 32]);
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_millis() as u64;
+        let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "security-owner".into(),
@@ -726,12 +725,9 @@ mod tests {
             not_before_unix_ms: now - 1_000,
             expires_at_unix_ms: now + 30_000,
         };
-        let signature = issuer
-            .sign(&grant.signing_bytes().unwrap())
-            .to_bytes()
-            .to_vec();
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+        let directory = tempfile::tempdir()?;
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "security-owner".into(),
@@ -741,20 +737,19 @@ mod tests {
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
             },
-        )
-        .unwrap();
-        (
+        )?;
+        Ok((
             authority,
             SignedFinalUseGrant { grant, signature },
             directory,
             approver,
             distributor,
-        )
+        ))
     }
 
     #[test]
     fn independent_approval_binds_exact_grant_semantics() {
-        let (_authority, grant, _directory, approver, _distributor) = fixture();
+        let (_authority, grant, _directory, approver, _distributor) = fixture().unwrap();
         let approval =
             FinalUseApproval::for_grant("operator-approver".into(), &grant.grant).unwrap();
         let signature = approver
@@ -782,7 +777,7 @@ mod tests {
 
     #[test]
     fn signed_revocation_feed_is_authenticated_and_monotonic() {
-        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture().unwrap();
         let token = authority.claim(&grant, &grant.grant.binding).unwrap();
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
@@ -821,7 +816,7 @@ mod tests {
 
     #[test]
     fn revocation_feed_freshness_fails_closed() {
-        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture().unwrap();
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
             FinalUseRevocations {
@@ -856,7 +851,7 @@ mod tests {
 
     #[test]
     fn approval_key_ring_enforces_epoch_windows_and_reports_selected_key() {
-        let (_authority, grant, _directory, approver, _distributor) = fixture();
+        let (_authority, grant, _directory, approver, _distributor) = fixture().unwrap();
         let next = SigningKey::from_bytes(&[44; 32]);
         let verifier = FinalUseApprovalVerifier::new_with_keys(
             "operator-approver".into(),
@@ -901,7 +896,7 @@ mod tests {
 
     #[test]
     fn convergence_report_requires_every_enrolled_node_ack() {
-        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture().unwrap();
         let node_a = SigningKey::from_bytes(&[71; 32]);
         let node_b = SigningKey::from_bytes(&[72; 32]);
         let update = FinalUseRevocationUpdate::new(
@@ -966,7 +961,12 @@ mod tests {
             ack: ack_a,
         };
         let partial = verifier
-            .verify(&feed_verifier, &signed_update, &[signed_a.clone()], 2_100)
+            .verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed_a),
+                2_100,
+            )
             .unwrap();
         assert!(!partial.converged());
         assert_eq!(partial.missing_nodes, vec!["node-b"]);
@@ -1005,7 +1005,7 @@ mod tests {
 
     #[test]
     fn convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs() {
-        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture().unwrap();
         let node = SigningKey::from_bytes(&[73; 32]);
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
@@ -1081,7 +1081,12 @@ mod tests {
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         assert_eq!(
-            verifier.verify(&feed_verifier, &signed_update, &[signed.clone()], 2_000),
+            verifier.verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed),
+                2_000
+            ),
             Err(FinalUseControlError::RevocationFeedStale)
         );
 
@@ -1101,7 +1106,7 @@ mod tests {
 
     #[test]
     fn revocation_ack_requires_receipt_for_the_exact_applied_update() {
-        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture().unwrap();
         let applied = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
             FinalUseRevocations {
@@ -1158,7 +1163,7 @@ mod tests {
 
     #[test]
     fn forged_revocation_feed_never_updates_authority() {
-        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture().unwrap();
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
             FinalUseRevocations {
