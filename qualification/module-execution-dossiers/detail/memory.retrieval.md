@@ -51,10 +51,10 @@ These are code-enforced capacity bounds, not target-host performance claims. p50
 
 ## 6. Concrete verification cases
 
-- **RET-01 — deterministic union:** channel/generator permutation produces the same canonical union and recall packet. Source: `generation_bound_tests.rs` and `generator_tests.rs`.
-- **RET-02 — contradiction safety:** contradictory active support forces explicit abstention where policy requires it. Source: `generation_bound_tests.rs` and `engram_tests.rs`.
-- **RET-03 — current support before delivery:** the owner adapter binds exact revision/support and Agentd performs final batch revalidation before materialization; stale or revoked support is omitted or fails closed. Source: `cognitive_retrieval_adapter_tests.rs`, `cognitive_context_hnmf_tests.rs` and existing cognitive revalidation tests.
-- **RET-04 — independent ablations:** plain/no-intervention, lexical-only, no-recurrence and no-inhibition baselines have explicit deterministic fixtures. Source: `engram_tests.rs` and generator/retrieval tests. These fixtures establish separable interventions and resource receipts; they do not establish longitudinal task utility without independently observed outcomes.
+- RET-01: **Deterministic union.** channel/generator permutation produces the same canonical union and recall packet. Source: `generation_bound_tests.rs` and `generator_tests.rs`.
+- RET-02: **Contradiction safety.** contradictory active support forces explicit abstention where policy requires it. Source: `generation_bound_tests.rs` and `engram_tests.rs`.
+- RET-03: **Current support before delivery.** the owner adapter binds exact revision/support and Agentd performs final batch revalidation before materialization; stale or revoked support is omitted or fails closed. Source: `cognitive_retrieval_adapter_tests.rs`, `cognitive_context_hnmf_tests.rs` and existing cognitive revalidation tests.
+- RET-04: **Independent ablations.** plain/no-intervention, lexical-only, no-recurrence and no-inhibition baselines have explicit deterministic fixtures. Source: `engram_tests.rs` and generator/retrieval tests. These fixtures establish separable interventions and resource receipts; they do not establish longitudinal task utility without independently observed outcomes.
 
 Additional negative coverage includes oversized total generator input, channel-rank mismatch, policy/generator coverage mismatch, cross-generation receipt rebinding, recomputed malformed receipt forgeries, tombstones, duplicate identities, OOD and stale generation.
 

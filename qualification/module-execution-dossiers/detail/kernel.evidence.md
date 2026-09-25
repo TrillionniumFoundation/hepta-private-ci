@@ -106,14 +106,14 @@ capacity evidence remains required before activation.
 
 ## 6. Concrete verification cases
 
-- **EVID-01:** one authenticated principal or one shared signing identity
+- EVID-01: one authenticated principal or one shared signing identity
   cannot satisfy generator/evaluator or other multi-role independence; distinct
   principals with distinct signing identities can.
-- **EVID-02:** evidence for a different tree is missing and expired evidence is
+- EVID-02: evidence for a different tree is missing and expired evidence is
   expired/unavailable.
-- **EVID-03:** canonical payload/projection corruption and broken predecessor
+- EVID-03: canonical payload/projection corruption and broken predecessor
   lineage fail closed on reopen.
-- **EVID-04:** fixture/hardware and other claim classes are not substitutable.
+- EVID-04: fixture/hardware and other claim classes are not substitutable.
 - Exact signed retry is idempotent; payload drift conflicts.
 - Correction/revocation history survives reopen without resurrection.
 - Real Agentd product test exercises append -> query -> verify, wrong
