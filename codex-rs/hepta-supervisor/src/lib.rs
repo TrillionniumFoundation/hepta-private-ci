@@ -191,14 +191,23 @@ mod release_controller;
 mod release_controller_store;
 #[cfg(feature = "production-authority")]
 pub use release_controller::MAX_PRODUCTION_RELEASE_JOURNAL_BYTES;
+#[cfg(feature = "production-authority")]
 pub use release_controller::MAX_PRODUCTION_RELEASE_REQUEST_BYTES;
+#[cfg(feature = "production-authority")]
 pub use release_controller::PRODUCTION_RELEASE_JOURNAL_SCHEMA_VERSION;
+#[cfg(feature = "production-authority")]
 pub use release_controller::PRODUCTION_RELEASE_REQUEST_SCHEMA_VERSION;
+#[cfg(feature = "production-authority")]
 pub use release_controller::ProductionReleaseCallerStatusV1;
+#[cfg(feature = "production-authority")]
 pub use release_controller::ProductionReleaseController;
+#[cfg(feature = "production-authority")]
 pub use release_controller::ProductionReleaseControllerError;
+#[cfg(feature = "production-authority")]
 pub use release_controller::ProductionReleaseJournalV1;
+#[cfg(feature = "production-authority")]
 pub use release_controller::ProductionReleaseRequestV1;
+#[cfg(feature = "production-authority")]
 pub use release_controller::read_production_release_request;
 
 mod signed_history;

@@ -50,13 +50,26 @@ on:
       - ".github/workflows/automation-taskflow-focused.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit for Supervisor qualification (empty uses this workflow commit)
+        required: false
+        type: string
+      base_sha:
+        description: Exact base commit; supplying it also executes deterministic Supervisor merge qualification
+        required: false
+        type: string
+      pull_request_number:
+        description: Pull request associated with an explicitly pinned merge qualification
+        required: false
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
   group: hepta-lane-b-source-closure-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   source-head:
@@ -217,9 +230,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+        candidate: ${{ fromJSON((github.event_name == 'pull_request' || inputs.base_sha) && '["source-head","synthetic-merge"]' || '["source-head"]') }}
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -231,14 +244,22 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
-      - name: Resolve current base
-        id: base
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_REF: ${{ github.base_ref }}
+      - name: Validate pinned Supervisor source
         run: |
           set -euo pipefail
-          BASE=$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Resolve current base
+        id: base
+        if: github.event_name == 'pull_request' || inputs.base_sha
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+          REQUESTED_BASE_SHA: ${{ inputs.base_sha }}
+        run: |
+          set -euo pipefail
+          BASE="${REQUESTED_BASE_SHA:-$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")}"
+          [[ "$BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$BASE^{commit}"
           printf 'sha=%s\n' "$BASE" >> "$GITHUB_OUTPUT"
       - name: Construct Supervisor merge candidate
         if: matrix.candidate == 'synthetic-merge'
@@ -246,7 +267,7 @@ jobs:
         with:
           base-sha: ${{ steps.base.outputs.sha }}
           source-sha: ${{ env.SOURCE_SHA }}
-          pr-number: ${{ github.event.pull_request.number }}
+          pr-number: ${{ inputs.pull_request_number || github.event.pull_request.number }}
           author-name: Hepta Supervisor CI
           author-email: hepta-supervisor-ci@users.noreply.github.com
           message: Synthetic Supervisor qualification

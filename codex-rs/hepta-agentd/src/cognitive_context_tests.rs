@@ -350,9 +350,19 @@ async fn context_reads_a_candidate_beyond_the_first_owner_page() {
         )
         .await
         .unwrap();
-    let expected = observation
-        .candidates()
-        .iter()
+    // The owner observation is identity-ordered, not final context-ranked.
+    // Independently construct the declared score-descending / ID / revision
+    // ordering before applying the public response limit.
+    let mut ranked = observation.candidates().iter().collect::<Vec<_>>();
+    ranked.sort_by_key(|candidate| {
+        (
+            std::cmp::Reverse(candidate.reciprocal_rank_score),
+            candidate.revalidation.memory.memory_id.clone(),
+            candidate.revalidation.memory.revision,
+        )
+    });
+    let expected = ranked
+        .into_iter()
         .take(4)
         .map(|candidate| {
             let id = candidate.revalidation.memory.memory_id.as_str();

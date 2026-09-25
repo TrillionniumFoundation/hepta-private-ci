@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b7efb9dbeaa3c33f18586944d429878a2b56de40",
-    "tree": "3b9a5a1aca1362dac97880302e73f6040247846b"
+    "commit": "1b7db8a0c0c0298e17e7314995269ec3dc551c9d",
+    "tree": "de9726ae69dc6b22efb92529b5e07d1d82ad2354"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -460,8 +460,8 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "b7efb9dbeaa3c33f18586944d429878a2b56de40",
-    "tree": "3b9a5a1aca1362dac97880302e73f6040247846b",
+    "commit": "1b7db8a0c0c0298e17e7314995269ec3dc551c9d",
+    "tree": "de9726ae69dc6b22efb92529b5e07d1d82ad2354",
     "interpretation": "Reviewed source composition for signed lifecycle, durable bounded fault recovery, independent release caller and host qualification. This observation is not an execution or deployment receipt."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
@@ -488,7 +488,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "7cc1a4bc757d4172177fa071095340738ad07dde"
+      "object": "8a28f5b8143ce5dd6c71c74283fc3e871796019f"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/authority_signer.rs",
@@ -520,7 +520,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_signed_tests.rs",
-      "object": "0535750b496f4d162237bf82fd9ff47fa077cab8"
+      "object": "b3c83281d1e6457306e11a7ebbbaa9aec548a21a"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
@@ -532,7 +532,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
-      "object": "fe1ea4d2b1652d7e79f151b907efa0722310c0d5"
+      "object": "04cfd0cf48956971d8f035f0b7c27a28059f9472"
     },
     {
       "path": "codex-rs/hepta-supervisor/tests/production_release_product.rs",
