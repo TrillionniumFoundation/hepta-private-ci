@@ -11,55 +11,46 @@ use crate::IssuerLifecycleState;
 
 const OWNER_ID: &str = "authbus-owner:test";
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid test identifier")
+type FixtureResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+fn id(value: &str) -> FixtureResult<StableId> {
+    Ok(StableId::new(value)?)
 }
 
-fn issuer_spec(value: &str, key_byte: u8) -> IssuerSpec {
-    IssuerSpec {
-        issuer_id: id(value),
-        key_epoch: Generation::new(1).expect("generation"),
+fn issuer_spec(value: &str, key_byte: u8) -> FixtureResult<IssuerSpec> {
+    Ok(IssuerSpec {
+        issuer_id: id(value)?,
+        key_epoch: Generation::new(1)?,
         verifying_key: SigningKey::from_bytes(&[key_byte; 32]).verifying_key(),
-    }
+    })
 }
 
-async fn initialized_host() -> (
+async fn initialized_host() -> FixtureResult<(
     TempDir,
     PathBuf,
     PathBuf,
     AuthBusAuthorityHost,
     AuthorityCheckpoint,
-) {
-    let root = TempDir::new().expect("temporary root");
+)> {
+    let root = TempDir::new()?;
     let database_root = root.path().join("database");
     let checkpoint_root = root.path().join("checkpoint");
-    std::fs::create_dir(&database_root).expect("database root");
-    std::fs::create_dir(&checkpoint_root).expect("checkpoint root");
-    std::fs::set_permissions(&database_root, std::fs::Permissions::from_mode(0o700))
-        .expect("private database root");
-    std::fs::set_permissions(&checkpoint_root, std::fs::Permissions::from_mode(0o700))
-        .expect("private checkpoint root");
+    std::fs::create_dir(&database_root)?;
+    std::fs::create_dir(&checkpoint_root)?;
+    std::fs::set_permissions(&database_root, std::fs::Permissions::from_mode(0o700))?;
+    std::fs::set_permissions(&checkpoint_root, std::fs::Permissions::from_mode(0o700))?;
     let database = database_root.join("authbus.sqlite");
     let checkpoint = checkpoint_root.join("authority.checkpoint.json");
 
-    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint.clone(), OWNER_ID)
-        .await
-        .expect("bootstrap authority host");
+    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint.clone(), OWNER_ID).await?;
     let first = host
         .store
         .authority_checkpoint()
-        .await
-        .expect("local checkpoint")
-        .expect("initialized checkpoint");
-    assert_eq!(
-        host.store
-            .authority_checkpoint()
-            .await
-            .expect("local checkpoint"),
-        Some(first)
-    );
-    assert_eq!(host.checkpoint.read().expect("external checkpoint"), first);
-    (root, database, checkpoint, host, first)
+        .await?
+        .ok_or("missing initialized checkpoint")?;
+    assert_eq!(host.store.authority_checkpoint().await?, Some(first));
+    assert_eq!(host.checkpoint.read()?, first);
+    Ok((root, database, checkpoint, host, first))
 }
 
 #[tokio::test]
@@ -82,7 +73,7 @@ async fn bootstrap_rejects_populated_database_without_external_witness() {
     store
         .enroll_issuer(
             IssuerPurpose::Message,
-            issuer_spec("issuer:unwitnessed", 40),
+            issuer_spec("issuer:unwitnessed", 40).unwrap(),
         )
         .await
         .expect("create unwitnessed state");
@@ -96,12 +87,12 @@ async fn bootstrap_rejects_populated_database_without_external_witness() {
 
 #[tokio::test]
 async fn reopen_promotes_checkpoint_already_published_externally() {
-    let (_root, database, checkpoint, host, first) = initialized_host().await;
+    let (_root, database, checkpoint, host, first) = initialized_host().await.unwrap();
     let record = host
         .store
         .enroll_issuer(
             IssuerPurpose::Settlement,
-            issuer_spec("issuer:published-before-reopen", 41),
+            issuer_spec("issuer:published-before-reopen", 41).unwrap(),
         )
         .await
         .expect("commit issuer before publication");
@@ -155,12 +146,12 @@ async fn reopen_promotes_checkpoint_already_published_externally() {
 
 #[tokio::test]
 async fn next_mutation_promotes_published_predecessor_before_appending() {
-    let (_root, _database, _checkpoint, host, first) = initialized_host().await;
+    let (_root, _database, _checkpoint, host, first) = initialized_host().await.unwrap();
     let predecessor = host
         .store
         .enroll_issuer(
             IssuerPurpose::Message,
-            issuer_spec("issuer:published-predecessor", 42),
+            issuer_spec("issuer:published-predecessor", 42).unwrap(),
         )
         .await
         .expect("commit predecessor");
@@ -177,7 +168,7 @@ async fn next_mutation_promotes_published_predecessor_before_appending() {
     let successor = host
         .enroll_issuer(
             IssuerPurpose::Settlement,
-            issuer_spec("issuer:successor-after-recovery", 43),
+            issuer_spec("issuer:successor-after-recovery", 43).unwrap(),
         )
         .await
         .expect("recover predecessor before successor");
@@ -217,7 +208,7 @@ async fn next_mutation_promotes_published_predecessor_before_appending() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn concurrent_host_mutations_publish_one_monotonic_generation_each() {
-    let (_root, _database, _checkpoint, host, first) = initialized_host().await;
+    let (_root, _database, _checkpoint, host, first) = initialized_host().await.unwrap();
     let host = Arc::new(host);
     let mut tasks = JoinSet::new();
     for index in 0_u8..8 {
@@ -225,7 +216,7 @@ async fn concurrent_host_mutations_publish_one_monotonic_generation_each() {
         tasks.spawn(async move {
             host.enroll_issuer(
                 IssuerPurpose::Message,
-                issuer_spec(&format!("issuer:concurrent:{index}"), 60 + index),
+                issuer_spec(&format!("issuer:concurrent:{index}"), 60 + index).unwrap(),
             )
             .await
         });
@@ -245,7 +236,7 @@ async fn concurrent_host_mutations_publish_one_monotonic_generation_each() {
 
 #[tokio::test]
 async fn separate_hosts_fail_closed_while_the_owner_lock_is_held() {
-    let (_root, database, checkpoint, host, first) = initialized_host().await;
+    let (_root, database, checkpoint, host, first) = initialized_host().await.unwrap();
     let contender = AuthBusAuthorityHost::open(&database, checkpoint, OWNER_ID)
         .await
         .expect("open second host instance");
@@ -260,7 +251,7 @@ async fn separate_hosts_fail_closed_while_the_owner_lock_is_held() {
         contender
             .enroll_issuer(
                 IssuerPurpose::Message,
-                issuer_spec("issuer:blocked-contender", 90),
+                issuer_spec("issuer:blocked-contender", 90).unwrap(),
             )
             .await,
         Err(AuthBusAuthorityError::OwnerBusy)
@@ -271,7 +262,7 @@ async fn separate_hosts_fail_closed_while_the_owner_lock_is_held() {
     let enrolled = contender
         .enroll_issuer(
             IssuerPurpose::Message,
-            issuer_spec("issuer:blocked-contender", 90),
+            issuer_spec("issuer:blocked-contender", 90).unwrap(),
         )
         .await
         .expect("retry after owner lock release");
@@ -306,19 +297,19 @@ async fn separate_hosts_fail_closed_while_the_owner_lock_is_held() {
 
 #[tokio::test]
 async fn failed_external_publication_is_reconciled_before_the_next_write() {
-    let (_root, _, checkpoint, host, first) = initialized_host().await;
+    let (_root, _, checkpoint, host, first) = initialized_host().await.unwrap();
     let name = checkpoint.file_name().unwrap().to_str().unwrap();
     let temporary = checkpoint.parent().unwrap().join(format!(
         ".{name}.{}.{}.tmp",
-        std::process::id(),
+        std::process::id().unwrap(),
         first.generation + 1
     ));
     std::fs::write(&temporary, b"occupied temporary publication path").unwrap();
-    let previous = issuer_spec("issuer:unacknowledged", 91);
+    let previous = issuer_spec("issuer:unacknowledged", 91).unwrap();
     assert!(matches!(
         host.enroll_issuer(
             IssuerPurpose::Message,
-            issuer_spec("issuer:unacknowledged", 91)
+            issuer_spec("issuer:unacknowledged", 91).unwrap()
         )
         .await,
         Err(AuthBusAuthorityError::Storage(_))
@@ -326,7 +317,7 @@ async fn failed_external_publication_is_reconciled_before_the_next_write() {
     assert_eq!(host.checkpoint.read().unwrap(), first);
     host.enroll_issuer(
         IssuerPurpose::Message,
-        issuer_spec("issuer:after-failure", 92),
+        issuer_spec("issuer:after-failure", 92).unwrap(),
     )
     .await
     .expect("recover previous publication before appending");
@@ -349,7 +340,7 @@ async fn failed_external_publication_is_reconciled_before_the_next_write() {
 
 #[tokio::test]
 async fn a_second_witness_path_cannot_bypass_database_writer_exclusion() {
-    let (_root, database, checkpoint, host, _) = initialized_host().await;
+    let (_root, database, checkpoint, host, _) = initialized_host().await.unwrap();
     let alternate = checkpoint.with_file_name("alternate.checkpoint.json");
     std::fs::copy(&checkpoint, &alternate).unwrap();
     let contender = AuthBusAuthorityHost::open(&database, alternate, OWNER_ID)
@@ -358,7 +349,10 @@ async fn a_second_witness_path_cannot_bypass_database_writer_exclusion() {
     let database_guard = try_owner_lock(&host.database_file).unwrap();
     assert!(matches!(
         contender
-            .enroll_issuer(IssuerPurpose::Message, issuer_spec("issuer:fork", 93))
+            .enroll_issuer(
+                IssuerPurpose::Message,
+                issuer_spec("issuer:fork", 93).unwrap()
+            )
             .await,
         Err(AuthBusAuthorityError::OwnerBusy)
     ));
@@ -376,7 +370,7 @@ async fn owner_lock_fences_a_separate_process() {
         ));
         return;
     }
-    let (_root, database, _, host, _) = initialized_host().await;
+    let (_root, database, _, host, _) = initialized_host().await.unwrap();
     let _guard = try_owner_lock(&host.database_file).unwrap();
     let status = std::process::Command::new(std::env::current_exe().unwrap())
         .args([

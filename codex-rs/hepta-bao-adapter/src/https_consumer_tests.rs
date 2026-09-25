@@ -490,20 +490,24 @@ impl AuthBusEvidence {
         }
     }
 
-    fn time_spec(&self) -> IssuerSpec {
-        IssuerSpec {
-            issuer_id: StableId::new("issuer:bao-time").unwrap(),
-            key_epoch: Generation::new(1).unwrap(),
+    fn time_spec(&self) -> Result<IssuerSpec, BaoAuthBusError> {
+        Ok(IssuerSpec {
+            issuer_id: StableId::new("issuer:bao-time")
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
+            key_epoch: Generation::new(1)
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
             verifying_key: self.time_key.verifying_key(),
-        }
+        })
     }
 
-    fn settlement_spec(&self) -> IssuerSpec {
-        IssuerSpec {
-            issuer_id: StableId::new("issuer:bao-settlement").unwrap(),
-            key_epoch: Generation::new(1).unwrap(),
+    fn settlement_spec(&self) -> Result<IssuerSpec, BaoAuthBusError> {
+        Ok(IssuerSpec {
+            issuer_id: StableId::new("issuer:bao-settlement")
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
+            key_epoch: Generation::new(1)
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
             verifying_key: self.settlement_key.verifying_key(),
-        }
+        })
     }
 }
 
@@ -584,9 +588,9 @@ async fn authbus_host(
 
     let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint, "bao-product-owner").await?;
     let mut evidence = AuthBusEvidence::new(now);
-    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
+    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec()?)
         .await?;
-    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
+    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec()?)
         .await?;
 
     let binding = client.binding(request)?;
@@ -658,8 +662,10 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .consume_kv_v2_with_authbus(
             &authbus,
             &admission,
-            &authority,
-            &grant,
+            BaoFinalUseContext {
+                authority: &authority,
+                grant: &grant,
+            },
             &request,
             &mut evidence,
             |bytes| {
@@ -702,8 +708,10 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
         .consume_kv_v2_with_authbus(
             &authbus,
             &admission,
-            &authority,
-            &grant,
+            BaoFinalUseContext {
+                authority: &authority,
+                grant: &grant,
+            },
             &request,
             &mut evidence,
             |_| Ok(()),

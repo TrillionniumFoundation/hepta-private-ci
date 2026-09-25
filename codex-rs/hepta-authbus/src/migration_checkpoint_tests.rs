@@ -27,14 +27,7 @@ async fn legacy_owner(
     }
     let database = database_root.join("authority.sqlite");
     let witness = witness_root.join("authority.json");
-    let options = SqliteConnectOptions::new()
-        .filename(&database)
-        .create_if_missing(true)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Full);
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(options)
+    let pool = codex_state::open_durable_sqlite_pool(&database, 1)
         .await
         .unwrap();
     TEST_MIGRATOR.run_to(4, &pool).await.unwrap();

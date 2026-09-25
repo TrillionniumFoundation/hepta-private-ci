@@ -1,11 +1,5 @@
-use std::time::Duration;
-
 use codex_hepta_types::StableId;
 use sqlx::migrate::Migrator;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::AuthBusAuthorityStore;
 use crate::ReservationState;
@@ -24,18 +18,9 @@ fn u64_blob(value: u64) -> Vec<u8> {
 async fn dispatch_boundary_migration_preserves_legacy_terminal_rows() {
     let root = tempfile::tempdir().expect("temporary root");
     let path = root.path().join("authbus.sqlite");
-    let options = SqliteConnectOptions::new()
-        .filename(&path)
-        .create_if_missing(true)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Full)
-        .foreign_keys(true)
-        .busy_timeout(Duration::from_secs(5));
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(options)
+    let pool = codex_state::open_durable_sqlite_pool(&path, 1)
         .await
-        .expect("open pre-v5 database");
+        .unwrap();
     TEST_MIGRATOR
         .run_to(4, &pool)
         .await
