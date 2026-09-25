@@ -575,6 +575,7 @@ jobs:
           printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
           printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
       - name: Reconstruct qualified synthetic merge
+        id: product-synthetic
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
         with:
@@ -584,16 +585,47 @@ jobs:
           author-name: Hepta Docs CI
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
+      - name: Bind exact engineering product candidate
+        id: product-identity
+        env:
+          EXPECTED_TESTED_SHA: ${{ steps.product-synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$EXPECTED_TESTED_SHA" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' '${{ matrix.lane }}' >> "$GITHUB_ENV"
       - name: Verify exact engineering product lane
+        id: product-map
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-gap-closure.py verify
-          python3 -m unittest discover -v \
-            -s tools/hepta-engineering-control -p 'test_*.py'
+          # The global document/map gate remains independently blocking. This
+          # product lane verifies its own exact denominator so unrelated module
+          # provenance cannot suppress an otherwise valid product receipt.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-product-commands/map.json" -- \
+            python3 scripts/hepta-implementation-maps.py verify \
+            --module control.engineering \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+      - name: Execute engineering tests independently of map outcome
+        id: product-tests
+        if: ${{ !cancelled() && steps.product-identity.outcome == 'success' }}
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-product-commands/tests.json" -- \
+            python3 -m unittest discover -v \
+              -s tools/hepta-engineering-control -p 'test_*.py'
       - name: Invoke v2 engineering product caller
+        if: ${{ !cancelled() && steps.product-map.outcome == 'success' && steps.product-tests.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -616,6 +648,15 @@ jobs:
         with:
           name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
           path: ${{ runner.temp }}/control-engineering-product.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Retain engineering map and test command records
+        if: ${{ always() && steps.product-identity.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-product-commands/*
           if-no-files-found: error
           retention-days: 30
 

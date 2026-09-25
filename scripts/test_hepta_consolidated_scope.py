@@ -154,5 +154,22 @@ class ConsolidatedScopeTests(unittest.TestCase):
         self.assertEqual(output, "required=false\n")
 
 
+class ControlEngineeringProductGateTests(unittest.TestCase):
+    def test_product_gate_has_exact_module_denominator_without_global_suppression(self):
+        workflow = (
+            ROOT / ".github/workflows/hepta-consolidated-source.yml"
+        ).read_text()
+        block = workflow.split("  engineering-product-gate:\n", 1)[1].split(
+            "  engineering-product-evidence:\n", 1
+        )[0]
+        self.assertIn("scripts/hepta-implementation-maps.py verify", block)
+        self.assertIn("--module control.engineering", block)
+        self.assertIn('--expected-sha "$(git rev-parse HEAD)"', block)
+        self.assertIn('--expected-tree "$(git rev-parse HEAD^{tree})"', block)
+        self.assertIn("tools/hepta-engineering-control -p 'test_*.py'", block)
+        self.assertNotIn("scripts/hepta-gap-closure.py verify", block)
+
+
+
 if __name__ == "__main__":
     unittest.main()
