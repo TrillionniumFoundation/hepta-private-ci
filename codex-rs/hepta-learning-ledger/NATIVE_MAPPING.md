@@ -34,6 +34,7 @@ Owned logical domains remain:
 | segmented append/rotation/recovery | `SegmentedLedger` | `src/segments.rs` | implemented backend |
 | unique product admission writer | `LedgerWriter` | `src/production.rs` | implemented/source-composed in evaluated shadow |
 | authenticate pinned root + versioned signer distribution | `LearningTrustRootV1`, `SignedLearningTrustDistributionV1`, `activate_learning_trust` | `src/trust_distribution.rs` | implemented |
+| recover an exact historical signed append | `LedgerWriter::authenticated_append_identity`, `LedgerWriter::recover_authenticated_append` | `src/production_recovery.rs` | Decision/Outcome/CreditBatch lookup; no new write authority |
 | independently witness acknowledgements | `LedgerWitnessStore` | `src/witness.rs` | implemented |
 | append authenticated decision | `LedgerWriter::append_decision` | `src/production.rs` | implemented |
 | append authenticated/corrected outcome | `LedgerWriter::append_outcome` | `src/production.rs` | implemented |
@@ -64,6 +65,21 @@ The existing `run_evaluated_shadow_v1` source consumer now holds
 `LedgerWriter`, not `DurableLearningJournal`, and writes only
 `AuthenticatedDecisionRecordV2`. It remains a qualification/shadow consumer,
 not evidence of a live production deployment.
+
+## Historical acknowledgement recovery
+
+The authenticated terminal caller first binds the complete Outcome or CreditBatch
+payload to its original evidence and predecessor, then asks the existing writer
+for the exact committed acknowledgement. An expired signature may identify a
+historical commit; it cannot append an absent fact, renew data eligibility or
+redispatch a physical operation. Credit admission failure preserves the recovered
+Outcome receipt. Changed payloads, signatures, stores or predecessors cannot
+recover a different request. The active run/episode binding remains required.
+
+`outcome_credit_v2` regressions include process exit after both commits, reopening
+without the original writer, expired evidence, changed payloads and missing credit.
+This is owner/facade recovery, not a claim that the default Agentd has persisted
+its complete canonical handoff or every pending append identity.
 
 ## Outcomes and correction lineage
 

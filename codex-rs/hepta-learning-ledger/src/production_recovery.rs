@@ -10,7 +10,7 @@ use super::*;
 const IDENTITY_SCHEMA: &str = "hepta.learning-ledger.append-identity.v1";
 const MAX_IDENTITY_BYTES: usize = 1_024;
 
-/// Persistable non-authorizing lookup key for one signed Decision or Outcome.
+/// Persistable non-authorizing lookup key for one signed Decision, Outcome or CreditBatch.
 /// Changing the store, predecessor or signed request cannot recover another
 /// operation under the same record ID. No signing key or model input is stored.
 #[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -111,6 +111,7 @@ impl LedgerWriter {
         let authentication_digest = match &record.event {
             LedgerEvent::AuthenticatedDecisionV2(value) => value.authentication_digest,
             LedgerEvent::AuthenticatedOutcomeV2(value) => value.authentication_digest,
+            LedgerEvent::CreditBatchV2(value) => value.authentication_digest,
             _ => return Err(ProductionLedgerError::Binding("append recovery event kind")),
         };
         if record.predecessor_chain_digest.to_string() != identity.expected_predecessor
