@@ -35,7 +35,8 @@
       "designOperation": "decode_source_envelope_json_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "d63aa3e9cd18756c13029ae2fe2ca00367a0dddf"
     },
     {
       "operation": "validate_structure",
@@ -58,7 +59,8 @@
       "designOperation": "validate_structure",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "5dc5676e23de3b4a661e1520a0c5ae4a1dc2020d"
     },
     {
       "operation": "canonical_objective_intent_digest_v1",
@@ -81,7 +83,8 @@
       "designOperation": "canonical_objective_intent_digest_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
     },
     {
       "operation": "admit_and_compile_objective_v1",
@@ -121,7 +124,8 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true,
-      "productRole": "compatibility_not_canonical_product_path"
+      "productRole": "compatibility_not_canonical_product_path",
+      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
     },
     {
       "operation": "check_feasibility_v1",
@@ -150,7 +154,8 @@
       "designOperation": "check_feasibility_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c540d050dfdc59688d3ef5406537b1a3c32471db"
     },
     {
       "operation": "compile",
@@ -184,7 +189,8 @@
       "delegatedCallees": [],
       "sourcePathExists": true,
       "publicCompatibilityEntrypoint": "compile_prevalidated_legacy_objective_v1",
-      "publicCompatibilityFeature": "qualification-legacy-compile"
+      "publicCompatibilityFeature": "qualification-legacy-compile",
+      "sourceBlob": "74d3da0017f74320ac47839e46988f8cd051c587"
     },
     {
       "operation": "encode_objective_function_v1",
@@ -222,7 +228,8 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "9a04b17f4b18ed352bdb285f0334b00755e6866e"
     },
     {
       "operation": "admit_objective_v1",
@@ -247,7 +254,8 @@
       "designOperation": "admit_objective_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
     },
     {
       "operation": "compile_admitted_objective_v1",
@@ -276,7 +284,8 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
     },
     {
       "operation": "decode_objective_function_v1",
@@ -300,7 +309,8 @@
       "designOperation": "decode_objective_function_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "9a04b17f4b18ed352bdb285f0334b00755e6866e"
     }
   ],
   "canonicalReadinessProtocols": [
@@ -339,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -486,7 +496,7 @@
     },
     {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
-      "object": "f31e94000362d9bce196007137c8276bb8ac0ca2"
+      "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
     }
   ]
 }
