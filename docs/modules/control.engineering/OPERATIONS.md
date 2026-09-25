@@ -242,11 +242,56 @@ readiness dimension open.
 
 ## Durable worker execution lifecycle
 
-`orchestration_generations`, `worker_registrations`, `worker_claims`, `worker_heartbeat_observations`, `worker_result_observations` and `worker_completion_observations` are owned by the same SQLite v9 writer. A claim is admissible only for the worker selected by the persisted plan and while its exact path lease is active. Signed heartbeat, result and completion receipts are retained as immutable digest-bound observations so acknowledgement-loss replay can return the already committed state without manufacturing a second transition or audit event. Heartbeat timeout or infrastructure failure can enter `retryable` while the attempt budget remains; semantic failure is terminal. A worker `success` result is `result_submitted`, not completion, until a current `ci_executor` completion receipt is verified and the claim becomes `completed_observed`.
+`orchestration_generations`, `worker_registrations`, `worker_claims`,
+`worker_capacity_reservations`, heartbeat/result/completion observations and audit events
+are owned by the same SQLite v10 writer. A claim is admissible only for the Worker
+selected by the persisted plan, while its exact path lease is active and while the
+persistent cross-generation reservation total remains within the registered capacity.
+The final check, claim and reservation commit in one `BEGIN IMMEDIATE` transaction.
+Result submission, timeout, revocation and recovery release the reservation exactly once;
+replay never decrements capacity twice.
 
-The named source-level product composition is `EngineeringControlProduct`. Current repository CI executes that owner separately for exact source and deterministic base-merge identities. GitHub reviewer observations bind API reviewer IDs and commit SHAs but explicitly carry no independent-acceptance or merge authority.
+The named source-level product composition is `EngineeringControlProduct`. On every
+process open, call `startup_reconcile` before admitting new claims: it expires stale
+heartbeats, revalidates registration/lease/envelope frontiers, preserves indeterminate or
+awaiting-completion facts and releases abandoned capacity without redispatching an effect.
+`EngineeringControlProduct.claim()` enforces this ordering and fails closed with
+`product_startup_reconciliation_required` until recovery succeeds in the current process
+object; do not bypass it with a lower-layer claim helper in a product caller.
+Current repository CI executes this owner separately for exact source and deterministic
+base-merge identities. GitHub reviewer observations bind API reviewer IDs and commit SHAs
+but explicitly carry no independent-acceptance or merge authority.
 
 
 ## Durable integration reconciliation
 
-`integration_queue_generations` and `integration_queue_items` are owned by the same SQLite v9 writer. A queue generation binds one persisted orchestration generation to the exact integration base commit/tree. Candidate, reviewer and CI observations advance an item through bounded revisioned states and may reach only `ready_external_merge`; they confer no merge authority. Any base commit/tree drift invalidates the generation and requires a new plan/queue generation. Terminal `merged` or `failed` observations are recorded durably, and reopen must preserve the same item state and audit anchor.
+`integration_queue_generations` and `integration_queue_items` are owned by the same
+SQLite v10 writer. A queue generation binds one persisted orchestration generation to the
+exact integration base commit/tree. Candidate, reviewer and CI receipts additionally bind
+the queue/orchestration/envelope semantic digests, source commit/tree and owner-context
+digest. Reusing the same local IDs under another source, base, plan or owner therefore
+fails before state mutation. These observations may reach only `ready_external_merge` and
+confer no merge authority. A separately authenticated terminal observer may record
+`terminal_merged` or `terminal_failed`; reopen must preserve the exact receipt and audit
+anchor. Any pre-terminal base drift invalidates the generation and requires a new plan.
+
+## Target-host qualification profile
+
+Run the bounded profile on the same exact candidate and Linux strong-sandbox host used by
+the product lane:
+
+```sh
+PYTHONPATH=tools/hepta-engineering-control \
+  python3 -m control_engineering_v2.qualification_profile \
+    --repository /path/to/exact/checkout \
+    --iterations 7 --sandbox-mode strong \
+    --output /retained/control-engineering-host-profile.json
+```
+
+Retain the JSON with the source/tree, runner identity and CI receipt. It reports store-open,
+planning, queue-to-claim, atomic claim, heartbeat, expiry recovery, SQLite lock handoff,
+WAL bytes, audit verification, online backup, restored-snapshot equality, controlled
+`SQLITE_FULL` rollback and the unchanged complete sandbox cost. Compare measurements only
+against the selected target-host profile; do not invent universal thresholds or delete
+Git-object/materialized-workspace checks to make a benchmark green. The profile has every
+authority field false and is not an operator acceptance receipt.
