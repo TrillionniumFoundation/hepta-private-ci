@@ -316,9 +316,7 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(
-                        receipt,
-                    )));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -348,7 +346,7 @@ impl AgentdAutomationEffectHost {
                         ))
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(
-                        AgentdAutomationEffectReconcileOutcome::Observed(Box::new(receipt)),
+                        AgentdAutomationEffectReconcileOutcome::Observed(receipt),
                     ),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),

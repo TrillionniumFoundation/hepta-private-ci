@@ -122,6 +122,10 @@ pub struct CircuitCompilationReceiptV1 {
 }
 
 impl NeuralCircuitCandidateV1 {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the versioned public constructor keeps graph, capability and independently bound policy/parameter/resource identities explicit"
+    )]
     pub fn new(
         circuit_id: impl Into<String>,
         version: u32,

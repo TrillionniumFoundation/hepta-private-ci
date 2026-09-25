@@ -97,3 +97,46 @@ fn publish_same_directory(_staging: &Path, _destination: &Path) -> io::Result<()
         "durable publication is unsupported on this platform",
     ))
 }
+
+/// Publish immutable owner history without replacing an existing identity.
+/// A failed publication must leave the previous current journal authoritative.
+pub(crate) fn publish_new(staging: &Path, destination: &Path) -> io::Result<()> {
+    let parent = staging
+        .parent()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "staging has no parent"))?;
+    if destination.parent() != Some(parent) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "immutable publication changed parent",
+        ));
+    }
+    #[cfg(unix)]
+    {
+        std::fs::hard_link(staging, destination)?;
+        std::fs::File::open(parent)?.sync_all()?;
+        std::fs::remove_file(staging)?;
+        Ok(())
+    }
+    #[cfg(windows)]
+    {
+        use windows_sys::Win32::Storage::FileSystem::MOVEFILE_WRITE_THROUGH;
+        use windows_sys::Win32::Storage::FileSystem::MoveFileExW;
+        let source = wide_path(staging)?;
+        let target = wide_path(destination)?;
+        // SAFETY: both paths are validated NUL-terminated buffers. Omitting
+        // REPLACE_EXISTING preserves an already published grant identity.
+        let result =
+            unsafe { MoveFileExW(source.as_ptr(), target.as_ptr(), MOVEFILE_WRITE_THROUGH) };
+        if result == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(())
+    }
+    #[cfg(not(any(unix, windows)))]
+    {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "immutable durable publication unsupported",
+        ))
+    }
+}

@@ -25,6 +25,7 @@ pub(crate) const MAX_FAULT_BYTES: usize = 512;
 pub(crate) enum RuntimePhase {
     AwaitingHealth { deadline: Instant },
     Running,
+    Unhealthy { deadline: Instant },
     Draining { deadline: Instant },
     Stopping { deadline: Instant },
     Killing,
@@ -37,6 +38,9 @@ pub(crate) struct AgentRuntime<P> {
     pub release_id: ReleaseId,
     pub generation: u64,
     pub phase: RuntimePhase,
+    /// A physical child exists but its lease publication did not confirm.
+    /// Only this case permits cleanup after exact child exit with no lease.
+    pub lease_publication_uncertain: bool,
     pub healthy: bool,
     pub fenced: bool,
 }
