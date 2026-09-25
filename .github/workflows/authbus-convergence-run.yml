@@ -83,13 +83,39 @@ jobs:
           --all-targets
 
       - name: AuthBus owner and product regression tests
+        id: regressions
+        shell: bash
         working-directory: codex-rs
-        run: >-
-          just test --locked
-          -p codex-hepta-authbus
-          -p codex-hepta-evidence
-          -p codex-hepta-bao-adapter
-          -p codex-hepta-agentd
+        run: |
+          set -uo pipefail
+          mkdir -p ../authbus-diagnostics
+          status=0
+          for package in \
+            codex-hepta-authbus \
+            codex-hepta-evidence \
+            codex-hepta-bao-adapter \
+            codex-hepta-agentd
+          do
+            printf '===== %s =====\n' "$package" | tee "../authbus-diagnostics/${package}.log"
+            set +e
+            just test --locked -p "$package" 2>&1 | tee -a "../authbus-diagnostics/${package}.log"
+            rc=${PIPESTATUS[0]}
+            set -e
+            printf '\nexit_status=%s\n' "$rc" | tee -a "../authbus-diagnostics/${package}.log"
+            if [ "$rc" -ne 0 ]; then
+              status=1
+            fi
+          done
+          exit "$status"
+
+      - name: Retain regression diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: authbus-regression-diagnostics-${{ github.run_id }}
+          path: authbus-diagnostics
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Apply repository lint fixes
         shell: bash
