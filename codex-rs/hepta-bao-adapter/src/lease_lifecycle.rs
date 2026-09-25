@@ -90,7 +90,7 @@ pub struct LeaseOperationV1 {
     pub observed_at_unix_ms: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub resulting_generation: Option<u64>,
-    #[serde(default, skip_serializing_if = "is_false")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub legacy_binding_incomplete: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub result_lease: Option<SecretLeaseMetadataV1>,
@@ -1123,13 +1123,13 @@ fn validate_operation(
             return Err(LeaseRegistryErrorV1::CorruptState);
         }
         match operation.result_observation.as_ref() {
-            Some(ProviderLeaseObservationV1::IssueApplied { lease }) => {
+            Some(ProviderLeaseObservationV1::IssueApplied { lease })
                 if operation.kind != LeaseOperationKindV1::Issue
-                    || operation.result_lease.as_ref() != Some(lease)
-                {
-                    return Err(LeaseRegistryErrorV1::CorruptState);
-                }
+                    || operation.result_lease.as_ref() != Some(lease) =>
+            {
+                return Err(LeaseRegistryErrorV1::CorruptState);
             }
+            Some(ProviderLeaseObservationV1::IssueApplied { .. }) => {}
             Some(ProviderLeaseObservationV1::RenewApplied {
                 lease_id,
                 observed_at_unix_ms,
@@ -1170,11 +1170,12 @@ fn validate_operation(
                     return Err(LeaseRegistryErrorV1::CorruptState);
                 }
             }
-            Some(ProviderLeaseObservationV1::Denied | ProviderLeaseObservationV1::NotApplied) => {
-                if operation.state != LeaseOperationStateV1::Denied {
-                    return Err(LeaseRegistryErrorV1::CorruptState);
-                }
+            Some(ProviderLeaseObservationV1::Denied | ProviderLeaseObservationV1::NotApplied)
+                if operation.state != LeaseOperationStateV1::Denied =>
+            {
+                return Err(LeaseRegistryErrorV1::CorruptState);
             }
+            Some(ProviderLeaseObservationV1::Denied | ProviderLeaseObservationV1::NotApplied) => {}
             Some(ProviderLeaseObservationV1::Unknown) => {
                 return Err(LeaseRegistryErrorV1::CorruptState);
             }
@@ -1222,10 +1223,9 @@ fn validate_operation(
     if let (Some(expected), Some(resulting)) = (
         operation.expected_generation,
         operation.resulting_generation,
-    ) {
-        if resulting <= expected {
-            return Err(LeaseRegistryErrorV1::CorruptState);
-        }
+    ) && resulting <= expected
+    {
+        return Err(LeaseRegistryErrorV1::CorruptState);
     }
     if let Some(lease_id) = operation.lease_id.as_deref() {
         let lease = state
@@ -1434,10 +1434,6 @@ fn identifier(value: &str) -> bool {
         && value
             .bytes()
             .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
-}
-
-const fn is_false(value: &bool) -> bool {
-    !*value
 }
 
 #[cfg(all(test, unix))]

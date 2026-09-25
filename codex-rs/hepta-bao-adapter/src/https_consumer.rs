@@ -56,6 +56,8 @@ impl fmt::Debug for BaoToken {
 pub struct BaoReadRequest {
     pub subject_id: String,
     pub consumer_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consumer_configuration_sha256: Option<[u8; 32]>,
     pub namespace: String,
     pub mount: String,
     pub path: String,
@@ -77,6 +79,15 @@ pub struct BaoAuthBusAdmission {
     pub operation_id: StableId,
     pub amount: u64,
     pub expires_at_ms: u64,
+}
+
+/// Exact authorization inputs for one metadata-bound provider read.
+#[derive(Clone, Copy)]
+pub struct BaoAuthorizedReadV1<'a> {
+    pub admission: &'a BaoAuthBusAdmission,
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
+    pub request: &'a BaoReadRequest,
 }
 
 /// Independent evidence producer used by the product host. AuthBus verifies
@@ -173,6 +184,7 @@ impl BaoClient {
             || !segmented(&request.mount)
             || !segmented(&request.path)
             || !component(&request.field)
+            || request.consumer_configuration_sha256 == Some([0; 32])
             || request.version == 0
             || request.expected_secret_sha256 == [0; 32]
         {
@@ -225,19 +237,13 @@ impl BaoClient {
     pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
         &self,
         authbus: &AuthBusAuthorityHost,
-        admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
-        request: &BaoReadRequest,
+        read: BaoAuthorizedReadV1<'_>,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
         self.consume_kv_v2_with_authbus_guarded(
             authbus,
-            admission,
-            authority,
-            grant,
-            request,
+            read,
             evidence,
             |_| Ok(()),
             |_| Ok(()),
@@ -249,15 +255,18 @@ impl BaoClient {
     pub(crate) async fn consume_kv_v2_with_authbus_guarded<E: BaoAuthBusEvidenceProvider>(
         &self,
         authbus: &AuthBusAuthorityHost,
-        admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
-        request: &BaoReadRequest,
+        read: BaoAuthorizedReadV1<'_>,
         evidence: &mut E,
         mut reserved: impl FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
         prepare_delivery: impl FnOnce(&BaoSecretReceipt) -> Result<(), ()>,
         consumer: impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+        let BaoAuthorizedReadV1 {
+            admission,
+            authority,
+            grant,
+            request,
+        } = read;
         if admission.policy_revision == 0
             || admission.expected_quota_revision == 0
             || admission.amount == 0
@@ -340,7 +349,7 @@ impl BaoClient {
                     "successful settlement lost its receipt",
                 ))
             }
-            Err(error) if ambiguous_after_dispatch(&error) => {
+            Err(error) if ambiguous_after_dispatch(error) => {
                 let time = authbus
                     .observe_trusted_time_attestation(&evidence.trusted_time()?)
                     .await;
@@ -590,7 +599,7 @@ pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     Ok(receipt)
 }
 
-fn ambiguous_after_dispatch(error: &BaoClientError) -> bool {
+fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
     matches!(
         error,
         BaoClientError::TransportUnavailable

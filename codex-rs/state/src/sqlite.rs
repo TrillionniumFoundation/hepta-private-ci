@@ -10,6 +10,7 @@ use crate::migrations::repair_legacy_recency_migration_version;
 use crate::runtime::RuntimeDbInitError;
 use crate::telemetry;
 use crate::telemetry::DbKind;
+use codex_state_sqlite::open_durable_authority_pool;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use log::LevelFilter;
 use sqlx::ConnectOptions;
@@ -369,33 +370,4 @@ impl SqliteConfig {
             .connect_with(options)
             .await
     }
-}
-
-/// Shared connection primitive for independently owned authoritative stores.
-/// This configures WAL/FULL and foreign keys, but owns no domain facts or migrations.
-pub async fn open_durable_authority_pool(path: &Path) -> Result<SqlitePool, Error> {
-    let options = SqliteConnectOptions::new()
-        .filename(path)
-        .create_if_missing(true)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Full)
-        .foreign_keys(true)
-        .busy_timeout(Duration::from_secs(5))
-        .log_statements(LevelFilter::Off);
-    SqlitePoolOptions::new()
-        .max_connections(5)
-        .connect_with(options)
-        .await
-}
-
-/// A one-connection, process-local schema oracle. No authority data is copied here.
-pub async fn open_schema_reference_pool() -> Result<SqlitePool, Error> {
-    let options = SqliteConnectOptions::new()
-        .in_memory(true)
-        .foreign_keys(true)
-        .log_statements(LevelFilter::Off);
-    SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(options)
-        .await
 }

@@ -86,6 +86,7 @@ where
 
 fn read_request() -> BaoReadRequest {
     BaoReadRequest {
+        consumer_configuration_sha256: None,
         subject_id: "agent-one".into(),
         consumer_id: "model-provider".into(),
         namespace: "team/one".into(),
@@ -491,20 +492,20 @@ impl AuthBusEvidence {
         }
     }
 
-    fn time_spec(&self) -> IssuerSpec {
-        IssuerSpec {
-            issuer_id: StableId::new("issuer:bao-time").unwrap(),
-            key_epoch: Generation::new(1).unwrap(),
+    fn time_spec(&self) -> Result<IssuerSpec, TestError> {
+        Ok(IssuerSpec {
+            issuer_id: StableId::new("issuer:bao-time")?,
+            key_epoch: Generation::new(1)?,
             verifying_key: self.time_key.verifying_key(),
-        }
+        })
     }
 
-    fn settlement_spec(&self) -> IssuerSpec {
-        IssuerSpec {
-            issuer_id: StableId::new("issuer:bao-settlement").unwrap(),
-            key_epoch: Generation::new(1).unwrap(),
+    fn settlement_spec(&self) -> Result<IssuerSpec, TestError> {
+        Ok(IssuerSpec {
+            issuer_id: StableId::new("issuer:bao-settlement")?,
+            key_epoch: Generation::new(1)?,
             verifying_key: self.settlement_key.verifying_key(),
-        }
+        })
     }
 }
 
@@ -637,9 +638,9 @@ async fn authbus_host_with_lifetime(
 
     let host = AuthBusAuthorityHost::open(&database, checkpoint, "bao-product-owner").await?;
     let mut evidence = AuthBusEvidence::new(now);
-    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
+    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec()?)
         .await?;
-    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
+    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec()?)
         .await?;
 
     let binding = client.binding(request)?;
@@ -710,10 +711,12 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
     let receipt = client
         .consume_kv_v2_with_authbus(
             &authbus,
-            &admission,
-            &authority,
-            &grant,
-            &request,
+            BaoAuthorizedReadV1 {
+                admission: &admission,
+                authority: &authority,
+                grant: &grant,
+                request: &request,
+            },
             &mut evidence,
             |bytes| {
                 assert_eq!(bytes, SECRET.as_bytes());
@@ -754,10 +757,12 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
     let result = client
         .consume_kv_v2_with_authbus(
             &authbus,
-            &admission,
-            &authority,
-            &grant,
-            &request,
+            BaoAuthorizedReadV1 {
+                admission: &admission,
+                authority: &authority,
+                grant: &grant,
+                request: &request,
+            },
             &mut evidence,
             |_| Ok(()),
         )
@@ -781,10 +786,13 @@ fn registered_product_host(
     callback: crate::BaoOperationConsumerCallback,
     observer: crate::BaoConsumerObserverCallback,
     configuration: [u8; 32],
-) -> (
-    crate::BaoFinalUseHost,
-    codex_hepta_contracts::SignedFinalUseApproval,
-) {
+) -> Result<
+    (
+        crate::BaoFinalUseHost,
+        codex_hepta_contracts::SignedFinalUseApproval,
+    ),
+    TestError,
+> {
     use codex_hepta_contracts::{
         FinalUseApproval, FinalUseApprovalVerifier, FinalUseRevocationFeedVerifier,
         FinalUseRevocationUpdate, SignedFinalUseApproval, SignedFinalUseRevocationUpdate,
@@ -792,32 +800,25 @@ fn registered_product_host(
     };
     let approver = SigningKey::from_bytes(&[91; 32]);
     let distributor = SigningKey::from_bytes(&[92; 32]);
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_millis() as u64;
+    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
     let host = crate::BaoFinalUseHost::new(
         authority,
         FinalUseApprovalVerifier::new(
             "bao-test-approver".into(),
             approver.verifying_key().to_bytes(),
-        )
-        .unwrap(),
+        )?,
         FinalUseRevocationFeedVerifier::new(
             "bao-test-distributor".into(),
             distributor.verifying_key().to_bytes(),
-        )
-        .unwrap(),
+        )?,
         Arc::new(SystemAuthorityClock),
         [crate::RegisteredBaoConsumer::for_operations(
             "model-provider".into(),
             configuration,
             callback,
             observer,
-        )
-        .unwrap()],
-    )
-    .unwrap();
+        )?],
+    )?;
     let update = FinalUseRevocationUpdate::new(
         "bao-test-distributor".into(),
         FinalUseRevocations {
@@ -829,33 +830,35 @@ fn registered_product_host(
         now + 180_000,
     );
     let signature = distributor
-        .sign(&update.signing_bytes().unwrap())
+        .sign(&update.signing_bytes()?)
         .to_bytes()
         .to_vec();
-    host.apply_revocation_update(&SignedFinalUseRevocationUpdate { update, signature })
-        .unwrap();
-    let approval = FinalUseApproval::for_grant("bao-test-approver".into(), &grant.grant).unwrap();
+    host.apply_revocation_update(&SignedFinalUseRevocationUpdate { update, signature })?;
+    let approval = FinalUseApproval::for_grant("bao-test-approver".into(), &grant.grant)?;
     let signature = approver
-        .sign(&approval.signing_bytes().unwrap())
+        .sign(&approval.signing_bytes()?)
         .to_bytes()
         .to_vec();
-    (
+    Ok((
         host,
         SignedFinalUseApproval {
             approval,
             signature,
         },
-    )
+    ))
 }
 
-fn product_registry() -> (
-    tempfile::TempDir,
-    std::sync::Mutex<crate::DurableLeaseRegistryV1>,
-) {
-    let directory = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-    let owner = crate::DurableLeaseRegistryV1::open(directory.path().join("owner.json")).unwrap();
-    (directory, std::sync::Mutex::new(owner))
+fn product_registry() -> Result<
+    (
+        tempfile::TempDir,
+        std::sync::Mutex<crate::DurableLeaseRegistryV1>,
+    ),
+    TestError,
+> {
+    let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let owner = crate::DurableLeaseRegistryV1::open(directory.path().join("owner.json"))?;
+    Ok((directory, std::sync::Mutex::new(owner)))
 }
 
 #[tokio::test]
@@ -869,7 +872,8 @@ async fn registered_product_persists_result_and_never_redispatches_after_restart
         Duration::from_secs(3),
     )
     .unwrap();
-    let request = read_request();
+    let mut request = read_request();
+    request.consumer_configuration_sha256 = Some([93; 32]);
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -893,17 +897,20 @@ async fn registered_product_persists_result_and_never_redispatches_after_restart
         }),
         Arc::new(|_, _| Ok(crate::BaoConsumerObservationV1::Unknown)),
         [93; 32],
-    );
-    let (owner_root, registry) = product_registry();
+    )
+    .unwrap();
+    let (owner_root, registry) = product_registry().unwrap();
     let receipt = host
         .consume_kv_v2_with_authbus(
             &client,
             &authbus,
             &registry,
-            &admission,
-            &grant,
-            &approval,
-            &request,
+            crate::BaoApprovedReadV1 {
+                admission: &admission,
+                grant: &grant,
+                approval: &approval,
+                request: &request,
+            },
             &mut evidence,
         )
         .await
@@ -922,10 +929,12 @@ async fn registered_product_persists_result_and_never_redispatches_after_restart
             &client,
             &authbus,
             &registry,
-            &admission,
-            &grant,
-            &approval,
-            &request,
+            crate::BaoApprovedReadV1 {
+                admission: &admission,
+                grant: &grant,
+                approval: &approval,
+                request: &request,
+            },
             &mut evidence,
         )
         .await
@@ -941,10 +950,12 @@ async fn registered_product_persists_result_and_never_redispatches_after_restart
             &client,
             &authbus,
             &registry,
-            &drift,
-            &grant,
-            &approval,
-            &request,
+            crate::BaoApprovedReadV1 {
+                admission: &drift,
+                grant: &grant,
+                approval: &approval,
+                request: &request
+            },
             &mut evidence
         )
         .await,
@@ -992,7 +1003,8 @@ async fn registered_product_recovers_settlement_without_reentering_consumer() {
         Duration::from_secs(3),
     )
     .unwrap();
-    let request = read_request();
+    let mut request = read_request();
+    request.consumer_configuration_sha256 = Some([94; 32]);
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -1017,17 +1029,20 @@ async fn registered_product_recovers_settlement_without_reentering_consumer() {
         }),
         Arc::new(|_, _| Ok(crate::BaoConsumerObservationV1::Unknown)),
         [94; 32],
-    );
-    let (owner_root, registry) = product_registry();
+    )
+    .unwrap();
+    let (owner_root, registry) = product_registry().unwrap();
     assert!(
         host.consume_kv_v2_with_authbus(
             &client,
             &authbus,
             &registry,
-            &admission,
-            &grant,
-            &approval,
-            &request,
+            crate::BaoApprovedReadV1 {
+                admission: &admission,
+                grant: &grant,
+                approval: &approval,
+                request: &request
+            },
             &mut evidence
         )
         .await
@@ -1076,7 +1091,8 @@ async fn registered_product_queries_durable_consumer_after_lost_ack() {
         Duration::from_secs(3),
     )
     .unwrap();
-    let request = read_request();
+    let mut request = read_request();
+    request.consumer_configuration_sha256 = Some([95; 32]);
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -1086,7 +1102,7 @@ async fn registered_product_queries_durable_consumer_after_lost_ack() {
             .await
             .unwrap();
     let (authority, grant, _authority_root) = product_grant(&client, &request).unwrap();
-    let (owner_root, registry) = product_registry();
+    let (owner_root, registry) = product_registry().unwrap();
     let output = owner_root.path().join("consumer-outcome.json");
     let observed = output.clone();
     let calls = Arc::new(AtomicUsize::new(0));
@@ -1122,16 +1138,19 @@ async fn registered_product_queries_durable_consumer_after_lost_ack() {
             }
         }),
         [95; 32],
-    );
+    )
+    .unwrap();
     assert!(matches!(
         host.consume_kv_v2_with_authbus(
             &client,
             &authbus,
             &registry,
-            &admission,
-            &grant,
-            &approval,
-            &request,
+            crate::BaoApprovedReadV1 {
+                admission: &admission,
+                grant: &grant,
+                approval: &approval,
+                request: &request
+            },
             &mut evidence
         )
         .await,
@@ -1198,4 +1217,35 @@ async fn durable_preparation_precedes_final_revocation_check() {
     assert!(matches!(result, Err(BaoClientError::Authority(_))));
     assert!(!called.load(std::sync::atomic::Ordering::SeqCst));
     task.await.unwrap().unwrap();
+}
+
+#[tokio::test]
+async fn consumer_configuration_is_inside_the_independently_signed_request() {
+    let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("synthetic-token".into()).unwrap(),
+        Duration::from_secs(3),
+    )
+    .unwrap();
+    let mut request = read_request();
+    let legacy = client.binding(&request).unwrap();
+    assert!(
+        !serde_json::to_string(&request)
+            .unwrap()
+            .contains("consumer_configuration_sha256")
+    );
+    request.consumer_configuration_sha256 = Some([93; 32]);
+    let first = client.binding(&request).unwrap();
+    request.consumer_configuration_sha256 = Some([94; 32]);
+    let second = client.binding(&request).unwrap();
+    assert_ne!(legacy.request_sha256, first.request_sha256);
+    assert_ne!(first.request_sha256, second.request_sha256);
+    request.consumer_configuration_sha256 = Some([0; 32]);
+    assert!(matches!(
+        client.binding(&request),
+        Err(BaoClientError::InvalidRequest)
+    ));
+    task.abort();
 }

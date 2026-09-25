@@ -14,7 +14,7 @@ pub(crate) async fn verify_schema(
     pool: &SqlitePool,
     migrator: &Migrator,
 ) -> Result<(), AuthBusAuthorityError> {
-    let reference = codex_state::open_schema_reference_pool()
+    let reference = codex_state_sqlite::open_schema_reference_pool()
         .await
         .map_err(storage)?;
     let result = async {

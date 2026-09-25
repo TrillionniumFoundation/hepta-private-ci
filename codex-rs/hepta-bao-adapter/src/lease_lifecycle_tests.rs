@@ -1,20 +1,20 @@
-fn private_directory() -> tempfile::TempDir {
-    let directory = tempfile::tempdir().unwrap();
+fn private_directory() -> std::io::Result<tempfile::TempDir> {
+    let directory = tempfile::tempdir()?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     }
-    directory
+    Ok(directory)
 }
 
 use super::*;
 
-fn registry() -> (tempfile::TempDir, DurableLeaseRegistryV1) {
-    let directory = private_directory();
+fn registry() -> Result<(tempfile::TempDir, DurableLeaseRegistryV1), Box<dyn std::error::Error>> {
+    let directory = private_directory()?;
     let path = directory.path().join("lease-registry.json");
-    let registry = DurableLeaseRegistryV1::open(path).unwrap();
-    (directory, registry)
+    let registry = DurableLeaseRegistryV1::open(path)?;
+    Ok((directory, registry))
 }
 
 fn active_lease() -> SecretLeaseMetadataV1 {
@@ -32,23 +32,20 @@ fn active_lease() -> SecretLeaseMetadataV1 {
     }
 }
 
-fn seed_active_lease(registry: &mut DurableLeaseRegistryV1) {
-    registry
-        .prepare_issue("op:seed:issue".into(), [31; 32])
-        .unwrap();
-    registry
-        .reconcile(
-            "op:seed:issue",
-            ProviderLeaseObservationV1::IssueApplied {
-                lease: active_lease(),
-            },
-        )
-        .unwrap();
+fn seed_active_lease(registry: &mut DurableLeaseRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
+    registry.prepare_issue("op:seed:issue".into(), [31; 32])?;
+    registry.reconcile(
+        "op:seed:issue",
+        ProviderLeaseObservationV1::IssueApplied {
+            lease: active_lease(),
+        },
+    )?;
+    Ok(())
 }
 
 #[test]
 fn issue_unknown_reconciles_without_duplicate_issue() {
-    let (directory, mut registry) = registry();
+    let (directory, mut registry) = registry().unwrap();
     let prepared = registry
         .prepare_issue("op:issue:1".into(), [3; 32])
         .unwrap();
@@ -83,7 +80,7 @@ fn issue_unknown_reconciles_without_duplicate_issue() {
 
 #[test]
 fn reused_operation_id_with_changed_semantics_conflicts() {
-    let (_directory, mut registry) = registry();
+    let (_directory, mut registry) = registry().unwrap();
     registry
         .prepare_issue("op:issue:1".into(), [3; 32])
         .unwrap();
@@ -95,8 +92,8 @@ fn reused_operation_id_with_changed_semantics_conflicts() {
 
 #[test]
 fn renew_unknown_blocks_fabricated_success_until_reconciled() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
 
     registry
         .prepare_renew("op:renew:1".into(), "lease:db:1".into(), [4; 32])
@@ -127,8 +124,8 @@ fn renew_unknown_blocks_fabricated_success_until_reconciled() {
 
 #[test]
 fn revoke_unknown_stays_nonterminal_until_provider_observation() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
 
     registry
         .prepare_revoke("op:revoke:1".into(), "lease:db:1".into(), [6; 32])
@@ -157,8 +154,8 @@ fn revoke_unknown_stays_nonterminal_until_provider_observation() {
 
 #[test]
 fn provider_not_applied_restores_active_lease_after_unknown() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     registry
         .prepare_renew("op:renew:1".into(), "lease:db:1".into(), [4; 32])
         .unwrap();
@@ -174,8 +171,8 @@ fn provider_not_applied_restores_active_lease_after_unknown() {
 
 #[test]
 fn expiry_is_durable_and_terminal_for_renewal() {
-    let (directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
 
     assert_eq!(registry.expire_at(61_000).unwrap(), 1);
     assert_eq!(
@@ -194,7 +191,7 @@ fn expiry_is_durable_and_terminal_for_renewal() {
 
 #[test]
 fn unique_writer_rejects_parallel_open_and_allows_handoff() {
-    let directory = private_directory();
+    let directory = private_directory().unwrap();
     let path = directory.path().join("lease-registry.json");
     let first = DurableLeaseRegistryV1::open(&path).unwrap();
     assert_eq!(
@@ -207,10 +204,10 @@ fn unique_writer_rejects_parallel_open_and_allows_handoff() {
 
 #[test]
 fn issue_result_binds_operation_to_provider_lease_across_restart() {
-    let directory = private_directory();
+    let directory = private_directory().unwrap();
     let path = directory.path().join("lease-registry.json");
     let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
-    seed_active_lease(&mut registry);
+    seed_active_lease(&mut registry).unwrap();
     let result = registry.operation_result("op:seed:issue").unwrap();
     assert_eq!(result.operation.lease_id.as_deref(), Some("lease:db:1"));
     assert_eq!(result.operation.resulting_generation, Some(1));
@@ -225,10 +222,10 @@ fn issue_result_binds_operation_to_provider_lease_across_restart() {
 
 #[test]
 fn unknown_and_confirmed_revoke_persist_and_reopen() {
-    let directory = private_directory();
+    let directory = private_directory().unwrap();
     let path = directory.path().join("lease-registry.json");
     let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
-    seed_active_lease(&mut registry);
+    seed_active_lease(&mut registry).unwrap();
     registry
         .prepare_renew("op:renew:persist".into(), "lease:db:1".into(), [32; 32])
         .unwrap();
@@ -265,8 +262,8 @@ fn unknown_and_confirmed_revoke_persist_and_reopen() {
 
 #[test]
 fn one_inflight_renew_and_generation_fence_reject_stale_observation() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     registry
         .prepare_renew("op:renew:old".into(), "lease:db:1".into(), [35; 32])
         .unwrap();
@@ -313,8 +310,8 @@ fn one_inflight_renew_and_generation_fence_reject_stale_observation() {
 
 #[test]
 fn revoke_terminal_cannot_be_revived_by_late_renew_observation() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     registry
         .prepare_renew("op:renew:unknown".into(), "lease:db:1".into(), [39; 32])
         .unwrap();
@@ -354,8 +351,8 @@ fn revoke_terminal_cannot_be_revived_by_late_renew_observation() {
 
 #[test]
 fn expiry_terminal_cannot_be_revived_by_late_renew_observation() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     registry
         .prepare_renew("op:renew:expiry".into(), "lease:db:1".into(), [43; 32])
         .unwrap();
@@ -382,7 +379,7 @@ fn expiry_terminal_cannot_be_revived_by_late_renew_observation() {
 
 #[test]
 fn legacy_v1_store_migrates_without_inventing_ambiguous_provider_facts() {
-    let directory = private_directory();
+    let directory = private_directory().unwrap();
     let path = directory.path().join("lease-registry.json");
     let lease = active_lease();
     let legacy = serde_json::json!({
@@ -430,7 +427,7 @@ fn legacy_v1_store_migrates_without_inventing_ambiguous_provider_facts() {
 
 #[test]
 fn capacity_rejection_preserves_previous_committed_image() {
-    let directory = private_directory();
+    let directory = private_directory().unwrap();
     let path = directory.path().join("lease-registry.json");
     let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
     registry
@@ -499,7 +496,7 @@ impl LeaseRegistryPersistenceV1 for FailParentSyncOnce {
 
 #[test]
 fn post_rename_uncertainty_fences_writer_until_reopen() {
-    let directory = private_directory();
+    let directory = private_directory().unwrap();
     let path = directory.path().join("lease-registry.json");
     drop(DurableLeaseRegistryV1::open(&path).unwrap());
 
@@ -526,8 +523,8 @@ fn post_rename_uncertainty_fences_writer_until_reopen() {
 
 #[test]
 fn completed_issue_retry_and_duplicate_observation_return_original_result() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     let before = registry.operation_result("op:seed:issue").unwrap();
     let retried = registry
         .prepare_issue("op:seed:issue".into(), before.operation.semantic_sha256)
@@ -557,8 +554,8 @@ fn completed_issue_retry_and_duplicate_observation_return_original_result() {
 
 #[test]
 fn original_result_survives_later_renew_revoke_and_restart() {
-    let (directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     let issued = registry.operation_result("op:seed:issue").unwrap();
     registry
         .prepare_renew("op:later:renew".into(), "lease:db:1".into(), [80; 32])
@@ -605,8 +602,8 @@ fn original_result_survives_later_renew_revoke_and_restart() {
 
 #[test]
 fn ordered_provider_renewal_may_shorten_remaining_ttl() {
-    let (_directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (_directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     registry
         .prepare_renew("op:shorter".into(), "lease:db:1".into(), [84; 32])
         .unwrap();
@@ -630,8 +627,8 @@ fn ordered_provider_renewal_may_shorten_remaining_ttl() {
 
 #[test]
 fn expiration_time_frontier_is_durable_and_cannot_roll_back() {
-    let (directory, mut registry) = registry();
-    seed_active_lease(&mut registry);
+    let (directory, mut registry) = registry().unwrap();
+    seed_active_lease(&mut registry).unwrap();
     assert_eq!(registry.expire_at(20_000).unwrap(), 0);
     drop(registry);
     let mut registry =
@@ -660,7 +657,7 @@ fn expiration_time_frontier_is_durable_and_cannot_roll_back() {
 
 #[test]
 fn missing_initialized_registry_is_not_silently_reset() {
-    let (directory, registry) = registry();
+    let (directory, registry) = registry().unwrap();
     drop(registry);
     let path = directory.path().join("lease-registry.json");
     std::fs::remove_file(&path).unwrap();
@@ -674,7 +671,7 @@ fn missing_initialized_registry_is_not_silently_reset() {
 #[test]
 fn state_files_are_private_and_hardlinks_are_rejected() {
     use std::os::unix::fs::PermissionsExt;
-    let (directory, registry) = registry();
+    let (directory, registry) = registry().unwrap();
     drop(registry);
     let path = directory.path().join("lease-registry.json");
     assert_eq!(
@@ -691,7 +688,7 @@ fn state_files_are_private_and_hardlinks_are_rejected() {
 #[cfg(unix)]
 #[test]
 fn removed_writer_lock_fences_original_owner() {
-    let (directory, mut registry) = registry();
+    let (directory, mut registry) = registry().unwrap();
     std::fs::remove_file(directory.path().join("lease-registry.json.lock")).unwrap();
     assert_eq!(
         registry.prepare_issue("op:must-fence".into(), [88; 32]),
@@ -701,7 +698,7 @@ fn removed_writer_lock_fences_original_owner() {
 
 #[test]
 fn uncertain_commit_cannot_be_retried_as_confirmed_success() {
-    let (directory, registry) = registry();
+    let (directory, registry) = registry().unwrap();
     drop(registry);
     let path = directory.path().join("lease-registry.json");
     let mut registry =
@@ -736,7 +733,7 @@ fn writer_lock_child() {
 #[cfg(unix)]
 #[test]
 fn writer_lock_is_exclusive_across_processes() {
-    let (directory, _registry) = registry();
+    let (directory, _registry) = registry().unwrap();
     let prefix = module_path!()
         .split("::")
         .skip(1)

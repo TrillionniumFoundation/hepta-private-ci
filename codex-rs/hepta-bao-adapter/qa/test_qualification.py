@@ -35,26 +35,26 @@ class QualificationTests(unittest.TestCase):
             return code, calls, json.loads((output / "receipt.json").read_text())
 
     def test_all_checks_run_when_format_fails(self):
-        code, calls, receipt = self.execute([1,0,0])
+        code, calls, receipt = self.execute([1,0,0,0])
         self.assertEqual(code, 1)
-        self.assertEqual(len(calls), 3)
-        self.assertEqual([row["exitCode"] for row in receipt["checks"]], [1,0,0])
+        self.assertEqual(len(calls), 4)
+        self.assertEqual([row["exitCode"] for row in receipt["checks"]], [1,0,0,0])
         self.assertFalse(receipt["passed"])
 
     def test_lint_failure_is_not_a_pass(self):
-        code, calls, receipt = self.execute([0,0,1])
+        code, calls, receipt = self.execute([0,0,1,0])
         self.assertEqual(code, 1)
-        self.assertEqual(len(calls), 3)
+        self.assertEqual(len(calls), 4)
         self.assertFalse(receipt["passed"])
 
     def test_wrong_source_and_dirty_source_cannot_pass(self):
         for expected, dirty in [("c"*40, ""), (HEAD, " M src/lib.rs")]:
-            code, _, receipt = self.execute([0,0,0], expected, dirty)
+            code, _, receipt = self.execute([0,0,0,0], expected, dirty)
             self.assertEqual(code, 1)
             self.assertFalse(receipt["identityClean"])
 
     def test_clean_all_pass_records_source_without_release_authority(self):
-        code, _, receipt = self.execute([0,0,0])
+        code, _, receipt = self.execute([0,0,0,0])
         self.assertEqual(code, 0)
         self.assertTrue(receipt["passed"])
         self.assertEqual((receipt["head"], receipt["tree"]), (HEAD,TREE))

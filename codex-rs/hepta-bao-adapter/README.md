@@ -215,3 +215,10 @@ Current native checks: `python3 codex-rs/hepta-bao-adapter/qa/qualify.py
 The historical recorded results below/above remain bound only to their original
 candidates. The independent jobs retain failed checks instead of skipping tests
 when another module's documentation fails.
+
+The registered entry now accepts `BaoApprovedReadV1 { admission, grant, approval,
+request }`; raw trusted callers use `BaoAuthorizedReadV1 { admission, authority,
+grant, request }`. An operation-aware request must carry the signed
+`consumer_configuration_sha256` of its host registration. Legacy requests omit
+that optional field and retain their original binding bytes, but cannot use the
+operation-aware durable product ingress.

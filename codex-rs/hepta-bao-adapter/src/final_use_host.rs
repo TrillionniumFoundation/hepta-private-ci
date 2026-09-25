@@ -36,6 +36,15 @@ use crate::{
 use codex_hepta_authbus::{ReservationState, SettlementStatus};
 use codex_hepta_types::{Digest32, StableId};
 
+/// Independently approved operation inputs; dependencies remain host-owned.
+#[derive(Clone, Copy)]
+pub struct BaoApprovedReadV1<'a> {
+    pub admission: &'a BaoAuthBusAdmission,
+    pub grant: &'a SignedFinalUseGrant,
+    pub approval: &'a SignedFinalUseApproval,
+    pub request: &'a BaoReadRequest,
+}
+
 pub type BaoOperationConsumerCallback =
     Arc<dyn Fn(&str, [u8; 32], &[u8]) -> Result<(), ()> + Send + Sync + 'static>;
 pub type BaoConsumerObserverCallback =
@@ -254,12 +263,15 @@ impl BaoFinalUseHost {
         client: &BaoClient,
         authbus: &AuthBusAuthorityHost,
         registry: &Mutex<DurableLeaseRegistryV1>,
-        admission: &BaoAuthBusAdmission,
-        grant: &SignedFinalUseGrant,
-        approval: &SignedFinalUseApproval,
-        request: &BaoReadRequest,
+        read: BaoApprovedReadV1<'_>,
         evidence: &mut E,
     ) -> Result<BaoSecretReceipt, BaoProductHostError> {
+        let BaoApprovedReadV1 {
+            admission,
+            grant,
+            approval,
+            request,
+        } = read;
         self.approved_consumer(grant, approval, &request.consumer_id)
             .map_err(BaoProductHostError::Host)?;
         let registration = self
@@ -269,6 +281,9 @@ impl BaoFinalUseHost {
         let configuration = registration
             .configuration_sha256
             .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
+        if request.consumer_configuration_sha256 != Some(configuration) {
+            return Err(BaoProductHostError::ConsumerProfileRequired);
+        }
         let callback = registration
             .operation_callback
             .clone()
@@ -322,10 +337,12 @@ impl BaoFinalUseHost {
         let result = client
             .consume_kv_v2_with_authbus_guarded(
                 authbus,
-                admission,
-                &self.authority,
-                grant,
-                request,
+                crate::BaoAuthorizedReadV1 {
+                    admission,
+                    authority: &self.authority,
+                    grant,
+                    request,
+                },
                 evidence,
                 |reservation| {
                     registry

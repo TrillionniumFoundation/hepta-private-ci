@@ -22,6 +22,11 @@ process activation is not established by these APIs or their fixtures.
 `RegisteredBaoConsumer::for_operations` binds a consumer ID, nonzero immutable
 implementation/configuration digest, operation-aware callback and observer.
 The callback receives the original operation ID and complete semantic digest.
+The optional `BaoReadRequest.consumer_configuration_sha256` is part of the
+independently signed request digest. The product ingress requires it to match the
+registered profile; changing only host configuration cannot silently reuse an
+old approved binding. Omitting the field preserves legacy KV binding bytes but
+cannot enter this operation-aware product ingress.
 Its observer must query the original effect, never re-execute it. A legacy
 closure-only registration cannot enter the durable product path. Independent
 issuer, approver, revocation-distributor, time and settlement keys remain outside
@@ -193,6 +198,22 @@ is `codex-rs/hepta-bao-adapter/qa/evidence/dynamic-contract-probe-20260925.json`
 This is a verified provider-contract blocker, not dynamic lease qualification.
 
 The AuthBus dependency now obtains WAL/FULL authority pools and a single-connection
-transient schema oracle through the existing `codex-state` SQLite owner. Its
+transient schema oracle through the existing state owner's lightweight `codex-state-sqlite` subpackage. Its
 five-connection, foreign-key and busy-timeout behavior is retained. Connection
 ownership is centralized without moving AuthBus's migrations or authority facts.
+
+The connection primitives live under `codex-rs/state/sqlite`, with no domain state
+or migrations. The existing state runtime delegates to the same factory; AuthBus
+does not acquire a dependency on the full Codex protocol/history/runtime stack.
+
+## Typed source inputs and native test denominator
+
+`BaoApprovedReadV1` groups admission, grant, independent approval and exact
+request for the registered host. `BaoAuthorizedReadV1` groups the corresponding
+low-level authority tuple; it is not a minted authorization. The grouped APIs
+replace long positional argument lists without dropping any signed fields.
+
+Native feedback executes adapter and lightweight SQLite-owner tests, their
+strict all-target Clippy, formatting and the AuthBus live-schema regressions.
+The Python qualification tests prove exit propagation and receipt binding only;
+they must not be counted as Rust/provider execution.

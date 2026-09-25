@@ -203,15 +203,14 @@ pub(super) fn validate_consumption(
     {
         return Err(LeaseRegistryErrorV1::CorruptState);
     }
-    if let Some(receipt) = &row.receipt {
-        if receipt.request_sha256 != row.request_sha256
+    if let Some(receipt) = &row.receipt
+        && (receipt.request_sha256 != row.request_sha256
             || receipt.version == 0
             || receipt.secret_bytes > 1024 * 1024
             || receipt.response_sha256 == [0; 32]
-            || receipt.secret_sha256 == [0; 32]
-        {
-            return Err(LeaseRegistryErrorV1::CorruptState);
-        }
+            || receipt.secret_sha256 == [0; 32])
+    {
+        return Err(LeaseRegistryErrorV1::CorruptState);
     }
     Ok(())
 }

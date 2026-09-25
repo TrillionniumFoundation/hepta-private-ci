@@ -11,9 +11,10 @@ import time
 
 ROOT = Path(__file__).resolve().parents[3]
 CHECKS = [
-    ("format", ["cargo", "fmt", "-p", "codex-hepta-bao-adapter", "--", "--check"]),
-    ("tests", ["cargo", "test", "--locked", "-p", "codex-hepta-bao-adapter", "--all-targets", "--", "--test-threads=2"]),
-    ("clippy", ["cargo", "clippy", "--locked", "-p", "codex-hepta-bao-adapter", "--all-targets", "--", "-D", "warnings"]),
+    ("format", ["cargo", "fmt", "-p", "codex-hepta-bao-adapter", "-p", "codex-hepta-authbus", "-p", "codex-state-sqlite", "--", "--check"]),
+    ("tests", ["cargo", "test", "--locked", "-p", "codex-hepta-bao-adapter", "-p", "codex-state-sqlite", "--all-targets", "--", "--test-threads=2"]),
+    ("clippy", ["cargo", "clippy", "--locked", "-p", "codex-hepta-bao-adapter", "-p", "codex-state-sqlite", "--all-targets", "--", "-D", "warnings"]),
+    ("authbus-schema", ["cargo", "test", "--locked", "-p", "codex-hepta-authbus", "authority_schema", "--", "--test-threads=2"]),
 ]
 
 

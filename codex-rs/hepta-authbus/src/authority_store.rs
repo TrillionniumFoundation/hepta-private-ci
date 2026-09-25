@@ -24,7 +24,7 @@ pub struct AuthBusAuthorityStore {
 
 impl AuthBusAuthorityStore {
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
-        let pool = codex_state::open_durable_authority_pool(path)
+        let pool = codex_state_sqlite::open_durable_authority_pool(path)
             .await
             .map_err(storage)?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")

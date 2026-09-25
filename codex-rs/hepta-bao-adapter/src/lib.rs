@@ -188,3 +188,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+pub use final_use_host::BaoApprovedReadV1;
+pub use https_consumer::BaoAuthorizedReadV1;
