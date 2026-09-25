@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass, is_dataclass
 import hashlib
 import json
 from pathlib import Path
+import re
 import sqlite3
 import time
 from typing import Any
@@ -24,7 +25,7 @@ from .path_policy import (
     path_is_within as path_is_within,
 )
 
-STORE_SCHEMA_VERSION = 9
+STORE_SCHEMA_VERSION = 10
 STORE_TABLES = frozenset(
     {
         "work_envelopes",
@@ -33,6 +34,7 @@ STORE_TABLES = frozenset(
         "orchestration_generations",
         "worker_registrations",
         "worker_claims",
+        "worker_capacity_reservations",
         "worker_heartbeat_observations",
         "worker_result_observations",
         "worker_completion_observations",
@@ -70,6 +72,41 @@ DENIED_AUTHORITIES = frozenset(
         "external_effect_authority",
     }
 )
+
+_CAPACITY_HOLDING_STATES = frozenset({"claimed", "running"})
+
+
+def _schema_sql_path() -> Path:
+    return Path(__file__).with_name("SCHEMA.sql")
+
+
+def _normalize_schema_sql(value: str | None) -> str | None:
+    if value is None:
+        return None
+    result = re.sub(r"\bIF\s+NOT\s+EXISTS\b", "", value, flags=re.IGNORECASE)
+    return " ".join(result.split()).lower()
+
+
+def _schema_manifest(connection: sqlite3.Connection) -> dict[tuple[str, str], tuple[str, str | None]]:
+    result: dict[tuple[str, str], tuple[str, str | None]] = {}
+    for row in connection.execute(
+        "SELECT type,name,tbl_name,sql FROM sqlite_master "
+        "WHERE type IN ('table','index','view','trigger') ORDER BY type,name"
+    ):
+        kind, name, table, sql = (str(row[0]), str(row[1]), str(row[2]), row[3])
+        if name.startswith("sqlite_"):
+            continue
+        result[(kind, name)] = (table, _normalize_schema_sql(None if sql is None else str(sql)))
+    return result
+
+
+def _expected_schema_manifest() -> dict[tuple[str, str], tuple[str, str | None]]:
+    connection = sqlite3.connect(":memory:")
+    try:
+        connection.executescript(_schema_sql_path().read_text(encoding="utf-8"))
+        return _schema_manifest(connection)
+    finally:
+        connection.close()
 
 
 class EngineeringError(ValueError):
@@ -292,30 +329,86 @@ class EngineeringStore:
         self.connection = sqlite3.connect(str(self.database), timeout=30.0)
         self.connection.row_factory = sqlite3.Row
         try:
-            version = int(self.connection.execute("PRAGMA user_version").fetchone()[0])
-            tables = {
-                str(row[0])
-                for row in self.connection.execute(
-                    "SELECT name FROM sqlite_master WHERE type='table'"
-                )
-            }
-            if version > STORE_SCHEMA_VERSION:
-                _error("unsupported_future_store_schema")
-            if "engineering_schema_meta" in tables:
-                metadata = self.connection.execute(
-                    "SELECT schema_version FROM engineering_schema_meta WHERE singleton=1"
-                ).fetchone()
-                if metadata is not None and int(metadata[0]) > STORE_SCHEMA_VERSION:
-                    _error("unsupported_future_store_schema")
-            if version == STORE_SCHEMA_VERSION and not STORE_TABLES.issubset(tables):
-                _error("store_schema_incomplete")
             self.connection.execute("PRAGMA foreign_keys=ON")
-            self.connection.execute("PRAGMA journal_mode=WAL")
-            self.connection.execute("PRAGMA synchronous=FULL")
-            self._create_schema()
+            version, metadata_version, tables = self._schema_version_state()
+            if version > STORE_SCHEMA_VERSION or (
+                metadata_version is not None and metadata_version > STORE_SCHEMA_VERSION
+            ):
+                _error("unsupported_future_store_schema")
+            if version == STORE_SCHEMA_VERSION:
+                if metadata_version != STORE_SCHEMA_VERSION:
+                    _error("store_schema_version_mismatch")
+                self._validate_schema_objects()
+                self._configure_durability()
+                self._validate_store_integrity()
+                self._verify_capacity_reservations()
+                self.verify_audit_chain()
+            else:
+                if version == 0:
+                    if tables:
+                        _error("store_schema_version_mismatch")
+                elif metadata_version != version:
+                    _error("store_schema_version_mismatch")
+                self._configure_durability()
+                # Schema creation/backfill, version publication and every startup
+                # validation belong to one outer transaction.  A malformed or
+                # unrecoverable predecessor must remain the same predecessor after
+                # rejection instead of being stamped as the current schema.
+                with self._transaction():
+                    self._create_schema(version)
+                    self._validate_schema_objects()
+                    self._validate_store_integrity()
+                    self._verify_capacity_reservations()
+                    self.verify_audit_chain()
         except Exception:
             self.connection.close()
             raise
+
+    def _schema_version_state(self) -> tuple[int, int | None, frozenset[str]]:
+        version = int(self.connection.execute("PRAGMA user_version").fetchone()[0])
+        tables = frozenset(
+            str(row[0])
+            for row in self.connection.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' "
+                "AND name NOT LIKE 'sqlite_%'"
+            )
+        )
+        metadata_version: int | None = None
+        if "engineering_schema_meta" in tables:
+            try:
+                rows = self.connection.execute(
+                    "SELECT singleton,schema_version FROM engineering_schema_meta"
+                ).fetchall()
+            except sqlite3.DatabaseError:
+                _error("store_schema_incomplete")
+            if len(rows) != 1 or int(rows[0]["singleton"]) != 1:
+                _error("store_schema_incomplete")
+            metadata_version = int(rows[0]["schema_version"])
+        return version, metadata_version, tables
+
+    def _configure_durability(self) -> None:
+        self.connection.execute("PRAGMA journal_mode=WAL")
+        self.connection.execute("PRAGMA synchronous=FULL")
+
+    def _validate_schema_objects(self) -> None:
+        expected = _expected_schema_manifest()
+        actual = _schema_manifest(self.connection)
+        missing = sorted(set(expected) - set(actual))
+        unexpected = sorted(set(actual) - set(expected))
+        if missing:
+            _error("store_schema_incomplete")
+        if unexpected:
+            _error("store_schema_unexpected_object")
+        for key, expected_value in expected.items():
+            if actual.get(key) != expected_value:
+                _error("store_schema_definition_mismatch")
+
+    def _validate_store_integrity(self) -> None:
+        quick = tuple(str(row[0]) for row in self.connection.execute("PRAGMA quick_check"))
+        if quick != ("ok",):
+            _error("store_integrity_check_failed")
+        if self.connection.execute("PRAGMA foreign_key_check").fetchone() is not None:
+            _error("store_foreign_key_check_failed")
 
     def __enter__(self) -> "EngineeringStore":
         return self
@@ -349,8 +442,8 @@ class EngineeringStore:
                 self.connection.rollback()
             raise
 
-    def _create_schema(self) -> None:
-        schema = Path(__file__).with_name("SCHEMA.sql").read_text(encoding="utf-8")
+    def _create_schema(self, source_version: int) -> None:
+        schema = _schema_sql_path().read_text(encoding="utf-8")
         with self._transaction():
             statement = ""
             for line in schema.splitlines(keepends=True):
@@ -360,10 +453,11 @@ class EngineeringStore:
                     statement = ""
             if statement.strip():
                 _error("invalid_store_schema")
+            self._backfill_capacity_reservations(source_version)
             metadata = self.connection.execute(
                 "SELECT schema_version FROM engineering_schema_meta WHERE singleton=1"
             ).fetchone()
-            if metadata is None or int(metadata[0]) < STORE_SCHEMA_VERSION:
+            if metadata is None or int(metadata[0]) <= STORE_SCHEMA_VERSION:
                 self.connection.execute(
                     "INSERT INTO engineering_schema_meta VALUES(1,?,?) "
                     "ON CONFLICT(singleton) DO UPDATE SET schema_version=excluded.schema_version,"
@@ -371,7 +465,128 @@ class EngineeringStore:
                     (STORE_SCHEMA_VERSION, time.time_ns()),
                 )
             self.connection.execute(f"PRAGMA user_version={STORE_SCHEMA_VERSION}")
-            self.verify_audit_chain()
+
+    def _claim_capacity_units(self, claim) -> int:
+        plan_row = self.connection.execute(
+            "SELECT semantic_digest,plan_json FROM orchestration_generations "
+            "WHERE generation_id=?",
+            (claim["generation_id"],),
+        ).fetchone()
+        if plan_row is None:
+            _error("worker_capacity_plan_missing")
+        try:
+            raw = plan_row["plan_json"]
+            plan = json.loads(raw if isinstance(raw, str) else bytes(raw).decode("utf-8"))
+        except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+            _error("worker_capacity_plan_invalid")
+        if not isinstance(plan, dict) or semantic_digest(plan) != str(plan_row["semantic_digest"]):
+            _error("worker_capacity_plan_invalid")
+        packages = plan.get("packages")
+        assignments = plan.get("assignments")
+        if not isinstance(packages, list) or not isinstance(assignments, list):
+            _error("worker_capacity_plan_invalid")
+        package = next(
+            (
+                row for row in packages
+                if isinstance(row, dict) and row.get("package_id") == claim["package_id"]
+            ),
+            None,
+        )
+        assignment = next(
+            (
+                row for row in assignments
+                if isinstance(row, dict) and row.get("package_id") == claim["package_id"]
+            ),
+            None,
+        )
+        if (
+            package is None
+            or assignment is None
+            or assignment.get("worker_id") != claim["worker_id"]
+            or type(package.get("capacity_units")) is not int
+            or not 1 <= int(package["capacity_units"]) <= 1_000_000
+        ):
+            _error("worker_capacity_plan_invalid")
+        return int(package["capacity_units"])
+
+    def _backfill_capacity_reservations(self, source_version: int) -> None:
+        if source_version >= STORE_SCHEMA_VERSION:
+            return
+        rows = self.connection.execute(
+            "SELECT * FROM worker_claims WHERE state IN ('claimed','running') "
+            "ORDER BY claim_fence"
+        ).fetchall()
+        for claim in rows:
+            existing = self.connection.execute(
+                "SELECT 1 FROM worker_capacity_reservations WHERE claim_id=?",
+                (claim["claim_id"],),
+            ).fetchone()
+            if existing is not None:
+                continue
+            units = self._claim_capacity_units(claim)
+            reserved = int(claim["claimed_unix_ns"])
+            digest = semantic_digest(
+                {
+                    "claimId": str(claim["claim_id"]),
+                    "workerId": str(claim["worker_id"]),
+                    "capacityUnits": units,
+                    "reservedUnixNs": reserved,
+                }
+            )
+            self.connection.execute(
+                "INSERT INTO worker_capacity_reservations VALUES(?,?,?,?,?,?,?,?)",
+                (
+                    claim["claim_id"],
+                    claim["worker_id"],
+                    units,
+                    "active",
+                    reserved,
+                    None,
+                    None,
+                    digest,
+                ),
+            )
+
+    def _verify_capacity_reservations(self) -> None:
+        reservations = self.connection.execute(
+            "SELECT r.*,c.state AS claim_state,c.worker_id AS claim_worker,"
+            "c.generation_id,c.package_id,c.claimed_unix_ns "
+            "FROM worker_capacity_reservations r "
+            "JOIN worker_claims c ON c.claim_id=r.claim_id ORDER BY c.claim_fence"
+        ).fetchall()
+        for row in reservations:
+            if str(row["worker_id"]) != str(row["claim_worker"]):
+                _error("worker_capacity_reservation_mismatch")
+            units = self._claim_capacity_units(row)
+            if units != int(row["capacity_units"]):
+                _error("worker_capacity_reservation_mismatch")
+            expected_digest = semantic_digest(
+                {
+                    "claimId": str(row["claim_id"]),
+                    "workerId": str(row["worker_id"]),
+                    "capacityUnits": units,
+                    "reservedUnixNs": int(row["reserved_unix_ns"]),
+                }
+            )
+            if expected_digest != str(row["semantic_digest"]):
+                _error("worker_capacity_reservation_mismatch")
+            holding = str(row["claim_state"]) in _CAPACITY_HOLDING_STATES
+            if holding != (str(row["state"]) == "active"):
+                _error("worker_capacity_reservation_state_mismatch")
+        missing = self.connection.execute(
+            "SELECT 1 FROM worker_claims c LEFT JOIN worker_capacity_reservations r "
+            "ON r.claim_id=c.claim_id WHERE c.state IN ('claimed','running') "
+            "AND (r.claim_id IS NULL OR r.state!='active') LIMIT 1"
+        ).fetchone()
+        if missing is not None:
+            _error("worker_capacity_reservation_missing")
+        totals = self.connection.execute(
+            "SELECT r.worker_id,SUM(r.capacity_units) AS used,w.capacity_units AS available "
+            "FROM worker_capacity_reservations r JOIN worker_registrations w "
+            "ON w.worker_id=r.worker_id WHERE r.state='active' GROUP BY r.worker_id"
+        ).fetchall()
+        if any(int(row["used"]) > int(row["available"]) for row in totals):
+            _error("worker_capacity_state_oversubscribed")
 
     def assignment_frontier(self, generation_id: str):
         from .hardening import assignment_frontier
