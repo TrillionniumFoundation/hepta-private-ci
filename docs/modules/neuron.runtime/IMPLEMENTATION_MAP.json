@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "c8d9ea1365795d8984c746957a0f3d5b15070ced",
+    "tree": "18fdaeb7d3dcf4eb1b4cbcb5e731ee86cb07ac77"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "agentd_owner_source_compiled_not_daemon_lifecycle_composed",
-  "productionWriterState": "durable_v1_owner_external_witness_source_implemented_not_activated",
+  "productionWriterState": "durable_complete_result_journal_external_witness_source_implemented_not_activated",
   "operations": [
     {
       "operation": "neuron_runtime_tick",
@@ -47,6 +47,11 @@
         {
           "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
           "symbol": "AnchorWitnessStore",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/operation_store.rs",
+          "symbol": "FileNeuronOperationStore",
           "role": "source_declaration"
         }
       ]
@@ -85,6 +90,26 @@
       "designOperation": "sparse_journal",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "durable_operation_result_store",
+      "nativeSymbol": "FileNeuronOperationStore",
+      "sourcePath": "codex-rs/hepta-neuron/src/operation_store.rs",
+      "state": "source_implemented_durable_complete_result_and_reconciliation_store",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/operation_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "durable_operation_result_store",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-neuron/src/operation_codec.rs",
+          "symbol": "encode_prepared / decode_event",
+          "role": "source_declaration"
+        }
+      ]
     },
     {
       "operation": "anchor_witness_store",
@@ -172,10 +197,11 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Stack/rebase the compiled AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind a concrete current inference.control feature port plus selected-artifact/witness lifecycle; a compiled owner boundary is not daemon activation.",
-    "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration and recovery path; never reinterpret V1 journal bytes as V2 state.",
-    "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation or productExecutionProved.",
-    "Execute unified-candidate rollover/anchor, learned feature host and lost-witness-ack reconciliation tests."
+    "Compose the compiled AgentdNeuronOwner into the normal daemon-owned runtime.agentd lifecycle with a concrete current inference.control feature owner, selected-artifact/currentness provider and actual intelligence consumer; a compiled owner boundary is not daemon activation.",
+    "Bind live revocation, queue/deadline cancellation and independently authenticated calibration/OOD evidence at the physical neuron use boundary before changing productExecutionProved.",
+    "Define an explicit migration for predecessor V1 journals that lack HPTNOP01 operation history; never initialize a replacement sidecar beside acknowledged history.",
+    "If PopulationSparseConfigV2 or DecisionCell is promoted beyond qualification, implement a separately versioned durable owner/store migration with effective base/organ/cell parameter consumption; never reinterpret V1 journal bytes as V2 state.",
+    "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation, productExecutionProved, activation or release."
   ],
   "externalEvidenceGates": [
     "target-host product execution with authenticated selected model/runtime/device evidence",
@@ -222,7 +248,11 @@
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "547ac1816441326278e889e22695253289a03994"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/OPERATION_STORE.md",
+      "object": "cc3e5bec3a3e9601c278dc65d67e6b4bdb5297a5"
     },
     {
       "path": "codex-rs/hepta-neuron/src/deletion.rs",
@@ -253,6 +283,18 @@
       "object": "29158c335533fd09687aa1941317e8253aa1f369"
     },
     {
+      "path": "codex-rs/hepta-neuron/src/operation_codec.rs",
+      "object": "ce00ddc87a2f48f4756456fbd2dbd1e156c6efc8"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/operation_store.rs",
+      "object": "07c776e365b435447d9ffe95aeb9f8f0c2d08948"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/operation_store_tests.rs",
+      "object": "f399783ef400a0344110ed84618f77baf3f55678"
+    },
+    {
       "path": "codex-rs/hepta-neuron/src/plasticity.rs",
       "object": "0bcfab2466d4b03161e6f4c4eb66fcbcf110b6ec"
     },
@@ -270,7 +312,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol.rs",
-      "object": "7afd7cdb43063e35dab9ca89f5d3b94765f43665"
+      "object": "2fdaef357d9bb3d73411978fb338ae82c7feeebd"
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
@@ -286,15 +328,15 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime.rs",
-      "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+      "object": "f1b55d581160890448b04724bdf1ecd8dfcfaa12"
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
-      "object": "4e46c63f3c0d915ae5bbe5474dfe3ca6b13e99d6"
+      "object": "7b483722a1ca075aebe83bc1ff12c226a3d8308d"
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
-      "object": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4"
+      "object": "744c4637a5f689c9ddb9d1202c4bc16c502d1a1c"
     },
     {
       "path": "codex-rs/hepta-neuron/src/witness.rs",
@@ -306,7 +348,7 @@
     },
     {
       "path": "docs/modules/neuron.runtime/TECHNICAL.md",
-      "object": "aff785fa12439d958f035ca8a069029004864c24"
+      "object": "5beb614ece27a538a1bdb668db06bfe1e97d6ec4"
     }
   ]
 }
