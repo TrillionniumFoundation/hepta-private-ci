@@ -400,3 +400,27 @@ fn canonical_shadow_read_tamper_fails_closed() {
         ))
     );
 }
+
+#[test]
+fn canonical_read_rejects_duplicate_event_even_with_recomputed_integrity() {
+    let read = authoritative_read_result();
+    let record = read.read_result.records()[0].clone();
+    let mut shadow = adapt_authoritative_read_to_canonical_shadow_v1(
+        &read,
+        vec![CanonicalReadRecordBindingV1 {
+            legacy_record_id: record.record_id.clone(),
+            legacy_record_revision: record.revision,
+            legacy_record_digest: record.record_digest(),
+            event: canonical_event(),
+        }],
+    )
+    .expect("initial canonical read");
+    let mut duplicate = shadow.rows[0].clone();
+    duplicate.legacy_record_id = id("memory:other");
+    shadow.rows.push(duplicate);
+    shadow.binding_digest = shadow.compute_binding_digest();
+    assert_eq!(
+        shadow.validate(),
+        Err(CanonicalReadShadowError::DuplicateCanonicalEvent)
+    );
+}

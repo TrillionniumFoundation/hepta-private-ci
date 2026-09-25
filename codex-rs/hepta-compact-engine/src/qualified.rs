@@ -231,7 +231,9 @@ impl CanonicalQualifiedCompactionCandidateV1 {
         let mut event_ids = BTreeSet::new();
         for (input, binding) in self.inputs.iter().zip(&self.input_bindings) {
             input.validate(&self.candidate.source_snapshot)?;
-            if &input.consumer_binding != binding || !event_ids.insert(&input.event.event_id) {
+            if &input.consumer_binding != binding
+                || !event_ids.insert(input.event.event_id.as_str().to_owned())
+            {
                 return Err(QualifiedCompactionError::CanonicalCandidateBindingMismatch);
             }
         }

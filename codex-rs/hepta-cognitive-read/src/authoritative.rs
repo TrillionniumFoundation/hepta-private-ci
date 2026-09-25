@@ -329,7 +329,20 @@ impl CanonicalAuthoritativeReadShadowV1 {
         if self.authority.grants_any() {
             return Err(CanonicalReadShadowError::AuthorityGranted);
         }
+        let mut canonical_ids = std::collections::BTreeSet::new();
+        let mut legacy_ids = std::collections::BTreeSet::new();
         for row in &self.rows {
+            if !canonical_ids.insert(row.event_id.as_str().to_owned()) {
+                return Err(CanonicalReadShadowError::DuplicateCanonicalEvent);
+            }
+            if !legacy_ids.insert((
+                row.legacy_record_id.as_str().to_owned(),
+                row.legacy_record_revision.get(),
+            )) {
+                return Err(CanonicalReadShadowError::DuplicateRecordBinding(
+                    row.legacy_record_id.to_string(),
+                ));
+            }
             row.event
                 .validate()
                 .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
@@ -392,6 +405,7 @@ pub enum CanonicalReadShadowError {
     BindingCountMismatch,
     MissingExactRecordBinding(String),
     DuplicateRecordBinding(String),
+    DuplicateCanonicalEvent,
     CitationProvenanceMismatch(String),
     LifecycleMismatch(String),
     EventDigestMismatch(String),
