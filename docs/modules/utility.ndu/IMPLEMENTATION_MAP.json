@@ -13,8 +13,8 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
-  "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
+  "productCallerState": "read_only_established_named_local_deterministic_process_candidate_production_trust_pending",
+  "productionWriterState": "named_local_deterministic_writer_candidate_production_activation_pending",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -44,8 +44,7 @@
       "designOperation": "evaluate_candidates",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -87,8 +86,7 @@
       "designOperation": "evaluate_candidates_with_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "canonical_evaluation_policy_digest",
@@ -112,8 +110,7 @@
       "designOperation": "canonical_evaluation_policy_digest",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_preference_target",
@@ -147,22 +144,21 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "iteration_bound_exhaustion_is_unavailable"
+          "symbol": "iteration_exhaustion_is_unavailable"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+          "symbol": "parent_and_child_updates_cannot_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
+          "symbol": "unrelated_hierarchy_updates_can_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "sourcePathExists": true
     },
     {
       "operation": "bind_solver_iteration_receipt_v1",
@@ -188,14 +184,25 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "symbol": "solver_receipt_cannot_be_rebound_to_another_subject"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "original_solve_context_cannot_be_replaced_after_numerical_execution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "unbound_legacy_solver_step_cannot_gain_original_context_after_the_fact"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solve_input_digest_binds_actual_target_and_eta_with_unchanged_claimed_context"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_backward_regression",
@@ -213,14 +220,29 @@
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
-          "symbol": "scaled, correlated, singular and covariance analytic fixtures"
+          "symbol": "scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "centers_both_terms_and_recovers_correlated_goldens"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "identity_covariance_reduces_to_cross_moment_over_dt"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "zero_cross_moment_returns_zero_sensitivity"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "rejects_singular_indefinite_ill_conditioned_and_collapsed_covariance"
         }
       ],
       "designOperation": "solve_backward_regression",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "985df3333fc8b7664ac867c53a9f7111e6dd999f"
+      "sourcePathExists": true
     },
     {
       "operation": "convert_z_to_original_q24",
@@ -262,8 +284,7 @@
       "designOperation": "convert_z_to_original_q24",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "91e51909b9231686e8218e1f5564c3025859418b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionJournalV1",
@@ -294,22 +315,33 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "live_selection_and_revocation_require_a_recorded_projection"
-        },
-        {
-          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
-        },
-        {
-          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "truncation_and_tampering_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "stale_selection_cannot_replace_newer_selection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_requires_a_recorded_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "capacity_reserves_a_revocation_for_every_live_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         }
       ],
       "designOperation": "NduProjectionJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "3cc7db74bac5014b1ed5a8c50c4e8da7f98bc75f"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionStoreV1",
@@ -352,13 +384,20 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
           "symbol": "persistence_failpoints_reconcile_at_real_durability_boundaries"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "oversized_sparse_image_is_rejected_before_unbounded_read"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "full_capacity_envelope_preserves_revocation_and_restart_recovery"
         }
       ],
       "designOperation": "NduProjectionStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "sourcePathExists": true
     },
     {
       "operation": "admit_ndu_coefficient_profile",
@@ -384,8 +423,7 @@
       "designOperation": "admit_ndu_coefficient_profile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "project_z_estimate_to_coefficient_q24",
@@ -422,8 +460,7 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduAuthenticatedOwnerV1",
@@ -441,7 +478,7 @@
       ],
       "state": "source_implemented_authenticated_owner_candidate_not_product_activated",
       "authority": "consumes_external_final_use_only",
-      "nonClaim": "utility.ndu never mints authority; named product bootstrap, selected writer enrollment and target-host activation remain external",
+      "nonClaim": "Named local-deterministic Agentd entry consumes external signatures; protected clock/off-host rollback frontier, independent acceptance and production activation remain unproved.",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
@@ -454,6 +491,50 @@
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
           "symbol": "live_revocation_frontier_blocks_previously_signed_write"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "authenticated_evaluation_receipt_binds_the_original_owner_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "selection_grant_binds_expected_predecessor_and_stale_selection_rejects"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "unrelated_head_advance_rejects_a_stale_owner_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "head_bound_product_selection_rejects_aba_without_consuming_grant"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "head_bound_commit_can_be_queried_after_lost_ack_and_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "durable_owner_binding_rejects_policy_and_principal_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "stale_direct_owner_cannot_publish_an_authenticated_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "product_lifecycle_is_rechecked_at_actual_mutation_entry"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "pending_owner_binding_recovers_only_an_empty_store"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "missing_owner_binding_never_adopts_committed_history"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "mutation_effect_fences_authority_updates_until_durable_entry_returns"
         }
       ],
       "designOperation": "NduAuthenticatedOwnerV1",
@@ -473,10 +554,93 @@
           "path": "codex-rs/hepta-ndu/src/projection_store.rs",
           "symbol": "NduProjectionStoreV1",
           "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
+          "symbol": "bind_owner",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
+          "symbol": "evaluation_source_context_digest",
+          "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "b178fa45920c465d038d57569c4f6556a2dabc84"
+      "sourcePathExists": true
+    },
+    {
+      "operation": "validate_ndu_coefficient_projection_v1",
+      "nativeSymbol": "codex_hepta_ndu::validate_ndu_coefficient_projection_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
+      "inputs": [
+        "AdmittedNduCoefficientProfileV1",
+        "NduCoefficientProjectionV1 including actual Q24 matrix"
+      ],
+      "outputs": [
+        "integrity-valid projection or explicit rejection"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+          "symbol": "projection_numeric_mutation_rejects_even_with_original_metadata"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "numeric_payload_replacement_cannot_reuse_solver_or_independent_evidence"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "every_q24_coordinate_and_projection_source_is_integrity_bound"
+        }
+      ],
+      "designOperation": "validate_ndu_coefficient_projection_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+          "symbol": "canonical_ndu_stochastic_solver_digest_v1",
+          "role": "product_consumer"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "solve_preference_target_with_context_v1",
+      "nativeSymbol": "codex_hepta_ndu::solve_preference_target_with_context_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
+      "inputs": [
+        "PreferenceState",
+        "target AxisValue set",
+        "eta",
+        "NduIterationContextV1 frozen before execution"
+      ],
+      "outputs": [
+        "PreferenceState",
+        "NduSolverTerminationReceipt",
+        "source-bound NduSolverIterationReceipt list"
+      ],
+      "state": "source_implemented_context_bound_existing_kernel",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "original_solve_context_cannot_be_replaced_after_numerical_execution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "unbound_legacy_solver_step_cannot_gain_original_context_after_the_fact"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solve_input_digest_binds_actual_target_and_eta_with_unchanged_claimed_context"
+        }
+      ],
+      "designOperation": "solve_preference_target_with_context_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -493,8 +657,8 @@
     "deterministicKernel": "candidate_implemented",
     "preferenceStateInvariants": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
-    "durableProjectionStore": "candidate_implemented_not_activated",
-    "authenticatedOwnerBoundary": "candidate_implemented_not_product_composed",
+    "durableProjectionStore": "candidate_with_named_local_writer_and_head_cas",
+    "authenticatedOwnerBoundary": "candidate_composed_in_named_local_process_production_trust_pending",
     "productionPolicySemanticBinding": "candidate_implemented",
     "legacyEvaluatorCallerPolicy": "candidate_implemented",
     "stochasticCoordinateQ24Conversion": "candidate_implemented",
@@ -509,7 +673,9 @@
     "requestLocalReadOnlyCaller": "established",
     "authenticatedProductionCaller": "not_established",
     "activationState": "not_established",
-    "releaseState": "not_established"
+    "releaseState": "not_established",
+    "localDeterministicProcess": "implemented_pending_exact_candidate_execution",
+    "numericProjectionIntegrity": "producer_consumer_canonical_validation_source_implemented"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -540,12 +706,12 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "f7ada1bf91a62fb341edb625892918a9e142072a",
+    "tree": "635700e83830a3434b625b17950fc259eaefd36d"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
-    "Compose NduAuthenticatedOwnerV1 in a named authenticated product bootstrap with a selected NduProjectionStoreV1 and host-managed current fence/revocation feed before changing authenticated production product execution or writer activation claims.",
+    "Qualify the named normal Agentd local-deterministic process and complete an independently protected clock/off-host-frontier production bootstrap before changing production execution/activation claims.",
     "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
     "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
     "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
@@ -571,53 +737,162 @@
       "nonClaim": "request-local read-only/planning composition is not the authenticated production NDU owner/caller"
     },
     "authenticatedOwnerSource": {
-      "state": "candidate_implemented_not_product_composed",
+      "state": "candidate_named_local_process_composed_production_trust_pending",
       "callSurface": "codex_hepta_ndu::NduAuthenticatedOwnerV1",
       "authorityModel": "consumes host-owned FinalUseAuthority; binds principal, owner, host generation, fence, revocation frontier, frozen production policy and exact mutation",
-      "nonClaim": "source candidate is not a named product bootstrap, selected writer, target-host activation or release"
+      "nonClaim": "Explicit local-deterministic process profile is not protected-time/off-host-frontier production trust, independent acceptance or activation."
     },
     "stochasticConsumerSource": {
       "state": "candidate_implemented_in_intelligence_control_not_product_activated",
       "callSurface": "codex_hepta_intelligence::admit_ndu_stochastic_candidate_v1",
       "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient"
+    },
+    "localDeterministicProcess": {
+      "state": "candidate_implemented_pending_exact_candidate_execution",
+      "callChain": [
+        "codex-hepta-agentd::main",
+        "load_ndu_process_bootstrap_v1",
+        "AgentdConfig::with_ndu_owner_host",
+        "AgentdState::attach_ndu_owner",
+        "AgentdNduOwnerHostV1::control",
+        "NduAuthenticatedOwnerV1::apply_mutation_at_head_guarded"
+      ],
+      "authority": "external_signed_final_use_with_independent_fresh_signed_revocation_feed",
+      "nonClaim": "Uses explicit local system-clock/local-authority baseline; no off-host anti-rollback, independent efficacy or release claim."
     }
   },
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
-    "baselineMainCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "implementationCommit": "de5f600d5f644d6ce9030d04b350fc27239063ec",
-    "branch": "fix/ndu-current-main-convergence-20260920",
-    "scope": "current-main NDU correctness, bounded preference invariants, real persistence fault cuts, authenticated owner/frozen policy, stochastic provenance/current-artifact chain, signed independent learning.eval decisions and named-host qualification runner",
+    "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "implementationCommit": "17c88dc62340574ababb61220dec7b1672469a9d",
+    "branch": "codex/utility-ndu-deterministic-closure",
+    "scope": "residual semantics, bounded persistence and safe revocations, full-journal/selection CAS, authenticated original context, stable durable owner binding, named normal Agentd local process, numeric coefficient payload integrity, independent exact-candidate suites",
     "exactHeadQualification": "pending_current_candidate_workflows",
     "namedHostQualification": "pending_current_candidate_receipts"
   },
   "productCallers": [
     {
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "nativeSymbol": "evaluate_utility",
-      "state": "compiled_owner_adapter_canonical_daemon_ingress_pending"
+      "nativeSymbol": "AgentdOwnerPortsV1::evaluate_utility",
+      "state": "named_agentd_read_only_owner_port_established_authenticated_owner_not_composed"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
+      "nativeSymbol": "load_ndu_process_bootstrap_v1",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
+          "symbol": "signed_feed_advance_during_admission_rejects_physical_mutation"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_owner.rs",
+      "nativeSymbol": "AgentdNduOwnerHostV1",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_control.rs",
+      "nativeSymbol": "AgentdNduOwnerHostV1::control",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "AgentdState::response",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/client.rs",
+      "nativeSymbol": "AgentdClient::ndu_control",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "nativeSymbol": "NduControlRequestV1",
+      "state": "bounded_existing_socket_transport_no_authority"
     }
   ],
   "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "object": "07f0823f8a0ea7bd105676c4afc3ae6b932e2861"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "2059fe32fe80b8a49d83b5995d667bbfbf4c0745"
+    },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/ndu_control.rs",
+      "object": "795a87fd8767049e1430b610dc0167517a20c15b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_owner.rs",
+      "object": "f4b964ac069b81e1bd088381a002c58d55a8f5c4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
+      "object": "a52cbc0a820c39a52bc399ed4d5fd410f2970036"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "4a5311e0933ac530a622c9fa385fb1ebf91dd40f"
+    },
+    {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "87d246d32305aa78d3f5a29ae0c6a2cc8bf55d63"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "object": "896d06018d1aface62eb1762f534aad0ae04f740"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+      "object": "4f5021be9e3e5962372fd99b6578552a98b1d6b6"
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "016ae6bf33f9c49c2b16be0ff33148b0f4419fda"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
-      "object": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "object": "66adac86a57121508793f8445d1690aa8deba1f0"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
-      "object": "274029ed1b0d86e4f3ff172e57db56b6d6d9e8a3"
+      "object": "748bf8ba2347167f7de8c274c5979ca74e3661c8"
     },
     {
       "path": "codex-rs/hepta-ndu/src/covariance.rs",
@@ -633,47 +908,55 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "645d13e169f5ad849aa8dc7d83213bb888ebd0cb"
+      "object": "ff9acf99c15907815e10ca9a3e291de6539e63d9"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
-      "object": "b178fa45920c465d038d57569c4f6556a2dabc84"
+      "object": "6f25bb87128ce6a240456955350a798e0667da76"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
+      "object": "0efa3c2aa0e0fde87e437bb0835d2ee4cfeaa780"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
+      "object": "fa0b8e75bb4fd66cfaca74ea1dcd3da17d05f102"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "776d6aa24763b35de925be2670586798156803f2"
+      "object": "500f30cfec56b8afc5b2ff5d61bbc233aa322cd8"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
-      "object": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "object": "3821d2e4990784e152a2fb4d4aaf48956c2d7889"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "c36bb4147e2eece2cb04d3421e3ca3e79a7b3776"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
-      "object": "3cc7db74bac5014b1ed5a8c50c4e8da7f98bc75f"
+      "object": "bdc2bf34fbbe47d89b8d1ae90b25780d840e60d2"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-      "object": "3018e57b24b4e5a3a86b9b205504744426ade4f0"
+      "object": "1dd7f13a344fb1a3a8c8797fec97266c90799fc3"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",
-      "object": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "object": "fc4d85ada3fdd50fd043afc6c2052ec4c87302bd"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
-      "object": "3a8d8bc99aab620dc37e07b30024fc33f06738b4"
+      "object": "07894fe25ba1f8dac8ef6d782da6c5e1f4ac2765"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol.rs",
-      "object": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
+      "object": "3e677ec6b3c1434d2590ce5cb9c29490bc3df1f3"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-      "object": "8e58a93aea0a93fb15d7e83922219c51fee93489"
+      "object": "23930af9569ad497d76434c840494aef4e54c823"
     },
     {
       "path": "codex-rs/hepta-ndu/src/z_conversion.rs",
@@ -685,7 +968,7 @@
     },
     {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
-      "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
+      "object": "750e8df4c0c8ace41918e9b64065bc5eb1303395"
     }
   ]
 }

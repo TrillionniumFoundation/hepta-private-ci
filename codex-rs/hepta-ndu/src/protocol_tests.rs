@@ -12,6 +12,7 @@ use crate::NduError;
 use crate::PreferenceState;
 use crate::SubjectClass;
 use crate::solve_preference_target;
+use crate::solve_preference_target_with_context_v1;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -33,13 +34,14 @@ fn agent_receipts() -> Vec<crate::NduSolverIterationReceipt> {
             value: FixedQ32::ZERO,
         }],
     ));
-    let (_, _, receipts) = must(solve_preference_target(
+    let (_, _, receipts) = must(solve_preference_target_with_context_v1(
         initial,
         vec![AxisValue {
             axis: id("quality"),
             value: FixedQ32::ONE,
         }],
         FixedQ32::from_raw(1_i64 << 30),
+        &context("agent-a"),
     ));
     receipts
 }
@@ -93,4 +95,92 @@ fn solver_receipt_cannot_be_rebound_to_another_subject() {
             .expect_err("subject mismatch must reject");
     assert_eq!(error, NduError::ProtocolSubjectMismatch);
     assert_eq!(error.code(), "NDU-E002");
+}
+
+#[test]
+fn original_solve_context_cannot_be_replaced_after_numerical_execution() {
+    let receipts = agent_receipts();
+    let receipt = receipts.first().expect("source-bound step");
+    let original = context("agent-a");
+    let mut changes = vec![original.clone(); 4];
+    changes[0].objective_digest = Digest32::of_bytes(b"another-objective");
+    changes[1].generation = must(Generation::new(5));
+    changes[2].event_digest = Digest32::of_bytes(b"another-event");
+    changes[3].coefficient_digest = Digest32::of_bytes(b"another-coefficient");
+    for changed in changes {
+        assert_eq!(
+            bind_solver_iteration_receipt_v1(&changed, receipt),
+            Err(NduError::InvalidSolverReceipt(
+                "solve context mismatch or unbound legacy step"
+            ))
+        );
+    }
+    assert!(
+        !must(bind_solver_iteration_receipt_v1(&original, receipt))
+            .solve_input_digest
+            .is_zero()
+    );
+}
+
+#[test]
+fn unbound_legacy_solver_step_cannot_gain_original_context_after_the_fact() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-a"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let (_, _, receipts) = must(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ONE,
+        }],
+        FixedQ32::from_raw(1_i64 << 30),
+    ));
+    assert_eq!(
+        bind_solver_iteration_receipt_v1(
+            &context("agent-a"),
+            receipts.first().expect("legacy step")
+        ),
+        Err(NduError::InvalidSolverReceipt(
+            "solve context mismatch or unbound legacy step"
+        ))
+    );
+}
+
+#[test]
+fn solve_input_digest_binds_actual_target_and_eta_with_unchanged_claimed_context() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-a"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let context = context("agent-a");
+    let mut digests = std::collections::BTreeSet::new();
+    for (target, eta) in [
+        (1_i64 << 29, 1_i64 << 30),
+        (1_i64 << 28, 1_i64 << 30),
+        (1_i64 << 29, 3_i64 << 28),
+    ] {
+        let (_, _, receipts) = must(solve_preference_target_with_context_v1(
+            initial.clone(),
+            vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::from_raw(target),
+            }],
+            FixedQ32::from_raw(eta),
+            &context,
+        ));
+        let bound = must(bind_solver_iteration_receipt_v1(
+            &context,
+            receipts.first().expect("bound step"),
+        ));
+        assert!(digests.insert(bound.solve_input_digest));
+    }
 }

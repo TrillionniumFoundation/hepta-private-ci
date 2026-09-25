@@ -34,12 +34,34 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+trait MustInvariant<T> {
+    fn must(self, context: &str) -> T;
+}
+
+impl<T, E: std::fmt::Debug> MustInvariant<T> for Result<T, E> {
+    fn must(self, context: &str) -> T {
+        match self {
+            Ok(value) => value,
+            Err(error) => panic!("{context}: {error:?}"),
+        }
+    }
+}
+
+impl<T> MustInvariant<T> for Option<T> {
+    fn must(self, context: &str) -> T {
+        match self {
+            Some(value) => value,
+            None => panic!("{context}"),
+        }
+    }
+}
+
 const SAMPLES: usize = 200;
 const P99_BUDGET: Duration = Duration::from_millis(50);
 const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("id")
+    StableId::new(value).must("id")
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -100,8 +122,8 @@ fn fixture(candidate_count: usize) -> Fixture {
             support_digest: digest(&format!("support:{index:03}")),
         })
         .collect::<Vec<_>>();
-    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).expect("set");
-    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).expect("order");
+    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).must("set");
+    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).must("order");
     let calibration_artifact_digest = digest("calibration:fast-gate");
     let ood_artifact_digest = digest("ood:fast-gate");
     let request = CalibratedDecisionRequestV1 {
@@ -124,7 +146,7 @@ fn fixture(candidate_count: usize) -> Fixture {
             truncation_digest: digest("truncation:fast-gate"),
             candidate_set_digest,
             canonical_order_digest,
-            candidate_count: u32::try_from(candidate_count).expect("bounded"),
+            candidate_count: u32::try_from(candidate_count).must("bounded"),
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -181,7 +203,7 @@ fn fixture(candidate_count: usize) -> Fixture {
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
         candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect("scores"),
+        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).must("scores"),
         policy_digest,
         policy_generation: 1,
     };
@@ -250,14 +272,14 @@ fn fixture(candidate_count: usize) -> Fixture {
             },
         ],
     })
-    .expect("verifier");
+    .must("verifier");
 
     let completeness_payload =
-        canonical_completeness_evidence_payload_v1(&request).expect("complete");
-    let profile_payload = canonical_profile_qualification_payload_v1(&profile).expect("profile");
+        canonical_completeness_evidence_payload_v1(&request).must("complete");
+    let profile_payload = canonical_profile_qualification_payload_v1(&profile).must("profile");
     let runtime_payload =
         canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment)
-            .expect("runtime");
+            .must("runtime");
     let completeness = sign(
         &verifier,
         &principals[0],
@@ -321,7 +343,7 @@ fn main() {
                 &fixture.verifier,
                 150,
             )
-            .expect("warmup");
+            .must("warmup");
         }
 
         let wall_start = Instant::now();
@@ -341,7 +363,7 @@ fn main() {
                 &fixture.verifier,
                 150,
             )
-            .expect("authenticated decision");
+            .must("authenticated decision");
             std::hint::black_box(receipt);
             samples.push(start.elapsed());
         }

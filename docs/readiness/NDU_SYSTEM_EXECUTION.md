@@ -105,7 +105,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. If the registered residual tolerance is not reached inside that bound, the solver returns `PreferenceSolverUnavailable`; the last bounded numerical state is not exposed as a successful terminal state.
+`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. If the registered residual tolerance is not reached inside that bound, the solver returns `PreferenceSolverUnavailable`; the last bounded numerical state is not exposed as a successful terminal state. When iterations exist, the termination maximum is computed only from the emitted iteration receipts; the pre-iteration residual is not folded into that field. A zero-iteration no-op uses its validated initial residual for both terminal and maximum residual.
 
 Parent/child staging is scoped by an explicit stable hierarchy identity. Different subject levels within the same hierarchy cannot select new artifacts in one generation. Unrelated hierarchy roots may advance in the same generation; a global subject-class ban is not the intended invariant.
 
@@ -116,7 +116,7 @@ Parent/child staging is scoped by an explicit stable hierarchy identity. Differe
 - disposition;
 - iteration count;
 - terminal residual;
-- true maximum residual across all iterations;
+- maximum residual across the emitted iteration receipts, or the validated initial residual for a zero-iteration no-op;
 - cumulative projection count;
 - predecessor and terminal state digests.
 
@@ -133,6 +133,8 @@ The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It
 - coefficient digest;
 - predecessor/next revisions;
 - residual, projection count and state digest.
+
+`solve_preference_target_with_context_v1` freezes the objective, generation, event, coefficient and subject before entering the existing numerical kernel. Its private solver source binds the validated initial state, canonical target and actual eta. The adapter rejects context-free legacy steps and any post-execution context replacement; native exported receipts include `solve_input_digest` under digest domain `hepta.ndu.iteration-receipt.v2`, without changing their deny-all authority or claiming independent convergence.
 
 The adapter also rejects structurally impossible local receipts: iteration zero or above 64, negative residual, a non-successor next revision, or an empty state digest. The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context or malformed local state fails before publication.
 
@@ -158,7 +160,7 @@ A numeric covariance fixture proves algebra only. It does not prove conditional 
 
 ### 6.2 Projection journal semantic recovery
 
-Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
+Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist, and replacement requires an exact expected-predecessor compare-and-set. Exact operation replay remains idempotent; a late selection cannot overwrite a newer selected projection.
 
 `NduProjectionJournalV1` is the bounded state-machine and serialization layer. Each entry binds:
 
@@ -178,17 +180,18 @@ The journal enforces equal-identity/equal-semantics replay, rejects identity dri
 The V1 writer provides:
 
 - one advisory writer lock held for the open store lifetime;
+- metadata-size admission before allocation plus a bounded `max + 1` read before semantic reopen;
 - bounded reopen through the semantic journal parser;
 - stale uncommitted temporary-image removal only after lock acquisition;
 - copy-on-mutate so failed persistence does not advance the in-memory journal;
 - complete temporary-image write followed by `sync_all`;
 - atomic rename to the committed image;
 - parent-directory synchronization on the Unix qualification profile before success acknowledgement;
-- an `Indeterminate` result if rename may have committed but directory durability cannot be acknowledged;
+- an `Indeterminate` result for any rename error, including a replacement whose acknowledgement was lost, or if directory durability cannot be acknowledged;
 - exact backup export;
 - validated backup restore only when the current committed history is an exact prefix of the restored history, preventing an old valid backup from deleting a later revocation.
 
-The file image remains bounded to the 4096-record journal ceiling. The lock is advisory and assumes a host-private directory; a hostile process that ignores the lock is outside this mechanism's threat model.
+The file image remains bounded to the 4096-record journal ceiling. Ordinary projection and selection history is admitted only while enough slots remain to revoke every currently live projection; revocation itself may consume that reserved frontier. The full-capacity fixture rejects ordinary history first, validates an in-memory revocation prefix, and commits the final two reserved revocations through the real store with a reopen between them. Recovery reaches all 4096 records and exact retries do not append duplicate entries; prefix fixture construction is not evidence of 2048 separate disk writes. The lock is advisory and assumes a host-private directory; a hostile process that ignores the lock is outside this mechanism's threat model.
 
 `NduProjectionStoreV1` is the initial V1 on-disk store format; V1 schema-open validation rejects unknown/corrupt images, and no fictitious predecessor migration is claimed. Any future format change requires an explicit deterministic migrator plus rollback compatibility evidence. Retention is fail-closed at the bounded record limit rather than silently compacting or deleting revocation history.
 
@@ -341,3 +344,12 @@ Closed documentation gap identifiers remain:
 - `RDY-GAP-NDU-004`
 - `RDY-GAP-NDU-005`
 - `RDY-GAP-NDU-006`
+
+
+## Current deterministic-owner and coefficient integrity boundary (2026-09-25)
+
+The canonical NDU follow-up is PR #997, not a parallel writer implementation. The normal Agentd `local-deterministic` bootstrap consumes a digest-pinned bounded descriptor and a fresh independently signed revocation source. Its existing private control socket exposes preparation, signed mutation, selection and historical outcome queries. Product selection binds the complete journal head as well as selected-content predecessor; content-only CAS cannot by itself reject an A-to-B-to-A history. Previously committed operation identities are reconciled through their stored outcome, not rebound to a new journal head. Owner/principal scope and frozen production policy are persisted under the single writer lock; unbound historical stores require explicit migration.
+
+The producer and stochastic consumer share `validate_ndu_coefficient_projection_v1`. Actual signed-Q24 matrix values, shape, admitted profile, source evidence and conversion receipt are recomputed against the canonical output digest before the solver identity is accepted. Retaining old digests/certificates while modifying even one numeric coordinate must fail. A freshly recomputed digest is still not independent acceptance: the current actual artifact, independently signed convergence/well-posedness evidence and consumer context must also match.
+
+These integrity and local process capabilities do not establish protected time, an off-host rollback witness, learned Cell/Circuit activation or external utility improvement. Independent held-out/longitudinal outcomes, actual selected artifacts and governed production trust remain separate gates. See the current module technical guide and retained exact-candidate suite receipts; test source and a workflow definition are not execution results.

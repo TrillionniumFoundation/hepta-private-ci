@@ -1,11 +1,15 @@
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use crate::AxisValue;
 use crate::NduError;
 use crate::NduSolverIterationReceipt;
+use crate::NduSolverTerminationReceipt;
+use crate::PreferenceState;
 use crate::SubjectClass;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -35,8 +39,31 @@ pub struct NduIterationReceiptV1 {
     pub residual_raw: i64,
     pub projection_count: u32,
     pub state_digest: Digest32,
+    pub solve_input_digest: Digest32,
     pub receipt_digest: Digest32,
     pub authority: AuthorityPosture,
+}
+
+/// Freeze the complete context before calling the existing deterministic kernel.
+/// This records provenance, not execution authority or independent convergence.
+pub fn solve_preference_target_with_context_v1(
+    initial: PreferenceState,
+    target: Vec<AxisValue>,
+    eta: FixedQ32,
+    context: &NduIterationContextV1,
+) -> Result<
+    (
+        PreferenceState,
+        NduSolverTerminationReceipt,
+        Vec<NduSolverIterationReceipt>,
+    ),
+    NduError,
+> {
+    let source_context = context_digest(context)?;
+    if initial.subject_id != context.subject_id || initial.subject_class != context.subject_class {
+        return Err(NduError::ProtocolSubjectMismatch);
+    }
+    crate::preference::solve_preference_target_bound(initial, target, eta, Some(source_context))
 }
 
 pub fn bind_solver_iteration_receipt_v1(
@@ -54,7 +81,15 @@ pub fn bind_solver_iteration_receipt_v1(
         return Err(NduError::ProtocolSubjectMismatch);
     }
 
-    let receipt_digest = digest_receipt(context, receipt);
+    if receipt.source_context_digest() != Some(context_digest(context)?) {
+        return Err(NduError::InvalidSolverReceipt(
+            "solve context mismatch or unbound legacy step",
+        ));
+    }
+    let solve_input_digest = receipt
+        .solve_input_digest()
+        .ok_or(NduError::InvalidSolverReceipt("missing solve input"))?;
+    let receipt_digest = digest_receipt(context, receipt, solve_input_digest);
     Ok(NduIterationReceiptV1 {
         subject_id: context.subject_id.clone(),
         subject_class: context.subject_class,
@@ -68,6 +103,7 @@ pub fn bind_solver_iteration_receipt_v1(
         residual_raw: receipt.residual_raw(),
         projection_count: receipt.projection_count(),
         state_digest: receipt.state_digest(),
+        solve_input_digest,
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
@@ -80,12 +116,27 @@ fn require_digest(value: Digest32, field: &'static str) -> Result<(), NduError> 
     Ok(())
 }
 
+fn context_digest(context: &NduIterationContextV1) -> Result<Digest32, NduError> {
+    require_digest(context.objective_digest, "objective")?;
+    require_digest(context.event_digest, "event")?;
+    require_digest(context.coefficient_digest, "coefficient")?;
+    let mut bytes = b"hepta.ndu.solver-context.v1\0".to_vec();
+    push_id(&mut bytes, &context.subject_id);
+    bytes.push(context.subject_class.tag());
+    bytes.extend_from_slice(context.objective_digest.as_array());
+    bytes.extend_from_slice(&context.generation.get().to_be_bytes());
+    bytes.extend_from_slice(context.event_digest.as_array());
+    bytes.extend_from_slice(context.coefficient_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 fn digest_receipt(
     context: &NduIterationContextV1,
     receipt: &NduSolverIterationReceipt,
+    solve_input_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.ndu.iteration-receipt.v1");
+    bytes.extend_from_slice(b"hepta.ndu.iteration-receipt.v2\0");
     push_id(&mut bytes, &context.subject_id);
     bytes.push(context.subject_class.tag());
     bytes.extend_from_slice(context.objective_digest.as_array());
@@ -98,6 +149,7 @@ fn digest_receipt(
     bytes.extend_from_slice(&receipt.residual_raw().to_be_bytes());
     bytes.extend_from_slice(&receipt.projection_count().to_be_bytes());
     bytes.extend_from_slice(receipt.state_digest().as_array());
+    bytes.extend_from_slice(solve_input_digest.as_array());
     Digest32::of_bytes(&bytes)
 }
 

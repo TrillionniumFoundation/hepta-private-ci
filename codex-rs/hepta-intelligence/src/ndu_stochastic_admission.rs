@@ -14,6 +14,7 @@ use codex_hepta_learning_artifacts::WithdrawalBoundArtifactAdmissionV3;
 use codex_hepta_learning_artifacts::verify_artifact_admission_v3;
 use codex_hepta_ndu::AdmittedNduCoefficientProfileV1;
 use codex_hepta_ndu::NduCoefficientProjectionV1;
+use codex_hepta_ndu::validate_ndu_coefficient_projection_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
@@ -125,6 +126,9 @@ pub fn canonical_ndu_stochastic_solver_digest_v1(
     {
         return Err(NduStochasticAdmissionError::ProjectionMismatch);
     }
+
+    validate_ndu_coefficient_projection_v1(coefficient_profile, projection)
+        .map_err(|_| NduStochasticAdmissionError::ProjectionMismatch)?;
 
     let mut bytes = b"hepta.intelligence.ndu-stochastic-solver.v2\0".to_vec();
     for digest in [

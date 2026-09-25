@@ -32,6 +32,28 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+trait MustInvariant<T> {
+    fn must(self, context: &str) -> T;
+}
+
+impl<T, E: std::fmt::Debug> MustInvariant<T> for Result<T, E> {
+    fn must(self, context: &str) -> T {
+        match self {
+            Ok(value) => value,
+            Err(error) => panic!("{context}: {error:?}"),
+        }
+    }
+}
+
+impl<T> MustInvariant<T> for Option<T> {
+    fn must(self, context: &str) -> T {
+        match self {
+            Some(value) => value,
+            None => panic!("{context}"),
+        }
+    }
+}
+
 const MODEL_BYTES: &[u8] = include_bytes!("fixtures/intuition-policy/linear-scorer-v1.model");
 const CALIBRATION_CSV: &str = include_str!("fixtures/intuition-policy/frozen-calibration-v1.csv");
 const OOD_CSV: &str = include_str!("fixtures/intuition-policy/frozen-ood-v1.csv");
@@ -54,7 +76,7 @@ struct Score {
 }
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+    StableId::new(value).must("frozen qualification fixture invariant")
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -63,18 +85,18 @@ fn digest(value: &str) -> Digest32 {
 
 fn probability_ppm(ppm: u32) -> ProbabilityQ32 {
     let raw = (u128::from(ProbabilityQ32::ONE.raw()) * u128::from(ppm)) / 1_000_000;
-    ProbabilityQ32::from_raw(raw as u64).unwrap()
+    ProbabilityQ32::from_raw(raw as u64).must("frozen qualification fixture invariant")
 }
 
 fn parse_model() -> LinearScorer {
-    let text = std::str::from_utf8(MODEL_BYTES).unwrap();
+    let text = std::str::from_utf8(MODEL_BYTES).must("frozen qualification fixture invariant");
     let get = |key: &str| -> i64 {
         let prefix = format!("{key}=");
         text.lines()
             .find_map(|line| line.strip_prefix(prefix.as_str()))
             .unwrap_or_else(|| panic!("missing {key}"))
             .parse()
-            .unwrap()
+            .must("frozen qualification fixture invariant")
     };
     assert!(text.contains("format=hepta.intuition.linear-scorer.v1"));
     LinearScorer {
@@ -94,13 +116,15 @@ fn score(model: LinearScorer, x_q16: i64, y_q16: i64) -> Score {
     let confidence_ppm = confidence.clamp(0, 1_000_000) as u32;
     let farthest = x_q16.unsigned_abs().max(y_q16.unsigned_abs());
     let ood_score_ppm = ((u128::from(farthest) * 1_000_000)
-        / u128::try_from(model.ood_scale_q16).unwrap())
+        / u128::try_from(model.ood_scale_q16).must("frozen qualification fixture invariant"))
     .min(1_000_000) as u32;
     let utility_q16 = i128::from(x_q16) * i128::from(model.utility_x_weight_q16)
         + i128::from(y_q16) * i128::from(model.utility_y_weight_q16);
     let utility_raw = (utility_q16 << 16) / 65_536;
     Score {
-        utility: FixedQ32::from_raw(i64::try_from(utility_raw).unwrap()),
+        utility: FixedQ32::from_raw(
+            i64::try_from(utility_raw).must("frozen qualification fixture invariant"),
+        ),
         confidence_ppm,
         ood_score_ppm,
     }
@@ -115,11 +139,18 @@ fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
         .filter(|line| !line.is_empty())
     {
         let fields = line.split(',').collect::<Vec<_>>();
-        let x: i64 = fields[1].parse().unwrap();
-        let y: i64 = fields[2].parse().unwrap();
-        let label: u64 = fields[3].parse().unwrap();
+        let x: i64 = fields[1]
+            .parse()
+            .must("frozen qualification fixture invariant");
+        let y: i64 = fields[2]
+            .parse()
+            .must("frozen qualification fixture invariant");
+        let label: u64 = fields[3]
+            .parse()
+            .must("frozen qualification fixture invariant");
         let prediction = u64::from(score(model, x, y).confidence_ppm);
-        let bin = usize::try_from((prediction * 5 / 1_000_001).min(4)).unwrap();
+        let bin = usize::try_from((prediction * 5 / 1_000_001).min(4))
+            .must("frozen qualification fixture invariant");
         bins[bin].0 += 1;
         bins[bin].1 += prediction;
         bins[bin].2 += label;
@@ -140,7 +171,8 @@ fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
         ));
     }
     (
-        u32::try_from(weighted_error / u128::from(rows)).unwrap(),
+        u32::try_from(weighted_error / u128::from(rows))
+            .must("frozen qualification fixture invariant"),
         Digest32::of_bytes(audit.as_bytes()),
     )
 }
@@ -150,9 +182,15 @@ fn ood_false_acceptance_ppm(model: LinearScorer, maximum_in_domain_ppm: u32) -> 
     let mut false_accepts = 0_u64;
     for line in OOD_CSV.lines().skip(1).filter(|line| !line.is_empty()) {
         let fields = line.split(',').collect::<Vec<_>>();
-        let x: i64 = fields[1].parse().unwrap();
-        let y: i64 = fields[2].parse().unwrap();
-        let in_domain: u8 = fields[3].parse().unwrap();
+        let x: i64 = fields[1]
+            .parse()
+            .must("frozen qualification fixture invariant");
+        let y: i64 = fields[2]
+            .parse()
+            .must("frozen qualification fixture invariant");
+        let in_domain: u8 = fields[3]
+            .parse()
+            .must("frozen qualification fixture invariant");
         if in_domain == 0 {
             ood_rows += 1;
             if score(model, x, y).ood_score_ppm <= maximum_in_domain_ppm {
@@ -160,7 +198,8 @@ fn ood_false_acceptance_ppm(model: LinearScorer, maximum_in_domain_ppm: u32) -> 
             }
         }
     }
-    u32::try_from(false_accepts * 1_000_000 / ood_rows).unwrap()
+    u32::try_from(false_accepts * 1_000_000 / ood_rows)
+        .must("frozen qualification fixture invariant")
 }
 
 fn sign(
@@ -233,8 +272,10 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
             support_digest: digest(&format!("support:{candidate_id}")),
         })
         .collect::<Vec<_>>();
-    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).unwrap();
-    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).unwrap();
+    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates)
+        .must("frozen qualification fixture invariant");
+    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates)
+        .must("frozen qualification fixture invariant");
     let generator_digest = digest("legal-candidate-generator:v1");
     let mut completeness_bytes = b"hepta.test.complete-set.v1".to_vec();
     completeness_bytes.extend_from_slice(generator_digest.as_array());
@@ -291,7 +332,8 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         candidates,
     };
 
-    let model_text = std::str::from_utf8(MODEL_BYTES).unwrap();
+    let model_text =
+        std::str::from_utf8(MODEL_BYTES).must("frozen qualification fixture invariant");
     let profile = CanonicalPolicyProfileV1 {
         profile_id: id("profile:intuition-frozen-v1"),
         policy_digest,
@@ -310,21 +352,21 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
                 model_text
                     .lines()
                     .find(|line| line.starts_with("feature_schema="))
-                    .unwrap()
+                    .must("frozen qualification fixture invariant")
                     .as_bytes(),
             ),
             output_schema_digest: Digest32::of_bytes(
                 model_text
                     .lines()
                     .find(|line| line.starts_with("output_schema="))
-                    .unwrap()
+                    .must("frozen qualification fixture invariant")
                     .as_bytes(),
             ),
             score_semantics_digest: Digest32::of_bytes(
                 model_text
                     .lines()
                     .find(|line| line.starts_with("score_semantics="))
-                    .unwrap()
+                    .must("frozen qualification fixture invariant")
                     .as_bytes(),
             ),
             scorer_contract_digest: digest("hepta.intuition.learned-scorer-contract.v1"),
@@ -397,23 +439,26 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
             },
         ],
     })
-    .unwrap();
+    .must("frozen qualification fixture invariant");
     let scoring = ScoringCommitmentV1 {
         model_artifact_digest: model_digest,
         feature_snapshot_digest: digest("feature-snapshot:frozen-qualification"),
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
         candidate_set_digest: request.completeness.candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).unwrap(),
+        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request)
+            .must("frozen qualification fixture invariant"),
         policy_digest,
         policy_generation: request.policy_generation,
     };
     let assignment = AssignmentCommitmentV1::Deterministic;
-    let completeness_payload = canonical_completeness_evidence_payload_v1(&request).unwrap();
-    let profile_qualification_payload =
-        canonical_profile_qualification_payload_v1(&profile).unwrap();
+    let completeness_payload = canonical_completeness_evidence_payload_v1(&request)
+        .must("frozen qualification fixture invariant");
+    let profile_qualification_payload = canonical_profile_qualification_payload_v1(&profile)
+        .must("frozen qualification fixture invariant");
     let runtime_payload =
-        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment).unwrap();
+        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment)
+            .must("frozen qualification fixture invariant");
     let completeness_evidence = sign(
         &verifier,
         &principals[0],
@@ -525,7 +570,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
             },
         ],
     })
-    .unwrap();
+    .must("frozen qualification fixture invariant");
     let revoked_completeness_evidence = sign(
         &revoked_verifier,
         &principals[0],
@@ -583,7 +628,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         &verifier,
         150,
     )
-    .unwrap();
+    .must("frozen qualification fixture invariant");
     assert_eq!(
         receipt.decision.disposition,
         CalibratedDispositionV1::Selected(id("candidate:b"))

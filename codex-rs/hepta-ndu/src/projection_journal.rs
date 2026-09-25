@@ -6,7 +6,7 @@ use std::fmt;
 use codex_hepta_types::Digest32;
 
 const MAGIC: &[u8; 8] = b"HNDUPJ01";
-const MAX_RECORDS: usize = 4096;
+pub(crate) const MAX_RECORDS: usize = 4096;
 const RECORD_BYTES: usize = 8 + 1 + 32 + 32 + 32 + 32 + 32 + 32;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -64,10 +64,12 @@ pub struct NduProjectionJournalV1 {
 pub enum NduProjectionJournalError {
     EmptyDigest,
     RecordLimitExceeded,
+    RevocationCapacityExhausted,
     IdentityConflict,
     DuplicateSerializedIdentity,
     ProjectionNotRecorded,
     RevokedProjection,
+    SelectionPredecessorMismatch,
     CorruptHeader,
     Truncated,
     CorruptSequence,
@@ -115,7 +117,26 @@ impl NduProjectionJournalV1 {
         if !kind.is_projection() {
             return Err(NduProjectionJournalError::IdentityConflict);
         }
-        self.append(
+        if let Some(existing) = self.replay_identity(
+            kind,
+            identity_digest,
+            objective_digest,
+            subject_digest,
+            payload_digest,
+        )? {
+            return Ok(existing);
+        }
+        if self.is_revoked(objective_digest, subject_digest, payload_digest) {
+            return Err(NduProjectionJournalError::RevokedProjection);
+        }
+        let additional_revocation_reservation =
+            if self.projection_recorded(objective_digest, subject_digest, payload_digest) {
+                0
+            } else {
+                1
+            };
+        self.ensure_non_revocation_capacity(additional_revocation_reservation)?;
+        self.append_new(
             kind,
             identity_digest,
             objective_digest,
@@ -124,6 +145,9 @@ impl NduProjectionJournalV1 {
         )
     }
 
+    /// Compatibility entry for first selection only. It fails closed when a
+    /// predecessor is already selected; replacements must use
+    /// `select_projection_if_current` with the exact current predecessor.
     pub fn select_projection(
         &mut self,
         operation_identity_digest: Digest32,
@@ -131,13 +155,48 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        self.select_projection_if_current(
+            operation_identity_digest,
+            objective_digest,
+            subject_digest,
+            None,
+            projection_digest,
+        )
+    }
+
+    /// Selects a recorded projection only if the caller's expected selected
+    /// predecessor still equals the authoritative selected view. `None` means
+    /// that no projection may currently be selected for this objective/subject.
+    /// Exact identity replay remains idempotent after a successful commit.
+    pub fn select_projection_if_current(
+        &mut self,
+        operation_identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        expected_predecessor: Option<Digest32>,
+        projection_digest: Digest32,
+    ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        if let Some(existing) = self.replay_identity(
+            NduProjectionKindV1::SelectedProjection,
+            operation_identity_digest,
+            objective_digest,
+            subject_digest,
+            projection_digest,
+        )? {
+            return Ok(existing);
+        }
         if !self.projection_recorded(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
         if self.is_revoked(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
-        self.append(
+        if self.selected_projection_digest(objective_digest, subject_digest) != expected_predecessor
+        {
+            return Err(NduProjectionJournalError::SelectionPredecessorMismatch);
+        }
+        self.ensure_non_revocation_capacity(0)?;
+        self.append_new(
             NduProjectionKindV1::SelectedProjection,
             operation_identity_digest,
             objective_digest,
@@ -153,10 +212,22 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        if let Some(existing) = self.replay_identity(
+            NduProjectionKindV1::Revocation,
+            revocation_identity_digest,
+            objective_digest,
+            subject_digest,
+            projection_digest,
+        )? {
+            return Ok(existing);
+        }
         if !self.projection_recorded(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        self.append(
+        if self.is_revoked(objective_digest, subject_digest, projection_digest) {
+            return Err(NduProjectionJournalError::RevokedProjection);
+        }
+        self.append_new(
             NduProjectionKindV1::Revocation,
             revocation_identity_digest,
             objective_digest,
@@ -220,7 +291,102 @@ impl NduProjectionJournalV1 {
         })
     }
 
+    fn unrevoked_projection_count(&self) -> usize {
+        let mut recorded = BTreeSet::new();
+        let mut revoked = BTreeSet::new();
+        for entry in &self.entries {
+            let key = (
+                entry.objective_digest,
+                entry.subject_digest,
+                entry.payload_digest,
+            );
+            if entry.kind.is_projection() {
+                recorded.insert(key);
+            } else if entry.kind == NduProjectionKindV1::Revocation {
+                revoked.insert(key);
+            }
+        }
+        recorded.difference(&revoked).count()
+    }
+
+    fn ensure_non_revocation_capacity(
+        &self,
+        additional_revocation_reservation: usize,
+    ) -> Result<(), NduProjectionJournalError> {
+        let entries_after_append = self
+            .entries
+            .len()
+            .checked_add(1)
+            .ok_or(NduProjectionJournalError::RecordLimitExceeded)?;
+        let reserved_revocations = self
+            .unrevoked_projection_count()
+            .checked_add(additional_revocation_reservation)
+            .ok_or(NduProjectionJournalError::RecordLimitExceeded)?;
+        let required_capacity = entries_after_append
+            .checked_add(reserved_revocations)
+            .ok_or(NduProjectionJournalError::RecordLimitExceeded)?;
+        if required_capacity > MAX_RECORDS {
+            return Err(NduProjectionJournalError::RevocationCapacityExhausted);
+        }
+        Ok(())
+    }
+
+    fn replay_identity(
+        &self,
+        kind: NduProjectionKindV1,
+        identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        payload_digest: Digest32,
+    ) -> Result<Option<NduProjectionEntryV1>, NduProjectionJournalError> {
+        let Some((existing_kind, existing_objective, existing_subject, existing_payload)) =
+            self.identities.get(&identity_digest)
+        else {
+            return Ok(None);
+        };
+        if *existing_kind != kind
+            || *existing_objective != objective_digest
+            || *existing_subject != subject_digest
+            || *existing_payload != payload_digest
+        {
+            return Err(NduProjectionJournalError::IdentityConflict);
+        }
+        self.entries
+            .iter()
+            .find(|entry| entry.identity_digest == identity_digest)
+            .cloned()
+            .map(Some)
+            .ok_or(NduProjectionJournalError::CorruptEntryDigest)
+    }
+
+    #[cfg(test)]
     fn append(
+        &mut self,
+        kind: NduProjectionKindV1,
+        identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        payload_digest: Digest32,
+    ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        if let Some(existing) = self.replay_identity(
+            kind,
+            identity_digest,
+            objective_digest,
+            subject_digest,
+            payload_digest,
+        )? {
+            return Ok(existing);
+        }
+        self.append_new(
+            kind,
+            identity_digest,
+            objective_digest,
+            subject_digest,
+            payload_digest,
+        )
+    }
+
+    fn append_new(
         &mut self,
         kind: NduProjectionKindV1,
         identity_digest: Digest32,
@@ -234,23 +400,6 @@ impl NduProjectionJournalV1 {
             || payload_digest.is_zero()
         {
             return Err(NduProjectionJournalError::EmptyDigest);
-        }
-        if let Some((existing_kind, existing_objective, existing_subject, existing_payload)) =
-            self.identities.get(&identity_digest)
-        {
-            if *existing_kind == kind
-                && *existing_objective == objective_digest
-                && *existing_subject == subject_digest
-                && *existing_payload == payload_digest
-            {
-                return self
-                    .entries
-                    .iter()
-                    .find(|entry| entry.identity_digest == identity_digest)
-                    .cloned()
-                    .ok_or(NduProjectionJournalError::CorruptEntryDigest);
-            }
-            return Err(NduProjectionJournalError::IdentityConflict);
         }
         if self.entries.len() >= MAX_RECORDS {
             return Err(NduProjectionJournalError::RecordLimitExceeded);
@@ -407,12 +556,17 @@ impl NduProjectionJournalV1 {
                         subject_digest,
                         payload_digest,
                     )?,
-                NduProjectionKindV1::SelectedProjection => journal.select_projection(
-                    identity_digest,
-                    objective_digest,
-                    subject_digest,
-                    payload_digest,
-                )?,
+                NduProjectionKindV1::SelectedProjection => {
+                    let selected_predecessor =
+                        journal.selected_projection_digest(objective_digest, subject_digest);
+                    journal.select_projection_if_current(
+                        identity_digest,
+                        objective_digest,
+                        subject_digest,
+                        selected_predecessor,
+                        payload_digest,
+                    )?
+                }
                 NduProjectionKindV1::Revocation => journal.revoke_projection(
                     identity_digest,
                     objective_digest,
