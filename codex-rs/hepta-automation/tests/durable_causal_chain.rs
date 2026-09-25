@@ -948,7 +948,7 @@ async fn durable_recovery_cursor_rotates_past_a_long_running_occurrence() {
 
 #[tokio::test]
 async fn unknown_dispatch_cursor_rotates_and_survives_restart_without_requeue() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let scheduler = AutomationScheduler::new(
         store.clone(),
@@ -963,7 +963,7 @@ async fn unknown_dispatch_cursor_rotates_and_survives_restart_without_requeue() 
         ("019153a4-3088-7000-a56a-9b1964f75d02", 200),
     ] {
         store
-            .create_task(&draft(id, AutomationSchedule::Once, due))
+            .create_task(&draft(id, AutomationSchedule::Once, due).expect("valid task fixture"))
             .await
             .expect("create");
         assert!(matches!(

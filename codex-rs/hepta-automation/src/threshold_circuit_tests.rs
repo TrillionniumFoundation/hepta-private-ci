@@ -82,7 +82,7 @@ fn candidate(
 ) -> NeuralCircuitCandidateV1 {
     NeuralCircuitCandidateV1::new(crate::NeuralCircuitDefinitionV1 {
         circuit_id: ("minimal-threshold-circuit").into(),
-        version: version,
+        version,
         predecessor_digest: predecessor,
         entry_node: ("decide").into(),
         nodes: vec![
@@ -153,6 +153,7 @@ async fn durable_choice_recovers_after_restart_before_route_projection() {
         )
         .await
         .expect("run");
+    assert_eq!(run.run_id, run_id);
     let claimed = store
         .claim_taskflow_run(&run_id, &fence(1), 100, 10)
         .await
