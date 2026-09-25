@@ -1,0 +1,82 @@
+name: Temporary Desktop Commander recovery through fleet peer
+
+on:
+  push:
+    branches:
+      - ops/desktop-commander-recover-fleet-20260925
+
+permissions:
+  actions: write
+
+jobs:
+  recover:
+    name: Restore through ${{ matrix.runner_name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner_name: pocket4
+            labels: '["self-hosted","linux","x64","pocket4"]'
+          - runner_name: macbook-pro
+            labels: '["self-hosted","macOS","ARM64","macbook"]'
+    runs-on: ${{ fromJSON(matrix.labels) }}
+    timeout-minutes: 10
+    steps:
+      - name: Reinstall and relaunch on qian-qi
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$RUNNER_NAME" = "${{ matrix.runner_name }}"
+
+          remote_script=$(cat <<'REMOTE'
+          set -euo pipefail
+          test "$(hostname)" = qian-qi
+          mkdir -p "$HOME/.desktop-commander-device"
+          exec 9>"$HOME/.desktop-commander-device/recovery-20260925.lock"
+          flock -w 60 9
+          marker="$HOME/.desktop-commander-device/recovery-20260925.ok"
+          dc_bin="$HOME/.npm-global/node_modules/.bin/desktop-commander"
+          if [ -f "$marker" ] && [ -x "$dc_bin" ] && pgrep -af 'desktop-commander.*remote|dist/index.js.*remote' >/dev/null; then
+            exit 0
+          fi
+          npm install --prefix "$HOME/.npm-global" @wonderwhy-er/desktop-commander@0.2.51
+          test -x "$dc_bin"
+          log="$HOME/.desktop-commander-device/recovery-20260925.log"
+          pkill -TERM -f 'desktop-commander.*remote|dist/index.js.*remote' 2>/dev/null || true
+          sleep 3
+          env -u RUNNER_TRACKING_ID -u GITHUB_ACTIONS setsid -f "$dc_bin" remote >"$log" 2>&1
+          sleep 20
+          pgrep -af 'desktop-commander.*remote|dist/index.js.*remote' >/dev/null || {
+            tail -n 100 "$log" || true
+            exit 1
+          }
+          touch "$marker"
+          REMOTE
+          )
+
+          candidates=(p4-desktop qian-qi@p4-desktop 192.168.0.4 qian-qi@192.168.0.4 qian-qi desktop qian-qi.local)
+          target=""
+          for candidate in "${candidates[@]}"; do
+            host_name=$(ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=accept-new "$candidate" hostname 2>/dev/null || true)
+            if [ "$host_name" = qian-qi ]; then
+              target="$candidate"
+              break
+            fi
+          done
+          test -n "$target"
+          ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "$target" 'bash -s' <<<"$remote_script"
+
+          for run_id in 36109602681 36110169120 36110343439; do
+            code=$(curl -sS -o "/tmp/cancel-$run_id.txt" -w '%{http_code}' \
+              -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel")
+            case "$code" in
+              202|409) ;;
+              *) cat "/tmp/cancel-$run_id.txt" || true ;;
+            esac
+          done
