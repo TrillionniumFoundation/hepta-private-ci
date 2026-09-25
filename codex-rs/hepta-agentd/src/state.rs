@@ -553,6 +553,21 @@ impl AgentdState {
         Ok(self.runtime.lock().map_err(poisoned_state)?.fenced)
     }
 
+    /// Observation of already-admitted work is distinct from new admission.
+    /// The existing Agent generation and stores must still be current.
+    pub(crate) fn automation_recovery_ready(&self) -> Result<bool, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        Ok(matches!(
+            runtime.lifecycle,
+            AgentLifecycle::Running | AgentLifecycle::Draining
+        ) && runtime.app_server_ready
+            && runtime.critical_stores_ready
+            && runtime.revocation_ready
+            && runtime.required_ports_ready
+            && !runtime.fenced)
+    }
+
     pub(crate) fn automation_admission_ready(&self) -> Result<bool, AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;

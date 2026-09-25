@@ -1,10 +1,11 @@
 //! Read-consumer fixtures use authenticated owner records, never raw fit APIs.
-use codex_hepta_bellman_operator::{
-    TabularOperatorArtifactV1, TerminalCellProfileV1, fit_terminal_cell_from_owner_v1,
-    freeze_terminal_cell_from_owner_v1,
-};
+use codex_hepta_bellman_operator::TabularOperatorArtifactV1;
+use codex_hepta_bellman_operator::TerminalCellProfileV1;
+use codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1;
+use codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1;
 use codex_hepta_learning_ledger::*;
-use codex_hepta_types::{Generation, StableId};
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 #[allow(dead_code)]
 #[path = "../tests/support/terminal_cell_owner.rs"]
 mod owner;
