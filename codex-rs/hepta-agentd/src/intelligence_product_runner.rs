@@ -103,7 +103,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
+        let timeout_micros = request.budget.total_micros.min(
+            u64::try_from(crate::control_budget::OWNER_PREPARATION_TIMEOUT.as_micros())
+                .map_err(|_| AgentdIntelligenceProductError::Clock)?,
+        );
         let started_ms = wall_clock_ms()?;
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
         let deadline_ms = started_ms

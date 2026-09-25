@@ -315,7 +315,18 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
 }
 
 fn prepared_fixture(label: &str, dispatch: bool) -> (AppServerModelDriver, PathBuf) {
-    let (driver, path) = fixture(label);
+    prepared_fixture_with_socket(label, dispatch, None)
+}
+
+fn prepared_fixture_with_socket(
+    label: &str,
+    dispatch: bool,
+    socket: Option<PathBuf>,
+) -> (AppServerModelDriver, PathBuf) {
+    let (mut driver, path) = fixture(label);
+    if let Some(socket) = socket {
+        driver.config.agentd_socket = socket;
+    }
     let binding = NativeIntelligenceRunBinding {
         run_id: "original-intelligence-run".to_string(),
         expected_revision: 2,
@@ -467,3 +478,7 @@ async fn resume_cannot_turn_an_unsent_reservation_into_new_execution() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[cfg(unix)]
+#[path = "native_agentd_release_tests.rs"]
+mod agentd_release_tests;

@@ -156,7 +156,11 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
+          cargo build --locked -p codex-app-server --bin codex-app-server
+          target_dir=$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+          export HEPTA_TEST_CODEX_EXE="$target_dir/debug/codex-app-server"
+          test -x "$HEPTA_TEST_CODEX_EXE"
+          just test --locked --retries 0 --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
       - name: Exercise actual optional retirement and durable destination recovery
