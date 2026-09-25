@@ -170,6 +170,7 @@ jobs:
           printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
           printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
       - name: Construct deterministic sandbox merge candidate
+        id: sandbox-synthetic
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
         with:
@@ -179,6 +180,27 @@ jobs:
           author-name: Hepta Docs CI
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
+      - name: Bind exact engineering sandbox candidate identity
+        env:
+          TESTED_SHA: ${{ steps.sandbox-synthetic.outputs.sha || env.SOURCE_SHA }}
+          MERGE_SHA: ${{ steps.sandbox-synthetic.outputs.sha }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then
+            test -n "$MERGE_SHA"
+            test "$TESTED_SHA" = "$MERGE_SHA"
+          else
+            test -z "$MERGE_SHA"
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "$HEPTA_CI_LANE" >> "$GITHUB_ENV"
       - name: Prepare dedicated sandbox runner
         run: |
           sudo apt-get update
@@ -189,6 +211,23 @@ jobs:
           fi
       - name: Exercise real namespace isolation and candidate evaluation
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-${{ matrix.lane }}.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+      - name: Measure bounded engineering-control host profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.qualification_profile \
+              --repository "$GITHUB_WORKSPACE" \
+              --iterations 7 \
+              --sandbox-mode strong \
+              --output "$RUNNER_TEMP/control-engineering-host-profile.json"
+      - name: Retain host qualification profile
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-host-profile-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/control-engineering-host-profile.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Retain real command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

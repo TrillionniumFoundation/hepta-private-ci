@@ -488,8 +488,32 @@ def plan_engineering_work(
             except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
                 raise EngineeringError("invalid_lease_paths_encoding") from None
 
+        capacity_frontier_rows = store.connection.execute(
+            "SELECT claim_id,worker_id,capacity_units,semantic_digest "
+            "FROM worker_capacity_reservations WHERE state='active' "
+            "ORDER BY worker_id,claim_id"
+        ).fetchall()
+        capacity_frontier = tuple(
+            {
+                "claimId": str(row["claim_id"]),
+                "workerId": str(row["worker_id"]),
+                "capacityUnits": int(row["capacity_units"]),
+                "semanticDigest": str(row["semantic_digest"]),
+            }
+            for row in capacity_frontier_rows
+        )
+        reserved_by_worker: dict[str, int] = {}
+        for row in capacity_frontier:
+            worker_id = str(row["workerId"])
+            reserved_by_worker[worker_id] = (
+                reserved_by_worker.get(worker_id, 0) + int(row["capacityUnits"])
+            )
         worker_remaining = {
-            row.worker_id: row.capacity_units for row in worker_values
+            row.worker_id: max(
+                0,
+                row.capacity_units - reserved_by_worker.get(row.worker_id, 0),
+            )
+            for row in worker_values
         }
         review_remaining = dict(review_template)
         ci_remaining = capacity.ci_units
@@ -628,6 +652,8 @@ def plan_engineering_work(
                 ],
             },
             "completionFrontierDigest": completion_frontier_digest,
+            "workerCapacityFrontier": capacity_frontier,
+            "workerCapacityFrontierDigest": semantic_digest(capacity_frontier),
             "assigned": assigned,
             "blocked": blocked_rows,
             "assignments": [asdict(row) for row in assignments],

@@ -12,18 +12,21 @@ assignment generations; verifies exact local or signed canonical source identity
 performs resource-aware engineering orchestration over worker skills/capacity,
 CI capacity, review topology, expected value, architecture debt and rollback cost;
 persists a base-bound integration queue whose product path accepts only signed,
-role-bound candidate/review/CI stage observations; creates bounded atomic single-
-or multi-file code candidates including rename;
+role-bound candidate/review/CI stage observations bound to the complete queue,
+orchestration, work-envelope, source, integration-base and logical-owner context;
+creates bounded atomic single- or multi-file code candidates including rename;
 runs admitted checks under a bounded sandbox controller; performs evaluator-owned
 mutation testing; verifies source/execution/evaluator evidence; records signed
 candidate-bound review eligibility; exposes distributed-fence, external-audit-anchor
 and external-key-custody admission contracts; and composes consent-bound dormant
-external-system proposals. The repository CI includes a named v4 product caller over the SQLite v9 owner.
-The caller executes registration → lease → claim → heartbeat → worker result → independently
-observed completion → signed candidate/review/CI integration-stage reconciliation, then
-reopens the same owner and idempotently replays the accepted
-registration/lease/claim/heartbeat/result/completion and integration observations. Replay must preserve the completed/ready states and the
-audit anchor; this is an acknowledgement-loss recovery fixture, not external independence.
+external-system proposals. The repository CI includes a named v4 product caller over the SQLite v10 owner.
+The caller executes registration → lease → capacity-reserving claim → heartbeat → worker
+result → independently observed completion → fully context-bound candidate/review/CI
+integration observations. It then reopens the same owner, runs the normal startup
+reconciler, idempotently replays acknowledgement-loss boundaries, records a separately
+signed terminal observation, and reopens once more to prove the terminal state and audit
+anchor are stable. The product caller uses reference fixture identities and grants no
+external independence, merge authority or deployment acceptance.
 That caller fail-closed reads the canonical work-package registry from the exact
 `HEAD:docs/delivery/WORK_PACKAGES.json` Git blob (not checkout-filtered worktree
 bytes) and binds its blob OID plus registry/package digests to the tested tree. It
@@ -35,12 +38,15 @@ On pull requests the named product caller executes independently against source-
 and the deterministic base-merge candidate. Each lane first runs the exact repository
 gap/document verifier plus the complete engineering-control Python suite; both source-head and deterministic
 base-merge identities must also pass the separate real Bubblewrap strong-sandbox matrix.
-Unrelated Rust/workspace
+The same per-lane runner emits a bounded host-profile artifact measuring SQLite, recovery,
+backup/restore, controlled disk-full rollback and complete candidate-sandbox costs without
+removing exact Git-object materialization or post-check drift detection. Unrelated Rust/workspace
 failures remain merge blockers in their own jobs but do not suppress this module's
 product-execution receipt. CI retains both lane receipts, then a
-separate aggregation job recomputes each receipt digest, checks common repository/run/source
-identity, ordered merge parents, canonical ECP blob/package identity and zero authority,
-and emits `hepta.control-engineering-product-receipt-pair.v2`. Production-readiness
+separate aggregation job recomputes each v5 execution-receipt digest, checks common
+repository/run/source identity, ordered merge parents, canonical ECP blob/package identity,
+all three startup-recovery observations and zero authority, and emits
+`hepta.control-engineering-product-receipt-pair.v3`. Production-readiness
 projection requires both lane digests and their canonical receipt-set digest; one lane
 plus caller-supplied booleans cannot satisfy product composition. It is not a learned code
 generator, merge service or autonomous release agent.
@@ -56,9 +62,9 @@ must provide the separate owner authorization required by its own contract.
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
 | `control_plane.py` | SQLite schema, transactions, envelopes, leases, base scheduling and audit anchor head | Public facade, orchestrator and CLI |
 | `orchestration.py` | Exact source admission, signed completion receipts, skills/capacity scheduling, integration order and merge-queue proposals | Product caller and public package |
-| `worker_lifecycle.py` | Durable worker registration, fenced claims, signed heartbeats/results, bounded requeue and independently observed completion | Named product owner |
-| `integration_controller.py` | Durable integration-queue generations, signed role-bound candidate/review/CI observations, base-drift invalidation and separately authenticated terminal observations | Named product owner / external merge observer |
-| `product_runtime.py` | Named `EngineeringControlProduct` composition over repository identity, SQLite owner, verifier port, planner and worker lifecycle | Repository product caller / production composition target |
+| `worker_lifecycle.py` | Durable worker registration, cross-generation capacity reservations, fenced claims, signed heartbeats/results, startup reconciliation, bounded requeue and independently observed completion | Named product owner |
+| `integration_controller.py` | Durable integration-queue generations, complete-context signed candidate/review/CI observations, base-drift invalidation and separately authenticated terminal observations | Named product owner / external merge observer |
+| `product_runtime.py` | Named `EngineeringControlProduct` composition over repository identity, SQLite owner, verifier port, planner, startup reconciler and worker lifecycle | Repository product caller / production composition target |
 | `candidate.py` | Deterministic single/multi-file/rename grammar, exact Git materialization and immutable oracle paths | Public facade and CLI |
 | `sandbox_control.py` | <=8 host-wide POSIX sandbox admission (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries | Mutation testing and production qualification |
 | `mutation_testing.py` | Baseline-pass / mutant-kill evaluator gate | Qualification |
@@ -67,7 +73,8 @@ must provide the separate owner authorization required by its own contract.
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
 | `external_controls.py` | Distributed fencing, external audit anchor over both audit head and durable owner-state snapshot, and subject-bound HSM/KMS custody receipt admission | Production worker/deployment composition |
-| `product_gate.py` | Named repository CI product caller over the SQLite v9 durable owner/orchestrator, worker lifecycle and integration reconciler; PR qualification emits separate source-head and base-merge execution receipts | `hepta-consolidated-source.yml` |
+| `product_gate.py` | Named repository CI product caller over the SQLite v10 durable owner/orchestrator, startup recovery, worker lifecycle and terminal integration reconciler; PR qualification emits separate source-head and base-merge execution receipts | `hepta-consolidated-source.yml` |
+| `qualification_profile.py` | Bounded target-host measurements for database, recovery, backup/restore, disk-full rollback and the unchanged complete sandbox boundary | Strong-sandbox source/merge lanes |
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
 There are no import-time store patches or alternate clone sandbox owners. The
@@ -84,7 +91,7 @@ caller that can directly rewrite its connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
-`SCHEMA.sql` is the single schema source, currently version 9. Tables are:
+`SCHEMA.sql` is the single schema source, currently version 10. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
@@ -93,6 +100,7 @@ caller that can directly rewrite its connection, modules or database.
 - `orchestration_generations`: immutable normalized resource-aware plan and semantic digest;
 - `worker_registrations`: authenticated worker profile, signing identity, scope, expiry and revision;
 - `worker_claims`: fenced assignment claims, heartbeat/result state, bounded attempts and observed completion;
+- `worker_capacity_reservations`: claim-bound active/released capacity records whose release is idempotent across retry, terminal result, revocation and recovery;
 - `worker_heartbeat_observations`: immutable signed heartbeat receipt digests and prior/resulting revisions for acknowledgement-loss replay;
 - `worker_result_observations`: immutable signed worker-result receipt digests, outcome and result binding for acknowledgement-loss replay;
 - `worker_completion_observations`: immutable accepted CI completion receipt digests used for acknowledgement-loss replay after reopen;
@@ -108,11 +116,15 @@ caller that can directly rewrite its connection, modules or database.
 
 An owner mutation, its binding/frontier and audit event either commit together or
 roll back together. Equal identity and semantics replay idempotently; different
-semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5/v6/v7/v8 stores migrate
-transactionally to v9; historical generations without a bound frontier remain
+semantics conflict. Startup checks exact table/index definitions, schema-version
+agreement, SQLite integrity, foreign keys, capacity-reservation consistency and the
+audit chain. Additive v2 through v9 stores migrate transactionally to v10; active
+legacy claims receive capacity reservations derived from their durable plan before
+the new version is published. Historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
-schema or journal-mode write. A database claiming v9 but missing a required table
-is rejected. A corrupted store must be quarantined and restored from a verified
+schema or journal-mode write. A database claiming v10 but missing a table, column,
+constraint or index—or carrying an unexpected schema object—is rejected before
+business execution. A corrupted store must be quarantined and restored from a verified
 backup; startup does not silently reconstruct acceptance or change owner facts.
 
 The store is a local coordination database, not a replicated consensus service.
@@ -155,7 +167,30 @@ packages with an eligible worker, remaining worker/CI/reviewer capacity and no p
 conflict. Infeasible work does not consume the assignment limit. The exact final
 assigned/blocked set—not a coarser preliminary schedule—is written to
 `assignment_generations` in the same transaction as its frontier and audit event.
-The generation semantic digest binds normalized package/worker/capacity inputs and is persisted in `orchestration_generations`. Integration reconciliation is replay-stable: identical candidate/review/CI or base-drift observations are no-op retries, evidence order is candidate → review → CI (or one atomic observation carrying all three), and terminal observations are immutable under later base movement. Worker execution then uses `worker_registrations`, `worker_claims` and `worker_completion_observations`: exact acknowledgement-loss replay is revision/audit-stable, accepted CI completion digests survive reopen, and  a claim must match the scheduler-selected worker and an active fenced path lease; signed heartbeat expiry can enter bounded retry, semantic failure cannot; a worker `success` result is non-terminal until an independent CI completion receipt is observed. The generation semantic digest binds normalized package/worker/capacity inputs,
+The generation semantic digest binds normalized package/worker/capacity inputs, the
+exact active capacity-reservation frontier and the final assignments. Planning subtracts
+reservations held by all prior generations, while `claim_assignment` repeats the capacity
+check and inserts the reservation in the same `BEGIN IMMEDIATE` transaction as the claim;
+therefore two stale plans cannot both consume one Worker slot. Release is persisted once
+when execution leaves the active claim boundary, and reopen verifies reservation/claim
+consistency before serving requests.
+
+Integration reconciliation is replay-stable: identical candidate/review/CI or base-drift
+observations are no-op retries, evidence order is candidate → review → CI, and terminal
+observations are immutable under later base movement. Every signed observation binds the
+persisted queue semantic digest, orchestration digest, envelope digest, source commit/tree,
+integration base commit/tree and owner-context digest; a reused local queue/package ID in
+another owner context is rejected. Worker execution then uses `worker_registrations`,
+`worker_claims`, `worker_capacity_reservations` and `worker_completion_observations`:
+acknowledgement-loss replay is revision/audit-stable, accepted CI completion digests survive
+reopen, and a claim must match the scheduler-selected worker and an active fenced path
+lease. Startup reconciliation expires heartbeat claims, rechecks registration/lease/envelope
+frontiers, releases capacity idempotently and preserves submitted results for the independent
+completion observer rather than redispatching them. The named product `claim()` fails closed
+with `product_startup_reconciliation_required` until that process generation has completed
+`startup_reconcile`; lower-level state-machine helpers are not the normal product admission
+surface. A worker `success` result is non-terminal
+until an independent CI completion receipt is observed. The generation semantic digest binds
 completion frontier, assignments, integration order and merge queue. A changed
 frontier or planning input requires a new generation ID. An assignment is still
 a proposal; workers must acquire the exact local lease, and multi-host production
@@ -297,10 +332,16 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
   -s tools/hepta-engineering-control -p 'test_*.py'
 HEPTA_REQUIRE_STRONG_SANDBOX=1 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
   -s tools/hepta-engineering-control -p 'test_candidate_sandbox_hardening.py'
+PYTHONPATH=tools/hepta-engineering-control \
+  python3 -m control_engineering_v2.qualification_profile \
+    --repository . --iterations 7 --sandbox-mode strong \
+    --output /tmp/control-engineering-host-profile.json
 ```
 
-The second command belongs on a Linux runner that can admit Bubblewrap namespaces.
-The default portable suite explicitly skips strong positive execution tests when
+The second and third commands belong on a Linux runner that can admit Bubblewrap
+namespaces. The profile records observed costs and fault behavior for the exact host and
+source; it neither defines universal thresholds nor grants deployment acceptance. The
+default portable suite explicitly skips strong positive execution tests when
 the real admission probe fails; strict mode turns that into failure. Never count a
 skip as strong sandbox evidence. `test_consolidated_engineering.py` adds concurrent
 SQLite lease races, rollback fault injection, migration/downgrade protection, deep

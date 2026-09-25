@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1ced8192e598c28fb6155bd89cd9d87c7039b91d",
-    "tree": "92fed912f21b27b27a16a0c6f659d0451adc57ea"
+    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -31,7 +31,8 @@
       "sourcePathExists": true,
       "designOperation": "artifact_registry_append",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e723e3cf7c8e53ef59405bf71aa8cd4f5dc95f42"
     },
     {
       "operation": "sensor_core_registry_read",
@@ -43,7 +44,8 @@
       "sourcePathExists": true,
       "designOperation": "sensor_core_registry_read",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "58d629d83c697c66977f8f26db9e260d99d08c81"
     },
     {
       "operation": "write_candidate_payload",
@@ -55,7 +57,8 @@
       "sourcePathExists": true,
       "designOperation": "write_candidate_payload",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d25f9e2a3070b3cf13aebfd5259611c4d66e1956"
     },
     {
       "operation": "load_pinned_candidate",
@@ -67,7 +70,8 @@
       "sourcePathExists": true,
       "designOperation": "load_pinned_candidate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
     },
     {
       "operation": "revalidate_pinned_candidate",
@@ -79,7 +83,8 @@
       "sourcePathExists": true,
       "designOperation": "revalidate_pinned_candidate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
     },
     {
       "operation": "validate_manifest_v2",
@@ -91,7 +96,8 @@
       "sourcePathExists": true,
       "designOperation": "validate_manifest_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "49af2232566bf4c38380d88b7cf63e9b7975537a"
     },
     {
       "operation": "withdrawal_append",
@@ -103,7 +109,8 @@
       "sourcePathExists": true,
       "designOperation": "withdrawal_append",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "49af2232566bf4c38380d88b7cf63e9b7975537a"
     },
     {
       "operation": "admit_manifest_at_withdrawal_head_v3",
@@ -115,7 +122,8 @@
       "sourcePathExists": true,
       "designOperation": "admit_manifest_at_withdrawal_head_v3",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "8e4f8830dbda3f387b54992f297c8d1f8baa329f"
     },
     {
       "operation": "publication_begin",
@@ -127,7 +135,8 @@
       "sourcePathExists": true,
       "designOperation": "publication_begin",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
     },
     {
       "operation": "publication_checkpoint",
@@ -139,7 +148,8 @@
       "sourcePathExists": true,
       "designOperation": "publication_checkpoint",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
     },
     {
       "operation": "authenticated_current_head",
@@ -151,7 +161,8 @@
       "sourcePathExists": true,
       "designOperation": "authenticated_current_head",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
     },
     {
       "operation": "authenticated_current_registry_view",
@@ -163,7 +174,8 @@
       "sourcePathExists": true,
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
     },
     {
       "operation": "owner_writer_fence",
@@ -175,7 +187,8 @@
       "sourcePathExists": true,
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
     },
     {
       "operation": "lifecycle_journal_append",
@@ -187,7 +200,8 @@
       "sourcePathExists": true,
       "designOperation": "lifecycle_journal_append",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "afa6ee9f052def7d17e291bf0fcd4e483bf4e08f"
     },
     {
       "operation": "durable_withdrawal_snapshot",
@@ -199,7 +213,8 @@
       "sourcePathExists": true,
       "designOperation": "durable_withdrawal_snapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf"
     },
     {
       "operation": "durable_lifecycle_snapshot",
@@ -211,7 +226,8 @@
       "sourcePathExists": true,
       "designOperation": "durable_lifecycle_snapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf"
     },
     {
       "operation": "iteration_transition",
@@ -223,7 +239,8 @@
       "sourcePathExists": true,
       "designOperation": "iteration_transition",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "a0b1fd3db118cba0498209e38ad650850270c807"
     },
     {
       "operation": "owner_service_open",
@@ -235,7 +252,8 @@
       "sourcePathExists": true,
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
     },
     {
       "operation": "owner_service_publish",
@@ -247,7 +265,8 @@
       "sourcePathExists": true,
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
     },
     {
       "operation": "recover_current_registry",
@@ -259,7 +278,8 @@
       "sourcePathExists": true,
       "designOperation": "recover_current_registry",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
     },
     {
       "operation": "recover_registry_by_head",
@@ -271,7 +291,8 @@
       "sourcePathExists": true,
       "designOperation": "recover_registry_by_head",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
     },
     {
       "operation": "current_head_restart_anchor",
@@ -283,7 +304,8 @@
       "sourcePathExists": true,
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
     },
     {
       "operation": "independent_selection_verify",
@@ -298,7 +320,8 @@
       "sourcePathExists": true,
       "designOperation": "independent_selection_verify",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
     },
     {
       "operation": "record_verified_selection",
@@ -312,7 +335,8 @@
       "sourcePathExists": true,
       "designOperation": "record_verified_selection",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
     },
     {
       "operation": "load_selected_candidate",
@@ -326,7 +350,8 @@
       "sourcePathExists": true,
       "designOperation": "load_selected_candidate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
     }
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",

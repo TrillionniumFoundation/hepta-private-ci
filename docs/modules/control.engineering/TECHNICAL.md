@@ -24,11 +24,19 @@ The primary owner `developer-productivity` controls changes inside the declared 
 
 Plane `engineering`, kind `orchestrator`, state model `stateful_projection` and architecture role `engineering_control` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
 
-The concrete Python owner, SQLite v9 schema, authenticated public API, CLI,
+The concrete Python owner, SQLite v10 schema, authenticated public API, CLI,
 resource limits, failure recovery and behavioral verification are documented in
 [IMPLEMENTATION.md](IMPLEMENTATION.md). The candidate isolation contract is in
 [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md). These implementation companions replace
 historical package-local maturity/closure assertion registries.
+
+The v10 owner persists worker-capacity reservations across orchestration generations,
+recomputes complete source/base/queue/owner context before accepting integration
+observations, validates the exact schema object set before opening current state and
+exposes startup reconciliation through the named product composition. Repository CI
+also runs a bounded target-host profile on the same exact-source and deterministic
+base-merge strong-sandbox lanes. These are source and execution mechanisms; they do
+not convert fixture identities or measurements into independent acceptance.
 
 ## 2. Source binding and implementation status
 
@@ -76,6 +84,7 @@ The bounded components are:
 
 - `authenticated source-envelope admission`
 - `resource-aware engineering orchestrator`
+- `cross-generation worker-capacity reservation owner`
 - `work-envelope scheduler`
 - `path-lease arbiter`
 - `candidate change-set generator`
@@ -83,7 +92,8 @@ The bounded components are:
 - `evaluator-owned mutation-testing gate`
 - `integration evidence/seal engine`
 - `distributed-fence / external-audit / key-custody admission`
-- `repository product caller`
+- `repository product caller and startup reconciler`
+- `bounded target-host qualification profiler`
 - `audit projection`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -177,13 +187,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies the resource-aware algorithm and qualification ceilings. Current native enforcement belongs to `control_engineering_v2`: candidate count/file/diff bounds in `candidate.py`; <=8 host-wide POSIX sandbox concurrency (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries in `sandbox_control.py`; worker/CI/reviewer capacity in `orchestration.py`; and mutation-test cardinality in `mutation_testing.py`. These ceilings are not throughput measurements. Multi-host capacity and failover require the separately authenticated distributed-fence boundary.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies the resource-aware algorithm and qualification ceilings. Current native enforcement belongs to `control_engineering_v2`: candidate count/file/diff bounds in `candidate.py`; <=8 host-wide POSIX sandbox concurrency (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries in `sandbox_control.py`; worker/CI/reviewer capacity in `orchestration.py`; cross-generation worker-capacity reservation at the atomic claim boundary in `worker_lifecycle.py`; and mutation-test cardinality in `mutation_testing.py`. `qualification_profile.py` measures store-open, planning, claim, heartbeat, recovery, SQLite-lock, WAL, audit, backup/restore, disk-full rollback and sandbox costs on one exact host profile. Measurements are observations, not universal budgets or acceptance. Multi-host capacity and failover require the separately authenticated distributed-fence boundary.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Run the control_engineering_v2 CLI and SQLite v9 owner documented in IMPLEMENTATION.md. Keep one connection per execution thread; writers serialize with BEGIN IMMEDIATE. Strong candidate isolation requires a successful Bubblewrap probe. WAL capacity, backup, external audit anchoring, retention and availability are operational responsibilities, not properties of the in-file hash chain.
+Run the control_engineering_v2 CLI and SQLite v10 owner documented in IMPLEMENTATION.md. Keep one connection per execution thread; writers serialize with BEGIN IMMEDIATE. Strong candidate isolation requires a successful Bubblewrap probe. WAL capacity, backup, external audit anchoring, retention and availability are operational responsibilities, not properties of the in-file hash chain.
 
 Current operating and state-format references:
 

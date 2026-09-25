@@ -28,9 +28,9 @@ The facade owns ephemeral orchestration only: run identity, frozen owner binding
 
 Agentd owns the product-call lifetime but not the facts. The seven owner APIs are invoked directly from their authoritative crates. `AgentdIntelligenceProductRunnerV1::prepare_and_admit` combines canonical composition with Agentd `RunStart` and exact `ContextAttached`, so callers cannot promote a merely prepared envelope into a physical-turn binding. A successful cognition worker has no dispatch or ledger capability; after it returns, Agentd performs another full currentness check before publishing a dispatch-proposal digest. Currentness comes from an Ed25519-signed manifest whose verifier key is configured outside the manifest and whose signed domain includes the authority epoch, revocation frontier and all seven owner generation/implementation/key identities.
 
-The daemon-owned `AgentRunCoordinator` freezes the exact prepared envelope into a typed run snapshot plus context attachment. runtime.codex accepts that binding only at the exact `ContextAttached` revision, persists its native dispatch identity, advances Agentd to `Dispatched`, and only then calls App Server `turn/start`. Product learning mutations remain behind the authenticated `LedgerWriter`; the runner carries no product writer capability.
+The daemon-owned `AgentRunCoordinator` freezes the exact prepared envelope into a typed run snapshot plus context attachment. runtime.codex accepts that binding only at the exact `ContextAttached` revision, persists its native dispatch identity, advances Agentd to `Dispatched`, and only then calls App Server `turn/start`. Decision and independently observed Outcome are appended only through the existing sealed `DurableLearningJournal`.
 
-The historical raw-V1 append and `PendingIntelligenceLedgerAppendV1` replay seam is confined to the explicit qualification legacy feature and test-support source. It is not production recovery evidence. Physical after-send uncertainty remains explicit: lost turn/start acknowledgement or a cancellation/deadline grace window without terminal provider evidence transitions the same Agentd run to `Indeterminate`; no automatic redispatch is permitted.
+Ledger append uncertainty never becomes success. `Indeterminate` or ambiguous I/O returns `PendingIntelligenceLedgerAppendV1`, preserving the exact event and original predecessor. Reconciliation requires a freshly recovered journal and exact replay. Physical after-send uncertainty is also explicit: lost turn/start acknowledgement or a cancellation/deadline grace window without terminal provider evidence transitions the same Agentd run to `Indeterminate`; no automatic redispatch is permitted.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -60,12 +60,12 @@ These are enforcement bounds, not target-host measurements. The blocking worker 
 
 Source tests now include:
 
-- INTEL-01: `codex-rs/hepta-intelligence/src/canonical_tests.rs` covers seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt and duplicate candidate rejection.
-- INTEL-02: `codex-rs/hepta-agentd/src/intelligence_product_tests.rs` exercises real objective/NDU/neuron/prompt/intuition/context/evaluation APIs, Agentd dispatch proposal, durable Decision -> independent terminal Outcome, acknowledged reopen and idempotent retry.
-- INTEL-03: Agentd product tests reject missing current owners, signed-currentness substitution and final-use revocation-frontier races and cover exact admit/context/dispatch/terminal lifecycle plus total-budget timeout before any ledger capability is exposed.
-- INTEL-04: agent protocol tests cover strict bounded run-lifecycle DTO round trips with owner-controlled admission time.
-- INTEL-05: native inference tests bind physical turn dispatch and terminal/indeterminate reconciliation to the exact Agentd intelligence run; a real-process App Server E2E remains required before `productExecutionProved` can become true.
-- INTEL-06: existing vertical/evaluated-shadow tests remain compatibility regression coverage.
+- `INTEL-01`: `codex-rs/hepta-intelligence/src/canonical_tests.rs`: seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt and duplicate candidate rejection.
+- `INTEL-02`: `codex-rs/hepta-agentd/src/intelligence_product_tests.rs`: real objective/NDU/neuron/prompt/intuition/context/evaluation APIs, Agentd dispatch proposal, real durable Decision -> independent terminal Outcome, acknowledged reopen and idempotent retry.
+- `INTEL-03`: The Agentd product tests also cover missing current owner, signed-currentness substitution, final-use revocation-frontier race, exact admit/context/dispatch/terminal lifecycle and total-budget timeout before any ledger capability is exposed.
+- `INTEL-04`: Agent protocol tests cover strict bounded run-lifecycle DTO round trips with owner-controlled admission time.
+- `INTEL-05`: Native inference source binds physical turn dispatch and terminal/indeterminate reconciliation to the exact Agentd intelligence run; a real-process App Server E2E for the exact candidate remains required before `productExecutionProved` can become true.
+- `INTEL-06`: Existing vertical/evaluated-shadow tests remain compatibility regression coverage.
 
 These are executable source tests. They become exact-candidate evidence only when the repository workflows execute them on the exact head and deterministic merge candidate. Target-host resource evidence remains a separate receipt.
 

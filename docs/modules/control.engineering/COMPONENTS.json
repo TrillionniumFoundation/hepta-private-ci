@@ -361,6 +361,31 @@
       "rollback": "retry with corrected input; scheduling retains immutable committed generations"
     },
     {
+      "id": "engineering-store-schema-validator",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+      "symbols": [
+        "EngineeringStore._validate_schema_objects",
+        "EngineeringStore._validate_store_integrity",
+        "EngineeringStore._verify_capacity_reservations"
+      ],
+      "state": "source_implemented",
+      "physicalState": "SQLite v10 startup compares the exact table/index definitions, version metadata, quick_check, foreign keys, capacity reservations and audit chain before serving requests",
+      "failureModel": [
+        "store_schema_incomplete",
+        "store_schema_unexpected_object",
+        "store_schema_definition_mismatch",
+        "store_schema_version_mismatch",
+        "store_integrity_check_failed",
+        "store_foreign_key_check_failed",
+        "worker_capacity_reservation_mismatch"
+      ],
+      "resourceBounds": {
+        "schemaObjects": "closed_world",
+        "repairOnOpen": 0
+      },
+      "rollback": "quarantine the database and restore or migrate from a verified compatible predecessor; never repair current facts silently"
+    },
+    {
       "id": "authenticated-engineering-orchestrator",
       "source": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
       "symbols": [
@@ -392,7 +417,9 @@
         "completion_receipt_digest",
         "completion_receipt_before_generation",
         "completion_receipt_window_exceeds_envelope",
-        "assignment_generation_invalid"
+        "assignment_generation_invalid",
+        "worker_capacity_exhausted",
+        "worker_capacity_state_oversubscribed"
       ],
       "resourceBounds": {
         "maximumWorkers": 256,
@@ -401,7 +428,7 @@
         "maximumCapacityUnits": 1000000
       },
       "rollback": "discard the immutable plan and publish a new generation from fresh authenticated facts",
-      "physicalState": "SQLite assignment_generations and assignment_generation_frontiers atomically contain the final resource-aware assigned/blocked projection"
+      "physicalState": "SQLite v10 assignment/orchestration generations atomically bind the final resource-aware projection and exact active Worker-capacity reservation frontier"
     },
     {
       "id": "sandbox-execution-controller",
@@ -425,6 +452,29 @@
       },
       "rollback": "stop host admission and release slot locks; semantic rejection is never retried",
       "physicalState": "POSIX host-wide advisory slot locks plus per-process bounded semaphore; separately authenticated distributed fence required across hosts"
+    },
+    {
+      "id": "target-host-qualification-profile",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/qualification_profile.py",
+      "symbols": [
+        "build_host_profile",
+        "main"
+      ],
+      "state": "source_implemented_live_ci_execution_pending",
+      "physicalState": "Per exact source/merge lane JSON artifact measures SQLite, recovery, WAL, audit, backup/restore, controlled disk-full rollback and the unchanged complete strong-sandbox boundary",
+      "failureModel": [
+        "qualification_repository_not_clean",
+        "qualification_recovery_not_observed",
+        "qualification_backup_snapshot_mismatch",
+        "disk_full_mutation_not_rolled_back",
+        "qualification_strong_sandbox_not_observed"
+      ],
+      "resourceBounds": {
+        "maximumIterations": 50,
+        "sandboxParallelism": 1,
+        "authorityMinted": 0
+      },
+      "rollback": "discard the measurement artifact; no performance result can weaken source, sandbox, recovery or deployment gates"
     },
     {
       "id": "mutation-testing-gate",
@@ -499,7 +549,7 @@
         "authorityMinted": 0
       },
       "rollback": "production admission remains blocked until fresh externally authenticated, role-separated custody and control receipts exist",
-      "physicalState": "SQLite v9 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
+      "physicalState": "SQLite v10 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
     },
     {
       "id": "repository-product-caller",
@@ -520,7 +570,11 @@
         "product_receipt_pair_canonical_drift",
         "product_worker_lifecycle_not_recovered",
         "product_integration_reconciliation_not_recovered",
-        "product_reopen_audit_anchor_drift"
+        "product_reopen_audit_anchor_drift",
+        "product_startup_recovery_missing",
+        "product_startup_recovery_incomplete",
+        "product_receipt_startup_recovery",
+        "integration_terminal_receipt_binding"
       ],
       "resourceBounds": {
         "runtimeAuthority": 0,
@@ -528,7 +582,7 @@
         "releaseAuthority": 0
       },
       "rollback": "discard the lane receipts/pair receipt; no product transition is authorized",
-      "physicalState": "Repository CI executes SQLite v9 planning, fenced worker lifecycle, integration reconciliation and reopen recovery using explicit reference fixture identities; external independent observations remain separate."
+      "physicalState": "Repository CI executes SQLite v10 planning, atomic capacity reservation, startup reconciliation, full-context integration stages, a separately signed terminal observation and repeated reopen recovery using explicit reference fixture identities; external independence and authority remain unproved."
     },
     {
       "id": "durable-worker-lifecycle",
@@ -540,10 +594,14 @@
         "heartbeat_claim",
         "submit_worker_result",
         "observe_claim_completion",
-        "expire_stale_claims"
+        "expire_stale_claims",
+        "WorkerCapacityUsage",
+        "WorkerRecoveryReport",
+        "worker_capacity_usage",
+        "recover_worker_lifecycle"
       ],
       "state": "source_implemented",
-      "physicalState": "SQLite v9 orchestration_generations, worker_registrations, worker_claims, worker_heartbeat_observations, worker_result_observations and worker_completion_observations",
+      "physicalState": "SQLite v10 orchestration_generations, worker_registrations, worker_claims, worker_capacity_reservations and immutable heartbeat/result/completion observations",
       "failureModel": [
         "worker_profile_drift",
         "claim_lease_invalid",
@@ -552,26 +610,36 @@
         "claim_attempts_exhausted",
         "worker_result_replay_conflict",
         "completion_replay_conflict",
-        "completion_observation_state_mismatch"
+        "completion_observation_state_mismatch",
+        "worker_capacity_exhausted",
+        "worker_capacity_reservation_missing",
+        "worker_capacity_reservation_state_mismatch",
+        "worker_capacity_state_oversubscribed",
+        "worker_recovery_state_invalid",
+        "worker_recovery_race"
       ],
       "resourceBounds": {
         "maximumClaimAttempts": 3,
         "maximumHeartbeatSeconds": 300
       },
-      "rollback": "claim/heartbeat/result/completion acknowledgement-loss replays return the already committed state without duplicate audit; timeout or infrastructure failure alone may enter bounded retry, semantic failure is terminal, and accepted CI completion digests survive reopen"
+      "rollback": "Claim and capacity reservation commit atomically; acknowledgement-loss replay returns committed state; result, timeout, revocation and startup recovery release capacity at most once; only bounded retryable failures create a new attempt."
     },
     {
       "id": "named-product-owner",
       "source": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
       "symbols": [
-        "EngineeringControlProduct"
+        "EngineeringControlProduct",
+        "EngineeringControlProduct.startup_reconcile",
+        "EngineeringControlProduct.worker_capacity"
       ],
       "state": "source_implemented_fixture_execution_pending",
-      "physicalState": "One named owner composes repository identity, SQLite v9 EngineeringStore, trust verifier, planner, fenced worker lifecycle and durable integration reconciliation",
+      "physicalState": "One named owner composes repository identity, SQLite v10 EngineeringStore, trust verifier, planner, atomic Worker-capacity reservations, startup reconciliation and durable terminal integration reconciliation",
       "failureModel": [
         "source_identity_mismatch",
         "repository_mismatch",
-        "orchestration_generation_conflict"
+        "orchestration_generation_conflict",
+        "worker_recovery_state_invalid",
+        "worker_capacity_reservation_state_mismatch"
       ],
       "resourceBounds": {
         "ambientAuthority": 0
@@ -590,10 +658,13 @@
         "observe_integration_stage",
         "reconcile_integration_item",
         "integration_queue_generation",
-        "integration_queue_item"
+        "integration_queue_item",
+        "IntegrationContextBinding",
+        "integration_context_binding",
+        "integration_receipt_context"
       ],
       "state": "source_implemented_authenticated_stage_boundary",
-      "physicalState": "SQLite v9 integration_queue_generations and integration_queue_items",
+      "physicalState": "SQLite v10 integration_queue_generations/items plus recomputed immutable queue, orchestration, envelope, source, base and owner-context bindings for every signed stage and terminal observation",
       "failureModel": [
         "integration_generation_unknown",
         "integration_item_unknown",
@@ -606,13 +677,19 @@
         "integration_ci_before_review",
         "integration_generation_terminal",
         "integration_stage_receipt_required",
-        "integration_stage_receipt_binding"
+        "integration_stage_receipt_binding",
+        "integration_queue_context_invalid",
+        "integration_envelope_invalid",
+        "orchestration_generation_invalid",
+        "assignment_generation_invalid",
+        "integration_terminal_receipt_binding",
+        "integration_context_binding_required"
       ],
       "resourceBounds": {
         "mergeAuthority": 0,
         "releaseAuthority": 0
       },
-      "rollback": "signed role-bound stage observations are replay-stable; drift invalidates the generation and requires a fresh queue from a fresh orchestration generation; review observation never becomes independent acceptance and terminal observations remain separately authenticated/immutable"
+      "rollback": "Fully context-bound role observations are replay-stable; any source/base/queue/owner mismatch fails before mutation, pre-terminal drift requires a fresh queue, and terminal observations remain separately authenticated and immutable."
     },
     {
       "id": "github-review-identity-observer",
