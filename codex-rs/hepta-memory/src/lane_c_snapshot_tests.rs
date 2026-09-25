@@ -504,8 +504,12 @@ async fn streamed_history_case(revisions: i64) {
     let access = CognitiveAccess::agent_private(owner.clone());
     let memory_id = "memory:lane-c-streamed-history";
     let source_id = "source:lane-c-streamed-history";
-    let source_digest = Sha256Digest::for_bytes(b"streamed history source").to_string();
-    let content_digest = Sha256Digest::for_bytes(b"streamed history").to_string();
+    let source_digest = Sha256Digest::for_bytes(b"streamed history source")
+        .as_str()
+        .to_string();
+    let content_digest = Sha256Digest::for_bytes(b"streamed history")
+        .as_str()
+        .to_string();
     let mut transaction = store.pool.begin().await.unwrap();
     sqlx::query(
         "INSERT INTO source_ledger (
