@@ -60,27 +60,54 @@ impl AckLossProxy {
             handlers.abort_all();
             while handlers.join_next().await.is_some() {}
         });
-        Ok(Self { root, signed_requests, forwarded: Some(forwarded_rx), cancellation, task })
+        Ok(Self {
+            root,
+            signed_requests,
+            forwarded: Some(forwarded_rx),
+            cancellation,
+            task,
+        })
     }
 
     pub(super) async fn crash_caller_after_forward(
-        &mut self, request: &Path, journal: &Path,
+        &mut self,
+        request: &Path,
+        journal: &Path,
     ) -> Result<()> {
-        let mut caller = tokio::process::Command::new(env!("CARGO_BIN_EXE_hepta-supervisor-release-controller"))
-            .arg("dispatch").arg("--fleet-root").arg(self.root.as_path())
-            .arg("--request").arg(request).arg("--journal").arg(journal)
-            .arg("--wait-seconds").arg("30")
-            .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::inherit())
-            .kill_on_drop(true).spawn()?;
-        let forwarded = self.forwarded.take().context("only one intentional lost acknowledgement")?;
+        let mut caller =
+            tokio::process::Command::new(env!("CARGO_BIN_EXE_hepta-supervisor-release-controller"))
+                .arg("dispatch")
+                .arg("--fleet-root")
+                .arg(self.root.as_path())
+                .arg("--request")
+                .arg(request)
+                .arg("--journal")
+                .arg(journal)
+                .arg("--wait-seconds")
+                .arg("30")
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .stderr(Stdio::inherit())
+                .kill_on_drop(true)
+                .spawn()?;
+        let forwarded = self
+            .forwarded
+            .take()
+            .context("only one intentional lost acknowledgement")?;
         tokio::time::timeout(Duration::from_secs(30), forwarded).await??;
         caller.kill().await?;
         let status = caller.wait().await?;
         use std::os::unix::process::ExitStatusExt;
-        ensure!(status.signal() == Some(libc::SIGKILL), "caller was not killed at the lost-ack cut");
-        let retained: ProductionReleaseJournalV1 = serde_json::from_slice(&std::fs::read(journal)?)?;
-        ensure!(retained.status == ProductionReleaseCallerStatusV1::Prepared,
-            "caller published a receipt despite withheld acknowledgement");
+        ensure!(
+            status.signal() == Some(libc::SIGKILL),
+            "caller was not killed at the lost-ack cut"
+        );
+        let retained: ProductionReleaseJournalV1 =
+            serde_json::from_slice(&std::fs::read(journal)?)?;
+        ensure!(
+            retained.status == ProductionReleaseCallerStatusV1::Prepared,
+            "caller published a receipt despite withheld acknowledgement"
+        );
         Ok(())
     }
 
@@ -106,11 +133,25 @@ async fn relay(
     let (reader, mut writer) = peer.into_split();
     let mut reader = tokio::io::BufReader::new(reader).take(262_145);
     let mut frame = Vec::new();
-    tokio::time::timeout(Duration::from_secs(10), reader.read_until(b'\n', &mut frame)).await??;
-    ensure!(frame.len() <= 262_144 && frame.ends_with(b"\n"), "invalid proxy frame");
+    tokio::time::timeout(
+        Duration::from_secs(10),
+        reader.read_until(b'\n', &mut frame),
+    )
+    .await??;
+    ensure!(
+        frame.len() <= 262_144 && frame.ends_with(b"\n"),
+        "invalid proxy frame"
+    );
     let request: serde_json::Value = serde_json::from_slice(&frame)?;
-    let signed = matches!(request["method"]["type"].as_str(), Some("signed_upgrade" | "signed_rollback"));
-    let ordinal = if signed { counter.fetch_add(1, Ordering::AcqRel) } else { usize::MAX };
+    let signed = matches!(
+        request["method"]["type"].as_str(),
+        Some("signed_upgrade" | "signed_rollback")
+    );
+    let ordinal = if signed {
+        counter.fetch_add(1, Ordering::AcqRel)
+    } else {
+        usize::MAX
+    };
     let mut upstream = AsyncUnixStream::connect(target).await?;
     upstream.write_all(&frame).await?;
     upstream.shutdown().await?;
@@ -122,14 +163,25 @@ async fn relay(
         // to the caller. No authority or result is fabricated by this proxy.
         let mut response = Vec::new();
         let mut upstream = tokio::io::BufReader::new(upstream).take(262_145);
-        tokio::time::timeout(Duration::from_secs(30), upstream.read_until(b'\n', &mut response)).await??;
+        tokio::time::timeout(
+            Duration::from_secs(30),
+            upstream.read_until(b'\n', &mut response),
+        )
+        .await??;
         stop.cancelled().await;
         return Ok(());
     }
     let mut response = Vec::new();
     let mut upstream = tokio::io::BufReader::new(upstream).take(262_145);
-    tokio::time::timeout(Duration::from_secs(30), upstream.read_until(b'\n', &mut response)).await??;
-    ensure!(response.len() <= 262_144 && response.ends_with(b"\n"), "invalid upstream frame");
+    tokio::time::timeout(
+        Duration::from_secs(30),
+        upstream.read_until(b'\n', &mut response),
+    )
+    .await??;
+    ensure!(
+        response.len() <= 262_144 && response.ends_with(b"\n"),
+        "invalid upstream frame"
+    );
     writer.write_all(&response).await?;
     writer.shutdown().await?;
     Ok(())
