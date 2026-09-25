@@ -706,8 +706,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "17c88dc62340574ababb61220dec7b1672469a9d",
-    "tree": "1a865b4fe61889d4f593ee8bf18e486c93615045"
+    "commit": "f7ada1bf91a62fb341edb625892918a9e142072a",
+    "tree": "635700e83830a3434b625b17950fc259eaefd36d"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -843,24 +843,56 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "object": "07f0823f8a0ea7bd105676c4afc3ae6b932e2861"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "2059fe32fe80b8a49d83b5995d667bbfbf4c0745"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/ndu_control.rs",
+      "object": "795a87fd8767049e1430b610dc0167517a20c15b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_owner.rs",
+      "object": "f4b964ac069b81e1bd088381a002c58d55a8f5c4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
+      "object": "a52cbc0a820c39a52bc399ed4d5fd410f2970036"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "4a5311e0933ac530a622c9fa385fb1ebf91dd40f"
+    },
+    {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "87d246d32305aa78d3f5a29ae0c6a2cc8bf55d63"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "object": "896d06018d1aface62eb1762f534aad0ae04f740"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+      "object": "4f5021be9e3e5962372fd99b6578552a98b1d6b6"
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "f6415ee51a7cf001fcf521cdbd4c03bef77e5bc3"
+      "object": "016ae6bf33f9c49c2b16be0ff33148b0f4419fda"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
-      "object": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "object": "66adac86a57121508793f8445d1690aa8deba1f0"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
-      "object": "274029ed1b0d86e4f3ff172e57db56b6d6d9e8a3"
+      "object": "748bf8ba2347167f7de8c274c5979ca74e3661c8"
     },
     {
       "path": "codex-rs/hepta-ndu/src/covariance.rs",
@@ -876,23 +908,31 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "645d13e169f5ad849aa8dc7d83213bb888ebd0cb"
+      "object": "ff9acf99c15907815e10ca9a3e291de6539e63d9"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
-      "object": "2d4cb117029f84a3d1b8f3d304243dbac6110216"
+      "object": "6f25bb87128ce6a240456955350a798e0667da76"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
+      "object": "0efa3c2aa0e0fde87e437bb0835d2ee4cfeaa780"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
+      "object": "fa0b8e75bb4fd66cfaca74ea1dcd3da17d05f102"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "7121a3f3cd838e82d12fdc68bfc8068789e24a9f"
+      "object": "500f30cfec56b8afc5b2ff5d61bbc233aa322cd8"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
-      "object": "1e02ebc0622dc975c083d0f31db231c2ea4a81f3"
+      "object": "3821d2e4990784e152a2fb4d4aaf48956c2d7889"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "c36bb4147e2eece2cb04d3421e3ca3e79a7b3776"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
@@ -904,19 +944,19 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",
-      "object": "b0ababef6455535c1a7ae96ba928eb070a7567b7"
+      "object": "fc4d85ada3fdd50fd043afc6c2052ec4c87302bd"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
-      "object": "6db0d871c17eeb4f6f52ffa3fd61b7a7d7b311ef"
+      "object": "07894fe25ba1f8dac8ef6d782da6c5e1f4ac2765"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol.rs",
-      "object": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
+      "object": "3e677ec6b3c1434d2590ce5cb9c29490bc3df1f3"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-      "object": "8e58a93aea0a93fb15d7e83922219c51fee93489"
+      "object": "23930af9569ad497d76434c840494aef4e54c823"
     },
     {
       "path": "codex-rs/hepta-ndu/src/z_conversion.rs",
@@ -928,7 +968,7 @@
     },
     {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
-      "object": "714ba51aa9264f0c6349f3fc52cf1e16ae10e381"
+      "object": "750e8df4c0c8ace41918e9b64065bc5eb1303395"
     }
   ]
 }
