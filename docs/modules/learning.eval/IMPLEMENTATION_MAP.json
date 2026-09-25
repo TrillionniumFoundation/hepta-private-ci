@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b6c67569382ca3ef5543a05b9c30716e135acabb",
-    "tree": "db3959d0984e02430f439ea3766144995e5ee1e9"
+    "commit": "9e12bf9ef5a8184a76adc09e4d7a5b80f25694ba",
+    "tree": "40fedff6677fc4c97e99b87c13f26d8a71f4f18e"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.eval",
@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "product_qualification_receipt_consumed_by_evaluated_shadow",
-  "productionWriterState": "qualification_evidence_sink_contract_composed_target_host_binding_unproved",
+  "productionWriterState": "concrete_agentd_evidence_transport_default_job_assembly_unproved",
   "operations": [
     {
       "operation": "estimate_ope",
@@ -247,7 +247,10 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain passing exact-head and ordered-parent synthetic-merge learning.eval qualification artifacts for the final immutable candidate."
+    "Obtain passing exact-head and ordered-parent synthetic-merge artifacts for the final immutable candidate; previous green commits do not qualify newer source.",
+    "Bind ordinary daemon evaluation requests to an authenticated final-holdout provider, frozen input archive and existing scheduler; synthetic test providers are not product ingress.",
+    "Persist and reload the original signed publication intent through its named existing operation/outbox owner; do not recreate a fresh message after an unknown result.",
+    "Execute current-source real-daemon publication and writer-lock revocation regressions; keep complete product execution unproved until the ordinary job path is demonstrated."
   ],
   "externalEvidenceGates": [
     "target-host authentication and durable binding for ProductQualificationEvidenceSinkV1 and final-holdout namespace",
@@ -298,7 +301,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "7ae50954169696b946eb5b0b4879e1513585b55b"
+      "object": "ca2e4738cd6cdbe51ae6cad42e757cc41f82ab7e"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
@@ -306,15 +309,15 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
-      "object": "b46cb572492afa8646b92e5213ce9c47a4feaf7d"
+      "object": "4bdb85d79305e6d480dd741c97ffff0b3933b051"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
-      "object": "ce468fc48283314fea1a005b9ecb2ff8dcfa72c1"
+      "object": "361b94dcbd8bcce3295db535ee13e2d200af0545"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
-      "object": "0e9d7b24f2ec08bab3eeb02866418b17d1edd3dc"
+      "object": "f9d985650330ca905583b67c06e4849194d702e8"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
@@ -350,11 +353,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-      "object": "724d8671fed818f5d1b0f4f7eac26ca717f53a36"
+      "object": "71b3f28c6d1047ab6124f2552a1b871c5bc6c48a"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
-      "object": "3789ccf8ed789a1f498cd6dd797847f743bc9254"
+      "object": "7fcb9838aac7885e5acdb9d864b17f2a4d546a81"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
@@ -394,7 +397,7 @@
     },
     {
       "path": "docs/modules/learning.eval/TECHNICAL.md",
-      "object": "9cc96e05394f08aca263048ecdd40bfc112f7601"
+      "object": "78375331c31e4893ff82157c2a7f2128daa234f8"
     }
   ]
 }
