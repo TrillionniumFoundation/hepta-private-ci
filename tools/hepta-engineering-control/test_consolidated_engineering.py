@@ -121,6 +121,30 @@ class OwnerTransactionTests(unittest.TestCase):
             ):
                 EngineeringStore(path)
 
+    def test_current_schema_unexpected_trigger_and_view_are_rejected_at_open(self):
+        for object_kind in ("trigger", "view"):
+            with self.subTest(object_kind=object_kind), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary) / "owner.sqlite3"
+                with EngineeringStore(path):
+                    pass
+                with sqlite3.connect(path) as connection:
+                    if object_kind == "trigger":
+                        connection.execute(
+                            "CREATE TRIGGER unexpected_worker_trigger "
+                            "AFTER INSERT ON worker_registrations BEGIN "
+                            "UPDATE engineering_schema_meta SET "
+                            "updated_unix_ns=updated_unix_ns WHERE singleton=1; END"
+                        )
+                    else:
+                        connection.execute(
+                            "CREATE VIEW unexpected_workers AS "
+                            "SELECT worker_id FROM worker_registrations"
+                        )
+                with self.assertRaisesRegex(
+                    EngineeringError, "store_schema_unexpected_object"
+                ):
+                    EngineeringStore(path)
+
     def test_current_schema_constraint_drift_is_rejected_at_open(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"

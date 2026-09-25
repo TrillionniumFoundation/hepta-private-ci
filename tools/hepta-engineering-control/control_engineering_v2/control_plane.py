@@ -91,7 +91,7 @@ def _schema_manifest(connection: sqlite3.Connection) -> dict[tuple[str, str], tu
     result: dict[tuple[str, str], tuple[str, str | None]] = {}
     for row in connection.execute(
         "SELECT type,name,tbl_name,sql FROM sqlite_master "
-        "WHERE type IN ('table','index') ORDER BY type,name"
+        "WHERE type IN ('table','index','view','trigger') ORDER BY type,name"
     ):
         kind, name, table, sql = (str(row[0]), str(row[1]), str(row[2]), row[3])
         if name.startswith("sqlite_"):
