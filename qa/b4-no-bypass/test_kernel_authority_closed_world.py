@@ -60,7 +60,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         block = code[brace + 1 : end]
         methods: set[str] = set()
         for method in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
+            r"\bpub\s+(?:(?:async|const)\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
         ):
             prefix = block[: method.start()]
             depth = prefix.count("{") - prefix.count("}")
@@ -72,7 +72,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         code = self.lexical_code(source_path)
         functions: set[str] = set()
         for function in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", code
+            r"\bpub\s+(?:(?:async|const)\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", code
         ):
             prefix = code[: function.start()]
             depth = prefix.count("{") - prefix.count("}")

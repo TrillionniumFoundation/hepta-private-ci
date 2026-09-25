@@ -8,6 +8,11 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 [privileged_inventory]
 required_boundary_ids = [
   "supervisor_authorized_boot",
+  "cognitive_store_recovery_open",
+  "cognitive_production_mutation_capability",
+  "learning_artifact_owner_bootstrap",
+  "learning_artifact_owner_restart",
+  "learning_artifact_verified_current_view",
   "memory_production_writer_open",
   "agentd_production_writer_host",
   "agentd_production_operation_runtime",
@@ -26,6 +31,7 @@ required_boundary_ids = [
   "final_use_approval_trust",
   "final_use_approval_verify",
   "final_use_revocation_feed_trust",
+  "final_use_revocation_feed_verify",
   "final_use_revocation_feed_apply",
   "final_use_revocation_convergence_trust",
   "final_use_revocation_convergence_verify",
@@ -45,8 +51,10 @@ required_boundary_ids = [
   "authority_lease_dispatch_raw",
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
-  "automation_taskflow_provider_effect_bridge",
-  "final_use_guarded_effect"
+  "final_use_guarded_effect",
+  "final_use_async_entry",
+  "bao_authbus_final_use_consumer",
+  "automation_taskflow_provider_effect_bridge"
 ]
 
 [[boundary]]
@@ -76,6 +84,7 @@ caller_markers = ["CognitiveStore::open_with_recovery", "ProductionAuthorityVeri
 [[boundary]]
 id = "cognitive_production_mutation_capability"
 symbol = "ProductionDurableWriter::cognitive_mutation_capability"
+call_pattern = '\.\s*cognitive_mutation_capability\s*\('
 definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
 definition_markers = ["pub struct ProductionCognitiveMutationCapability", "pub fn cognitive_mutation_capability", "production_cognitive_mutation_sealed"]
 product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
@@ -116,10 +125,14 @@ caller_markers = ["LearningArtifactOwnerHost::open_with_required_current_head", 
 [[boundary]]
 id = "learning_artifact_verified_current_view"
 symbol = "VerifiedCurrentRegistryViewV1"
+call_pattern = '\.\s*with_current\s*\('
 definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
-product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs"]
-caller_markers = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+  "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+]
+caller_markers = ["VerifiedCurrentRegistryViewV1", "with_current"]
 
 [[boundary]]
 id = "provider_effect_coordinator"
@@ -142,8 +155,8 @@ id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"]
-caller_markers = ["FinalUseAuthority::open_state_dir", "authority_state_dir", "SignedFinalUseGrant"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+caller_markers = ["FinalUseAuthority::open_state_dir", "FinalUseAuthority", "authority"]
 
 [[boundary]]
 id = "final_use_claim"
@@ -159,8 +172,8 @@ symbol = "FinalUseAuthority::claim"
 call_pattern = "authority\\s*\\.\\s*claim\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
-caller_markers = [".claim(", "signed_grant", "expected_binding"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+caller_markers = ["FinalUseAuthority", ".claim(", "FinalUseBinding"]
 
 [[boundary]]
 id = "final_use_delivery"
@@ -184,8 +197,8 @@ symbol = "FinalUseAuthority::with_verified_use"
 call_pattern = "authority\\s*\\.\\s*with_verified_use\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "validate_live"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+caller_markers = ["FinalUseAuthority", "with_verified_use", "FinalUseBinding"]
 
 [[boundary]]
 id = "final_use_dispatch"
@@ -218,8 +231,8 @@ symbol = "FinalUseAuthority::update_revocations"
 call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-contracts/src/final_use_control.rs"]
-caller_markers = ["FinalUseAuthority", ".update_revocations(signed.update.head.clone())", "FinalUseRevocationFeedVerifier"]
+product_callers = ["codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+caller_markers = ["FinalUseAuthority", "update_revocations", "FinalUseRevocations"]
 
 [[boundary]]
 id = "final_use_approval_trust"
@@ -241,19 +254,32 @@ caller_markers = ["approval_verifier", ".verify(grant, approval)", "BaoFinalUseH
 [[boundary]]
 id = "final_use_revocation_feed_trust"
 symbol = "FinalUseRevocationFeedVerifier::new"
+call_pattern = 'FinalUseRevocationFeedVerifier\s*::\s*(?:new|new_with_keys)\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new(", "InvalidTrust"]
-product_callers = []
-caller_markers = []
+definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new(", "pub fn new_with_keys(", "InvalidTrust"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+caller_markers = ["FinalUseRevocationFeedVerifier::new_with_keys", "final_use_revocation_keys"]
+
+[[boundary]]
+id = "final_use_revocation_feed_verify"
+symbol = "FinalUseRevocationFeedVerifier::verify"
+call_pattern = 'revocation_feed_verifier\s*\.\s*verify\s*\('
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub fn verify<", "self.verify_signed(signed, now_unix_ms)"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+caller_markers = ["revocation_feed_verifier", ".verify(&signed", "signed final-use revocation feed rejected"]
 
 [[boundary]]
 id = "final_use_revocation_feed_apply"
 symbol = "FinalUseRevocationFeedVerifier::apply"
-call_pattern = "revocation_verifier\\s*\\.\\s*apply\\s*\\("
+call_pattern = 'revocation_(?:feed_)?verifier\s*\.\s*apply\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["pub struct FinalUseRevocationFeedVerifier", "pub fn apply(", "update_revocations"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
-caller_markers = ["revocation_verifier", ".apply(&self.authority, update, now_unix_ms)", "apply_revocation_update"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+  "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+]
+caller_markers = ["FinalUseRevocationFeedVerifier", ".apply("]
 
 [[boundary]]
 id = "final_use_revocation_convergence_trust"
@@ -486,12 +512,12 @@ release = false
 
 [[boundary]]
 id = "final_use_async_dispatch_fence"
+call_pattern = 'authority\s*\.\s*with_verified_use_async(?:_with_witness)?\s*\('
 symbol = "FinalUseAuthority::with_verified_use_async"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub async fn with_verified_use_async", "DispatchInProgress", "active_dispatches"]
-product_callers = []
-caller_markers = []
-
+definition_markers = ["pub async fn with_verified_use_async", "pub async fn with_verified_use_async_with_witness", "DispatchInProgress", "active_dispatches"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
+caller_markers = ["with_verified_use_async_with_witness", "record_effect_dispatch_authority_witness", "expected_binding"]
 
 [[boundary]]
 id = "automation_taskflow_provider_effect_bridge"
@@ -507,5 +533,22 @@ id = "final_use_guarded_effect"
 symbol = "FinalUseAuthority::with_verified_effect"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
-caller_markers = ["with_verified_effect"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_async_entry"
+symbol = "VerifiedUseToken::enter / FinalUseAuthority::enter_verified_use"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn enter(self", "pub fn enter_verified_use(", "StaleRevocationHead"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/native_app_server.rs"]
+caller_markers = ["VerifiedUseToken", "verified_use.enter", "EnteredUseToken"]
+
+[[boundary]]
+id = "bao_authbus_final_use_consumer"
+symbol = "BaoClient::consume_kv_v2_with_authbus"
+call_pattern = '\.\s*consume_kv_v2_with_authbus\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+definition_markers = ["pub async fn consume_kv_v2_with_authbus", "mark_dispatch_attempted", "consume_kv_v2(authority"]
+product_callers = []
+caller_markers = []

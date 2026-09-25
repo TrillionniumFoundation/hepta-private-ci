@@ -6,6 +6,7 @@ use std::fmt;
 use std::future::Future;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
@@ -230,6 +231,7 @@ struct Inner {
     issuer_keys: Vec<PinnedIssuerKey>,
     state: Mutex<State>,
     active_dispatches: AtomicUsize,
+    revocation_pending: AtomicBool,
     store: store::Store,
     clock: Arc<dyn AuthorityClock>,
     frontier_store: Option<Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>>,
@@ -321,6 +323,9 @@ impl VerifiedUseToken {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
+        if self.owner.revocation_pending.load(Ordering::Acquire) {
+            return Err(FinalUseError::RevocationPending);
+        }
         let now_unix_ms = self.owner.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(&self.grant, &state.head, now_unix_ms)?;
         if state.head != self.claimed_head {
@@ -383,6 +388,7 @@ impl FinalUseAuthority {
             }],
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
+            revocation_pending: AtomicBool::new(false),
             store,
             clock,
             frontier_store: None,
@@ -424,6 +430,7 @@ impl FinalUseAuthority {
             }],
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
+            revocation_pending: AtomicBool::new(false),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -460,6 +467,7 @@ impl FinalUseAuthority {
             issuer_keys,
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
+            revocation_pending: AtomicBool::new(false),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -547,6 +555,7 @@ impl FinalUseAuthority {
         // Guarded provider effects and trusted revocation updates share this
         // state lock at entry. Retry the update after effect completion/cancel.
         if self.0.active_dispatches.load(Ordering::Acquire) != 0 {
+            self.0.revocation_pending.store(true, Ordering::Release);
             return Err(FinalUseError::DispatchInProgress);
         }
         let mut next = state.clone();
@@ -554,7 +563,9 @@ impl FinalUseAuthority {
             next.used_nonces.clear();
         }
         next.head = head;
-        self.persist_or_fence(&mut state, next)
+        self.persist_or_fence(&mut state, next)?;
+        self.0.revocation_pending.store(false, Ordering::Release);
+        Ok(())
     }
 
     /// Atomically validate and claim one nonce immediately before dispatch.
@@ -586,6 +597,9 @@ impl FinalUseAuthority {
             .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
+        }
+        if self.0.revocation_pending.load(Ordering::Acquire) {
+            return Err(FinalUseError::RevocationPending);
         }
         let now_unix_ms = self.now_unix_ms()?;
         validate_live(&signed.grant, &state.head, now_unix_ms)?;
@@ -691,7 +705,7 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
-        let guard = self.enter_verified_effect(token, expected)?;
+        let (guard, _witness) = self.enter_verified_effect(token, expected)?;
         let result = consumer();
         drop(guard);
         Ok(result)
@@ -709,17 +723,36 @@ impl FinalUseAuthority {
     where
         F: Future<Output = T>,
     {
-        let guard = self.enter_verified_effect(token, expected)?;
+        let (guard, _witness) = self.enter_verified_effect(token, expected)?;
         let result = consumer().await;
         drop(guard);
         Ok(result)
+    }
+
+    /// Guard an async provider effect and expose the canonical, non-authorizing
+    /// dispatch-entry witness to the already-selected durable owner before that
+    /// owner contacts the provider. The witness is evidence only; the active
+    /// dispatch guard remains held until the returned future completes.
+    pub async fn with_verified_use_async_with_witness<T, F>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce(VerifiedUseTokenWitnessV1) -> F,
+    ) -> Result<(T, VerifiedUseTokenWitnessV1), FinalUseError>
+    where
+        F: Future<Output = T>,
+    {
+        let (guard, witness) = self.enter_verified_effect(token, expected)?;
+        let result = consumer(witness.clone()).await;
+        drop(guard);
+        Ok((result, witness))
     }
 
     fn enter_verified_effect(
         &self,
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
-    ) -> Result<ActiveDispatchGuard, FinalUseError> {
+    ) -> Result<(ActiveDispatchGuard, VerifiedUseTokenWitnessV1), FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
@@ -731,12 +764,28 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        validate_live(&token.grant, &state.head, self.now_unix_ms()?)?;
+        if self.0.revocation_pending.load(Ordering::Acquire) {
+            return Err(FinalUseError::RevocationPending);
+        }
+        let now_unix_ms = self.now_unix_ms()?;
+        validate_live(&token.grant, &state.head, now_unix_ms)?;
+        let witness = VerifiedUseTokenWitnessV1::final_use(
+            self.0.signer_id.clone(),
+            token.grant.grant_id,
+            state.head.authority_epoch,
+            state.head.revision,
+            now_unix_ms,
+            VerifiedUseBoundaryV1::DispatchEntry,
+            final_use_binding_witness_sha256(expected)?,
+        );
         self.0.active_dispatches.fetch_add(1, Ordering::AcqRel);
         drop(state);
-        Ok(ActiveDispatchGuard {
-            owner: Arc::clone(&self.0),
-        })
+        Ok((
+            ActiveDispatchGuard {
+                owner: Arc::clone(&self.0),
+            },
+            witness,
+        ))
     }
 
     /// Revalidate live authority and hold the revocation linearization fence
@@ -775,6 +824,9 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
+        if self.0.revocation_pending.load(Ordering::Acquire) {
+            return Err(FinalUseError::RevocationPending);
+        }
         let now_unix_ms = self.now_unix_ms()?;
         validate_live(&token.grant, &state.head, now_unix_ms)?;
         Ok(VerifiedUseTokenWitnessV1::final_use(
@@ -804,6 +856,9 @@ impl FinalUseAuthority {
             .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
+        }
+        if self.0.revocation_pending.load(Ordering::Acquire) {
+            return Err(FinalUseError::RevocationPending);
         }
         let now_unix_ms = self.now_unix_ms()?;
         validate_live(&token.grant, &state.head, now_unix_ms)?;
@@ -1010,6 +1065,7 @@ pub enum FinalUseError {
     AlreadyClaimed,
     CapacityExceeded,
     DispatchInProgress,
+    RevocationPending,
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,

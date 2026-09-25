@@ -56,6 +56,8 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseAuthorityRefV1;
+use codex_hepta_contracts::VerifiedUseBoundaryV1;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -591,6 +593,39 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
         )
         .await
         .expect("same grant remains usable after local wire mismatch");
+    let witness = store
+        .authorized_taskflow_effect_authority_witness(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+        )
+        .await
+        .expect("read authority witness")
+        .expect("dispatch-entry witness");
+    witness.validate().expect("valid authority witness");
+    assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
+    match &witness.authority_ref {
+        VerifiedUseAuthorityRefV1::FinalUse(reference) => {
+            assert_eq!(reference.grant_id, signed.grant.grant_id);
+            assert_eq!(reference.revocation_revision, 1);
+        }
+        VerifiedUseAuthorityRefV1::AuthorityLease(_) => panic!("unexpected authority family"),
+    }
+    drop(store);
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen automation store");
+    assert_eq!(
+        reopened
+            .authorized_taskflow_effect_authority_witness(
+                &effect.run_id,
+                &effect.step_id,
+                effect.attempt,
+            )
+            .await
+            .expect("read restarted authority witness"),
+        Some(witness),
+    );
     assert_eq!(driver.calls, 1);
 }
 

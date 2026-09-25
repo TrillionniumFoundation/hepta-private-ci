@@ -392,14 +392,17 @@ impl AuthorityLeaseRegistry {
                 }
             }
             Some(current) => {
+                let next_expected_revision = next_revision(expected_revision)?;
                 if current == &lease {
+                    if lease.revision != next_expected_revision {
+                        return Err(AuthorityLeaseError::RevisionMismatch);
+                    }
                     return Ok(AuthorityLeaseReadV1 {
                         lease,
                         store_revision: state.store_revision,
                     });
                 }
-                if current.revision != expected_revision
-                    || lease.revision != expected_revision.saturating_add(1)
+                if current.revision != expected_revision || lease.revision != next_expected_revision
                 {
                     return Err(AuthorityLeaseError::RevisionMismatch);
                 }
@@ -669,8 +672,8 @@ impl AuthorityLeaseVerifier {
         expected_revision: u64,
         expected: &AuthorityLeaseBinding,
     ) -> Result<LeaseVerifiedUseToken, AuthorityLeaseError> {
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let lease = state
             .leases
             .get(lease_id)
@@ -720,8 +723,8 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -754,8 +757,8 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -1205,6 +1208,8 @@ mod tests {
     use std::os::unix::fs::PermissionsExt;
     use std::sync::Arc;
     use std::sync::Mutex;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
     use std::sync::mpsc;
     use std::time::Duration;
 
@@ -1214,6 +1219,39 @@ mod tests {
     impl AuthorityClock for FixedClock {
         fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
             Ok(self.0)
+        }
+    }
+
+    #[derive(Debug)]
+    struct ObservableClock {
+        now_unix_ms: AtomicU64,
+        observer: Mutex<Option<mpsc::Sender<u64>>>,
+    }
+
+    impl ObservableClock {
+        fn new(now_unix_ms: u64) -> Self {
+            Self {
+                now_unix_ms: AtomicU64::new(now_unix_ms),
+                observer: Mutex::new(None),
+            }
+        }
+
+        fn set(&self, now_unix_ms: u64) {
+            self.now_unix_ms.store(now_unix_ms, Ordering::SeqCst);
+        }
+
+        fn observe_with(&self, observer: mpsc::Sender<u64>) {
+            *self.observer.lock().unwrap() = Some(observer);
+        }
+    }
+
+    impl AuthorityClock for ObservableClock {
+        fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+            let now_unix_ms = self.now_unix_ms.load(Ordering::SeqCst);
+            if let Some(observer) = self.observer.lock().unwrap().as_ref() {
+                let _ = observer.send(now_unix_ms);
+            }
+            Ok(now_unix_ms)
         }
     }
 
@@ -1383,6 +1421,90 @@ mod tests {
                 .recv_timeout(Duration::from_secs(2))
                 .expect("revocation did not complete after local dispatch boundary")
                 .is_ok()
+        );
+    }
+
+    fn lease_expiring_while_waiting_for_owner_lock(
+        dispatch_boundary: bool,
+    ) -> Result<(), AuthorityLeaseError> {
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let clock = Arc::new(ObservableClock::new(2_000));
+        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
+            directory.path(),
+            "security-authority".into(),
+            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+            clock.clone(),
+        )
+        .unwrap();
+        let mut expiring = lease();
+        expiring.expires_at_unix_ms = 3_000;
+        registry.put_lease(expiring, 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+
+        let owner = Arc::clone(&verifier.0);
+        let owner_lock = owner.state.lock().unwrap();
+        let (clock_tx, clock_rx) = mpsc::channel();
+        clock.observe_with(clock_tx);
+        let (started_tx, started_rx) = mpsc::channel();
+        let expected = binding();
+        let worker = std::thread::spawn(move || {
+            started_tx.send(()).unwrap();
+            if dispatch_boundary {
+                verifier.with_dispatch_boundary(token, &expected, || ())
+            } else {
+                verifier.with_verified_use(token, &expected, || ())
+            }
+        });
+        started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        let sampled_before_lock = clock_rx.recv_timeout(Duration::from_millis(500)).ok();
+        clock.set(4_000);
+        drop(owner_lock);
+        if sampled_before_lock.is_none() {
+            assert_eq!(
+                clock_rx.recv_timeout(Duration::from_secs(2)).unwrap(),
+                4_000
+            );
+        }
+        worker.join().unwrap()
+    }
+
+    #[test]
+    fn identical_lease_retry_requires_the_original_predecessor_revision() {
+        let (registry, _directory) = fixture();
+        let original = lease();
+        registry.put_lease(original.clone(), 0).unwrap();
+        assert_eq!(
+            registry.put_lease(original.clone(), 1).unwrap_err(),
+            AuthorityLeaseError::RevisionMismatch
+        );
+        registry.put_lease(original, 0).unwrap();
+
+        let mut replacement = lease();
+        replacement.revision = 2;
+        replacement.expires_at_unix_ms = 40_000;
+        registry.put_lease(replacement.clone(), 1).unwrap();
+        assert_eq!(
+            registry.put_lease(replacement.clone(), 2).unwrap_err(),
+            AuthorityLeaseError::RevisionMismatch
+        );
+        registry.put_lease(replacement, 1).unwrap();
+    }
+
+    #[test]
+    fn verified_use_rechecks_expiry_after_waiting_for_owner_lock() {
+        assert_eq!(
+            lease_expiring_while_waiting_for_owner_lock(false),
+            Err(AuthorityLeaseError::Expired)
+        );
+    }
+
+    #[test]
+    fn dispatch_boundary_rechecks_expiry_after_waiting_for_owner_lock() {
+        assert_eq!(
+            lease_expiring_while_waiting_for_owner_lock(true),
+            Err(AuthorityLeaseError::Expired)
         );
     }
 

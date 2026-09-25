@@ -554,7 +554,7 @@ caller_markers = ["VerifiedUseToken", "verified_use.enter", "EnteredUseToken"]''
         '''[[boundary]]
 id = "bao_authbus_final_use_consumer"
 symbol = "BaoClient::consume_kv_v2_with_authbus"
-call_pattern = "\\.\\s*consume_kv_v2_with_authbus\\s*\\("
+call_pattern = '\\.\\s*consume_kv_v2_with_authbus\\s*\\('
 definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
 definition_markers = ["pub async fn consume_kv_v2_with_authbus", "mark_dispatch_attempted", "consume_kv_v2(authority"]
 product_callers = []

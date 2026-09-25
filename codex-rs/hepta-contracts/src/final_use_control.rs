@@ -558,6 +558,18 @@ impl FinalUseRevocationFeedVerifier {
         })
     }
 
+    /// Authenticate one fresh signed head without mutating authority state.
+    /// Hosts use this only to validate their initial externally supplied head
+    /// before opening the durable authority owner. The returned key id is audit
+    /// metadata and grants no authority.
+    pub fn verify<'a>(
+        &'a self,
+        signed: &SignedFinalUseRevocationUpdate,
+        now_unix_ms: u64,
+    ) -> Result<&'a str, FinalUseControlError> {
+        self.verify_signed(signed, now_unix_ms)
+    }
+
     /// Authenticate one fresh head and atomically hand it to the durable
     /// authority owner. Replays, rollback and same-epoch revocation removal are
     /// rejected by `FinalUseAuthority::update_revocations`.

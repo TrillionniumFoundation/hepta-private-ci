@@ -811,6 +811,13 @@ fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
     let (authority, signed, _directory) = fixture().unwrap();
     let binding = signed.grant.binding.clone();
     let token = authority.claim(&signed, &binding).unwrap();
+    let mut later = signed.clone();
+    later.grant.grant_id = "read-after-pending-revocation".into();
+    later.grant.nonce = [91; 32];
+    later.signature = SigningKey::from_bytes(&[47; 32])
+        .sign(&later.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
     let mut future = Box::pin(
         authority.with_verified_use_async(token, &binding, || async {
             std::future::pending::<()>().await
@@ -828,6 +835,11 @@ fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
         }),
         Err(FinalUseError::DispatchInProgress)
     );
+    assert_eq!(
+        authority.claim(&later, &binding).unwrap_err(),
+        FinalUseError::RevocationPending,
+        "a pending newer head must stop new admission rather than permit starvation"
+    );
 
     drop(future);
     authority
@@ -837,6 +849,33 @@ fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
             revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
+    authority
+        .claim(&later, &binding)
+        .expect("successful revocation retry clears the admission fence");
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn async_effect_exposes_canonical_dispatch_entry_witness() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+
+    let (inside, outside) = authority
+        .with_verified_use_async_with_witness(token, &binding, |witness| async move { witness })
+        .await
+        .unwrap();
+
+    inside.validate().unwrap();
+    assert_eq!(inside, outside);
+    assert_eq!(inside.boundary, VerifiedUseBoundaryV1::DispatchEntry);
+    match &inside.authority_ref {
+        VerifiedUseAuthorityRefV1::FinalUse(reference) => {
+            assert_eq!(reference.signer_id, "security-owner");
+            assert_eq!(reference.grant_id, signed.grant.grant_id);
+            assert_eq!(reference.revocation_revision, 1);
+        }
+        VerifiedUseAuthorityRefV1::AuthorityLease(_) => panic!("unexpected authority family"),
+    }
 }
 
 #[test]
