@@ -8,6 +8,8 @@ No live effect authority, signing credentials, or existing keyring are consumed.
 from __future__ import annotations
 import argparse
 import base64
+import ctypes
+import ctypes.util
 import hashlib
 import hmac
 import json
@@ -103,6 +105,55 @@ def write_endpoint(root: Path, account: str, address: str):
     return signing
 
 
+def close_native_window(window_id: str) -> None:
+    """Request normal close via WM_DELETE_WINDOW, even without a window manager.
+
+    xdotool windowclose destroys the server resource, which is not the same
+    lifecycle event as a user requesting that an application close its window.
+    """
+    library = ctypes.util.find_library("X11")
+    if library is None:
+        raise RuntimeError("libX11 is required for native lifecycle qualification")
+    x11 = ctypes.CDLL(library)
+    class Data(ctypes.Union):
+        _fields_ = [("bytes", ctypes.c_char * 20), ("shorts", ctypes.c_short * 10),
+                    ("longs", ctypes.c_long * 5)]
+    class ClientMessage(ctypes.Structure):
+        _fields_ = [("type", ctypes.c_int), ("serial", ctypes.c_ulong),
+                    ("send_event", ctypes.c_int), ("display", ctypes.c_void_p),
+                    ("window", ctypes.c_ulong), ("message_type", ctypes.c_ulong),
+                    ("format", ctypes.c_int), ("data", Data)]
+    class Event(ctypes.Union):
+        _fields_ = [("client", ClientMessage), ("padding", ctypes.c_long * 24)]
+    x11.XOpenDisplay.argtypes = [ctypes.c_char_p]
+    x11.XOpenDisplay.restype = ctypes.c_void_p
+    x11.XInternAtom.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+    x11.XInternAtom.restype = ctypes.c_ulong
+    x11.XSendEvent.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_int,
+                              ctypes.c_long, ctypes.POINTER(Event)]
+    x11.XSendEvent.restype = ctypes.c_int
+    x11.XFlush.argtypes = [ctypes.c_void_p]
+    x11.XCloseDisplay.argtypes = [ctypes.c_void_p]
+    display = x11.XOpenDisplay(None)
+    if not display:
+        raise RuntimeError("could not connect to the isolated X display")
+    try:
+        event = Event()
+        event.client.type = 33  # ClientMessage
+        event.client.send_event = 1
+        event.client.display = display
+        event.client.window = int(window_id)
+        event.client.message_type = x11.XInternAtom(display, b"WM_PROTOCOLS", 0)
+        event.client.format = 32
+        event.client.data.longs[0] = x11.XInternAtom(display, b"WM_DELETE_WINDOW", 0)
+        event.client.data.longs[1] = 0  # CurrentTime
+        if x11.XSendEvent(display, int(window_id), 0, 0, ctypes.byref(event)) == 0:
+            raise RuntimeError("WM_DELETE_WINDOW could not be delivered")
+        x11.XFlush(display)
+    finally:
+        x11.XCloseDisplay(display)
+
+
 def terminate(process):
     if process is not None and process.poll() is None:
         process.terminate()
@@ -191,14 +242,17 @@ def main():
             time.sleep(.25)
             if gui.poll() is not None:raise AssertionError("normal GUI exited during keyboard traversal")
             # WM_DELETE_WINDOW, not a test-profile exit flag.
-            run(["xdotool","windowclose",window],env=environment)
-            gui.wait(timeout=10)
+            close_native_window(window)
+            exit_code = gui.wait(timeout=10)
+            if exit_code != 0:
+                raise RuntimeError(f"normal GUI close failed with exit code {exit_code}; inspect gui-{iteration}.log")
+            startup["normal_close_exit_code"] = exit_code
             starts.append(startup)
             gui=None
         if starts[0]["session"]["session_id"]==starts[1]["session"]["session_id"]:raise AssertionError("restart reused session identity")
         after={name:hashlib.sha256((owner/"runtime-v2"/name).read_bytes()).hexdigest() for name in before}
         if before!=after:raise AssertionError("read-only product path mutated owner state")
-        receipt={"schema":"hepta.native-linux-product-qualification.v1","packageBinarySha256":package["binarySha256"],"gatewaySha256":hashlib.sha256(args.gateway.read_bytes()).hexdigest(),"normalConnection":connection,"ordinaryGuiStarts":starts,"visibleWindowObserved":True,"keyboardEventsDelivered":True,"ownerStateUnchanged":True,"environment":"isolated Linux Xvfb/DBus with real OS keyring and owner-format fixture", "physicalDisplayAcceptance":False,"screenReaderAcceptance":False,"independentAcceptance":False,"release":False}
+        receipt={"schema":"hepta.native-linux-product-qualification.v1","packageBinarySha256":package["binarySha256"],"gatewaySha256":hashlib.sha256(args.gateway.read_bytes()).hexdigest(),"normalConnection":connection,"ordinaryGuiStarts":starts,"visibleWindowObserved":True,"keyboardEventsDelivered":True,"normalCloseVerified":True,"ownerStateUnchanged":True,"environment":"isolated Linux Xvfb/DBus with real OS keyring and owner-format fixture", "physicalDisplayAcceptance":False,"screenReaderAcceptance":False,"independentAcceptance":False,"release":False}
         (out/"product-receipt.json").write_text(json.dumps(receipt,indent=2)+"\n")
         print(json.dumps(receipt,indent=2))
     finally:
