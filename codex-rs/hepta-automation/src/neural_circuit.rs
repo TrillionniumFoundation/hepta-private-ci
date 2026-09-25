@@ -493,7 +493,7 @@ mod tests {
     fn successor_binds_exact_predecessor_and_can_change_route_and_parameters() {
         let current = v1();
         let successor = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
-            circuit_id: (current.circuit_id.clone()).into(),
+            circuit_id: current.circuit_id.clone(),
             version: 2,
             predecessor_digest: Some(current.circuit_digest.clone()),
             entry_node: ("observe").into(),
@@ -525,7 +525,7 @@ mod tests {
     fn structural_successor_cannot_rebind_predecessor_or_widen_capabilities() {
         let current = v1();
         let wrong = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
-            circuit_id: (current.circuit_id.clone()).into(),
+            circuit_id: current.circuit_id.clone(),
             version: 2,
             predecessor_digest: Some(digest("wrong-predecessor")),
             entry_node: ("observe").into(),
@@ -540,7 +540,7 @@ mod tests {
         assert!(validate_circuit_successor_v1(&current, &wrong).is_err());
 
         let widened = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
-            circuit_id: (current.circuit_id.clone()).into(),
+            circuit_id: current.circuit_id.clone(),
             version: 2,
             predecessor_digest: Some(current.circuit_digest.clone()),
             entry_node: ("observe").into(),
