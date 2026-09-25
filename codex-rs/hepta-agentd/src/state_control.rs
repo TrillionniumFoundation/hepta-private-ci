@@ -4,7 +4,9 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
@@ -30,6 +32,7 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
+const AUTOMATION_THRESHOLD_CIRCUIT_LEASE_MS: u64 = 60_000;
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -93,7 +96,23 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
+                capabilities.push(
+                    crate::AgentdCapability::new(
+                        crate::AGENTD_CAPABILITY_AUTOMATION_THRESHOLD_CIRCUIT,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Protocol)?,
+                );
                 if self.automation_effect_host().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            crate::AGENTD_CAPABILITY_AUTOMATION_EFFECT_PREPARATION,
+                            1,
+                            0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
@@ -586,6 +605,85 @@ impl AgentdState {
                     None => automation_unavailable(),
                 }
             }
+            crate::AgentdMethod::AutomationRunThresholdCircuit { invocation } => {
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
+                let Some(store) = automation.as_ref() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_unavailable(),
+                    );
+                };
+                let fence = threshold_circuit_fence(
+                    &self.identity,
+                    current_generation,
+                    &invocation.candidate.circuit_digest,
+                )?;
+                let decision = store
+                    .run_threshold_circuit_v1(
+                        &invocation,
+                        &fence,
+                        now_ms()?,
+                        AUTOMATION_THRESHOLD_CIRCUIT_LEASE_MS,
+                    )
+                    .await
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!("threshold circuit execution: {error}"))
+                    })?;
+                self.fence_after_durable_change()?;
+                AgentdPayload::AutomationThresholdCircuit(decision)
+            }
+            crate::AgentdMethod::AutomationPrepareEffect {
+                operation_id,
+                wire_payload_hex,
+                expected_predecessor_digest,
+                compensation_for,
+            } => {
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
+                let Some(store) = automation.as_ref() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_unavailable(),
+                    );
+                };
+                let Some(host) = self.automation_effect_host() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_effect_unavailable(),
+                    );
+                };
+                let wire_payload = decode_effect_wire_hex(&wire_payload_hex)?;
+                let preparation = host
+                    .prepare(
+                        store,
+                        operation_id,
+                        &wire_payload,
+                        expected_predecessor_digest,
+                        compensation_for,
+                        now_ms()?,
+                    )
+                    .await?;
+                self.fence_after_durable_change()?;
+                AgentdPayload::AutomationEffectPreparation(preparation)
+            }
             crate::AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
@@ -634,13 +732,11 @@ impl AgentdState {
                 step_id,
                 attempt,
             } => {
-                require_automation_ready(
+                require_automation_recovery_ready(
                     lifecycle,
-                    app_server_ready,
                     critical_stores_ready,
                     revocation_ready,
                     required_ports_ready,
-                    admission_open,
                     fenced,
                 )?;
                 let Some(store) = automation.as_ref() else {
@@ -1332,6 +1428,49 @@ fn wire_cancellation_disposition(
         crate::CancellationDisposition::AlreadyTerminal => {
             crate::AgentCancellationDisposition::AlreadyTerminal
         }
+    }
+}
+
+fn threshold_circuit_fence(
+    identity: &crate::AgentdIdentity,
+    generation: u64,
+    circuit_digest: &Sha256Digest,
+) -> Result<TaskFlowFence, AgentdError> {
+    let mut bytes = b"hepta.agentd.threshold-circuit-fence.v1\0".to_vec();
+    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    bytes.extend_from_slice(&generation.to_be_bytes());
+    bytes.extend_from_slice(circuit_digest.as_str().as_bytes());
+    TaskFlowFence::new(
+        identity.agent_id.clone(),
+        "agentd.automation-threshold-circuit",
+        generation,
+        generation,
+        Sha256Digest::for_bytes(&bytes).as_str().to_string(),
+    )
+    .map_err(|error| AgentdError::Protocol(format!("threshold circuit fence: {error}")))
+}
+
+fn require_automation_recovery_ready(
+    lifecycle: AgentLifecycle,
+    critical_stores_ready: bool,
+    revocation_ready: bool,
+    required_ports_ready: bool,
+    fenced: bool,
+) -> Result<(), AgentdError> {
+    if matches!(
+        lifecycle,
+        AgentLifecycle::Running | AgentLifecycle::Draining
+    ) && critical_stores_ready
+        && revocation_ready
+        && required_ports_ready
+        && !fenced
+    {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(
+            "automation recovery is unavailable outside a live Running/Draining generation"
+                .to_string(),
+        ))
     }
 }
 

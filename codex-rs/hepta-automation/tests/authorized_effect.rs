@@ -1266,3 +1266,63 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     );
     assert_eq!(must_not_dispatch.calls, 0);
 }
+
+#[tokio::test]
+async fn old_claim_cannot_cross_provider_entry_after_uncontacted_generation_takeover() {
+    struct CountingDriver(usize);
+    impl AuthorizedEffectDriver for CountingDriver {
+        fn dispatch(
+            &mut self,
+            _: &AuthorizedEffectRequest<'_>,
+        ) -> Result<
+            AuthorizedEffectProviderReceipt,
+            codex_hepta_automation::AuthorizedEffectDriverError,
+        > {
+            self.0 += 1;
+            Ok(AuthorizedEffectProviderReceipt {
+                outcome: AuthorizedEffectOutcome::Succeeded,
+                receipt_digest: Sha256Digest::for_bytes(b"late callback"),
+            })
+        }
+    }
+    let fixture = Fixture::new();
+    let (store, old_fence, effect, binding) = prepared_effect_store(&fixture).await;
+    let old_run = store
+        .taskflow_run(&effect.run_id)
+        .await
+        .expect("run")
+        .expect("run exists");
+    let now = old_run.lease_expires_at_ms.expect("lease") + 1;
+    let successor = TaskFlowFence::new(
+        old_fence.owner_agent_id.clone(),
+        old_fence.owner_id.clone(),
+        old_fence.owner_epoch + 1,
+        old_fence.generation + 1,
+        "successor-fence",
+    )
+    .expect("new fence");
+    store
+        .claim_taskflow_run(&effect.run_id, &successor, now, 60_000)
+        .await
+        .expect("uncontacted takeover");
+    let (authority, grant, _authority_dir) = final_use(binding.clone(), "stale-effect-entry");
+    let mut driver = CountingDriver(0);
+    let result = store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &old_fence,
+            &grant,
+            &binding,
+            "late-old-dispatch",
+            now,
+        )
+        .await;
+    assert!(result.is_err());
+    assert_eq!(
+        driver.0, 0,
+        "the old provider callback must not run before stale bookkeeping is rejected"
+    );
+}
