@@ -225,8 +225,15 @@ def verify_source_identity(
     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
         raise ValueError(f"unknown source identity policy: {policy}")
     source = checked_identity(row.get("sourceBase"), candidate)
+    mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
+    if mapping_mode not in {"path_only", "exact_blob"}:
+        raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
     paths = evidence_paths(row, roots)
-    observations = [(source, paths)]
+    # In exact-blob mode ``sourceBase`` is immutable integration provenance,
+    # not the current-source observation. Currentness is proved independently
+    # by every mapped HEAD blob plus ``observedAtHead`` over the complete
+    # evidence/root set. Path-only maps retain the historical no-drift anchor.
+    observations = [] if mapping_mode == "exact_blob" else [(source, paths)]
     if "observedAtHead" in row:
         observed = checked_identity(row["observedAtHead"], candidate)
         observed_paths = row.get("observedSourcePaths", roots)
@@ -254,9 +261,14 @@ def verify_source_identity(
         observations.append((observed, sorted(set(paths + observed_paths))))
     else:
         observed = None
-    if policy == "candidate_or_exact_observation_v1" and source not in (
-        candidate,
-        observed,
+        if mapping_mode == "exact_blob":
+            raise ValueError(
+                "exact blob provenance requires an explicit current source observation"
+            )
+    if (
+        policy == "candidate_or_exact_observation_v1"
+        and mapping_mode != "exact_blob"
+        and source not in (candidate, observed)
     ):
         raise ValueError("source base is neither candidate nor exact observed source")
     checked_paths = sorted({path for _, items in observations for path in items})
@@ -714,6 +726,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     if (
         "observedAtHead" in migrated
         or migrated.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1"
+        or migrated.get("mappingSourceIdentityMode") == "exact_blob"
     ):
         # A navigation-only migration must survive committing the map itself.
         # Without an explicit observation, a strong-policy sourceBase equal to
@@ -778,6 +791,7 @@ def migrate(selected_modules: list[str] | None = None):
         if row.get("module", mid) != mid:
             raise SystemExit(f"{mid}: identity")
         anchor = checked_identity(row.get("sourceBase"), source_base)
+        mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
         migrated = migrate_map(row, by_id[mid], lanes, anchor)
         if "observedAtHead" in row:
             migrated["observedAtHead"] = row["observedAtHead"]
@@ -787,7 +801,13 @@ def migrate(selected_modules: list[str] | None = None):
                 migrated, resolved, source_base, check_checkout=False
             )
         except SourceDrift:
-            migrated = migrate_map(row, by_id[mid], lanes, source_base)
+            if mapping_mode == "exact_blob":
+                # Preserve immutable integration provenance. Rebind only the
+                # explicit current-source observation and HEAD blob manifest.
+                migrated["sourceBase"] = anchor
+                migrated["observedAtHead"] = source_base
+            else:
+                migrated = migrate_map(row, by_id[mid], lanes, source_base)
             paths = verify_source_identity(
                 migrated, resolved, source_base, check_checkout=False
             )
@@ -1176,8 +1196,9 @@ def verify(
 ):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
-    Legacy anchor records are accepted only after the same exact source proof,
-    never as provenance-only evidence. Verification does not qualify execution.
+    Exact-blob maps may retain an immutable provenance anchor only when their
+    mapped HEAD blobs and explicit current-source observation both verify. No
+    provenance record alone establishes currentness or execution qualification.
     """
     candidate = current_source_base()
     try:
@@ -1210,6 +1231,7 @@ def verify(
     checked_paths: set[str] = set()
     candidate_bound_maps = 0
     exact_observed_fallback_maps = 0
+    provenance_anchored_exact_blob_maps = 0
     for module in modules:
         mid = module["id"]
         try:
@@ -1298,6 +1320,8 @@ def verify(
             source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
             if row["sourceBase"] == candidate:
                 candidate_bound_maps += 1
+            elif mapping_mode == "exact_blob":
+                provenance_anchored_exact_blob_maps += 1
             else:
                 exact_observed_fallback_maps += 1
             boundary = row.get("claimBoundary") or row.get("completion")
@@ -1411,9 +1435,10 @@ def verify(
                 "currentSourceIdentityRequired": True,
                 "candidateBoundMaps": candidate_bound_maps,
                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
+                "provenanceAnchoredExactBlobMaps": provenance_anchored_exact_blob_maps,
                 "legacyProvenanceOnlyMaps": [],
                 "sourceObservationCount": len(source_bases),
-                "sourceBaseSemantics": "module_local_rebind_anchor_plus_no_mapped_source_drift",
+                "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
                 "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
             },
             sort_keys=True,

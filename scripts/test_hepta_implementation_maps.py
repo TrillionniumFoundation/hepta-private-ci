@@ -344,6 +344,77 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         )
         self.assertFalse(result["claimBoundary"]["productExecutionProved"])
 
+    def test_exact_blob_verify_requires_explicit_current_observation(self):
+        row = self.rows["alpha"]
+        row["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        row["mappingSourceIdentityMode"] = "exact_blob"
+        row["operations"][0]["sourceBlob"] = self.git(
+            "rev-parse", "HEAD:src/alpha/lib.rs"
+        )
+        self.change_maps()
+        with self.assertRaisesRegex(
+            SystemExit,
+            "exact blob provenance requires an explicit current source observation",
+        ):
+            self.verify()
+
+    def test_exact_blob_observation_covers_non_operation_evidence(self):
+        row = self.rows["alpha"]
+        row["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        row["mappingSourceIdentityMode"] = "exact_blob"
+        row["operations"][0]["sourceBlob"] = self.git(
+            "rev-parse", "HEAD:src/alpha/lib.rs"
+        )
+        row["operations"][0]["tests"] = [{"path": "tests/native.rs"}]
+        row["observedAtHead"] = copy.deepcopy(self.anchor)
+        row["observedSourcePaths"] = ["src/alpha"]
+        self.change_maps()
+        self.verify()
+        self.write("tests/native.rs", "#[test] fn changed_qualification() {}\n")
+        self.commit("change non-operation evidence")
+        self.reject()
+
+    def test_exact_blob_migration_preserves_provenance_and_rebinds_observation(self):
+        row = self.rows["alpha"]
+        row["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        row["mappingSourceIdentityMode"] = "exact_blob"
+        row["operations"][0]["sourceBlob"] = self.git(
+            "rev-parse", "HEAD:src/alpha/lib.rs"
+        )
+        row["observedAtHead"] = copy.deepcopy(self.anchor)
+        row["observedSourcePaths"] = ["src/alpha"]
+        self.change_maps()
+        provenance = copy.deepcopy(self.anchor)
+
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 9; }\n")
+        current = self.commit("change exact blob implementation")
+        result = self.migrate(["alpha"])
+        self.assertEqual(
+            result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
+        )
+        migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(migrated["sourceBase"], provenance)
+        self.assertEqual(migrated["observedAtHead"], current)
+        self.assertEqual(
+            migrated["operations"][0]["sourceBlob"],
+            self.git("rev-parse", "HEAD:src/alpha/lib.rs"),
+        )
+        self.commit("bind exact blob current observation")
+        result = self.verify()
+        self.assertEqual(result["provenanceAnchoredExactBlobMaps"], 1)
+
+        before = (
+            self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
+        ).read_bytes()
+        self.write("README.md", "later prose must not rewrite provenance\n")
+        self.commit("prose after exact blob observation")
+        self.assertEqual(self.migrate(["alpha"])["migrated"], 0)
+        self.assertEqual(
+            before,
+            (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
+        )
+        self.verify()
+
     def test_closed_world_writer_binding_preserves_exact_source_identity(self):
         row = self.rows["alpha"]
         row["productionWriterState"] = "owner_service_composed"
