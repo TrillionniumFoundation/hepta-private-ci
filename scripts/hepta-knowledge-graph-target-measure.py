@@ -9,6 +9,7 @@ import platform
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -117,6 +118,64 @@ def parse_receipt(output: str, expected_profile_id: str) -> dict[str, Any]:
     ):
         fail("bounded query edge scan count is smaller than its match count")
 
+    for field in (
+        "validatedNodes",
+        "validatedEdges",
+        "validatedSupports",
+        "visibilityNodesScanned",
+        "visibilitySupportsInspected",
+        "relationSupportsInspected",
+        "selectedSupportsCloned",
+    ):
+        positive_int(work.get(field), f"boundedQueryWork.{field}")
+    if work["relationEdgesScanned"] != work["validatedEdges"]:
+        fail("bounded query must account for every canonical edge scan")
+    if (
+        not cloned
+        <= work["selectedSupportsCloned"]
+        <= work["relationSupportsInspected"]
+        <= work["validatedSupports"]
+    ):
+        fail("bounded query support accounting is inconsistent")
+    if (
+        not work["visibilityNodesScanned"]
+        == work["validatedNodes"]
+        <= work["visibilitySupportsInspected"]
+        <= work["validatedSupports"]
+    ):
+        fail("bounded query visibility accounting is inconsistent")
+
+    writes = receipt["writes"]
+    for field, expected in (
+        ("logicalNodes", writes * 16),
+        ("logicalEdges", writes * 128),
+        ("revisionEntityRows", writes * 16),
+        ("revisionRelationRows", writes * 128),
+        ("compactGenerationWitnessRows", writes),
+        ("legacySnapshotNodeRows", 0),
+        ("legacySnapshotEdgeRows", 0),
+    ):
+        if positive_int(receipt.get(field), field, allow_zero=True) != expected:
+            fail(f"benchmark storage workload mismatch: {field}")
+    generation = positive_int(receipt.get("currentGeneration"), "currentGeneration")
+    if (
+        positive_int(
+            receipt.get("postContentionGeneration"), "postContentionGeneration"
+        )
+        != generation + contention["rounds"]
+    ):
+        fail("contention did not publish exactly one generation per writer")
+    total = positive_int(receipt["mutationNs"].get("total"), "mutationNs.total")
+    if total < receipt["mutationNs"]["p99"]:
+        fail("mutation total is below a measured latency")
+    throughput = positive_int(
+        receipt["mutationNs"].get("throughputMilliOpsPerSecond"),
+        "mutationNs.throughputMilliOpsPerSecond",
+        allow_zero=True,
+    )
+    if throughput != writes * 1_000_000_000_000 // total:
+        fail("mutation throughput disagrees with count and elapsed time")
+
     storage = receipt.get("storage")
     if not isinstance(storage, dict):
         fail("missing DB/WAL storage measurements")
@@ -127,7 +186,15 @@ def parse_receipt(output: str, expected_profile_id: str) -> dict[str, Any]:
     if not isinstance(process, dict):
         fail("missing process measurements")
     if platform.system() == "Linux":
-        positive_int(process.get("peakRssKiB"), "process.peakRssKiB")
+        peak = positive_int(process.get("peakRssKiB"), "process.peakRssKiB")
+        for field in ("rssKiBBefore", "rssKiBAfter"):
+            if positive_int(process.get(field), f"process.{field}") > peak:
+                fail("peak RSS is lower than an observed resident set")
+        positive_int(
+            process.get("linuxCpuTicksDelta"),
+            "process.linuxCpuTicksDelta",
+            allow_zero=True,
+        )
     return receipt
 
 
@@ -148,6 +215,36 @@ def read_linux_host_details() -> dict[str, Any]:
     loadavg = Path("/proc/loadavg")
     if loadavg.exists():
         details["loadAverageBefore"] = loadavg.read_text(encoding="utf-8").split()[:3]
+    scratch = Path(tempfile.gettempdir()).resolve()
+    stat = os.statvfs(scratch)
+    details["benchmarkFilesystem"] = {
+        "scratchDirectory": str(scratch),
+        "deviceId": os.stat(scratch).st_dev,
+        "blockSize": stat.f_frsize,
+        "totalBytes": stat.f_blocks * stat.f_frsize,
+        "availableBytesBefore": stat.f_bavail * stat.f_frsize,
+    }
+    # Resolve only the actual benchmark scratch filesystem, not unrelated mounts.
+    try:
+        mount = subprocess.run(
+            [
+                "findmnt",
+                "--json",
+                "--target",
+                str(scratch),
+                "--output",
+                "TARGET,SOURCE,FSTYPE,OPTIONS",
+            ],
+            check=True,
+            text=True,
+            capture_output=True,
+            timeout=10,
+        )
+        details["benchmarkFilesystem"]["mount"] = json.loads(mount.stdout)[
+            "filesystems"
+        ]
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
+        details["benchmarkFilesystem"]["mountObservationError"] = type(error).__name__
     return details
 
 
@@ -173,6 +270,8 @@ def run_benchmark(args: argparse.Namespace) -> tuple[dict[str, Any], int, str]:
         "test",
         "--locked",
         "--release",
+        "--profile",
+        "knowledge-graph-measurement",
         "--retries",
         "0",
         "-p",
@@ -233,9 +332,24 @@ def self_test() -> int:
         "schema": BENCHMARK_SCHEMA,
         "hostProfileId": "self-test",
         "writes": 256,
+        "currentGeneration": 256,
+        "postContentionGeneration": 266,
+        "logicalNodes": 4096,
+        "logicalEdges": 32768,
+        "revisionEntityRows": 4096,
+        "revisionRelationRows": 32768,
+        "compactGenerationWitnessRows": 256,
+        "legacySnapshotNodeRows": 0,
+        "legacySnapshotEdgeRows": 0,
         "querySamples": 20,
         "reopenSamples": 5,
-        "mutationNs": {"p50": 1, "p95": 2, "p99": 3},
+        "mutationNs": {
+            "p50": 1,
+            "p95": 2,
+            "p99": 3,
+            "total": 1000000,
+            "throughputMilliOpsPerSecond": 256000000,
+        },
         "queryNs": {"p50": 1, "p95": 2, "p99": 3},
         "reopenNs": {"p50": 1, "p95": 2, "p99": 3},
         "contention": {
@@ -247,13 +361,25 @@ def self_test() -> int:
         },
         "boundedQueryWork": {
             "returnedEdges": 1,
+            "validatedNodes": 4,
+            "validatedEdges": 4,
+            "validatedSupports": 20,
+            "visibilityNodesScanned": 4,
+            "visibilitySupportsInspected": 4,
+            "relationSupportsInspected": 4,
+            "selectedSupportsCloned": 2,
             "omittedEdges": 2,
             "matchingEdges": 3,
             "relationEdgesScanned": 4,
             "selectedEdgesCloned": 1,
         },
         "storage": {"databaseBytes": 4096, "walBytes": 0},
-        "process": {"peakRssKiB": 1},
+        "process": {
+            "peakRssKiB": 1,
+            "rssKiBBefore": 1,
+            "rssKiBAfter": 1,
+            "linuxCpuTicksDelta": 10,
+        },
     }
     parsed = parse_receipt(PREFIX + json.dumps(fixture), "self-test")
     if parsed["boundedQueryWork"]["omittedEdges"] != 2:
@@ -294,6 +420,8 @@ def measure(args: argparse.Namespace) -> int:
         "hostProfileId": args.host_profile_id,
         "host": host,
         "buildProfile": "release",
+        "nextestProfile": "knowledge-graph-measurement",
+        "measurementWatchdogSeconds": 600,
         "hostDesignation": "operator-supplied-profile-not-independent-acceptance",
         "rawLogSha256": hashlib.sha256(raw_output.encode()).hexdigest(),
         "selectedRuntimeWriter": "complete-generation-rebuild",
@@ -306,6 +434,7 @@ def measure(args: argparse.Namespace) -> int:
             "contentionRounds": args.contention_rounds,
         },
         "benchmark": receipt,
+        "hostAfter": read_linux_host_details() if platform.system() == "Linux" else {},
         "harnessWallNanoseconds": harness_ns,
         "interpretation": {
             "exactSourceBound": True,

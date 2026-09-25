@@ -1,5 +1,3 @@
-use std::fs::File;
-use std::fs::TryLockError;
 use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
@@ -32,7 +30,9 @@ use crate::authority_store::storage;
 use crate::host_checkpoint::AuthorityCheckpointFile;
 use crate::host_checkpoint::checkpoint_path_exists;
 use crate::host_checkpoint::validate_checkpoint_location;
+use crate::host_lock::OwnerLockFile;
 use crate::host_lock::open_private_owner_lock;
+use crate::host_lock::try_owner_lock;
 
 const RECOVERY_BATCH: u32 = 256;
 
@@ -42,8 +42,8 @@ pub struct AuthBusAuthorityHost {
     /// Serializes the complete local-mutation -> external publication -> local
     /// promotion protocol across tasks in this host. The file itself carries
     /// the same exclusion across host instances and processes.
-    owner_file: File,
-    database_file: File,
+    owner_file: OwnerLockFile,
+    database_file: OwnerLockFile,
     mutation_gate: Semaphore,
 }
 
@@ -127,6 +127,8 @@ impl AuthBusAuthorityHost {
         }
         while !store.reconcile_after_restart(RECOVERY_BATCH).await? {}
         sync_checkpoint_parts(&store, &checkpoint).await?;
+        database_file.validate_current()?;
+        owner_file.validate_current()?;
         drop(process_guard);
         drop(database_guard);
         Ok(Self {
@@ -150,7 +152,11 @@ impl AuthBusAuthorityHost {
     }
 
     async fn sync_checkpoint_locked(&self) -> Result<(), AuthBusAuthorityError> {
-        sync_checkpoint_parts(&self.store, &self.checkpoint).await
+        self.database_file.validate_current()?;
+        self.owner_file.validate_current()?;
+        sync_checkpoint_parts(&self.store, &self.checkpoint).await?;
+        self.database_file.validate_current()?;
+        self.owner_file.validate_current()
     }
 
     /// Serialize the complete preflight-recovery -> local mutation -> external
@@ -450,24 +456,6 @@ async fn sync_checkpoint_parts(
             .await?;
     }
     Ok(())
-}
-
-struct OwnerFileLockGuard<'a> {
-    file: &'a File,
-}
-
-impl Drop for OwnerFileLockGuard<'_> {
-    fn drop(&mut self) {
-        let _ = self.file.unlock();
-    }
-}
-
-fn try_owner_lock(file: &File) -> Result<OwnerFileLockGuard<'_>, AuthBusAuthorityError> {
-    match file.try_lock() {
-        Ok(()) => Ok(OwnerFileLockGuard { file }),
-        Err(TryLockError::WouldBlock) => Err(AuthBusAuthorityError::OwnerBusy),
-        Err(TryLockError::Error(error)) => Err(AuthBusAuthorityError::Storage(error.to_string())),
-    }
 }
 
 async fn authority_store_is_pristine(

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "addfa146f289059cb7007c44fd4c3df5507e72b3",
-    "tree": "9cb9616cf4715ffef58ad7625959e1c361aae384"
+    "commit": "b6c67569382ca3ef5543a05b9c30716e135acabb",
+    "tree": "db3959d0984e02430f439ea3766144995e5ee1e9"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -334,8 +334,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "addfa146f289059cb7007c44fd4c3df5507e72b3",
-    "tree": "9cb9616cf4715ffef58ad7625959e1c361aae384"
+    "commit": "b6c67569382ca3ef5543a05b9c30716e135acabb",
+    "tree": "db3959d0984e02430f439ea3766144995e5ee1e9"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -360,47 +360,79 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "9ef8c6ada4e681085fc118dfebadf45a937b385c"
+      "object": "af07b3f6b842d58ab48cf3ec70e25130f4ede027"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
       "object": "b051815e3f38374fd4a3261d5e977de0a897e47c"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
+      "object": "ed4b15661af4628e650f82f62c6dc72573f23eea"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
-      "object": "8ac1e1cc98d989a64e45781aecfce968acc1af61"
+      "object": "8eabe992b1ed7f0e417b2d5a2da9a0e79a50cc1c"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs",
+      "object": "036363db56af7278e4442bf5c6b8463b49ec6e32"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned.rs",
-      "object": "893f0d5bf8f1313cd0c20fdd13ab50fad3257293"
+      "object": "d2b45b06af22609d4d4ab52dbfdee88e4e6e423f"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
-      "object": "63efa2f84b011b41d8a4bc58c24aced6cef2b873"
+      "object": "d66ee5e27044501b662a80989a1a3321f6b682e3"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
+      "object": "db6ca93d904e0c8e6fd603ddf99686d0eb23b57b"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
-      "object": "4ab6f3074524e87a66777e9dfbb34b1426adbe72"
+      "object": "566761236f4bd140bb98e0eda2ee9258f0247cbe"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
+      "object": "1888954078a6879b4cdfb94141befa257d3d1f86"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/loaded.rs",
       "object": "9b7ea343617370801aef4adc1b7441baaeab3555"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs",
+      "object": "0bb48f6156893f6c6253bb40ce987afd6068bb05"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
-      "object": "a66b1b9098116911a79ffee154caa8c94e857ce2"
+      "object": "ebdbe19e5858a085cb735330a4f6b51b683b82bd"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_terminal_tests.rs",
+      "object": "a078cdd455711f08660769f3a4f2ed234784494c"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/reference.rs",
       "object": "f25b30be042dc7922311d8b43a3ade746a3b0df6"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+      "object": "c2c4a486a66c6c64cd6d2bb53bb29340203ff40e"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/world_model.rs",
       "object": "0c1494d4a627f1eeaffd8315a1cc4aed048ca7eb"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
+      "object": "23244f3c86315ff454df6fe62e09887596d0ac1c"
+    },
+    {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
-      "object": "9fa795685e26a6074e893d4d8ae6f514c554d2e3"
+      "object": "a27017d7a265dc50ae77da19544ab1ac908b8267"
     }
   ]
 }

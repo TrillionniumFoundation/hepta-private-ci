@@ -717,6 +717,7 @@ impl AgentdClient {
 
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
+        let response_timeout = crate::control_budget::response_timeout(&request.method);
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
@@ -733,9 +734,12 @@ impl AgentdClient {
             .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
         let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
+        let count = timeout(
+            response_timeout,
+            reader.read_until(b'\n', &mut response_bytes),
+        )
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
         if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
         {
             return Err(AgentdError::Protocol(
