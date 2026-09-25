@@ -34,11 +34,22 @@ binds its predecessor, clock, complete config and actual supplied numerical
 input/prediction bytes, not just a caller-supplied feature digest. Checkpoint
 fields are private; the state is returned only after full validation/computation.
 
-`sparse_tick` is pure. Returning a successor does not durably commit it. A host
-must authenticate input provenance, enforce expiry/revocation and CAS the exact
-predecessor while atomically persisting the checkpoint and receipt. Concurrent
-proposals may be computed; only the host's single writer may publish one.
-Owner-local serialization, crash/reopen, deletion rebuild, exact inference-control feature execution and canonical JSON protocol adapters are now implemented on the closure line. Product daemon activation, authenticated selected-artifact/current-owner wiring, and independently qualified real-model execution remain separate integration/evidence work.
+`sparse_tick` is pure. Returning a successor does not durably commit it. The
+V1 owner now uses three distinct durable boundaries: the sparse checkpoint
+journal, the complete operation/result sidecar and the independent acknowledged
+frontier. The sidecar freezes the complete runtime configuration and stores the
+exact result before the journal commit, so restart, first-witness failure and
+acknowledgement loss reconcile without model reexecution. Canonical checkpoint
+predecessors are derived from committed state, not caller-authored summaries.
+See [OPERATION_STORE.md](OPERATION_STORE.md) for the transaction and recovery
+matrix.
+
+The composing host still authenticates input provenance, enforces current
+expiry/revocation and owns the files and directory durability. Concurrent pure
+proposals may be computed, but only the host's single writer may publish one.
+Product daemon activation, authenticated selected-artifact/current-owner wiring,
+and independently qualified real-model execution remain separate
+integration/evidence work.
 
 ## No manufactured intelligence evidence
 
@@ -56,8 +67,11 @@ Run `just test --locked -p codex-hepta-neuron`, locked all-target compilation,
 strict selected-package Clippy and formatting checks at both exact source and
 actual-base synthetic merge. Tests cover canonical tie/order, inhibition,
 homeostasis, L1 projection, signed rounding, clock/sequence/scope/config drift,
-checkpoint corruption, extreme input and 2048-step bounded replay. Rollback
-removes the additive export; the old API and callers remain unchanged.
+checkpoint corruption, extreme input, 2048-step bounded replay, exact-result
+restart, operation-store sync uncertainty, first-witness recovery, witness
+acknowledgement loss and forged-predecessor rejection. Rollback must preserve
+interpretability of both the sparse journal and operation sidecar; a predecessor
+binary that does not understand `HPTNOP01` must not open or discard it.
 
 
 ## Versioned multi-population profile

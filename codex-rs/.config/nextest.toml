@@ -125,3 +125,17 @@ retries = 0
 filter = 'package(codex-hepta-agentd) & test(cancellation_preserves_in_flight_queue_ack_before_scheduler_exit)'
 threads-required = "num-test-threads"
 retries = 0
+
+# These two neuron journal cases enumerate every partial durable-frame boundary.
+# They intentionally perform hundreds of real fsync/truncate/reopen operations;
+# serialize them and retain a bounded five-minute watchdog rather than skipping
+# any cut or retrying a timeout under the same host contention.
+[test-groups.hepta_neuron_durable_boundaries]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-neuron) & (test(every_partial_frame_boundary_recovers_only_the_predecessor) | test(every_partial_acknowledged_frame_is_preserved_as_failure_evidence))'
+test-group = 'hepta_neuron_durable_boundaries'
+threads-required = "num-test-threads"
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0

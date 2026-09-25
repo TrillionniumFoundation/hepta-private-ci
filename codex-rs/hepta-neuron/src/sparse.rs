@@ -177,6 +177,11 @@ impl SparseCheckpoint {
         self.sequence
     }
 
+    /// Exact predecessor committed into this checkpoint.
+    pub fn predecessor_digest(&self) -> Digest32 {
+        self.predecessor
+    }
+
     /// Canonical digest of the recurrent temporal-state vector only.
     ///
     /// This is intentionally distinct from the full checkpoint digest so the

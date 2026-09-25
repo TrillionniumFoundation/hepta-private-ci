@@ -37,13 +37,30 @@ syncs a valid complete suffix before returning: an earlier sync may have failed
 after writing a full frame. Any write/sync uncertainty returns indeterminate,
 poisons the handle and requires reopen/reconciliation rather than a blind retry.
 
+## Complete operation/result sidecar
+
+The sparse journal intentionally does not contain the complete model/runtime and
+calibration result. `NeuronRuntime` therefore pairs it with the separately locked
+`HPTNOP01` operation store described in
+[OPERATION_STORE.md](OPERATION_STORE.md). The sidecar header freezes the complete
+runtime configuration; a prepared frame stores the exact successor operation and
+result before this journal is advanced. A completion frame is appended only after
+the journal and independent witness agree. Recovery requires the existing
+sidecar and never creates one beside an already committed journal.
+
+This separation preserves the fixed V1 journal vectors while closing exact-result
+retry and acknowledgement-loss recovery. It is not permission to fall back to an
+unanchored journal when operation history is missing.
+
 ## Bounds, migration and rollback
 
 At most 1024 ticks per segment: below 4.6 MB at d=256, plus one incomplete tail.
-Replay and receipt-cache memory are quota-bounded. At capacity the caller stops;
-segment rollover, compaction and cross-segment temporal continuity are not yet
+Replay and receipt-cache memory are quota-bounded. Bounded successor segments
+preserve the exact predecessor checkpoint and global sequence; recovery walks the
+registered chain and rejects a missing acknowledged segment. Compaction is not
 implemented. This synced disk path has no real-time latency claim. Configuration,
-selected model weights and topology remain immutable throughout a segment.
+selected model weights and topology remain immutable throughout one generation,
+and the operation-store header rejects same-generation configuration drift.
 
 The host must revoke/rebuild deleted-data-derived state before reopening it. The V1 journal remains deliberately tied to the single-population/same-width `SparseConfig` replay format. `PopulationSparseConfigV2` is a different mechanism generation and may not be written into this V1 format; durable V2 use requires an explicitly versioned store/migration.
 Encryption and backup deletion remain separate work. Canonical Neuron JSON protocol adapters, an independently synced file-backed acknowledgement witness, and exact inference-control feature-receipt binding are implemented on the closure line; authenticated selected-artifact/current-owner distribution and daemon activation remain separate composition/evidence work. Process-exit
