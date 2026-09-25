@@ -226,7 +226,7 @@
       ],
       "guide": "docs/modules/kernel.operations/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/kernel.operations.md",
-      "implementationState": "durable_source_implemented_product_execution_pending",
+      "implementationState": "source_implemented_product_composed_requires_candidate_evidence",
       "apiContract": "OperationIntentV1 binds operation/subject/destination/payload/scope/policy-generation/expected-predecessor; ProductionDurableWriter::prepare_operation atomically publishes source operation+event+outbox; durable claim lease gates effect entry; ProductionFinalUseOutboxDispatcher consumes final-use authority; destination observer settles Applied/NotApplied/Quarantined without blind resend.",
       "stateAndEncoding": "Canonical intent semantics live in hepta-operations. Durable rows live in the existing CognitiveStore SQLite owner: migration 0011 binds immutable operation semantics to event/outbox identity; migration 0012 persists attempt/generation/fence/lease-expiry/next-eligible claim state. Destination facts remain destination-owned.",
       "linearizationAndRecovery": "Source operation/event/outbox commit together. A bounded claim lease is retryable only before the one-shot effect-entry fence. Final-use is consumed immediately before destination entry. After possible send, restart remains Indeterminate and observer-only reconciliation settles terminality. CognitiveSourceOutboxTarget checks predecessor/CAS inside destination BEGIN IMMEDIATE.",
@@ -1287,7 +1287,7 @@
           },
           {
             "path": "codex-rs/hepta-agentd/src/runtime.rs",
-            "symbol": "build_cognitive_runtime"
+            "symbol": "attach_federation_after_generation_fence"
           }
         ],
         "stateAndRecovery": "Canonical V2 verifies exact query-bound remote response digests, observes live capability authority before and after one interruptible transport attempt, clamps evidence lifetime to response/lease/query/live-authority horizons, and preserves explicit product coverage. Agentd composes AvailableFederatedV2 over existing read-only CognitiveStore capability/reader surfaces; Memory-extension product registration requires the V2-only product APIs, which reject the legacy AvailableFederated variant. The module owns no peer registry, remote writer, retry queue or alternate memory store.",
@@ -1933,7 +1933,7 @@
       ],
       "guide": "docs/modules/neuron.runtime/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/neuron.runtime.md",
-      "implementationState": "source_owner_implemented_not_product_evidence",
+      "implementationState": "source_implemented_product_composed_requires_candidate_evidence",
       "apiContract": "NeuronRuntime::tick over canonical owner-local NeuronRuntimeConfigV1/NeuronTickInputV1/NeuronTickReceiptV1/NeuronSignalReceiptV1, an inference.control NeuronFeatureReceiptV1 model port, SparseJournal and independent AnchorWitnessStore. Raw sparse_tick remains a compatibility mechanism; no owner receipt grants effect authority.",
       "stateAndEncoding": "The owner binds exact model manifest/weights/tokenizer/preprocessor/quantization/runtime/device identity, scope/objective/NDU/body, logical sequence/time, recurrent state, sparse activation, moving activity, thresholds, committed eligibility history, calibration/OOD/resource evidence and predecessor/witness digests. Current selected weights/topology are immutable.",
       "linearizationAndRecovery": "inference.control feature execution -> deterministic successor -> durable SparseJournal commit -> calibrated/resource disposition -> independent witness CAS -> owner output. Lost acknowledgement is reconciled from committed history; write/sync uncertainty poisons the handle. Successor segments preserve the exact checkpoint. Deletion rebuild requires an exact successor generation and no state reuse.",

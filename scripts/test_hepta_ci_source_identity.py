@@ -507,6 +507,31 @@ class WorkflowGateTests(unittest.TestCase):
                 LANE_E.verify_workflow(findings)
                 return [item.code for item in findings.items]
 
+    def test_implementation_map_workflows_use_current_exact_source_cli(self) -> None:
+        workflows = (
+            "hepta-objective-admission.yml",
+            "hepta-lane-d-semantic-conformance.yml",
+            "hepta-contract-gate.yml",
+        )
+        root = SCRIPTS.parent / ".github" / "workflows"
+        for name in workflows:
+            with self.subTest(workflow=name):
+                workflow = (root / name).read_text(encoding="utf-8")
+                self.assertIn(
+                    "python3 scripts/hepta-implementation-maps.py verify "
+                    "--require-current-source",
+                    workflow,
+                )
+                self.assertNotIn(
+                    "hepta-implementation-maps.py verify --expected-sha", workflow
+                )
+                self.assertNotRegex(
+                    workflow,
+                    r"hepta-implementation-maps[.]py verify[\s\S]{0,160}"
+                    r"--expected-(?:sha|tree)",
+                )
+                self.assertIn('test "$(git rev-parse HEAD)" = ', workflow)
+
     def test_real_just_and_legacy_cargo_commands_preserve_test_contract(self) -> None:
         text = LANE_E.WORKFLOW_PATH.read_text(encoding="utf-8")
         self.assertEqual(self.findings(text), [])
