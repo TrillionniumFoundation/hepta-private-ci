@@ -1,6 +1,6 @@
 fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
-        agent_id: "agent.product".to_string(),
+        agent_id: "019153a4-3088-7e03-a56a-9b1964f75dde".to_string(),
         supervisor_generation: 1,
         agentd_generation: 1,
         configuration_digest: digest("runtime-config").to_string(),
@@ -18,6 +18,13 @@ use crate::RuntimeComposition;
 use std::fs::OpenOptions;
 
 use super::*;
+use crate::AgentdIntuitionPolicyPinsV2;
+use codex_hepta_intuition::CalibratedDecisionRequestV1;
+use std::sync::Arc;
+#[path = "intelligence_product_intuition_support.rs"]
+mod intuition_support;
+#[path = "intelligence_product_intuition_tests.rs"]
+mod intuition_tests;
 use codex_hepta_context_compiler::ContextItem;
 use codex_hepta_context_compiler::ContextRole;
 use codex_hepta_intelligence::CanonicalBudgetV1;
@@ -373,6 +380,7 @@ struct Fixture {
     request: CanonicalIntelligenceRunRequestV1,
     inputs: AgentdIntelligenceOwnerInputsV1,
     owners: Vec<OwnerBindingV1>,
+    intuition_host: Arc<AgentdIntuitionPolicyHostV2>,
 }
 
 fn fixture() -> Fixture {
@@ -568,7 +576,21 @@ fn fixture() -> Fixture {
         candidates: intuition_candidates,
     };
 
-    let owners = owner_bindings();
+    let intuition = intuition_support::build(
+        intuition_request,
+        model_digest,
+        intuition_support::TEST_AGENT_ID,
+        1,
+        wall_clock_ms().expect("intuition fixture clock"),
+    );
+    let mut owners = owner_bindings();
+    let intuition_owner = owners
+        .iter_mut()
+        .find(|owner| owner.owner_id.as_str() == "intuition.policy")
+        .expect("intuition owner");
+    intuition_owner.generation = generation(intuition.input.profile.generation);
+    intuition_owner.key_digest = intuition.root_key_digest;
+    intuition_owner.key_epoch = intuition.authority_epoch;
     let snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
         objective_digest,
         authority_epoch: 11,
@@ -650,13 +672,21 @@ fn fixture() -> Fixture {
             neural_tick,
             neural_previous: None,
             prompt_request,
-            intuition_request,
+            intuition: intuition.input,
             context_request,
             evaluation_request,
             signed_evaluation: None,
         },
         owners,
+        intuition_host: intuition.host,
     }
+}
+
+fn product_runner(authority: PathBuf, fixture: &Fixture) -> AgentdIntelligenceProductRunnerV1 {
+    AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_intuition_policy_host(Arc::clone(&fixture.intuition_host))
+        .expect("authenticated intuition host")
 }
 
 #[cfg(feature = "qualification-legacy-learning-write")]
@@ -670,8 +700,7 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -810,8 +839,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
         serde_json::to_vec(&value).expect("tampered authority json"),
     )
     .expect("tamper authority");
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     assert!(matches!(
         runner
             .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
@@ -833,8 +861,7 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+    let runner = product_runner(authority.clone(), &fixture);
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await
@@ -884,8 +911,7 @@ async fn missing_current_owner_fails_before_product_use() {
         &owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     assert!(matches!(
         runner
             .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
@@ -916,8 +942,7 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     let result = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await;

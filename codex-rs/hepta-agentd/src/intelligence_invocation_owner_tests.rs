@@ -110,9 +110,13 @@ fn owners(value: Fixture) -> OwnerFixture {
         reader(&values, &reads, &fail_at, /*index*/ 4, |v| {
             v.inputs.prompt_request.clone()
         }),
-        reader(&values, &reads, &fail_at, /*index*/ 5, |v| {
-            v.inputs.intuition_request.clone()
-        }),
+        reader(
+            &values,
+            &reads,
+            &fail_at,
+            /*index*/ 5,
+            |v| v.inputs.intuition.clone(),
+        ),
         reader(&values, &reads, &fail_at, /*index*/ 6, |v| {
             v.inputs.context_request.clone()
         }),

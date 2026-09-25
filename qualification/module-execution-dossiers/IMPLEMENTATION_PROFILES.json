@@ -2039,20 +2039,95 @@
             "symbol": "decide_calibrated"
           },
           {
+            "path": "codex-rs/hepta-intuition/src/calibrated.rs",
+            "symbol": "canonical_candidate_set_digest_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/calibrated.rs",
+            "symbol": "canonical_candidate_order_digest_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
+            "symbol": "canonical_calibrated_request_digest_v1"
+          },
+          {
             "path": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
             "symbol": "decide_calibrated_v2"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/lib.rs",
+            "symbol": "decide"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/qualified.rs",
+            "symbol": "canonical_policy_profile_digest_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/qualified.rs",
+            "symbol": "canonical_completeness_evidence_payload_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/qualified.rs",
+            "symbol": "canonical_qualification_evidence_payload_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/qualified.rs",
+            "symbol": "decide_calibrated_v3"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/runtime_commitment.rs",
+            "symbol": "canonical_scored_outputs_digest_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/runtime_commitment.rs",
+            "symbol": "canonical_scoring_commitment_digest_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/runtime_commitment.rs",
+            "symbol": "canonical_profile_qualification_payload_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/runtime_commitment.rs",
+            "symbol": "canonical_runtime_commitment_payload_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/runtime_commitment_v2.rs",
+            "symbol": "canonical_scored_outputs_digest_v2"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/runtime_commitment_v2.rs",
+            "symbol": "canonical_scoring_commitment_digest_v2"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/runtime_commitment_v2.rs",
+            "symbol": "canonical_runtime_commitment_payload_v2"
           }
         ],
-        "stateAndRecovery": "Pure receipts retain action propensities and explicit abstain/slow-path mass; hard veto, OOD, confidence and risk checks precede selection over the supplied candidate set. Calibration, completeness and provenance are input evidence, not learned here.",
+        "stateAndRecovery": "Pure bounded policy kernel; current admission uses scorer V2 and three authenticated independent roles. Agentd product host pins profile separately from owner implementation, root-authenticated distribution, agent generation and model/scorer/RNG. Signed owner observations bracket policy use; observed mismatch retires the host instance.",
         "testFiles": [
-          "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+          "codex-rs/hepta-intuition/src/calibrated_tests.rs",
+          "codex-rs/hepta-intuition/src/lib_tests.rs",
+          "codex-rs/hepta-intuition/src/qualified_tests.rs",
+          "codex-rs/hepta-intuition/src/runtime_commitment.rs",
+          "codex-rs/hepta-intuition/src/runtime_commitment_v2.rs",
+          "codex-rs/hepta-intelligence/tests/intuition_admission_v3_boundaries.rs",
+          "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_intuition_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_intuition_tests.rs",
+          "codex-rs/hepta-agentd/src/intuition_policy_bootstrap_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/intuition.policy/TECHNICAL.md",
-          "codex-rs/hepta-intelligence/EVALUATED_SHADOW.md"
+          "qualification/module-execution-dossiers/detail/intuition.policy.md"
         ],
         "remainingWork": [
-          "Bind authenticated current calibration/OOD/completeness artifacts and an owner-supplied assignment draw; real calibration quality and consumer execution require independent evidence."
+          "Finish exact source and deterministic synthetic-merge qualification for the same candidate.",
+          "Install real owner-backed model, feature, evidence and terminal-observer providers on the ordinary daemon profile.",
+          "Prove restart/restore against a durable independent current-authority frontier; a restored authority file is not itself anti-rollback evidence.",
+          "independent representative task/risk/subgroup calibration and equal-budget efficacy",
+          "registered selected target-host and production model/RNG profile qualification",
+          "independent semantic/operator acceptance, canary, promotion and release"
         ]
       }
     },

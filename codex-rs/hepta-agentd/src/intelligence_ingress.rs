@@ -7,10 +7,10 @@
 
 use std::sync::Arc;
 
+use crate::AgentdAuthenticatedIntuitionInputV1;
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_intelligence_eval::EvaluationRequest;
-use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_ndu::ContributionSet;
 use codex_hepta_ndu::EvaluationPolicyV1;
@@ -68,7 +68,10 @@ type NeuronOwnerV1 = dyn Fn(
 type PromptOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<OptimizationRequest, AgentdError>
     + Send
     + Sync;
-type IntuitionOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CalibratedDecisionRequestV1, AgentdError>
+type IntuitionOwnerV1 = dyn Fn(
+        &AgentdIdentity,
+        &RunStartRecordV1,
+    ) -> Result<AgentdAuthenticatedIntuitionInputV1, AgentdError>
     + Send
     + Sync;
 type ContextOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CompilationRequest, AgentdError>
@@ -154,7 +157,7 @@ impl AgentdIntelligenceInvocationV1 {
         I: Fn(
                 &AgentdIdentity,
                 &RunStartRecordV1,
-            ) -> Result<CalibratedDecisionRequestV1, AgentdError>
+            ) -> Result<AgentdAuthenticatedIntuitionInputV1, AgentdError>
             + Send
             + Sync
             + 'static,
@@ -288,7 +291,7 @@ impl AgentdIntelligenceInvocationProviderV1 for AuthoritativeInvocationProviderV
             (self.utility_owner)(identity, record)?;
         let (neural_config, neural_tick, neural_previous) = (self.neuron_owner)(identity, record)?;
         let prompt_request = (self.prompt_owner)(identity, record)?;
-        let intuition_request = (self.intuition_owner)(identity, record)?;
+        let intuition = (self.intuition_owner)(identity, record)?;
         let context_request = (self.context_owner)(identity, record)?;
         let (evaluation_request, signed_evaluation) = (self.evaluation_owner)(identity, record)?;
         let invocation = AgentdIntelligenceInvocationV1 {
@@ -305,7 +308,7 @@ impl AgentdIntelligenceInvocationProviderV1 for AuthoritativeInvocationProviderV
                 neural_tick,
                 neural_previous,
                 prompt_request,
-                intuition_request,
+                intuition,
                 context_request,
                 evaluation_request,
                 signed_evaluation,

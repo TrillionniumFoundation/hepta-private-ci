@@ -1,5 +1,5 @@
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
-use codex_hepta_intelligence::decide_authenticated_intuition_v2;
+use codex_hepta_intelligence::decide_authenticated_intuition_v3;
 use codex_hepta_intuition::AssignmentCommitmentV1;
 use codex_hepta_intuition::AssignmentModeV1;
 use codex_hepta_intuition::CalibratedActionCandidateV1;
@@ -12,13 +12,13 @@ use codex_hepta_intuition::CanonicalRiskRuleV1;
 use codex_hepta_intuition::LearnedScorerContractV1;
 use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::RiskClass;
-use codex_hepta_intuition::ScoringCommitmentV1;
+use codex_hepta_intuition::ScoringCommitmentV2;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_intuition::canonical_completeness_evidence_payload_v1;
 use codex_hepta_intuition::canonical_profile_qualification_payload_v1;
-use codex_hepta_intuition::canonical_runtime_commitment_payload_v1;
-use codex_hepta_intuition::canonical_scored_outputs_digest_v1;
+use codex_hepta_intuition::canonical_runtime_commitment_payload_v2;
+use codex_hepta_intuition::canonical_scored_outputs_digest_v2;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -420,13 +420,12 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         ],
     })
     .unwrap();
-    let scoring = ScoringCommitmentV1 {
+    let scoring = ScoringCommitmentV2 {
         model_artifact_digest: model_digest,
         feature_snapshot_digest: digest("feature-snapshot:frozen-qualification"),
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
-        candidate_set_digest: request.completeness.candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).unwrap(),
+        scored_outputs_digest: canonical_scored_outputs_digest_v2(&request).unwrap(),
         policy_digest,
         policy_generation: request.policy_generation,
     };
@@ -435,7 +434,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
     let profile_qualification_payload =
         canonical_profile_qualification_payload_v1(&profile).unwrap();
     let runtime_payload =
-        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment).unwrap();
+        canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment).unwrap();
     let completeness_evidence = sign(
         &verifier,
         &principals[0],
@@ -467,7 +466,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
     let mut tampered_runtime = runtime_evidence.clone();
     tampered_runtime.signature[0] ^= 1;
     assert!(
-        decide_authenticated_intuition_v2(
+        decide_authenticated_intuition_v3(
             request.clone(),
             profile.clone(),
             scoring.clone(),
@@ -486,7 +485,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
     let mut wrong_role_runtime = runtime_evidence.clone();
     wrong_role_runtime.role = LearningEvidenceRoleV1::Evaluator;
     assert!(
-        decide_authenticated_intuition_v2(
+        decide_authenticated_intuition_v3(
             request.clone(),
             profile.clone(),
             scoring.clone(),
@@ -503,7 +502,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
     );
 
     assert!(
-        decide_authenticated_intuition_v2(
+        decide_authenticated_intuition_v3(
             request.clone(),
             profile.clone(),
             scoring.clone(),
@@ -576,7 +575,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         &runtime_payload,
     );
     assert!(
-        decide_authenticated_intuition_v2(
+        decide_authenticated_intuition_v3(
             request.clone(),
             profile.clone(),
             scoring.clone(),
@@ -592,7 +591,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         .is_err()
     );
 
-    let receipt = decide_authenticated_intuition_v2(
+    let receipt = decide_authenticated_intuition_v3(
         request,
         profile,
         scoring,

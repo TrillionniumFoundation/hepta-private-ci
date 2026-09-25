@@ -60,6 +60,7 @@ impl SignedLearningTrustDistributionV1 {
 pub struct ActivatedLearningTrustV1 {
     root_id: StableId,
     root_digest: Digest32,
+    root_key_digest: Digest32,
     distribution_id: StableId,
     generation: u64,
     effective_at: u64,
@@ -76,6 +77,12 @@ impl ActivatedLearningTrustV1 {
     #[must_use]
     pub const fn root_digest(&self) -> Digest32 {
         self.root_digest
+    }
+
+    /// Public key identity already authenticated at trust activation.
+    #[must_use]
+    pub const fn root_key_digest(&self) -> Digest32 {
+        self.root_key_digest
     }
 
     #[must_use]
@@ -179,6 +186,7 @@ pub fn activate_learning_trust(
     Ok(ActivatedLearningTrustV1 {
         root_id: root.root_id.clone(),
         root_digest,
+        root_key_digest: Digest32::of_bytes(&root.verifying_key),
         distribution_id: distribution.distribution_id.clone(),
         generation: distribution.generation,
         effective_at: distribution.effective_at,
