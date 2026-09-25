@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "local_agentd_composed_global_supervisor_host_source_composed_not_daemon_activated",
+  "productionWriterState": "planner_journal_store_source_implemented_target_host_qualification_pending",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -167,10 +167,11 @@
       "nativeSymbol": "codex_hepta_control_plane::PlannerJournalV1",
       "sourcePath": "codex-rs/hepta-control-plane/src/planner_journal.rs",
       "inputs": [
-        "snapshot, decision, selection and revocation records"
+        "snapshot, decision, operation-result, selection and revocation records"
       ],
       "outputs": [
         "bounded hash-chain bytes",
+        "operation-identity committed-result lookup",
         "selected plan projection"
       ],
       "state": "source_implemented_owner_local_durability_reference",
@@ -188,11 +189,176 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
           "symbol": "revocation_clears_selection_and_prevents_reselection"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+          "symbol": "isolated_selection_cannot_be_appended"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+          "symbol": "hash_valid_isolated_selection_cannot_be_reopened"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+          "symbol": "operation_result_requires_a_recorded_decision"
         }
       ],
       "designOperation": "PlannerJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "canonical_resource_reservation_digest",
+      "nativeSymbol": "codex_hepta_control_plane::canonical_resource_reservation_digest",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [],
+      "outputs": [],
+      "state": "source_implemented_exact_budget_binding",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "exact_resource_reservations_change_prepared_identity_even_when_feasibility_is_equal"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "time_before_snapshot_collection_is_rejected"
+        }
+      ],
+      "designOperation": "canonical_resource_reservation_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "authenticated_owner_summary_admission",
+      "nativeSymbol": "codex_hepta_control_plane::admit_durable_owner_summary_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/global_plane.rs",
+      "inputs": [],
+      "outputs": [],
+      "state": "source_implemented_durable_authbus_admission",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/global_plane_tests.rs",
+          "symbol": "replayed_owner_summary_is_rejected_before_planning"
+        }
+      ],
+      "designOperation": "authenticated_owner_summary_admission",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_authbus",
+        "codex_hepta_evidence"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "fleet_resource_admission",
+      "nativeSymbol": "codex_hepta_control_plane::admit_fleet_allocation_owner_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/global_plane.rs",
+      "inputs": [],
+      "outputs": [],
+      "state": "source_implemented_current_fleet_projection",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/global_plane_tests.rs",
+          "symbol": "authenticated_global_plan_uses_real_fleet_budget_and_ndu"
+        }
+      ],
+      "designOperation": "fleet_resource_admission",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_fleet"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "compose_global_plan_with_fleet_v1",
+      "nativeSymbol": "codex_hepta_control_plane::compose_global_plan_with_fleet_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/global_plane.rs",
+      "inputs": [],
+      "outputs": [],
+      "state": "source_implemented_named_host_composition_kernel",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/global_plane_tests.rs",
+          "symbol": "different_real_fleet_budget_changes_the_sealed_plan_identity"
+        }
+      ],
+      "designOperation": "compose_global_plan_with_fleet_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_ndu",
+        "codex_hepta_fleet",
+        "codex_hepta_authbus"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerJournalStoreV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerJournalStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "inputs": [],
+      "outputs": [],
+      "state": "source_implemented_durable_owner_store",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "durable_store_reopens_selected_plan_after_ack_loss"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "torn_next_file_never_replaces_the_last_committed_state"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "indeterminate_publish_fences_writer_until_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "restore_of_pre_revocation_backup_fails_current_recovery_floor"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "corrupt_v1_migration_leaves_predecessor_bytes_unchanged"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/global_control_tests.rs",
+          "symbol": "committed_plan_survives_ack_loss_and_replay_is_rejected_after_restart"
+        }
+      ],
+      "designOperation": "PlannerJournalStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "final_use_grant_request_bridge",
+      "nativeSymbol": "codex_hepta_control_plane::with_authorized_grant_request_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/authority_bridge.rs",
+      "inputs": [],
+      "outputs": [],
+      "state": "source_implemented_independent_final_use_bridge",
+      "authority": "external_signed_grant_required",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/authority_bridge_tests.rs",
+          "symbol": "final_use_binding_changes_for_every_grant_request_dimension"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/global_control_tests.rs",
+          "symbol": "planner_expiry_and_current_final_use_revocation_block_local_dispatch_boundary"
+        }
+      ],
+      "designOperation": "final_use_grant_request_bridge",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_contracts::FinalUseAuthority"
+      ],
       "sourcePathExists": true
     }
   ],
@@ -210,11 +376,11 @@
   ],
   "completion": {
     "specification": "complete",
-    "nativePlanningKernel": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
-    "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
-    "productionWriter": "not_established",
+    "nativePlanningKernel": "hardened_candidate_implemented",
+    "ownerLocalDurabilityReference": "durable_store_source_implemented",
+    "canonicalExternalProtocolAdmission": "authenticated_owner_admission_source_implemented",
+    "productionCaller": "named_global_host_source_composed_not_daemon_activated",
+    "productionWriter": "named_durable_owner_source_implemented_not_deployment_activated",
     "exactHeadQualification": "required",
     "independentAcceptanceState": "not_established",
     "activationState": "not_established",
@@ -240,16 +406,77 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "3aef4b9200bca4cd8b03cce404d3efa6b422f9a1",
+    "tree": "ce99bbf86e22abc98bd3a6a0ddeec1477913bde6"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Select and provision the default-daemon GlobalControlHostV1 state/trust/revocation-floor inputs before activation.",
+    "Run exact-head and deterministic synthetic-merge qualification on the same candidate before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "currentNativeState": "exact-budget planner, semantic journal replay, durable PlannerJournalStoreV1, authenticated owner/fleet admission, real NDU composition, exact final-use bridge, one local Agentd caller and one named Supervisor global host are source implemented; the global host is not default-daemon activated and target-host durability, independent acceptance, promotion and release remain separate",
+  "hostIntegrationRequirements": [
+    "Provision HeptaEvidenceStore, owner issuer trust, current runtime.fleet allocation and a monotonic planner clock at the selected Supervisor host.",
+    "Provision an owner-only PlannerJournalStoreV1 directory and an independently current revoked-decision recovery floor.",
+    "Issue final-use grants only from kernel authority and revalidate the exact GrantRequestV1 binding immediately before the physical effect.",
+    "Complete target-host power-loss, backup-restore and operator recovery qualification before activation."
+  ],
+  "productCallerBindingPolicy": "closed_world",
+  "productionWriterBindingPolicy": "closed_world",
+  "productCallerBindings": [
+    {
+      "operation": "plan_observed_context",
+      "mode": "local_product_composed",
+      "callerPath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "mustContain": "plan_observed_context",
+      "productPath": "Agentd cognitive read -> measured ObservedContextV1 -> local read/abstain plan -> owner revalidation"
+    },
+    {
+      "operation": "global_control_plan",
+      "mode": "named_source_composition_not_daemon_activated",
+      "callerPath": "codex-rs/hepta-supervisor/src/global_control.rs",
+      "mustContain": "GlobalControlHostV1",
+      "productPath": "GlobalControlHostV1::plan -> durable AuthBus admission + fleet allocation -> real NDU -> durable planner journal"
+    },
+    {
+      "operation": "authorized_grant_request_dispatch",
+      "mode": "independent_final_use_boundary",
+      "callerPath": "codex-rs/hepta-supervisor/src/global_control.rs",
+      "mustContain": "with_authorized_grant_request_v1",
+      "productPath": "GlobalControlHostV1::apply_final_use_revocations + with_authorized_request -> claim_final_use -> dispatch_final_use -> bounded local dispatch closure"
+    }
+  ],
+  "productionWriterBindings": [
+    {
+      "owner": "PlannerJournalStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "mustContain": "pub struct PlannerJournalStoreV1",
+      "host": "GlobalControlHostV1",
+      "closedSetManifest": "CALLERS.toml",
+      "guarantees": [
+        "exclusive_process_writer_lock",
+        "owner_only_no_follow_filesystem_profile",
+        "same_directory_atomic_replace",
+        "state_file_and_parent_directory_fsync",
+        "semantic_journal_reopen_validation",
+        "append_prefix_history_monotonicity",
+        "revoked_decision_recovery_floor",
+        "schema_v1_to_v2_atomic_migration"
+      ]
+    }
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "plan_observed_context"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/global_control.rs",
+      "nativeSymbol": "GlobalControlHostV1::plan"
+    }
   ]
 }
