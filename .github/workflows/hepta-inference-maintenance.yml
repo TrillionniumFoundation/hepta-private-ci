@@ -260,6 +260,15 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Build exact-source native runtime executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-runtime-build.json" -- cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-app-server --bin codex-app-server
+          target="$(cargo metadata --locked --manifest-path codex-rs/Cargo.toml --no-deps --format-version 1 | jq -er '.target_directory')"
+          test -x "$target/debug/codex-app-server"
+          sha256sum "$target/debug/codex-app-server" > "$RUNNER_TEMP/hepta-inference-records/native-runtime-binary.sha256"
+          printf 'HEPTA_TEST_CODEX_EXE=%s/debug/codex-app-server\n' "$target" >> "$GITHUB_ENV"
       - name: Execute native authorization, uncertain-send and restart regressions
         shell: bash
         run: |

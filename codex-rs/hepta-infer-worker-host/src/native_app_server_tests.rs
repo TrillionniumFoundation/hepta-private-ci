@@ -407,7 +407,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
@@ -415,6 +415,12 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    // Keep this a structural companion to the real Agentd race test below,
+    // not a substitute for executing the physical typed send with a grant.
+    let send = &source[source
+        .find("async fn send_authorized_turn_start(")
+        .expect("authorized send helper")..];
+    assert!(send.contains(".request_typed_observed(ClientRequest::TurnStart"));
 }
 
 #[cfg(unix)]
@@ -450,8 +456,17 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let codex_executable = std::env::var_os("HEPTA_TEST_CODEX_EXE")
+        .map(PathBuf::from)
+        .ok_or("build the exact candidate codex-app-server binary and set HEPTA_TEST_CODEX_EXE")?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_executable,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;

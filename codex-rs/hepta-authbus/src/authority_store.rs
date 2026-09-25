@@ -18,7 +18,7 @@ const MAX_POLICIES: i64 = 4096;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone)]
-pub struct AuthBusAuthorityStore {
+pub(crate) struct AuthBusAuthorityStore {
     pub(crate) pool: SqlitePool,
 }
 
@@ -67,6 +67,7 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)
     }
 
+    #[cfg(test)]
     pub async fn last_trusted_time(
         &self,
     ) -> Result<Option<TrustedTimeSample>, AuthBusAuthorityError> {

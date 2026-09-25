@@ -56,6 +56,16 @@ TESTS = (
         "reserved_metadata_and_maximum_terminal_can_consume_their_own_headroom",
         False,
     ),
+    (
+        "inference-late-usage-capacity",
+        "full_journal_accepts_small_usage_delta_without_rewriting_terminal_body",
+        False,
+    ),
+    (
+        "inference-late-usage-write-failure",
+        "failed_usage_append_preserves_missing_usage_and_poisoned_owner_cannot_retry",
+        False,
+    ),
 )
 
 

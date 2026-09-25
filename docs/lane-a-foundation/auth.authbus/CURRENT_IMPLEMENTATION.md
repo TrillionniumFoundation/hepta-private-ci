@@ -62,13 +62,13 @@ restart, reserve quota or grant effect authority.
   `SignedMessage::authenticate`, `AuthenticatedMessage` in
   `codex-rs/hepta-authbus/src/signed.rs`;
 - durable authority owner: `AuthBusAuthorityHost`,
-  `AuthBusAuthorityStore`, `PolicyDecision`, `QuotaReservation`,
+  `PolicyDecision`, `QuotaReservation`,
   `Settlement` in `codex-rs/hepta-authbus/src/{host,authority_store,quota_store,settlement_store}.rs`;
 - issuer/trusted-time lifecycle in
   `codex-rs/hepta-authbus/src/{trust,trust_store}.rs`;
 - authority rollback/restart reconciliation in
   `codex-rs/hepta-authbus/src/recovery.rs` and migration
-  `0004_recovery_retention.sql`;
+  `0004_recovery_retention.sql` and `0005_dispatch_boundary.sql`;
 - durable signed ingress/replay/outbox in
   `codex-rs/hepta-evidence/src/authbus_{store,outbox,outbox_worker,recovery}.rs`;
 - Agentd source composition in
@@ -106,9 +106,9 @@ The following are not established by this candidate:
 
 ## Known limits and non-claims
 
-`AuthBusAuthorityStore` remains a lower-level source API for focused tests and
-owner construction; production mutation is expected to pass through
-`AuthBusAuthorityHost` so external checkpoint publication cannot be skipped.
+`AuthBusAuthorityStore` is crate-private. The public mutation boundary is
+`AuthBusAuthorityHost`; there is no public raw-store accessor or caller-supplied
+settlement issuer registration.
 The external checkpoint file hardening currently relies on Unix ownership,
 single-link, private-directory and fsync semantics.
 
@@ -144,3 +144,59 @@ A provider host must supply the canonical operation identity and current
 reservation and final-use grant. Operators must complete target-host
 crash/power-loss, capacity, backup/restore and independent security
 qualification before activation.
+
+## Correctness continuation: settlement and owner protocol
+
+`AuthBusAuthorityHost::settle(evidence, time)` resolves the evidence issuer ID,
+key epoch and `Settlement` purpose from durable state in the same write
+transaction as quota settlement. New settlement requires an active issuer at
+admission, including after writer-lock waiting. Revoked/retired epochs cannot
+submit new results even with earlier observation times. An exact retry of an
+already committed terminal receipt returns its original result after issuer
+revocation or expiry; no new effect or quota consumption is created.
+
+`dispatched_at_ms` is written once with `Held -> DispatchAttempted` and included
+in the checkpoint digest. `updated_at_ms` tracks later local state changes.
+A legitimate observation after dispatch but before `Indeterminate` may arrive
+late, including after restart. A pre-dispatch observation remains invalid.
+Migration 0005 backfills legacy `DispatchAttempted` rows from their exact last
+update. Legacy indeterminate/terminal rows retain an unknown boundary rather
+than a fabricated time. Terminal rows remain readable and archiveable; an
+indeterminate row with no proven boundary cannot be newly settled/refunded.
+Migration 0005 retains the local frontier dialect. An already published v4
+witness is validated and promoted with the v1 digest, then separately advanced
+to the v2 digest that binds dispatch time. Once v2 is committed, a legacy digest
+cannot downgrade the owner. Migration regressions cover both sides of external
+publication and a second crash after local legacy promotion.
+
+An async permit and stable private database/checkpoint lock files serialize the
+complete predecessor-recovery, local commit, external publication and local
+promotion sequence. Database locks also fence alternate checkpoint names.
+Contention returns `OwnerBusy` before a mutation. The locks are not taken on
+the witness inode replaced by rename. The raw store is not publicly writable.
+
+Every write first reconciles an interrupted predecessor. A publication error
+does not assert that SQLite rolled back: query/retry the same operation rather
+than inventing a replacement identity. Before promoting a visible external
+witness, the host repeats file and directory fsync and verifies identity.
+Bootstrap creates an external witness only over a pristine authority owner.
+
+Replay recovery verifies pending generation and semantic frontier before
+returning an unpublished checkpoint to its host. Corrupt pending metadata is
+not published just because its external predecessor matches local state.
+
+New regression sources include `host_tests.rs` (concurrent writers, separate
+process locking, alternate witness paths, failed publication and lost ACK),
+`settlement_boundary_tests.rs` (revocation during lock waiting, forged signing
+key and delayed success/no-effect after restart), and `migration_tests.rs`
+(real version-4 terminal/archive migration). The evidence owner's
+`authbus_outbox_tests.rs` exercises signed enqueue, external publication before
+local promotion, reopen, exact delivery, ACK and a second reopen without
+redelivery. These are source identities, not executable pass receipts.
+
+An earlier review misidentified workflow job 107538163316 as an AuthBus outbox
+failure. Its retained raw log instead shows Worker/App Server fixture failures
+including an unconfigured Codex executable. The newly added AuthBus regression
+is independent evidence; it must not be described as turning that nonexistent
+historical AuthBus test green. Execution reports must identify the exact source,
+command, selected tests, terminal result and any skipped/blocked work.

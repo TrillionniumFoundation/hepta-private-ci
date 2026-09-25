@@ -250,6 +250,11 @@ impl DurableInferenceControl {
         let file = options.open(&path)?;
         // Retain the data lock as well to exclude pre-maintenance owners.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        // Reject an already oversized file without parsing millions of empty
+        // legacy lines. The streaming limits below also protect actual reads.
+        if file.metadata()?.len() > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
@@ -257,6 +262,21 @@ impl DurableInferenceControl {
         let mut line = Vec::new();
         let mut checkpoint_frame = checkpoint_frame::CheckpointFrame::default();
         loop {
+            // Empty historical lines carry no state. Consume a whole buffered
+            // run instead of entering the semantic parser once per byte.
+            let blank_bytes = reader
+                .fill_buf()?
+                .iter()
+                .take_while(|byte| **byte == b'\n')
+                .count();
+            if blank_bytes > 0 {
+                journal_bytes += blank_bytes as u64;
+                if journal_bytes > MAX_JOURNAL_BYTES {
+                    return Err(Error::CapacityExceeded);
+                }
+                reader.consume(blank_bytes);
+                continue;
+            }
             line.clear();
             // Bound actual reads and allocation, including files whose metadata
             // races with open. One extra byte distinguishes EOF from overflow.

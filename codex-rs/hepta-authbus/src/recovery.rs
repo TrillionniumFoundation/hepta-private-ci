@@ -17,6 +17,13 @@ pub struct AuthorityCheckpoint {
     pub digest: Digest32,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(i64)]
+pub(crate) enum FrontierVersion {
+    LegacyV4 = 1,
+    DispatchV5 = 2,
+}
+
 impl AuthBusAuthorityStore {
     pub async fn authority_frontier_digest(&self) -> Result<Digest32, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
@@ -55,7 +62,7 @@ impl AuthBusAuthorityStore {
             None => {
                 sqlx::query(
                     "INSERT INTO authbus_authority_checkpoint
-                     (singleton, generation, checkpoint_digest) VALUES (1, ?, ?)",
+                     (singleton, generation, checkpoint_digest, frontier_version) VALUES (1, ?, ?, 2)",
                 )
                 .bind(u64_bytes(checkpoint.generation).as_slice())
                 .bind(checkpoint.digest.as_array().as_slice())
@@ -82,8 +89,27 @@ impl AuthBusAuthorityStore {
             .await?
             .ok_or(AuthBusAuthorityError::RollbackDetected)?;
         let dirty = is_dirty(&mut tx).await?;
+        let version: i64 = sqlx::query_scalar(
+            "SELECT frontier_version FROM authbus_authority_checkpoint WHERE singleton = 1",
+        )
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let version = match version {
+            1 => FrontierVersion::LegacyV4,
+            2 => FrontierVersion::DispatchV5,
+            _ => {
+                return Err(AuthBusAuthorityError::CorruptState(
+                    "invalid frontier version",
+                ));
+            }
+        };
         if external == current {
             if !dirty {
+                if authority_frontier_digest_for_version(&mut tx, version).await? != current.digest
+                {
+                    return Err(AuthBusAuthorityError::RollbackDetected);
+                }
                 tx.commit().await.map_err(storage)?;
                 return Ok(None);
             }
@@ -105,10 +131,29 @@ impl AuthBusAuthorityStore {
                     .ok_or(AuthBusAuthorityError::CapacityExceeded)?
             && external.digest == authority_frontier_digest_tx(&mut tx).await?
         {
-            persist_checkpoint(&mut tx, external).await?;
+            persist_checkpoint(&mut tx, external, FrontierVersion::DispatchV5).await?;
             set_dirty(&mut tx, false).await?;
             tx.commit().await.map_err(storage)?;
             return Ok(None);
+        }
+        if dirty
+            && version == FrontierVersion::LegacyV4
+            && current.generation.checked_add(1) == Some(external.generation)
+            && authority_frontier_digest_for_version(&mut tx, FrontierVersion::LegacyV4).await?
+                == external.digest
+        {
+            let successor = AuthorityCheckpoint {
+                generation: external
+                    .generation
+                    .checked_add(1)
+                    .ok_or(AuthBusAuthorityError::CapacityExceeded)?,
+                digest: authority_frontier_digest_tx(&mut tx).await?,
+            };
+            // The old publication is real. Retain its dialect until the new
+            // digest has separately crossed the external publication boundary.
+            persist_checkpoint(&mut tx, external, FrontierVersion::LegacyV4).await?;
+            tx.commit().await.map_err(storage)?;
+            return Ok(Some(successor));
         }
         Err(AuthBusAuthorityError::RollbackDetected)
     }
@@ -132,11 +177,12 @@ impl AuthBusAuthorityStore {
         {
             return Err(AuthBusAuthorityError::RollbackDetected);
         }
-        persist_checkpoint(&mut tx, external).await?;
+        persist_checkpoint(&mut tx, external, FrontierVersion::DispatchV5).await?;
         set_dirty(&mut tx, false).await?;
         tx.commit().await.map_err(storage)
     }
 
+    #[cfg(test)]
     pub async fn recovery_required(&self) -> Result<bool, AuthBusAuthorityError> {
         let value: i64 = sqlx::query_scalar(
             "SELECT recovery_required FROM authbus_recovery_state WHERE singleton = 1",
@@ -238,13 +284,15 @@ async fn load_checkpoint(
 async fn persist_checkpoint(
     tx: &mut Transaction<'_, Sqlite>,
     checkpoint: AuthorityCheckpoint,
+    version: FrontierVersion,
 ) -> Result<(), AuthBusAuthorityError> {
     sqlx::query(
         "UPDATE authbus_authority_checkpoint
-         SET generation = ?, checkpoint_digest = ? WHERE singleton = 1",
+         SET generation = ?, checkpoint_digest = ?, frontier_version = ? WHERE singleton = 1",
     )
     .bind(u64_bytes(checkpoint.generation).as_slice())
     .bind(checkpoint.digest.as_array().as_slice())
+    .bind(version as i64)
     .execute(&mut **tx)
     .await
     .map_err(storage)?;
@@ -276,7 +324,18 @@ async fn set_dirty(
 async fn authority_frontier_digest_tx(
     tx: &mut Transaction<'_, Sqlite>,
 ) -> Result<Digest32, AuthBusAuthorityError> {
-    let mut bytes = b"hepta.authbus.authority-frontier.v1\0".to_vec();
+    authority_frontier_digest_for_version(tx, FrontierVersion::DispatchV5).await
+}
+
+pub(crate) async fn authority_frontier_digest_for_version(
+    tx: &mut Transaction<'_, Sqlite>,
+    version: FrontierVersion,
+) -> Result<Digest32, AuthBusAuthorityError> {
+    let mut bytes = match version {
+        FrontierVersion::LegacyV4 => b"hepta.authbus.authority-frontier.v1\0",
+        FrontierVersion::DispatchV5 => b"hepta.authbus.authority-frontier.v2\0",
+    }
+    .to_vec();
     append_rows(
         tx,
         &mut bytes,
@@ -325,8 +384,14 @@ async fn authority_frontier_digest_tx(
          FROM authbus_quota_registry ORDER BY quota_key",
     )
     .await?;
-    append_rows(tx, &mut bytes, "reservation", RESERVATION_FRONTIER_SQL).await?;
-    append_rows(tx, &mut bytes, "reservation_archive", ARCHIVE_FRONTIER_SQL).await?;
+    // Legacy hashing is only for validating an outstanding v4 witness.
+    // Every newly published checkpoint uses DispatchV5 and binds dispatch time.
+    let (reservation_sql, archive_sql) = match version {
+        FrontierVersion::LegacyV4 => (LEGACY_RESERVATION_FRONTIER_SQL, LEGACY_ARCHIVE_FRONTIER_SQL),
+        FrontierVersion::DispatchV5 => (RESERVATION_FRONTIER_SQL, ARCHIVE_FRONTIER_SQL),
+    };
+    append_rows(tx, &mut bytes, "reservation", reservation_sql).await?;
+    append_rows(tx, &mut bytes, "reservation_archive", archive_sql).await?;
     append_rows(
         tx,
         &mut bytes,
@@ -344,8 +409,9 @@ const RESERVATION_FRONTIER_SQL: &str =
             principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
             hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
             hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
-            hex(updated_at_ms)||'|'||COALESCE(hex(dispatch_digest),'-')||'|'||
-            COALESCE(hex(terminal_evidence),'-')||'|'||COALESCE(hex(observed_cost),'-')||'|'||
+            hex(updated_at_ms)||'|'||COALESCE(hex(dispatched_at_ms),'-')||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
             COALESCE(hex(settlement_digest),'-')
      FROM authbus_quota_reservation ORDER BY reservation_id";
 
@@ -354,8 +420,31 @@ const ARCHIVE_FRONTIER_SQL: &str =
             principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
             hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
             hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
-            hex(updated_at_ms)||'|'||COALESCE(hex(dispatch_digest),'-')||'|'||
-            COALESCE(hex(terminal_evidence),'-')||'|'||COALESCE(hex(observed_cost),'-')||'|'||
+            hex(updated_at_ms)||'|'||COALESCE(hex(dispatched_at_ms),'-')||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
+            COALESCE(hex(settlement_digest),'-')||'|'||hex(archived_at_ms)
+     FROM authbus_quota_reservation_archive ORDER BY reservation_id";
+
+const LEGACY_RESERVATION_FRONTIER_SQL: &str =
+    "SELECT reservation_id||'|'||operation_id||'|'||quota_key||'|'||period_id||'|'||
+            principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
+            hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
+            hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
+            hex(updated_at_ms)||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
+            COALESCE(hex(settlement_digest),'-')
+     FROM authbus_quota_reservation ORDER BY reservation_id";
+
+const LEGACY_ARCHIVE_FRONTIER_SQL: &str =
+    "SELECT reservation_id||'|'||operation_id||'|'||quota_key||'|'||period_id||'|'||
+            principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
+            hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
+            hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
+            hex(updated_at_ms)||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
             COALESCE(hex(settlement_digest),'-')||'|'||hex(archived_at_ms)
      FROM authbus_quota_reservation_archive ORDER BY reservation_id";
 

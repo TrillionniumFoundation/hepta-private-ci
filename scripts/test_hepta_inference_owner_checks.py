@@ -96,6 +96,20 @@ class InferenceOwnerCheckTests(unittest.TestCase):
         self.assertIn("always() && steps.identity.outcome == 'success'", product)
         self.assertIn('["source-head","base-merge"]', product)
 
+    def test_native_runtime_is_built_and_bound_before_product_execution(self):
+        workflow = (
+            checks.ROOT / ".github/workflows/hepta-inference-maintenance.yml"
+        ).read_text()
+        product = workflow.split("  native-product-regression:", 1)[1]
+        self.assertLess(
+            product.index("Build exact-source native runtime executable"),
+            product.index("Execute native authorization"),
+        )
+        self.assertIn("-p codex-app-server --bin codex-app-server", product)
+        self.assertIn("native-runtime-build.json", product)
+        self.assertIn("native-runtime-binary.sha256", product)
+        self.assertIn("HEPTA_TEST_CODEX_EXE", product)
+
 
 if __name__ == "__main__":
     unittest.main()

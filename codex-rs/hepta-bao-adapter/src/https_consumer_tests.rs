@@ -5,7 +5,6 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_authbus::AuthBusAuthorityHost;
-use codex_hepta_authbus::AuthBusAuthorityStore;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_authbus::PolicyEffect;
@@ -571,9 +570,6 @@ async fn authbus_host(
     ),
     TestError,
 > {
-    use std::io::Write;
-    use std::os::unix::fs::OpenOptionsExt;
-
     let database_root = tempfile::tempdir()?;
     let checkpoint_root = tempfile::tempdir()?;
     std::fs::set_permissions(database_root.path(), std::fs::Permissions::from_mode(0o700))?;
@@ -586,25 +582,7 @@ async fn authbus_host(
         .path()
         .join("authbus-authority-checkpoint.json");
 
-    let raw = AuthBusAuthorityStore::open(&database).await?;
-    let frontier = raw.authority_frontier_digest().await?;
-    drop(raw);
-    let document = serde_json::json!({
-        "schema_version": 1,
-        "owner_id": "bao-product-owner",
-        "generation": 1,
-        "digest": frontier.to_string(),
-    });
-    let mut file = std::fs::OpenOptions::new()
-        .create_new(true)
-        .write(true)
-        .mode(0o600)
-        .open(&checkpoint)?;
-    serde_json::to_writer(&mut file, &document)?;
-    file.flush()?;
-    file.sync_all()?;
-
-    let host = AuthBusAuthorityHost::open(&database, checkpoint, "bao-product-owner").await?;
+    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint, "bao-product-owner").await?;
     let mut evidence = AuthBusEvidence::new(now);
     host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
         .await?;
