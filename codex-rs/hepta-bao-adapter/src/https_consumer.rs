@@ -87,6 +87,13 @@ pub struct BaoAuthBusAdmission {
     pub expires_at_ms: u64,
 }
 
+/// Borrowed kernel authorization inputs, not a grant or an AuthBus authority.
+/// The existing final-use verifier still validates and consumes the signed grant.
+pub struct BaoFinalUseContext<'a> {
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
+}
+
 /// Independent evidence producer used by the product host. AuthBus verifies
 /// every returned signature; the Bao adapter never owns trusted-time or
 /// settlement signing keys.
@@ -234,12 +241,12 @@ impl BaoClient {
         &self,
         authbus: &AuthBusAuthorityHost,
         admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
+        final_use: BaoFinalUseContext<'_>,
         request: &BaoReadRequest,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+        let BaoFinalUseContext { authority, grant } = final_use;
         if admission.policy_revision == 0
             || admission.expected_quota_revision == 0
             || admission.amount == 0
@@ -319,7 +326,7 @@ impl BaoClient {
                     "successful settlement lost its receipt",
                 ))
             }
-            Err(error) if ambiguous_after_dispatch(&error) => {
+            Err(error) if ambiguous_after_dispatch(error) => {
                 let time = authbus
                     .observe_trusted_time_attestation(&evidence.trusted_time()?)
                     .await;
@@ -535,20 +542,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
         terminal_evidence_digest,
         time.wall_time_ms(),
     )?;
-    let issuer = match authbus
-        .settlement_issuer(&signed.claims.issuer_id, signed.claims.key_epoch)
-        .await
-    {
-        Ok(issuer) => issuer,
-        Err(error) => {
-            return Err(BaoAuthBusError::SettlementPending {
-                reservation_id: reservation.reservation_id.clone(),
-                receipt,
-                control_error: error.to_string(),
-            });
-        }
-    };
-    if let Err(error) = authbus.settle(&issuer, &signed, time).await {
+    if let Err(error) = authbus.settle(&signed, time).await {
         return Err(BaoAuthBusError::SettlementPending {
             reservation_id: reservation.reservation_id.clone(),
             receipt,
@@ -558,7 +552,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     Ok(receipt)
 }
 
-fn ambiguous_after_dispatch(error: &BaoClientError) -> bool {
+fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
     matches!(
         error,
         BaoClientError::TransportUnavailable

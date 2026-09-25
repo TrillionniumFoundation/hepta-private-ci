@@ -18,6 +18,7 @@ use checkpoint::record_headroom;
 
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
 pub(super) const CHECKPOINT_PREFIX: &str = "native-checkpoint-v1|";
+const USAGE_HEADROOM_BYTES: u64 = 4 * 1024;
 const TERMINAL_HEADROOM_BYTES: u64 = super::MAX_JOURNAL_LINE_BYTES as u64 + 128 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -264,6 +265,12 @@ enum Event {
         request_id: String,
         output: NativeRunOutput,
     },
+    // A terminal body is immutable. Late usage need not append it again.
+    RefineUsage {
+        request_id: String,
+        expected_revision: u64,
+        observed_output_tokens: u64,
+    },
 }
 
 impl Event {
@@ -276,7 +283,8 @@ impl Event {
             | Self::Cancel { request_id }
             | Self::Stop { request_id, .. }
             | Self::AbortBeforeEffect { request_id, .. }
-            | Self::Observe { request_id, .. } => request_id,
+            | Self::Observe { request_id, .. }
+            | Self::RefineUsage { request_id, .. } => request_id,
         }
     }
 }
@@ -470,7 +478,7 @@ impl DurableInferenceControl {
     pub fn settle_native(
         &mut self,
         request_id: &str,
-        output: NativeRunOutput,
+        mut output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
         let record = self
             .native
@@ -479,6 +487,25 @@ impl DurableInferenceControl {
             .ok_or(Error::RequestNotFound)?;
         if record.observation.as_ref() == Some(&output) {
             return Ok(record.clone());
+        }
+        if let Some(previous) = &record.observation
+            && previous.terminal_observed
+            && let Some(tokens) = output.observed_output_tokens
+        {
+            // Compare every non-usage field without cloning the output body.
+            output.observed_output_tokens = previous.observed_output_tokens;
+            let usage_only = previous == &output;
+            output.observed_output_tokens = Some(tokens);
+            if usage_only {
+                return self.commit_native(
+                    request_id,
+                    Event::RefineUsage {
+                        request_id: request_id.to_string(),
+                        expected_revision: record.revision,
+                        observed_output_tokens: tokens,
+                    },
+                );
+            }
         }
         self.commit_native(
             request_id,
@@ -603,7 +630,8 @@ impl NativeJournal {
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::AbortBeforeEffect { request_id, .. }
-            | Event::Observe { request_id, .. } => request_id,
+            | Event::Observe { request_id, .. }
+            | Event::RefineUsage { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         let was_active = record.state != NativeReservationState::Released;
@@ -775,6 +803,29 @@ impl NativeJournal {
                 }
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
+            }
+            Event::RefineUsage {
+                expected_revision,
+                observed_output_tokens,
+                ..
+            } => {
+                if record.state != NativeReservationState::Released
+                    || record.revision != expected_revision
+                {
+                    return Err(Error::Conflict);
+                }
+                let observation = record
+                    .observation
+                    .as_mut()
+                    .ok_or(Error::TerminalObservationMissing)?;
+                if !observation.terminal_observed
+                    || observation
+                        .observed_output_tokens
+                        .is_some_and(|previous| observed_output_tokens <= previous)
+                {
+                    return Err(Error::Conflict);
+                }
+                observation.observed_output_tokens = Some(observed_output_tokens);
             }
             Event::Observe { output, .. } => {
                 if record

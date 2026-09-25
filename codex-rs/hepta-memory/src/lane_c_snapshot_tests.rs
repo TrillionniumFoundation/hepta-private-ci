@@ -4,6 +4,7 @@ use codex_hepta_cognitive_read::SnapshotProviderError;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -493,4 +494,135 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
             .await,
         Err(CognitiveStoreError::Conflict(_))
     ));
+}
+
+async fn streamed_history_case(revisions: i64) {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(104);
+    let agent_layout = layout(&temp, &owner);
+    let store = CognitiveStore::open(&agent_layout).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let memory_id = "memory:lane-c-streamed-history";
+    let source_id = "source:lane-c-streamed-history";
+    let source_digest = Sha256Digest::for_bytes(b"streamed history source")
+        .as_str()
+        .to_string();
+    let content_digest = Sha256Digest::for_bytes(b"streamed history")
+        .as_str()
+        .to_string();
+    let mut transaction = store.pool.begin().await.unwrap();
+    sqlx::query(
+        "INSERT INTO source_ledger (
+             source_id,source_revision,owner_agent_id,scope_kind,workspace_sha256,
+             source_kind,content,content_sha256,observed_at_unix_seconds,
+             recorded_at_unix_seconds
+         ) VALUES (?,1,?,'agent_private',NULL,'test',?,?,1,1)",
+    )
+    .bind(source_id)
+    .bind(owner.as_str())
+    .bind(b"streamed history source".as_slice())
+    .bind(&source_digest)
+    .execute(&mut *transaction)
+    .await
+    .unwrap();
+    for revision in 1..=revisions {
+        sqlx::query(
+            "INSERT INTO memory_revisions (
+                 memory_id,revision,owner_agent_id,scope_kind,workspace_sha256,
+                 content,content_sha256,verification,lifecycle,tombstone_reason,
+                 valid_from_unix_seconds,valid_to_unix_seconds,supersedes_revision,
+                 recorded_at_unix_seconds
+             ) VALUES (?,?,?,'agent_private',NULL,'streamed history',?,
+                       'verified','active',NULL,1,NULL,?,1)",
+        )
+        .bind(memory_id)
+        .bind(revision)
+        .bind(owner.as_str())
+        .bind(&content_digest)
+        .bind((revision > 1).then_some(revision - 1))
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
+        sqlx::query(
+            "INSERT INTO memory_citations
+             (memory_id,memory_revision,ordinal,source_id,source_revision)
+             VALUES (?,?,0,?,1)",
+        )
+        .bind(memory_id)
+        .bind(revision)
+        .bind(source_id)
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
+        sqlx::query(
+            "INSERT INTO kg_revision_fact_sets (
+                 memory_id,memory_revision,extractor_contract,fact_set_sha256,
+                 source_id,source_revision,entity_count,relation_count,
+                 recorded_at_unix_seconds
+             ) VALUES (?,?,'legacy_pre_g3_empty_v1',
+                       '6eb8599ab837d22123cda62453adb0c22a20fb1986308de666507188e79297af',
+                       ?,1,0,0,1)",
+        )
+        .bind(memory_id)
+        .bind(revision)
+        .bind(source_id)
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
+        if revision == 1 {
+            sqlx::query("INSERT INTO memory_heads(memory_id,revision) VALUES (?,1)")
+                .bind(memory_id)
+                .execute(&mut *transaction)
+                .await
+                .unwrap();
+        } else {
+            sqlx::query("UPDATE memory_heads SET revision=? WHERE memory_id=?")
+                .bind(revision)
+                .bind(memory_id)
+                .execute(&mut *transaction)
+                .await
+                .unwrap();
+        }
+    }
+    transaction.commit().await.unwrap();
+
+    let page = store
+        .lane_c_snapshot_page(&access, &CognitiveScope::AgentPrivate, 10, 1, None)
+        .await
+        .unwrap();
+    assert_eq!(page.records().len(), 1);
+    assert_eq!(page.records()[0].revision.get(), revisions as u64);
+    assert_eq!(page.frontiers().memory, revisions as u64);
+    assert_eq!(page.frontiers().source, 1);
+    assert_eq!(page.frontiers().knowledge_facts, revisions as u64);
+    store.pool.close().await;
+    drop(store);
+    let reopened = CognitiveStore::open(&agent_layout).await.unwrap();
+    assert_eq!(
+        reopened
+            .lane_c_snapshot_page(
+                &CognitiveAccess::agent_private(owner),
+                &CognitiveScope::AgentPrivate,
+                10,
+                1,
+                None,
+            )
+            .await
+            .unwrap()
+            .records()[0]
+            .revision
+            .get(),
+        revisions as u64
+    );
+}
+
+#[tokio::test]
+async fn durable_lane_c_page_streams_history_beyond_one_ancestry_batch() {
+    streamed_history_case(1_025).await;
+}
+
+#[tokio::test]
+#[ignore = "qualification: complete chain beyond the former materialization limit"]
+async fn qualification_lane_c_page_streams_beyond_old_revision_limit() {
+    streamed_history_case(16_385).await;
 }

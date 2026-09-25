@@ -133,6 +133,14 @@ impl HeptaEvidenceStore {
             .ok_or(AuthBusRecoveryError::RollbackDetected)?;
         let pending = load_pending_checkpoint(&mut tx).await?;
         if external == current {
+            let frontier = replay_frontier_digest_tx(&mut tx).await?;
+            let expected = pending.unwrap_or(current);
+            if frontier != expected.digest
+                || pending
+                    .is_some_and(|next| current.generation.checked_add(1) != Some(next.generation))
+            {
+                return Err(AuthBusRecoveryError::RollbackDetected);
+            }
             tx.commit().await.map_err(classify_sqlx_error)?;
             return Ok(pending);
         }

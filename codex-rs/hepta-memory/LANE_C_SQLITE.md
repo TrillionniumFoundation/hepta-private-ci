@@ -134,7 +134,8 @@ Whole-scope `lane_c_snapshot` remains bounded to 16,384 immutable revisions,
 65,536 citations, and 65,536 source rows; exceeding those pilot bounds returns
 `Unavailable`. For larger scopes, `lane_c_snapshot_page` keyset-pages at most
 512 current heads and loads complete ancestry/citations only for the selected
-heads (16,384 ancestry revisions / 65,536 citations per page). Its continuation
+heads (512-revision batches, at most 16,384 citations per batch, and
+262,144 total ancestry revisions/citations of work per page). Its continuation
 binds the global memory/source/tombstone/fact/KG frontiers, citation count,
 complete ordered head set and observation time. Any intervening owner mutation
 or validity-time change rejects the continuation rather than mixing cuts.
@@ -152,3 +153,19 @@ Run with `just test -p codex-hepta-memory`; exact-candidate CI also records the
 durable performance profiles described in the module guide.
 
 `cognitive_kg_oracle_tests.rs` additionally verifies full/incremental canonical V2 equivalence against SQLite, persisted physical/canonical digests, reopen, visibility, correction and tombstone; store tamper cases reject invalid canonical generation/publication receipts.
+
+## Production use ordering and result observation
+
+`ProductionAuthorityVerifier::enter_use` rejects by default. A trusted verifier
+must supply a revocation-linearized owned guard. Semantic mutation acquires it
+after `BEGIN IMMEDIATE`, validates the local lease in that transaction, and keeps
+it until the cancellation-safe commit task finishes. Recovery keeps the guard
+through private-copy verification and active publication and rechecks expiry
+before publication. Revocation acknowledgement waits for prior holds.
+
+`ProductionDurableWriter::cognitive_mutation_result` observes one exact original
+operation without re-execution, including after lease release under the retained
+identity/fence rules. Identical semantic retries yield typed `ObservedResult`.
+The result exposes committed revision/digest metadata, not a new full-payload
+write receipt or execution grant. Independent current-witness coordination and
+authenticated recoverable archives remain distinct, unfinished host/owner work.

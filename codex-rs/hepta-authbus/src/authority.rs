@@ -205,6 +205,8 @@ pub enum AuthBusAuthorityError {
     RollbackDetected,
     #[error("AuthBus owner has not completed restart reconciliation")]
     RecoveryRequired,
+    #[error("another AuthBus authority owner is publishing the durable frontier")]
+    OwnerBusy,
     #[error("AuthBus authority checkpoint file is unsafe or unavailable")]
     UnsafeCheckpoint,
     #[error("AuthBus policy cannot be retired while reservations still reference it")]

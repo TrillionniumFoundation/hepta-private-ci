@@ -30,7 +30,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 
 ## 6. Concrete verification cases
 
-- STORE-01: duplicate same-semantic event returns the prior commit; changed identity content conflicts.
+- STORE-01: duplicate same-semantic event exposes the prior committed disposition without re-execution; the production API returns typed `ObservedResult` metadata, while changed identity content conflicts.
 - STORE-02: crash before/after sync and acknowledgement loss preserve anchored history.
 - STORE-03: stale writer and competing writer cannot both advance a frontier.
 - STORE-04: restoring a backup before a forget cutoff replays revocations before any read becomes visible.
@@ -48,8 +48,26 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **Implemented entrypoints:** `AdmittedCognitiveStoreV2` (including `append_admitted_with_canonical_shadow`) and the canonical durable façade in [codex-rs/hepta-cognitive-store](../../../codex-rs/hepta-cognitive-store/src/lib.rs); physical `CognitiveStore` and `open_with_recovery` in [hepta-memory](../../../codex-rs/hepta-memory/src/cognitive_store.rs); whole-cut and proof-bound `lane_c_snapshot_page` reads in [lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs); named product composition in [AgentdProductionWriterHost](../../../codex-rs/hepta-agentd/src/production_writer_host.rs).
 - **State and recovery:** V1/V2 remain semantic in-memory components, while `hepta-memory::CognitiveStore` over `cognitive_1.sqlite3` is the only physical owner. Writable recovery is source-implemented by retaining source descriptors, fencing ordinary handles, materializing a bounded private database/WAL/journal copy, comparing the independent exact-current-cut anchor, verifying SQLite integrity and production authority/fence, checkpointing, and atomically publishing the recovered generation. Ordinary `open` still does not authenticate currentness.
 - **Bounded reads:** the original whole-scope adapter retains its 16,384-revision pilot bound. `lane_c_snapshot_page` keyset-pages at most 512 heads and reconstructs complete ancestry/citations for only those heads; its cursor binds all owner frontiers, citation count, the complete ordered head set and observation time so an intervening correction, deletion, source/fact/KG change or validity-time change rejects continuation.
-- **Source tests:** [v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs), [lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs), [cognitive_store_recovery_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs), [production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs), and [cognitive_store_product_writer.rs](../../../codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs). The production-writer cases include semantic-validation rollback, live-authority revocation, and exact response-loss/restart duplicate rejection. These are test identities; exact-candidate CI receipts determine pass/fail.
+- **Source tests:** [v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs), [lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs), [cognitive_store_recovery_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs), [production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs), and [cognitive_store_product_writer.rs](../../../codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs). The production-writer cases include semantic-validation rollback, live-authority revocation, and exact response-loss/restart typed result observation. These are test identities; exact-candidate CI receipts determine pass/fail.
 - **Performance evidence path:** [cognitive_store_perf.rs](../../../codex-rs/hepta-memory/examples/cognitive_store_perf.rs) emits `PERF-DURABLE` JSON; consolidated source CI requests both 256-record and 16,384-record profiles when this durable boundary changes.
 - **Canonical migration:** the shadow receipt is on this convergence line. Legacy admission evidence still lacks `source_revision`, so the shadow by itself does not claim full provenance equivalence. The production durable path now supplies the authoritative source revision/digest/time in `ProductionCognitiveMutationReceiptV1`, and `bind_canonical_event_to_durable_receipt` verifies the canonical `MemoryEventV1` against that owner receipt.
 - **Production provenance:** `ProductionCognitiveMutationCapability` durably admits the operation, performs the authoritative source/Memory/fact/projection mutation, and appends its committed provenance marker in one SQLite transaction. The typed production receipt binds grant/authority/owner epochs, lease generation, semantic input, predecessor revision, authoritative source revision and final write digest. Failed semantic validation rolls the admission/outbox back with the mutation.
 - **Remaining work/external gates:** do not create another memory database. The host must independently retain/authenticate the current-cut witness and verify production authority. Exact-head/merge receipts, target-host measurements, independent semantic review, operator acceptance, activation, canary, promotion and release remain separate evidence gates. Long-term retention/pruning, physical erasure, backup deletion, derived-artifact revocation and model unlearning remain separate from a logical tombstone.
+
+### Current revocation and result boundary
+
+The verifier-owned use guard is acquired after the SQLite writer lock; its
+default constructor path fails closed unless the trusted verifier implements
+`enter_use`. The guard covers commit or recovery publication. The commit task
+retains it if its response waiter is cancelled, and expiry is checked before
+commit/publication. Tests cover queued revocation, in-use revocation ordering,
+recovery phases, abandoned commit waiters, concurrent identical mutations and
+result lookup after release/owner handoff. These source tests are not automatic
+execution receipts. Full daemon bootstrap/witness reconciliation and recoverable
+archive/retention remain open; no digest-only destructive archive is enabled.
+
+The existing complete head-set/current-cut digest is retained while ancestry
+reconstruction streams 512 revisions per batch. The ignored qualification case
+`qualification_lane_c_page_streams_beyond_old_revision_limit` crosses the former
+16,384-revision materialization limit and is explicitly selected by cognitive
+CI. It is not a claim of unlimited retention or constant-time global paging.

@@ -410,11 +410,22 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     // Fill active capacity using copies with independent fixture identities;
     // admission hashing/signatures are exercised separately, not 4096 times.
     sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
+        INSERT INTO authbus_outbox SELECT randomblob(32),
+        CASE WHEN x < 512 THEN issuer_id ELSE 'issuer:fixture:' || (x / 512) END,
+        key_epoch, 'fixture:' || x,
         subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
         state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
         updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
         .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
+    // Global pressure must be reachable under the per-issuer 512-row limit:
+    // eight independent issuers, not 4096 active rows for one issuer.
+    let population: (i64, i64) = sqlx::query_as(
+        "SELECT SUM(n), MAX(n) FROM (SELECT COUNT(*) AS n FROM authbus_outbox GROUP BY issuer_id)",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(population, (4096, 512));
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
         store
@@ -606,5 +617,76 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
             )
             .await,
         Err(AuthBusOutboxError::Capacity)
+    ));
+}
+
+#[tokio::test]
+async fn signed_outbox_external_publish_before_local_promotion_recovers_exact_delivery() {
+    let temp = TempDir::new().unwrap();
+    let sqlite = config(temp.path());
+    let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let initial = ReplayCheckpoint {
+        generation: 1,
+        digest: store.authbus_replay_frontier_digest().await.unwrap(),
+    };
+    store
+        .initialize_authbus_restore_checkpoint(initial)
+        .await
+        .unwrap();
+    let queued = enqueue(&store, 1).await;
+    let published = store
+        .pending_authbus_restore_checkpoint()
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(published.generation, initial.generation + 1);
+    // External persistence is represented by retaining the exact witness across
+    // closing every SQLite connection, without acknowledging it locally.
+    store.pool.close().await;
+    let reopened = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    assert_eq!(
+        reopened.authbus_restore_checkpoint().await.unwrap(),
+        Some(initial)
+    );
+    assert_eq!(
+        reopened
+            .reconcile_authbus_restore_checkpoint(published)
+            .await
+            .unwrap(),
+        None
+    );
+    assert_eq!(
+        reopened.authbus_restore_checkpoint().await.unwrap(),
+        Some(published)
+    );
+    assert_eq!(enqueue(&reopened, 1).await, queued);
+    let delivery = claim(&reopened, queued.delivery_id, 60_000).await.unwrap();
+    assert_eq!(delivery.payload, b"payload");
+    let (issuer, _) = fixture(1, u64::MAX);
+    let acknowledgement = Digest32::of_bytes(b"stable consumer receipt");
+    reopened
+        .ack_authbus_delivery(&issuer, &delivery.lease, acknowledgement)
+        .await
+        .unwrap();
+    reopened.pool.close().await;
+    let recovered = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    assert_eq!(
+        recovered
+            .reconcile_authbus_restore_checkpoint(published)
+            .await
+            .unwrap(),
+        None
+    );
+    let terminal = recovered
+        .authbus_delivery_status(queued.delivery_id)
+        .await
+        .unwrap();
+    assert_eq!(
+        (terminal.state, terminal.acknowledgement),
+        (AuthBusDeliveryState::Acked, Some(acknowledgement))
+    );
+    assert!(matches!(
+        claim(&recovered, queued.delivery_id, 60_000).await,
+        Err(AuthBusOutboxError::Unavailable)
     ));
 }

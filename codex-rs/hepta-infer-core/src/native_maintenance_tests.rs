@@ -162,14 +162,7 @@ fn reserved_metadata_and_maximum_terminal_can_consume_their_own_headroom() {
     let path = path("liability-at-byte-boundary");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("live"), 1).unwrap();
-    let padding = "\n".repeat(1024 * 1024);
-    while control.journal_capacity_status().admissible_bytes > 0 {
-        let amount = control
-            .journal_capacity_status()
-            .admissible_bytes
-            .min(padding.len() as u64);
-        control.append(&padding[..amount as usize]).unwrap();
-    }
+    fill_admissible_bytes(&mut control);
     let full = control.journal_capacity_status();
     assert_eq!(full.admissible_bytes, 0);
     control.dispatch_native("live", dispatch()).unwrap();
@@ -180,7 +173,7 @@ fn reserved_metadata_and_maximum_terminal_can_consume_their_own_headroom() {
     let settled = control.settle_native("live", terminal).unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
     let final_capacity = control.journal_capacity_status();
-    assert_eq!(final_capacity.reserved_headroom_bytes, 0);
+    assert_eq!(final_capacity.reserved_headroom_bytes, USAGE_HEADROOM_BYTES);
     // No checkpoint reclamation was needed: already-owned bytes were consumed.
     assert!(final_capacity.journal_bytes > full.journal_bytes);
     drop(control);
@@ -250,4 +243,24 @@ fn checkpoint_state_mutation_is_rejected_without_repairing_the_source() {
     }
     std::fs::write(&path, full).unwrap();
     assert!(DurableInferenceControl::open(&path, 8).is_ok());
+}
+
+/// Durable fixture padding, not a logical transaction. One sync avoids turning
+/// a capacity-boundary test into dozens of unrelated storage-latency samples.
+pub(super) fn fill_admissible_bytes(control: &mut DurableInferenceControl) {
+    let padding = vec![b'\n'; 1024 * 1024];
+    let amount = control.journal_capacity_status().admissible_bytes;
+    let mut remaining = amount;
+    while remaining > 0 {
+        let bytes = remaining.min(padding.len() as u64) as usize;
+        control.file.write_all(&padding[..bytes]).unwrap();
+        remaining -= bytes as u64;
+    }
+    control.file.flush().unwrap();
+    control.file.sync_all().unwrap();
+    control.journal_bytes += amount;
+    assert_eq!(
+        control.file.metadata().unwrap().len(),
+        control.journal_bytes
+    );
 }

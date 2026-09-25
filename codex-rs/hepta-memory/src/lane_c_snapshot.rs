@@ -28,9 +28,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
-use sqlx::QueryBuilder;
 use sqlx::Row;
-use sqlx::Sqlite;
 
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
@@ -43,10 +41,12 @@ const MAX_CITATIONS: usize = 65_536;
 const MAX_SOURCES: i64 = 65_536;
 /// Maximum number of owner heads scanned by one durable Lane C page.
 pub const MAX_LANE_C_SNAPSHOT_PAGE_HEADS: usize = 512;
-/// A page may include only this many immutable ancestry rows.  Callers can
-/// retry with a smaller head page when a few histories are exceptionally deep.
-pub const MAX_LANE_C_PAGE_ANCESTRY_REVISIONS: usize = 16_384;
-pub const MAX_LANE_C_PAGE_CITATIONS: usize = 65_536;
+/// Per-page work ceiling, not a materialization ceiling. Complete ancestry is
+/// verified in fixed batches; no history is deleted or omitted from the chain.
+pub const MAX_LANE_C_PAGE_ANCESTRY_REVISIONS: usize = 262_144;
+pub const MAX_LANE_C_PAGE_CITATIONS: usize = 262_144;
+const LANE_C_ANCESTRY_BATCH: usize = 512;
+const LANE_C_BATCH_CITATIONS: usize = LANE_C_ANCESTRY_BATCH * 32;
 const LANE_C_HEAD_DIGEST_BATCH: i64 = 1_024;
 /// The current durable SQLite memory schema has no persisted kind discriminator.
 /// Its admitted memory revisions therefore project only as Fact until a schema migration adds one.
@@ -462,171 +462,163 @@ impl CognitiveStore {
             .collect::<Result<Vec<_>, _>>()?;
 
         let mut records = Vec::new();
-        if !head_ids.is_empty() {
-            let ancestry_limit =
-                i64::try_from(MAX_LANE_C_PAGE_ANCESTRY_REVISIONS + 1).map_err(|_| {
-                    CognitiveStoreError::Invalid("Lane C ancestry limit exceeds i64".to_string())
-                })?;
-            let mut revision_query = QueryBuilder::<Sqlite>::new(
-                "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
-                        r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
-                        r.supersedes_revision, h.revision AS head_revision
-                 FROM memory_revisions r LEFT JOIN memory_heads h ON h.memory_id = r.memory_id
-                 WHERE r.owner_agent_id = ",
-            );
-            revision_query
-                .push_bind(self.owner_agent_id.as_str())
-                .push(" AND r.scope_kind = ")
-                .push_bind(scope_kind)
-                .push(" AND r.workspace_sha256 IS ")
-                .push_bind(workspace)
-                .push(" AND r.memory_id IN (");
-            {
-                let mut separated = revision_query.separated(", ");
-                for memory_id in &head_ids {
-                    separated.push_bind(memory_id);
-                }
-            }
-            revision_query
-                .push(") ORDER BY r.memory_id, r.revision LIMIT ")
-                .push_bind(ancestry_limit);
-            let rows = revision_query
-                .build()
-                .fetch_all(&mut *transaction)
-                .await
-                .map_err(unavailable)?;
-            if rows.len() > MAX_LANE_C_PAGE_ANCESTRY_REVISIONS {
-                return Err(CognitiveStoreError::Unavailable(format!(
-                    "Lane C selected page exceeds {MAX_LANE_C_PAGE_ANCESTRY_REVISIONS} ancestry revisions; retry with fewer heads"
-                )));
-            }
-
-            let citation_limit = i64::try_from(MAX_LANE_C_PAGE_CITATIONS + 1).map_err(|_| {
-                CognitiveStoreError::Invalid("Lane C citation limit exceeds i64".to_string())
-            })?;
-            let mut citation_query = QueryBuilder::<Sqlite>::new(
-                "SELECT c.memory_id, c.memory_revision, s.source_id, s.content_sha256
-                 FROM memory_citations c
-                 JOIN memory_revisions r ON r.memory_id = c.memory_id AND r.revision = c.memory_revision
-                 JOIN source_ledger s ON s.source_id = c.source_id AND s.source_revision = c.source_revision
-                 WHERE r.owner_agent_id = ",
-            );
-            citation_query
-                .push_bind(self.owner_agent_id.as_str())
-                .push(" AND r.scope_kind = ")
-                .push_bind(scope_kind)
-                .push(" AND r.workspace_sha256 IS ")
-                .push_bind(workspace)
-                .push(" AND r.memory_id IN (");
-            {
-                let mut separated = citation_query.separated(", ");
-                for memory_id in &head_ids {
-                    separated.push_bind(memory_id);
-                }
-            }
-            citation_query
-                .push(") ORDER BY c.memory_id, c.memory_revision, c.ordinal LIMIT ")
-                .push_bind(citation_limit);
-            let citation_rows = citation_query
-                .build()
-                .fetch_all(&mut *transaction)
-                .await
-                .map_err(unavailable)?;
-            if citation_rows.len() > MAX_LANE_C_PAGE_CITATIONS {
-                return Err(CognitiveStoreError::Unavailable(format!(
-                    "Lane C selected page exceeds {MAX_LANE_C_PAGE_CITATIONS} citations; retry with fewer heads"
-                )));
-            }
-            let mut citations = BTreeMap::<(String, i64), Vec<Citation>>::new();
-            for row in citation_rows {
-                let key = (
-                    row.try_get("memory_id").map_err(unavailable)?,
-                    row.try_get("memory_revision").map_err(unavailable)?,
-                );
-                let source: String = row.try_get("source_id").map_err(unavailable)?;
-                let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
-                citations.entry(key).or_default().push(Citation {
-                    source_id: StableId::new(source).map_err(corrupt)?,
-                    source_digest: digest.parse().map_err(corrupt)?,
-                });
-            }
-
+        let mut processed_revisions = 0_usize;
+        let mut processed_citations = 0_usize;
+        for head_id in &head_ids {
+            let mut after_revision = 0_i64;
             let mut previous: Option<MemoryRecord> = None;
-            let mut last_head = 0_i64;
-            for row in rows {
-                let id: String = row.try_get("memory_id").map_err(unavailable)?;
-                let revision: i64 = row.try_get("revision").map_err(unavailable)?;
-                let predecessor: Option<i64> =
-                    row.try_get("supersedes_revision").map_err(unavailable)?;
-                let state: String = row.try_get("lifecycle").map_err(unavailable)?;
-                let record_id = StableId::new(id.clone()).map_err(corrupt)?;
-                let prior = previous
-                    .as_ref()
-                    .filter(|record| record.record_id == record_id);
-                if prior.is_none()
-                    && previous
-                        .as_ref()
-                        .is_some_and(|record| record.revision.get() != last_head as u64)
-                {
-                    return Err(corrupt("memory head is not the latest committed revision"));
+            let mut observed_head = None;
+            loop {
+                let mut rows = sqlx::query(
+                    "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
+                            r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
+                            r.supersedes_revision, h.revision AS head_revision
+                     FROM memory_revisions r JOIN memory_heads h
+                       ON h.memory_id=r.memory_id
+                     WHERE r.owner_agent_id=? AND r.scope_kind=?
+                       AND r.workspace_sha256 IS ? AND r.memory_id=?
+                       AND r.revision>?
+                     ORDER BY r.revision LIMIT ?",
+                )
+                .bind(self.owner_agent_id.as_str())
+                .bind(scope_kind)
+                .bind(workspace)
+                .bind(head_id)
+                .bind(after_revision)
+                .bind(i64::try_from(LANE_C_ANCESTRY_BATCH + 1).map_err(corrupt)?)
+                .fetch_all(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if rows.is_empty() {
+                    break;
                 }
-                if (revision == 1 && predecessor.is_some())
-                    || (revision > 1
-                        && !prior.is_some_and(|record| {
-                            predecessor == Some(revision - 1)
-                                && record.revision.get() == (revision - 1) as u64
-                        }))
-                {
-                    return Err(corrupt("broken cognitive revision ancestry"));
+                let has_more_revisions = rows.len() > LANE_C_ANCESTRY_BATCH;
+                if has_more_revisions {
+                    rows.truncate(LANE_C_ANCESTRY_BATCH);
                 }
-                let state = match state.as_str() {
-                    "active" => RecordState::Live,
-                    "tombstoned" => RecordState::Tombstone,
-                    _ => return Err(corrupt("invalid cognitive lifecycle")),
-                };
-                if state == RecordState::Live
-                    && prior.is_some_and(|record| record.state == RecordState::Tombstone)
-                {
-                    return Err(corrupt("tombstoned memory resurrection"));
+                processed_revisions = processed_revisions
+                    .checked_add(rows.len())
+                    .ok_or_else(|| corrupt("Lane C ancestry work overflow"))?;
+                if processed_revisions > MAX_LANE_C_PAGE_ANCESTRY_REVISIONS {
+                    return Err(CognitiveStoreError::Unavailable(format!(
+                        "Lane C selected page exceeds {MAX_LANE_C_PAGE_ANCESTRY_REVISIONS} streamed ancestry revisions; retry with fewer heads"
+                    )));
                 }
-                let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
-                let record = MemoryRecord {
-                    record_id,
-                    revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
-                        .map_err(corrupt)?,
-                    kind: MemoryKind::Fact,
-                    content_digest: digest.parse().map_err(corrupt)?,
-                    predecessor_digest: prior.map(MemoryRecord::record_digest),
-                    citations: citations
-                        .remove(&(id, revision))
-                        .ok_or_else(|| corrupt("missing cognitive citations"))?,
-                    state,
-                };
-                record.validate().map_err(corrupt)?;
-                let head: i64 = row.try_get("head_revision").map_err(unavailable)?;
-                if head < revision {
-                    return Err(corrupt("memory head regressed behind committed revision"));
-                }
-                last_head = head;
-                let verification: String = row.try_get("verification").map_err(unavailable)?;
-                let valid_from: i64 = row
-                    .try_get("valid_from_unix_seconds")
+                let batch_last_revision: i64 = rows
+                    .last()
+                    .ok_or_else(|| corrupt("non-empty ancestry batch has no last revision"))?
+                    .try_get("revision")
                     .map_err(unavailable)?;
-                let valid_to: Option<i64> =
-                    row.try_get("valid_to_unix_seconds").map_err(unavailable)?;
-                if revision == head
-                    && (state == RecordState::Tombstone
-                        || (verification == "verified"
-                            && valid_from <= now_unix_seconds
-                            && valid_to.is_none_or(|until| now_unix_seconds < until)))
-                {
-                    records.push(record.clone());
+                let remaining_citations = MAX_LANE_C_PAGE_CITATIONS
+                    .saturating_sub(processed_citations)
+                    .min(LANE_C_BATCH_CITATIONS);
+                let citation_rows = sqlx::query(
+                    "SELECT c.memory_revision,s.source_id,s.content_sha256
+                     FROM memory_citations c JOIN source_ledger s
+                       ON s.source_id=c.source_id AND s.source_revision=c.source_revision
+                     WHERE c.memory_id=? AND c.memory_revision>? AND c.memory_revision<=?
+                     ORDER BY c.memory_revision,c.ordinal LIMIT ?",
+                )
+                .bind(head_id)
+                .bind(after_revision)
+                .bind(batch_last_revision)
+                .bind(i64::try_from(remaining_citations.saturating_add(1)).map_err(corrupt)?)
+                .fetch_all(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if citation_rows.len() > remaining_citations {
+                    return Err(CognitiveStoreError::Unavailable(format!(
+                        "Lane C selected page exceeds {MAX_LANE_C_PAGE_CITATIONS} streamed citations; retry with fewer heads"
+                    )));
                 }
-                previous = Some(record);
+                processed_citations += citation_rows.len();
+                let mut citations = BTreeMap::<i64, Vec<Citation>>::new();
+                for row in citation_rows {
+                    let revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
+                    let source: String = row.try_get("source_id").map_err(unavailable)?;
+                    let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
+                    citations.entry(revision).or_default().push(Citation {
+                        source_id: StableId::new(source).map_err(corrupt)?,
+                        source_digest: digest.parse().map_err(corrupt)?,
+                    });
+                }
+
+                for row in rows {
+                    let id: String = row.try_get("memory_id").map_err(unavailable)?;
+                    let revision: i64 = row.try_get("revision").map_err(unavailable)?;
+                    let predecessor: Option<i64> =
+                        row.try_get("supersedes_revision").map_err(unavailable)?;
+                    let state: String = row.try_get("lifecycle").map_err(unavailable)?;
+                    let record_id = StableId::new(id).map_err(corrupt)?;
+                    if (revision == 1 && predecessor.is_some())
+                        || (revision > 1
+                            && !previous.as_ref().is_some_and(|record| {
+                                predecessor == Some(revision - 1)
+                                    && record.revision.get() == (revision - 1) as u64
+                            }))
+                    {
+                        return Err(corrupt("broken cognitive revision ancestry"));
+                    }
+                    let state = match state.as_str() {
+                        "active" => RecordState::Live,
+                        "tombstoned" => RecordState::Tombstone,
+                        _ => return Err(corrupt("invalid cognitive lifecycle")),
+                    };
+                    if state == RecordState::Live
+                        && previous
+                            .as_ref()
+                            .is_some_and(|record| record.state == RecordState::Tombstone)
+                    {
+                        return Err(corrupt("tombstoned memory resurrection"));
+                    }
+                    let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
+                    let record = MemoryRecord {
+                        record_id,
+                        revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
+                            .map_err(corrupt)?,
+                        kind: MemoryKind::Fact,
+                        content_digest: digest.parse().map_err(corrupt)?,
+                        predecessor_digest: previous.as_ref().map(MemoryRecord::record_digest),
+                        citations: citations
+                            .remove(&revision)
+                            .ok_or_else(|| corrupt("missing cognitive citations"))?,
+                        state,
+                    };
+                    record.validate().map_err(corrupt)?;
+                    let head: i64 = row.try_get("head_revision").map_err(unavailable)?;
+                    if head < revision {
+                        return Err(corrupt("memory head regressed behind committed revision"));
+                    }
+                    if observed_head.replace(head).is_some_and(|seen| seen != head) {
+                        return Err(corrupt("memory head changed inside one read transaction"));
+                    }
+                    let verification: String = row.try_get("verification").map_err(unavailable)?;
+                    let valid_from: i64 = row
+                        .try_get("valid_from_unix_seconds")
+                        .map_err(unavailable)?;
+                    let valid_to: Option<i64> =
+                        row.try_get("valid_to_unix_seconds").map_err(unavailable)?;
+                    if revision == head
+                        && (state == RecordState::Tombstone
+                            || (verification == "verified"
+                                && valid_from <= now_unix_seconds
+                                && valid_to.is_none_or(|until| now_unix_seconds < until)))
+                    {
+                        records.push(record.clone());
+                    }
+                    previous = Some(record);
+                }
+                after_revision = batch_last_revision;
+                if !has_more_revisions {
+                    break;
+                }
             }
+            let Some(head) = observed_head else {
+                return Err(corrupt("selected memory head has no immutable revisions"));
+            };
             if previous
                 .as_ref()
-                .is_some_and(|record| record.revision.get() != last_head as u64)
+                .is_none_or(|record| record.revision.get() != head as u64)
             {
                 return Err(corrupt("memory head is not the latest committed revision"));
             }

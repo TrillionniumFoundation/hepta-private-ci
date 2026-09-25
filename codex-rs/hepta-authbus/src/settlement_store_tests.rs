@@ -4,6 +4,9 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;
+use crate::IssuerLifecycleState;
+use crate::IssuerRecord;
+use crate::IssuerSpec;
 use crate::PolicyDecision;
 use crate::PolicySpec;
 use crate::QuotaSpec;
@@ -93,13 +96,18 @@ async fn configured() -> (
     (root, store, decision, reservation)
 }
 
-fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
-    SettlementIssuerRegistration {
-        issuer_id: id("issuer:settlement"),
-        key_epoch: Generation::new(1).expect("generation"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    }
+async fn enroll_settlement_issuer(store: &AuthBusAuthorityStore, key: &SigningKey) -> IssuerRecord {
+    store
+        .enroll_issuer(
+            IssuerPurpose::Settlement,
+            IssuerSpec {
+                issuer_id: id("issuer:settlement"),
+                key_epoch: Generation::new(1).expect("generation"),
+                verifying_key: key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll settlement issuer")
 }
 
 fn evidence(
@@ -118,7 +126,7 @@ fn evidence(
         observed_cost,
         terminal_evidence_digest: Digest32::of_bytes(b"provider-terminal-evidence"),
         observed_at_ms,
-        expires_at_ms: observed_at_ms + 2_000,
+        expires_at_ms: observed_at_ms + 10_000,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
     SignedSettlementEvidence { claims, signature }
@@ -159,9 +167,10 @@ async fn completed_settlement_is_conservative_and_idempotent() {
         .await
         .expect("mark dispatch");
     let key = SigningKey::from_bytes(&[9; 32]);
+    enroll_settlement_issuer(&store, &key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     let settled = store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(settled.state, ReservationState::Settled);
@@ -187,16 +196,30 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     );
     assert_eq!(
         store
-            .settle(&issuer(&key), &signed, sample(7, 1_700))
+            .settle(&signed, sample(7, 1_700))
             .await
             .expect("exact settlement retry"),
         settled
     );
+    store
+        .revoke_issuer(
+            IssuerPurpose::Settlement,
+            &id("issuer:settlement"),
+            Generation::new(1).expect("generation"),
+            1,
+        )
+        .await
+        .expect("revoke after terminal settlement");
+    assert_eq!(
+        store
+            .settle(&signed, sample(8, 1_800))
+            .await
+            .expect("terminal retry does not recreate an effect"),
+        settled
+    );
     let changed = evidence(&key, &dispatched, SettlementStatus::Completed, 4, 1_600);
     assert!(matches!(
-        store
-            .settle(&issuer(&key), &changed, sample(8, 1_800))
-            .await,
+        store.settle(&changed, sample(9, 1_900)).await,
         Err(AuthBusAuthorityError::IdempotencyConflict)
     ));
 }
@@ -229,9 +252,10 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
     assert_eq!((held.available, held.reserved, held.consumed), (3, 7, 0));
 
     let key = SigningKey::from_bytes(&[10; 32]);
-    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 5_200);
+    enroll_settlement_issuer(&store, &key).await;
+    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
-        .settle(&issuer(&key), &signed, sample(7, 5_200))
+        .settle(&signed, sample(7, 5_200))
         .await
         .expect("late terminal settlement");
     let closed = store
@@ -242,6 +266,99 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
         (closed.available, closed.reserved, closed.consumed),
         (5, 0, 5)
     );
+}
+
+#[tokio::test]
+async fn settlement_reloads_issuer_and_rejects_cached_epoch_after_rotation() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            reservation.revision,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .expect("mark dispatch");
+    let old_key = SigningKey::from_bytes(&[21; 32]);
+    let cached = enroll_settlement_issuer(&store, &old_key).await;
+    let replacement_key = SigningKey::from_bytes(&[22; 32]);
+    store
+        .rotate_issuer(
+            IssuerPurpose::Settlement,
+            IssuerSpec {
+                issuer_id: cached.issuer_id.clone(),
+                key_epoch: Generation::new(2).expect("generation"),
+                verifying_key: replacement_key.verifying_key(),
+            },
+            cached.key_epoch,
+            cached.revision,
+        )
+        .await
+        .expect("rotate issuer");
+    assert_eq!(cached.state, IssuerLifecycleState::Active);
+    let signed = evidence(&old_key, &dispatched, SettlementStatus::Completed, 5, 1_600);
+    assert!(matches!(
+        store.settle(&signed, sample(6, 1_600)).await,
+        Err(AuthBusAuthorityError::SettlementIssuerRevoked)
+    ));
+}
+
+#[tokio::test]
+async fn settlement_rejects_unregistered_or_wrong_purpose_issuer() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            reservation.revision,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .expect("mark dispatch");
+    let key = SigningKey::from_bytes(&[23; 32]);
+    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
+    assert!(matches!(
+        store.settle(&signed, sample(6, 1_600)).await,
+        Err(AuthBusAuthorityError::IssuerMissing)
+    ));
+    store
+        .enroll_issuer(
+            IssuerPurpose::Message,
+            IssuerSpec {
+                issuer_id: id("issuer:settlement"),
+                key_epoch: Generation::new(1).expect("generation"),
+                verifying_key: key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll wrong-purpose key");
+    assert!(matches!(
+        store.settle(&signed, sample(7, 1_700)).await,
+        Err(AuthBusAuthorityError::IssuerMissing)
+    ));
+}
+
+#[tokio::test]
+async fn settlement_rejects_observation_before_persisted_dispatch_boundary() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            reservation.revision,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .expect("mark dispatch");
+    assert_eq!(dispatched.dispatched_at_ms, Some(1_500));
+    let key = SigningKey::from_bytes(&[24; 32]);
+    enroll_settlement_issuer(&store, &key).await;
+    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_499);
+    assert!(matches!(
+        store.settle(&signed, sample(6, 1_600)).await,
+        Err(AuthBusAuthorityError::InvalidSettlementEvidence)
+    ));
 }
 
 #[tokio::test]
@@ -350,9 +467,10 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         .await
         .expect("mark dispatch");
     let key = SigningKey::from_bytes(&[33; 32]);
+    enroll_settlement_issuer(&store, &key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(
@@ -384,3 +502,6 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         .expect("quota snapshot");
     assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
 }
+
+#[path = "settlement_boundary_tests.rs"]
+mod boundary_tests;

@@ -61,6 +61,15 @@ impl ProductionAuthorityVerifier for AllowVerifier {
     ) -> Result<(), String> {
         Ok(())
     }
+
+    fn enter_use(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<crate::ProductionAuthorityUseGuard, String> {
+        self.verify(authority, expected_agent)?;
+        Ok(crate::ProductionAuthorityUseGuard::from_verified_use(()))
+    }
 }
 
 fn unix_seconds() -> u64 {

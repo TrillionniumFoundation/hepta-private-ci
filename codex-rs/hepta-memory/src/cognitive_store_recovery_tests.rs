@@ -3,6 +3,9 @@ use std::collections::BTreeMap;
 use std::ffi::OsString;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Condvar;
+use std::sync::Mutex;
 use tempfile::TempDir;
 
 #[cfg(unix)]
@@ -44,6 +47,15 @@ impl crate::ProductionAuthorityVerifier for RecoveryVerifier {
             Err("recovery authority owner mismatch".to_string())
         }
     }
+
+    fn enter_use(
+        &self,
+        authority: &crate::ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<crate::ProductionAuthorityUseGuard, String> {
+        self.verify(authority, expected_agent)?;
+        Ok(crate::ProductionAuthorityUseGuard::from_verified_use(()))
+    }
 }
 
 fn recovery_authority(owner: &AgentId) -> crate::ProductionAuthorityLease {
@@ -57,6 +69,152 @@ fn recovery_authority(owner: &AgentId) -> crate::ProductionAuthorityLease {
             .expect("valid recovery token"),
     )
     .expect("valid recovery authority")
+}
+
+#[derive(Default)]
+struct LinearizedRecoveryState {
+    revoked: bool,
+    active_uses: usize,
+    revocation_requested: bool,
+}
+
+#[derive(Clone, Default)]
+struct LinearizedRecoveryVerifier {
+    state: Arc<(Mutex<LinearizedRecoveryState>, Condvar)>,
+}
+
+struct LinearizedRecoveryUse {
+    state: Arc<(Mutex<LinearizedRecoveryState>, Condvar)>,
+}
+
+impl Drop for LinearizedRecoveryUse {
+    fn drop(&mut self) {
+        let (lock, changed) = &*self.state;
+        let mut state = lock.lock().expect("linearized recovery state");
+        state.active_uses = state
+            .active_uses
+            .checked_sub(1)
+            .expect("recovery use count is positive");
+        changed.notify_all();
+    }
+}
+
+impl LinearizedRecoveryVerifier {
+    fn wait_for_revocation_request(&self) {
+        let (lock, changed) = &*self.state;
+        let mut state = lock.lock().expect("linearized recovery state");
+        while !state.revocation_requested {
+            state = changed
+                .wait(state)
+                .expect("linearized recovery state after wait");
+        }
+    }
+
+    fn revoke_and_wait(&self) {
+        let (lock, changed) = &*self.state;
+        let mut state = lock.lock().expect("linearized recovery state");
+        state.revoked = true;
+        state.revocation_requested = true;
+        changed.notify_all();
+        while state.active_uses != 0 {
+            state = changed
+                .wait(state)
+                .expect("linearized recovery state after wait");
+        }
+    }
+}
+
+impl crate::ProductionAuthorityVerifier for LinearizedRecoveryVerifier {
+    fn verify(
+        &self,
+        authority: &crate::ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<(), String> {
+        let state = self
+            .state
+            .0
+            .lock()
+            .map_err(|_| "linearized recovery state poisoned".to_string())?;
+        if state.revoked {
+            return Err("recovery authority revoked".to_string());
+        }
+        if &authority.agent_id != expected_agent {
+            return Err("recovery authority owner mismatch".to_string());
+        }
+        Ok(())
+    }
+
+    fn enter_use(
+        &self,
+        authority: &crate::ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<crate::ProductionAuthorityUseGuard, String> {
+        let mut state = self
+            .state
+            .0
+            .lock()
+            .map_err(|_| "linearized recovery state poisoned".to_string())?;
+        if state.revoked {
+            return Err("recovery authority revoked".to_string());
+        }
+        if &authority.agent_id != expected_agent {
+            return Err("recovery authority owner mismatch".to_string());
+        }
+        state.active_uses = state.active_uses.saturating_add(1);
+        drop(state);
+        Ok(crate::ProductionAuthorityUseGuard::from_verified_use(
+            LinearizedRecoveryUse {
+                state: Arc::clone(&self.state),
+            },
+        ))
+    }
+}
+
+struct RecoveryPhaseGate {
+    target: CognitiveRecoveryPhase,
+    state: Mutex<(bool, bool)>,
+    changed: Condvar,
+}
+
+impl RecoveryPhaseGate {
+    fn new(target: CognitiveRecoveryPhase) -> Self {
+        Self {
+            target,
+            state: Mutex::new((false, false)),
+            changed: Condvar::new(),
+        }
+    }
+
+    fn observe(&self, phase: CognitiveRecoveryPhase) {
+        if phase != self.target {
+            return;
+        }
+        let mut state = self.state.lock().expect("recovery phase gate");
+        state.0 = true;
+        self.changed.notify_all();
+        while !state.1 {
+            state = self
+                .changed
+                .wait(state)
+                .expect("recovery phase gate after wait");
+        }
+    }
+
+    fn wait_until_reached(&self) {
+        let mut state = self.state.lock().expect("recovery phase gate");
+        while !state.0 {
+            state = self
+                .changed
+                .wait(state)
+                .expect("recovery phase gate after wait");
+        }
+    }
+
+    fn release(&self) {
+        let mut state = self.state.lock().expect("recovery phase gate");
+        state.1 = true;
+        self.changed.notify_all();
+    }
 }
 
 async fn seeded(
@@ -133,6 +291,114 @@ struct EntryImage {
 enum EntryPayload {
     Bytes(Vec<u8>),
     Symlink(PathBuf),
+}
+
+async fn assert_revocation_is_linearized_at_recovery_phase(phase: CognitiveRecoveryPhase) {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(111);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let expected = store.recovery_anchor().await.expect("current cut");
+    let owner_layout = layout(&temp, &owner);
+    store.pool.close().await;
+    drop(store);
+
+    let verifier = Arc::new(LinearizedRecoveryVerifier::default());
+    let verifier_for_recovery = Arc::clone(&verifier);
+    let authority = recovery_authority(&owner);
+    let gate = Arc::new(RecoveryPhaseGate::new(phase));
+    let gate_for_recovery = Arc::clone(&gate);
+    let recovery = tokio::spawn(async move {
+        let observer = move |observed| gate_for_recovery.observe(observed);
+        CognitiveStore::open_with_recovery_observed(
+            &owner_layout,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
+            &authority,
+            verifier_for_recovery.as_ref(),
+            &observer,
+        )
+        .await
+    });
+
+    gate.wait_until_reached();
+    let verifier_for_revocation = Arc::clone(&verifier);
+    let revocation = std::thread::spawn(move || verifier_for_revocation.revoke_and_wait());
+    verifier.wait_for_revocation_request();
+    assert!(
+        !revocation.is_finished(),
+        "revocation acknowledgement must wait for the recovery publication guard at {phase:?}"
+    );
+    gate.release();
+    let recovered = recovery
+        .await
+        .expect("recovery task")
+        .expect("guarded recovery");
+    recovered.pool.close().await;
+    drop(recovered);
+    revocation.join().expect("revocation thread");
+    assert!(
+        verifier
+            .verify(&recovery_authority(&owner), &owner)
+            .is_err(),
+        "authority must remain revoked after the guarded recovery completes"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn recovery_copy_checkpoint_and_publication_are_linearized_against_revocation() {
+    for phase in [
+        CognitiveRecoveryPhase::PrivateCopyMaterialized,
+        CognitiveRecoveryPhase::BeforeCheckpoint,
+        CognitiveRecoveryPhase::AfterCheckpoint,
+        CognitiveRecoveryPhase::BeforePublication,
+        CognitiveRecoveryPhase::AfterPublication,
+    ] {
+        assert_revocation_is_linearized_at_recovery_phase(phase).await;
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn revocation_after_preflight_before_recovery_use_prevents_publication() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(112);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let expected = store.recovery_anchor().await.expect("current cut");
+    let root = store.path().parent().expect("cognitive root").to_path_buf();
+    store.pool.close().await;
+    drop(store);
+    let tree_before = capture_recovery_tree(&root);
+    let owner_layout = layout(&temp, &owner);
+    let authority = recovery_authority(&owner);
+    let verifier = Arc::new(LinearizedRecoveryVerifier::default());
+    let verifier_for_recovery = Arc::clone(&verifier);
+    let gate = Arc::new(RecoveryPhaseGate::new(
+        CognitiveRecoveryPhase::BeforeAuthorityUse,
+    ));
+    let gate_for_recovery = Arc::clone(&gate);
+    let recovery = tokio::spawn(async move {
+        let observer = move |observed| gate_for_recovery.observe(observed);
+        CognitiveStore::open_with_recovery_observed(
+            &owner_layout,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
+            &authority,
+            verifier_for_recovery.as_ref(),
+            &observer,
+        )
+        .await
+    });
+    gate.wait_until_reached();
+    verifier.revoke_and_wait();
+    gate.release();
+    let failure = recovery
+        .await
+        .expect("recovery task")
+        .err()
+        .expect("revoked recovery must not publish");
+    assert!(matches!(failure, CognitiveRecoveryError::AccessDenied(_)));
+    assert_eq!(
+        capture_recovery_tree(&root),
+        tree_before,
+        "revocation before guarded recovery use must not create or publish a candidate"
+    );
 }
 
 #[tokio::test]
