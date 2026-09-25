@@ -14,6 +14,9 @@ on:
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/test_hepta_knowledge_graph_target_measure.py"
+      - "qualification/knowledge-graph/**"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
   push:
@@ -30,6 +33,9 @@ on:
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/test_hepta_knowledge_graph_target_measure.py"
+      - "qualification/knowledge-graph/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
 
 permissions:
@@ -113,6 +119,12 @@ jobs:
           # exact-candidate knowledge.graph executable evidence below.
           python3 scripts/hepta-technical-closure.py verify
 
+      - name: Validate target measurement evidence parser
+        if: ${{ !cancelled() }}
+        run: |
+          python3 scripts/test_hepta_knowledge_graph_target_measure.py
+          python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
+
       - name: Check KG-owned Rust formatting
         working-directory: codex-rs
         shell: bash
@@ -139,11 +151,15 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      # Keep native feedback independent; earlier failed gates still fail this
+      # job. No skipped, missing or failed result is converted into acceptance.
       - name: Test canonical KG kernel
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-kg -- --nocapture
 
       - name: Test prompt-factor owner, projection and real consumer
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -151,10 +167,12 @@ jobs:
           cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
 
       - name: Test durable cognitive KG owner and recovery
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
 
       - name: Crash/reopen KG transaction windows
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -163,7 +181,7 @@ jobs:
             -- --ignored --exact --nocapture --test-threads=1
 
       - name: Measure PERF-LIBRARY pilot capacity
-        if: matrix.lane == 'source-head'
+        if: ${{ !cancelled() && matrix.lane == 'source-head' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -172,6 +190,7 @@ jobs:
             -- --ignored --exact --nocapture --test-threads=1
 
       - name: Test default Agentd production cognitive-writer profile
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -179,6 +198,7 @@ jobs:
             --test cognitive_product_e2e -- --nocapture --test-threads=1
 
       - name: Test qualification witness on top of product writer
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -187,6 +207,7 @@ jobs:
             --test cognitive_product_e2e -- --nocapture --test-threads=1
 
       - name: Strict KG lint
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail

@@ -120,5 +120,11 @@ fn runtime_shutdown_retains_authority_and_writer_until_commit_finishes()
     let count: i64 = reader
         .block_on(sqlx::query_scalar("SELECT COUNT(*) FROM committed").fetch_one(&mut *keeper))?;
     assert_eq!(count, 1);
+    // SQLx pool-connection Drop schedules work. Dispose the retained reader
+    // connection inside its live runtime, after verifying the shutdown commit.
+    reader.block_on(async move {
+        drop(keeper);
+        pool.close().await;
+    });
     Ok(())
 }

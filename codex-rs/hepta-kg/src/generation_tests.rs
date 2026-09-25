@@ -611,3 +611,153 @@ fn bounded_query_still_rejects_tampering_beyond_returned_prefix() {
         Err(KnowledgeGenerationErrorV2::DigestMismatch("generation"))
     );
 }
+
+#[test]
+fn bounded_query_clones_only_selected_edges_and_counts_every_omission() {
+    let graph = build_complete_generation(
+        generation(1),
+        input(
+            vec![
+                node("a", "a"),
+                node("b", "b"),
+                node("c", "c"),
+                node("d", "d"),
+            ],
+            vec![
+                edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab"),
+                edge("a", "c", KnowledgeRelationKindV2::Causes, "edge-ac"),
+                edge("a", "d", KnowledgeRelationKindV2::Causes, "edge-ad"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid graph: {error}"));
+    let query = KnowledgeRelationQueryV2 {
+        query_id: id("query:bounded-copy"),
+        generation_digest: graph.generation_digest,
+        seed_node_ids: vec![id("node:a")],
+        relation_kinds: vec![KnowledgeRelationKindV2::Causes],
+        valid_at_unix_seconds: None,
+        maximum_edges: 1,
+    };
+
+    let (measured, work) = query_relations_with_work(&graph, query.clone())
+        .unwrap_or_else(|error| panic!("valid measured query: {error}"));
+    let ordinary = query_relations(&graph, query)
+        .unwrap_or_else(|error| panic!("valid ordinary query: {error}"));
+
+    assert_eq!(measured, ordinary);
+    assert_eq!(measured.edges, graph.edges[..1]);
+    assert_eq!(measured.omitted_count, 2);
+    assert_eq!(work.validated_nodes, 4);
+    assert_eq!(work.validated_edges, 3);
+    assert_eq!(work.validated_supports, 7);
+    assert_eq!(work.relation_edges_scanned, 3);
+    assert_eq!(work.matching_edges, 3);
+    assert_eq!(work.selected_edges_cloned, 1);
+    assert_eq!(work.selected_supports_cloned, 1);
+    assert_eq!(work.omitted_edges, 2);
+}
+
+#[test]
+fn measured_query_filters_large_support_history_before_cloning() {
+    let mut relation = edge("a", "b", KnowledgeRelationKindV2::Causes, "unused");
+    relation.supports = (0..4096)
+        .map(|index| {
+            let mut value = support(&format!("history-{index:04}"), false);
+            if index != 4095 {
+                value.valid_to_unix_seconds = Some(100);
+            }
+            value
+        })
+        .collect();
+    let graph = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![relation]),
+    )
+    .expect("support-rich graph");
+    let query = KnowledgeRelationQueryV2 {
+        query_id: id("query:support-history"),
+        generation_digest: graph.generation_digest,
+        seed_node_ids: vec![id("node:a")],
+        relation_kinds: Vec::new(),
+        valid_at_unix_seconds: Some(100),
+        maximum_edges: 1,
+    };
+    let (measured, work) =
+        query_relations_with_work(&graph, query.clone()).expect("measured query");
+    assert_eq!(
+        measured,
+        query_relations(&graph, query).expect("ordinary query")
+    );
+    assert_eq!(
+        measured.edges[0].supports,
+        vec![support("history-4095", false)]
+    );
+    assert_eq!(measured.omitted_count, 0);
+    assert_eq!(work.relation_supports_inspected, 4096);
+    assert_eq!(work.selected_supports_cloned, 1);
+    assert!(measured.edges[0].supports.capacity() < 16);
+}
+
+#[test]
+fn measured_query_matches_collect_then_truncate_reference_for_every_bound() {
+    let mut edges = Vec::new();
+    for index in 0..64 {
+        let mut value = edge(
+            "a",
+            "b",
+            KnowledgeRelationKindV2::Custom(id(&format!("r:{index:02}"))),
+            &format!("s:{index:02}"),
+        );
+        value.supports[0].valid_to_unix_seconds = Some(index + 100);
+        edges.push(value);
+    }
+    let graph = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], edges),
+    )
+    .expect("graph");
+    for at in [None, Some(100), Some(132), Some(164)] {
+        for limit in [1, 2, 31, 64, 100] {
+            let mut expected = graph
+                .edges
+                .iter()
+                .filter_map(|edge| {
+                    let mut edge = edge.clone();
+                    if let Some(at) = at {
+                        edge.supports.retain(|support| support.visible_at(at));
+                    }
+                    (!edge.supports.is_empty()).then_some(edge)
+                })
+                .collect::<Vec<_>>();
+            let matches = expected.len();
+            expected.truncate(limit as usize);
+            let query = KnowledgeRelationQueryV2 {
+                query_id: id("query:reference"),
+                generation_digest: graph.generation_digest,
+                seed_node_ids: vec![id("node:a")],
+                relation_kinds: Vec::new(),
+                valid_at_unix_seconds: at,
+                maximum_edges: limit,
+            };
+            let (result, work) = query_relations_with_work(&graph, query.clone()).expect("query");
+            let reference = KnowledgeRelationResultV2 {
+                edges: expected,
+                omitted_count: matches.saturating_sub(limit as usize) as u32,
+                ..result.clone()
+            };
+            assert_eq!(result, reference);
+            assert_eq!(
+                result.result_digest,
+                compute_query_result_digest(&reference)
+            );
+            assert_eq!(
+                result,
+                query_relations(&graph, query).expect("ordinary query")
+            );
+            assert_eq!(work.selected_edges_cloned as usize, result.edges.len());
+            assert_eq!(work.selected_supports_cloned as usize, result.edges.len());
+            assert_eq!(work.omitted_edges as u32, result.omitted_count);
+        }
+    }
+}

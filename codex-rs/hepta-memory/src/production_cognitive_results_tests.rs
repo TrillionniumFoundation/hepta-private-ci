@@ -81,9 +81,35 @@ async fn terminal_result_survives_release_and_successor_writer() {
     );
     drop(capability);
     drop(writer);
+    // Retired fencing material must not authorize a new generation. Keep the
+    // negative assertion and use a genuinely fresh verified grant for takeover.
+    let reused = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        auth.clone(),
+        Arc::new(AllowVerifier),
+        "production:result-port",
+        2,
+    )
+    .await;
+    assert!(matches!(
+        reused,
+        Err(ProductionWriterError::Local(
+            LocalLeaseOutboxError::CasConflict(_)
+        ))
+    ));
+    let successor_authority = ProductionAuthorityLease::from_verified_parts(
+        auth.agent_id,
+        Sha256Digest::for_bytes(b"signed-successor-grant"),
+        auth.authority_epoch + 1,
+        auth.owner_epoch + 1,
+        auth.lease_expires_at_unix_seconds,
+        ProductionAuthorityToken::from_verified_bytes(b"successor-supervisor-token".to_vec())
+            .unwrap(),
+    )
+    .unwrap();
     let successor = ProductionDurableWriter::open_with_live_verifier(
         store,
-        auth,
+        successor_authority,
         Arc::new(AllowVerifier),
         "production:result-port",
         2,

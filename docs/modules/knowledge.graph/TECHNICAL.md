@@ -324,3 +324,37 @@ prefix; this change does not establish indexed O(k) queries, incremental
 whole-generation updates, bounded-history recovery or target-host performance.
 The regression suite varies retained graph size and output limits, checks
 retained output capacity and temporal filtering, and rejects a tampered tail.
+
+## 18. Bounded query work and measurement procedure
+
+`query_relations` keeps exact omission accounting without materializing omitted
+relations. Temporal filtering clones only visible supports on selected edges;
+expired supports on a selected edge are not copied first and discarded later.
+`query_relations_with_work` executes the same generation validation and canonical
+selection, returning diagnostic counters separately from the request/result
+receipts. The counters distinguish full-generation validation record counts,
+visibility scans, relation/support inspections, selected clones and omissions.
+They are not a claim that validation or exact omission counting is O(output).
+The ordinary query uses the same implementation without collecting diagnostics.
+
+Migration regression compares the actual migrated KG tables, indexes and
+triggers with a freshly opened store, in addition to checking preserved source
+facts and revoked legacy projections. Migration-ledger version equality alone
+is insufficient evidence. Recovery tests retain rejection of reused fences;
+a successor uses fresh externally verified authority material.
+
+For reproducible release measurements, use
+[`qualification/knowledge-graph/TARGET_HOST.md`](../../../qualification/knowledge-graph/TARGET_HOST.md).
+The harness checks a clean exact SHA before and after execution, rejects
+missing/duplicate receipts and mismatched workload/host identity, and retains
+the raw execution log even on failure. The benchmark uses the cognitive owner
+and real retrieval, measures concurrent readers/writer and reopen, and reports
+host-specific p50/p95/p99, DB/WAL, RSS and work counts. Measured source identity
+is distinct from a subsequent documentation-only evidence commit.
+
+The selected writer remains complete-generation rebuild. Do not promote the
+incremental reference path based on a microbenchmark or a smaller returned
+result alone: promotion requires current exact-head and synthetic-merge
+correctness, independent full-rebuild equivalence, and a measured end-to-end
+benefit under an explicit target-host budget. No result here changes activation,
+independent acceptance or release state automatically.
