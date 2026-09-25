@@ -131,9 +131,17 @@ impl CognitiveTestHost {
         )
         .await?;
         let control_task = tokio::spawn(control.run());
+        // App Server runtime setup requires an explicit absolute self path even
+        // for this in-process, provider-only qualification. No helper process is
+        // launched by this fixture; bind the exact test artifact rather than
+        // falling back to PATH or a developer installation.
+        let arg0_paths = Arg0DispatchPaths {
+            codex_self_exe: Some(std::env::current_exe()?),
+            ..Arg0DispatchPaths::default()
+        };
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
