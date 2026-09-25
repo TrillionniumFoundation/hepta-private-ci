@@ -1,0 +1,161 @@
+name: Cognitive store authority and result convergence apply
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/workflows/cognitive-store-authority-results-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-authority-results-apply
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Bind the reviewed applicator
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f scripts/hepta_apply_cognitive_authority_results.py
+          mapfile -t changed < <(git diff --name-only HEAD^ HEAD | sort)
+          expected=(
+            .github/workflows/cognitive-store-authority-results-apply.yml
+            scripts/hepta_apply_cognitive_authority_results.py
+          )
+          mapfile -t expected_sorted < <(printf '%s\n' "${expected[@]}" | sort)
+          diff -u <(printf '%s\n' "${expected_sorted[@]}") <(printf '%s\n' "${changed[@]}")
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Apply authority linearization and durable result lookup
+        run: python3 scripts/hepta_apply_cognitive_authority_results.py
+
+      - name: Prepare native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev libssl-dev
+
+      - name: Format changed Rust packages
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-memory --package codex-hepta-cognitive-store
+          git diff --check
+
+      - name: Test revocation while waiting for the SQLite writer
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-memory --lib
+          production_writer::tests::revocation_while_waiting_for_sqlite_writer_lock_blocks_semantic_commit
+          -- --exact --nocapture
+
+      - name: Test response-loss result recovery
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-memory --lib
+          production_writer::tests::semantic_response_loss_restart_rejects_duplicate_and_preserves_committed_cut
+          -- --exact --nocapture
+
+      - name: Test writable recovery and canonical facade
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory --lib cognitive_store_recovery_tests -- --nocapture
+          cargo test --locked -p codex-hepta-cognitive-store --lib -- --nocapture
+
+      - name: Check affected product hosts
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-memory
+          -p codex-hepta-cognitive-store
+          -p codex-hepta-agentd
+          -p codex-hepta-supervisor
+          --all-targets
+
+      - name: Strict changed-package lint
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-memory --no-deps --lib --tests -- -D warnings
+          cargo clippy --locked -p codex-hepta-cognitive-store --no-deps --lib --tests -- -D warnings
+
+      - name: Commit validated convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -- scripts/hepta_apply_cognitive_authority_results.py \
+            .github/workflows/cognitive-store-authority-results-apply.yml
+          git diff --check
+          git config user.name "Hepta convergence bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-memory/src/production_writer.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
+            codex-rs/hepta-memory/src/lib.rs \
+            codex-rs/hepta-cognitive-store/src/durable.rs \
+            codex-rs/hepta-cognitive-store/src/lib.rs \
+            scripts/hepta_apply_cognitive_authority_results.py \
+            .github/workflows/cognitive-store-authority-results-apply.yml
+          git commit -s -m "feat(cognitive.store): linearize authority and recover results"
+
+      - name: Rebase, revalidate and fast-forward push
+        env:
+          BRANCH: work/product-converence-20260923
+        shell: bash
+        run: |
+          set -euo pipefail
+          validate_rebased_head() {
+            git diff --check
+            (
+              cd codex-rs
+              cargo fmt --package codex-hepta-memory --package codex-hepta-cognitive-store -- --check
+              cargo test --locked -p codex-hepta-memory --lib \
+                production_writer::tests::revocation_while_waiting_for_sqlite_writer_lock_blocks_semantic_commit \
+                -- --exact
+              cargo test --locked -p codex-hepta-memory --lib \
+                production_writer::tests::semantic_response_loss_restart_rejects_duplicate_and_preserves_committed_cut \
+                -- --exact
+              cargo test --locked -p codex-hepta-memory --lib cognitive_store_recovery_tests
+              cargo test --locked -p codex-hepta-cognitive-store --lib
+              cargo check --locked \
+                -p codex-hepta-memory \
+                -p codex-hepta-cognitive-store \
+                -p codex-hepta-agentd \
+                -p codex-hepta-supervisor \
+                --all-targets
+              cargo clippy --locked -p codex-hepta-memory --no-deps --lib --tests -- -D warnings
+              cargo clippy --locked -p codex-hepta-cognitive-store --no-deps --lib --tests -- -D warnings
+          )
+          }
+          for attempt in 1 2 3; do
+            git fetch origin "$BRANCH"
+            remote_head="$(git rev-parse FETCH_HEAD)"
+            if ! git merge-base --is-ancestor "$remote_head" HEAD; then
+              git rebase "$remote_head"
+              validate_rebased_head
+            fi
+            if git push origin "HEAD:refs/heads/$BRANCH"; then
+              exit 0
+            fi
+          done
+          echo "branch advanced during all fast-forward attempts" >&2
+          exit 1
