@@ -46,7 +46,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &observed(notification),
+        &binding,
+        &mut NativeMessageOutput::default(),
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -771,4 +776,54 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn completed_only_output_is_bound_deduplicated_and_never_predeclares_success() {
+    let mut output = output();
+    let binding = binding();
+    let mut messages = NativeMessageOutput::default();
+    let item = ThreadItem::AgentMessage {
+        id: "message-final".to_string(),
+        text: "fresh context accepted".to_string(),
+        phase: None,
+        memory_citation: None,
+        delivery: None,
+    };
+    let completed = |thread: &str| {
+        observed(ServerNotification::ItemCompleted(
+            codex_app_server_protocol::ItemCompletedNotification {
+                thread_id: thread.to_string(),
+                turn_id: "turn-a".to_string(),
+                completed_at_ms: 0,
+                item: item.clone(),
+            },
+        ))
+    };
+    assert!(!observe_event(&mut output, &completed("foreign"), &binding, &mut messages).unwrap());
+    assert!(output.output.is_empty());
+    for _ in 0..2 {
+        assert!(
+            !observe_event(&mut output, &completed("thread-a"), &binding, &mut messages).unwrap()
+        );
+        assert_eq!(output.output, "fresh context accepted");
+        assert!(!output.terminal_observed);
+        assert!(!output.succeeded());
+    }
+    let mut notification = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(value) = &mut notification {
+        value.turn.items.push(item);
+    }
+    assert!(
+        observe_event(
+            &mut output,
+            &observed(notification),
+            &binding,
+            &mut messages
+        )
+        .unwrap()
+    );
+    assert_eq!(output.output, "fresh context accepted");
+    assert!(output.terminal_observed);
+    assert!(output.codex_terminal_correlation_digest.is_some());
 }
