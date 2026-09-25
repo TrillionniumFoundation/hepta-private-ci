@@ -275,7 +275,11 @@ impl DurableLeaseRegistryV1 {
         let mut next = self.state.clone();
         match (&current.kind, observation) {
             (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
-                validate_lease(&lease)?;
+                validate_lease_metadata(&lease)?;
+                // New issuance is active-only; persisted lifecycle states are not.
+                if lease.state != SecretLeaseStateV1::Active {
+                    return Err(LeaseRegistryErrorV1::InvalidInput);
+                }
                 if next.leases.contains_key(&lease.lease_id) {
                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
                 }
@@ -474,12 +478,12 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
         if id != &lease.lease_id {
             return Err(LeaseRegistryErrorV1::CorruptState);
         }
-        validate_lease(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
+        validate_lease_metadata(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
     }
     Ok(())
 }
 
-fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
+fn validate_lease_metadata(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
     if !identifier(&lease.lease_id)
         || !identifier(&lease.secret_reference_id)
         || !identifier(&lease.consumer_id)
@@ -487,7 +491,6 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
         || lease.provider_metadata_sha256 == [0; 32]
         || lease.generation == 0
         || lease.expires_at_unix_ms <= lease.issued_at_unix_ms
-        || lease.state != SecretLeaseStateV1::Active
     {
         return Err(LeaseRegistryErrorV1::InvalidInput);
     }
