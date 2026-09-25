@@ -27,11 +27,16 @@ source/test navigation maps. They do not self-certify maturity or grant authorit
 self-referential candidate commit. This module opts into
 `mappingSourceIdentityMode=exact_blob`: every mapped operation records the Git blob OID
 of its current `sourcePath`; `observedAtHead` covers the complete current source/evidence
-set; and the global verifier requires the provenance commit to be an ancestor, recomputes
-every `HEAD:<sourcePath>` blob and rejects a missing or stale current observation. A
+set; and the verifier validates the provenance commit/tree object without rewriting it
+when squash integration removes ancestry. This applies only to explicit exact-blob
+provenance: `observedAtHead` still must be an ancestor with no drift across the
+complete mapped source/test/caller set. Every mapped HEAD blob is recomputed. A
 mapping migration updates the exact blobs and current observation without rewriting
-`sourceBase`. Exact candidate commit/tree execution identity remains the responsibility
-of source-head and deterministic synthetic-merge execution receipts.
+`sourceBase`. The product workflow invokes the same verifier with
+`--module control.engineering` and exact expected commit/tree arguments; this narrows only
+the product receipt denominator. The independent global verification remains blocking for
+repository convergence. Exact candidate commit/tree execution identity remains the
+responsibility of source-head and deterministic synthetic-merge execution receipts.
 Historical `HARDENING.json`, `CLOSURE_V4.json`, `MATURITY.json` and copied package
 registries are retired; their useful behavior is in the current source, schema,
 implementation guide and behavioral regressions. No historical materializer,
@@ -85,3 +90,11 @@ independent semantic acceptance. `qualification_profile.py` measures the unchang
 sandbox and durable-owner costs per exact lane without granting authority. The historical
 `hepta_engineering_control.py` remains compatibility-only and is not a native mapping for
 new callers.
+
+
+The normal POSIX control-pipe entry is `python -m control_engineering_v2 serve`.
+It constructs the same EngineeringControlProduct. The launcher selects a verifier
+factory; no reference signer is installed automatically. Process tests cover lost
+result acknowledgements, kill/reopen, same-plan recovery, signed completion and
+terminal observations, another restart and idle recovery despite partial input.
+Reference test identities do not establish external key custody or independence.
