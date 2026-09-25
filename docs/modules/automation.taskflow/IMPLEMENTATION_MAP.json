@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ad5ee92be46021568330138e92a7a1624970b402",
-    "tree": "4534a4ff89d0cdfb045e6f746487d3a171a203f1"
+    "commit": "268a117f5c370646aebb4eff2c5b1143cf32fe80",
+    "tree": "d4c35b9e1f365fddcc67e379247d4e71f37f7cbe"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -136,8 +136,8 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "symbol": "pub async fn execute_authorized_taskflow_effect",
+        "path": "codex-rs/hepta-automation/src/product_effect.rs",
+        "symbol": "pub async fn execute_prepared_product_effect_async",
         "buildTarget": "codex-hepta-automation"
       },
       "delegatedCallees": [
@@ -152,6 +152,62 @@
           "role": "delegated_callee",
           "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
           "symbol": "pub async fn execute_authorized_taskflow_effect_async",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/product_effect.rs",
+          "symbol": "pub async fn prepare_product_effect_v1(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/product_effect.rs",
+          "symbol": "pub async fn execute_prepared_product_effect_async",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/product_effect_store.rs",
+          "symbol": "pub async fn product_effect_preparation_by_attempt(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/threshold_circuit.rs",
+          "symbol": "pub async fn run_threshold_circuit_v1(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+          "symbol": "pub fn validate_circuit_successor_v1(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/timer_lifecycle.rs",
+          "symbol": "pub async fn handoff_timer(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+          "symbol": "pub async fn create_task_from_operation(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/dispatch_recovery_cursor.rs",
+          "symbol": "pub async fn next_uncertain_dispatch(",
           "ownerModule": "automation.taskflow",
           "buildTarget": "codex-hepta-automation"
         }
@@ -176,19 +232,56 @@
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/product_effect.rs",
+          "kind": "product_preparation_integrity_crash_cut_and_key_binding",
+          "command": "just test --locked -p codex-hepta-automation --test product_effect --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/threshold_circuit_tests.rs",
+          "kind": "deterministic_parameter_choice_restart_and_version_isolation",
+          "command": "just test --locked -p codex-hepta-automation --lib --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/threshold_circuit_capacity.rs",
+          "kind": "ordinary_disk_restricted_circuit_capacity",
+          "command": "just test --locked -p codex-hepta-automation --test threshold_circuit_capacity --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+          "kind": "host_profile_rotation_exact_payload_and_expired_reconciliation",
+          "command": "just test --locked -p codex-hepta-agentd --lib -E test(automation_effect_host) --retries 0"
         }
       ],
       "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
       "operation": "execute_step",
-      "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
-      "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "nativeSymbol": "pub async fn execute_prepared_product_effect_async",
+      "sourcePath": "codex-rs/hepta-automation/src/product_effect.rs",
       "sourcePathExists": true,
-      "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
+      "productCallers": [
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "pub(crate) async fn execute(",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_prepare",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "crate::AgentdMethod::AutomationPrepareEffect",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "productCompositionState": "named_host_preparation_async_dispatch_and_bound_profile_recovery_candidate",
       "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "General DecisionCell/Intuition product binding and circuit feedback/organ semantics remain outside the restricted threshold profile.",
+    "Final exact-head and applicable synthetic-merge execution qualifications are not established by this map.",
+    "No-contact preparation reclaim, final-use/lease bounds and stale-generation entry guard are implemented candidates; final native and public-socket crash qualification remain pending."
+  ],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
     "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
@@ -199,7 +292,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -222,7 +315,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+  "productCallerState": "named_agentd_scheduler_prepare_execute_reconcile_and_restricted_threshold_control",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -231,8 +324,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "ad5ee92be46021568330138e92a7a1624970b402",
-    "tree": "4534a4ff89d0cdfb045e6f746487d3a171a203f1"
+    "commit": "268a117f5c370646aebb4eff2c5b1143cf32fe80",
+    "tree": "d4c35b9e1f365fddcc67e379247d4e71f37f7cbe"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -252,7 +345,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "846183e6c076a6c1b1f080150c0d5cce57e3ce7d"
+        "blobSha": "3fb164c03ccf1c657138bb8599d437fd5ac71017"
       }
     ]
   },
@@ -274,10 +367,16 @@
     "codex-rs/hepta-automation",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery_policy_tests.rs",
+    "codex-rs/hepta-agentd/src/error.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host_config.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs"
   ],
   "repositoryControlledProductCompositionGaps": [
-    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
+    "Independent final-use trust/revocation/clock and attested provider profiles must be provisioned and qualified on the selected host.",
+    "Legacy unknown effects without a frozen original provider profile require explicit historical binding migration."
   ],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",
@@ -299,6 +398,16 @@
       "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
       "nativeSymbol": "run_automation_scheduler",
       "state": "existing_app_server_queue_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "AgentdAutomationEffectHost",
+      "state": "optional_attested_product_host_candidate"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "crate::AgentdMethod::AutomationRunThresholdCircuit",
+      "state": "restricted_capability_free_threshold_profile"
     }
   ],
   "sourceObjects": [
@@ -316,11 +425,11 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "4a7e49c1ff741f176cd6d1b37f2b5b04a73b5c51"
+      "object": "472a9d67b40e99344739ad2e7c32b947da51f8af"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "846183e6c076a6c1b1f080150c0d5cce57e3ce7d"
+      "object": "3fb164c03ccf1c657138bb8599d437fd5ac71017"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
@@ -348,15 +457,15 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "639c48ae7d201ac9c249e6c87d0e577b14e740ba"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "67aacd49344270c52818f48aac5035434989904b"
+      "object": "d9bc2c72b741d777c3c59159d42d4c3d30050665"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "e1f1d067c33320610ca29034e1c33241f7aa018b"
+      "object": "e851d5f98c22ba67383390c30ca7c8e7ce8b5534"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",

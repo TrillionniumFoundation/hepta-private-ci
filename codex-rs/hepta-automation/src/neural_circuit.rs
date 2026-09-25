@@ -111,6 +111,21 @@ pub struct NeuralCircuitCandidateV1 {
     pub circuit_digest: Sha256Digest,
 }
 
+/// Unsealed named circuit inputs; construction validates and seals the candidate.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuralCircuitDefinitionV1 {
+    pub circuit_id: String,
+    pub version: u32,
+    pub predecessor_digest: Option<Sha256Digest>,
+    pub entry_node: String,
+    pub nodes: Vec<CircuitNodeV1>,
+    pub edges: Vec<CircuitEdgeV1>,
+    pub capability_set: Vec<String>,
+    pub route_policy_digest: Sha256Digest,
+    pub parameter_bundle_digest: Sha256Digest,
+    pub resource_profile_digest: Sha256Digest,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CircuitCompilationReceiptV1 {
     pub circuit_id: String,
@@ -122,22 +137,19 @@ pub struct CircuitCompilationReceiptV1 {
 }
 
 impl NeuralCircuitCandidateV1 {
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "the versioned public constructor keeps graph, capability and independently bound policy/parameter/resource identities explicit"
-    )]
-    pub fn new(
-        circuit_id: impl Into<String>,
-        version: u32,
-        predecessor_digest: Option<Sha256Digest>,
-        entry_node: impl Into<String>,
-        mut nodes: Vec<CircuitNodeV1>,
-        mut edges: Vec<CircuitEdgeV1>,
-        mut capability_set: Vec<String>,
-        route_policy_digest: Sha256Digest,
-        parameter_bundle_digest: Sha256Digest,
-        resource_profile_digest: Sha256Digest,
-    ) -> Result<Self, TaskFlowError> {
+    pub fn new(definition: NeuralCircuitDefinitionV1) -> Result<Self, TaskFlowError> {
+        let NeuralCircuitDefinitionV1 {
+            circuit_id,
+            version,
+            predecessor_digest,
+            entry_node,
+            mut nodes,
+            mut edges,
+            mut capability_set,
+            route_policy_digest,
+            parameter_bundle_digest,
+            resource_profile_digest,
+        } = definition;
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
         edges.sort_by(|left, right| {
             left.from
@@ -146,10 +158,10 @@ impl NeuralCircuitCandidateV1 {
         });
         capability_set.sort();
         let mut candidate = Self {
-            circuit_id: circuit_id.into(),
+            circuit_id,
             version,
             predecessor_digest,
-            entry_node: entry_node.into(),
+            entry_node,
             nodes,
             edges,
             capability_set,
@@ -439,27 +451,27 @@ mod tests {
     }
 
     fn v1() -> NeuralCircuitCandidateV1 {
-        NeuralCircuitCandidateV1::new(
-            "retrieval-control",
-            1,
-            None,
-            "observe",
-            vec![
+        NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
+            circuit_id: ("retrieval-control").into(),
+            version: 1,
+            predecessor_digest: None,
+            entry_node: ("observe").into(),
+            nodes: vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            vec![
+            edges: vec![
                 CircuitEdgeV1::new("observe", "decide"),
                 CircuitEdgeV1::new("decide", "success"),
                 CircuitEdgeV1::new("decide", "failure"),
             ],
-            vec![],
-            digest("route-v1"),
-            digest("parameters-v1"),
-            digest("resources-v1"),
-        )
+            capability_set: vec![],
+            route_policy_digest: digest("route-v1"),
+            parameter_bundle_digest: digest("parameters-v1"),
+            resource_profile_digest: digest("resources-v1"),
+        })
         .expect("v1 circuit")
     }
 
@@ -480,30 +492,30 @@ mod tests {
     #[test]
     fn successor_binds_exact_predecessor_and_can_change_route_and_parameters() {
         let current = v1();
-        let successor = NeuralCircuitCandidateV1::new(
-            current.circuit_id.clone(),
-            2,
-            Some(current.circuit_digest.clone()),
-            "observe",
-            vec![
+        let successor = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
+            circuit_id: current.circuit_id.clone(),
+            version: 2,
+            predecessor_digest: Some(current.circuit_digest.clone()),
+            entry_node: ("observe").into(),
+            nodes: vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::new("guard", CircuitNodeRoleV1::TransformGuard),
                 CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            vec![
+            edges: vec![
                 CircuitEdgeV1::new("observe", "guard"),
                 CircuitEdgeV1::new("guard", "decide"),
                 CircuitEdgeV1::new("guard", "failure"),
                 CircuitEdgeV1::new("decide", "success"),
                 CircuitEdgeV1::new("decide", "failure"),
             ],
-            vec![],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
-        )
+            capability_set: vec![],
+            route_policy_digest: digest("route-v2"),
+            parameter_bundle_digest: digest("parameters-v2"),
+            resource_profile_digest: digest("resources-v1"),
+        })
         .expect("successor");
         validate_circuit_successor_v1(&current, &successor).expect("admitted successor");
         assert_ne!(current.circuit_digest, successor.circuit_digest);
@@ -512,81 +524,81 @@ mod tests {
     #[test]
     fn structural_successor_cannot_rebind_predecessor_or_widen_capabilities() {
         let current = v1();
-        let wrong = NeuralCircuitCandidateV1::new(
-            current.circuit_id.clone(),
-            2,
-            Some(digest("wrong-predecessor")),
-            "observe",
-            current.nodes.clone(),
-            current.edges.clone(),
-            vec![],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
-        )
+        let wrong = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
+            circuit_id: current.circuit_id.clone(),
+            version: 2,
+            predecessor_digest: Some(digest("wrong-predecessor")),
+            entry_node: ("observe").into(),
+            nodes: current.nodes.clone(),
+            edges: current.edges.clone(),
+            capability_set: vec![],
+            route_policy_digest: digest("route-v2"),
+            parameter_bundle_digest: digest("parameters-v2"),
+            resource_profile_digest: digest("resources-v1"),
+        })
         .expect("wrong successor shape");
         assert!(validate_circuit_successor_v1(&current, &wrong).is_err());
 
-        let widened = NeuralCircuitCandidateV1::new(
-            current.circuit_id.clone(),
-            2,
-            Some(current.circuit_digest.clone()),
-            "observe",
-            vec![
+        let widened = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
+            circuit_id: current.circuit_id.clone(),
+            version: 2,
+            predecessor_digest: Some(current.circuit_digest.clone()),
+            entry_node: ("observe").into(),
+            nodes: vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::effect("effect", "network.http", "circuit/{run}/effect"),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            vec![
+            edges: vec![
                 CircuitEdgeV1::new("observe", "effect"),
                 CircuitEdgeV1::new("observe", "failure"),
                 CircuitEdgeV1::new("effect", "success"),
                 CircuitEdgeV1::new("effect", "failure"),
             ],
-            vec!["network.http".to_string()],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
-        )
+            capability_set: vec!["network.http".to_string()],
+            route_policy_digest: digest("route-v2"),
+            parameter_bundle_digest: digest("parameters-v2"),
+            resource_profile_digest: digest("resources-v1"),
+        })
         .expect("widened successor shape");
         assert!(validate_circuit_successor_v1(&current, &widened).is_err());
     }
 
     #[test]
     fn exhausted_version_space_rejects_same_version_successor() {
-        let current = NeuralCircuitCandidateV1::new(
-            "circuit-max-version",
-            u32::MAX,
-            Some(digest("prior-version")),
-            "observe",
-            vec![
+        let current = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
+            circuit_id: ("circuit-max-version").into(),
+            version: u32::MAX,
+            predecessor_digest: Some(digest("prior-version")),
+            entry_node: ("observe").into(),
+            nodes: vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            vec![
+            edges: vec![
                 CircuitEdgeV1::new("observe", "success"),
                 CircuitEdgeV1::new("observe", "failure"),
             ],
-            Vec::new(),
-            digest("route-max"),
-            digest("parameters-max"),
-            digest("resources-max"),
-        )
+            capability_set: Vec::new(),
+            route_policy_digest: digest("route-max"),
+            parameter_bundle_digest: digest("parameters-max"),
+            resource_profile_digest: digest("resources-max"),
+        })
         .expect("current max-version circuit");
-        let successor = NeuralCircuitCandidateV1::new(
-            "circuit-max-version",
-            u32::MAX,
-            Some(current.circuit_digest.clone()),
-            "observe",
-            current.nodes.clone(),
-            current.edges.clone(),
-            Vec::new(),
-            digest("route-max-next"),
-            digest("parameters-max-next"),
-            digest("resources-max-next"),
-        )
+        let successor = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
+            circuit_id: ("circuit-max-version").into(),
+            version: u32::MAX,
+            predecessor_digest: Some(current.circuit_digest.clone()),
+            entry_node: ("observe").into(),
+            nodes: current.nodes.clone(),
+            edges: current.edges.clone(),
+            capability_set: Vec::new(),
+            route_policy_digest: digest("route-max-next"),
+            parameter_bundle_digest: digest("parameters-max-next"),
+            resource_profile_digest: digest("resources-max-next"),
+        })
         .expect("same-version candidate remains structurally valid");
         assert!(matches!(
             validate_circuit_successor_v1(&current, &successor),
@@ -596,28 +608,28 @@ mod tests {
 
     #[test]
     fn circuit_reuses_taskflow_cycle_and_terminal_rejection() {
-        let result = NeuralCircuitCandidateV1::new(
-            "loop",
-            1,
-            None,
-            "a",
-            vec![
+        let result = NeuralCircuitCandidateV1::new(NeuralCircuitDefinitionV1 {
+            circuit_id: ("loop").into(),
+            version: 1,
+            predecessor_digest: None,
+            entry_node: ("a").into(),
+            nodes: vec![
                 CircuitNodeV1::new("a", CircuitNodeRoleV1::Decide),
                 CircuitNodeV1::new("b", CircuitNodeRoleV1::TransformGuard),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            vec![
+            edges: vec![
                 CircuitEdgeV1::new("a", "b"),
                 CircuitEdgeV1::new("b", "a"),
                 CircuitEdgeV1::new("a", "success"),
                 CircuitEdgeV1::new("b", "failure"),
             ],
-            vec![],
-            digest("route"),
-            digest("params"),
-            digest("resources"),
-        );
+            capability_set: vec![],
+            route_policy_digest: digest("route"),
+            parameter_bundle_digest: digest("params"),
+            resource_profile_digest: digest("resources"),
+        });
         assert!(result.is_err());
     }
 }

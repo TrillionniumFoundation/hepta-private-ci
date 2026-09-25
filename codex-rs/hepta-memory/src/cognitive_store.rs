@@ -47,6 +47,11 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_generation.rs"]
+mod generation;
+use generation::CognitiveStoreGenerationGuard;
+pub(crate) use generation::CognitiveStoreReadGeneration;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -302,6 +307,53 @@ impl CognitiveStoreOpenGuard {
 }
 
 impl CognitiveStore {
+    pub(crate) fn bind_current_read_generation(
+        layout: &HeptaAgentLayout,
+    ) -> Result<CognitiveStoreReadGeneration, CognitiveStoreError> {
+        let root = canonical_path_without_redirection(layout.cognitive_root())
+            .map_err(unavailable)?
+            .ok_or_else(|| {
+                CognitiveStoreError::Unavailable(
+                    "federated cognitive owner root does not exist".to_string(),
+                )
+            })?;
+        if root != layout.cognitive_root() {
+            return Err(CognitiveStoreError::Invalid(
+                "federated cognitive owner root is redirected".to_string(),
+            ));
+        }
+        let guard = CognitiveStoreGenerationGuard::acquire_shared_existing(&root)?;
+        let database_path = resolve_active_database_path(&root)?;
+        if canonical_path_without_redirection(&database_path)
+            .map_err(unavailable)?
+            .as_ref()
+            != Some(&database_path)
+        {
+            return Err(CognitiveStoreError::Invalid(
+                "current cognitive database is missing or redirected".to_string(),
+            ));
+        }
+        let metadata = fs::metadata(&database_path).map_err(unavailable)?;
+        if !metadata.is_file() {
+            return Err(CognitiveStoreError::Invalid(
+                "current cognitive database must be a regular file".to_string(),
+            ));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            if metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
+                return Err(CognitiveStoreError::Invalid(
+                    "current cognitive database must be private and singly linked".to_string(),
+                ));
+            }
+        }
+        Ok(CognitiveStoreReadGeneration {
+            _guard: guard,
+            database_path,
+        })
+    }
+
     pub(crate) fn from_read_only_pool(
         pool: SqlitePool,
         owner_agent_id: AgentId,
@@ -322,6 +374,7 @@ impl CognitiveStore {
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
+        CognitiveStoreGenerationGuard::ensure(&root)?;
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
