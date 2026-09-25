@@ -43,6 +43,7 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt, clippy
       - uses: taiki-e/install-action@just
+      - uses: taiki-e/install-action@cargo-nextest
       - name: Format and test contracts
         working-directory: codex-rs
         run: |
@@ -62,6 +63,7 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt, clippy
       - uses: taiki-e/install-action@just
+      - uses: taiki-e/install-action@cargo-nextest
       - name: Test product composition
         working-directory: codex-rs
         run: |
