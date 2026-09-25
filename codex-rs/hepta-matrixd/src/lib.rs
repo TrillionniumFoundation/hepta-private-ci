@@ -11,11 +11,12 @@
 #![forbid(unsafe_code)]
 #![recursion_limit = "256"]
 
-/// Reusable state machine; does not install a second runtime owner.
+/// Compatibility exports for the MatrixDurableStore-owned dispatch ledger.
 pub mod send_observer;
 
 mod config;
 mod control;
+mod final_use;
 mod runner;
 
 use std::collections::BTreeMap;
