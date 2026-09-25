@@ -1,4 +1,5 @@
 use super::*;
+use crate::SignedIntentStatus;
 use pretty_assertions::assert_eq;
 
 fn signed_h7_envelope(

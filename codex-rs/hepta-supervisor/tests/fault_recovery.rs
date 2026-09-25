@@ -425,7 +425,7 @@ fn first_start_finalized_exit_retains_retry_release_across_recovery() -> Result<
     f.control.crash(&f.agent_id);
     assert_eq!(f.supervisor.tick(f.now), TickReport::default());
     let before = f.supervisor.snapshot(&f.agent_id).expect("queued retry");
-    assert!(!before.active && before.restart_pending);
+    assert!(!before.active && before.restart_pending());
     assert_eq!(durable_attempt(&f)?, 1);
     f = reopen(f)?;
     let after = f.supervisor.snapshot(&f.agent_id).expect("recovered retry");

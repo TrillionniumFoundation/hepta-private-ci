@@ -132,6 +132,20 @@ fn write_file(path: &Path, file: &SignedMemoryRetrievalContextFileV1) {
     }
 }
 
+// The production reader rejects group-writable owner roots. Tempfile uses
+// the process umask unless explicit permissions are requested; a shared umask
+// must not make signature/revocation tests fail before reaching that boundary.
+fn private_owner_directory() -> tempfile::TempDir {
+    let temp = tempfile::tempdir().expect("temporary owner root");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(temp.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("protect owner directory");
+    }
+    temp
+}
+
 fn provider(root: &Path, path: &Path, key: &SigningKey) -> FileCurrentMemoryRetrievalContextV1 {
     FileCurrentMemoryRetrievalContextV1::new(
         path.to_path_buf(),
@@ -148,7 +162,7 @@ fn provider(root: &Path, path: &Path, key: &SigningKey) -> FileCurrentMemoryRetr
 
 #[test]
 fn signed_provider_reloads_and_rejects_revocation() {
-    let temp = tempfile::tempdir().expect("temporary owner root");
+    let temp = private_owner_directory();
     let root = temp.path().canonicalize().expect("canonical owner root");
     let path = root.join("memory-retrieval-context.json");
     let key = SigningKey::from_bytes(&[7_u8; 32]);
@@ -176,7 +190,7 @@ fn signed_provider_reloads_and_rejects_revocation() {
 
 #[test]
 fn signed_provider_rejects_rollback_and_same_revision_fork() {
-    let temp = tempfile::tempdir().expect("temporary owner root");
+    let temp = private_owner_directory();
     let root = temp.path().canonicalize().expect("canonical owner root");
     let path = root.join("memory-retrieval-context.json");
     let key = SigningKey::from_bytes(&[9_u8; 32]);
@@ -217,7 +231,7 @@ fn signed_provider_rejects_rollback_and_same_revision_fork() {
 
 #[test]
 fn signed_provider_rejects_wrong_generation_and_bad_signature() {
-    let temp = tempfile::tempdir().expect("temporary owner root");
+    let temp = private_owner_directory();
     let root = temp.path().canonicalize().expect("canonical owner root");
     let path = root.join("memory-retrieval-context.json");
     let key = SigningKey::from_bytes(&[11_u8; 32]);
