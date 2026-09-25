@@ -8,10 +8,12 @@ release, deployment, or runtime capability authority.
 
 from __future__ import annotations
 
+from dataclasses import asdict
+import json
 from pathlib import Path
 from typing import Iterable
 
-from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
+from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope, semantic_digest
 from .evidence import SignatureTrustStore
 from .integration_controller import (
     IntegrationQueueGeneration,
@@ -25,7 +27,9 @@ from .integration_controller import (
 )
 from .orchestration import (
     CompletionReceipt,
+    EngineeringAssignment,
     EngineeringCapacity,
+    MergeQueueProposal,
     EngineeringPlan,
     EngineeringWorkPackage,
     WorkerProfile,
@@ -38,6 +42,7 @@ from .worker_lifecycle import (
     WorkerRecoveryReport,
     WorkerRegistrationReceipt,
     WorkerResultReceipt,
+    _load_plan,
     claim_assignment,
     heartbeat_claim,
     observe_claim_completion,
@@ -135,6 +140,41 @@ class EngineeringControlProduct:
             generation_id=generation_id,
             now_ns=now_ns,
         )
+
+    def plan_state(self, generation_id: str) -> EngineeringPlan:
+        """Recover the immutable plan, rather than recomputing historical choices."""
+        with self.store._transaction():
+            plan = _load_plan(self.store, generation_id)
+            return EngineeringPlan(
+                generation_id, plan["envelopeId"],
+                tuple(EngineeringAssignment(**{**row, "review_roles": tuple(row["review_roles"])}) for row in plan["assignments"]),
+                tuple(tuple(row) for row in plan["blocked"]),
+                tuple(plan["integrationOrder"]),
+                tuple(MergeQueueProposal(**row) for row in plan["mergeQueue"]),
+                semantic_digest(plan), plan["completionFrontierDigest"],
+            )
+
+    def observe_external_completion(self, claim_id: str, completion: CompletionReceipt) -> WorkerClaim:
+        """Bind an external observation to the envelope owned by this claim."""
+        with self.store._transaction():
+            row = self.store.connection.execute(
+                "SELECT e.* FROM work_envelopes e "
+                "JOIN assignment_generations a ON a.envelope_id=e.envelope_id "
+                "JOIN worker_claims c ON c.generation_id=a.generation_id WHERE c.claim_id=?",
+                (claim_id,),
+            ).fetchone()
+            if row is None:
+                raise EngineeringError("unknown_worker_claim")
+            envelope = WorkEnvelope(
+                row["envelope_id"], row["source_commit"], row["source_tree"],
+                row["objective_digest"], row["contract_digest"], row["owner"],
+                tuple(json.loads(row["allowed_paths_json"])),
+                tuple(json.loads(row["denied_authorities_json"])),
+                row["maximum_assignments"], row["expires_unix_ns"], row["revision"],
+            )
+            if semantic_digest(asdict(envelope)) != row["semantic_digest"]:
+                raise EngineeringError("completion_envelope_binding_mismatch")
+            return self.observe_completion(claim_id, envelope, completion)
 
     def startup_reconcile(
         self,

@@ -83,8 +83,18 @@ def _schema_sql_path() -> Path:
 def _normalize_schema_sql(value: str | None) -> str | None:
     if value is None:
         return None
-    result = re.sub(r"\bIF\s+NOT\s+EXISTS\b", "", value, flags=re.IGNORECASE)
-    return " ".join(result.split()).lower()
+    # SQL keywords are case-insensitive; quoted literals are not. Normalizing
+    # their case/whitespace would accept a different CHECK or DEFAULT contract.
+    parts = re.split(
+        r"('(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|`(?:``|[^`])*`|\[[^\]]*\])",
+        value,
+    )
+    for index in range(0, len(parts), 2):
+        unquoted = re.sub(
+            r"\bIF\s+NOT\s+EXISTS\b", "", parts[index], flags=re.IGNORECASE
+        )
+        parts[index] = re.sub(r"\s+", " ", unquoted).lower()
+    return "".join(parts).strip()
 
 
 def _schema_manifest(connection: sqlite3.Connection) -> dict[tuple[str, str], tuple[str, str | None]]:
@@ -340,9 +350,16 @@ class EngineeringStore:
                     _error("store_schema_version_mismatch")
                 self._validate_schema_objects()
                 self._configure_durability()
-                self._validate_store_integrity()
-                self._verify_capacity_reservations()
-                self.verify_audit_chain()
+                # All owner invariants must describe one snapshot. A concurrent
+                # claim/release must not split reservation and claim observations.
+                with self._transaction():
+                    locked_version, locked_metadata, _ = self._schema_version_state()
+                    if (locked_version, locked_metadata) != (STORE_SCHEMA_VERSION, STORE_SCHEMA_VERSION):
+                        _error("store_schema_version_mismatch")
+                    self._validate_schema_objects()
+                    self._validate_store_integrity()
+                    self._verify_capacity_reservations()
+                    self.verify_audit_chain()
             else:
                 if version == 0:
                     if tables:

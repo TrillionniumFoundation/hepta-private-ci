@@ -109,6 +109,13 @@ def parser():
         choices=("implementation", "deployment"),
         default="deployment",
     )
+    service = commands.add_parser("serve", help="POSIX trusted control pipe over the durable product owner")
+    service.add_argument("--database", required=True)
+    service.add_argument("--repository", required=True)
+    service.add_argument("--repository-full-name", required=True)
+    service.add_argument("--verifier-factory", required=True, help="trusted host module:factory; no fixture fallback")
+    service.add_argument("--scan-interval-seconds", type=float, default=1.0)
+    service.add_argument("--maximum-requests", type=int, default=10000)
     for name, help_text in (
         ("candidates", "generate deterministic proposals including no-change"),
         ("sandbox", "execute one candidate in the admitted isolation profile"),
@@ -188,6 +195,9 @@ def run(args):
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
+        if args.command == "serve":
+            from .product_service import serve_product
+            return serve_product(args)
         result = run(args)
     except (EngineeringError, OSError, ValueError, TypeError) as exc:
         code = exc.code if isinstance(exc, EngineeringError) else "invalid_input"
