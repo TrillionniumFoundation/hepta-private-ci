@@ -88,6 +88,14 @@ fn config() -> NeuronRuntimeConfigV1 {
 }
 
 fn publish(owner: &Artifacts, config: &mut NeuronRuntimeConfigV1) -> NeuronSelectedArtifactsV1 {
+    publish_with_expiry(owner, config, 1000)
+}
+
+fn publish_with_expiry(
+    owner: &Artifacts,
+    config: &mut NeuronRuntimeConfigV1,
+    expiry: u64,
+) -> NeuronSelectedArtifactsV1 {
     let calibration = config.calibration_evidence_payload_v1().unwrap();
     let ood = config.ood_evidence_payload_v1().unwrap();
     config.calibration.calibration_artifact_digest = Digest32::of_bytes(&calibration);
@@ -139,7 +147,7 @@ fn publish(owner: &Artifacts, config: &mut NeuronRuntimeConfigV1) -> NeuronSelec
                 normalization_digest: config.normalization_digest,
                 producer_id: id("operator.native.owner"),
                 created_at: 20,
-                expires_at: 1000,
+                expires_at: expiry,
             },
             bytes,
         );
@@ -321,5 +329,29 @@ fn neuron_selected_guard_rejects_same_summary_with_different_evidence_lineage() 
             &config,
         )
         .is_err()
+    );
+}
+
+#[test]
+fn neuron_selected_guard_checks_cached_manifest_lifetime_not_just_selection_expiry() {
+    let root = tempfile::tempdir().unwrap();
+    let artifacts = Artifacts::open(root.path(), None);
+    let mut config = config();
+    let selections = publish_with_expiry(&artifacts, &mut config, 60);
+    assert_eq!(selections.model.expires_at, 1000);
+    let clock = Arc::new(Clock(AtomicU64::new(50)));
+    let mut guard = AgentdNeuronArtifactAdmissionV1::new(
+        Arc::clone(&artifacts.owner),
+        artifacts.selector.clone(),
+        selections,
+        clock.clone(),
+        &config,
+    )
+    .unwrap();
+    guard.check(&config, &input()).unwrap();
+    clock.0.store(61, Ordering::SeqCst);
+    assert_eq!(
+        guard.check(&config, &input()),
+        Err(NeuronAdmissionError::Revoked)
     );
 }

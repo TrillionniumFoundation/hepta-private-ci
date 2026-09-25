@@ -94,8 +94,12 @@ versioned domains. Their hashes must equal the configured evidence hashes.
 
 Construction verifies the actual immutable payload bytes and complete manifests.
 Each admission then rereads authenticated CURRENT and verifies all three selections,
-metadata, eligibility and lifetimes before and after file reads under the same owner
-lock. Weights are not reread on every check; the inference owner must still verify
+eligibility and lifetimes before and after those reads under the same owner lock.
+Immutable, support-hash-bound metadata is retained after construction; its own expiry
+is checked even when a selector signature has a later expiry. This avoids redundant
+full-registry reads through each manifest lookup. A live check uses two current views,
+not cached authority, while retaining all three exact selection checks at both ends.
+Weights and immutable manifests are not reread on every check; the inference owner must still verify
 the exact selected execution tuple. A failed refresh closes this installed consumer;
 restoring an old file or reversing its clock cannot reopen that handle. Historical
 result queries remain non-authorizing and use the existing runtime result store.

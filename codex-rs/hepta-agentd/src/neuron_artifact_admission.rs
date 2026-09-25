@@ -37,6 +37,7 @@ pub struct AgentdNeuronArtifactAdmissionV1 {
     clock: Arc<dyn AuthorityClock>,
     configuration: Digest32,
     last_time: u64,
+    manifest_expiries: [u64; 3],
     closed: bool,
 }
 
@@ -62,6 +63,7 @@ impl AgentdNeuronArtifactAdmissionV1 {
             clock,
             configuration,
             last_time: 0,
+            manifest_expiries: [0; 3],
             closed: false,
         };
         result.validate_current(config, PayloadCheck::Required)?;
@@ -132,11 +134,20 @@ impl AgentdNeuronArtifactAdmissionV1 {
                 Some(ood.as_slice()),
             ),
         ];
-        for (selection, kind, content, expected_payload) in records {
+        for (index, (selection, kind, content, expected_payload)) in records.into_iter().enumerate()
+        {
             let verified = self
                 .selector
                 .verify(selection, &current, now)
                 .map_err(|_| NeuronAdmissionError::Revoked)?;
+            if matches!(payload_check, PayloadCheck::AlreadyLoaded) {
+                // Selection verification binds the exact immutable support hash
+                // checked at load. Reuse that metadata, but not a CURRENT view.
+                if now > self.manifest_expiries[index] {
+                    return Err(NeuronAdmissionError::Revoked);
+                }
+                continue;
+            }
             let admitted = owner
                 .read_current_selected_manifest(&self.selector, selection, now)
                 .map_err(|_| NeuronAdmissionError::Revoked)?;
@@ -177,14 +188,13 @@ impl AgentdNeuronArtifactAdmissionV1 {
             }
             // A matching independently selected content digest authenticates all
             // summary fields, not merely an arbitrary "calibration present" tag.
-            if matches!(payload_check, PayloadCheck::Required) {
-                let (_, bytes) = owner
-                    .read_current_selected_payload(&self.selector, selection, now)
-                    .map_err(|_| NeuronAdmissionError::Revoked)?;
-                if expected_payload.is_some_and(|expected| expected != bytes) {
-                    return Err(NeuronAdmissionError::BindingMismatch);
-                }
+            let (_, bytes) = owner
+                .read_current_selected_payload(&self.selector, selection, now)
+                .map_err(|_| NeuronAdmissionError::Revoked)?;
+            if expected_payload.is_some_and(|expected| expected != bytes) {
+                return Err(NeuronAdmissionError::BindingMismatch);
             }
+            self.manifest_expiries[index] = manifest.expires_at;
         }
         // File reads may consume time. Check lifetimes again at the final
         // observation while retaining the same publication lock.
@@ -192,7 +202,12 @@ impl AgentdNeuronArtifactAdmissionV1 {
             .clock
             .now_unix_ms()
             .map_err(|_| NeuronAdmissionError::Unavailable)?;
-        if finished < now {
+        if finished < now
+            || self
+                .manifest_expiries
+                .iter()
+                .any(|expiry| finished > *expiry)
+        {
             return Err(NeuronAdmissionError::Revoked);
         }
         let final_current = owner
@@ -211,9 +226,6 @@ impl AgentdNeuronArtifactAdmissionV1 {
         ] {
             self.selector
                 .verify(selection, &final_current, finished)
-                .map_err(|_| NeuronAdmissionError::Revoked)?;
-            owner
-                .read_current_selected_manifest(&self.selector, selection, finished)
                 .map_err(|_| NeuronAdmissionError::Revoked)?;
         }
         self.last_time = finished;
