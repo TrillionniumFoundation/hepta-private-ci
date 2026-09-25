@@ -5,6 +5,7 @@ pub mod error;
 pub mod journal;
 pub mod model;
 pub mod platform;
+pub mod private_state;
 pub mod qualification;
 pub mod runtime;
 pub mod security;

@@ -13,6 +13,7 @@ use sha2::Sha256;
 use crate::error::ShellError;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
+use crate::private_state::PrivateStateRoot;
 use crate::security::TrustedKeySet;
 use crate::security::now_unix_ms;
 
@@ -135,6 +136,7 @@ pub struct PendingUpdateV1 {
 pub struct UpdateManager {
     trusted_keys: TrustedKeySet,
     root: PathBuf,
+    private_root: PrivateStateRoot,
 }
 
 impl UpdateManager {
@@ -144,8 +146,12 @@ impl UpdateManager {
                 "native update root must be absolute".to_owned(),
             ));
         }
-        std::fs::create_dir_all(&root)?;
-        Ok(Self { trusted_keys, root })
+        let private_root = PrivateStateRoot::open(root.clone())?;
+        Ok(Self {
+            trusted_keys,
+            root,
+            private_root,
+        })
     }
 
     pub fn pending_path(&self) -> PathBuf {
@@ -158,6 +164,7 @@ impl UpdateManager {
         package_path: &Path,
         backend_protocol_version: u32,
     ) -> Result<PendingUpdateV1, ShellError> {
+        self.private_root.verify()?;
         let _lock = lock_update_root(&self.root)?;
         manifest.validate(backend_protocol_version)?;
         self.trusted_keys.verify_message(
@@ -217,6 +224,7 @@ impl UpdateManager {
     }
 
     pub fn load_pending(&self) -> Result<Option<PendingUpdateV1>, ShellError> {
+        self.private_root.verify()?;
         let path = self.pending_path();
         if !path.exists() {
             return Ok(None);
@@ -233,6 +241,7 @@ impl UpdateManager {
     }
 
     pub fn clear_pending(&self) -> Result<(), ShellError> {
+        self.private_root.verify()?;
         let _lock = lock_update_root(&self.root)?;
         if self.load_pending()?.is_some_and(|pending| {
             !matches!(
@@ -248,6 +257,7 @@ impl UpdateManager {
     }
 
     fn clear_pending_locked(&self) -> Result<(), ShellError> {
+        self.private_root.verify()?;
         let path = self.pending_path();
         if path.exists() {
             std::fs::remove_file(&path)?;
@@ -257,6 +267,7 @@ impl UpdateManager {
     }
 
     pub fn recover_interrupted_activation(&self) -> Result<bool, ShellError> {
+        self.private_root.verify()?;
         let Some(pending) = self.load_pending()? else {
             return Ok(false);
         };
@@ -270,6 +281,7 @@ impl UpdateManager {
     }
 
     pub fn rollback_unconfirmed(&self) -> Result<bool, ShellError> {
+        self.private_root.verify()?;
         let _lock = lock_update_root(&self.root)?;
         let Some(mut pending) = self.load_pending()? else {
             return Ok(false);
@@ -351,6 +363,7 @@ impl UpdateManager {
     }
 
     pub fn confirm_current_digest(&self, running_binary: &Path) -> Result<bool, ShellError> {
+        self.private_root.verify()?;
         let _lock = lock_update_root(&self.root)?;
         let Some(pending) = self.load_pending()? else {
             return Ok(false);
@@ -631,6 +644,7 @@ fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
 
 // Shared by GUI transitions and the updater helper; never held across GUI life.
 fn lock_update_root(root: &Path) -> Result<File, ShellError> {
+    let _private_root = PrivateStateRoot::open_existing(root.to_path_buf())?;
     let path = root.join("update-owner.lock");
     match std::fs::symlink_metadata(&path) {
         Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_file() => {

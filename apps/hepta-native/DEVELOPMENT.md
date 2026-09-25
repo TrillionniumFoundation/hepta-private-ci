@@ -1,125 +1,326 @@
 # ui.native current-source development guide
 
-## 1. Candidate identity and scope
+## 1. Candidate identity and claim boundary
 
-The single module candidate is `work/ui-native-current-source-20260925`, based
-on main `7ddbfac88525196e7a4b31387ceae194958275f5`. The Rust application root is
-recovered from #830 commit `3198549d80d6c59887b82e2c50018ab818217c53`.
-Only `apps/hepta-native` is restored from that source tree. Current
-`codex-rs/hepta-contracts`, gateway, runtime and domain owners are retained.
-A history-only merge is not implementation delivery.
+The single convergence candidate is
+`work/ui-native-current-source-20260925`, based on main
+`7ddbfac88525196e7a4b31387ceae194958275f5`. The Rust application was recovered
+from PR #830 source commit `3198549d80d6c59887b82e2c50018ab818217c53`, then
+reviewed against the current owner contracts. A merged historical branch is not
+implementation delivery; the files, locks, maps, tests and qualification
+receipts for the present candidate are the delivery identity.
 
-`CURRENT_SOURCE.json`, when generated and committed by the scoped freeze job,
-binds every native source, configuration, document and native Cargo lock by
-SHA-256. Qualification checks that file set before testing. Exact build SHA,
-tree, candidate SHA and merge base are separately recorded by each runner.
-Absent fingerprints or a missing lock is an unprepared candidate, not a pass.
+`CURRENT_SOURCE.json` records SHA-256 fingerprints for the native application
+and the exact current-owner integration surfaces used by it: the native gateway,
+kernel final-use store, Windows private-state helper, Cargo locks and native
+workflow. The file deliberately excludes itself. Qualification separately
+records the checked-out commit, tree, main base and deterministic merge commit.
+A missing fingerprint, dirty worktree, unlocked dependency resolution, failed
+or skipped check is not a pass.
+
+This guide distinguishes four states:
+
+1. **source-composed** — the implementation exists in the named candidate;
+2. **exact-head qualified** — the committed candidate executed its checks;
+3. **merge qualified** — the deterministic current-main merge executed them;
+4. **physically accepted/released** — external host, signing and operator gates
+   were independently observed.
+
+The present source may advance state 1 and, through retained CI receipts, states
+2–3. It does not self-assert state 4.
 
 ## 2. Product and owner topology
 
-`src/main.rs` bootstraps the eframe/egui/AccessKit desktop shell. `src/ui.rs`
-contains the presentation. `backend.rs` consumes a signed endpoint manifest
-and keyring bearer. `session_store.rs` stores only opaque session references.
-Domain state is never written by the UI.
+`src/main.rs` is the only desktop product bootstrap. It constructs:
 
-`runtime.rs` owns one mutable shell runtime and its local operation lifecycle.
-`journal.rs` owns bounded shell dispatch records, not domain or authorization
-facts. `security.rs` consumes the current kernel-owned final-use grant and
-synchronous-effect fence; it does not create a UI-local authority issuer.
-`platform.rs` applies an additional local permission ceiling.
+- `LoopbackGatewayBackend` from a verified signed endpoint manifest and an
+  OS-keyring bearer capability;
+- `NativeShellRuntime`, which owns one session/view state machine and its local
+  operation lifecycle;
+- `OperationJournal`, which owns only native dispatch/recovery facts;
+- `PrivateStateRoot`, which fail-closes local journal/update state when its
+  no-follow ownership, Unix mode or Windows protected-DACL identity changes;
+- `KernelFinalUseGate`, which consumes `kernel.authority` and cannot mint grants;
+- `SystemPlatformAdapter`, an additional local policy ceiling around OS effects;
+- `UpdateManager`, which owns signed staging and recovery metadata; and
+- `HeptaNativeApp`, the eframe/egui presentation with AccessKit integration.
 
-The current main gateway does not yet accept `--auth-keyring-account` or expose
-the authenticated health contract required by this backend. This is remaining
-repository implementation work, not an external signing requirement. Do not
-turn off backend authentication to make startup appear successful.
+The GUI owns one background-task slot for runtime refresh, reconciliation,
+final-use effect execution and update verification/staging. Each click freezes an
+owned request before handing it to the worker; the event loop only polls cached
+outcomes and remains responsive while network, OS-adapter or package I/O is in
+flight. The worker locks the same `NativeShellRuntime`; it is not a second owner
+or execution spine. Competing effect/update buttons remain disabled until the
+single task resolves.
 
-## 3. Operation identity and recovery
+The read-only `codex-hepta-native-gateway` remains the runtime adapter. It is
+loopback-only, accepts no mutation route and requires one bounded
+`Authorization: Bearer ...` value loaded from OS keyring service
+`hepta.native.gateway.v1`. `/healthz` must report
+`native_auth=keyring_bearer_v1`; unauthenticated, duplicate-header, wrong-token
+and legacy unauthenticated responses fail closed.
 
-Operation identity is `(session_id, session_generation, operation_id)` plus
-semantic binding to endpoint, subject, displayed revision, action, serialized
-payload, final-use binding and grant digest. Same identity with changed
-semantics is rejected. The runtime uses owned Rust request values and mutable
-borrowing instead of re-reading mutable JavaScript objects after an await.
+The UI never becomes the writer of runtime, model, memory, authority or release
+facts. `codex-rs/hepta-private-state` is a Windows durability/ACL implementation
+inside the existing `kernel.authority` owner, not a new authority module.
 
-The journal persists `Prepared -> Invoking -> Indeterminate/Terminal` before
-and after the adapter boundary. An uncertain invocation is reconciled, never
-blindly re-invoked. The port additionally rejects duplicate recovered keys,
-unknown root schema fields, endpoint drift and conflicting terminal receipts.
-Persistence failure poisons the owner until reopen/reconciliation. Destructive
-terminal cleanup is refused until a durable deduplication retirement frontier
-exists; reaching the 4096-record/8 MiB ceiling is fail-closed, not silent eviction.
+## 3. Ordinary authenticated startup
 
-Final-use claims use the current kernel authority. The reviewed adaptation
-uses its synchronous active-effect fence. This does not itself solve bounded
-OS launcher waits, global registry lifecycle, or all physical-path races.
-Those still require validation before enabling production effects.
+### 3.1 Build the three product binaries
 
-## 4. Updates and rollback
+From the repository root:
 
-`updater.rs` verifies signed stable-channel manifests, exact package digest,
-platform/architecture, backend version, independent selector identity and
-installed predecessor. The independent updater helper performs replacement.
-`ActivatedUnconfirmed` must be confirmed against the installed running binary.
+```sh
+cargo +1.95.0 build \
+  --manifest-path apps/hepta-native/Cargo.toml \
+  --locked --release --bins
+```
 
-The adaptation adds a shared per-transition GUI/helper writer lock, signature
-verification when reopening pending state, installed-target identity checks,
-refusal to erase unresolved update state, and rollback comparison against the
-admitted candidate/predecessor. An unrelated installed binary must not be
-overwritten by stale recovery. Missing/bad predecessor evidence leaves durable
-`RecoveryRequired`, not a fabricated rollback success.
+The release directory contains:
 
-Full pending-record path trust, hostile symlink races, interruption at every
-filesystem cut, and physical OS update behavior remain qualification work.
+- `hepta-native` — GUI product process;
+- `hepta-native-credential` — keyring capability provision/delete helper; and
+- `hepta-native-updater` — separate replacement/rollback helper.
 
-## 5. Build and tests
+### 3.2 Provision the loopback bearer
 
-The standalone app pins Rust 1.95.0. Once the source freeze has committed
-`Cargo.lock`, run from the repository root:
+Choose a bounded stable account name and provision it once through the OS
+keyring. The helper prints the account and token digest, never the bearer:
+
+```sh
+apps/hepta-native/target/release/hepta-native-credential \
+  provision gateway.local
+```
+
+Run the existing Hepta binary with the same account:
+
+```sh
+hepta --serve-ui \
+  --listen 127.0.0.1:7373 \
+  --auth-keyring-account gateway.local
+```
+
+The gateway refuses non-loopback or port-zero listeners, missing/duplicate
+accounts, missing keyring entries and malformed bearer capabilities. It exposes
+only authenticated `GET /`, `GET /healthz` and read-only runtime status. At most
+64 loopback connections may execute concurrently; excess accepted sockets are
+dropped before a request task is allocated, while each admitted request remains
+bounded by header size and read/write deadlines.
+
+### 3.3 Supply signed endpoint and trust material
+
+The GUI requires absolute paths to:
+
+- a trusted Ed25519 public-key set;
+- a signed `hepta.endpoint-manifest.v1` binding endpoint ID, loopback address,
+  protocol version, keyring account, issue/expiry times and key ID; and
+- a private state directory.
+
+The endpoint account must be the same account provisioned above. The final
+`--state-dir` component is created or reopened as a current-principal private
+root: owner mode `0700` with no-follow opening on Unix, and a protected local
+DACL with no reparse point on Windows. Missing, redirected or permission-drifted
+state roots fail startup or the next journal/update transition. Private signing
+keys do not belong in the repository, UI state directory or keyring session
+record.
+
+A normal read-only start is:
+
+```sh
+apps/hepta-native/target/release/hepta-native \
+  --endpoint-manifest /absolute/config/endpoint.json \
+  --trusted-keys /absolute/config/trusted-keys.json \
+  --state-dir /absolute/private/hepta-native-state
+```
+
+Platform mutations additionally require an independently configured kernel
+final-use owner and explicit local ceilings, for example:
+
+```sh
+apps/hepta-native/target/release/hepta-native \
+  --endpoint-manifest /absolute/config/endpoint.json \
+  --trusted-keys /absolute/config/trusted-keys.json \
+  --state-dir /absolute/private/hepta-native-state \
+  --final-use-authority /absolute/config/final-use-authority.json \
+  --allow-root /absolute/approved/root \
+  --allow-clipboard \
+  --allow-notifications
+```
+
+Omitting `--final-use-authority` preserves read-only product startup and causes
+effect requests to end as no-dispatch rejection. Local flags are ceilings, not
+authority: they never replace a valid, current, exact-binding final-use grant.
+
+## 4. Operation identity, concurrency and recovery
+
+The operation key is:
+
+```text
+(endpoint_id, session_id, session_generation, operation_id)
+```
+
+The semantic record also binds subject, displayed revision, action/destination,
+canonical serialized payload digest, exact final-use binding and grant digest.
+An identical retry returns the existing record; reuse with changed semantics is
+a conflict. A new session generation cannot consume an old generation receipt.
+Owned Rust values are validated before asynchronous work, so platform permission
+and invocation cannot observe different caller-mutated JavaScript objects.
+Journal and updater operations revalidate their private state roots before local
+state transitions; a changed root is not treated as a new empty store.
+
+The journal phase machine is monotonic:
+
+```text
+Prepared -> Invoking -> Indeterminate -> Terminal
+                 \---------------------> Terminal
+Prepared ------------------------------> Terminal
+```
+
+`Invoking` is persisted and fsynced before the adapter boundary. Once an effect
+may have entered the adapter, restart/retry never invokes it again. Only the
+adapter's reconciliation path may move an uncertain operation to terminal.
+Persistence failure poisons the journal owner until reopen; it is never
+reinterpreted as a known no-effect result.
+
+Journal schema v3 retains at most 4096 active records and 8 MiB. Terminal
+compaction moves exact operation identities into a sorted, durable,
+domain-separated SHA-256 retirement frontier instead of forgetting them. A
+retired identity is rejected before permission, authority claim or dispatch,
+including after full process restart and even if a caller changes payload
+semantics. Legacy v2 journals open read-only-compatible and migrate to v3 on the
+next persisted change. Duplicate, malformed or active/retired-overlapping
+frontiers fail closed.
+
+The exact retirement frontier is bounded at 32768 entries. Reaching that ceiling
+fails closed; this is deliberate evidence that a later sharded/epoch retirement
+format needs an explicit migration rather than silent resurrection.
+
+## 5. Final-use and local platform boundary
+
+For a mutation, the order is:
+
+```text
+durable Prepared
+-> kernel final-use claim for the exact binding
+-> durable Invoking
+-> current verified-use fence immediately before physical entry
+-> local path/clipboard/notification policy
+-> OS adapter
+-> durable observation or indeterminate reconciliation state
+```
+
+The kernel owner preserves signature, principal, session, action, destination,
+payload, epoch, expiry, revocation and single-use nonce semantics. Unix uses the
+existing owner-only/no-follow state store. Windows uses
+`codex-hepta-private-state`, which accepts only absolute local-drive roots and
+validates directory and per-file owner SID/DACL, reparse-point absence, file
+identity and durable replace operations.
+Both use the current v3 authority snapshot and append-only nonce log; neither
+falls back to a UI-local signer or weaker replay registry.
+
+Open/reveal/notification launchers are bounded to four concurrent child
+processes and a one-second observation window. A timeout kills/reaps the child
+where possible but remains **indeterminate**, because process termination does
+not prove the OS did not accept the request. Such an operation is not replayed.
+Clipboard may become terminal only after immediate readback matches. Windows
+notification remains disabled until a packaged AppUserModelID/WinRT identity is
+available; a generic command launch is not treated as notification success.
+
+## 6. Signed updates and recovery
+
+`SignedUpdateManifestV1` binds stable channel, package and predecessor digests,
+platform, architecture, backend protocol, evidence digest, independent selector
+and generator, issue/expiry times and signing key. Selection and generation
+principals must differ.
+
+The GUI verifies and stages the package in a private directory, writes pending
+state atomically and exits before invoking the independent updater helper. The
+helper re-verifies manifest and package, confirms the installed predecessor,
+backs it up and replaces through a temporary file. Activation remains
+`ActivatedUnconfirmed` until the new process confirms its running executable
+digest.
+
+Recovery uses a shared transition lock and authenticated pending state. It may
+restore only the admitted predecessor over the admitted candidate. An unrelated
+newer installed binary is never overwritten by stale recovery. Missing or bad
+predecessor evidence, rollback failure or destroyed recovery evidence becomes
+durable `RecoveryRequired`; public cleanup cannot erase unresolved state.
+
+## 7. Development, lock and package commands
+
+The app pins Rust 1.95.0 and commits both the standalone native lock and the
+current root workspace lock. Run:
 
 ```sh
 cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
-cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
-cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
-cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml --locked --release --bins
+cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
+  --locked --all-targets --all-features -- -D warnings
+cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+  --locked --all-targets
+
+cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+  -p codex-hepta-native-gateway -p codex-hepta-contracts \
+  -p codex-hepta-private-state --check
+cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml --locked \
+  -p codex-hepta-native-gateway -p codex-hepta-contracts \
+  -p codex-hepta-private-state --all-targets --all-features --no-deps \
+  -- -D warnings
+cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml --locked \
+  -p codex-hepta-native-gateway -p codex-hepta-contracts \
+  -p codex-hepta-private-state --all-targets --all-features
 ```
 
-The current-source workflow tests exact candidate and deterministic merge on
-Ubuntu 24.04, macOS 15 and Windows 2025 runners. Lint failure does not suppress
-independent native test feedback. Test source presence is never a pass receipt.
+Build and validate an unsigned development package with:
 
-`tests/journal_regressions.rs` adds terminal immutability, endpoint conflict,
-duplicate recovery, unknown schema, persistence-failure fencing, retained
-deduplication, session-generation separation and monotonic phase cases.
-Existing runtime/security/update tests are retained rather than weakened.
+```sh
+python3 apps/hepta-native/tools/package_unsigned.py --self-test
+python3 apps/hepta-native/tools/package_unsigned.py \
+  --platform linux \
+  --architecture x86_64 \
+  --release-dir apps/hepta-native/target/release \
+  --out-dir native-package
+```
 
-`--self-test` and `--qualification-e2e` use isolated fixtures and fake platform
-adapters. The latter kills fixture child processes at durable journal/update
-cuts. These are release-binary fault checks, not physical GUI, keyring or
-installed-package acceptance, and do not authorize real OS effects.
+Use `macos` or `windows` on those runners. The packager emits a deterministic
+ZIP, validates and extracts that ZIP into a fresh root for packaged-binary smoke,
+records every binary digest, and emits a receipt that keeps
+`productionSigningObserved`, `notarizationObserved` and `releaseAuthorized`
+false. Package creation is not release selection.
 
-## 6. Configuration and ordinary-user acceptance
+## 8. Qualification and evidence
 
-The Rust bootstrap expects absolute `--endpoint-manifest`, `--trusted-keys`
-and `--state-dir` inputs. Effects additionally require independently provisioned
-`--final-use-authority`; optional local ceilings include `--allow-root`,
-`--allow-clipboard` and `--allow-notifications`. Private signing keys must never
-be installed in the UI state root or source repository.
+The branch workflow checks both exact candidate and a deterministic synthetic
+merge with current main on Ubuntu 24.04, macOS 15 and Windows 2025. Each matrix
+leg independently runs app and owner-integration format, strict Clippy and tests,
+then builds release binaries, executes `--self-test` and
+`--qualification-e2e`, creates the platform package and re-runs the packaged
+binary from the freshly extracted ZIP. Failures and skipped steps are retained
+as outcomes; an earlier lint failure must not be converted into a downstream pass.
 
-The historical setup examples are not presently an executable end-to-end
-recipe against current main: authenticated gateway composition is still
-missing. Acceptance must run the actual packaged application through normal
-startup, trusted connection, displayed state, denied and authorized requests,
-shutdown/restart and recovery without selecting a fixture-only profile.
+`--qualification-e2e` uses isolated product state and deterministic fake backend
+or platform observations. It exercises authenticated view composition,
+generation fencing, permission denial, live final-use revocation, actual child
+process death after durable `Invoking`, updater child death, predecessor restore
+and durable `RecoveryRequired`. It does not invoke real user OS effects.
 
-## 7. Platform, accessibility and performance gates
+The workflow records wall-clock build/package/smoke durations and artifact sizes
+as measurements. They are not target-host acceptance thresholds. Current source
+fingerprints, commit/tree/base/merge identities and per-check outcomes travel
+with each artifact.
 
-AccessKit and native focusable widgets are implementation foundations only.
-Keyboard traversal, screen-reader names/states, IME, Chinese rendering,
-multi-monitor DPI, focus restoration and update restart need physical evidence.
-Startup, RSS, event latency and long-running journal growth need measurements.
+## 9. Remaining independent gates
 
-Current kernel sources do not establish Windows durable final-use qualification.
-Do not restore obsolete Windows authority code or claim a three-platform pass
-because a matrix exists. Windows notification identity is not implemented by
-turning on a flag. Signatures, notarization, release selection and independent
-operator acceptance remain separate gates, all false until observed.
+Repository source and CI cannot self-issue:
+
+- Apple Developer ID custody and notarization;
+- Windows Authenticode and installed AppUserModelID/notification identity;
+- Linux distribution signing or repository ownership;
+- physical keyboard, screen-reader, Chinese IME, focus-restoration and
+  multi-monitor DPI acceptance;
+- observed terminality for OS facilities that expose no transaction query;
+- sustained target-host startup, RSS and interaction acceptance;
+- independent release-channel selection, operator acceptance, promotion or
+  release authority.
+
+These remain false until separately observed. Source composition, green CI and
+an unsigned package must never be used as substitutes for them.

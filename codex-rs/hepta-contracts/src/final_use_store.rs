@@ -24,6 +24,13 @@ const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
 const CLAIM_FRAME_BYTES: usize = 8 + 32;
 
+#[cfg(unix)]
+type StoreRoot = File;
+#[cfg(windows)]
+type StoreRoot = codex_hepta_private_state::PrivateStateDirectory;
+#[cfg(not(any(unix, windows)))]
+type StoreRoot = File;
+
 #[derive(Deserialize)]
 struct StoredHeader {
     schema: u32,
@@ -74,7 +81,7 @@ enum StoreTrust {
 }
 
 pub(super) struct Store {
-    root: File,
+    root: StoreRoot,
     signer_id: String,
     trust: StoreTrust,
     _lock: File,
@@ -364,7 +371,11 @@ impl Store {
     }
 }
 
-fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {
+fn read_bounded(
+    directory: &StoreRoot,
+    name: &str,
+    maximum: usize,
+) -> Result<Vec<u8>, FinalUseError> {
     let mut bytes = Vec::new();
     open_private(directory, name, Access::Read)?
         .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
@@ -383,7 +394,7 @@ enum Access {
 }
 
 #[cfg(unix)]
-fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
+fn prepare_directory(root: &Path) -> Result<StoreRoot, FinalUseError> {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::MetadataExt;
     if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
@@ -414,7 +425,7 @@ fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
 }
 
 #[cfg(unix)]
-fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
+fn open_private(directory: &StoreRoot, name: &str, access: Access) -> Result<File, FinalUseError> {
     use rustix::fs::Mode;
     use rustix::fs::OFlags;
     use std::os::unix::fs::MetadataExt;
@@ -438,12 +449,33 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
-fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<StoreRoot, FinalUseError> {
+    codex_hepta_private_state::PrivateStateDirectory::open(root)
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(windows)]
+fn open_private(directory: &StoreRoot, name: &str, access: Access) -> Result<File, FinalUseError> {
+    directory
+        .verify_trust()
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    directory
+        .open_file(name, matches!(access, Access::Create))
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(not(any(unix, windows)))]
+fn prepare_directory(_root: &Path) -> Result<StoreRoot, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
+
+#[cfg(not(any(unix, windows)))]
+fn open_private(
+    _directory: &StoreRoot,
+    _name: &str,
+    _access: Access,
+) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 
@@ -473,16 +505,46 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
-fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
+#[cfg(windows)]
+fn entry_exists(directory: &StoreRoot, name: &str) -> Result<bool, FinalUseError> {
+    directory
+        .verify_trust()
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    directory
+        .entry_exists(name)
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &StoreRoot) -> Result<(), FinalUseError> {
+    directory
+        .verify_trust()
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    directory
+        .replace("authority.next", "authority.json")
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(windows)]
+fn replace_claims(directory: &StoreRoot) -> Result<(), FinalUseError> {
+    directory
+        .verify_trust()
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    directory
+        .replace("authority.claims.next", "authority.claims")
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(not(any(unix, windows)))]
+fn entry_exists(_directory: &StoreRoot, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &StoreRoot) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn replace_claims(_directory: &StoreRoot) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 

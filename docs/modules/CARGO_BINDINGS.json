@@ -2,10 +2,6 @@
   "schema": "hepta.cargo-module-binding.v1",
   "bindings": [
     {
-      "packagePath": "apps/hepta-native",
-      "module": "ui.native"
-    },
-    {
       "packagePath": "codex-rs/ext/hepta-governance",
       "module": "control.engineering"
     },
@@ -180,6 +176,10 @@
     {
       "packagePath": "codex-rs/hepta-plasticity",
       "module": "learning.plasticity"
+    },
+    {
+      "packagePath": "codex-rs/hepta-private-state",
+      "module": "kernel.authority"
     },
     {
       "packagePath": "codex-rs/hepta-prompt-optimizer",

@@ -175,6 +175,8 @@ impl NativeShellRuntime {
         let binding_digest = crate::model::sha256_hex(serde_json::to_vec(&binding)?);
         let grant_digest = crate::model::sha256_hex(serde_json::to_vec(&request.grant)?);
         let key = OperationKey::new(&session, &request.operation_id)?;
+        self.journal
+            .ensure_not_retired(&session.endpoint_id, &key)?;
 
         if let Some(existing) = self.journal.find(&key).cloned() {
             if existing.endpoint_id != session.endpoint_id

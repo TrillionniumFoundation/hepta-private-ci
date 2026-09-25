@@ -11,6 +11,7 @@ use hepta_native::journal::OperationJournal;
 use hepta_native::model::EndpointManifest;
 use hepta_native::platform::PlatformPolicy;
 use hepta_native::platform::SystemPlatformAdapter;
+use hepta_native::private_state::PrivateStateRoot;
 use hepta_native::runtime::NativeShellRuntime;
 use hepta_native::security::KernelFinalUseGate;
 use hepta_native::security::SignedEndpointManifestV1;
@@ -59,7 +60,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let config = AppConfig::parse(&raw_args)?;
-    std::fs::create_dir_all(&config.state_dir)?;
+    let _state_root = PrivateStateRoot::open(config.state_dir.clone())?;
     let trusted_keys = TrustedKeySet::from_path(&config.trusted_keys)?;
     let signed_manifest: SignedEndpointManifestV1 =
         serde_json::from_slice(&std::fs::read(&config.endpoint_manifest)?)?;

@@ -29,14 +29,17 @@ Plane `kernel`, kind `authority`, state model `stateful` and architecture role `
 Declared exclusive target roots:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/hepta-private-state`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/hepta-private-state`
 
 Non-authoritative implementation evidence roots:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/hepta-private-state`
 - `codex-rs/ext/hepta-governance`
 
 Declared roots not yet present:
@@ -47,7 +50,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), and external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
+The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs), and the Windows private-directory durability implementation is [codex-rs/hepta-private-state](../../../codex-rs/hepta-private-state). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -77,6 +80,8 @@ The bounded components are:
 - `lease registry`
 - `revocation index`
 - `verified-use validator`
+- `Unix owner-only/no-follow durable store`
+- `Windows private-directory/ACL durable store`
 - `decision and audit projection`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -130,7 +135,9 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-The current general authority-lease store starts at canonical store schema V2 because retired lease-ID revision lineage participates in the authoritative frontier. No schema-V1 general lease store was activated or released; V1 images are rejected rather than silently reinterpreted. Any future durable predecessor requires an explicit migration and frontier transition. FinalUse retains its separately documented V1 single-key compatibility format and V2 key-ring format.
+The current general authority-lease store starts at canonical store schema V2 because retired lease-ID revision lineage participates in the authoritative frontier. No schema-V1 general lease store was activated or released; V1 images are rejected rather than silently reinterpreted. Any future durable predecessor requires an explicit migration and frontier transition.
+
+FinalUse durable state uses the current v3 authority snapshot plus an append-only, checksummed single-use nonce log. Unix preserves owner-only/no-follow open, file identity and file/directory fsync semantics. Windows uses `codex-rs/hepta-private-state` to validate a local private root, owner SID/DACL, reparse-point absence, file identity and durable same-directory replacement. Unsupported platforms fail closed; there is no UI-local or in-memory production fallback. The separately documented V1 single-key and V2 key-ring inputs remain compatibility forms for signed grant verification, not weaker durable-store schemas.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
@@ -154,7 +161,7 @@ Owned threat entries:
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Windows store tests additionally cover single-writer locking, restart replay rejection, revocation persistence and unsafe state-directory rejection. Source tests are not platform acceptance receipts. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
@@ -180,6 +187,8 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs); named case: `signed_claim_is_single_use_and_delivers_under_same_owner`.
+- [codex-rs/hepta-contracts/src/final_use_windows_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_windows_tests.rs); Windows-only restart/replay/revocation durability cases.
+- [codex-rs/hepta-private-state/src/windows.rs](../../../codex-rs/hepta-private-state/src/windows.rs); Windows-only private-directory, ACL, no-reparse and replacement tests.
 - [codex-rs/hepta-contracts/src/agent_id_tests.rs](../../../codex-rs/hepta-contracts/src/agent_id_tests.rs); named case: `canonical_id_is_stable_across_display_parse_and_serde`.
 The previously listed dedicated kernel-authority traceability test is not present in this source tree. Its target-port and Browser B4 closed-set coverage must not be inferred from these source references.
 
@@ -221,6 +230,7 @@ For `kernel.authority`, this document grants no runtime, production, model, prov
 - Owner/deputy: `security-authority` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-contracts/**`
+- `codex-rs/hepta-private-state/**`
 - Development predecessors:
 - `P0.7A-RUNTIME-BOOTSTRAP`
 - Activation predecessors:
@@ -406,7 +416,8 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `finaluseauthority` | `FinalUseAuthority`, `VerifiedUseToken`, `dispatch_final_use` | `codex-rs/hepta-contracts/src/final_use.rs` | `final_use_tests.rs`, `tests/final_use_linearization.rs` |
-| `store` | `Store` | `codex-rs/hepta-contracts/src/final_use_store.rs` | `final_use_tests.rs` |
+| `store` | `Store` | `codex-rs/hepta-contracts/src/final_use_store.rs` | `final_use_tests.rs`, `final_use_windows_tests.rs` |
+| Windows private durable directory | `PrivateStateDirectory` | `codex-rs/hepta-private-state/src/windows.rs` | inline Windows-only ACL/reparse/identity/replace tests |
 | `authority_lease` / `capability_revocation` | `AuthorityLeaseRegistry`, `AuthorityLeaseVerifier` | `codex-rs/hepta-contracts/src/authority_lease.rs` | inline unit tests |
 | trusted time / anti-rollback interface | `AuthorityClock`, `AuthorityFrontierStore` | `codex-rs/hepta-contracts/src/authority_trust.rs` | lease + FinalUse restored-snapshot tests |
 | independent approval / revocation feed | `FinalUseApprovalVerifier`, `FinalUseRevocationFeedVerifier`, `FinalUseTrustKey` | `codex-rs/hepta-contracts/src/final_use_control.rs` | inline unit tests |

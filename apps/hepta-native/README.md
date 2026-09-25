@@ -1,23 +1,39 @@
-# Hepta native shell — current-source candidate
+# Hepta Native
 
-Canonical candidate: `work/ui-native-current-source-20260925`, based on main
-`7ddbfac88525196e7a4b31387ceae194958275f5`.
+Long-running refresh, reconciliation, final-use execution and update staging run
+through one serialized worker slot so the native event loop never performs those
+I/O operations directly.
 
-This branch carries the actual Rust application files recovered from #830, not
-just its merge history. It keeps current kernel owner sources and does not
-restore historical authority or gateway implementations.
+`apps/hepta-native` is the canonical Rust desktop shell for `ui.native` on the
+`work/ui-native-current-source-20260925` convergence line. The branch contains
+the actual eframe/egui/AccessKit application, not only the history of PR #830.
+The retired JavaScript `native.js` and `shell-runtime.js` surfaces are not
+product entrypoints.
 
-Read [DEVELOPMENT.md](DEVELOPMENT.md) for the current contract and remaining
-repository work. `HISTORICAL_830_DEVELOPMENT.md` is historical reference only;
-its Windows/store/product-closure claims are not current acceptance facts.
+The shell is deliberately not a second execution spine. Runtime facts come
+from the loopback-only `codex-hepta-native-gateway`; final-use authority comes
+from `kernel.authority`; domain state remains with its existing owners. The UI
+owns only presentation state, a bounded durable local-operation journal, opaque
+session references and the updater state machine.
 
-The narrowly scoped current-source workflow materializes reviewed adaptations,
-formats them, commits a native Cargo lock and source fingerprints, then tests
-that committed source and a deterministic merge on three operating systems.
-The preparation commit is not itself qualification. Actual outcomes are
-retained as artifacts, including failures and skipped steps.
+Repository source now composes:
 
-No production activation, signing, platform acceptance or release is claimed.
-The current main gateway does not yet provide the keyring authentication
-expected by the Rust backend; ordinary connected product acceptance remains
-blocked until that owner integration is implemented and tested.
+- signed endpoint discovery and OS-keyring bearer authentication;
+- the read-only authenticated native gateway;
+- session/generation/operation semantic fencing;
+- durable `Prepared -> Invoking -> Indeterminate/Terminal` recovery;
+- a durable exact retirement frontier for terminal-operation compaction;
+- kernel-owned final-use claims with Unix and Windows durable stores;
+- bounded local OS launchers and conservative indeterminate semantics;
+- signed staged updates with predecessor fencing and durable recovery states;
+- deterministic unsigned Linux, macOS and Windows development packages.
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for architecture, configuration, normal
+startup, failure semantics and qualification commands. Historical PR #830
+remains available through Git history; this current guide, implementation map
+and exact-candidate receipts are authoritative.
+
+Source composition is not production acceptance. Platform signing and
+notarization, installed notification identity, physical screen-reader/IME/DPI
+acceptance, target-host performance, independent selection and release remain
+separate gates and stay false until independently observed.

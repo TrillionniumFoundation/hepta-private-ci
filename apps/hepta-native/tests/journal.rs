@@ -1,9 +1,11 @@
+mod common;
+
+use common::private_tempdir;
 use hepta_native::journal::OperationJournal;
-use tempfile::TempDir;
 
 #[test]
 fn second_operation_journal_owner_is_rejected() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let path = temp.path().join("operations.json");
     let first = OperationJournal::open(&path).unwrap();
     let error = OperationJournal::open(&path).unwrap_err();
@@ -24,7 +26,7 @@ fn killed_operation_journal_owner_releases_lock() {
         }
     }
 
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let path = temp.path().join("operations.json");
     let mut child = std::process::Command::new(std::env::current_exe().unwrap())
         .args([
@@ -58,7 +60,7 @@ fn killed_operation_journal_owner_releases_lock() {
 fn group_or_world_readable_operation_journal_fails_closed() {
     use std::os::unix::fs::PermissionsExt as _;
 
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let path = temp.path().join("operations.json");
     std::fs::write(
         &path,

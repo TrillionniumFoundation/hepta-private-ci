@@ -1,6 +1,12 @@
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
+use std::process::ExitStatus;
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
+use std::time::Instant;
 
 use arboard::Clipboard;
 
@@ -12,6 +18,10 @@ use crate::model::PlatformObservation;
 use crate::model::PlatformPayload;
 use crate::model::TerminalStatus;
 use crate::model::sha256_hex;
+
+const MAX_CONCURRENT_LAUNCHERS: usize = 4;
+const LAUNCHER_TIMEOUT: Duration = Duration::from_secs(1);
+const LAUNCHER_POLL_INTERVAL: Duration = Duration::from_millis(10);
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PermissionDecision {
@@ -79,11 +89,15 @@ impl PlatformPolicy {
 #[derive(Debug, Clone)]
 pub struct SystemPlatformAdapter {
     policy: PlatformPolicy,
+    active_launchers: Arc<AtomicUsize>,
 }
 
 impl SystemPlatformAdapter {
     pub fn new(policy: PlatformPolicy) -> Self {
-        Self { policy }
+        Self {
+            policy,
+            active_launchers: Arc::new(AtomicUsize::new(0)),
+        }
     }
 
     fn launcher_observation(
@@ -165,7 +179,7 @@ impl PlatformAdapter for SystemPlatformAdapter {
                         "open path escaped admitted platform roots before OS entry".to_owned(),
                     ));
                 }
-                let status = launch_open(&canonical)?;
+                let status = launch_open(&canonical, &self.active_launchers)?;
                 Ok(self.launcher_observation(PlatformAction::OpenPath, status))
             }
             PlatformPayload::RevealPath { path } => {
@@ -179,11 +193,11 @@ impl PlatformAdapter for SystemPlatformAdapter {
                         "reveal path escaped admitted platform roots before OS entry".to_owned(),
                     ));
                 }
-                let status = launch_reveal(&canonical)?;
+                let status = launch_reveal(&canonical, &self.active_launchers)?;
                 Ok(self.launcher_observation(PlatformAction::RevealPath, status))
             }
             PlatformPayload::Notify { title, body } => {
-                let status = launch_notification(title, body)?;
+                let status = launch_notification(title, body, &self.active_launchers)?;
                 Ok(self.launcher_observation(PlatformAction::Notify, status))
             }
         }
@@ -194,54 +208,103 @@ impl PlatformAdapter for SystemPlatformAdapter {
     }
 }
 
+#[derive(Debug)]
+struct LauncherSlot {
+    active: Arc<AtomicUsize>,
+}
+
+impl LauncherSlot {
+    fn acquire(active: &Arc<AtomicUsize>) -> Result<Self, ShellError> {
+        active
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |current| {
+                (current < MAX_CONCURRENT_LAUNCHERS).then_some(current + 1)
+            })
+            .map_err(|_| {
+                ShellError::Platform(format!(
+                    "native launcher capacity reached {MAX_CONCURRENT_LAUNCHERS}"
+                ))
+            })?;
+        Ok(Self {
+            active: Arc::clone(active),
+        })
+    }
+}
+
+impl Drop for LauncherSlot {
+    fn drop(&mut self) {
+        self.active.fetch_sub(1, Ordering::AcqRel);
+    }
+}
+
+fn run_bounded_launcher(
+    mut command: Command,
+    description: &str,
+    active: &Arc<AtomicUsize>,
+) -> Result<ExitStatus, ShellError> {
+    let _slot = LauncherSlot::acquire(active)?;
+    let mut child = command
+        .spawn()
+        .map_err(|error| ShellError::Platform(format!("{description}: {error}")))?;
+    let deadline = Instant::now() + LAUNCHER_TIMEOUT;
+    loop {
+        if let Some(status) = child
+            .try_wait()
+            .map_err(|error| ShellError::Platform(format!("observe {description}: {error}")))?
+        {
+            return Ok(status);
+        }
+        if Instant::now() >= deadline {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(ShellError::Platform(format!(
+                "{description} exceeded the bounded {LAUNCHER_TIMEOUT:?} launcher window; effect remains indeterminate"
+            )));
+        }
+        std::thread::sleep(LAUNCHER_POLL_INTERVAL);
+    }
+}
+
 #[cfg(target_os = "macos")]
-fn launch_open(path: &Path) -> Result<std::process::ExitStatus, ShellError> {
-    Command::new("open")
-        .arg(path)
-        .status()
-        .map_err(|error| ShellError::Platform(format!("open path: {error}")))
+fn launch_open(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
+    let mut command = Command::new("open");
+    command.arg(path);
+    run_bounded_launcher(command, "open path", active)
 }
 
 #[cfg(target_os = "windows")]
-fn launch_open(path: &Path) -> Result<std::process::ExitStatus, ShellError> {
-    Command::new("explorer.exe")
-        .arg(path)
-        .status()
-        .map_err(|error| ShellError::Platform(format!("open path: {error}")))
+fn launch_open(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
+    let mut command = Command::new("explorer.exe");
+    command.arg(path);
+    run_bounded_launcher(command, "open path", active)
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
-fn launch_open(path: &Path) -> Result<std::process::ExitStatus, ShellError> {
-    Command::new("xdg-open")
-        .arg(path)
-        .status()
-        .map_err(|error| ShellError::Platform(format!("open path: {error}")))
+fn launch_open(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
+    let mut command = Command::new("xdg-open");
+    command.arg(path);
+    run_bounded_launcher(command, "open path", active)
 }
 
 #[cfg(target_os = "macos")]
-fn launch_reveal(path: &Path) -> Result<std::process::ExitStatus, ShellError> {
-    Command::new("open")
-        .arg("-R")
-        .arg(path)
-        .status()
-        .map_err(|error| ShellError::Platform(format!("reveal path: {error}")))
+fn launch_reveal(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
+    let mut command = Command::new("open");
+    command.arg("-R").arg(path);
+    run_bounded_launcher(command, "reveal path", active)
 }
 
 #[cfg(target_os = "windows")]
-fn launch_reveal(path: &Path) -> Result<std::process::ExitStatus, ShellError> {
-    Command::new("explorer.exe")
-        .arg(format!("/select,{}", path.display()))
-        .status()
-        .map_err(|error| ShellError::Platform(format!("reveal path: {error}")))
+fn launch_reveal(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
+    let mut command = Command::new("explorer.exe");
+    command.arg(format!("/select,{}", path.display()));
+    run_bounded_launcher(command, "reveal path", active)
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
-fn launch_reveal(path: &Path) -> Result<std::process::ExitStatus, ShellError> {
+fn launch_reveal(path: &Path, active: &Arc<AtomicUsize>) -> Result<ExitStatus, ShellError> {
     let parent = path.parent().unwrap_or(path);
-    Command::new("xdg-open")
-        .arg(parent)
-        .status()
-        .map_err(|error| ShellError::Platform(format!("reveal path: {error}")))
+    let mut command = Command::new("xdg-open");
+    command.arg(parent);
+    run_bounded_launcher(command, "reveal path", active)
 }
 
 fn notification_supported() -> bool {
@@ -249,25 +312,32 @@ fn notification_supported() -> bool {
 }
 
 #[cfg(target_os = "macos")]
-fn launch_notification(title: &str, body: &str) -> Result<std::process::ExitStatus, ShellError> {
-    Command::new("osascript")
-        .args([
-            "-e",
-            "on run argv",
-            "-e",
-            "display notification (item 2 of argv) with title (item 1 of argv)",
-            "-e",
-            "end run",
-            "--",
-            title,
-            body,
-        ])
-        .status()
-        .map_err(|error| ShellError::Platform(format!("send notification: {error}")))
+fn launch_notification(
+    title: &str,
+    body: &str,
+    active: &Arc<AtomicUsize>,
+) -> Result<ExitStatus, ShellError> {
+    let mut command = Command::new("osascript");
+    command.args([
+        "-e",
+        "on run argv",
+        "-e",
+        "display notification (item 2 of argv) with title (item 1 of argv)",
+        "-e",
+        "end run",
+        "--",
+        title,
+        body,
+    ]);
+    run_bounded_launcher(command, "send notification", active)
 }
 
 #[cfg(target_os = "windows")]
-fn launch_notification(_title: &str, _body: &str) -> Result<std::process::ExitStatus, ShellError> {
+fn launch_notification(
+    _title: &str,
+    _body: &str,
+    _active: &Arc<AtomicUsize>,
+) -> Result<ExitStatus, ShellError> {
     Err(ShellError::Platform(
         "Windows notification requires packaged AppUserModelID/WinRT integration; the native shell refuses to fake it"
             .to_owned(),
@@ -275,13 +345,14 @@ fn launch_notification(_title: &str, _body: &str) -> Result<std::process::ExitSt
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
-fn launch_notification(title: &str, body: &str) -> Result<std::process::ExitStatus, ShellError> {
-    Command::new("notify-send")
-        .arg("--")
-        .arg(title)
-        .arg(body)
-        .status()
-        .map_err(|error| ShellError::Platform(format!("send notification: {error}")))
+fn launch_notification(
+    title: &str,
+    body: &str,
+    active: &Arc<AtomicUsize>,
+) -> Result<ExitStatus, ShellError> {
+    let mut command = Command::new("notify-send");
+    command.arg("--").arg(title).arg(body);
+    run_bounded_launcher(command, "send notification", active)
 }
 
 #[cfg(test)]
@@ -310,6 +381,18 @@ mod tests {
             })
             .unwrap();
         assert!(!notification.allowed);
+    }
+
+    #[test]
+    fn launcher_capacity_is_bounded_and_released() {
+        let active = Arc::new(AtomicUsize::new(MAX_CONCURRENT_LAUNCHERS));
+        assert!(LauncherSlot::acquire(&active).is_err());
+        active.store(0, Ordering::Release);
+        {
+            let _slot = LauncherSlot::acquire(&active).unwrap();
+            assert_eq!(active.load(Ordering::Acquire), 1);
+        }
+        assert_eq!(active.load(Ordering::Acquire), 0);
     }
 
     #[test]

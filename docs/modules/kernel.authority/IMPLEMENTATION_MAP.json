@@ -11,10 +11,12 @@
   "deputy": "kernel-contracts",
   "technicalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
   "declaredRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-private-state"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-private-state"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -43,12 +45,17 @@
       "state": "source_implemented_not_product_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+        "codex-rs/hepta-private-state/src/windows.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-private-state/src/windows.rs"
+      ],
+      "sourceSemantics": "Current v3 authority snapshot plus append-only nonce log; Unix owner-only/no-follow durability and Windows private-directory/ACL durability fail closed without weaker fallback."
     },
     {
       "operation": "authority_lease_registry",
@@ -153,9 +160,9 @@
   ],
   "repositoryControlledGaps": [
     "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
+    "Retain Linux and Windows exact-head plus deterministic synthetic-merge store execution receipts for the current source candidate.",
     "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes.",
     "Compose remaining target-only ModulePorts only when their real owner exposes one canonical authority reference/revision; do not create ad-hoc double-authority wrappers.",
-    "Obtain exact-head and deterministic synthetic-merge execution receipts for the current-main closure candidate.",
     "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; runtime.fleet is now source-composed, while the remaining target-only ports are enumerated in TRACEABILITY.md."
   ],
   "externalEvidenceGates": [
@@ -177,7 +184,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-private-state"
   ],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",

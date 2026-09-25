@@ -25,7 +25,11 @@ serde_json = { workspace = true }
 sha2 = { workspace = true }
 zeroize = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-hepta-private-state = { workspace = true }
+
 [dev-dependencies]
+getrandom = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }

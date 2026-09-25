@@ -35,6 +35,7 @@ use crate::model::TerminalStatus;
 use crate::model::sha256_hex;
 use crate::platform::PermissionDecision;
 use crate::platform::PlatformAdapter;
+use crate::private_state::PrivateStateRoot;
 use crate::runtime::NativeShellRuntime;
 use crate::security::KernelFinalUseGate;
 use crate::security::TrustedKeySet;
@@ -79,7 +80,7 @@ impl QualificationRoot {
             std::process::id(),
             now_unix_ms()?.max(1)
         ));
-        std::fs::create_dir(&path)?;
+        let _private_root = PrivateStateRoot::open(path.clone())?;
         Ok(Self { path })
     }
 }
@@ -512,7 +513,7 @@ pub fn run_packaged_e2e() -> Result<PackagedQualificationReceipt, ShellError> {
     drop(final_use);
 
     let crash_root = root.path.join("parent-death");
-    std::fs::create_dir(&crash_root)?;
+    let _crash_private_root = PrivateStateRoot::open(crash_root.clone())?;
     let crash_ready = crash_root.join("ready");
     let mut crash_child = Command::new(
         std::env::current_exe()

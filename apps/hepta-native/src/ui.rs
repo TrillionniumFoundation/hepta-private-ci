@@ -1,7 +1,12 @@
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
+use std::sync::mpsc;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::TryRecvError;
+use std::time::Duration;
 
 use codex_hepta_contracts::SignedFinalUseGrant;
 use eframe::egui;
@@ -10,11 +15,13 @@ use crate::error::ShellError;
 use crate::model::EndpointManifest;
 use crate::model::PlatformAction;
 use crate::model::PlatformPayload;
+use crate::model::PlatformReceipt;
 use crate::model::PlatformRequest;
 use crate::runtime::NativeShellRuntime;
 use crate::security::now_unix_ms;
 use crate::session_store::SessionReferenceStore;
 use crate::updater::PendingUpdateStatus;
+use crate::updater::PendingUpdateV1;
 use crate::updater::SignedUpdateManifestV1;
 use crate::updater::UpdateManager;
 
@@ -37,9 +44,12 @@ impl Locale {
         let locale = std::env::var("LC_ALL")
             .or_else(|_| std::env::var("LC_MESSAGES"))
             .or_else(|_| std::env::var("LANG"))
-            .unwrap_or_default()
-            .to_ascii_lowercase();
-        if locale.starts_with("zh") {
+            .unwrap_or_default();
+        Self::from_name(&locale)
+    }
+
+    fn from_name(locale: &str) -> Self {
+        if locale.trim().to_ascii_lowercase().starts_with("zh") {
             Self::Chinese
         } else {
             Self::English
@@ -54,12 +64,92 @@ impl Locale {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum UiTaskKind {
+    Refresh,
+    Reconcile,
+    Execute,
+    StageUpdate,
+}
+
+impl UiTaskKind {
+    fn thread_name(self) -> &'static str {
+        match self {
+            Self::Refresh => "hepta-native-refresh",
+            Self::Reconcile => "hepta-native-reconcile",
+            Self::Execute => "hepta-native-effect",
+            Self::StageUpdate => "hepta-native-update-stage",
+        }
+    }
+
+    fn label(self, locale: Locale) -> &'static str {
+        match self {
+            Self::Refresh => locale.text("Refreshing runtime", "正在刷新运行时"),
+            Self::Reconcile => locale.text("Reconciling operations", "正在对账操作"),
+            Self::Execute => locale.text("Executing bounded operation", "正在执行受限操作"),
+            Self::StageUpdate => locale.text("Verifying and staging update", "正在验证并暂存更新"),
+        }
+    }
+}
+
+#[derive(Debug)]
+enum UiTaskOutput {
+    Refresh {
+        status: serde_json::Value,
+        view_revision: u64,
+        operations: Vec<PlatformReceipt>,
+    },
+    Reconcile {
+        operations: Vec<PlatformReceipt>,
+    },
+    Execute {
+        message: String,
+        operations: Vec<PlatformReceipt>,
+    },
+    StageUpdate {
+        message: String,
+        pending: Box<PendingUpdateV1>,
+    },
+}
+
+struct PendingUiTask {
+    kind: UiTaskKind,
+    receiver: Receiver<Result<UiTaskOutput, String>>,
+}
+
+fn lock_runtime(
+    runtime: &Arc<Mutex<NativeShellRuntime>>,
+) -> Result<std::sync::MutexGuard<'_, NativeShellRuntime>, ShellError> {
+    runtime
+        .lock()
+        .map_err(|_| ShellError::State("native runtime worker lock is poisoned".to_owned()))
+}
+
+fn spawn_ui_task<F>(kind: UiTaskKind, task: F) -> std::io::Result<PendingUiTask>
+where
+    F: FnOnce() -> Result<UiTaskOutput, ShellError> + Send + 'static,
+{
+    let (sender, receiver) = mpsc::channel();
+    let handle = std::thread::Builder::new()
+        .name(kind.thread_name().to_owned())
+        .spawn(move || {
+            let outcome = task().map_err(|error| error.to_string());
+            let _ = sender.send(outcome);
+        })?;
+    drop(handle);
+    Ok(PendingUiTask { kind, receiver })
+}
+
 pub struct HeptaNativeApp {
-    runtime: NativeShellRuntime,
+    runtime: Arc<Mutex<NativeShellRuntime>>,
     manifest: EndpointManifest,
     screen: Screen,
     locale: Locale,
+    connected: bool,
     status: Option<serde_json::Value>,
+    view_revision: Option<u64>,
+    operations: Vec<PlatformReceipt>,
+    pending_task: Option<PendingUiTask>,
     last_error: Option<String>,
     operation_subject_id: String,
     operation_id: String,
@@ -72,6 +162,7 @@ pub struct HeptaNativeApp {
     operation_binding: Option<String>,
     operation_message: Option<String>,
     pending_update_path: PathBuf,
+    pending_update: Option<PendingUpdateV1>,
     updater: UpdateManager,
     activate_update_on_exit: Arc<AtomicBool>,
     update_manifest_path: String,
@@ -88,12 +179,18 @@ impl HeptaNativeApp {
     ) -> Result<Self, ShellError> {
         let session = runtime.connect_runtime(&manifest)?;
         SessionReferenceStore::default().save(&session, &manifest.manifest_digest)?;
+        let operations = runtime.operation_history();
+        let pending_update = updater.load_pending()?;
         let mut app = Self {
-            runtime,
+            runtime: Arc::new(Mutex::new(runtime)),
             manifest,
             screen: Screen::Runtime,
             locale: Locale::detect(),
+            connected: true,
             status: None,
+            view_revision: None,
+            operations,
+            pending_task: None,
             last_error: None,
             operation_subject_id: "operator.local".to_owned(),
             operation_id: format!("native.ui.{}.{}", std::process::id(), now_unix_ms()?.max(1)),
@@ -106,6 +203,7 @@ impl HeptaNativeApp {
             operation_binding: None,
             operation_message: None,
             pending_update_path: updater.pending_path(),
+            pending_update,
             updater,
             activate_update_on_exit,
             update_manifest_path: String::new(),
@@ -116,38 +214,148 @@ impl HeptaNativeApp {
         Ok(app)
     }
 
-    fn refresh(&mut self) {
-        match self.runtime.refresh_runtime_view() {
-            Ok((_presentation, status)) => {
+    fn start_task<F>(&mut self, kind: UiTaskKind, task: F)
+    where
+        F: FnOnce() -> Result<UiTaskOutput, ShellError> + Send + 'static,
+    {
+        if self.pending_task.is_some() {
+            self.last_error = Some(
+                self.locale
+                    .text(
+                        "Another native operation is still running.",
+                        "另一个原生操作仍在运行。",
+                    )
+                    .to_owned(),
+            );
+            return;
+        }
+        match spawn_ui_task(kind, task) {
+            Ok(pending) => {
+                self.pending_task = Some(pending);
+                self.last_error = None;
+            }
+            Err(error) => {
+                self.last_error = Some(format!("start native worker: {error}"));
+            }
+        }
+    }
+
+    fn poll_task(&mut self) {
+        let outcome = match self.pending_task.as_ref() {
+            Some(task) => match task.receiver.try_recv() {
+                Ok(outcome) => Some((task.kind, outcome)),
+                Err(TryRecvError::Empty) => None,
+                Err(TryRecvError::Disconnected) => Some((
+                    task.kind,
+                    Err("native worker exited without an outcome".to_owned()),
+                )),
+            },
+            None => None,
+        };
+        let Some((kind, outcome)) = outcome else {
+            return;
+        };
+        self.pending_task = None;
+        match outcome {
+            Ok(UiTaskOutput::Refresh {
+                status,
+                view_revision,
+                operations,
+            }) => {
                 self.status = Some(status);
+                self.view_revision = Some(view_revision);
+                self.operations = operations;
                 self.operation_binding = None;
                 self.last_error = None;
             }
-            Err(error) => self.last_error = Some(error.to_string()),
+            Ok(UiTaskOutput::Reconcile { operations }) => {
+                self.operations = operations;
+                self.last_error = None;
+            }
+            Ok(UiTaskOutput::Execute {
+                message,
+                operations,
+            }) => {
+                self.operation_message = Some(message);
+                self.operations = operations;
+                self.last_error = None;
+            }
+            Ok(UiTaskOutput::StageUpdate { message, pending }) => {
+                self.update_message = Some(message);
+                self.pending_update = Some(*pending);
+                self.last_error = None;
+            }
+            Err(error) => {
+                if kind == UiTaskKind::Execute {
+                    self.operation_message = None;
+                } else if kind == UiTaskKind::StageUpdate {
+                    self.update_message = None;
+                }
+                self.last_error = Some(error);
+            }
         }
+    }
+
+    fn is_busy(&self) -> bool {
+        self.pending_task.is_some()
+    }
+
+    fn refresh(&mut self) {
+        let runtime = Arc::clone(&self.runtime);
+        self.start_task(UiTaskKind::Refresh, move || {
+            let mut runtime = lock_runtime(&runtime)?;
+            let (presentation, status) = runtime.refresh_runtime_view()?;
+            let operations = runtime.operation_history();
+            Ok(UiTaskOutput::Refresh {
+                status,
+                view_revision: presentation.revision,
+                operations,
+            })
+        });
     }
 
     fn reconcile(&mut self) {
-        match self.runtime.reconcile_pending() {
-            Ok(_) => self.last_error = None,
-            Err(error) => self.last_error = Some(error.to_string()),
-        }
+        let runtime = Arc::clone(&self.runtime);
+        self.start_task(UiTaskKind::Reconcile, move || {
+            let mut runtime = lock_runtime(&runtime)?;
+            let _ = runtime.reconcile_pending()?;
+            Ok(UiTaskOutput::Reconcile {
+                operations: runtime.operation_history(),
+            })
+        });
     }
 
     fn top_bar(&mut self, ui: &mut egui::Ui) {
+        let busy = self.is_busy();
         ui.horizontal(|ui| {
             ui.heading("Hepta Native");
             ui.separator();
-            if self.runtime.session().is_some() {
+            if self.connected {
                 ui.label(self.locale.text("Connected", "已连接"));
             } else {
                 ui.label(self.locale.text("Disconnected", "未连接"));
             }
-            if ui.button(self.locale.text("Refresh", "刷新")).clicked() {
+            if ui
+                .add_enabled(
+                    !busy,
+                    egui::Button::new(self.locale.text("Refresh", "刷新")),
+                )
+                .clicked()
+            {
                 self.refresh();
             }
-            if ui.button(self.locale.text("Reconcile", "对账")).clicked() {
+            if ui
+                .add_enabled(
+                    !busy,
+                    egui::Button::new(self.locale.text("Reconcile", "对账")),
+                )
+                .clicked()
+            {
                 self.reconcile();
+            }
+            if let Some(task) = &self.pending_task {
+                ui.spinner();
+                ui.label(task.kind.label(self.locale));
             }
         });
         if let Some(error) = &self.last_error {
@@ -248,20 +456,27 @@ impl HeptaNativeApp {
 
         ui.label(self.locale.text("Signed grant path", "签名 grant 路径"));
         ui.text_edit_singleline(&mut self.operation_grant_path);
+        let busy = self.is_busy();
         ui.horizontal(|ui| {
             if ui
-                .button(
-                    self.locale
-                        .text("Prepare exact binding", "生成精确 binding"),
+                .add_enabled(
+                    !busy,
+                    egui::Button::new(
+                        self.locale
+                            .text("Prepare exact binding", "生成精确 binding"),
+                    ),
                 )
                 .clicked()
             {
                 self.prepare_operation_binding();
             }
             if ui
-                .button(
-                    self.locale
-                        .text("Execute with signed grant", "使用签名 grant 执行"),
+                .add_enabled(
+                    !busy,
+                    egui::Button::new(
+                        self.locale
+                            .text("Execute with signed grant", "使用签名 grant 执行"),
+                    ),
                 )
                 .clicked()
             {
@@ -290,13 +505,12 @@ impl HeptaNativeApp {
             "Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.",
             "不确定操作绝不会自动重放。对账只接受平台适配器提供的可信终态观察。",
         ));
-        let operations = self.runtime.operation_history();
-        if operations.is_empty() {
+        if self.operations.is_empty() {
             ui.label(self.locale.text("No operation receipts.", "暂无操作回执。"));
             return;
         }
         egui::ScrollArea::vertical().show(ui, |ui| {
-            for receipt in operations.iter().rev() {
+            for receipt in self.operations.iter().rev() {
                 ui.group(|ui| {
                     ui.label(format!("{} · {}", receipt.key.operation_id, receipt.action));
                     ui.label(format!(
@@ -336,7 +550,10 @@ impl HeptaNativeApp {
     fn prepare_operation_binding(&mut self) {
         let outcome = (|| -> Result<String, ShellError> {
             let payload = self.operation_payload()?;
-            let binding = self.runtime.prepare_platform_binding(
+            let runtime = self.runtime.try_lock().map_err(|_| {
+                ShellError::State("native runtime is busy; retry after the current task".to_owned())
+            })?;
+            let binding = runtime.prepare_platform_binding(
                 self.operation_subject_id.trim(),
                 self.operation_id.trim(),
                 &payload,
@@ -365,7 +582,7 @@ impl HeptaNativeApp {
     }
 
     fn execute_operation(&mut self) {
-        let outcome = (|| -> Result<String, ShellError> {
+        let outcome = (|| -> Result<PlatformRequest, ShellError> {
             let grant_path = PathBuf::from(self.operation_grant_path.trim());
             if !grant_path.is_absolute() {
                 return Err(ShellError::InvalidInput(
@@ -379,29 +596,35 @@ impl HeptaNativeApp {
                 ));
             }
             let grant: SignedFinalUseGrant = serde_json::from_slice(&std::fs::read(&grant_path)?)?;
-            let displayed_revision =
-                self.runtime
-                    .view()
-                    .map(|view| view.revision)
-                    .ok_or_else(|| {
-                        ShellError::State("native runtime view is unavailable".to_owned())
-                    })?;
-            let receipt = self.runtime.request_platform_capability(PlatformRequest {
+            let displayed_revision = self.view_revision.ok_or_else(|| {
+                ShellError::State("native runtime view is unavailable".to_owned())
+            })?;
+            Ok(PlatformRequest {
                 subject_id: self.operation_subject_id.trim().to_owned(),
                 operation_id: self.operation_id.trim().to_owned(),
                 displayed_revision,
                 payload: self.operation_payload()?,
                 grant,
-            })?;
-            Ok(format!(
-                "{}: terminal={} status={:?}",
-                receipt.key.operation_id, receipt.terminal_observed, receipt.terminal_status
-            ))
+            })
         })();
         match outcome {
-            Ok(message) => {
-                self.operation_message = Some(message);
-                self.last_error = None;
+            Ok(request) => {
+                let runtime = Arc::clone(&self.runtime);
+                self.operation_message = None;
+                self.start_task(UiTaskKind::Execute, move || {
+                    let mut runtime = lock_runtime(&runtime)?;
+                    let receipt = runtime.request_platform_capability(request)?;
+                    let message = format!(
+                        "{}: terminal={} status={:?}",
+                        receipt.key.operation_id,
+                        receipt.terminal_observed,
+                        receipt.terminal_status
+                    );
+                    Ok(UiTaskOutput::Execute {
+                        message,
+                        operations: runtime.operation_history(),
+                    })
+                });
             }
             Err(error) => {
                 self.operation_message = None;
@@ -422,7 +645,10 @@ impl HeptaNativeApp {
         ui.label(self.locale.text("Package path", "更新包路径"));
         ui.text_edit_singleline(&mut self.update_package_path);
         if ui
-            .button(self.locale.text("Verify & stage", "验证并暂存"))
+            .add_enabled(
+                !self.is_busy(),
+                egui::Button::new(self.locale.text("Verify & stage", "验证并暂存")),
+            )
             .clicked()
         {
             self.stage_update();
@@ -433,8 +659,8 @@ impl HeptaNativeApp {
             self.locale.text("Pending record", "待处理记录"),
             self.pending_update_path.display()
         ));
-        match self.updater.load_pending() {
-            Ok(Some(pending)) => {
+        match &self.pending_update {
+            Some(pending) => {
                 ui.label(format!(
                     "{}: {:?}",
                     self.locale.text("Pending status", "待处理状态"),
@@ -447,9 +673,12 @@ impl HeptaNativeApp {
                 ));
                 if pending.status == PendingUpdateStatus::Staged
                     && ui
-                        .button(
-                            self.locale
-                                .text("Activate on restart & close", "关闭并在重启时激活"),
+                        .add_enabled(
+                            !self.is_busy(),
+                            egui::Button::new(
+                                self.locale
+                                    .text("Activate on restart & close", "关闭并在重启时激活"),
+                            ),
                         )
                         .clicked()
                 {
@@ -465,11 +694,8 @@ impl HeptaNativeApp {
                     ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
                 }
             }
-            Ok(None) => {
+            None => {
                 ui.label(self.locale.text("No pending update", "无待处理更新"));
-            }
-            Err(error) => {
-                self.last_error = Some(error.to_string());
             }
         }
         if let Some(message) = &self.update_message {
@@ -479,7 +705,7 @@ impl HeptaNativeApp {
     }
 
     fn stage_update(&mut self) {
-        let outcome = (|| -> Result<String, ShellError> {
+        let outcome = (|| -> Result<(SignedUpdateManifestV1, PathBuf), ShellError> {
             let manifest_path = PathBuf::from(self.update_manifest_path.trim());
             let package_path = PathBuf::from(self.update_package_path.trim());
             if !manifest_path.is_absolute() || !package_path.is_absolute() {
@@ -487,24 +713,34 @@ impl HeptaNativeApp {
                     "update manifest and package paths must be absolute".to_owned(),
                 ));
             }
-            let manifest: SignedUpdateManifestV1 =
-                serde_json::from_slice(&std::fs::read(&manifest_path)?)?;
-            let pending = self.updater.verify_and_stage(
-                manifest,
-                &package_path,
-                self.manifest.protocol_version,
-            )?;
-            Ok(format!(
-                "staged {} for {}/{}",
-                pending.manifest.package_digest,
-                pending.manifest.platform,
-                pending.manifest.architecture
-            ))
+            let metadata = std::fs::metadata(&manifest_path)?;
+            if !metadata.is_file() || metadata.len() == 0 || metadata.len() > 64 * 1024 {
+                return Err(ShellError::InvalidInput(
+                    "signed update manifest must be a non-empty regular file <= 64 KiB".to_owned(),
+                ));
+            }
+            let manifest = serde_json::from_slice(&std::fs::read(&manifest_path)?)?;
+            Ok((manifest, package_path))
         })();
         match outcome {
-            Ok(message) => {
-                self.update_message = Some(message);
-                self.last_error = None;
+            Ok((manifest, package_path)) => {
+                let updater = self.updater.clone();
+                let protocol_version = self.manifest.protocol_version;
+                self.update_message = None;
+                self.start_task(UiTaskKind::StageUpdate, move || {
+                    let pending =
+                        updater.verify_and_stage(manifest, &package_path, protocol_version)?;
+                    let message = format!(
+                        "staged {} for {}/{}",
+                        pending.manifest.package_digest,
+                        pending.manifest.platform,
+                        pending.manifest.architecture
+                    );
+                    Ok(UiTaskOutput::StageUpdate {
+                        message,
+                        pending: Box::new(pending),
+                    })
+                });
             }
             Err(error) => {
                 self.update_message = None;
@@ -533,6 +769,10 @@ impl HeptaNativeApp {
 
 impl eframe::App for HeptaNativeApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.poll_task();
+        if self.is_busy() {
+            ui.ctx().request_repaint_after(Duration::from_millis(50));
+        }
         egui::Panel::top("hepta-native-top").show(ui, |ui| {
             self.top_bar(ui);
         });
@@ -549,6 +789,57 @@ impl eframe::App for HeptaNativeApp {
     }
 
     fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
-        let _ = self.runtime.close();
+        if let Ok(mut runtime) = self.runtime.try_lock() {
+            let _ = runtime.close();
+            self.connected = false;
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    use super::Locale;
+    use super::UiTaskKind;
+    use super::UiTaskOutput;
+    use super::spawn_ui_task;
+    use crate::error::ShellError;
+
+    #[test]
+    fn worker_slot_returns_before_the_bounded_task_completes() {
+        let (release, wait) = mpsc::channel();
+        let pending = spawn_ui_task(UiTaskKind::Refresh, move || {
+            wait.recv()
+                .map_err(|error| ShellError::State(error.to_string()))?;
+            Err::<UiTaskOutput, ShellError>(ShellError::State("worker-finished".to_owned()))
+        })
+        .unwrap();
+        assert!(matches!(
+            pending.receiver.try_recv(),
+            Err(mpsc::TryRecvError::Empty)
+        ));
+        release.send(()).unwrap();
+        let outcome = pending
+            .receiver
+            .recv_timeout(Duration::from_secs(2))
+            .unwrap();
+        assert_eq!(
+            outcome.unwrap_err(),
+            "native-shell state violation: worker-finished"
+        );
+    }
+
+    #[test]
+    fn locale_selection_covers_chinese_and_safe_english_fallback() {
+        for value in ["zh", "zh_CN.UTF-8", "ZH-tw", " zh_Hans "] {
+            assert_eq!(Locale::from_name(value), Locale::Chinese);
+        }
+        for value in ["", "C", "C.UTF-8", "en_US.UTF-8", "ja_JP.UTF-8"] {
+            assert_eq!(Locale::from_name(value), Locale::English);
+        }
+        assert_eq!(Locale::Chinese.text("English", "中文"), "中文");
+        assert_eq!(Locale::English.text("English", "中文"), "English");
     }
 }

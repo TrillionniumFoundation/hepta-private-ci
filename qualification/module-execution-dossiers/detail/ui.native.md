@@ -2,66 +2,153 @@
 
 Parent: `docs/modules/ui.native/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
 Canonical branch: `work/ui-native-current-source-20260925`.
-Status: source port and qualification in progress; not product accepted.
+Status: Rust product and current-owner integration source composed; execution,
+physical acceptance and release remain separately evidenced.
 
 ## 1. Source and work envelope
 
-Root: `apps/hepta-native`. Packages: `UI-NATIVE-1-SHELL`, `UI-V5`.
-Restore actual #830 app content onto the current main owner contracts. Do not
-restore historical kernel or gateway trees or count merged history as delivery.
+The exclusive UI source root is `apps/hepta-native`. The application was
+recovered from PR #830 commit
+`3198549d80d6c59887b82e2c50018ab818217c53` and adapted against current main,
+not delivered through a history-only merge. The candidate preserves current
+runtime, gateway and kernel authority ownership.
 
-## 2. Operations
+Current cross-owner source touched for product closure is limited to the
+read-only native gateway and the existing kernel final-use durability boundary,
+including `codex-rs/hepta-private-state` as a Windows implementation root of
+`kernel.authority`.
 
-`connect_runtime`, `refresh_runtime_view`, `request_platform_capability`,
-`reconcile_pending`, signed update staging/activation/rollback/confirmation.
-Runtime facts and final-use authority remain with their existing owners.
+## 2. Product operations and caller
 
-## 3. State and failure semantics
+The named product caller is `apps/hepta-native/src/main.rs`, which composes:
 
-A bounded local journal retains session-generation/operation identity and
-complete semantic digests. Invoking/indeterminate records never automatically
-replay. The reviewed port rejects changed terminal observations, duplicate
-recovered identities and endpoint drift; uncertain persistence fences the
-owner. Destructive retirement is refused without a durable dedup frontier.
+- authenticated `connect_runtime` and `refresh_runtime_view`;
+- exact-binding `request_platform_capability`;
+- `reconcile_pending` without automatic effect replay; and
+- signed update verify/stage/activate/recover/confirm.
 
-## 4. Update semantics
+The gateway is loopback-only and read-only. It requires an OS-keyring bearer and
+reports `native_auth=keyring_bearer_v1`. Final-use authority remains with
+`kernel.authority`; the UI cannot issue grants or write domain facts.
 
-Signed manifests and package digests bind target compatibility and predecessor.
-GUI and helper share a transition lock. Recovery authenticates the admitted
-manifest, cannot overwrite an unrelated current target, and preserves durable
-RecoveryRequired when predecessor restoration is not established.
+## 3. Operation identity and durable recovery
 
-## 5. Capacity and performance
+An operation binds endpoint, session ID, session generation, operation ID,
+subject, displayed revision, action/destination, canonical payload, final-use
+binding and grant digest. Identical retry reuses the record; changed semantics
+under the same identity conflict; a new session generation cannot consume an
+old receipt.
 
-Journal pilot hard limits remain 4096 records and 8 MiB. Refusing unsafe cleanup
-is not a scalable retirement solution. Launcher wait bounds, UI responsiveness,
-startup, RSS and sustained interaction performance remain to be measured.
+The journal and updater roots are absolute current-principal private local
+state. Unix uses owner mode `0700` plus no-follow directory opening; Windows uses
+protected local DACL and no-reparse validation. Root disappearance, redirection
+or permission drift fails closed before further local mutation.
 
-## 6. Required acceptance
+The journal persists `Prepared -> Invoking -> Indeterminate/Terminal`; it fsyncs
+`Invoking` before adapter entry. Once an effect may have entered the adapter,
+restart and retry do not invoke it again. Only reconciliation may establish a
+later terminal observation. Persistence failure poisons the journal owner.
 
-NATIVE-01: web/native pending, indeterminate and terminal semantics agree.
-NATIVE-02: OS denial and current final-use revocation prevent new effects.
-NATIVE-03: actual process exit/restart reconciles without duplicate effects.
-NATIVE-04: unsigned/incompatible updates fail closed; admitted predecessor can
-be restored, and stale recovery cannot overwrite a newer unrelated binary.
-These are acceptance requirements, not pass receipts.
+Journal v3 migrates v2 on the next persisted change. Terminal compaction moves
+exact operation identities into a durable retirement frontier. Retired identities
+are rejected before permission, authority claim or dispatch after restart and
+under payload drift. Active storage is bounded to 4096 records/8 MiB; the exact
+retirement frontier is bounded to 32768 entries and fails closed at capacity.
 
-## 7. Qualification identity
+## 4. Final-use and platform boundary
 
-The scoped workflow commits port changes, formatting, a native lock and source
-fingerprints before testing exact candidate and deterministic merge. It retains
-actual per-step outcomes. Release-binary fixture profiles do not prove physical
-OS effects, authentic gateway integration, installed packages or accessibility.
+The effect order is durable prepare, exact kernel claim, durable invoking,
+current verified-use fence, local policy, OS entry, then durable observation.
+The source preserves Unix durable authority and composes the current v3 snapshot
+plus append-only nonce log with a Windows private-directory implementation that
+validates owner ACL, reparse-point absence, file identity and durable replacement.
 
-## 8. Current native implementation
+Open/reveal/notification child launchers are bounded to four concurrent processes
+and a one-second observation window. Timeout remains indeterminate and cannot be
+blindly replayed. Clipboard success requires matching readback. Windows
+notification remains disabled without installed AppUserModelID/WinRT identity.
 
-The candidate Rust entrypoint is `apps/hepta-native/src/main.rs`; owner-bound
-operations are in `src/runtime.rs`, journal persistence in `src/journal.rs`,
-and update lifecycle in `src/updater.rs`. Implementation detail and current
-configuration are in `apps/hepta-native/DEVELOPMENT.md`.
+## 5. Update and rollback semantics
 
-Remaining repository blockers include current gateway keyring authentication,
-non-Unix kernel durable final-use support/qualification, bounded physical
-adapters, complete fault matrices, durable retirement, real packaged lifecycle,
-accessibility and performance runs. Independent signing and external acceptance
-are separate. No activation, promotion or release is granted by this dossier.
+Signed manifests bind stable channel, target tuple, package/predecessor/evidence
+digests, backend compatibility, independent selector/generator and time bounds.
+The GUI stages only after verification and exits before the separate updater
+helper performs replacement.
+
+The helper re-verifies the pending state and package, checks the installed
+predecessor, creates a backup and replaces through a temporary file. Activation
+stays `ActivatedUnconfirmed` until the new binary confirms its running digest.
+Stale recovery cannot overwrite an unrelated newer binary. Missing evidence or
+rollback failure becomes durable `RecoveryRequired` and cannot be cleared as a
+fabricated success.
+
+## 6. Capacity and performance profile
+
+Enforced source ceilings are:
+
+- 4096 active operation records;
+- 8 MiB active journal file;
+- 32768 exact retired-operation identities;
+- four concurrent OS launcher children;
+- one-second launcher observation window;
+- 64 concurrent authenticated loopback gateway connections; and
+- one serialized GUI background task for refresh, reconciliation, effect and
+  update-stage I/O.
+
+These are safety ceilings, not target-host performance claims. CI records build,
+package and smoke duration plus artifact size. Installed startup, RSS,
+interaction latency, sustained operation growth and multi-monitor behavior still
+require physical measurements.
+
+## 7. Required verification cases
+
+- **NATIVE-01:** native and web clients preserve rejected, pending,
+  indeterminate and terminal meanings.
+- **NATIVE-02:** OS policy denial and current final-use revocation both prevent
+  physical entry.
+- **NATIVE-03:** concurrent retry, acknowledgement loss and actual process death
+  preserve one identity without duplicate effect invocation.
+- **NATIVE-04:** unsigned/incompatible updates reject; admitted predecessor can
+  recover; stale recovery cannot overwrite an unrelated binary; rollback damage
+  yields durable `RecoveryRequired`.
+- **NATIVE-05:** v2 journal migration and v3 retirement never resurrect a
+  compacted operation after restart or semantic drift.
+- **NATIVE-06:** missing, wrong or duplicate gateway bearer credentials reject
+  before runtime facts are returned.
+- **NATIVE-07:** refresh, reconciliation, bounded effect entry and package staging
+  do not block the native event loop; concurrent UI submissions remain disabled
+  until the single worker returns a cached outcome.
+- **NATIVE-08:** missing, redirected, group/world-accessible or ACL-drifted native
+  state roots reject startup or the next journal/update mutation.
+- **NATIVE-09:** the loopback gateway rejects a 65th concurrent connection before
+  task allocation and releases capacity after each admitted request completes.
+
+These are requirements until exact-candidate receipts show their executed
+results. Test source presence is not a pass.
+
+## 8. Qualification identity and packaging
+
+`CURRENT_SOURCE.json` fingerprints the application and current-owner integration
+surfaces. Qualification runs both the exact candidate and a deterministic
+synthetic merge with current main on Ubuntu 24.04, macOS 15 and Windows 2025.
+Each leg independently reports app and owner-package format, strict Clippy and
+tests before release build and fault profiles.
+
+The platform packager creates deterministic unsigned ZIPs for Linux AppDir,
+macOS `.app` and Windows directory layouts. Its manifest binds all three binary
+digests and explicitly keeps signing, notarization and release false. The ZIP is
+validated, extracted into a fresh root and the packaged main binary is smoked
+from that extracted archive layout; this is not installation
+or physical GUI acceptance.
+
+## 9. Remaining gates
+
+Repository execution evidence remains required for the final committed
+exact-head and deterministic merge. Independently governed gates include Apple
+notarization, Windows Authenticode/AppUserModelID, Linux repository ownership,
+physical screen-reader/keyboard/Chinese IME/DPI acceptance, target-host sustained
+performance, release-channel selection, operator acceptance, promotion and
+release.
+
+No documentation, workflow, fixture or unsigned package grants activation,
+filesystem/notification authority or release authority.

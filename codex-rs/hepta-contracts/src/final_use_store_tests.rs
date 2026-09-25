@@ -4,9 +4,11 @@ use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;
 
 fn private_tempdir() -> tempfile::TempDir {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = tempfile::tempdir()
+        .unwrap_or_else(|error| panic!("create final-use store test directory: {error}"));
     #[cfg(unix)]
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+        .unwrap_or_else(|error| panic!("secure final-use store test directory: {error}"));
     directory
 }
 

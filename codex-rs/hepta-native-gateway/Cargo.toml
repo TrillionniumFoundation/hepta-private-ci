@@ -16,8 +16,10 @@ workspace = true
 [dependencies]
 anyhow = { workspace = true }
 codex-hepta-paths = { workspace = true }
+codex-keyring-store = { workspace = true }
 codex-hepta-runtime = { workspace = true }
 serde_json = { workspace = true }
+zeroize = { workspace = true }
 tokio = { workspace = true, features = [
     "io-util",
     "macros",
@@ -28,5 +30,6 @@ tokio = { workspace = true, features = [
 ] }
 
 [dev-dependencies]
+getrandom = { workspace = true }
 codex-hepta-wire = { path = "../hepta-wire" }
 pretty_assertions = { workspace = true }

@@ -677,12 +677,20 @@ dependencies = [
 name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-private-state",
  "ed25519-dalek",
  "rustix 1.1.5",
  "serde",
  "serde_json",
  "sha2",
  "zeroize",
+]
+
+[[package]]
+name = "codex-hepta-private-state"
+version = "0.0.0"
+dependencies = [
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -1623,11 +1631,13 @@ dependencies = [
  "atomic-write-file",
  "base64",
  "codex-hepta-contracts",
+ "codex-hepta-private-state",
  "codex-keyring-store",
  "ed25519-dalek",
  "eframe",
  "embed-manifest",
  "getrandom 0.4.3",
+ "rustix 1.1.5",
  "serde",
  "serde_json",
  "sha2",

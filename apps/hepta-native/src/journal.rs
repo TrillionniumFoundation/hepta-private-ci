@@ -16,12 +16,16 @@ use crate::model::OperationKey;
 use crate::model::PlatformAction;
 use crate::model::PlatformReceipt;
 use crate::model::TerminalStatus;
+use crate::model::sha256_hex;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
+use crate::private_state::PrivateStateRoot;
 
-const JOURNAL_SCHEMA: &str = "hepta.native-operation-journal.v2";
+const JOURNAL_SCHEMA_V2: &str = "hepta.native-operation-journal.v2";
+const JOURNAL_SCHEMA_V3: &str = "hepta.native-operation-journal.v3";
 const MAX_JOURNAL_BYTES: u64 = 8 * 1024 * 1024;
 const MAX_OPERATION_RECORDS: usize = 4096;
+const MAX_RETIRED_OPERATION_DIGESTS: usize = 32 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -101,14 +105,24 @@ impl OperationRecord {
 struct JournalFile {
     schema: String,
     operations: Vec<OperationRecord>,
+    #[serde(default)]
+    retired_operation_digests: Vec<String>,
 }
 
 #[derive(Debug)]
 pub struct OperationJournal {
     path: PathBuf,
     operations: Vec<OperationRecord>,
+    retired_operation_digests: Vec<String>,
     failed: bool,
+    private_root: PrivateStateRoot,
     _lock: File,
+}
+
+impl Drop for OperationJournal {
+    fn drop(&mut self) {
+        let _ = self._lock.unlock();
+    }
 }
 
 impl OperationJournal {
@@ -119,11 +133,15 @@ impl OperationJournal {
                 "operation journal path must be absolute".to_owned(),
             ));
         }
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)?;
-        }
+        let parent = path.parent().ok_or_else(|| {
+            ShellError::InvalidInput("operation journal path has no private parent".to_owned())
+        })?;
+        let private_root = PrivateStateRoot::open(parent.to_path_buf())?;
         let lock_path = path.with_extension("lock");
         let lock_existed = lock_path.exists();
+        if lock_existed {
+            ensure_private_state_file(&lock_path, true)?;
+        }
         let lock = OpenOptions::new()
             .read(true)
             .write(true)
@@ -141,7 +159,9 @@ impl OperationJournal {
             return Ok(Self {
                 path,
                 operations: Vec::new(),
+                retired_operation_digests: Vec::new(),
                 failed: false,
+                private_root,
                 _lock: lock,
             });
         }
@@ -161,10 +181,15 @@ impl OperationJournal {
                 "operation journal read exceeded byte limit".to_owned(),
             ));
         }
-        let state: JournalFile = serde_json::from_slice(&bytes)?;
-        if state.schema != JOURNAL_SCHEMA {
+        let mut state: JournalFile = serde_json::from_slice(&bytes)?;
+        if state.schema != JOURNAL_SCHEMA_V2 && state.schema != JOURNAL_SCHEMA_V3 {
             return Err(ShellError::State(
                 "operation journal schema is not supported".to_owned(),
+            ));
+        }
+        if state.schema == JOURNAL_SCHEMA_V2 && !state.retired_operation_digests.is_empty() {
+            return Err(ShellError::State(
+                "legacy journal cannot contain a retirement frontier".to_owned(),
             ));
         }
         if state.operations.len() > MAX_OPERATION_RECORDS {
@@ -172,6 +197,21 @@ impl OperationJournal {
                 "operation journal exceeds {MAX_OPERATION_RECORDS} records"
             )));
         }
+        if state.retired_operation_digests.len() > MAX_RETIRED_OPERATION_DIGESTS {
+            return Err(ShellError::State(format!(
+                "operation retirement frontier exceeds {MAX_RETIRED_OPERATION_DIGESTS} entries"
+            )));
+        }
+        let mut retired = HashSet::with_capacity(state.retired_operation_digests.len());
+        for digest in &state.retired_operation_digests {
+            validate_digest(digest, "journal.retired_operation_digest")?;
+            if !retired.insert(digest.clone()) {
+                return Err(ShellError::State(
+                    "duplicate operation identity in retirement frontier".to_owned(),
+                ));
+            }
+        }
+        state.retired_operation_digests.sort_unstable();
         let mut keys = HashSet::with_capacity(state.operations.len());
         for operation in &state.operations {
             operation.validate()?;
@@ -180,11 +220,19 @@ impl OperationJournal {
                     "duplicate operation identity in journal".to_owned(),
                 ));
             }
+            let digest = retirement_digest(&operation.endpoint_id, &operation.key)?;
+            if retired.contains(&digest) {
+                return Err(ShellError::State(
+                    "active operation also appears in retirement frontier".to_owned(),
+                ));
+            }
         }
         Ok(Self {
             path,
             operations: state.operations,
+            retired_operation_digests: state.retired_operation_digests,
             failed: false,
+            private_root,
             _lock: lock,
         })
     }
@@ -207,8 +255,31 @@ impl OperationJournal {
         &self.operations
     }
 
+    pub fn retired_count(&self) -> usize {
+        self.retired_operation_digests.len()
+    }
+
+    pub fn ensure_not_retired(
+        &self,
+        endpoint_id: &str,
+        key: &OperationKey,
+    ) -> Result<(), ShellError> {
+        let digest = retirement_digest(endpoint_id, key)?;
+        if self
+            .retired_operation_digests
+            .binary_search(&digest)
+            .is_ok()
+        {
+            return Err(ShellError::State(
+                "operation identity belongs to the durable retirement frontier".to_owned(),
+            ));
+        }
+        Ok(())
+    }
+
     /// Failed persistence requires reopen and reconciliation, never replay.
     pub fn ensure_healthy(&self) -> Result<(), ShellError> {
+        self.private_root.verify()?;
         if self.failed {
             return Err(ShellError::State(
                 "journal persistence is indeterminate; reopen and reconcile".to_owned(),
@@ -220,6 +291,7 @@ impl OperationJournal {
     pub fn upsert(&mut self, record: OperationRecord) -> Result<(), ShellError> {
         self.ensure_healthy()?;
         record.validate()?;
+        self.ensure_not_retired(&record.endpoint_id, &record.key)?;
         let mut next = self.operations.clone();
         if let Some(index) = next.iter().position(|existing| existing.key == record.key) {
             let existing = &next[index];
@@ -255,7 +327,7 @@ impl OperationJournal {
             }
             next.push(record);
         }
-        if let Err(error) = self.persist(&next) {
+        if let Err(error) = self.persist(&next, &self.retired_operation_digests) {
             self.failed = true;
             return Err(error);
         }
@@ -270,18 +342,55 @@ impl OperationJournal {
             .iter()
             .filter(|record| record.phase == OperationPhase::Terminal)
             .count();
-        if terminal_count > keep_latest {
-            return Err(ShellError::State(
-                "terminal retirement requires a durable deduplication frontier".to_owned(),
-            ));
+        let mut remaining_to_retire = terminal_count.saturating_sub(keep_latest);
+        if remaining_to_retire == 0 {
+            return Ok(());
         }
+
+        let mut next_operations = Vec::with_capacity(self.operations.len() - remaining_to_retire);
+        let mut next_retired = self.retired_operation_digests.clone();
+        let mut retired_set: HashSet<String> = next_retired.iter().cloned().collect();
+        for record in &self.operations {
+            if remaining_to_retire > 0 && record.phase == OperationPhase::Terminal {
+                let digest = retirement_digest(&record.endpoint_id, &record.key)?;
+                if !retired_set.insert(digest.clone()) {
+                    return Err(ShellError::State(
+                        "active terminal operation already belongs to retirement frontier"
+                            .to_owned(),
+                    ));
+                }
+                next_retired.push(digest);
+                remaining_to_retire -= 1;
+            } else {
+                next_operations.push(record.clone());
+            }
+        }
+        next_retired.sort_unstable();
+        next_retired.dedup();
+        if next_retired.len() > MAX_RETIRED_OPERATION_DIGESTS {
+            return Err(ShellError::State(format!(
+                "operation retirement frontier reached {MAX_RETIRED_OPERATION_DIGESTS} entries"
+            )));
+        }
+        if let Err(error) = self.persist(&next_operations, &next_retired) {
+            self.failed = true;
+            return Err(error);
+        }
+        self.operations = next_operations;
+        self.retired_operation_digests = next_retired;
         Ok(())
     }
 
-    fn persist(&self, operations: &[OperationRecord]) -> Result<(), ShellError> {
+    fn persist(
+        &self,
+        operations: &[OperationRecord],
+        retired_operation_digests: &[String],
+    ) -> Result<(), ShellError> {
+        self.private_root.verify()?;
         let state = JournalFile {
-            schema: JOURNAL_SCHEMA.to_owned(),
+            schema: JOURNAL_SCHEMA_V3.to_owned(),
             operations: operations.to_vec(),
+            retired_operation_digests: retired_operation_digests.to_vec(),
         };
         let bytes = serde_json::to_vec(&state)?;
         if bytes.len() as u64 > MAX_JOURNAL_BYTES {
@@ -300,6 +409,22 @@ impl OperationJournal {
         sync_parent_directory(&self.path)?;
         Ok(())
     }
+}
+
+fn retirement_digest(endpoint_id: &str, key: &OperationKey) -> Result<String, ShellError> {
+    validate_stable_id(endpoint_id, "retirement.endpoint_id")?;
+    validate_stable_id(&key.session_id, "retirement.session_id")?;
+    validate_stable_id(&key.operation_id, "retirement.operation_id")?;
+    if key.session_generation == 0 {
+        return Err(ShellError::State(
+            "retired operation has zero session generation".to_owned(),
+        ));
+    }
+    Ok(sha256_hex(serde_json::to_vec(&(
+        "hepta.native-retired-operation.v1",
+        endpoint_id,
+        key,
+    ))?))
 }
 
 fn phase_transition_allowed(from: OperationPhase, to: OperationPhase) -> bool {
@@ -335,25 +460,27 @@ fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
     Ok(())
 }
 
-#[cfg(unix)]
-fn ensure_private_state_file(path: &Path, preexisting: bool) -> Result<(), ShellError> {
-    use std::os::unix::fs::PermissionsExt as _;
-
-    let metadata = std::fs::metadata(path)?;
-    let mode = metadata.permissions().mode() & 0o777;
-    if preexisting && mode & 0o077 != 0 {
+fn ensure_private_state_file(path: &Path, _preexisting: bool) -> Result<(), ShellError> {
+    let metadata = std::fs::symlink_metadata(path)?;
+    if metadata.file_type().is_symlink() || !metadata.is_file() {
         return Err(ShellError::Security(format!(
-            "native operation journal state is group/world accessible: {}",
+            "native operation journal state is not a regular local file: {}",
             path.display()
         )));
     }
-    if mode != 0o600 {
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt as _;
+        let mode = metadata.permissions().mode() & 0o777;
+        if _preexisting && mode & 0o077 != 0 {
+            return Err(ShellError::Security(format!(
+                "native operation journal state is group/world accessible: {}",
+                path.display()
+            )));
+        }
+        if mode != 0o600 {
+            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+        }
     }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn ensure_private_state_file(_path: &Path, _preexisting: bool) -> Result<(), ShellError> {
     Ok(())
 }

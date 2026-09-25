@@ -1,3 +1,6 @@
+mod common;
+
+use common::private_tempdir;
 use std::path::Path;
 
 use base64::Engine as _;
@@ -21,7 +24,6 @@ use hepta_native::updater::UpdateManager;
 use hepta_native::updater::activate_staged_update;
 use hepta_native::updater::digest_file;
 use sha2::Digest as _;
-use tempfile::TempDir;
 
 fn test_material(label: &str) -> [u8; 32] {
     sha2::Sha256::digest(label.as_bytes()).into()
@@ -46,6 +48,37 @@ fn key_fixture(root: &Path) -> (SigningKey, TrustedKeySet, std::path::PathBuf) {
     .unwrap();
     let keys = TrustedKeySet::from_path(&path).unwrap();
     (signing, keys, path)
+}
+
+fn signed_update_manifest(
+    signing: &SigningKey,
+    package: &Path,
+    target: &Path,
+    evidence_label: &[u8],
+) -> SignedUpdateManifestV1 {
+    let now = now_unix_ms().unwrap();
+    let mut manifest = SignedUpdateManifestV1 {
+        schema: "hepta.native-update.v1".to_owned(),
+        package_digest: digest_file(package).unwrap(),
+        predecessor_digest: digest_file(target).unwrap(),
+        evidence_digest: sha256_hex(evidence_label),
+        platform: std::env::consts::OS.to_owned(),
+        architecture: std::env::consts::ARCH.to_owned(),
+        backend_protocol_version: 1,
+        channel: "stable".to_owned(),
+        selected_by: "release.reviewer".to_owned(),
+        generator_principal: "release.builder".to_owned(),
+        issued_unix_ms: now.saturating_sub(1_000),
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        signature_base64: String::new(),
+    };
+    manifest.signature_base64 = STANDARD.encode(
+        signing
+            .sign(manifest.signing_message().as_bytes())
+            .to_bytes(),
+    );
+    manifest
 }
 
 fn write_kernel_authority_config(
@@ -96,7 +129,7 @@ fn signed_final_use_grant(
 
 #[test]
 fn kernel_final_use_binding_rejects_session_drift() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let signing = test_signing_key("session-drift-key");
     let head = FinalUseRevocations {
         authority_epoch: 1,
@@ -136,7 +169,7 @@ fn kernel_final_use_binding_rejects_session_drift() {
 
 #[test]
 fn kernel_final_use_reloads_revocation_before_os_entry() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let signing = test_signing_key("revocation-key");
     let head = FinalUseRevocations {
         authority_epoch: 1,
@@ -178,7 +211,7 @@ fn kernel_final_use_reloads_revocation_before_os_entry() {
 
 #[test]
 fn signed_update_stages_activates_and_confirms_with_predecessor_backup() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (signing, keys, key_path) = key_fixture(temp.path());
     let package = temp.path().join("next.bin");
     let target = temp.path().join("hepta-native.bin");
@@ -226,7 +259,7 @@ fn signed_update_stages_activates_and_confirms_with_predecessor_backup() {
 
 #[test]
 fn update_rejects_self_selection_before_activation() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (_signing, keys, _) = key_fixture(temp.path());
     let package = temp.path().join("next.bin");
     std::fs::write(&package, b"new native binary").unwrap();
@@ -254,7 +287,7 @@ fn update_rejects_self_selection_before_activation() {
 
 #[test]
 fn update_rejects_unadmitted_channel() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (signing, keys, _) = key_fixture(temp.path());
     let package = temp.path().join("next.bin");
     std::fs::write(&package, b"new native binary").unwrap();
@@ -288,7 +321,7 @@ fn update_rejects_unadmitted_channel() {
 
 #[test]
 fn activation_rejects_wrong_installed_predecessor() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (signing, keys, key_path) = key_fixture(temp.path());
     let package = temp.path().join("next.bin");
     let target = temp.path().join("hepta-native.bin");
@@ -327,7 +360,7 @@ fn activation_rejects_wrong_installed_predecessor() {
 
 #[test]
 fn unsigned_update_is_rejected_before_staging() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (_signing, keys, _) = key_fixture(temp.path());
     let package = temp.path().join("unsigned.bin");
     std::fs::write(&package, b"unsigned native binary").unwrap();
@@ -356,7 +389,7 @@ fn unsigned_update_is_rejected_before_staging() {
 
 #[test]
 fn unconfirmed_activation_rolls_back_to_predecessor() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (signing, keys, key_path) = key_fixture(temp.path());
     let package = temp.path().join("next.bin");
     let target = temp.path().join("hepta-native.bin");
@@ -417,7 +450,7 @@ fn interrupted_activation_is_reconciled_to_predecessor_before_restart() {
         }
     }
 
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (signing, keys, key_path) = key_fixture(temp.path());
     let root = temp.path().join("updates");
     let manager = UpdateManager::new(keys, root.clone()).unwrap();
@@ -489,7 +522,7 @@ fn interrupted_activation_is_reconciled_to_predecessor_before_restart() {
 
 #[test]
 fn failed_rollback_is_durable_recovery_required() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (signing, keys, key_path) = key_fixture(temp.path());
     let package = temp.path().join("next-recovery.bin");
     let target = temp.path().join("hepta-native-recovery.bin");
@@ -533,8 +566,38 @@ fn failed_rollback_is_durable_recovery_required() {
 }
 
 #[test]
+fn stale_recovery_refuses_to_overwrite_an_unrelated_newer_binary() {
+    let temp = private_tempdir();
+    let (signing, keys, key_path) = key_fixture(temp.path());
+    let package = temp.path().join("candidate.bin");
+    let target = temp.path().join("hepta-native.bin");
+    std::fs::write(&package, b"admitted candidate").unwrap();
+    std::fs::write(&target, b"admitted predecessor").unwrap();
+
+    let manifest = signed_update_manifest(&signing, &package, &target, b"stale-recovery");
+    let manager = UpdateManager::new(keys, temp.path().join("updates")).unwrap();
+    manager.verify_and_stage(manifest, &package, 1).unwrap();
+    let trusted_keys = TrustedKeySet::from_path(&key_path).unwrap();
+    activate_staged_update(&manager.pending_path(), &trusted_keys, &target, 1).unwrap();
+
+    std::fs::write(&target, b"independently installed newer binary").unwrap();
+    let newer_digest = digest_file(&target).unwrap();
+    let error = manager.rollback_unconfirmed().unwrap_err();
+    assert!(error.to_string().contains("recovery_required"));
+    assert_eq!(digest_file(&target).unwrap(), newer_digest);
+    let pending = manager.load_pending().unwrap().unwrap();
+    assert_eq!(pending.status, PendingUpdateStatus::RecoveryRequired);
+    assert!(
+        pending
+            .recovery_reason
+            .as_deref()
+            .is_some_and(|reason| reason.contains("neither candidate nor predecessor"))
+    );
+}
+
+#[test]
 fn signed_endpoint_manifest_binds_gateway_address_and_keyring_account() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_tempdir();
     let (signing, keys, _) = key_fixture(temp.path());
     let now = now_unix_ms().unwrap();
     let mut endpoint = SignedEndpointManifestV1 {
