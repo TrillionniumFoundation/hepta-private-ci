@@ -8,6 +8,12 @@ struct NativeCheckpoint {
     record: NativeRunRecord,
 }
 
+#[derive(Serialize)]
+struct NativeCheckpointRef<'a> {
+    maximum_in_flight: usize,
+    record: &'a NativeRunRecord,
+}
+
 impl NativeJournal {
     pub(in crate::durable_control) fn required_headroom_bytes(&self) -> Result<u64, Error> {
         self.records.values().try_fold(0_u64, |total, record| {
@@ -32,9 +38,9 @@ impl NativeJournal {
         };
         for record in self.records.values() {
             validate_checkpoint_record(record, maximum_in_flight)?;
-            let checkpoint = NativeCheckpoint {
+            let checkpoint = NativeCheckpointRef {
                 maximum_in_flight,
-                record: record.clone(),
+                record,
             };
             let json = serde_json::to_string(&checkpoint)
                 .map_err(|_| Error::CorruptJournal("native checkpoint encode"))?;
@@ -83,7 +89,17 @@ pub(in crate::durable_control) fn record_headroom(record: &NativeRunRecord) -> u
             TERMINAL_HEADROOM_BYTES - 64 * 1024
         }
         NativeReservationState::Cancelling => TERMINAL_HEADROOM_BYTES - 96 * 1024,
-        NativeReservationState::Released => 0,
+        NativeReservationState::Released => {
+            if record.observation.as_ref().is_some_and(|observation| {
+                observation.terminal_observed && observation.observed_output_tokens.is_none()
+            }) {
+                // Execution is released, but the first real usage observation
+                // still owns bounded persistence capacity. Never invent zero.
+                USAGE_HEADROOM_BYTES
+            } else {
+                0
+            }
+        }
     }
 }
 
@@ -100,6 +116,11 @@ fn validate_checkpoint_record(
         .records
         .get_mut(&record.request.request_id)
         .ok_or(Error::CorruptJournal("native checkpoint missing"))?;
+    if current.revision > record.revision
+        || (current.revision < record.revision && record.observation.is_none())
+    {
+        return Err(Error::CorruptJournal("native checkpoint revision"));
+    }
     // Repeated observations can refine usage without changing the state shape.
     // Keep the exact durable revision, but never replay revision-count copies.
     current.revision = record.revision;
@@ -137,7 +158,7 @@ fn checkpoint_events(
                 reason: reason.clone(),
             });
         }
-        return finish_checkpoint_events(record, events);
+        return Ok(events);
     }
     if let Some(reason) = &record.pre_dispatch_stop {
         if record.turn_id.is_some()
@@ -151,7 +172,7 @@ fn checkpoint_events(
             request_id,
             reason: reason.clone(),
         });
-        return finish_checkpoint_events(record, events);
+        return Ok(events);
     }
     if let Some(rejection) = &record.dispatch_rejection {
         events.push(Event::RejectBeforeStart {
@@ -210,26 +231,6 @@ fn checkpoint_events(
                     .is_some_and(|rejection| rejection.retry_safe_before_admission) => {}
             _ => return Err(Error::CorruptJournal("native checkpoint state")),
         }
-    }
-    finish_checkpoint_events(record, events)
-}
-
-fn finish_checkpoint_events(
-    record: &NativeRunRecord,
-    events: Vec<Event>,
-) -> Result<Vec<Event>, Error> {
-    let mut replayed = NativeJournal::default();
-    for event in events.iter().cloned() {
-        replayed.apply(event)?;
-    }
-    let current = replayed
-        .records
-        .get(&record.request.request_id)
-        .ok_or(Error::CorruptJournal("native checkpoint missing"))?;
-    if current.revision > record.revision
-        || (current.revision < record.revision && record.observation.is_none())
-    {
-        return Err(Error::CorruptJournal("native checkpoint revision"));
     }
     Ok(events)
 }

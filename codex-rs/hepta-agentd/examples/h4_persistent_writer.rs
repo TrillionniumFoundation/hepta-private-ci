@@ -74,6 +74,15 @@ impl ProductionAuthorityVerifier for QualificationVerifier {
         }
         Ok(())
     }
+
+    fn enter_use(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<codex_hepta_memory::ProductionAuthorityUseGuard, String> {
+        self.verify(authority, expected_agent)?;
+        Ok(codex_hepta_memory::ProductionAuthorityUseGuard::from_verified_use(()))
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

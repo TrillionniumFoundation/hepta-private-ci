@@ -880,3 +880,6 @@ mod growth;
 
 #[path = "native_maintenance_tests.rs"]
 mod maintenance;
+
+#[path = "native_usage_tests.rs"]
+mod usage;

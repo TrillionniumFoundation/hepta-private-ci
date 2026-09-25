@@ -117,9 +117,16 @@ jobs:
             "${GITHUB_PROSPECTIVE_MERGE_SHA:-}" "${GITHUB_PROSPECTIVE_MERGE_TREE:-}" \
             > "$RUNNER_TEMP/hepta-inference-records/identity.txt"
           git archive --format=tar "$CANDIDATE" | gzip -1 > "$RUNNER_TEMP/hepta-inference-records/source-input.tar.gz"
-          rustc --version --verbose > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
-          cargo --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
-          cargo fmt --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          # Rustup resolves overrides from the working directory, not from
+          # --manifest-path. Bootstrap inside the pinned workspace and bind all
+          # subsequent recorder/root invocations to that same toolchain.
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal --component clippy --component rustfmt --component rust-src
+          export RUSTUP_TOOLCHAIN="$toolchain"
+          (cd codex-rs && rustc --version --verbose) > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo fmt --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
       - name: Select exact-tree native execution
         id: execution
         env:
@@ -253,13 +260,29 @@ jobs:
             "${GITHUB_PROSPECTIVE_MERGE_SHA:-}" "${GITHUB_PROSPECTIVE_MERGE_TREE:-}" \
             > "$RUNNER_TEMP/hepta-inference-records/identity.txt"
           git archive --format=tar "$CANDIDATE" | gzip -1 > "$RUNNER_TEMP/hepta-inference-records/source-input.tar.gz"
-          rustc --version --verbose > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
-          cargo --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
-          cargo fmt --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          # Rustup resolves overrides from the working directory, not from
+          # --manifest-path. Bootstrap inside the pinned workspace and bind all
+          # subsequent recorder/root invocations to that same toolchain.
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal --component clippy --component rustfmt --component rust-src
+          export RUSTUP_TOOLCHAIN="$toolchain"
+          (cd codex-rs && rustc --version --verbose) > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo fmt --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
       - name: Install repository test entry tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Build exact-source native runtime executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-runtime-build.json" -- cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-app-server --bin codex-app-server
+          target="$(cargo metadata --locked --manifest-path codex-rs/Cargo.toml --no-deps --format-version 1 | jq -er '.target_directory')"
+          test -x "$target/debug/codex-app-server"
+          sha256sum "$target/debug/codex-app-server" > "$RUNNER_TEMP/hepta-inference-records/native-runtime-binary.sha256"
+          printf 'HEPTA_TEST_CODEX_EXE=%s/debug/codex-app-server\n' "$target" >> "$GITHUB_ENV"
       - name: Execute native authorization, uncertain-send and restart regressions
         shell: bash
         run: |
