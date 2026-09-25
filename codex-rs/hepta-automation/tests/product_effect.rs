@@ -293,15 +293,18 @@ async fn mutable_preparation_cannot_change_provider_key_or_burn_the_valid_grant(
     assert!(
         store
             .execute_prepared_product_effect_async(
-                &authority,
                 &mut driver,
                 &forged,
-                b"exact-provider-wire",
-                &fence(1),
-                &signed,
-                &binding,
-                "effect-command",
-                104
+                codex_hepta_automation::AuthorizedEffectDispatch {
+                    authority: &authority,
+                    intent: &forged.intent,
+                    wire_payload: b"exact-provider-wire",
+                    fence: &fence(1),
+                    signed_grant: &signed,
+                    expected_binding: &binding,
+                    command_id: "effect-command",
+                    now_ms: 104
+                }
             )
             .await
             .is_err()
@@ -309,15 +312,18 @@ async fn mutable_preparation_cannot_change_provider_key_or_burn_the_valid_grant(
     assert_eq!(driver.calls, 0);
     store
         .execute_prepared_product_effect_async(
-            &authority,
             &mut driver,
             &prepared,
-            b"exact-provider-wire",
-            &fence(1),
-            &signed,
-            &binding,
-            "effect-command",
-            now + 5,
+            codex_hepta_automation::AuthorizedEffectDispatch {
+                authority: &authority,
+                intent: &prepared.intent,
+                wire_payload: b"exact-provider-wire",
+                fence: &fence(1),
+                signed_grant: &signed,
+                expected_binding: &binding,
+                command_id: "effect-command",
+                now_ms: now + 5,
+            },
         )
         .await
         .expect("unchanged preparation retains grant");

@@ -136,8 +136,8 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "symbol": "pub async fn execute_authorized_taskflow_effect",
+        "path": "codex-rs/hepta-automation/src/product_effect.rs",
+        "symbol": "pub async fn execute_prepared_product_effect_async",
         "buildTarget": "codex-hepta-automation"
       },
       "delegatedCallees": [
@@ -256,8 +256,8 @@
       ],
       "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
       "operation": "execute_step",
-      "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
-      "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "nativeSymbol": "pub async fn execute_prepared_product_effect_async",
+      "sourcePath": "codex-rs/hepta-automation/src/product_effect.rs",
       "sourcePathExists": true,
       "productCallers": [
         {
@@ -279,8 +279,8 @@
   ],
   "repositoryControlledGaps": [
     "General DecisionCell/Intuition product binding and circuit feedback/organ semantics remain outside the restricted threshold profile.",
-    "Interrupted product preparation across owner generation change requires explicit pre-contact reconciliation; no blind reset or redispatch.",
-    "Final exact-head and applicable synthetic-merge execution qualifications are not established by this map."
+    "Final exact-head and applicable synthetic-merge execution qualifications are not established by this map.",
+    "No-contact preparation reclaim, final-use/lease bounds and stale-generation entry guard are implemented candidates; final native and public-socket crash qualification remain pending."
   ],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",

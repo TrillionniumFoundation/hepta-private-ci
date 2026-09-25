@@ -66,7 +66,7 @@ pub(super) struct AutomationEffectProviderProfileView<'a> {
 }
 
 impl AutomationEffectHostFileV1 {
-    fn active_profile(&self) -> AutomationEffectProviderProfileView<'_> {
+    pub(super) fn active_profile(&self) -> AutomationEffectProviderProfileView<'_> {
         AutomationEffectProviderProfileView {
             provider_scope: &self.provider_scope,
             destination_id: &self.destination_id,
@@ -85,7 +85,7 @@ impl AutomationEffectHostFileV1 {
 }
 
 impl AutomationEffectProviderProfileFileV1 {
-    fn view(&self) -> AutomationEffectProviderProfileView<'_> {
+    pub(super) fn view(&self) -> AutomationEffectProviderProfileView<'_> {
         AutomationEffectProviderProfileView {
             provider_scope: &self.provider_scope,
             destination_id: &self.destination_id,

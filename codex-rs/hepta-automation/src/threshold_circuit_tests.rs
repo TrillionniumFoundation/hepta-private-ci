@@ -80,25 +80,25 @@ fn candidate(
     predecessor: Option<Sha256Digest>,
     parameters: &ThresholdDecisionCellParametersV1,
 ) -> NeuralCircuitCandidateV1 {
-    NeuralCircuitCandidateV1::new(
-        "minimal-threshold-circuit",
-        version,
-        predecessor,
-        "decide",
-        vec![
+    NeuralCircuitCandidateV1::new(crate::NeuralCircuitDefinitionV1 {
+        circuit_id: ("minimal-threshold-circuit").into(),
+        version: version,
+        predecessor_digest: predecessor,
+        entry_node: ("decide").into(),
+        nodes: vec![
             CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
             CircuitNodeV1::new("accepted", CircuitNodeRoleV1::ExitSuccess),
             CircuitNodeV1::new("rejected", CircuitNodeRoleV1::ExitFailure),
         ],
-        vec![
+        edges: vec![
             CircuitEdgeV1::new("decide", "accepted"),
             CircuitEdgeV1::new("decide", "rejected"),
         ],
-        Vec::new(),
-        Sha256Digest::for_bytes(format!("route-policy-{version}").as_bytes()),
-        parameters.parameter_digest.clone(),
-        Sha256Digest::for_bytes(b"bounded-threshold-resource-profile"),
-    )
+        capability_set: Vec::new(),
+        route_policy_digest: Sha256Digest::for_bytes(format!("route-policy-{version}").as_bytes()),
+        parameter_bundle_digest: parameters.parameter_digest.clone(),
+        resource_profile_digest: Sha256Digest::for_bytes(b"bounded-threshold-resource-profile"),
+    })
     .expect("candidate")
 }
 

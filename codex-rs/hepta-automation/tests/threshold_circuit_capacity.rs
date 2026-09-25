@@ -71,26 +71,29 @@ fn fixture_contract() -> (NeuralCircuitCandidateV1, ThresholdDecisionCellParamet
         "rejected",
     )
     .expect("parameters");
-    let candidate = NeuralCircuitCandidateV1::new(
-        "qualification.threshold-circuit",
-        1,
-        None,
-        "decide",
-        vec![
-            CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
-            CircuitNodeV1::new("accepted", CircuitNodeRoleV1::ExitSuccess),
-            CircuitNodeV1::new("rejected", CircuitNodeRoleV1::ExitFailure),
-        ],
-        vec![
-            CircuitEdgeV1::new("decide", "accepted"),
-            CircuitEdgeV1::new("decide", "rejected"),
-        ],
-        Vec::new(),
-        Sha256Digest::for_bytes(b"qualification-route-policy"),
-        parameters.parameter_digest.clone(),
-        Sha256Digest::for_bytes(b"qualification-bounded-resource-profile"),
-    )
-    .expect("candidate");
+    let candidate =
+        NeuralCircuitCandidateV1::new(codex_hepta_automation::NeuralCircuitDefinitionV1 {
+            circuit_id: ("qualification.threshold-circuit").into(),
+            version: 1,
+            predecessor_digest: None,
+            entry_node: ("decide").into(),
+            nodes: vec![
+                CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
+                CircuitNodeV1::new("accepted", CircuitNodeRoleV1::ExitSuccess),
+                CircuitNodeV1::new("rejected", CircuitNodeRoleV1::ExitFailure),
+            ],
+            edges: vec![
+                CircuitEdgeV1::new("decide", "accepted"),
+                CircuitEdgeV1::new("decide", "rejected"),
+            ],
+            capability_set: Vec::new(),
+            route_policy_digest: Sha256Digest::for_bytes(b"qualification-route-policy"),
+            parameter_bundle_digest: parameters.parameter_digest.clone(),
+            resource_profile_digest: Sha256Digest::for_bytes(
+                b"qualification-bounded-resource-profile",
+            ),
+        })
+        .expect("candidate");
     (candidate, parameters)
 }
 

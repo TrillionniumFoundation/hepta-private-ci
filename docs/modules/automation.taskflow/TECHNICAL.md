@@ -393,7 +393,7 @@ Current source bounds include:
 - Calendar V2 timezone transition profile <=512 transitions and bounded calendar search <=1032 candidate days;
 - diagnostic recovery page <=1024 rows; product recovery uses one durable round-robin selection and exact known-identity lookup;
 - Agentd terminal observation is bounded to <=16 pages × 100 persisted turns per recovery pass; when more history remains, the opaque `next_cursor` is persisted under exact-CAS and the next pass resumes there. A known turn can therefore age beyond 1600 recent turns without permanent invisibility or unbounded full-history materialization;
-- one historical occurrence reconciliation plus at most one new scheduler admission per Agentd tick;
+- one historical occurrence and one unknown queue-admission reconciliation plus at most one new scheduler admission per Agentd tick;
 - TaskFlow graph/step bounds inherited from the existing TaskFlow ledger/outbox.
 
 These are source limits, not deployment measurements. Target-host latency, backlog and restore evidence remain activation gates.
@@ -603,9 +603,11 @@ reservation and a distinct completion receipt; v22 holds the restricted threshol
 candidate/parameter/choice records; v23 adds a separate fair unknown-dispatch cursor.
 A public preparation value is not a permit: the executor reloads its complete
 immutable identity and readiness receipt before consuming final-use authority.
-Incomplete preparation never licenses provider contact. Recovery of an interrupted
-preparation across an owner-generation change still requires explicit reconciliation;
-it is not silently treated as a new ready operation.
+Incomplete preparation never licenses provider contact. A no-contact preparation may
+resume under a newer native run fence as a new bounded immutable attempt, retaining
+the operation and provider key. The provider-attempt insert checks the current fence
+in the same SQLite writer order as takeover. Unknown/terminal contact is not retried.
+The signed final-use deadline cannot outlive the frozen preparation lease.
 
 The product host uses the existing async final-use/provider bridge, retaining the
 original `for_operation` key rather than converting old records to the generic
@@ -632,3 +634,30 @@ Execution receipts must identify the final source commit, storage medium, toolch
 commands and any failed/skipped/timed-out cases. Source mapping and mock HTTP contract
 signatures never constitute independently provisioned deployment authority, real
 provider acceptance, long-run target qualification, activation or release.
+
+
+### Candidate validation status (2026-09-26 continuation)
+
+This continuation is a review candidate on the existing #990 line, not a release
+receipt. The earlier exact source `68d28d68` passed the Lane B path guard. That is
+not an execution receipt for this larger continuation. The candidate has been
+rebased onto the concurrently advanced branch rather than overwriting it.
+
+The ordinary-disk nextest command and native check were attempted without test
+retries or relaxed watchdogs. An exploratory check reached Agentd and exposed a
+missing logging-crate reference; that reference was removed. Later exact check
+attempts were blocked during dependency resolution by absent locked crate archives
+and Git cache restoration. A scoped dependency inventory found 229 absent registry
+archives; HTTP restoration also timed out. No final package-pass count, strict
+Clippy pass, synthetic-merge pass, target-host latency or provider acceptance is
+claimed. One requested local caller/Lane-B command was blocked by the connection's
+safety check and was not routed around it.
+
+The new regressions cover no-contact preparation restart, immutable preparation
+substitution, stale-generation provider entry, original-profile lookup after host
+rotation, same-frontier revocation substitution, cursor fairness, and restricted
+parameter/choice recovery. Their source presence is not an executed pass. A full
+Agentd public-socket qualification, crash-cut matrix and real target-host resource
+measurement are still required; the restricted threshold fixture is not general
+Neuron/Laya/Intuition qualification. All deployment and independent-acceptance flags
+remain false.

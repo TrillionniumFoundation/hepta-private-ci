@@ -573,7 +573,7 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
                     expected_binding: &expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                },
+                }
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -754,7 +754,7 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
                     expected_binding: &wrong,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                },
+                }
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -1062,7 +1062,7 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
                     expected_binding: &expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                },
+                }
             )
             .await,
         Err(AuthorizedEffectError::Driver(
@@ -1162,7 +1162,7 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
                     expected_binding: &expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 31,
-                },
+                }
             )
             .await
             .is_err(),
@@ -1258,7 +1258,7 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
                     expected_binding: &expected,
                     command_id: "compensation-dispatch",
                     now_ms: 32,
-                },
+                }
             )
             .await
             .is_err(),
@@ -1309,15 +1309,17 @@ async fn old_claim_cannot_cross_provider_entry_after_uncontacted_generation_take
     let mut driver = CountingDriver(0);
     let result = store
         .execute_authorized_taskflow_effect(
-            &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &old_fence,
-            &grant,
-            &binding,
-            "late-old-dispatch",
-            now,
+            codex_hepta_automation::AuthorizedEffectDispatch {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &old_fence,
+                signed_grant: &grant,
+                expected_binding: &binding,
+                command_id: "late-old-dispatch",
+                now_ms: now,
+            },
         )
         .await;
     assert!(result.is_err());

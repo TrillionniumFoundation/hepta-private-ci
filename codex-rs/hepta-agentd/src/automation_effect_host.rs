@@ -13,7 +13,6 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 
-use codex_hepta_automation::AuthorizedEffectDispatch;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectProviderReceipt;
@@ -352,15 +351,18 @@ impl AgentdAutomationEffectHost {
         };
         store
             .execute_prepared_product_effect_async(
-                &self.authority,
                 &mut driver,
                 &preparation,
-                wire_payload,
-                &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                codex_hepta_automation::AuthorizedEffectDispatch {
+                    authority: &self.authority,
+                    intent: intent,
+                    wire_payload: wire_payload,
+                    fence: &fence,
+                    signed_grant: signed_grant,
+                    expected_binding: &binding,
+                    command_id: command_id,
+                    now_ms: now_ms,
+                },
             )
             .await
             .map_err(|error| {

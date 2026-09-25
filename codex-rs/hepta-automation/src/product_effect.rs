@@ -8,12 +8,9 @@
 use crate::AsyncAuthorizedEffectDriver;
 use crate::AuthorizedEffectError;
 use crate::TaskFlowStepReceipt;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::ProviderEffectIntent;
 use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
@@ -294,19 +291,16 @@ impl AutomationStore {
     /// final-use/provider boundary. The provider key comes only from the
     /// immutable preparation; callers cannot replace it after a restart or
     /// local retry.
-    #[allow(clippy::too_many_arguments)]
     pub async fn execute_prepared_product_effect_async<D: AsyncAuthorizedEffectDriver>(
         &self,
-        authority: &FinalUseAuthority,
         driver: &mut D,
         preparation: &ProductEffectPreparationV1,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        dispatch: crate::AuthorizedEffectDispatch<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let wire_payload = dispatch.wire_payload;
+        if dispatch.intent != &preparation.intent {
+            return Err(AuthorizedEffectError::BindingMismatch);
+        }
         let durable = self
             .product_effect_preparation_by_attempt(
                 &preparation.intent.run_id,
@@ -317,7 +311,7 @@ impl AutomationStore {
             .ok_or(AuthorizedEffectError::BindingMismatch)?;
         if durable != *preparation
             || !self.product_effect_is_ready(&durable).await?
-            || signed_grant.grant.expires_at_unix_ms > durable.lease_deadline_ms
+            || dispatch.signed_grant.grant.expires_at_unix_ms > durable.lease_deadline_ms
         {
             return Err(AuthorizedEffectError::BindingMismatch);
         }
@@ -331,16 +325,9 @@ impl AutomationStore {
         let provider_intent =
             ProviderEffectIntent::new(provider_key, preparation.intent.payload_digest.clone());
         self.execute_authorized_taskflow_effect_async_with_provider_intent(
-            authority,
             driver,
-            &preparation.intent,
+            dispatch,
             provider_intent,
-            wire_payload,
-            fence,
-            signed_grant,
-            expected_binding,
-            command_id,
-            now_ms,
         )
         .await
     }
