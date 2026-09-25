@@ -310,6 +310,14 @@ pub struct AgentSupervisorSnapshot {
     pub(crate) has_last_command: bool,
 }
 
+impl AgentSupervisorSnapshot {
+    /// Whether the supervisor has retained a bounded restart after this snapshot.
+    #[must_use]
+    pub const fn restart_pending(&self) -> bool {
+        self.restart_pending
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum ControlRuntimePhase {
