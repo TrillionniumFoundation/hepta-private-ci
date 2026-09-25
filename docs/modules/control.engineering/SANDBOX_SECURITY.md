@@ -88,3 +88,13 @@ manifest, after every check. A later check cannot hide an earlier mutation. The
 source-boundary digest includes refs even when HEAD remains unchanged. All checks
 share one elapsed time budget; argument vectors are bounded to 256 arguments,
 8192 characters per argument and 65536 characters total.
+
+## Target-host profile reuse
+
+`control_engineering_v2.qualification_profile` invokes the same `SandboxCoordinator`,
+`CandidateEnvelope`, exact Git-object materializer, complete workspace manifest and
+post-check drift verifier used by qualification. Strong mode must pass the real
+Bubblewrap admission probe and may issue only the existing `sandbox_tested` state. The
+profile records elapsed cost and adapter identity; it does not cache mutable workspace
+bytes, omit the before/after manifests, weaken path policy, grant review eligibility or
+establish deployment acceptance.
