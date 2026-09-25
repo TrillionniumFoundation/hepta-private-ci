@@ -1,0 +1,142 @@
+name: Memory retrieval convergence apply
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/workflows/memory-retrieval-convergence-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-retrieval-convergence-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      BRANCH: work/product-convergence-20260923
+      CARGO_BUILD_JOBS: "2"
+      RUST_BACKTRACE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind reviewed branch head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          remote_head="$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)"
+          test "$remote_head" = "$GITHUB_SHA"
+      - name: Apply memory retrieval convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import zlib
+          from pathlib import Path
+          payload = Path("scripts/memory_retrieval_convergence_payload.b64").read_text().strip()
+          source = zlib.decompress(base64.b64decode(payload))
+          exec(compile(source, "memory-retrieval-convergence", "exec"))
+          PY
+          git rm -- scripts/memory_retrieval_convergence_payload.b64
+          git rm -- .github/workflows/memory-retrieval-convergence-apply.yml
+          git rm -- .github/workflows/agentd-convergence-apply.yml
+      - name: Format changed Rust
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Verify patch shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          ! rg -n '\bcontradiction_group_digest\b' codex-rs --glob '*.rs'
+          test -f .github/workflows/hepta-memory-retrieval-convergence.yml
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Focused cross-owner tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked \
+            -p codex-hepta-memory-retrieval \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-infer-core \
+            --lib --tests
+      - name: Strict focused lint
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked \
+            -p codex-hepta-memory-retrieval \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-infer-core \
+            --all-targets -- -D warnings
+      - name: Commit validated source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta convergence bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -s -m "fix(memory.retrieval): close product-bound retrieval semantics"
+      - name: Rebind implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module memory.retrieval
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json")
+          value = json.loads(path.read_text())
+          value["productCallerState"] = "source_composed_signed_provider_paged_owner_cut_not_product_qualified"
+          value["repositoryControlledGaps"] = [
+              "Keep green exact-head and ordered-parent synthetic-merge receipts current for every source-changing candidate; cancelled or skipped jobs are not passing evidence.",
+              "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel.",
+              "Retain end-to-end real-process evidence that joins the published retrieval digest to NativeDispatch and the durable App Server Started observation without treating model utility as implied.",
+          ]
+          roots = set(value.get("compositionRoots", []))
+          roots.update([
+              "codex-rs/hepta-agentd/src/cognitive_retrieval_context_file.rs",
+              "codex-rs/hepta-agentd/src/cognitive_retrieval_context_file_tests.rs",
+              "codex-rs/hepta-agentd/src/cognitive_retrieval_owner_cut.rs",
+              "codex-rs/hepta-agentd/src/main.rs",
+              "codex-rs/hepta-infer-core/src/native_control.rs",
+              "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          ])
+          value["compositionRoots"] = sorted(roots)
+          observed = set(value.get("observedSourcePaths", []))
+          observed.update(value["compositionRoots"])
+          observed.add(".github/workflows/hepta-memory-retrieval-convergence.yml")
+          observed.add("codex-rs/hepta-memory/tests/retrieval_relation_groups.rs")
+          value["observedSourcePaths"] = sorted(observed)
+          for caller in value.get("productCallers", []):
+              if caller.get("sourcePath") == "codex-rs/hepta-agentd/src/cognitive_context.rs":
+                  caller["state"] = "explicit_signed_authenticated_retrieval_profile"
+          path.write_text(json.dumps(value, indent=2) + "\n")
+          PY
+          python3 scripts/hepta-implementation-maps.py verify
+          git diff --check
+          git add docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json
+          git commit -s -m "docs(mapping): rebind memory retrieval convergence"
+      - name: Push without overwriting concurrent work
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)"
+          test "$remote_head" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$BRANCH"
