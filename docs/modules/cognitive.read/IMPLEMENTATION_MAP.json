@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "eba89dda72d23a0933028895d87145906ad5fc3f",
-    "tree": "7950bd80518d8ddadcffaf30760c197bc40ec665"
+    "commit": "2de0f3c8c59bef52beec22e31fef5e8ed22fc0b7",
+    "tree": "ab4e9d38f8a2ac84123b313b82791174aeeec621"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -171,7 +171,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "94ce7b6eb990da37a2c52d2b7f26cf2d23a89765"
+      "object": "d6da785ded8640512a63a785c41ad01899257915"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
@@ -191,7 +191,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "112c42d7372381df84794c940d0d213538f3adea"
+      "object": "bc38da9007554426183f65fff7f8eb4b65e2e064"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -273,13 +273,13 @@
   "productCallers": [
     {
       "role": "owner_read_adapter",
-      "blobSha": "94ce7b6eb990da37a2c52d2b7f26cf2d23a89765",
+      "blobSha": "d6da785ded8640512a63a785c41ad01899257915",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn read("
     },
     {
       "role": "owner_final_use_revalidation",
-      "blobSha": "94ce7b6eb990da37a2c52d2b7f26cf2d23a89765",
+      "blobSha": "d6da785ded8640512a63a785c41ad01899257915",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn revalidate("
     },
@@ -314,8 +314,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "eba89dda72d23a0933028895d87145906ad5fc3f",
-    "tree": "7950bd80518d8ddadcffaf30760c197bc40ec665"
+    "commit": "2de0f3c8c59bef52beec22e31fef5e8ed22fc0b7",
+    "tree": "ab4e9d38f8a2ac84123b313b82791174aeeec621"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
