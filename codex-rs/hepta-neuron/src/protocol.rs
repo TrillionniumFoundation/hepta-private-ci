@@ -456,6 +456,7 @@ pub fn canonical_checkpoint_v1(
     expires_unix_ms: u64,
 ) -> Result<NeuronCheckpointV1, NeuronProtocolError> {
     if tick.checkpoint_after != checkpoint.digest()
+        || tick.checkpoint_before != checkpoint.predecessor_digest()
         || tick.activation_digest != checkpoint.activation_digest()
         || tick.threshold_digest != checkpoint.threshold_digest()
         || tick.eligibility_digest != checkpoint.eligibility_digest()

@@ -177,6 +177,14 @@ impl SparseCheckpoint {
         self.sequence
     }
 
+    pub(crate) fn predecessor_digest(&self) -> Digest32 {
+        self.predecessor
+    }
+
+    pub(crate) fn input_binding_digest(&self) -> Digest32 {
+        self.input
+    }
+
     /// Canonical digest of the recurrent temporal-state vector only.
     ///
     /// This is intentionally distinct from the full checkpoint digest so the

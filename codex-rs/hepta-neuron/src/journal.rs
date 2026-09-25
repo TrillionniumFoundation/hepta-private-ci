@@ -383,6 +383,39 @@ impl SparseJournal {
         )
     }
 
+    /// Compute the exact next state and receipt without mutating the journal.
+    pub(crate) fn preview(
+        &self,
+        expected_predecessor: Digest32,
+        tick: &SparseTick,
+    ) -> Result<(SparseCheckpoint, SparseSignalReceipt), JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if tick.drive_q24.len() != self.config.width
+            || tick.prediction_q24.len() != self.config.width
+        {
+            return Err(JournalError::Mechanism(SparseError::InvalidInput));
+        }
+        if tick.scope_digest != self.scope.scope_digest
+            || tick.objective_digest != self.scope.objective_digest
+        {
+            return Err(JournalError::ContextMismatch);
+        }
+        if self
+            .current
+            .as_ref()
+            .map_or(Digest32::ZERO, SparseCheckpoint::digest)
+            != expected_predecessor
+        {
+            return Err(JournalError::Conflict);
+        }
+        if self.entries.len() >= self.max_records {
+            return Err(JournalError::Capacity);
+        }
+        sparse_tick(&self.config, tick, self.current.as_ref()).map_err(JournalError::Mechanism)
+    }
+
     /// Compare-and-append one tick. Equal retries return the exact committed
     /// receipt, including after later ticks in the same segment.
     pub fn commit(
@@ -419,19 +452,7 @@ impl SparseJournal {
                 Err(JournalError::Conflict)
             };
         }
-        if self
-            .current
-            .as_ref()
-            .map_or(Digest32::ZERO, SparseCheckpoint::digest)
-            != expected_predecessor
-        {
-            return Err(JournalError::Conflict);
-        }
-        if self.entries.len() >= self.max_records {
-            return Err(JournalError::Capacity);
-        }
-        let (state, receipt) = sparse_tick(&self.config, tick, self.current.as_ref())
-            .map_err(JournalError::Mechanism)?;
+        let (state, receipt) = self.preview(expected_predecessor, tick)?;
         let frame = encode_frame(tick, &receipt);
         let expected_length = (self.data_offset + self.entries.len() * frame.len()) as u64;
         self.poisoned = true;
@@ -489,6 +510,20 @@ impl SparseJournal {
             .anchor_at(anchor.sequence)
             .is_some_and(|current| current == anchor))
     }
+    pub(crate) fn receipt_at(
+        &self,
+        sequence: u64,
+    ) -> Result<Option<&SparseSignalReceipt>, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let index = sequence
+            .checked_sub(self.base_sequence)
+            .and_then(|relative| relative.checked_sub(1))
+            .and_then(|relative| usize::try_from(relative).ok());
+        Ok(index.and_then(|value| self.entries.get(value).map(|(_, receipt)| receipt)))
+    }
+
     pub fn remaining_capacity(&self) -> Result<usize, JournalError> {
         if self.poisoned {
             Err(JournalError::Poisoned)
