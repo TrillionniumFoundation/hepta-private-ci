@@ -1190,15 +1190,21 @@ def public_rust_functions(root: str) -> set[str]:
         raw = source.read_text(encoding="utf-8")
         text = top_level_rust_source(raw)
         functions = set(re.findall(declaration, text))
-        module_dir = source.parent if source.name in {"lib.rs", "mod.rs"} else source.parent / source.stem
+        module_dir = (
+            source.parent
+            if source.name in {"lib.rs", "mod.rs"}
+            else source.parent / source.stem
+        )
         for module, name in re.findall(reexport, text):
             target = module_dir / f"{module}.rs"
             module_decl = re.search(rf"\bmod\s+{re.escape(module)}\s*;", text)
             if module_decl is not None:
-                prefix = text[:module_decl.start()].rstrip()
-                attribute = re.search(r"#\[\s*path\s*=\s*[^\]]*\]\s*(?:#\[[^\]]*\]\s*)*$", prefix)
+                prefix = text[: module_decl.start()].rstrip()
+                attribute = re.search(
+                    r"#\[\s*path\s*=\s*[^\]]*\]\s*(?:#\[[^\]]*\]\s*)*$", prefix
+                )
                 if attribute is not None:
-                    raw_attribute = raw[attribute.start():attribute.end()]
+                    raw_attribute = raw[attribute.start() : attribute.end()]
                     path = re.match(r'#\[\s*path\s*=\s*"([^"\n]+)"\s*\]', raw_attribute)
                     if path is None:
                         raise ValueError("unsupported Rust module path attribute")
