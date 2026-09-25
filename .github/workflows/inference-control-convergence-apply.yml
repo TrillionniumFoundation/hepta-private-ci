@@ -9,21 +9,18 @@ on:
       - .github/workflows/inference-control-convergence-apply.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: inference-control-convergence-apply
   cancel-in-progress: false
 
 jobs:
-  apply:
+  diagnose-patch-anchor:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 10
     env:
       BRANCH: work/product-convergence-20260923
-      CARGO_BUILD_JOBS: "2"
-      CARGO_INCREMENTAL: "0"
-      RUST_BACKTRACE: "1"
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -31,138 +28,35 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
 
-      - name: Refresh the canonical candidate without discarding concurrent work
+      - name: Refresh canonical candidate
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin "$BRANCH"
           git checkout -B "$BRANCH" "origin/$BRANCH"
-          echo "START_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
-      - name: Decode and apply the reviewed patch
+      - name: Decode and print the stale anchor
         shell: bash
         run: |
           set -euo pipefail
           base64 --decode scripts/.hepta_inference_control_converge.py.gz.b64 \
-            | gzip --decompress > scripts/.hepta_inference_control_converge.py
-          echo "55820b7f5fbfc5db7bd3355e91386a981678f7bac9b177e98e0e58862b206324  scripts/.hepta_inference_control_converge.py" \
+            | gzip --decompress > "$RUNNER_TEMP/hepta-inference-converge.py"
+          echo "55820b7f5fbfc5db7bd3355e91386a981678f7bac9b177e98e0e58862b206324  $RUNNER_TEMP/hepta-inference-converge.py" \
             | sha256sum --check -
-          python3 scripts/.hepta_inference_control_converge.py
-          rm scripts/.hepta_inference_control_converge.py
-          git rm -- \
-            scripts/.hepta_inference_control_converge.py.gz.b64 \
-            .github/workflows/inference-control-convergence-apply.yml
+          python3 - "$RUNNER_TEMP/hepta-inference-converge.py" <<'PY'
+          from pathlib import Path
+          import sys
 
-      - name: Format changed Rust packages
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml \
-            --package codex-hepta-infer-core \
-            --package codex-hepta-types \
-            --package codex-hepta-inferd \
-            --package codex-hepta-infer-worker-host
-
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-
-      - name: Run inference owner and real product-caller tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-types \
-            -p codex-hepta-inferd \
-            -p codex-hepta-infer-worker-host \
-            --lib -- --test-threads=1
-
-      - name: Run owner handoff, crash and capacity qualification
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_inference_owner_checks.py \
-            --output-dir "$RUNNER_TEMP/hepta-inference-owner-checks"
-
-      - name: Strict inference lint
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-inferd \
-            -p codex-hepta-infer-worker-host \
-            --all-targets -- -D warnings
-
-      - name: Commit implementation only after validation
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
-          git config user.name "Hepta convergence bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet && {
-            echo "patch produced no implementation change" >&2
-            exit 1
-          }
-          git commit -s -m "feat(inference): close durable control recovery"
-
-      - name: Rebind and verify inference source navigation
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module inference.control
-          git add -A
-          git diff --cached --quiet && {
-            echo "source migration produced no mapping change" >&2
-            exit 1
-          }
-          git commit -s -m "docs(inference): bind durable control source truth"
-          python3 scripts/hepta-implementation-maps.py verify
-
-      - name: Fast-forward the canonical branch without overwriting parallel work
-        shell: bash
-        run: |
-          set -euo pipefail
-          conflict_paths=(
-            codex-rs/Cargo.toml
-            codex-rs/Cargo.lock
-            codex-rs/rust-toolchain.toml
-            codex-rs/hepta-infer-core
-            codex-rs/hepta-inferd
-            codex-rs/hepta-infer-worker-host
-            codex-rs/hepta-types
-            codex-rs/hepta-contracts
-            scripts/hepta_inference_owner_checks.py
-            scripts/hepta-implementation-maps.py
-            scripts/hepta_module_source_roots.py
-            docs/modules/inference.control
-            docs/readiness/LANE_B_NATIVE_HOST.md
-            qualification/module-execution-dossiers/detail/inference.control.md
-            .github/workflows/hepta-inference-maintenance.yml
-          )
-          for attempt in 1 2 3; do
-            remote_head="$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)"
-            if test "$remote_head" = "$START_HEAD"; then
-              git push origin "HEAD:refs/heads/$BRANCH"
-              exit 0
-            fi
-            git fetch origin "$BRANCH"
-            if ! git diff --quiet "$START_HEAD" "$remote_head" -- "${conflict_paths[@]}"; then
-              echo "canonical inference/build inputs changed while qualification ran" >&2
-              git diff --name-only "$START_HEAD" "$remote_head" -- "${conflict_paths[@]}" >&2
-              exit 1
-            fi
-            git rebase --onto "$remote_head" "$START_HEAD"
-            START_HEAD="$remote_head"
-            python3 scripts/hepta-implementation-maps.py migrate --module inference.control
-            if ! git diff --quiet; then
-              git add -A
-              git commit --amend --no-edit
-            fi
-            python3 scripts/hepta-implementation-maps.py verify
-          done
-          echo "canonical branch kept moving during all safe fast-forward attempts" >&2
+          text = Path(sys.argv[1]).read_text()
+          needle = "durable fields"
+          index = text.find(needle)
+          print(f"script bytes={len(text)} anchor-index={index}")
+          print("----- script context -----")
+          print(text[max(0, index - 2400): index + 600])
+          print("----- current source context -----")
+          source = Path("codex-rs/hepta-infer-core/src/durable_control.rs").read_text()
+          start = source.index("pub struct DurableInferenceControl")
+          end = source.index("impl DurableInferenceControl", start)
+          print(source[max(0, start - 120):end + 40])
+          PY
           exit 1
