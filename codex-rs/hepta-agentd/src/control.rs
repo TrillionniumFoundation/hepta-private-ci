@@ -11,6 +11,7 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -25,7 +26,8 @@ use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
-const IO_TIMEOUT: Duration = Duration::from_secs(2);
+use crate::control_budget::FRAME_IO_TIMEOUT;
+use crate::control_budget::operation_timeout;
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
@@ -57,9 +59,14 @@ impl AgentdControlServer {
     }
 
     pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
+        let mut connections = JoinSet::new();
         loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
+                _ = self.cancellation.cancelled() => {
+                    connections.shutdown().await;
+                    return Ok(());
+                },
+                _ = connections.join_next(), if !connections.is_empty() => continue,
                 accepted = self.listener.accept() => accepted?,
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
@@ -72,9 +79,9 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            connections.spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = serve_connection(stream, state).await;
             });
         }
     }
@@ -94,36 +101,62 @@ impl Drop for AgentdControlServer {
 }
 
 async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    let owner = Arc::clone(&state);
+    serve_connection_with(stream, state, move |request| async move {
+        owner
+            .response(request.request_id, request.spawn_generation, request.method)
+            .await
+    })
+    .await
+}
+
+async fn serve_connection_with<F, R>(
+    stream: UnixStream,
+    state: Arc<AgentdState>,
+    handler: F,
+) -> Result<(), AgentdError>
+where
+    F: FnOnce(AgentdRequest) -> R,
+    R: std::future::Future<Output = Result<AgentdResponse, AgentdError>>,
+{
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = timeout(FRAME_IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd request frame timed out".to_string()))??;
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Err(AgentdError::Protocol(
             "agentd control request must be one bounded newline JSON frame".to_string(),
         ));
     }
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
+    let request_id = request.request_id;
+    let spawn_generation = request.spawn_generation;
     let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
         error_response(
             &state,
-            request.request_id,
-            request.spawn_generation,
+            request_id,
+            spawn_generation,
             "unsupported_schema",
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
-        {
-            Ok(response) => response,
-            Err(error) => error_response(
+        match timeout(operation_timeout(&request.method), handler(request)).await {
+            Ok(Ok(response)) => response,
+            Ok(Err(error)) => error_response(
                 &state,
-                request.request_id,
-                request.spawn_generation,
+                request_id,
+                spawn_generation,
                 "request_rejected",
                 &error.to_string(),
+            ),
+            Err(_) => error_response(
+                &state,
+                request_id,
+                spawn_generation,
+                "operation_timed_out",
+                "operation acknowledgement timed out; reconcile the original identity before retrying",
             ),
         }
     };
@@ -134,8 +167,12 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "agentd control response exceeded frame bound".to_string(),
         ));
     }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    timeout(FRAME_IO_TIMEOUT, async {
+        writer.write_all(&bytes).await?;
+        writer.shutdown().await
+    })
+    .await
+    .map_err(|_| AgentdError::Protocol("agentd response frame timed out".to_string()))??;
     Ok(())
 }
 
@@ -230,3 +267,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_transport_tests.rs"]
+mod tests;
