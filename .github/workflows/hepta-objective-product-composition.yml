@@ -96,6 +96,7 @@ jobs:
           cargo test --locked -p codex-hepta-learning-ledger
           cargo test --locked -p codex-hepta-intelligence product_objective -- --nocapture
           cargo test --locked -p codex-hepta-agentd objective -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
       - name: Strict lint
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs

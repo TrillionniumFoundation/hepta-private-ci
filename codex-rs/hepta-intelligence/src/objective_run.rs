@@ -161,11 +161,7 @@ pub fn compile_and_publish_objective_run_v1(
         ));
     }
     let objective_function_v1 = encode_authenticated_objective_function_v1(
-        &objective,
-        envelope,
-        profile,
-        context,
-        &receipt,
+        &objective, envelope, profile, context, &receipt,
     )?;
     if objective_function_v1.native_semantic_digest() != objective.objective.semantic_digest {
         return Err(ObjectiveRunError::Protocol(

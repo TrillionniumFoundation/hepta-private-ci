@@ -138,6 +138,36 @@ pub struct DurableRunStartStore {
 }
 
 impl DurableRunStartStore {
+    /// Return true only when `root` contains no local run-start history and can
+    /// therefore bootstrap a missing independent checkpoint. Unknown entries,
+    /// mutable/immutable segment files, compacted state and legacy journals all
+    /// make the layout non-pristine so recovery remains fail-closed.
+    pub fn checkpoint_initialization_allowed(root: &Path) -> Result<bool, RunStartStoreError> {
+        let metadata = match std::fs::symlink_metadata(root) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(true),
+            Err(error) => return Err(error.into()),
+        };
+        if !metadata.is_dir() || metadata.file_type().is_symlink() {
+            return Err(RunStartStoreError::NotRegular);
+        }
+        for entry in std::fs::read_dir(root)? {
+            let entry = entry?;
+            if entry.file_name() != std::ffi::OsStr::new(SEGMENT_DIRECTORY) {
+                return Ok(false);
+            }
+            let path = entry.path();
+            let metadata = std::fs::symlink_metadata(&path)?;
+            if !metadata.is_dir() || metadata.file_type().is_symlink() {
+                return Err(RunStartStoreError::NotRegular);
+            }
+            if std::fs::read_dir(path)?.next().transpose()?.is_some() {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+
     pub fn open(
         root: PathBuf,
         binding: Digest32,
@@ -548,36 +578,41 @@ impl DurableRunStartStore {
         if self.sealed.len() + 1 >= MAX_RUN_START_SEGMENTS {
             return Err(RunStartStoreError::Capacity);
         }
-        let active = self.active.take().ok_or(RunStartStoreError::Poisoned)?;
+        let active = self.active.as_ref().ok_or(RunStartStoreError::Poisoned)?;
         if active.record_count() == 0 {
-            self.active = Some(active);
             return Err(RunStartStoreError::Capacity);
         }
         let base = active.base_anchor();
         let head = active.head_anchor();
+        let active = self.active.take().ok_or(RunStartStoreError::Poisoned)?;
         drop(active);
-        let sealed_path = self.segments_root.join(segment_filename(base, head)?);
-        if sealed_path.exists() {
+        let transition = (|| {
+            let sealed_path = self.segments_root.join(segment_filename(base, head)?);
+            if sealed_path.exists() {
+                return Err(RunStartStoreError::SegmentMismatch);
+            }
+            std::fs::rename(self.root.join(ACTIVE_FILE), &sealed_path)?;
+            sync_directory(&self.root)?;
+            sync_directory(&self.segments_root)?;
+            let successor = DurableRunStartJournal::create_segment(
+                create_private(&self.root.join(ACTIVE_FILE))?,
+                self.binding,
+                self.max_records_per_segment,
+                head,
+            )?;
+            sync_directory(&self.root)?;
+            self.sealed.push(SealedSegment {
+                path: sealed_path,
+                base_anchor: base,
+                head_anchor: head,
+            });
+            self.active = Some(successor);
+            Ok(())
+        })();
+        if transition.is_err() {
             self.poisoned = true;
-            return Err(RunStartStoreError::SegmentMismatch);
         }
-        std::fs::rename(self.root.join(ACTIVE_FILE), &sealed_path)?;
-        sync_directory(&self.root)?;
-        sync_directory(&self.segments_root)?;
-        let successor = DurableRunStartJournal::create_segment(
-            create_private(&self.root.join(ACTIVE_FILE))?,
-            self.binding,
-            self.max_records_per_segment,
-            head,
-        )?;
-        sync_directory(&self.root)?;
-        self.sealed.push(SealedSegment {
-            path: sealed_path,
-            base_anchor: base,
-            head_anchor: head,
-        });
-        self.active = Some(successor);
-        Ok(())
+        transition
     }
 
     /// Replace a complete expired sealed prefix with an authenticated compact

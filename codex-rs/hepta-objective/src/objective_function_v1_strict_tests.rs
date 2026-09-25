@@ -212,8 +212,7 @@ fn source() -> ObjectiveSourceEnvelopeV1 {
         deadline: Some("2026-09-08T10:05:00Z".to_string()),
         input_schema_digest: test_digest("schema-v1"),
     };
-    source.intent_digest =
-        canonical_objective_intent_digest_v1(&source).expect("canonical intent");
+    source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("canonical intent");
     source
 }
 
@@ -242,8 +241,8 @@ fn compile_fixture() -> (
     let profile = profile();
     let source = source();
     let context = context(&profile, &source);
-    let outcome = admit_and_compile_objective_v1(&source, &profile, &context)
-        .expect("admit and compile");
+    let outcome =
+        admit_and_compile_objective_v1(&source, &profile, &context).expect("admit and compile");
     let compiled = outcome.compile_result.expect("compiled");
     (profile, source, context, outcome.receipt, compiled)
 }
@@ -462,8 +461,8 @@ fn microsecond_deadline_has_conservative_millisecond_projection() {
     let mut source = source();
     source.deadline = Some("2026-09-08T10:05:00.000001Z".to_string());
     let context = context(&profile, &source);
-    let outcome = admit_and_compile_objective_v1(&source, &profile, &context)
-        .expect("microsecond admission");
+    let outcome =
+        admit_and_compile_objective_v1(&source, &profile, &context).expect("microsecond admission");
     let compiled = outcome.compile_result.expect("compiled");
     let artifact = encode_authenticated_objective_function_v1(
         &compiled,
@@ -476,6 +475,9 @@ fn microsecond_deadline_has_conservative_millisecond_projection() {
     let value: Value = serde_json::from_slice(artifact.canonical_bytes()).expect("wire");
     assert_eq!(
         value["deadlineUnixMs"].as_u64(),
-        outcome.receipt.deadline_unix_micros.map(|value| value / 1_000)
+        outcome
+            .receipt
+            .deadline_unix_micros
+            .map(|value| value / 1_000)
     );
 }

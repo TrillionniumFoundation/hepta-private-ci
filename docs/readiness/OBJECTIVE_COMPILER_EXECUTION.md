@@ -27,7 +27,7 @@ bounded JSON bytes
          -> check_feasibility_v1
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
--> for compiled/abstain: encode_objective_function_v1(...)
+-> for compiled/abstain: encode_authenticated_objective_function_v1(...)
    -> canonical ObjectiveFunctionV1 JSON bytes
    -> ObjectiveFunctionV1 protocol-wire digest
 -> durable RunStart v2 record
@@ -112,7 +112,7 @@ Compilation semantics are a pure function of the authenticated source envelope, 
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. `ObjectiveAdmissionContextV1` is an owner-local trust carrier for the pure library boundary, not a standalone cryptographic authentication proof; a test or arbitrary downstream crate constructing that value does not establish a product caller. The canonical product-source caller is Agentd's signed objective ingress: current AuthBus trust authenticates the exact signed body before Agentd decodes the embedded source and constructs the owner-local admission context. `compile_and_publish_objective_run_v1` then creates the canonical `ObjectiveFunctionV1` projection and appends the signed-ingress authentication fields, admission binding, owner-native objective semantic bytes/digest, canonical `ObjectiveFunctionV1` bytes/protocol digest and `RunStartSnapshotV1` to the destination-owned durable run-start v2 journal before a non-abstain run reaches `AgentRunCoordinator`. Exact replay is idempotent; same-run native or protocol semantic drift and predecessor drift conflict; restart recovery revalidates retained authentication against current trust. Legacy v1 records are readable for recovery/migration inspection but fail closed at Agentd final use because they lack canonical protocol identity. This is source composition, not deployment activation. Publication occurs only after source, intent, profile, constraint, native-objective and protocol-wire digests agree.
+The compiler owns no domain-fact store. `ObjectiveAdmissionContextV1` is an owner-local trust carrier for the pure library boundary, not a standalone cryptographic authentication proof; a test or arbitrary downstream crate constructing that value does not establish a product caller. The canonical product-source caller is Agentd's signed objective ingress: current AuthBus trust authenticates the exact signed body before Agentd decodes the embedded source and constructs the owner-local admission context. `compile_and_publish_objective_run_v1` uses `encode_authenticated_objective_function_v1`, which recomputes admission and native compilation from that exact source/profile/context and rejects any source, profile, receipt or native-result drift before projection. It then appends the signed-ingress authentication fields, admission binding, owner-native objective semantic bytes/digest, canonical `ObjectiveFunctionV1` bytes/protocol digest and `RunStartSnapshotV1` to the destination-owned segmented `DurableRunStartStore` before a non-abstain run reaches `AgentRunCoordinator`. Every append and compacted-prefix transition advances an independent monotonic checkpoint outside the Agent-home rollback domain. Exact replay is idempotent; same-run native or protocol semantic drift and predecessor drift conflict; restart recovery revalidates checkpoint history and retained authentication against current trust. Legacy v1 records are readable for recovery/migration inspection but fail closed at Agentd final use because they lack canonical protocol identity. This is source composition, not deployment activation. Publication occurs only after source, intent, profile, constraint, native-objective and protocol-wire digests agree.
 
 ```text
 received
@@ -126,7 +126,7 @@ received
 -> published by owning caller
 ```
 
-A crash before caller publication leaves no selected objective. A partial unacknowledged tail is truncated only to the last complete validated frame; acknowledged missing history is never repaired as success. A crash after a fully synchronized append but before the caller observes the receipt is handled as acknowledgement loss: reopening and replaying the exact record is idempotent. Reusing the run identity with changed native or canonical-protocol semantics conflicts. At runtime final use, current trust, generation, fence and canonical protocol identity are revalidated. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
+A crash before caller publication leaves no selected objective. A partial unacknowledged active-segment tail is truncated only to the last complete validated frame; acknowledged missing history, a removed sealed segment, a missing external checkpoint for existing local history, or a checkpoint ahead of local history is never repaired as empty success. Rotation preserves one global predecessor chain. Compaction replaces only a complete expired sealed prefix with a replay index that retains run identity, authentication frontier, record and chain digests; the pending summary is written first, checkpointed by CAS second, committed third, and old segments removed last. A crash or acknowledgement loss at any of those cuts is reconciled without resurrecting an older frontier. Reusing the run identity with changed native or canonical-protocol semantics conflicts. At runtime final use, current trust, generation, fence, exact admitted deadline and canonical protocol identity are revalidated. `ObjectiveFunctionV1` floors the exact microsecond deadline to milliseconds, and Agentd uses the same conservative floor so the wire cannot extend authority. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
 ## 6. Error taxonomy and fallback
 
@@ -160,7 +160,8 @@ The following paths are measured separately:
 
 | Path | Bound/complexity |
 |---|---|
-| raw JSON guard and structural decode | `<=256 KiB`, bounded field and collection counts |
+| generic raw JSON guard and structural decode | `<=256 KiB`, bounded field and collection counts |
+| normal Agentd signed product ingress | source JSON `<=32 KiB`; canonical signed body `<=48 KiB` |
 | normalization and canonical sorting | `O(n log n)` |
 | one ordinary feasibility oracle call | profile-specific `C(n)` |
 | inclusion-minimal conflict extraction | at most `n+1` oracle calls and `O(n C(n))` |
@@ -186,11 +187,11 @@ The repository-owned measurement harness is `scripts/hepta-objective-target-meas
 - `OBJ-GV-012`: success predicates, terminal conditions and evidence requirements reject when their aggregate exceeds 128.
 - `OBJ-GV-013`: locale rejection, stale source and invalid/expired/missing deadlines are non-retryable for the same semantic input.
 
-Tests cover structural round trips, canonical ordering, unit conversion, conflict minimization, idempotent durable replay, stale/future time, deadline handling, source authentication, resource overflow, aggregate-bound hostility, action-slot reservation, variant-specific retry policy, redaction and property-based permutation invariance.
+Tests cover structural round trips, authenticated source/profile/context/native-result rebinding, canonical ordering and semantic uniqueness, unit conversion, conflict minimization, idempotent durable replay, segment rotation and compaction, checkpoint acknowledgement loss and rollback detection, stale/future time, conservative microsecond deadline projection/final use, source authentication, product ingress capacities, resource overflow, aggregate-bound hostility, action-slot reservation, variant-specific retry policy, redaction and property-based permutation invariance.
 
 ## 10. Implementation sequence
 
-Implement and maintain, in order: strict JSON decoder; owner-local source type; admission-safe structural validator; authenticated product ingress; frozen profile mapping; opaque admitted-objective boundary; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; destination-owned durable run-start journal; recovery/replay; target-host measurement harness; exact-source and merge-candidate qualification.
+Implement and maintain, in order: strict JSON decoder; owner-local source type; admission-safe structural validator; authenticated product ingress; frozen profile mapping; opaque admitted-objective boundary; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; authenticated canonical projection; deny-all receipts; destination-owned segmented run-start store; independent monotonic checkpoint; rotation/compaction/recovery; daemon restart qualification; target-host measurement harness; exact-source and merge-candidate qualification.
 
 Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion still does not establish a production caller, activation, independent acceptance, promotion or release.
 

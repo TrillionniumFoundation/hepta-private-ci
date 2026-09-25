@@ -1,7 +1,12 @@
-use std::fs::OpenOptions;
+use std::sync::Mutex;
 
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_learning_ledger::RunStartAnchor;
+use codex_hepta_learning_ledger::RunStartCheckpointOwnerV1;
+use codex_hepta_learning_ledger::RunStartCheckpointV1;
+use codex_hepta_learning_ledger::RunStartJournal;
 use codex_hepta_learning_ledger::RunStartSnapshotV1;
+use codex_hepta_learning_ledger::RunStartStoreError;
 use tempfile::TempDir;
 
 use super::*;
@@ -64,19 +69,50 @@ fn record(
     }
 }
 
+struct TestCheckpoint(Mutex<RunStartCheckpointV1>);
+
+impl TestCheckpoint {
+    fn new() -> Self {
+        Self(Mutex::new(RunStartCheckpointV1::ZERO))
+    }
+}
+
+impl RunStartCheckpointOwnerV1 for TestCheckpoint {
+    fn current_checkpoint(&self) -> Result<RunStartCheckpointV1, RunStartStoreError> {
+        self.0
+            .lock()
+            .map(|value| *value)
+            .map_err(|_| RunStartStoreError::Poisoned)
+    }
+
+    fn compare_and_swap(
+        &self,
+        expected: RunStartCheckpointV1,
+        next: RunStartCheckpointV1,
+    ) -> Result<(), RunStartStoreError> {
+        let mut current = self.0.lock().map_err(|_| RunStartStoreError::Poisoned)?;
+        if *current == next {
+            return Ok(());
+        }
+        if *current != expected || !next.is_well_formed() {
+            return Err(RunStartStoreError::RollbackDetected);
+        }
+        *current = next;
+        Ok(())
+    }
+}
+
 fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
     let temp = TempDir::new().expect("temp");
-    let path = temp.path().join("journal");
-    let file = OpenOptions::new()
-        .create_new(true)
-        .read(true)
-        .write(true)
-        .open(path)
-        .expect("journal");
-    let mut journal =
-        DurableRunStartJournal::create(file, digest("binding"), 16).expect("create journal");
+    let mut journal = DurableRunStartStore::open(
+        temp.path().join("run-start"),
+        digest("binding"),
+        16,
+        Box::new(TestCheckpoint::new()),
+    )
+    .expect("create journal");
     journal
-        .append(Digest32::ZERO, record)
+        .append_run_start(Digest32::ZERO, record)
         .expect("append record");
     let highest_sequences = replay_frontier(&journal).expect("frontier");
     (
@@ -264,5 +300,23 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
     assert!(
         !authentication_is_current(&durable, &stale, &identity, now_ms)
             .expect("stale authentication")
+    );
+}
+
+#[test]
+fn sub_millisecond_deadline_never_extends_final_use() {
+    assert!(deadline_is_expired(1_000_001, 1_000));
+    assert!(!deadline_is_expired(1_001_000, 1_000));
+}
+
+#[test]
+fn product_ingress_uses_the_registered_protocol_capacity() {
+    assert_eq!(
+        AuthBusObjectiveBody::MAX_SOURCE_ENVELOPE_JSON_BYTES,
+        32 * 1024
+    );
+    assert_eq!(
+        AuthBusObjectiveBody::MAX_CANONICAL_BODY_JSON_BYTES,
+        48 * 1024
     );
 }

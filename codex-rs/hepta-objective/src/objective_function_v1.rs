@@ -187,7 +187,7 @@ struct ResourceEndowmentWireV1 {
 /// receipt or protocol projection. Product callers that possess the original
 /// authenticated context must use [`encode_authenticated_objective_function_v1`]
 /// so the complete admission and native lowering are independently replayed.
-pub fn encode_objective_function_v1(
+pub(crate) fn encode_objective_function_v1(
     compiled: &ObjectiveCompileReceipt,
     source: &ObjectiveSourceEnvelopeV1,
     profile: &ObjectiveAdmissionProfileV1,
@@ -245,14 +245,16 @@ fn validate_projection_binding(
     let profile_digest = profile
         .digest()
         .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("profile"))?;
-    let observed_at_unix_micros = parse_utc_micros(&source.observed_at)
-        .ok_or(ObjectiveFunctionV1Error::ProjectionMismatch("observed timestamp"))?;
+    let observed_at_unix_micros = parse_utc_micros(&source.observed_at).ok_or(
+        ObjectiveFunctionV1Error::ProjectionMismatch("observed timestamp"),
+    )?;
     let deadline_unix_micros = source
         .deadline
         .as_deref()
         .map(|value| {
-            parse_utc_micros(value)
-                .ok_or(ObjectiveFunctionV1Error::ProjectionMismatch("deadline timestamp"))
+            parse_utc_micros(value).ok_or(ObjectiveFunctionV1Error::ProjectionMismatch(
+                "deadline timestamp",
+            ))
         })
         .transpose()?;
 
@@ -268,8 +270,7 @@ fn validate_projection_binding(
             .provenance
             .normalization_profile_digest
             != profile.expected_normalization_profile_digest
-        || source.structured_intent.provenance.source_digest
-            != admission.supplied_source_digest
+        || source.structured_intent.provenance.source_digest != admission.supplied_source_digest
         || observed_at_unix_micros != admission.observed_at_unix_micros
         || deadline_unix_micros != admission.deadline_unix_micros
         || admission.authority.grants_any()
@@ -535,7 +536,7 @@ fn validate_wire(value: &ObjectiveFunctionWireV1) -> Result<(), ObjectiveFunctio
     )?;
     strictly_ordered(
         &value.forbidden_action_classes,
-        |left, right| left.cmp(right),
+        std::cmp::Ord::cmp,
         "forbidden action order",
     )?;
     strictly_ordered(
@@ -554,7 +555,11 @@ fn validate_wire(value: &ObjectiveFunctionWireV1) -> Result<(), ObjectiveFunctio
         stable_id(&predicate.axis, "predicate.axis")?;
         stable_id(&predicate.evidence_source, "predicate.evidenceSource")?;
         relation(&predicate.relation)?;
-        unique(&mut semantic_ids, &predicate.id, "semantic identity uniqueness")?;
+        unique(
+            &mut semantic_ids,
+            &predicate.id,
+            "semantic identity uniqueness",
+        )?;
     }
     for constraint in &value.hard_constraints {
         stable_id(&constraint.id, "constraint.id")?;
@@ -604,9 +609,7 @@ fn validate_wire(value: &ObjectiveFunctionWireV1) -> Result<(), ObjectiveFunctio
         allowed.insert(action.id.as_str());
     }
     if abstain_confirmation != Some("not_required") {
-        return Err(ObjectiveFunctionV1Error::InvalidField(
-            "intrinsic abstain",
-        ));
+        return Err(ObjectiveFunctionV1Error::InvalidField("intrinsic abstain"));
     }
 
     for action in &value.forbidden_action_classes {
@@ -718,8 +721,8 @@ fn stable_id(value: &str, field: &'static str) -> Result<(), ObjectiveFunctionV1
 }
 
 fn digest(value: &str, field: &'static str) -> Result<(), ObjectiveFunctionV1Error> {
-    let value = Digest32::from_str(value)
-        .map_err(|_| ObjectiveFunctionV1Error::InvalidField(field))?;
+    let value =
+        Digest32::from_str(value).map_err(|_| ObjectiveFunctionV1Error::InvalidField(field))?;
     if value.is_zero() {
         return Err(ObjectiveFunctionV1Error::InvalidField(field));
     }

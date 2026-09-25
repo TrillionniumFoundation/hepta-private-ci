@@ -83,7 +83,7 @@ pub use objective_function_v1::ObjectiveFunctionV1Artifact;
 pub use objective_function_v1::ObjectiveFunctionV1Error;
 pub use objective_function_v1::decode_objective_function_v1;
 pub use objective_function_v1::encode_authenticated_objective_function_v1;
-pub use objective_function_v1::encode_objective_function_v1;
+pub(crate) use objective_function_v1::encode_objective_function_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;

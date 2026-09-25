@@ -89,6 +89,7 @@ fn record(run_id: &str, sequence: u64) -> RunStartRecordV1 {
 struct MemoryCheckpoint {
     checkpoint: Arc<Mutex<RunStartCheckpointV1>>,
     fail_next: Arc<AtomicBool>,
+    fail_after_update_next: Arc<AtomicBool>,
 }
 
 impl MemoryCheckpoint {
@@ -100,6 +101,7 @@ impl MemoryCheckpoint {
                 compacted_digest: Digest32::ZERO,
             })),
             fail_next: Arc::new(AtomicBool::new(false)),
+            fail_after_update_next: Arc::new(AtomicBool::new(false)),
         }
     }
 
@@ -113,6 +115,10 @@ impl MemoryCheckpoint {
 
     fn fail_next(&self) {
         self.fail_next.store(true, Ordering::SeqCst);
+    }
+
+    fn fail_after_update_next(&self) {
+        self.fail_after_update_next.store(true, Ordering::SeqCst);
     }
 }
 
@@ -154,6 +160,9 @@ impl RunStartCheckpointOwnerV1 for MemoryCheckpoint {
             return Err(RunStartStoreError::RollbackDetected);
         }
         *current = next;
+        if self.fail_after_update_next.swap(false, Ordering::SeqCst) {
+            return Err(RunStartStoreError::Indeterminate);
+        }
         Ok(())
     }
 }
@@ -429,4 +438,111 @@ fn crash_after_segment_rename_without_successor_recovers_new_active_segment() {
     assert_eq!(reopened.head_anchor().sequence, 1);
     let second = must(reopened.append_run_start(first.chain_digest, record("run.rename.2", 2)));
     assert_eq!(second.sequence, 2);
+}
+
+#[test]
+fn append_checkpoint_ack_loss_after_durable_cas_reopens_exact_result() {
+    let fixture = Fixture::new("append-cas-ack-loss");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(2, checkpoint.clone()));
+    checkpoint.fail_after_update_next();
+    assert_eq!(
+        store.append_run_start(Digest32::ZERO, record("run.append.cas", 1)),
+        Err(RunStartStoreError::Indeterminate)
+    );
+    assert_eq!(checkpoint.anchor().sequence, 1);
+    drop(store);
+
+    let mut reopened = must(fixture.open(2, checkpoint.clone()));
+    let existing = must(reopened.get(&id("run.append.cas")))
+        .cloned()
+        .expect("durable append");
+    let replay = must(reopened.append_run_start(checkpoint.anchor().chain_digest, existing));
+    assert_eq!(
+        replay.disposition,
+        RunStartAppendDisposition::IdempotentReplay
+    );
+    assert_eq!(replay.sequence, 1);
+}
+
+#[test]
+fn compaction_checkpoint_ack_loss_after_durable_cas_commits_pending_summary() {
+    let fixture = Fixture::new("compact-cas-ack-loss");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(1, checkpoint.clone()));
+    let first = must(store.append_run_start(Digest32::ZERO, record("run.compact.cas.1", 1)));
+    must(store.append_run_start(first.chain_digest, record("run.compact.cas.2", 2)));
+    checkpoint.fail_after_update_next();
+    assert_eq!(
+        store.compact_expired_prefix(20_001),
+        Err(RunStartStoreError::Indeterminate)
+    );
+    assert_eq!(checkpoint.checkpoint().compacted_prefix.sequence, 1);
+    drop(store);
+
+    let reopened = must(fixture.open(1, checkpoint.clone()));
+    assert_eq!(reopened.local_checkpoint(), checkpoint.checkpoint());
+    assert_eq!(reopened.local_checkpoint().compacted_prefix.sequence, 1);
+    assert_eq!(reopened.sealed_segment_paths().len(), 0);
+    assert!(must(reopened.get(&id("run.compact.cas.1"))).is_none());
+    assert!(must(reopened.get(&id("run.compact.cas.2"))).is_some());
+}
+
+#[test]
+fn checkpoint_bootstrap_is_allowed_only_for_a_pristine_known_layout() {
+    let fixture = Fixture::new("checkpoint-bootstrap");
+    must(fs::remove_dir_all(&fixture.root));
+    assert!(must(
+        DurableRunStartStore::checkpoint_initialization_allowed(&fixture.root)
+    ));
+
+    must(fs::create_dir_all(&fixture.root));
+    assert!(must(
+        DurableRunStartStore::checkpoint_initialization_allowed(&fixture.root)
+    ));
+
+    must(fs::create_dir_all(fixture.root.join("segments")));
+    assert!(must(
+        DurableRunStartStore::checkpoint_initialization_allowed(&fixture.root)
+    ));
+
+    must(fs::write(
+        fixture.root.join("active.bin"),
+        b"durable-history",
+    ));
+    assert!(!must(
+        DurableRunStartStore::checkpoint_initialization_allowed(&fixture.root)
+    ));
+    must(fs::remove_file(fixture.root.join("active.bin")));
+
+    must(fs::write(fixture.root.join("unknown-state"), b"unknown"));
+    assert!(!must(
+        DurableRunStartStore::checkpoint_initialization_allowed(&fixture.root)
+    ));
+}
+
+#[test]
+fn failed_rotation_poisons_writer_until_reopen() {
+    let fixture = Fixture::new("rotate-poison");
+    let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
+    let mut store = must(fixture.open(1, checkpoint));
+    let first = must(store.append_run_start(Digest32::ZERO, record("run.rotate.poison.1", 1)));
+    let sealed_name = super::segment_filename(
+        RunStartAnchor::ZERO,
+        RunStartAnchor {
+            sequence: first.sequence,
+            chain_digest: first.chain_digest,
+        },
+    )
+    .expect("sealed segment name");
+    must(fs::write(
+        fixture.root.join("segments").join(sealed_name),
+        b"preexisting-conflict",
+    ));
+
+    assert_eq!(
+        store.append_run_start(first.chain_digest, record("run.rotate.poison.2", 2)),
+        Err(RunStartStoreError::SegmentMismatch)
+    );
+    assert_eq!(store.records(), Err(RunStartStoreError::Poisoned));
 }

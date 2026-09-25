@@ -68,6 +68,8 @@ jobs:
           cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
           cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
           cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
+          cargo test --locked -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
 
       - name: Strict objective and product-composition lint
         working-directory: codex-rs

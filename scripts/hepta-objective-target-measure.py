@@ -17,7 +17,9 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 CARGO_ROOT = ROOT / "codex-rs"
 PREFIX = "OBJECTIVE_MEASUREMENT="
+PRODUCT_PREFIX = "OBJECTIVE_PRODUCT_MEASUREMENT="
 SCHEMA = "hepta.objective-target-host-evidence.v1"
+PRODUCT_SCHEMA = "hepta.objective-product-target-measurement.v1"
 
 
 def fail(message: str) -> None:
@@ -66,6 +68,68 @@ def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
     return value
 
 
+def parse_product_measurement(output: str) -> dict[str, Any]:
+    rows = [
+        line.split(PRODUCT_PREFIX, 1)[1]
+        for line in output.splitlines()
+        if PRODUCT_PREFIX in line
+    ]
+    if len(rows) != 1:
+        fail(f"expected exactly one product measurement row, received {len(rows)}")
+    try:
+        value = json.loads(rows[0])
+    except ValueError as error:
+        fail(f"invalid product measurement JSON: {error}")
+    if value.get("schema") != PRODUCT_SCHEMA:
+        fail("unexpected product measurement schema")
+    if value.get("path") != "signed_objective_daemon_round_trip":
+        fail(f"unexpected product measurement path: {value.get('path')!r}")
+    samples = value.get("samples")
+    if not isinstance(samples, int) or samples <= 0:
+        fail("invalid product measurement sample count")
+    latency = value.get("latencyNanoseconds")
+    if not isinstance(latency, dict):
+        fail("missing product latency distribution")
+    ordered = [latency.get(key) for key in ("p50", "p95", "p99")]
+    if not all(isinstance(item, int) and item >= 0 for item in ordered):
+        fail("invalid product latency percentiles")
+    if ordered != sorted(ordered):
+        fail("non-monotone product latency percentiles")
+    for field in ("exactReplayNanoseconds", "restartReadyNanoseconds"):
+        if not isinstance(value.get(field), int) or value[field] < 0:
+            fail(f"invalid product measurement field: {field}")
+    if value.get("durableCheckpointSequence") != samples:
+        fail("product checkpoint sequence does not cover every measured request")
+    return value
+
+
+def run_product_fixture(samples: int) -> dict[str, Any]:
+    env = os.environ.copy()
+    env["HEPTA_OBJECTIVE_PRODUCT_MEASUREMENT_SAMPLES"] = str(samples)
+    started = time.monotonic_ns()
+    output = command(
+        "cargo",
+        "test",
+        "--locked",
+        "--release",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "objective_product_e2e",
+        "measurement_signed_objective_daemon_round_trip",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        cwd=CARGO_ROOT,
+        env=env,
+    )
+    harness_ns = time.monotonic_ns() - started
+    measurement = parse_product_measurement(output)
+    measurement["harnessWallNanoseconds"] = harness_ns
+    return measurement
+
+
 def run_fixture(test_name: str, expected_path: str, samples: int) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES"] = str(samples)
@@ -99,6 +163,16 @@ def self_test() -> int:
     parsed = parse_measurement(fixture, "ordinary_authenticated_admission_compile")
     if parsed["latencyNanoseconds"]["p99"] != 30:
         fail("self-test parse mismatch")
+    product_fixture = (
+        'OBJECTIVE_PRODUCT_MEASUREMENT={"schema":"hepta.objective-product-target-measurement.v1",'
+        '"path":"signed_objective_daemon_round_trip","samples":3,'
+        '"latencyNanoseconds":{"p50":100,"p95":200,"p99":300},'
+        '"exactReplayNanoseconds":80,"restartReadyNanoseconds":400,'
+        '"durableCheckpointSequence":3}'
+    )
+    product = parse_product_measurement(product_fixture)
+    if product["restartReadyNanoseconds"] != 400:
+        fail("product self-test parse mismatch")
     print("PASS_HEPTA_OBJECTIVE_TARGET_MEASUREMENT_SELF_TEST")
     return 0
 
@@ -125,6 +199,7 @@ def measure(args: argparse.Namespace) -> int:
         "maximum_conflict_extraction",
         args.conflict_samples,
     )
+    product = run_product_fixture(args.product_samples)
 
     evidence = {
         "schema": SCHEMA,
@@ -140,9 +215,10 @@ def measure(args: argparse.Namespace) -> int:
             "cargo": cargo,
         },
         "buildProfile": "release",
-        "measurements": [ordinary, conflict],
+        "measurements": [ordinary, conflict, product],
         "interpretation": {
             "ordinaryAndConflictAreSeparate": True,
+            "productIncludesSignedIngressSocketFsyncAndRestart": True,
             "ciRunnerIsNotProductionEvidence": True,
             "activationGranted": False,
             "releaseGranted": False,
@@ -168,6 +244,7 @@ def main() -> int:
     parser.add_argument("--host-profile-id")
     parser.add_argument("--ordinary-samples", type=int, default=1_000)
     parser.add_argument("--conflict-samples", type=int, default=64)
+    parser.add_argument("--product-samples", type=int, default=32)
     parser.add_argument("--output")
     args = parser.parse_args()
 
@@ -183,6 +260,8 @@ def main() -> int:
         parser.error("--ordinary-samples must be in 1..=100000")
     if not (1 <= args.conflict_samples <= 10_000):
         parser.error("--conflict-samples must be in 1..=10000")
+    if not (1 <= args.product_samples <= 1_000):
+        parser.error("--product-samples must be in 1..=1000")
     return measure(args)
 
 

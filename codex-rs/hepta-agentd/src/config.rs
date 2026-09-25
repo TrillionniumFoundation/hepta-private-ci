@@ -81,6 +81,7 @@ pub struct AgentdConfig {
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     objective_profile_file: Option<PathBuf>,
+    objective_checkpoint_file: Option<PathBuf>,
     authbus_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
@@ -204,6 +205,7 @@ impl AgentdConfig {
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
             objective_profile_file: None,
+            objective_checkpoint_file: None,
             authbus_checkpoint_file: None,
             cognitive_ranker: None,
             production_operations: None,
@@ -282,6 +284,17 @@ impl AgentdConfig {
 
     pub(crate) fn objective_profile_file(&self) -> Option<&Path> {
         self.objective_profile_file.as_deref()
+    }
+
+    /// Independent monotonic witness for the segmented objective RunStart
+    /// history. It must live outside the Agent home rollback domain.
+    pub fn with_objective_checkpoint_file(mut self, path: PathBuf) -> Self {
+        self.objective_checkpoint_file = Some(path);
+        self
+    }
+
+    pub(crate) fn objective_checkpoint_file(&self) -> Option<&Path> {
+        self.objective_checkpoint_file.as_deref()
     }
 
     /// Independently retained replay witness. Production signed ingress requires
