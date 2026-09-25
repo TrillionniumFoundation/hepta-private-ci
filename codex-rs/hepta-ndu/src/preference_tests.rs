@@ -15,7 +15,9 @@ use super::solve_preference_target;
 use super::validate_staged_updates;
 use crate::AxisValue;
 use crate::NduError;
+use crate::NduIterationContextV1;
 use crate::SubjectClass;
+use crate::bind_solver_iteration_receipt_v1;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -264,7 +266,7 @@ fn one_subject_cannot_select_two_artifacts_in_one_generation() {
 }
 
 #[test]
-fn impossible_local_receipt_invariants_are_rejected() {
+fn malformed_local_solver_receipts_reject_before_protocol_publication() {
     let revision = must(Revision::new(1));
     let next_revision = must(Revision::new(2));
     let invalid = NduSolverIterationReceipt {
@@ -277,9 +279,21 @@ fn impossible_local_receipt_invariants_are_rejected() {
         projection_count: 0,
         state_digest: Digest32::of_bytes(b"state"),
     };
+    let context = NduIterationContextV1 {
+        subject_id: id("agent-a"),
+        subject_class: SubjectClass::Agent,
+        objective_digest: Digest32::of_bytes(b"objective"),
+        generation: must(Generation::new(4)),
+        event_digest: Digest32::of_bytes(b"event"),
+        coefficient_digest: Digest32::of_bytes(b"coefficient"),
+    };
 
     assert_eq!(
         must_err(invalid.validate()),
+        NduError::InvalidSolverReceipt("iteration")
+    );
+    assert_eq!(
+        must_err(bind_solver_iteration_receipt_v1(&context, &invalid)),
         NduError::InvalidSolverReceipt("iteration")
     );
 }

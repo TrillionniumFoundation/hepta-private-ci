@@ -42,6 +42,9 @@ class LaneDChangeScopeTests(unittest.TestCase):
                     {
                         "module": module,
                         "authorityDelta": "none",
+                        "productCallerState": LANE_D.EXPECTED_MAP_PRODUCT_CALLER_STATES[
+                            module
+                        ],
                         "sourceRoot": root,
                         "operations": [
                             {
@@ -304,6 +307,9 @@ class LaneDOwnerMapTests(unittest.TestCase):
             "schemaVersion": 3,
             "module": self.module,
             "authorityDelta": "none",
+            "productCallerState": LANE_D.EXPECTED_MAP_PRODUCT_CALLER_STATES[
+                self.module
+            ],
             "sourceRoot": self.roots.copy(),
             "declaredRoots": self.roots.copy(),
             "operations": self.operations,
@@ -315,6 +321,17 @@ class LaneDOwnerMapTests(unittest.TestCase):
     def verify(self) -> tuple[str, ...]:
         self.map_path.write_text(json.dumps(self.mapping), encoding="utf-8")
         return LANE_D.verify_map(self.module)
+
+    def test_product_caller_truth_boundary_is_exact(self) -> None:
+        self.assertEqual(self.verify(), tuple(self.roots))
+        for state in ("not_established", "not_composed", "source_composed"):
+            with self.subTest(state=state):
+                self.mapping["productCallerState"] = state
+                with self.assertRaisesRegex(SystemExit, "map productCallerState"):
+                    self.verify()
+        self.mapping["productCallerState"] = (
+            LANE_D.EXPECTED_MAP_PRODUCT_CALLER_STATES[self.module]
+        )
 
     def test_canonical_v3_roots_admit_sources_in_each_declared_owner(self) -> None:
         self.assertEqual(self.verify(), tuple(self.roots))
@@ -386,6 +403,19 @@ class LaneDOwnerMapTests(unittest.TestCase):
                 finally:
                     target.unlink()
                     target.write_text(original)
+
+    def test_test_symbols_must_be_concrete_existing_functions(self) -> None:
+        test = self.mapping["operations"][0]["tests"][0]
+        for symbol in ("", "natural language fixture", "first / second", None):
+            with self.subTest(symbol=symbol):
+                test["symbol"] = symbol
+                with self.assertRaisesRegex(SystemExit, "invalid test symbol"):
+                    self.verify()
+        test["symbol"] = "missing_regression"
+        with self.assertRaisesRegex(SystemExit, "missing test symbol"):
+            self.verify()
+        test["symbol"] = "regression"
+        self.assertEqual(self.verify(), tuple(self.roots))
 
     def test_real_json_loader_rejects_ambiguous_or_nonobject_maps(self) -> None:
         relative = LANE_D.MAPS[self.module]

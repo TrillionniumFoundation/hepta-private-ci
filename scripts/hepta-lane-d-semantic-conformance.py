@@ -14,6 +14,21 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ("objective.compiler", "utility.ndu", "control.runtime")
 MAPS = {module: f"docs/modules/{module}/IMPLEMENTATION_MAP.json" for module in MODULES}
+EXPECTED_MAP_PRODUCT_CALLER_STATES = {
+    "objective.compiler": "source_composed_authenticated_agentd_not_activated",
+    "utility.ndu": (
+        "request_local_read_only_established_authenticated_owner_source_candidate_"
+        "not_product_composed"
+    ),
+    "control.runtime": "not_composed",
+}
+EXPECTED_MATURITY_PRODUCT_CALLER_STATES = {
+    "objective.compiler": "source_composed_authenticated_agentd_not_activated",
+    "utility.ndu": (
+        "request_local_read_only_established_authenticated_production_not_composed"
+    ),
+    "control.runtime": "not_established",
+}
 REQUIRED_DOCS = (
     "docs/contracts/OBJECTIVE_ERRORS.json",
     "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
@@ -83,6 +98,11 @@ def verify_map(module: str) -> tuple[str, ...]:
     mapping = load(MAPS[module])
     need(mapping.get("module") == module, f"{module} map identity")
     need(mapping.get("authorityDelta") == "none", f"{module} authority delta")
+    need(
+        mapping.get("productCallerState")
+        == EXPECTED_MAP_PRODUCT_CALLER_STATES[module],
+        f"truth boundary {module} map productCallerState",
+    )
     # v3 owns a list of declared roots; sourceRoot is its compatibility alias.
     # Retain legacy scalar maps without rewriting the canonical registry.
     raw_roots = mapping.get("declaredRoots", mapping.get("sourceRoot"))
@@ -145,12 +165,18 @@ def verify_map(module: str) -> tuple[str, ...]:
             )
             need((ROOT / test_path).is_file(), f"missing test {test_path}")
             test_source = (ROOT / test_path).read_text(encoding="utf-8")
-            test_symbol = test["symbol"]
-            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", test_symbol):
-                need(
-                    f"fn {test_symbol}" in test_source,
-                    f"missing test symbol {test_symbol}",
-                )
+            test_symbol = test.get("symbol")
+            need(
+                isinstance(test_symbol, str)
+                and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", test_symbol)
+                is not None,
+                f"invalid test symbol {test_symbol!r}",
+            )
+            need(
+                re.search(rf"\bfn\s+{re.escape(test_symbol)}\b", test_source)
+                is not None,
+                f"missing test symbol {test_symbol}",
+            )
 
     return tuple(owner_roots)
 
@@ -315,16 +341,10 @@ def verify() -> int:
     for row in maturity["modules"]:
         module = row["module"]
         product_caller = row["dimensions"]["productCaller"]["state"]
-        if module == "objective.compiler":
-            need(
-                product_caller == "source_composed_authenticated_agentd_not_activated",
-                f"truth boundary {module} productCaller",
-            )
-        else:
-            need(
-                product_caller == "not_established",
-                f"truth boundary {module} productCaller",
-            )
+        need(
+            product_caller == EXPECTED_MATURITY_PRODUCT_CALLER_STATES[module],
+            f"truth boundary {module} productCaller",
+        )
         for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
