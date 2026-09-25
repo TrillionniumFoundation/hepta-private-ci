@@ -399,3 +399,10 @@ This receipt records repository source bindings for the current documentation ca
 - The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+
+## 18. Supervisor convergence mechanics
+
+[Recovery and qualification](RECOVERY_AND_QUALIFICATION.md) defines bounded startup/runtime failure handling, durable explicit-stop suppression, ambiguous signed recovery, native full-frame deadlines and per-Agent tick scheduling. [Production release caller](PRODUCTION_RELEASE_CALLER.md) defines the independent signer/caller/owner path and exact-grant historical lookup.
+
+The current implementation adds no model, tool or secret-reading authority to Supervisor. Default builds still omit `production-authority`; read-only context/history calls are not execution permits. The source files, focused tests and host qualification executable must be checked on the same committed source and applicable deterministic merge. Historical passes, dirty-worktree runs and control-protocol fixtures are not interchangeable with deployed real-Agentd acceptance.

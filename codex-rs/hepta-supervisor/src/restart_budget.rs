@@ -17,6 +17,11 @@ pub struct RestartBudgetState {
     pub window_started_unix_ms: u64,
     pub attempts: u32,
     pub pending: bool,
+    // Omitted when false so existing v2 record digests remain valid on read.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub operator_stopped: bool,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub pending_requires_spawn: bool,
     pub next_eligible_unix_ms: u64,
 }
 
@@ -39,6 +44,37 @@ pub struct RestartClaim {
     pub backoff: Duration,
 }
 
+pub(crate) fn operator_stopped(run_root: &Path) -> Result<bool, RestartBudgetError> {
+    Ok(read_restart_budget(run_root)?.is_some_and(|state| state.operator_stopped))
+}
+
+pub(crate) fn suppress_restart(run_root: &Path) -> Result<(), RestartBudgetError> {
+    let now_ms = unix_ms()?;
+    let mut state = read_restart_budget(run_root)?.unwrap_or(RestartBudgetState {
+        schema_version: RESTART_BUDGET_SCHEMA_VERSION,
+        window_started_unix_ms: now_ms,
+        attempts: 0,
+        pending: false,
+        operator_stopped: false,
+        pending_requires_spawn: false,
+        next_eligible_unix_ms: now_ms,
+    });
+    state.pending = false;
+    state.pending_requires_spawn = false;
+    state.operator_stopped = true;
+    write_restart_budget(run_root, &state)
+}
+
+pub(crate) fn resume_restart(run_root: &Path) -> Result<(), RestartBudgetError> {
+    if let Some(mut state) = read_restart_budget(run_root)?
+        && state.operator_stopped
+    {
+        state.operator_stopped = false;
+        write_restart_budget(run_root, &state)?;
+    }
+    Ok(())
+}
+
 pub fn claim_restart(
     run_root: &Path,
     maximum_attempts: u32,
@@ -53,8 +89,16 @@ pub fn claim_restart(
         window_started_unix_ms: now_ms,
         attempts: 0,
         pending: false,
+        operator_stopped: false,
+        pending_requires_spawn: false,
         next_eligible_unix_ms: now_ms,
     });
+    if state.operator_stopped {
+        return Err(RestartBudgetError::Invalid(
+            "operator stop forbids automatic restart until an explicit start or restart"
+                .to_string(),
+        ));
+    }
     if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION
         || state.window_started_unix_ms == 0
         || state.attempts > maximum_attempts
@@ -89,6 +133,7 @@ pub fn claim_restart(
         .checked_add(1)
         .ok_or_else(|| RestartBudgetError::Invalid("restart attempts overflow".to_string()))?;
     state.pending = true;
+    state.pending_requires_spawn = true;
     let backoff = backoff_for(state.attempts, base_backoff)?;
     let backoff_ms = u64::try_from(backoff.as_millis())
         .map_err(|_| RestartBudgetError::Invalid("restart backoff exceeds u64".to_string()))?;
@@ -107,6 +152,7 @@ pub fn complete_restart(run_root: &Path) -> Result<(), RestartBudgetError> {
         return Ok(());
     };
     state.pending = false;
+    state.pending_requires_spawn = false;
     state.next_eligible_unix_ms = unix_ms()?;
     write_restart_budget(run_root, &state)
 }
@@ -122,6 +168,11 @@ pub fn restart_available(
     if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION || state.attempts > maximum_attempts {
         return Err(RestartBudgetError::Invalid(
             "restart budget state is outside configured bounds".to_string(),
+        ));
+    }
+    if unix_ms()? < state.window_started_unix_ms {
+        return Err(RestartBudgetError::Invalid(
+            "clock rollback cannot replenish restart budget".to_string(),
         ));
     }
     if state.pending {
@@ -148,10 +199,15 @@ pub fn pending_restart(
             "restart budget state is outside configured bounds".to_string(),
         ));
     }
-    if !state.pending {
+    let now_ms = unix_ms()?;
+    if now_ms < state.window_started_unix_ms {
+        return Err(RestartBudgetError::Invalid(
+            "clock rollback cannot resume a restart permit".to_string(),
+        ));
+    }
+    if !state.pending || state.operator_stopped {
         return Ok(None);
     }
-    let now_ms = unix_ms()?;
     Ok(Some(RestartClaim {
         attempt: state.attempts,
         backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
