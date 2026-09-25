@@ -3532,6 +3532,8 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state",
+ "codex-utils-absolute-path",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -3686,12 +3688,15 @@ dependencies = [
 name = "codex-hepta-control-plane"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-authbus",
  "codex-hepta-contracts",
+ "codex-hepta-fleet",
  "codex-hepta-ndu",
  "codex-hepta-operations",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
+ "rustix 1.1.4",
  "tempfile",
  "tokio",
 ]
@@ -4055,6 +4060,8 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
+ "codex-utils-absolute-path",
  "ed25519-dalek",
  "sqlx",
  "tempfile",
@@ -4188,15 +4195,20 @@ dependencies = [
  "anyhow",
  "base64 0.22.1",
  "codex-hepta-agent-protocol",
+ "codex-hepta-authbus",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
+ "codex-hepta-evidence",
  "codex-hepta-fleet",
  "codex-hepta-intelligence-eval",
  "codex-hepta-matrix-protocol",
  "codex-hepta-memory",
+ "codex-hepta-ndu",
  "codex-hepta-paths",
  "codex-hepta-types",
+ "codex-state",
  "codex-uds",
+ "codex-utils-absolute-path",
  "constant_time_eq",
  "ed25519-dalek",
  "jsonschema",

@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
@@ -13,12 +15,26 @@ use crate::ZEstimateV1;
 use crate::admit_covariance_profile;
 use crate::admit_z_conversion_profile;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
+fn must_err<T, E>(result: Result<T, E>) -> E {
+    match result {
+        Err(error) => error,
+        Ok(_) => panic!("expected an error"),
+    }
+}
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
 fn covariance() -> crate::AdmittedCovarianceProfileV1 {
-    admit_covariance_profile(NduCovarianceProfileV1 {
+    must(admit_covariance_profile(NduCovarianceProfileV1 {
         units_digest: digest("driver-units"),
         driver_dimension: 2,
         utility_dimension: 1,
@@ -28,20 +44,18 @@ fn covariance() -> crate::AdmittedCovarianceProfileV1 {
         maximum_absolute_sample: 1e6,
         maximum_absolute_z: 100.0,
         maximum_relative_residual: 1e-10,
-    })
-    .expect("covariance")
+    }))
 }
 
 fn conversion() -> crate::AdmittedZConversionProfileV1 {
-    admit_z_conversion_profile(NduZConversionProfileV1 {
+    must(admit_z_conversion_profile(NduZConversionProfileV1 {
         units_digest: digest("driver-units"),
         driver_dimension: 2,
         utility_dimension: 1,
         source_coordinates: ZCoordinateConventionV1::OriginalIncrement,
         whitening_lower: Vec::new(),
         maximum_absolute_z: 100.0,
-    })
-    .expect("conversion")
+    }))
 }
 
 fn specification(
@@ -65,12 +79,11 @@ fn specification(
 fn coefficient_profile_binds_covariance_conversion_units_and_dimensions() {
     let covariance = covariance();
     let conversion = conversion();
-    let admitted = admit_ndu_coefficient_profile(
+    let admitted = must(admit_ndu_coefficient_profile(
         specification(&covariance, &conversion),
         &covariance,
         &conversion,
-    )
-    .expect("profile");
+    ));
 
     assert_eq!(admitted.covariance_profile_digest(), covariance.digest());
     assert_eq!(admitted.z_conversion_profile_digest(), conversion.digest());
@@ -79,7 +92,11 @@ fn coefficient_profile_binds_covariance_conversion_units_and_dimensions() {
     let mut wrong = specification(&covariance, &conversion);
     wrong.z_conversion_profile_digest = digest("wrong-conversion");
     assert_eq!(
-        admit_ndu_coefficient_profile(wrong, &covariance, &conversion).expect_err("profile drift"),
+        must_err(admit_ndu_coefficient_profile(
+            wrong,
+            &covariance,
+            &conversion,
+        )),
         NduCoefficientProfileError::ProfileMismatch
     );
 }
@@ -88,12 +105,11 @@ fn coefficient_profile_binds_covariance_conversion_units_and_dimensions() {
 fn q24_projection_requires_exact_covariance_provenance() {
     let covariance = covariance();
     let conversion = conversion();
-    let admitted = admit_ndu_coefficient_profile(
+    let admitted = must(admit_ndu_coefficient_profile(
         specification(&covariance, &conversion),
         &covariance,
         &conversion,
-    )
-    .expect("profile");
+    ));
     let estimate = ZEstimateV1 {
         z: vec![vec![3.0, -1.0]],
         covariance_profile_digest: covariance.digest(),
@@ -103,8 +119,12 @@ fn q24_projection_requires_exact_covariance_provenance() {
         evidence_digest: digest("z-estimate"),
         authority: AuthorityPosture::DENY_ALL,
     };
-    let projected = project_z_estimate_to_coefficient_q24(&estimate, &admitted, &conversion, 5_000)
-        .expect("projection");
+    let projected = must(project_z_estimate_to_coefficient_q24(
+        &estimate,
+        &admitted,
+        &conversion,
+        5_000,
+    ));
 
     assert_eq!(projected.q24_raw, vec![vec![3 * (1 << 24), -(1 << 24)]]);
     assert_eq!(projected.coefficient_profile_digest, admitted.digest());
@@ -116,8 +136,12 @@ fn q24_projection_requires_exact_covariance_provenance() {
         ..estimate
     };
     assert_eq!(
-        project_z_estimate_to_coefficient_q24(&wrong, &admitted, &conversion, 5_000)
-            .expect_err("wrong covariance"),
+        must_err(project_z_estimate_to_coefficient_q24(
+            &wrong,
+            &admitted,
+            &conversion,
+            5_000,
+        )),
         NduCoefficientProfileError::ProfileMismatch
     );
 }
@@ -128,7 +152,11 @@ fn expired_coefficient_profile_rejects_projection() {
     let conversion = conversion();
     let mut spec = specification(&covariance, &conversion);
     spec.expires_unix_ms = 5_000;
-    let admitted = admit_ndu_coefficient_profile(spec, &covariance, &conversion).expect("profile");
+    let admitted = must(admit_ndu_coefficient_profile(
+        spec,
+        &covariance,
+        &conversion,
+    ));
     let estimate = ZEstimateV1 {
         z: vec![vec![0.0, 0.0]],
         covariance_profile_digest: covariance.digest(),
@@ -139,8 +167,12 @@ fn expired_coefficient_profile_rejects_projection() {
         authority: AuthorityPosture::DENY_ALL,
     };
     assert_eq!(
-        project_z_estimate_to_coefficient_q24(&estimate, &admitted, &conversion, 5_000)
-            .expect_err("expiry"),
+        must_err(project_z_estimate_to_coefficient_q24(
+            &estimate,
+            &admitted,
+            &conversion,
+            5_000,
+        )),
         NduCoefficientProfileError::Expiry
     );
 }

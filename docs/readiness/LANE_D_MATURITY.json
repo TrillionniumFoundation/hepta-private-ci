@@ -211,11 +211,10 @@
         "productCaller": {
           "state": "request_local_read_only_established_authenticated_production_not_composed",
           "evidence": [
-            "codex-rs/hepta-agentd/src/cognitive_context.rs",
-            "codex-rs/hepta-control-plane/src/planner_context.rs",
-            "codex-rs/hepta-control-plane/src/planner_ndu.rs",
-            "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
-            "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
+            "codex-rs/hepta-agentd/src/cognitive_context.rs::plan_observed_context",
+            "codex-rs/hepta-control-plane/src/planner_context.rs::plan_observed_context",
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs::evaluate_prepared_plan_with_ndu",
+            "codex-rs/hepta-control-plane/src/global_plane.rs::compose_global_plan_with_fleet_v1"
           ]
         },
         "productionWriter": {
@@ -290,9 +289,12 @@
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "planner_journal_store_source_implemented_target_host_qualification_pending",
           "evidence": [
-            "PlannerJournalV1"
+            "codex-rs/hepta-control-plane/src/planner_store.rs::PlannerJournalStoreV1",
+            "durable_store_reopens_selected_plan_after_ack_loss",
+            "torn_next_file_never_replaces_the_last_committed_state",
+            "restore_of_pre_revocation_backup_fails_current_recovery_floor"
           ]
         },
         "effectAuthority": {
@@ -302,16 +304,26 @@
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "state": "pending_current_candidate_workflow_success",
+          "evidence": [
+            ".github/workflows/control-runtime-qualification.yml",
+            "source-head and deterministic synthetic-merge receipts must bind one candidate"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "local_agentd_composed_global_supervisor_host_source_composed_not_activated",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs::plan_observed_context",
+            "codex-rs/hepta-supervisor/src/global_control.rs::GlobalControlHostV1",
+            "codex-rs/hepta-control-plane/src/global_plane.rs::compose_global_plan_with_fleet_v1"
+          ]
         },
         "productionWriter": {
-          "state": "not_established",
-          "evidence": []
+          "state": "planner_journal_store_source_implemented_not_deployment_activated",
+          "evidence": [
+            "codex-rs/hepta-control-plane/src/planner_store.rs::PlannerJournalStoreV1",
+            "codex-rs/hepta-supervisor/src/global_control.rs::GlobalControlHostV1"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -328,6 +340,10 @@
         "sealedPlanningIntegrity": {
           "state": "candidate_implemented",
           "evidence": [
+            "exact_resource_reservations_change_prepared_identity_even_when_feasibility_is_equal",
+            "time_before_snapshot_collection_is_rejected",
+            "isolated_selection_cannot_be_appended",
+            "hash_valid_isolated_selection_cannot_be_reopened",
             "tampered_candidate_payload_is_rejected_before_grant_request",
             "grant_request_revalidates_snapshot_masks_and_digest"
           ]
@@ -337,7 +353,8 @@
           "evidence": [
             "snapshotPolicyDigest",
             "evaluationPolicyDigest",
-            "resourceProfileDigest"
+            "resourceProfileDigest",
+            "resourceReservationDigest"
           ]
         }
       }

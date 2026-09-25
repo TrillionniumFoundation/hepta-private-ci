@@ -15,7 +15,9 @@ use super::solve_preference_target;
 use super::validate_staged_updates;
 use crate::AxisValue;
 use crate::NduError;
+use crate::NduIterationContextV1;
 use crate::SubjectClass;
+use crate::bind_solver_iteration_receipt_v1;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -24,10 +26,17 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
-fn must_err<T: Debug, E>(result: Result<T, E>) -> E {
+fn must_err<T, E>(result: Result<T, E>) -> E {
     match result {
         Err(error) => error,
-        Ok(value) => panic!("expected error, received value: {value:?}"),
+        Ok(_) => panic!("expected an error"),
+    }
+}
+
+fn must_some<T>(value: Option<T>) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("expected a value"),
     }
 }
 
@@ -61,20 +70,16 @@ fn damped_preference_update_emits_local_solver_receipts() {
     assert!(terminal.revision.get() > 1);
     assert!(terminal.values[0].value <= FixedQ32::ONE);
     assert_eq!(
-        usize::try_from(termination.iterations).expect("bounded iteration count"),
+        must(usize::try_from(termination.iterations)),
         receipts.len()
     );
     assert_eq!(
         termination.terminal_residual_raw,
-        receipts.last().expect("terminal receipt").residual_raw
+        must_some(receipts.last()).residual_raw
     );
     assert_eq!(
         termination.maximum_residual_raw,
-        receipts
-            .iter()
-            .map(|receipt| receipt.residual_raw)
-            .max()
-            .expect("maximum residual")
+        must_some(receipts.iter().map(|receipt| receipt.residual_raw).max(),)
     );
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }
@@ -160,7 +165,7 @@ fn preference_dimension_and_value_bounds_fail_at_boundary() {
 }
 
 #[test]
-fn iteration_exhaustion_is_unavailable() {
+fn iteration_bound_exhaustion_is_unavailable() {
     let initial = must(PreferenceState::genesis(
         id("agent-slow"),
         SubjectClass::Agent,
@@ -191,7 +196,7 @@ fn iteration_exhaustion_is_unavailable() {
 }
 
 #[test]
-fn parent_and_child_updates_cannot_share_generation() {
+fn parent_and_child_updates_cannot_share_generation_within_one_hierarchy() {
     let generation = must(Generation::new(7));
     let error = must_err(validate_staged_updates(&[
         UpdateGeneration {
@@ -214,7 +219,7 @@ fn parent_and_child_updates_cannot_share_generation() {
 }
 
 #[test]
-fn unrelated_hierarchy_updates_can_share_generation() {
+fn unrelated_hierarchies_may_advance_different_levels_in_same_generation() {
     let generation = must(Generation::new(8));
     must(validate_staged_updates(&[
         UpdateGeneration {
@@ -264,7 +269,7 @@ fn one_subject_cannot_select_two_artifacts_in_one_generation() {
 }
 
 #[test]
-fn impossible_local_receipt_invariants_are_rejected() {
+fn malformed_local_solver_receipts_reject_before_protocol_publication() {
     let revision = must(Revision::new(1));
     let next_revision = must(Revision::new(2));
     let invalid = NduSolverIterationReceipt {
@@ -278,8 +283,16 @@ fn impossible_local_receipt_invariants_are_rejected() {
         state_digest: Digest32::of_bytes(b"state"),
     };
 
+    let context = NduIterationContextV1 {
+        subject_id: id("agent-a"),
+        subject_class: SubjectClass::Agent,
+        objective_digest: Digest32::of_bytes(b"objective"),
+        generation: must(Generation::new(4)),
+        event_digest: Digest32::of_bytes(b"event"),
+        coefficient_digest: Digest32::of_bytes(b"coefficient"),
+    };
     assert_eq!(
-        must_err(invalid.validate()),
+        must_err(bind_solver_iteration_receipt_v1(&context, &invalid)),
         NduError::InvalidSolverReceipt("iteration")
     );
 }

@@ -31,10 +31,10 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
-fn must_err<T: Debug, E>(result: Result<T, E>) -> E {
+fn must_err<T, E>(result: Result<T, E>) -> E {
     match result {
         Err(error) => error,
-        Ok(value) => panic!("expected error, received value: {value:?}"),
+        Ok(_) => panic!("expected an error"),
     }
 }
 
@@ -450,5 +450,45 @@ fn resource_profile_and_snapshot_policy_are_mandatory_and_digest_bound() {
     assert_eq!(
         must_err(prepare_plan(&changed, planning_request(1))),
         PlannerError::PreparedPlanMismatch
+    );
+}
+
+#[test]
+fn exact_resource_reservations_change_prepared_identity_even_when_feasibility_is_equal() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let first = must(prepare_plan(&snapshot, planning_request(1)));
+
+    let mut changed_request = planning_request(1);
+    changed_request.resource_reservations[0].endowment = q32(100);
+    changed_request.resource_reservations[0].essential_floor = q32(20);
+    let changed = must(prepare_plan(&snapshot, changed_request));
+
+    assert_eq!(first.candidate_set_digest(), changed.candidate_set_digest());
+    assert_eq!(
+        first.resource_rejected_candidate_ids(),
+        changed.resource_rejected_candidate_ids()
+    );
+    assert_ne!(
+        first.resource_reservation_digest(),
+        changed.resource_reservation_digest()
+    );
+    assert_ne!(first.prepared_digest(), changed.prepared_digest());
+}
+
+#[test]
+fn time_before_snapshot_collection_is_rejected() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request.now_micros = 999;
+
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::InvalidTime("current time before snapshot collection")
     );
 }

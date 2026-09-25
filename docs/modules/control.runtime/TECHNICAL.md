@@ -340,3 +340,86 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 - `codex-rs/hepta-control-plane`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Current path-level composition and durability
+
+This section records the path-level state of the current convergence candidate. It
+narrows earlier target language; it does not grant activation or release authority.
+
+### 18.1 Distinct caller states
+
+- **Local context planning is product-composed.** Agentd's cognitive-context path
+  constructs `ObservedContextV1` from an authenticated owner read, invokes
+  `plan_observed_context`, publishes the bounded result and revalidates the owner
+  cut before final use.
+- **Global planning has one named source-composed host.**
+  `codex-rs/hepta-supervisor/src/global_control.rs::GlobalControlHostV1` is the
+  only named global product composition. It admits durable AuthBus owner
+  receipts, one current `runtime.fleet` allocation and the real `utility.ndu`
+  owner implementation before calling the planner. It is not yet wired into a
+  default daemon bootstrap or an external RPC, so this state is
+  `source_composed_not_activated`, not deployed product execution. `CALLERS.toml`
+  closes the global composition, planner-store open and planner-store persist
+  call sets to this host; a second product caller or writer fails caller proof.
+- **Effect authorization remains independent.** The host emits only deny-all
+  `GrantRequestV1` values. `authority_bridge.rs` converts one exact request into
+  a `FinalUseBinding`, rejects a host monotonic time at or beyond the sealed
+  planner expiry, claims it through `claim_final_use`, and crosses only the
+  bounded local irreversible boundary through `dispatch_final_use`. Remote
+  terminality and reconciliation remain outside the fence. Control does not
+  mint grants.
+
+### 18.2 Exact budget and time identity
+
+`PreparedPlanInputV1` and `FeasiblePlanReceiptV1` now carry a
+`resource_reservation_digest` over every canonical resource axis, endowment and
+essential floor. A caller-selected profile label cannot make two materially
+separate budgets share one prepared identity even when both budgets leave the
+same candidates feasible. Planning also rejects a current time earlier than the
+snapshot collection time; wall-clock authentication and monotonic planner time
+remain separate host inputs.
+
+### 18.3 Durable state owner
+
+`PlannerJournalStoreV1` is the single source-level durable owner for global
+snapshot, decision, operation-result, selection and revocation history. On the qualified Unix
+filesystem profile it requires an owner-only directory, no-follow opens, an
+exclusive process lock, same-directory atomic replacement, state-file fsync and
+parent-directory fsync. Version 2 stores the journal plus its revoked-decision
+set and verifies both on reopen. Any publish-stage I/O uncertainty fail-stops the
+writer until reopen and reconciliation. Persistence is append-prefix monotonic;
+restoring a predecessor history or a state below the host-supplied current
+revocation floor fails closed.
+
+The store is source implemented and exercised through `GlobalControlHostV1`, but
+no deployment path, state directory, operator recovery source or trusted
+revocation-floor provider is selected by this repository change. Target-host
+power-loss qualification and independent acceptance remain external gates.
+
+### 18.4 Recovery matrix
+
+Current source tests cover:
+
+- commit followed by response loss and restart, with the original `plan_id`
+  recovering the exact committed receipt digest without re-execution;
+- duplicate persistence without duplicate history;
+- torn uncommitted successor files;
+- rename-complete/fsync-indeterminate publication with writer fail-stop and reopen;
+- schema-v1 to schema-v2 migration and corrupt migration rollback;
+- append-prefix/history regression;
+- revocation persistence and restoration of a pre-revocation backup;
+- AuthBus replay after restart;
+- a sealed planner request expiring before final-use claim without consuming
+  the signed grant nonce or entering dispatch;
+- a current trusted final-use revocation blocking local dispatch entry;
+- a fresh body generation replacing, rather than resurrecting, the predecessor
+  selection.
+
+### 18.5 Completion vocabulary
+
+The current candidate may claim `native planning hardened`, `durable owner source
+implemented`, `local context caller composed` and `global named host source
+composed`. It may not claim default-daemon activation, target-host durability,
+independent acceptance, promotion or release. Exact-head and deterministic
+synthetic-merge qualification must bind the same source before any stronger
+claim is made.

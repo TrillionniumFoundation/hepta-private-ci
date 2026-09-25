@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -21,8 +22,15 @@ use crate::UtilityProfile;
 use crate::evaluate_candidates_with_policy;
 use crate::legacy_evaluation_policy;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid test identifier")
+    must(StableId::new(value))
 }
 
 fn axes() -> [StableId; 3] {
@@ -76,7 +84,7 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
             organ_ids: vec![id("observed-owner")],
         },
     };
-    let mut policy = legacy_evaluation_policy(&profile).expect("valid profile");
+    let mut policy = must(legacy_evaluation_policy(&profile));
     for axis in &mut policy.pareto_absolute_tolerances {
         axis.value = FixedQ32::from_raw(1 << 30);
     }
@@ -86,7 +94,7 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
             candidate_id: row.candidate_id.clone(),
             organ_id: id("observed-owner"),
             objective_digest: Digest32::of_bytes(b"objective"),
-            generation: Generation::new(1).expect("valid generation"),
+            generation: must(Generation::new(1)),
             feasibility: FeasibilityPosture::Feasible,
             utility: row.utility.clone(),
             risk: vec![],
@@ -128,10 +136,10 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
                         {
                             continue;
                         }
-                        let receipt = evaluate_candidates_with_policy(
+                        let receipt = must(evaluate_candidates_with_policy(
                             ContributionSet {
                                 objective_digest: Digest32::of_bytes(b"objective"),
-                                generation: Generation::new(1).expect("valid generation"),
+                                generation: must(Generation::new(1)),
                                 contributions: [a, b, c, d]
                                     .map(|index| contributions[index].clone())
                                     .to_vec(),
@@ -139,8 +147,7 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
                             profile.clone(),
                             scalarization.clone(),
                             policy.clone(),
-                        )
-                        .expect("nonempty feasible frontier");
+                        ));
                         assert_eq!(
                             receipt
                                 .base

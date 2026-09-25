@@ -4,9 +4,9 @@
 //! triggers. The transient reference contains no authority data and never acts
 //! as a second owner; it supplies SQLite's canonical schema representation.
 
+use codex_state::SqliteConfig;
 use sqlx::SqlitePool;
 use sqlx::migrate::Migrator;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use crate::AuthBusAuthorityError;
 use crate::authority_store::storage;
@@ -15,9 +15,7 @@ pub(crate) async fn verify_schema(
     pool: &SqlitePool,
     migrator: &Migrator,
 ) -> Result<(), AuthBusAuthorityError> {
-    let reference = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let reference = SqliteConfig::open_transient_reference_pool()
         .await
         .map_err(storage)?;
     let result = async {

@@ -11,14 +11,12 @@ use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::DestinationApplyReceipt;
 use crate::DispatchClaim;
@@ -81,16 +79,13 @@ impl DurableOperationStore {
             std::fs::create_dir_all(parent)
                 .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
         }
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(4)
-            .connect_with(options)
+        let absolute_path = AbsolutePathBuf::from_absolute_path(path)
+            .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
+        let sqlite_home = absolute_path.parent().ok_or_else(|| {
+            DurableOperationError::Unavailable("SQLite path has no parent".to_string())
+        })?;
+        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+            .open_durable_evidence_pool_with_limit(absolute_path.as_path(), 4)
             .await
             .map_err(sqlx_error)?;
         if let Err(error) = verify_quick_check(&pool).await {
@@ -909,29 +904,28 @@ impl DurableOperationStore {
             operation_id,
         )
         .await?
+            && status.state != DurableOutboxState::Acknowledged
         {
-            if status.state != DurableOutboxState::Acknowledged {
-                let fence = status
-                    .fence
-                    .checked_add(1)
-                    .ok_or(DurableOperationError::Capacity)?;
-                sqlx::query(
-                    "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
-                     lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
-                     terminal_at_ms = COALESCE(terminal_at_ms, ?)
-                     WHERE destination = ? AND scope_id = ? AND operation_id = ?",
-                )
-                .bind(to_i64(fence)?)
-                .bind(receipt.evidence_digest.as_array().as_slice())
-                .bind(now)
-                .bind(now)
-                .bind(operation.intent.destination.as_str())
-                .bind(scope_id.as_str())
-                .bind(operation_id.as_str())
-                .execute(&mut *tx)
-                .await
-                .map_err(sqlx_error)?;
-            }
+            let fence = status
+                .fence
+                .checked_add(1)
+                .ok_or(DurableOperationError::Capacity)?;
+            sqlx::query(
+                "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
+                 lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
+                 terminal_at_ms = COALESCE(terminal_at_ms, ?)
+                 WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+            )
+            .bind(to_i64(fence)?)
+            .bind(receipt.evidence_digest.as_array().as_slice())
+            .bind(now)
+            .bind(now)
+            .bind(operation.intent.destination.as_str())
+            .bind(scope_id.as_str())
+            .bind(operation_id.as_str())
+            .execute(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
         }
         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
             .await?

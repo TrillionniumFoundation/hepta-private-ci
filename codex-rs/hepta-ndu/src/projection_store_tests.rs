@@ -78,6 +78,13 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
+fn must_err<T, E>(result: Result<T, E>) -> E {
+    match result {
+        Err(error) => error,
+        Ok(_) => panic!("expected an error"),
+    }
+}
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
@@ -89,7 +96,7 @@ impl TempRoot {
         let nonce = NONCE.fetch_add(1, Ordering::Relaxed);
         let path =
             std::env::temp_dir().join(format!("hepta-ndu-{label}-{}-{nonce}", std::process::id()));
-        fs::create_dir(&path).expect("create temp NDU root");
+        must(fs::create_dir(&path));
         Self(path)
     }
 }
@@ -176,9 +183,7 @@ fn backup_restore_is_validated_before_replacing_live_state() {
     let last = tampered.len() - 1;
     tampered[last] ^= 1;
     assert_eq!(
-        target
-            .restore_backup(&tampered)
-            .expect_err("tampered backup must not replace live state"),
+        must_err(target.restore_backup(&tampered)),
         NduProjectionStoreError::Journal(NduProjectionJournalError::CorruptEntryDigest)
     );
     assert_eq!(
@@ -224,10 +229,9 @@ fn older_valid_backup_cannot_remove_a_later_revocation() {
 #[test]
 fn stale_uncommitted_temp_image_is_discarded_before_recovery() {
     let root = TempRoot::new("stale-temp");
-    let mut temp = File::create(root.0.join(TEMP_FILE)).expect("create stale temp image");
-    temp.write_all(b"uncommitted garbage")
-        .expect("write stale temp image");
-    temp.sync_all().expect("sync stale temp fixture");
+    let mut temp = must(File::create(root.0.join(TEMP_FILE)));
+    must(temp.write_all(b"uncommitted garbage"));
+    must(temp.sync_all());
     drop(temp);
 
     let store = must(NduProjectionStoreV1::open(&root.0));
@@ -239,9 +243,7 @@ fn stale_uncommitted_temp_image_is_discarded_before_recovery() {
 fn concurrent_writer_is_rejected_while_owner_lock_is_live() {
     let root = TempRoot::new("writer-lock");
     let owner = must(NduProjectionStoreV1::open(&root.0));
-    let error = NduProjectionStoreV1::open(&root.0)
-        .err()
-        .expect("second writer must reject");
+    let error = must_err(NduProjectionStoreV1::open(&root.0));
     assert_eq!(error, NduProjectionStoreError::Busy);
     drop(owner);
     must(NduProjectionStoreV1::open(&root.0));

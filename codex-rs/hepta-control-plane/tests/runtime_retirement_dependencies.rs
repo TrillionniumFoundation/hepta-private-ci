@@ -2,6 +2,7 @@
 //! not deployment evidence or an independent authorization decision.
 
 use std::collections::BTreeSet;
+use std::fmt::Debug;
 
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModuleLifecycleV1;
@@ -13,12 +14,26 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
+fn must_some<T>(value: Option<T>) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("expected a value"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid identity")
+    must(StableId::new(value))
 }
 
 fn generation() -> Generation {
-    Generation::new(1).expect("valid generation")
+    must(Generation::new(1))
 }
 
 fn abi(name: &str, dependencies: &[&str]) -> RuntimeModuleAbiV1 {
@@ -42,20 +57,18 @@ fn abi(name: &str, dependencies: &[&str]) -> RuntimeModuleAbiV1 {
 fn select(registry: &mut RuntimeModuleRegistryV1, value: RuntimeModuleAbiV1) {
     let module = value.module_id.clone();
     let epoch = value.generation;
-    registry.register_candidate(value).expect("register");
-    registry.enter_shadow(&module, epoch).expect("shadow");
-    registry.enter_canary(&module, epoch).expect("canary");
-    registry
-        .promote_after_handoff(
-            &module,
-            epoch,
-            RuntimeModulePromotionWitnessV1 {
-                selection_digest: Digest32::of_bytes(b"fixture-selection"),
-                canary_digest: Digest32::of_bytes(b"fixture-canary"),
-                handoff_digest: Digest32::ZERO,
-            },
-        )
-        .expect("select stateless fixture");
+    must(registry.register_candidate(value));
+    must(registry.enter_shadow(&module, epoch));
+    must(registry.enter_canary(&module, epoch));
+    must(registry.promote_after_handoff(
+        &module,
+        epoch,
+        RuntimeModulePromotionWitnessV1 {
+            selection_digest: Digest32::of_bytes(b"fixture-selection"),
+            canary_digest: Digest32::of_bytes(b"fixture-canary"),
+            handoff_digest: Digest32::ZERO,
+        },
+    ));
 }
 
 #[test]
@@ -65,7 +78,7 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() {
         select(&mut registry, abi("provider", &[]));
         select(&mut registry, abi("consumer", &["provider"]));
         if quarantine {
-            registry.quarantine(&id("consumer"), generation()).unwrap();
+            must(registry.quarantine(&id("consumer"), generation()));
         }
         let before = registry.snapshot();
         assert_eq!(
@@ -76,30 +89,19 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() {
         );
         assert_eq!(registry.snapshot(), before);
         assert_eq!(
-            registry
-                .record(&id("provider"), generation())
-                .unwrap()
-                .lifecycle,
+            must_some(registry.record(&id("provider"), generation())).lifecycle,
             RuntimeModuleLifecycleV1::Active
         );
-        registry
-            .begin_retire(&id("consumer"), generation())
-            .unwrap();
+        must(registry.begin_retire(&id("consumer"), generation()));
         assert_eq!(
             registry.begin_retire(&id("provider"), generation()),
             Err(RuntimeModuleRegistryError::SelectedDependent(id(
                 "consumer"
             )))
         );
-        registry
-            .finish_retire(&id("consumer"), generation())
-            .unwrap();
-        registry
-            .begin_retire(&id("provider"), generation())
-            .unwrap();
-        registry
-            .finish_retire(&id("provider"), generation())
-            .unwrap();
+        must(registry.finish_retire(&id("consumer"), generation()));
+        must(registry.begin_retire(&id("provider"), generation()));
+        must(registry.finish_retire(&id("provider"), generation()));
         assert!(registry.snapshot().active.is_empty());
         assert_eq!(registry.active_generation(&id("provider")), None);
     }
@@ -109,9 +111,7 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() {
 fn finish_rechecks_consumers_selected_during_the_drain_window() {
     let mut registry = RuntimeModuleRegistryV1::new();
     select(&mut registry, abi("provider", &[]));
-    registry
-        .begin_retire(&id("provider"), generation())
-        .unwrap();
+    must(registry.begin_retire(&id("provider"), generation()));
     // The registry is not the host's dependency admission evaluator. Even if a
     // caller admits a consumer during this interval, retirement must not free
     // the provider reservation until that consumer has finished draining.
@@ -129,21 +129,12 @@ fn finish_rechecks_consumers_selected_during_the_drain_window() {
         Some(generation())
     );
     assert_eq!(
-        registry
-            .record(&id("provider"), generation())
-            .unwrap()
-            .lifecycle,
+        must_some(registry.record(&id("provider"), generation())).lifecycle,
         RuntimeModuleLifecycleV1::Quiescing
     );
-    registry
-        .begin_retire(&id("late-consumer"), generation())
-        .unwrap();
-    registry
-        .finish_retire(&id("late-consumer"), generation())
-        .unwrap();
-    registry
-        .finish_retire(&id("provider"), generation())
-        .unwrap();
+    must(registry.begin_retire(&id("late-consumer"), generation()));
+    must(registry.finish_retire(&id("late-consumer"), generation()));
+    must(registry.finish_retire(&id("provider"), generation()));
     assert_eq!(registry.active_generation(&id("provider")), None);
 }
 
@@ -151,21 +142,12 @@ fn finish_rechecks_consumers_selected_during_the_drain_window() {
 fn unselected_candidate_does_not_pin_a_provider_forever() {
     let mut registry = RuntimeModuleRegistryV1::new();
     select(&mut registry, abi("provider", &[]));
-    registry
-        .register_candidate(abi("pending-consumer", &["provider"]))
-        .unwrap();
-    registry
-        .begin_retire(&id("provider"), generation())
-        .unwrap();
-    registry
-        .finish_retire(&id("provider"), generation())
-        .unwrap();
+    must(registry.register_candidate(abi("pending-consumer", &["provider"])));
+    must(registry.begin_retire(&id("provider"), generation()));
+    must(registry.finish_retire(&id("provider"), generation()));
     assert!(registry.snapshot().active.is_empty());
     assert_eq!(
-        registry
-            .record(&id("pending-consumer"), generation())
-            .unwrap()
-            .lifecycle,
+        must_some(registry.record(&id("pending-consumer"), generation())).lifecycle,
         RuntimeModuleLifecycleV1::Registered
     );
 }
