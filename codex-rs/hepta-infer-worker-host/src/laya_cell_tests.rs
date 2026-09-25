@@ -181,20 +181,27 @@ fn existing_worker_checks_payload_and_builds_authority_free_receipt() {
 fn actual_pinned_laya_runs_through_existing_worker() {
     let path = |key: &str| PathBuf::from(std::env::var_os(key).expect(key));
     let backend = path("HEPTA_LAYA_BACKEND");
-    let ready: Ready = serde_json::from_slice(&std::fs::read(path("HEPTA_LAYA_MANIFEST")).unwrap()).unwrap();
+    let ready: Ready =
+        serde_json::from_slice(&std::fs::read(path("HEPTA_LAYA_MANIFEST")).unwrap()).unwrap();
     let driver = LayaCellDriver::new(LayaCellConfig {
-        python: path("HEPTA_LAYA_PYTHON"), backend: backend.clone(),
+        python: path("HEPTA_LAYA_PYTHON"),
+        backend: backend.clone(),
         model: path("HEPTA_LAYA_MODEL"),
         candidate: std::env::var_os("HEPTA_LAYA_CANDIDATE").map(PathBuf::from),
         base_sha256: "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204".to_string(),
         backend_sha256: format!("{:x}", Sha256::digest(std::fs::read(backend).unwrap())),
-        load_timeout: Duration::from_secs(180), stop_timeout: Duration::from_secs(3),
+        load_timeout: Duration::from_secs(180),
+        stop_timeout: Duration::from_secs(3),
         cancel: Arc::new(AtomicBool::new(false)),
-    }).unwrap();
+    })
+    .unwrap();
     let mut worker = worker(driver);
     worker.load_model(now_ms(), ready.manifest.clone()).unwrap();
     let mut reports = Vec::new();
-    for (index, features) in [vec![0, Q24, Q24, Q24], vec![Q24, 0, 0, Q24]].into_iter().enumerate() {
+    for (index, features) in [vec![0, Q24, Q24, Q24], vec![Q24, 0, 0, Q24]]
+        .into_iter()
+        .enumerate()
+    {
         let mut input = request(now_ms() + 120_000);
         input.authorization.request_id = format!("real-laya-{index}");
         input.authorization.model_digest = ready.manifest.model_digest.clone();
@@ -203,11 +210,16 @@ fn actual_pinned_laya_runs_through_existing_worker() {
         input.head_digest = ready.head_digest.clone();
         input.weights_digest = ready.manifest.weights_digest.clone();
         input.feature_vector_q24 = features;
-        input.input_digest = format!("{:x}", Sha256::digest(serde_json::to_vec(&input.feature_vector_q24).unwrap()));
+        input.input_digest = format!(
+            "{:x}",
+            Sha256::digest(serde_json::to_vec(&input.feature_vector_q24).unwrap())
+        );
         let payload = canonical_neuron_feature_payload_digest(&input);
         input.authorization.payload_digest = payload.clone();
         input.authorization.lease_payload_digest = payload;
-        let receipt = worker.run_neuron_features_receipt(now_ms(), &ready.manifest.model_id, input).unwrap();
+        let receipt = worker
+            .run_neuron_features_receipt(now_ms(), &ready.manifest.model_id, input)
+            .unwrap();
         assert!(!receipt.authority.grants_any());
         assert_eq!(receipt.prediction_q24.iter().sum::<i64>(), Q24);
         reports.push(serde_json::json!({
@@ -222,7 +234,9 @@ fn actual_pinned_laya_runs_through_existing_worker() {
     }
     assert_ne!(reports[0]["request_digest"], reports[1]["request_digest"]);
     assert_ne!(reports[0]["prediction_q24"], reports[1]["prediction_q24"]);
-    worker.unload_model(now_ms(), &ready.manifest.model_id).unwrap();
+    worker
+        .unload_model(now_ms(), &ready.manifest.model_id)
+        .unwrap();
     let report = serde_json::json!({"qualification_only": true, "rows": reports});
     if let Some(path) = std::env::var_os("HEPTA_LAYA_REPORT") {
         std::fs::write(path, serde_json::to_vec_pretty(&report).unwrap()).unwrap();
