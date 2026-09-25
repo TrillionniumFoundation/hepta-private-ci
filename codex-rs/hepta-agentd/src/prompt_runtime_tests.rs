@@ -513,7 +513,7 @@ fn staged_pipeline_fixture() -> (
     let registry_root = temporary.path().join("prompt-registry");
     let runtime_root = temporary.path().join("prompt-runtime");
     let authority_root = temporary.path().join("prompt-authority");
-    let checkpoint = temporary.path().join("prompt-registry-witness.json");
+    let checkpoint = temporary.path().join("prompt-witness").join("registry.json");
     let pipeline = AgentdPromptPipelineOwner::open_state_dirs(
         &registry_root,
         Some(&checkpoint),
@@ -872,7 +872,7 @@ fn revocation_after_staging_blocks_prepare_and_dispatch_after_full_reopen() {
     drop(pipeline);
     let reopened = AgentdPromptPipelineOwner::open_state_dirs(
         &temporary.path().join("prompt-registry"),
-        Some(&temporary.path().join("prompt-registry-witness.json")),
+        Some(&temporary.path().join("prompt-witness").join("registry.json")),
         "agent:test:prompt.registry",
         &temporary.path().join("prompt-runtime"),
         64,
@@ -968,7 +968,7 @@ fn accepted_dispatch_reopens_indeterminate_and_cannot_be_blindly_sent_again() {
     drop(pipeline);
     let reopened = AgentdPromptPipelineOwner::open_state_dirs(
         &temporary.path().join("prompt-registry"),
-        Some(&temporary.path().join("prompt-registry-witness.json")),
+        Some(&temporary.path().join("prompt-witness").join("registry.json")),
         "agent:test:prompt.registry",
         &temporary.path().join("prompt-runtime"),
         64,
@@ -1205,7 +1205,7 @@ fn fence_after_dispatch_persistence_records_not_dispatched_and_denies_send() {
     drop(pipeline);
     let reopened = AgentdPromptPipelineOwner::open_state_dirs(
         &temporary.path().join("prompt-registry"),
-        Some(&temporary.path().join("prompt-registry-witness.json")),
+        Some(&temporary.path().join("prompt-witness").join("registry.json")),
         "agent:test:prompt.registry",
         &temporary.path().join("prompt-runtime"),
         64,
