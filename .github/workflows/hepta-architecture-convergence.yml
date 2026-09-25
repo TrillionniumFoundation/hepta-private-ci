@@ -169,9 +169,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+          # The historical compaction/scale implementation was retired when the
+          # canonical bounded journal returned. Run current named durability
+          # regressions instead of accepting a zero-test filter as evidence.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-journal-budget.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-reopen.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core duplicate_reopen_preserves_exact_binding_and_reserves_only_once -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-indeterminate.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core missing_terminal_observation_becomes_indeterminate -- --nocapture --test-threads=1
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
@@ -238,9 +241,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # GET of receive-pack advertisement performs no ref, PR or settings
-          # write. Do not test a credential by attempting same-value PATCHes:
-          # concurrent owner changes can make a supposed no-op destructive.
+          # The receive-pack probe sends only a Git flush packet: no ref
+          # command, capability request or object pack. Do not substitute a
+          # same-value PATCH; concurrent owner changes could make it destructive.
           # This bounded observation is NOT proof of admin/PR-write denial or
           # independent credential custody. The strict activation observer
           # remains a separate gate; no missing protection is waived here.
