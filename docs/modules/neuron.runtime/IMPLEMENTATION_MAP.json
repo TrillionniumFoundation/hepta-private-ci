@@ -182,7 +182,10 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-neuron/src/protocol_tests.rs",
-        "codex-rs/hepta-neuron/src/artifact_binding_tests.rs"
+        "codex-rs/hepta-neuron/src/artifact_binding_tests.rs",
+        "codex-rs/hepta-agentd/tests/support/neuron_artifact_tests.rs",
+        "codex-rs/hepta-agentd/tests/support/current_artifacts.rs",
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
