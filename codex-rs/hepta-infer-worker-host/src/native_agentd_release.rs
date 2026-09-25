@@ -12,10 +12,22 @@ use super::Result;
 
 impl AppServerModelDriver {
     pub(super) async fn release_settled_agentd_run(&self, record: &NativeRunRecord) {
-        if let Err(error) = self.try_release_settled_agentd_run(record).await {
-            // No model input or response bytes belong in cleanup diagnostics.
-            let message: String = error.to_string().chars().take(512).collect();
-            eprintln!("Agentd terminal row release remains pending: {message}");
+        // Cleanup must not hold a durably completed result behind the general
+        // control-client budget. A timeout preserves the original replay debt.
+        match tokio::time::timeout(
+            std::time::Duration::from_secs(1),
+            self.try_release_settled_agentd_run(record),
+        )
+        .await
+        {
+            Ok(Ok(())) => {}
+            Ok(Err(error)) => {
+                let message: String = error.to_string().chars().take(512).collect();
+                eprintln!("Agentd terminal row release remains pending: {message}");
+            }
+            Err(_) => {
+                eprintln!("Agentd terminal row release timed out; durable result retained");
+            }
         }
     }
 
