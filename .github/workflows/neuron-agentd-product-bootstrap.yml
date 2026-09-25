@@ -1,0 +1,80 @@
+name: Neuron Agentd product bootstrap
+
+on:
+  push:
+    branches: [work/neuron-runtime-recovery-20260925]
+    paths:
+      - scripts/reviewer/neuron-agentd-step3/**
+      - .github/workflows/neuron-agentd-product-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neuron-agentd-product-bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply-and-verify:
+    if: ${{ !contains(github.event.head_commit.message, '[neuron-agentd-applied]') }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 75
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: work/neuron-runtime-recovery-20260925
+      - name: Verify exact bootstrap ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git merge-base HEAD cfd7595ce51762aeab13740ff20cd87ad12745a4)" = "cfd7595ce51762aeab13740ff20cd87ad12745a4"
+          test "$(git rev-list --count cfd7595ce51762aeab13740ff20cd87ad12745a4..HEAD)" -eq 1
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Reconstruct and apply reviewed product patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat scripts/reviewer/neuron-agentd-step3/piece-* > "$RUNNER_TEMP/neuron-step3.b64"
+          base64 --decode "$RUNNER_TEMP/neuron-step3.b64" > "$RUNNER_TEMP/neuron-step3.patch"
+          echo '1a9e5be664665cddc89732401cf44662b7ac28caedc9c877478c1aa5c19b0b38  '"$RUNNER_TEMP/neuron-step3.patch" | sha256sum -c -
+          git apply --check "$RUNNER_TEMP/neuron-step3.patch"
+          git apply "$RUNNER_TEMP/neuron-step3.patch"
+      - name: Format and reject whitespace errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cd ..
+          git diff --check
+      - name: Test selected product path
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-neuron --lib
+          cargo test --locked -p codex-hepta-intelligence --lib
+          cargo test --locked -p codex-hepta-agentd --lib
+      - name: Strict selected-package lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Commit exact reviewed result
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf scripts/reviewer/neuron-agentd-step3
+          rm .github/workflows/neuron-agentd-product-bootstrap.yml
+          git add -A
+          test -n "$(git status --porcelain)"
+          git config user.name "Hepta Neuron CI"
+          git config user.email "hepta-neuron-ci@users.noreply.github.com"
+          git commit -m "feat(neuron): route Agentd product stage through durable owner [neuron-agentd-applied]"
+          git push origin HEAD:work/neuron-runtime-recovery-20260925
