@@ -551,16 +551,33 @@ fn run_agent_child() -> Result<()> {
             agent_id: agent_id.clone(),
             spawn_generation,
             current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
-                promotion_ready: true,
-                ready: running,
-                fenced: false,
-                lifecycle: lifecycle.lifecycle,
-                process_id: std::process::id(),
-                workspace,
-                home_root,
-                run_root,
-            }),
+            payload: match request.method {
+                codex_hepta_agent_protocol::AgentdMethod::Health => {
+                    AgentdPayload::Health(HealthSnapshot {
+                        promotion_ready: true,
+                        ready: running,
+                        fenced: false,
+                        lifecycle: lifecycle.lifecycle,
+                        process_id: std::process::id(),
+                        workspace,
+                        home_root,
+                        run_root,
+                    })
+                }
+                codex_hepta_agent_protocol::AgentdMethod::Drain => {
+                    AgentdPayload::Drain(codex_hepta_agent_protocol::DrainSnapshot {
+                        admission_closed: true,
+                        running_turns: 0,
+                        drained: true,
+                        lifecycle: lifecycle.lifecycle,
+                        fenced: false,
+                    })
+                }
+                _ => AgentdPayload::Error {
+                    code: "unsupported_fixture_method".to_string(),
+                    message: "fixture supports health and drain".to_string(),
+                },
+            },
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

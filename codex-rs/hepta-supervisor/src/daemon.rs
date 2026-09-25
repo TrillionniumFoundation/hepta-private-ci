@@ -222,18 +222,38 @@ async fn run_supervisord_inner(
         interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
         loop {
             tokio::select! {
-                _ = tick_cancellation.cancelled() => return,
+                _ = tick_cancellation.cancelled() => return Ok::<(), SupervisorError>(()),
                 _ = interval.tick() => {
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
-                    tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                    let agents = tick_state.supervisor.lock().await.agent_ids();
+                    for agent_id in agents {
+                        if tick_cancellation.is_cancelled() { return Ok(()); }
+                        let owner = Arc::clone(&tick_state);
+                        // Exactly one queued worker and one Agent transaction.
+                        // Preserve the global owner/CAS while letting unrelated
+                        // control requests run between Agents with fresh clocks.
+                        let result = tokio::task::spawn_blocking(move || {
+                            owner.supervisor.blocking_lock().tick_agent(&agent_id, Instant::now())
+                        }).await;
+                        match result {
+                            Ok(report) => { tick_state.observed_faults.fetch_add(report.faults.len() as u64, Ordering::Relaxed); }
+                            Err(error) => {
+                                tick_cancellation.cancel();
+                                return Err(SupervisorError::Invalid(format!("supervisor tick worker failed: {error}")));
+                            }
+                        }
+                        tokio::task::yield_now().await;
+                    }
                 }
             }
         }
     });
     let result = server.run().await;
     cancellation.cancel();
-    let _ = ticker.await;
-    result
+    let tick_result = ticker
+        .await
+        .map_err(|error| SupervisorError::Invalid(format!("supervisor ticker failed: {error}")))?;
+    result?;
+    tick_result
 }
 
 #[cfg(not(unix))]
@@ -290,7 +310,10 @@ impl SupervisordServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                // Retain the bounded connection permit through handler completion.
+                // Network expiry must not abandon an admitted mutation or release
+                // permits while detached release-resolution work is still running.
+                let _ = serve_connection(stream, state).await;
             });
         }
     }
@@ -319,7 +342,11 @@ async fn serve_connection(
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_SUPERVISORD_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
+        .await
+        .map_err(|_| {
+            SupervisorError::Invalid("supervisord request frame timed out".to_string())
+        })??;
     if count == 0 || count as u64 > MAX_SUPERVISORD_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Ok(());
     }
@@ -374,8 +401,13 @@ async fn write_response(
             "supervisord response exceeded frame bound".to_string(),
         ));
     }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    timeout(IO_TIMEOUT, async {
+        writer.write_all(&bytes).await?;
+        writer.shutdown().await?;
+        Ok::<(), std::io::Error>(())
+    })
+    .await
+    .map_err(|_| SupervisorError::Invalid("supervisord response write timed out".to_string()))??;
     Ok(())
 }
 
@@ -472,6 +504,40 @@ async fn handle_request<D: ProcessDriver>(
                 Err(error) => {
                     safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
                 }
+            }
+        }
+        SupervisordMethod::ProductionMutationContext { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match agent_status_locked(&state, &supervisor, &agent_id) {
+                Ok(agent) => {
+                    let Some(snapshot) = supervisor.snapshot(&agent_id) else {
+                        return safe_rejection(
+                            SupervisorError::UnknownAgent(agent_id),
+                            None,
+                            false,
+                        );
+                    };
+                    SupervisordPayload::ProductionMutationContext {
+                        context: crate::ProductionMutationContext {
+                            agent,
+                            control_revision: snapshot.control_revision,
+                            authority_epoch: crate::authority_epoch_for_supervisor_epoch(
+                                state.supervisor_epoch.as_str(),
+                            ),
+                        },
+                    }
+                }
+                Err(error) => safe_rejection(error, None, false),
+            }
+        }
+        SupervisordMethod::ProductionMutationLookup {
+            agent_id,
+            grant_sha256,
+        } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.production_mutation_lookup(&agent_id, &grant_sha256) {
+                Ok(state) => SupervisordPayload::ProductionMutationStatus { state },
+                Err(error) => safe_rejection(error, None, false),
             }
         }
         SupervisordMethod::ProductionMutationStatus { agent_id } => {
@@ -936,17 +1002,11 @@ fn agent_status_locked<D: ProcessDriver>(
     supervisor: &Supervisor<D>,
     agent_id: &AgentId,
 ) -> Result<SupervisordAgentStatus, SupervisorError> {
-    let record = state
-        .registry
-        .load()?
-        .agent(agent_id)
-        .cloned()
+    let snapshot = supervisor
+        .snapshot(agent_id)
         .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-    status_from(
-        &state.supervisor_epoch,
-        &record,
-        supervisor.snapshot(agent_id),
-    )
+    let record = state.registry.load_agent(agent_id)?;
+    status_from(&state.supervisor_epoch, &record, Some(snapshot))
 }
 
 #[cfg(any(unix, test))]
@@ -1755,3 +1815,7 @@ mod tests {
 #[cfg(all(test, not(unix)))]
 #[path = "daemon_platform_tests.rs"]
 mod platform_tests;
+
+#[cfg(all(test, unix))]
+#[path = "daemon_io_tests.rs"]
+mod io_tests;

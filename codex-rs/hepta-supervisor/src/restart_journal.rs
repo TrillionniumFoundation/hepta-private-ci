@@ -149,8 +149,16 @@ impl RestartRecord {
             ));
         }
         if let Some(main) = &self.main
-            && (main.schema_version != 1
+            && (!matches!(
+                main.schema_version,
+                1 | crate::restart_budget::RESTART_BUDGET_SCHEMA_VERSION
+            ) || (main.schema_version == 1 && main.release_binding.is_some())
+                || (main.schema_version == crate::restart_budget::RESTART_BUDGET_SCHEMA_VERSION
+                    && main.pending
+                    && main.release_binding.is_none())
                 || main.window_started_unix_ms == 0
+                || (main.operator_stopped && main.pending)
+                || (main.pending_requires_spawn && !main.pending)
                 || (main.pending
                     && (main.attempts == 0
                         || main.next_eligible_unix_ms < main.window_started_unix_ms)))
@@ -188,6 +196,9 @@ fn legacy_main(
         window_started_unix_ms: started,
         attempts: window.attempts,
         pending: false,
+        release_binding: None,
+        operator_stopped: false,
+        pending_requires_spawn: false,
         next_eligible_unix_ms: started,
     }))
 }
@@ -369,8 +380,14 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    let recovery_window_millis = u64::try_from(RESTART_RECOVERY_WINDOW.as_millis())
-        .expect("bounded recovery window milliseconds");
+    let Ok(recovery_window_millis) = u64::try_from(RESTART_RECOVERY_WINDOW.as_millis()) else {
+        return (
+            RESTART_ATTEMPT_BUDGET,
+            Some(now),
+            Some(now_unix_millis),
+            true,
+        );
+    };
     let Some(elapsed_millis) = now_unix_millis.checked_sub(started_unix_millis) else {
         // Wall-clock rollback is not allowed to buy extra restart attempts.
         return (

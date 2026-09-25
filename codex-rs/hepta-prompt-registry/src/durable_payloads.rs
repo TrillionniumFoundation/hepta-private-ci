@@ -46,6 +46,10 @@ pub(super) struct StoredV3 {
     // Embedded payloads must be empty; there is only one physical payload copy.
     pub state: StoredV2,
     pub payload_references: Vec<PayloadReference>,
+    /// Once set, reopening without the independently retained checkpoint is
+    /// forbidden. Older V3 manifests omit this field and migrate on guarded open.
+    #[serde(default)]
+    pub recovery_checkpoint_required: bool,
 }
 
 #[derive(Clone)]
@@ -77,7 +81,7 @@ impl PayloadState {
     pub fn hydrate(
         directory: &File,
         mut stored: StoredV3,
-    ) -> Result<(Self, StoredV2), DurableRegistryError> {
+    ) -> Result<(Self, StoredV2, bool), DurableRegistryError> {
         if stored.schema != 3
             || stored.state.schema != super::STORE_SCHEMA
             || !stored.state.payloads.is_empty()
@@ -129,6 +133,7 @@ impl PayloadState {
                 initialized: true,
             },
             stored.state,
+            stored.recovery_checkpoint_required,
         ))
     }
 

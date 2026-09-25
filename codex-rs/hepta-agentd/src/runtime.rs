@@ -65,6 +65,9 @@ pub async fn run(
     let checkpoint_file = config
         .authbus_checkpoint_file()
         .map(std::path::Path::to_path_buf);
+    let prompt_registry_recovery_checkpoint = config
+        .prompt_registry_recovery_checkpoint_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
     if production_operations.is_some() && production_writer_host.is_none() {
@@ -93,10 +96,11 @@ pub async fn run(
         .filter(|record| record.manifest.agent_id != identity.agent_id)
         .map(|record| record.layout)
         .collect::<Vec<_>>();
-    let state = Arc::new(AgentdState::new(
+    let state = Arc::new(AgentdState::new_with_prompt_registry_recovery(
         identity.clone(),
         registry,
         EVENT_CAPACITY,
+        prompt_registry_recovery_checkpoint.as_deref(),
     )?);
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;

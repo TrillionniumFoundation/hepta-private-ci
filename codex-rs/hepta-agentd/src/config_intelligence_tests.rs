@@ -93,6 +93,12 @@ fn canonical_pair_requires_all_authenticated_ingress_configuration() {
     configured = configured.with_authbus_trust_file(temp.path().join("trust"));
     assert!(configured.require_intelligence_composition().is_err());
     configured = configured.with_authbus_checkpoint_file(temp.path().join("checkpoint"));
+    assert!(configured.require_intelligence_composition().is_err());
+    configured = configured
+        .with_prompt_registry_recovery_checkpoint_file(
+            temp.path().join("prompt-registry-checkpoint"),
+        )
+        .expect("external prompt checkpoint");
     assert!(configured.require_intelligence_composition().is_ok());
     // File presence/authentication belongs to the later owner open. Shape-only
     // success here neither starts a daemon nor certifies this fixture as usable.
