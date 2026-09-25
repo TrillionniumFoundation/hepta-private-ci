@@ -45,13 +45,16 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         // Input preparation is bounded separately from the later seven-stage
         // computation, always within the durable objective/admission horizon.
-        timeout(Duration::from_millis(remaining.min(5_000)), &mut worker)
-            .await
-            .map_err(|_| {
-                worker.abort();
-                AgentdError::Protocol("canonical owner input production timed out".to_string())
-            })?
-            .map_err(|_| AgentdError::Protocol("canonical owner input worker failed".to_string()))?
+        timeout(
+            Duration::from_millis(remaining).min(crate::control_budget::OWNER_INPUT_TIMEOUT),
+            &mut worker,
+        )
+        .await
+        .map_err(|_| {
+            worker.abort();
+            AgentdError::Protocol("canonical owner input production timed out".to_string())
+        })?
+        .map_err(|_| AgentdError::Protocol("canonical owner input worker failed".to_string()))?
     }
 }
 

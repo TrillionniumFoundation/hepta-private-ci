@@ -82,6 +82,7 @@ pub struct AgentdConfig {
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     objective_profile_file: Option<PathBuf>,
     authbus_checkpoint_file: Option<PathBuf>,
+    prompt_registry_recovery_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
@@ -205,6 +206,7 @@ impl AgentdConfig {
             evidence_recovery_frontier_trust_file: None,
             objective_profile_file: None,
             authbus_checkpoint_file: None,
+            prompt_registry_recovery_checkpoint_file: None,
             cognitive_ranker: None,
             production_operations: None,
             production_writer_host: None,
@@ -293,6 +295,32 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_checkpoint_file(&self) -> Option<&Path> {
         self.authbus_checkpoint_file.as_deref()
+    }
+
+    /// Independently retained prompt-registry recovery witness. Production
+    /// prompt composition requires an absolute path outside the Agent home
+    /// rollback domain; request bytes cannot select or replace this path.
+    pub fn with_prompt_registry_recovery_checkpoint_file(
+        mut self,
+        path: PathBuf,
+    ) -> Result<Self, AgentdError> {
+        if self.prompt_registry_recovery_checkpoint_file.is_some() {
+            return Err(AgentdError::Invalid(
+                "prompt registry recovery checkpoint already configured".to_string(),
+            ));
+        }
+        if !path.is_absolute() || path.starts_with(&self.identity.home_root) {
+            return Err(AgentdError::Invalid(
+                "prompt registry recovery checkpoint must be absolute and outside Agent home"
+                    .to_string(),
+            ));
+        }
+        self.prompt_registry_recovery_checkpoint_file = Some(path);
+        Ok(self)
+    }
+
+    pub(crate) fn prompt_registry_recovery_checkpoint_file(&self) -> Option<&Path> {
+        self.prompt_registry_recovery_checkpoint_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must
@@ -546,9 +574,10 @@ impl AgentdConfig {
                 if self.objective_profile_file().is_none()
                     || self.authbus_trust_file().is_none()
                     || self.authbus_checkpoint_file().is_none()
+                    || self.prompt_registry_recovery_checkpoint_file().is_none()
                 {
                     return Err(AgentdError::Invalid(
-                        "canonical intelligence requires an Objective profile, AuthBus trust and replay checkpoint".to_string(),
+                        "canonical intelligence requires an Objective profile, AuthBus trust, AuthBus replay checkpoint and external prompt-registry recovery checkpoint".to_string(),
                     ));
                 }
                 Ok(())

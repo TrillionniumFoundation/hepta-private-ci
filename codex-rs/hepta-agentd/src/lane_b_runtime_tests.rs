@@ -516,3 +516,36 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
     );
     assert_eq!(coordinator.run("run.abstain"), None);
 }
+
+#[test]
+fn cancellation_at_ack_deadline_returns_current_indeterminate_receipt() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+    coordinator
+        .mark_dispatched(300, "run.1", 2)
+        .expect("dispatch");
+    let (_, cancelling) = coordinator
+        .cancel_run(400, "run.1", 3, "operator_request")
+        .expect("cancel");
+    let (disposition, unknown) = coordinator
+        .cancel_run(3_400, "run.1", cancelling.revision, "operator_request")
+        .expect("acknowledge elapsed cancellation deadline");
+    let expected = RunReceipt {
+        revision: cancelling.revision + 1,
+        phase: RunPhase::Indeterminate,
+        cancel_ack_deadline_ms: None,
+        ..cancelling
+    };
+    assert_eq!(
+        disposition,
+        CancellationDisposition::CancellingAfterDispatch
+    );
+    assert_eq!(unknown, expected);
+    assert_eq!(coordinator.run("run.1"), Some(expected));
+}
+
+#[path = "run_cancellation_tests.rs"]
+mod cancellation_regressions;

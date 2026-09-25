@@ -315,6 +315,7 @@ pub struct AgentSupervisorSnapshot {
 pub(crate) enum ControlRuntimePhase {
     AwaitingHealth,
     Running,
+    Unhealthy,
     Draining,
     Stopping,
     Killing,

@@ -1,5 +1,8 @@
 //! Local durable admission around the actual App Server driver.
 
+#[path = "native_agentd_release.rs"]
+mod agentd_release;
+
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativePreparedInputV1;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
@@ -165,10 +168,12 @@ impl AppServerModelDriver {
                 .as_ref()
                 .filter(|output| output.terminal_observed)
             {
+                self.release_settled_agentd_run(&record).await;
                 return Ok(output.clone());
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
+                self.release_settled_agentd_run(&settled).await;
                 return settled.observation.ok_or_else(|| {
                     "durable reconciliation omitted its normalized observation".into()
                 });
@@ -217,6 +222,7 @@ impl AppServerModelDriver {
                     control.cancel_native(&request_id)?;
                 }
                 let settled = control.settle_native(&request_id, output)?;
+                self.release_settled_agentd_run(&settled).await;
                 settled.observation.ok_or_else(|| {
                     "durable execution settlement omitted its normalized observation".into()
                 })

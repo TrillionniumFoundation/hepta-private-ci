@@ -148,6 +148,45 @@ while delivery still returns owned bounded bytes. Metadata serialization, semant
 hashing and the full in-memory registry remain size-dependent; this change reduces
 payload copy/write amplification, not unlimited-history recovery or retention cost.
 
+### Guarded recovery and independent checkpoint ownership
+
+Production composition uses `DurablePromptRegistry::open_state_dir_with_recovery_checkpoint`.
+The checkpoint location is an explicit host configuration, not a path automatically
+derived inside the Agent backup tree. Agentd accepts
+`--prompt-registry-recovery-checkpoint-file <absolute-path>` and the corresponding
+`AgentdConfig::with_prompt_registry_recovery_checkpoint_file` builder. Canonical
+Intelligence startup rejects a missing checkpoint along with its other required
+owner/trust inputs. A checkpoint path must be outside the Agent home; the storage
+owner also checks that its canonical parent is outside the registry directory.
+
+The checkpoint binds owner identity, monotonic witness generation, exact registry
+revision/digest, lifecycle and revocation frontiers. A mutation prepares one exact
+pending successor before registry publication, then promotes that same successor.
+After uncertain publication the owner is fenced. Reopen first reconciles the
+checkpoint against the complete semantic image, and only then may trim unselected
+payload tails or publish a migration. Rejected rollback must not modify payloads.
+A manifest requiring the checkpoint cannot fall back to ordinary unguarded open.
+
+Retain this checkpoint independently from registry backup/restore, pin its owner
+and location in trusted host configuration, and never regenerate a missing witness
+from the restored registry. Initial enrollment of an existing unguarded registry
+needs a separately established current baseline. This file is not a signature,
+hardware counter, or protection against restoration of the entire host including
+its checkpoint. Runtime/provider-journal antirollback is a separate obligation.
+
+### Terminal capacity policy
+
+Before publishing metadata, retain bounded room for retiring and revoking accepted
+live factors, including lifecycle events, revision/digest growth and disabled
+realization flags. Ordinary additions fail atomically before consuming that room.
+Agentd likewise reserves a maximum bounded terminal observation for each unresolved
+dispatch; an indeterminate record retains the unused portion until reconciliation.
+Physical disk failures still produce explicit failure or indeterminate outcomes.
+These reserves are not history archives, garbage collection, or target-host
+performance measurements. Legacy images admitted without reservations need an
+explicit maintenance/migration strategy; capacity cannot be recovered by forgetting
+revocations or possible prior sends.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).
@@ -178,12 +217,16 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Revalidate revocation and model/tokenizer compatibility at actual delivery; an inserted factor is not automatically selected. A host must separately bind durable persistence rather than treating an in-memory registry image as a service.
+Use the durable registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Agentd already opens the named pipeline owner and installs its guarded host in App Server. Persisted source leases are checked both at preparation and at provider dispatch admission, with fresh time under the registry lock and the existing Agentd/Fleet generation fence. A recorded dispatch identity is never a fresh send permission. Normal authenticated input production and selection still must invoke this path; owner construction and a hand-built test portfolio do not establish full product execution.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs).
 - [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs).
+- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs).
+- [codex-rs/hepta-prompt-registry/src/durable_recovery.rs](../../../codex-rs/hepta-prompt-registry/src/durable_recovery.rs).
+- [codex-rs/hepta-agentd/src/prompt_runtime.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime.rs).
+- [codex-rs/hepta-agentd/src/prompt_runtime_registry_lease.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime_registry_lease.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -226,7 +269,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -348,4 +391,13 @@ The bootstrap source-location obligation for `prompt.registry` is implemented by
 
 - `codex-rs/hepta-prompt-registry`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is subject to `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This paragraph records the required workflow, not a pass receipt for the current mutable branch. Exact source/test receipts must identify their actual commit and logs. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. Profile identity and bounded compatible views
+
+Admission, supersession and durable restore use the same `RealizationProfileKey`, including model ID and model version. `read_compatible_v2` sorts borrowed bindings and clones only the selected return set; omitted-count and canonical ordering semantics do not change. Compatible-set validation checks each binding, rejects reused realization identities across factors, enforces the required-factor bound and rejects missing required factors even when a caller recomputes the outer digest.
+
+Recovery-checkpoint preflight validates the existing private parent or its creatable final component before opening the registry writer lock. The later owner open revalidates filesystem identity and permissions; preflight is not a replacement for final filesystem checks. The regression `unsafe_checkpoint_parent_is_rejected_before_initial_registry_creation` verifies that correcting an invalid initial checkpoint configuration can still initialize and reopen safely.
+
+These changes do not close the production input-producer, long-term archive, complete-host rollback or independent provider-acceptance gates described in the module dossier. The test-only runtime `prepare` compatibility helper is not a production source endpoint.

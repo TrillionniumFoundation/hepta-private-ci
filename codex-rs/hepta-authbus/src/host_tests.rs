@@ -383,3 +383,6 @@ async fn owner_lock_fences_a_separate_process() {
         .expect("execute independent process");
     assert!(status.success());
 }
+
+#[path = "host_lock_tests.rs"]
+mod lock_tests;

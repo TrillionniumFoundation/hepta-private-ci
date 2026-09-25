@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "309ccf58ece129d92508978b7c06e0da1b5562fb",
-    "tree": "945946079e4ca88c9afe6d71381909c30f41cfd9"
+    "commit": "b7efb9dbeaa3c33f18586944d429878a2b56de40",
+    "tree": "3b9a5a1aca1362dac97880302e73f6040247846b"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -169,11 +169,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-      "object": "2379d7a33ac80ccb60fa381373537b5dcfac6b54"
+      "object": "b15224606212cb5e697ed1fa3a835d7cdf265452"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
-      "object": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95"
+      "object": "a957a57a74d9096f026e5e4f37d9c5b0ba5dc729"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
@@ -185,7 +185,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
-      "object": "533e1e8b6eda8e61289e06004be3c50be7a66f74"
+      "object": "2789f7e378e1eac9de761de16021bd27bbb11382"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
@@ -205,7 +205,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
-      "object": "241611472e38d3892f5dcedc577285f18f0dee2d"
+      "object": "731fc46426d07947bd39d5bde5ef7506f7ee7994"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
@@ -291,13 +291,13 @@
     },
     {
       "role": "control_protocol",
-      "blobSha": "2379d7a33ac80ccb60fa381373537b5dcfac6b54",
+      "blobSha": "b15224606212cb5e697ed1fa3a835d7cdf265452",
       "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "nativeSymbol": "CognitiveContextRevalidate {"
     },
     {
       "role": "control_client",
-      "blobSha": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+      "blobSha": "a957a57a74d9096f026e5e4f37d9c5b0ba5dc729",
       "sourcePath": "codex-rs/hepta-agentd/src/client.rs",
       "nativeSymbol": "pub async fn revalidate_cognitive_context("
     },
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "309ccf58ece129d92508978b7c06e0da1b5562fb",
-    "tree": "945946079e4ca88c9afe6d71381909c30f41cfd9"
+    "commit": "b7efb9dbeaa3c33f18586944d429878a2b56de40",
+    "tree": "3b9a5a1aca1362dac97880302e73f6040247846b"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",

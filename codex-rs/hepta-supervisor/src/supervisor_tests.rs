@@ -136,13 +136,6 @@ fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
 }
 
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
-}
-
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
@@ -505,6 +498,14 @@ fn hung_agent_is_stopped_and_killed_without_blocking_peer() -> Result<(), Superv
     assert_eq!(recovered, TickReport::default());
     supervisor.start(&fleet.first, command()?, now)?;
     supervisor.start(&fleet.second, command()?, now)?;
+    let original_process = supervisor
+        .snapshot(&fleet.first)
+        .expect("original")
+        .process_system_id;
+    let peer_process = supervisor
+        .snapshot(&fleet.second)
+        .expect("peer")
+        .process_system_id;
     control.set_healthy(&fleet.second);
     control.push_logs(&fleet.first, 10);
     control.push_logs(&fleet.second, 10);
@@ -548,8 +549,13 @@ fn hung_agent_is_stopped_and_killed_without_blocking_peer() -> Result<(), Superv
 
     let first = supervisor.snapshot(&fleet.first).expect("first slot");
     let second = supervisor.snapshot(&fleet.second).expect("second slot");
-    assert!(!first.active);
+    // The failed child was killed; the documented automatic recovery now
+    // starts one distinct replacement without changing the healthy peer.
+    assert!(first.active);
+    assert_ne!(first.process_system_id, original_process);
+    assert_eq!(first.restart_attempt, 1);
     assert!(second.active);
+    assert_eq!(second.process_system_id, peer_process);
     assert_eq!((first.logs.len(), second.logs.len()), (3, 3));
     assert!(first.events.len() <= 8);
     assert!(second.events.len() <= 8);
@@ -621,6 +627,10 @@ fn recovery_reuses_restart_claim_persisted_before_exit_finalize() -> Result<(), 
         .expect("registered agent");
     let claim = crate::restart_budget::claim_restart(
         record.layout.run_root(),
+        crate::restart_budget::RestartReleaseBinding {
+            agent_id: fleet.first.clone(),
+            release_id: codex_hepta_fleet::ReleaseId::parse("recoverable-v1")?,
+        },
         config().restart_max_attempts,
         config().restart_window,
         config().restart_backoff_base,
@@ -775,12 +785,22 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
         .clone();
     let first_claim = crate::restart_budget::claim_restart(
         record.layout.run_root(),
+        crate::restart_budget::RestartReleaseBinding {
+            agent_id: fleet.first.clone(),
+            release_id: codex_hepta_fleet::ReleaseId::parse("recoverable-v1")?,
+        },
         config().restart_max_attempts,
         config().restart_window,
         config().restart_backoff_base,
     )
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     assert_eq!(first_claim.attempt, 1);
+    // Historical records did not distinguish an undispatched replacement.
+    // Preserve their acknowledged attempt without physically replaying it.
+    let mut legacy = crate::restart_journal::read_main_restart_budget(record.layout.run_root())?
+        .expect("legacy pending");
+    legacy.pending_requires_spawn = false;
+    crate::restart_journal::write_main_restart_budget(record.layout.run_root(), &legacy)?;
     drop(supervisor);
 
     let (mut recovered, report) =
@@ -2340,6 +2360,10 @@ fn recovered_companion_budget_case(
         .expect("agent");
     crate::restart_budget::claim_restart(
         record.layout.run_root(),
+        crate::restart_budget::RestartReleaseBinding {
+            agent_id: fleet.first.clone(),
+            release_id: release_id.clone(),
+        },
         3,
         Duration::from_secs(60),
         Duration::from_millis(1),
@@ -2378,8 +2402,12 @@ fn recovered_companion_budget_case(
     let (mut recovered, report) =
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
     assert_eq!(report, TickReport::default());
+    // Finish the adopted predecessor before the pending replacement.
+    control.set_exit(&fleet.first);
+    let resumed_at = now + Duration::from_millis(2);
+    assert_eq!(recovered.tick(resumed_at), TickReport::default());
     control.set_healthy(&fleet.first);
-    assert_eq!(recovered.tick(now), TickReport::default());
+    assert_eq!(recovered.tick(resumed_at), TickReport::default());
     assert_eq!(
         control.matrix_spawn_count(&fleet.first),
         0,
@@ -2410,3 +2438,6 @@ fn recovered_companion_clock_rollback_cannot_replenish_attempts() -> Result<(), 
 fn recovered_companion_retains_bounded_retry_delay() -> Result<(), SupervisorError> {
     recovered_companion_budget_case(2, false)
 }
+
+#[path = "supervisor_signed_tests.rs"]
+mod signed_tests;
