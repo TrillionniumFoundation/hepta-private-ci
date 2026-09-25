@@ -78,6 +78,7 @@ Agentd preserves dispatch-boundary uncertainty and accepts terminal state only f
 | `shared_terminal_cell_load` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn load(` |
 | `shared_terminal_cell_predict` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn predict(` |
 | `shared_terminal_cell_restore` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn restore(` |
+| `compose_authoritative_owner_inputs` | `owner_native` | `codex-rs/hepta-agentd/src/intelligence_ingress.rs` — `pub fn authoritative_provider<` |
 
 Remaining repository implementation gaps:
 
@@ -265,6 +266,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 53 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 54 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
