@@ -3,6 +3,7 @@ use super::*;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceInvocationProviderV1;
+use crate::AgentdIntelligenceInvocationV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
