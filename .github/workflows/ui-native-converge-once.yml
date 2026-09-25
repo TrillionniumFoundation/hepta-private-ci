@@ -1,0 +1,399 @@
+name: ui.native one-shot convergence
+
+on:
+  push:
+    branches: [work/ui-native-current-source-20260925]
+    paths: [.github/workflows/ui-native-converge-once.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-one-shot-convergence
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  converge:
+    name: patch, verify, and freeze candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      final_sha: ${{ steps.final.outputs.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/ui-native-current-source-20260925
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install Linux native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Apply reviewed protocol and session hardening
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          backend = Path('apps/hepta-native/src/backend.rs')
+          text = backend.read_text(encoding='utf-8')
+          text = text.replace('use std::sync::atomic::AtomicU64;\nuse std::sync::atomic::Ordering;\n', '')
+          text = text.replace('static SESSION_COUNTER: AtomicU64 = AtomicU64::new(1);\n', '')
+          old = '''        if health.value.get("product").and_then(Value::as_str) != Some("hepta")
+                      || health.value.get("status").and_then(Value::as_str) != Some("ok")
+                      || health.value.get("native_auth").and_then(Value::as_str) != Some("keyring_bearer_v1")
+                  {
+                      return Err(ShellError::Backend(
+                          "gateway health identity is not the expected Hepta product".to_owned(),
+                      ));
+                  }
+                  let counter = SESSION_COUNTER.fetch_add(1, Ordering::Relaxed);
+                  let now = now_unix_ms()?.max(1);
+                  let session = SessionIncarnation {
+                      endpoint_id: manifest.endpoint_id.clone(),
+                      session_id: format!("native.{}.{}.{}", std::process::id(), now, counter),
+                      generation: now,
+                  };
+          '''
+          new = '''        if health.value.get("product").and_then(Value::as_str) != Some("hepta")
+                      || health.value.get("status").and_then(Value::as_str) != Some("ok")
+                      || health.value.get("native_auth").and_then(Value::as_str) != Some("keyring_bearer_v1")
+                  {
+                      return Err(ShellError::Backend(
+                          "gateway health identity is not the expected Hepta product".to_owned(),
+                      ));
+                  }
+                  let observed_protocol = health
+                      .value
+                      .get("native_protocol_version")
+                      .and_then(Value::as_u64)
+                      .ok_or_else(|| {
+                          ShellError::Backend(
+                              "gateway health is missing the native protocol version".to_owned(),
+                          )
+                      })?;
+                  if observed_protocol != manifest.protocol_version {
+                      return Err(ShellError::Backend(format!(
+                          "gateway native protocol version mismatch: manifest={}, observed={observed_protocol}",
+                          manifest.protocol_version
+                      )));
+                  }
+
+                  let mut session_nonce = [0_u8; 32];
+                  getrandom::fill(&mut session_nonce).map_err(|error| {
+                      ShellError::Security(format!("generate native session incarnation: {error}"))
+                  })?;
+                  let now = now_unix_ms()?.max(1);
+                  let session = SessionIncarnation {
+                      endpoint_id: manifest.endpoint_id.clone(),
+                      session_id: format!("native.{}", sha256_hex(&session_nonce)),
+                      generation: now,
+                  };
+          '''
+          if old not in text:
+              raise SystemExit('backend protocol/session block did not match expected candidate')
+          backend.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          gateway = Path('codex-rs/hepta-native-gateway/src/lib.rs')
+          text = gateway.read_text(encoding='utf-8')
+          old = '            br#"{\\"product\\":\\"hepta\\",\\"status\\":\\"ok\\",\\"native_auth\\":\\"keyring_bearer_v1\\"}"#,'
+          new = '            br#"{\\"product\\":\\"hepta\\",\\"status\\":\\"ok\\",\\"native_auth\\":\\"keyring_bearer_v1\\",\\"native_protocol_version\\":1}"#,'
+          if old not in text:
+              raise SystemExit('gateway health body did not match expected candidate')
+          text = text.replace(old, new, 1)
+          needle = '        assert_eq!(health_value["native_auth"], "keyring_bearer_v1");\n'
+          if needle not in text:
+              raise SystemExit('gateway health assertion did not match expected candidate')
+          text = text.replace(needle, needle + '        assert_eq!(health_value["native_protocol_version"], 1);\n', 1)
+          gateway.write_text(text, encoding='utf-8')
+
+          tests = Path('apps/hepta-native/tests/backend.rs')
+          text = tests.read_text(encoding='utf-8')
+          old = '        r#"{\\"product\\":\\"hepta\\",\\"status\\":\\"ok\\",\\"native_auth\\":\\"keyring_bearer_v1\\"}"#,'
+          new = '        r#"{\\"product\\":\\"hepta\\",\\"status\\":\\"ok\\",\\"native_auth\\":\\"keyring_bearer_v1\\",\\"native_protocol_version\\":1}"#,'
+          if old not in text:
+              raise SystemExit('backend success fixture did not match expected candidate')
+          text = text.replace(old, new, 1)
+          additions = r'''
+
+          #[test]
+          fn gateway_protocol_must_match_the_signed_manifest() {
+              let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+              let address = listener.local_addr().unwrap();
+              let server = serve_health(
+                  listener,
+                  r#"{"product":"hepta","status":"ok","native_auth":"keyring_bearer_v1","native_protocol_version":2}"#,
+              );
+              let mut backend = LoopbackGatewayBackend::new(address, TOKEN.to_owned()).unwrap();
+              let error = backend.connect(&manifest(address)).unwrap_err();
+              assert!(error.to_string().contains("protocol version mismatch"));
+              let _ = server.join().unwrap();
+          }
+
+          #[test]
+          fn gateway_protocol_identity_is_required() {
+              let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+              let address = listener.local_addr().unwrap();
+              let server = serve_health(
+                  listener,
+                  r#"{"product":"hepta","status":"ok","native_auth":"keyring_bearer_v1"}"#,
+              );
+              let mut backend = LoopbackGatewayBackend::new(address, TOKEN.to_owned()).unwrap();
+              let error = backend.connect(&manifest(address)).unwrap_err();
+              assert!(error.to_string().contains("missing the native protocol version"));
+              let _ = server.join().unwrap();
+          }
+
+          #[test]
+          fn each_authenticated_connection_gets_a_fresh_session_identity() {
+              fn connect_once() -> String {
+                  let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+                  let address = listener.local_addr().unwrap();
+                  let server = serve_health(
+                      listener,
+                      r#"{"product":"hepta","status":"ok","native_auth":"keyring_bearer_v1","native_protocol_version":1}"#,
+                  );
+                  let mut backend = LoopbackGatewayBackend::new(address, TOKEN.to_owned()).unwrap();
+                  let session_id = backend.connect(&manifest(address)).unwrap().session_id;
+                  let _ = server.join().unwrap();
+                  session_id
+              }
+
+              let first = connect_once();
+              let second = connect_once();
+              assert_ne!(first, second);
+              assert!(first.starts_with("native."));
+              assert_eq!(first.len(), "native.".len() + 64);
+          }
+          '''
+          if 'fn gateway_protocol_must_match_the_signed_manifest()' in text:
+              raise SystemExit('backend protocol regressions already exist')
+          tests.write_text(text.rstrip() + additions + '\n', encoding='utf-8')
+
+          ignore = Path('.gitignore')
+          text = ignore.read_text(encoding='utf-8')
+          needle = 'out/\nstorybook-static/\n'
+          if needle not in text:
+              raise SystemExit('gitignore insertion point did not match expected candidate')
+          ignore.write_text(text.replace(needle, 'out/\n/apps/hepta-native/target/\nstorybook-static/\n', 1), encoding='utf-8')
+
+          guide = Path('apps/hepta-native/DEVELOPMENT.md')
+          text = guide.read_text(encoding='utf-8')
+          needle = '''`native_auth=keyring_bearer_v1`; unauthenticated, duplicate-header, wrong-token
+          and legacy unauthenticated responses fail closed.
+          '''
+          replacement = '''`native_auth=keyring_bearer_v1` and the exact native protocol version from the
+          signed endpoint manifest; missing or mismatched protocol identity fails before a
+          session is created. Unauthenticated, duplicate-header, wrong-token and legacy
+          unauthenticated responses fail closed. Every accepted connection receives a
+          fresh CSPRNG-derived session incarnation rather than a process/time-derived ID.
+          '''
+          if needle not in text:
+              raise SystemExit('development guide insertion point did not match expected candidate')
+          guide.write_text(text.replace(needle, replacement, 1), encoding='utf-8')
+          PY
+          rm -rf apps/hepta-native/target
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway
+          git diff --check
+      - name: Verify hardened source on Linux
+        env:
+          CARGO_TARGET_DIR: /tmp/ui-native-one-shot-target
+          CARGO_BUILD_JOBS: "2"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 metadata --manifest-path apps/hepta-native/Cargo.toml --locked --format-version 1 >/dev/null
+          cargo +1.95.0 metadata --manifest-path codex-rs/Cargo.toml --locked --format-version 1 >/dev/null
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state -- --check
+          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets --all-features -- -D warnings
+          cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state --all-targets --all-features --no-deps -- -D warnings
+          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets
+          cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state --all-targets --all-features
+          cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --release --bins
+          binary=/tmp/ui-native-one-shot-target/release/hepta-native
+          "$binary" --self-test
+          "$binary" --qualification-e2e
+          python3 apps/hepta-native/tools/package_unsigned.py --self-test
+          python3 apps/hepta-native/tools/package_unsigned.py \
+            --platform linux --architecture x86_64 \
+            --release-dir /tmp/ui-native-one-shot-target/release \
+            --out-dir /tmp/ui-native-one-shot-package
+          /tmp/ui-native-one-shot-package/extracted/HeptaNative.AppDir/usr/bin/hepta-native --self-test
+          /tmp/ui-native-one-shot-package/extracted/HeptaNative.AppDir/usr/bin/hepta-native --qualification-e2e
+      - name: Commit source and exact-source metadata
+        id: final
+        run: |
+          set -euo pipefail
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -- \
+            .gitignore \
+            apps/hepta-native/DEVELOPMENT.md \
+            apps/hepta-native/src/backend.rs \
+            apps/hepta-native/tests/backend.rs \
+            codex-rs/hepta-native-gateway/src/lib.rs
+          git commit -s -m 'ui.native: bind gateway protocol and fresh session identity'
+          python3 apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
+          python3 apps/hepta-native/tools/prepare_current_source.py --sync-metadata
+          git add -A
+          for path in $(git diff --cached --name-only); do
+            case "$path" in
+              apps/hepta-native/CURRENT_SOURCE.json|docs/modules/ui.native/IMPLEMENTATION_MAP.json|qualification/module-execution-dossiers/NATIVE_BINDINGS.json|docs/modules/SOURCE_BINDINGS.json|docs/modules/MODULE_DOCS.json|qualification/module-execution-dossiers/DETAILS.json) ;;
+              *) echo "unexpected metadata path: $path" >&2; exit 1 ;;
+            esac
+          done
+          git commit -s -m 'docs(ui.native): bind hardened current source'
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          python3 scripts/test_hepta_module_registry.py
+          python3 scripts/hepta-implementation-maps.py verify --require-current-source
+          git rm .github/workflows/ui-native-converge-once.yml
+          git commit -s -m 'ci(ui.native): retire one-shot convergence workflow'
+          test -z "$(git status --porcelain)"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git push origin HEAD:refs/heads/work/ui-native-current-source-20260925
+
+  qualify:
+    name: ${{ matrix.os }}-${{ matrix.source }} final qualification
+    needs: converge
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+        source: [head, merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    env:
+      CARGO_TARGET_DIR: apps/hepta-native/target
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.converge.outputs.final_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind final exact head or deterministic merge
+        env:
+          FINAL_SHA: ${{ needs.converge.outputs.final_sha }}
+          SOURCE: ${{ matrix.source }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$FINAL_SHA"
+          git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+          base=$(git rev-parse refs/remotes/origin/main)
+          if test "$SOURCE" = merge; then
+            tree=$(git merge-tree --write-tree "$base" "$FINAL_SHA")
+            export GIT_AUTHOR_NAME=native-qualification
+            export GIT_AUTHOR_EMAIL=native-qualification@users.noreply.github.com
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z
+            export GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge=$(printf '%s\n' 'deterministic ui.native final qualification merge' |
+              git commit-tree "$tree" -p "$base" -p "$FINAL_SHA")
+            git checkout --detach "$merge"
+          fi
+          mkdir -p native-evidence
+          {
+            printf 'candidate=%s\n' "$FINAL_SHA"
+            printf 'base=%s\n' "$base"
+            printf 'source=%s\n' "$SOURCE"
+            printf 'checkout=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          } > native-evidence/source.txt
+          python3 apps/hepta-native/tools/prepare_current_source.py
+      - name: Install Linux native dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Verify, lint, and test final candidate
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 metadata --manifest-path apps/hepta-native/Cargo.toml --locked --format-version 1 >/dev/null
+          cargo +1.95.0 metadata --manifest-path codex-rs/Cargo.toml --locked --format-version 1 >/dev/null
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state -- --check
+          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets --all-features -- -D warnings
+          cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state --all-targets --all-features --no-deps -- -D warnings
+          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets
+          cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state --all-targets --all-features
+          python3 scripts/test_hepta_module_registry.py
+          python3 scripts/hepta-implementation-maps.py verify --require-current-source
+      - name: Build, package, and execute actual product binary
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --release --bins
+          binary=apps/hepta-native/target/release/hepta-native
+          if test "$RUNNER_OS" = Windows; then binary="${binary}.exe"; fi
+          "$binary" --self-test > native-evidence/self-test.json
+          "$binary" --qualification-e2e > native-evidence/faults.json
+          case "$RUNNER_OS" in
+            Linux) platform=linux ;;
+            macOS) platform=macos ;;
+            Windows) platform=windows ;;
+            *) exit 2 ;;
+          esac
+          case "$RUNNER_ARCH" in
+            X64) architecture=x86_64 ;;
+            ARM64) architecture=aarch64 ;;
+            *) architecture=$(printf '%s' "$RUNNER_ARCH" | tr '[:upper:]' '[:lower:]') ;;
+          esac
+          python3 apps/hepta-native/tools/package_unsigned.py \
+            --platform "$platform" --architecture "$architecture" \
+            --release-dir apps/hepta-native/target/release \
+            --out-dir native-package > native-evidence/package-output.json
+          case "$RUNNER_OS" in
+            Linux) packaged='native-package/extracted/HeptaNative.AppDir/usr/bin/hepta-native' ;;
+            macOS) packaged='native-package/extracted/Hepta Native.app/Contents/MacOS/hepta-native' ;;
+            Windows) packaged='native-package/extracted/HeptaNative/hepta-native.exe' ;;
+          esac
+          "$packaged" --self-test > native-evidence/packaged-self-test.json
+          "$packaged" --qualification-e2e > native-evidence/packaged-faults.json
+          cp native-package/package-receipt.json native-evidence/package-receipt.json
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ui-native-final-${{ matrix.os }}-${{ matrix.source }}-${{ needs.converge.outputs.final_sha }}
+          path: |
+            native-evidence/
+            native-package/*.zip
+          if-no-files-found: error
+          retention-days: 14
