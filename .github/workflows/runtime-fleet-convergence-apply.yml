@@ -19,8 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      EXPECTED_PARENT: 198958eb6735921cfbfa431c7968ea6594020044
-      HISTORICAL_BASE: 331b81d385a88837e252bd80fda8b8ac35ea4191
+      EXPECTED_PARENT: d6b3d9706f236c91a9e2325fbfbb6f0689da0d19
       HISTORICAL_HEAD: 6298a20a087a3874276d10c6362ee4647351a8a6
       BRANCH: work/product-convergence-20260923
       CARGO_BUILD_JOBS: "2"
@@ -38,266 +37,11 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$(git rev-parse HEAD)"
-          git cat-file -e "$HISTORICAL_BASE^{commit}"
           git cat-file -e "$HISTORICAL_HEAD^{commit}"
 
-      - name: Restore durable Fleet owner and harden lease invariants
+      - name: Apply reviewed Fleet source convergence
         shell: bash
-        run: |
-          set -euo pipefail
-          paths=(
-            codex-rs/hepta-fleet/src/allocation_model.rs
-            codex-rs/hepta-fleet/src/allocation_store.rs
-            codex-rs/hepta-fleet/src/allocation_store_tests.rs
-            codex-rs/hepta-fleet/src/lease_ledger.rs
-            codex-rs/hepta-fleet/src/lease_ledger_tests.rs
-            codex-rs/hepta-fleet/src/placement.rs
-            codex-rs/hepta-fleet/src/placement_tests.rs
-            codex-rs/hepta-fleet/src/resource_model.rs
-            codex-rs/hepta-fleet/src/resource_model_tests.rs
-            codex-rs/hepta-fleet/src/runtime_use.rs
-            codex-rs/hepta-fleet/src/runtime_use_tests.rs
-          )
-          git diff --binary --full-index "$HISTORICAL_BASE" "$HISTORICAL_HEAD" -- "${paths[@]}" > /tmp/runtime-fleet-core.patch
-          test -s /tmp/runtime-fleet-core.patch
-          git apply --3way --index /tmp/runtime-fleet-core.patch
-
-          python3 - <<'PY'
-          from pathlib import Path
-
-          lib = Path("codex-rs/hepta-fleet/src/lib.rs")
-          source = lib.read_text()
-
-          def add_after(anchor: str, addition: str) -> None:
-              global source
-              if addition.strip() in source:
-                  return
-              assert source.count(anchor) == 1, anchor
-              source = source.replace(anchor, anchor + addition)
-
-          def add_before(anchor: str, addition: str) -> None:
-              global source
-              if addition.strip() in source:
-                  return
-              assert source.count(anchor) == 1, anchor
-              source = source.replace(anchor, addition + anchor)
-
-          add_after("mod allocation_model;\n", "mod allocation_store;\n")
-          add_after("mod model;\n", "mod placement;\n")
-          add_after("mod release;\n", "mod resource_model;\nmod runtime_use;\n")
-
-          add_before(
-              "pub use authority_port::FleetAuthorityError;\n",
-              "pub use allocation_store::FleetAllocationSnapshot;\n"
-              "pub use allocation_store::FleetAllocationStore;\n"
-              "pub use allocation_store::FleetAllocationStoreError;\n",
-          )
-          add_after(
-              "pub use authority_port::FleetAuthorityPort;\n",
-              "pub use lease_ledger::FleetConsumptionObservationV1;\n"
-              "pub use lease_ledger::FleetReconciliationOutcomeV1;\n",
-          )
-          add_before(
-              "pub use registry::AgentRecord;\n",
-              "pub use placement::FLEET_PLACEMENT_POLICY_VERSION;\n"
-              "pub use placement::FleetCapacityMeasurementV1;\n"
-              "pub use placement::FleetPlacementCommitV1;\n"
-              "pub use placement::FleetPlacementError;\n"
-              "pub use placement::FleetPlacementPlanV1;\n"
-              "pub use placement::FleetPlacementRequestV1;\n"
-              "pub use placement::admit_host_with_authority;\n"
-              "pub use placement::capacity_observation_binding;\n"
-              "pub use placement::commit_placement_with_authority;\n"
-              "pub use placement::placement_authority_binding;\n"
-              "pub use placement::plan_placement_v1;\n",
-          )
-          add_before(
-              "pub use revocation_control::FleetNodeRevocationState;\n",
-              "pub use resource_model::FleetResourceAxisV1;\n"
-              "pub use resource_model::FleetResourceLimitClassV1;\n"
-              "pub use resource_model::FleetResourceUnitV1;\n"
-              "pub use resource_model::FleetResourceVectorV1;\n"
-              "pub use runtime_use::FleetAllocationGrantV1;\n"
-              "pub use runtime_use::FleetAllocationUseV1;\n"
-              "pub use runtime_use::FleetReconciliationCommitV1;\n"
-              "pub use runtime_use::FleetRuntimeUseError;\n"
-              "pub use runtime_use::admit_runtime_use_v1;\n"
-              "pub use runtime_use::consumption_observation_binding;\n"
-              "pub use runtime_use::read_active_grants_v1;\n"
-              "pub use runtime_use::reconcile_consumption_with_authority;\n",
-          )
-          resource_tests = '''\n#[cfg(test)]\n#[path = "resource_model_tests.rs"]\nmod resource_model_tests;\n'''
-          if "mod resource_model_tests;" not in source:
-              source += resource_tests
-          lib.write_text(source)
-
-          authority = Path("codex-rs/hepta-fleet/src/authority_port.rs")
-          source = authority.read_text()
-          old = '''    hash_u64(&mut scope, grant.resources.cpu_millis);\n    hash_u64(&mut scope, grant.resources.memory_bytes);\n    hash_u64(&mut scope, grant.resources.accelerator_millis);\n'''
-          new = '''    hash_u64(&mut scope, grant.resources.concurrent_turns);\n    hash_u64(&mut scope, grant.resources.memory_mib);\n    hash_u64(&mut scope, grant.resources.tool_processes);\n    hash_u64(&mut scope, grant.resources.turn_queue_slots);\n'''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          source = source.replace("cpu_millis: 100,\n                memory_bytes: 1024,\n                accelerator_millis: 0,", "concurrent_turns: 100,\n                memory_mib: 1024,\n                tool_processes: 0,\n                turn_queue_slots: 0,")
-          source = source.replace("cpu_millis: 1_000,\n                    memory_bytes: 1 << 20,\n                    accelerator_millis: 1_000,", "concurrent_turns: 1_000,\n                    memory_mib: 1 << 20,\n                    tool_processes: 1_000,\n                    turn_queue_slots: 4_096,")
-          source = source.replace("changed.resources.cpu_millis += 1;", "changed.resources.concurrent_turns += 1;")
-          source = source.replace(".unwrap_err()", ".expect_err(\"expected rejection\")")
-          source = source.replace(".unwrap()", ".expect(\"test setup or operation\")")
-          authority.write_text(source)
-
-          ledger = Path("codex-rs/hepta-fleet/src/lease_ledger.rs")
-          source = ledger.read_text()
-          old = '''            LeaseDisposition::Revoke => {\n                let grant = self\n                    .grants\n                    .get_mut(allocation_id)\n                    .ok_or(Error::AllocationNotFound)?;\n                grant.revoked = true;\n                grant.lease_generation = grant\n                    .lease_generation\n                    .checked_add(1)\n                    .ok_or(Error::ArithmeticOverflow)?;\n                Ok(receipt(grant, LeaseOutcome::Revoked))\n            }\n'''
-          new = '''            LeaseDisposition::Revoke => {\n                let next_generation = current\n                    .lease_generation\n                    .checked_add(1)\n                    .ok_or(Error::ArithmeticOverflow)?;\n                let mut next = current.clone();\n                next.revoked = true;\n                next.lease_generation = next_generation;\n                let result = receipt(&next, LeaseOutcome::Revoked);\n                self.grants.insert(allocation_id.to_string(), next);\n                Ok(result)\n            }\n'''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''            LeaseDisposition::Renew { expires_at_ms } => {\n                let host = self\n                    .hosts\n                    .get(&current.host_id)\n                    .ok_or(Error::HostNotFound)?;\n                if now_ms >= host.valid_until_ms || host.generation != current.host_generation {\n                    return Err(Error::StaleHost);\n                }\n                if expires_at_ms <= now_ms || expires_at_ms > host.valid_until_ms {\n                    return Err(Error::InvalidTime);\n                }\n                if expires_at_ms == current.expires_at_ms {\n                    return Ok(receipt(&current, LeaseOutcome::Unchanged));\n                }\n                let result = {\n                    let grant = self\n                        .grants\n                        .get_mut(allocation_id)\n                        .ok_or(Error::AllocationNotFound)?;\n                    grant.expires_at_ms = expires_at_ms;\n                    grant.lease_generation = grant\n                        .lease_generation\n                        .checked_add(1)\n                        .ok_or(Error::ArithmeticOverflow)?;\n                    receipt(grant, LeaseOutcome::Renewed)\n                };\n                // A release/holder observation for the predecessor lease fence\n                // cannot be reused to settle the renewed lease.\n                self.holder_observations.remove(allocation_id);\n                Ok(result)\n            }\n'''
-          new = '''            LeaseDisposition::Renew { expires_at_ms } => {\n                let host = self\n                    .hosts\n                    .get(&current.host_id)\n                    .cloned()\n                    .ok_or(Error::HostNotFound)?;\n                if current.expires_at_ms <= now_ms {\n                    return Err(Error::StaleLease);\n                }\n                if now_ms >= host.valid_until_ms || host.generation != current.host_generation {\n                    return Err(Error::StaleHost);\n                }\n                if expires_at_ms <= now_ms || expires_at_ms > host.valid_until_ms {\n                    return Err(Error::InvalidTime);\n                }\n                if expires_at_ms == current.expires_at_ms {\n                    return Ok(receipt(&current, LeaseOutcome::Unchanged));\n                }\n                let reserved = self.reserved_resources_for_placement(&current.host_id, now_ms)?;\n                if !reserved.fits(host.capacity) {\n                    return Err(Error::CapacityExceeded);\n                }\n                let next_generation = current\n                    .lease_generation\n                    .checked_add(1)\n                    .ok_or(Error::ArithmeticOverflow)?;\n                let mut next = current.clone();\n                next.expires_at_ms = expires_at_ms;\n                next.lease_generation = next_generation;\n                let result = receipt(&next, LeaseOutcome::Renewed);\n                self.grants.insert(allocation_id.to_string(), next);\n                // A release/holder observation for the predecessor lease fence\n                // cannot be reused to settle the renewed lease.\n                self.holder_observations.remove(allocation_id);\n                Ok(result)\n            }\n'''
-          assert source.count(old) == 1
-          ledger.write_text(source.replace(old, new))
-
-          tests = Path("codex-rs/hepta-fleet/src/lease_ledger_tests.rs")
-          source = tests.read_text()
-          regression = r'''
-
-#[test]
-fn expired_holder_still_reserves_capacity_until_release_is_observed() {
-    let mut ledger = LeaseLedger::new();
-    ledger.admit_host(host()).expect("host");
-    let mut first = grant("expired-holder", 1_000);
-    first.expires_at_ms = 300;
-    ledger.issue(200, first).expect("first grant");
-    assert_eq!(
-        ledger.issue(400, grant("replacement", 1_000)),
-        Err(Error::CapacityExceeded)
-    );
-}
-
-#[test]
-fn revoked_holder_still_reserves_capacity_until_release_is_observed() {
-    let mut ledger = LeaseLedger::new();
-    ledger.admit_host(host()).expect("host");
-    ledger.issue(200, grant("revoked-holder", 1_000)).expect("grant");
-    ledger
-        .renew_or_revoke(
-            250,
-            "revoked-holder",
-            1,
-            3,
-            &"1".repeat(64),
-            LeaseDisposition::Revoke,
-        )
-        .expect("revoke");
-    assert_eq!(
-        ledger.issue(300, grant("replacement", 1_000)),
-        Err(Error::CapacityExceeded)
-    );
-    let revoked = ledger.get("revoked-holder").expect("revoked grant").clone();
-    ledger
-        .reconcile_consumption(350, released(&revoked, 1, 350))
-        .expect("release holder");
-    ledger
-        .issue(350, grant("replacement", 1_000))
-        .expect("released capacity can be reused");
-}
-
-#[test]
-fn expired_lease_cannot_be_renewed_after_replacement_admission_window() {
-    let mut ledger = LeaseLedger::new();
-    ledger.admit_host(host()).expect("host");
-    let mut expired = grant("expired", 1_000);
-    expired.expires_at_ms = 300;
-    ledger.issue(200, expired).expect("grant");
-    let before = ledger.get("expired").expect("stored grant").clone();
-    assert_eq!(
-        ledger.renew_or_revoke(
-            400,
-            "expired",
-            1,
-            3,
-            &"1".repeat(64),
-            LeaseDisposition::Renew { expires_at_ms: 900 },
-        ),
-        Err(Error::StaleLease)
-    );
-    assert_eq!(ledger.get("expired"), Some(&before));
-}
-
-#[test]
-fn failed_revoke_is_atomic_when_generation_overflows() {
-    let mut ledger = LeaseLedger::new();
-    ledger.admit_host(host()).expect("host");
-    let mut value = grant("overflow-revoke", 1);
-    value.lease_generation = u64::MAX;
-    ledger.issue(200, value).expect("grant");
-    let before = ledger.get("overflow-revoke").expect("stored grant").clone();
-    assert_eq!(
-        ledger.renew_or_revoke(
-            300,
-            "overflow-revoke",
-            u64::MAX,
-            3,
-            &"1".repeat(64),
-            LeaseDisposition::Revoke,
-        ),
-        Err(Error::ArithmeticOverflow)
-    );
-    assert_eq!(ledger.get("overflow-revoke"), Some(&before));
-}
-
-#[test]
-fn failed_renew_is_atomic_when_generation_overflows() {
-    let mut ledger = LeaseLedger::new();
-    ledger.admit_host(host()).expect("host");
-    let mut value = grant("overflow-renew", 1);
-    value.lease_generation = u64::MAX;
-    ledger.issue(200, value).expect("grant");
-    let before = ledger.get("overflow-renew").expect("stored grant").clone();
-    assert_eq!(
-        ledger.renew_or_revoke(
-            300,
-            "overflow-renew",
-            u64::MAX,
-            3,
-            &"1".repeat(64),
-            LeaseDisposition::Renew { expires_at_ms: 900 },
-        ),
-        Err(Error::ArithmeticOverflow)
-    );
-    assert_eq!(ledger.get("overflow-renew"), Some(&before));
-}
-'''
-          marker = "fn expired_holder_still_reserves_capacity_until_release_is_observed()"
-          if marker not in source:
-              source += regression
-          tests.write_text(source)
-
-          lane = Path(".github/workflows/hepta-lane-b-truth.yml")
-          source = lane.read_text()
-          source = source.replace(
-              '      - "codex-rs/hepta-agentd/**"\n',
-              '      - "codex-rs/hepta-fleet/**"\n'
-              '      - "codex-rs/hepta-supervisor/**"\n'
-              '      - "codex-rs/hepta-agentd/**"\n',
-          )
-          source = source.replace(
-              '      - "docs/modules/**/IMPLEMENTATION_MAP.json"\n',
-              '      - "docs/modules/runtime.fleet/**"\n'
-              '      - "docs/modules/**/IMPLEMENTATION_MAP.json"\n',
-          )
-          old = '          cargo test -p codex-hepta-fleet --bin hepta-fleet-leased\n'
-          new = (
-              '          cargo test --locked -p codex-hepta-fleet --lib\n'
-              '          cargo clippy --locked -p codex-hepta-fleet --all-targets -- -D warnings\n'
-          )
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''            cd codex-rs\n            cargo test -p codex-hepta-automation\n'''
-          new = '''            cd codex-rs\n            cargo test --locked -p codex-hepta-fleet --lib\n            cargo test -p codex-hepta-automation\n'''
-          assert source.count(old) == 1
-          lane.write_text(source.replace(old, new))
-          PY
-
-          git diff --check
+        run: python3 .github/scripts/runtime_fleet_core_apply.py apply
 
       - name: Format Fleet sources
         shell: bash
@@ -306,9 +50,7 @@ fn failed_renew_is_atomic_when_generation_overflows() {
       - name: Execute Fleet regressions
         working-directory: codex-rs
         shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-fleet --lib -- --test-threads=1
+        run: cargo test --locked -p codex-hepta-fleet --lib -- --test-threads=1
 
       - name: Strict Fleet lint
         working-directory: codex-rs
@@ -329,64 +71,24 @@ fn failed_renew_is_atomic_when_generation_overflows() {
           git config user.name "Hepta convergence bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm -- .github/workflows/runtime-fleet-convergence-apply.yml
-          git add \
-            .github/workflows/hepta-lane-b-truth.yml \
-            codex-rs/hepta-fleet/src/allocation_model.rs \
-            codex-rs/hepta-fleet/src/allocation_store.rs \
-            codex-rs/hepta-fleet/src/allocation_store_tests.rs \
-            codex-rs/hepta-fleet/src/authority_port.rs \
-            codex-rs/hepta-fleet/src/lease_ledger.rs \
-            codex-rs/hepta-fleet/src/lease_ledger_tests.rs \
-            codex-rs/hepta-fleet/src/lib.rs \
-            codex-rs/hepta-fleet/src/placement.rs \
-            codex-rs/hepta-fleet/src/placement_tests.rs \
-            codex-rs/hepta-fleet/src/resource_model.rs \
-            codex-rs/hepta-fleet/src/resource_model_tests.rs \
-            codex-rs/hepta-fleet/src/runtime_use.rs \
-            codex-rs/hepta-fleet/src/runtime_use_tests.rs
+          git add .github/workflows/hepta-lane-b-truth.yml codex-rs/hepta-fleet
           git commit -s -m "fix(runtime.fleet): restore durable allocation invariants"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
-      - name: Rebind implementation source identity honestly
+      - name: Rebind implementation source identity
         shell: bash
         env:
           SOURCE_SHA: ${{ steps.source.outputs.sha }}
           SOURCE_TREE: ${{ steps.source.outputs.tree }}
+        run: python3 .github/scripts/runtime_fleet_core_apply.py rebind
+
+      - name: Commit truthful implementation map
+        shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          path = Path("docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json")
-          data = json.loads(path.read_text())
-          data["sourceBase"] = {
-              "commit": os.environ["SOURCE_SHA"],
-              "tree": os.environ["SOURCE_TREE"],
-          }
-          data["sourceMaturity"] = "durable_allocation_owner_source"
-          data["stateOwnerDisposition"] = (
-              "Implements a durable, generation-fenced allocation owner and holder reconciliation; "
-              "named Supervisor product composition remains separately qualified."
-          )
-          data["repositoryControlledGaps"] = [
-              "Compose the durable Fleet allocation owner into current Supervisor start, restart, upgrade, rollback and adoption paths with a named capacity observer."
-          ]
-          data["productCallerState"] = "not_composed"
-          data["productionWriterState"] = "implemented_not_composed"
-          data["productionImplementation"] = False
-          boundary = data["claimBoundary"]
-          boundary["repositoryControlledSourceBoundaryGapsClosed"] = False
-          boundary["productExecutionComplete"] = False
-          boundary["productionImplementation"] = False
-          boundary["productExecutionProved"] = False
-          boundary["activation"] = False
-          boundary["release"] = False
-          path.write_text(json.dumps(data, indent=2) + "\n")
-          PY
           git add docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json
+          git rm -- .github/scripts/runtime_fleet_core_apply.py
           git commit -s -m "docs(runtime.fleet): bind restored durable owner source"
 
       - name: Verify governance and Lane B truth
@@ -410,12 +112,9 @@ fn failed_renew_is_atomic_when_generation_overflows() {
           merge_dir="${RUNNER_TEMP}/runtime-fleet-merge"
           git worktree add --detach "$merge_dir" origin/main
           git -C "$merge_dir" merge --no-ff --no-edit "$final_sha"
-          (
-            cd "$merge_dir/codex-rs"
-            cargo test --locked -p codex-hepta-fleet --lib -- --test-threads=1
-            cargo clippy --locked -p codex-hepta-fleet --all-targets -- -D warnings
-          )
-          git -C "$merge_dir" diff --check
+          cd "$merge_dir/codex-rs"
+          cargo test --locked -p codex-hepta-fleet --lib -- --test-threads=1
+          cargo clippy --locked -p codex-hepta-fleet --all-targets -- -D warnings
 
       - name: Push only onto unchanged canonical candidate
         shell: bash
