@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+def replace(path: str, old: str, new: str, count: int = 1) -> None:
+    target = ROOT / path
+    text = target.read_text()
+    found = text.count(old)
+    if found != count:
+        raise SystemExit(f"{path}: expected {count}, found {found}: {old[:72]!r}")
+    target.write_text(text.replace(old, new, count))
+
+def insert_before(path: str, marker: str, addition: str) -> None:
+    replace(path, marker, addition + marker)
+
+def write(path: str, content: str) -> None:
+    target = ROOT / path
+    if target.exists():
+        raise SystemExit(f"{path}: already exists")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content)
+
+replace(
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    """    pub fn revocation_head(&self) -> Result<FinalUseRevocations, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(state.head.clone())
+    }
+
+""",
+    """    pub fn revocation_head(&self) -> Result<FinalUseRevocations, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(state.head.clone())
+    }
+
+    /// Canonical digest of the exact currently trusted revocation head.
+    ///
+    /// This is the same digest embedded in `VerifiedUseToken`. Claimed nonces
+    /// are deliberately excluded, while every epoch, revision and revoked-grant
+    /// change advances the value.
+    pub fn revocation_head_sha256(&self) -> Result<[u8; 32], FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        revocation_head_sha256(&state.head)
+    }
+
+""",
+)
+replace(
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    """        let claimed_head = state.head.clone();
+        let claimed_head_bytes =
+            serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?;
+        let mut head_witness = b"hepta.kernel.authority.revocation-head.v1\\0".to_vec();
+        head_witness.extend_from_slice(&claimed_head_bytes);
+        let claimed_head_sha256: [u8; 32] = Sha256::digest(&head_witness).into();
+        let mut witness = b"hepta.kernel.authority.final-use-witness.v2\\0".to_vec();
+""",
+    """        let claimed_head = state.head.clone();
+        let claimed_head_bytes =
+            serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?;
+        let claimed_head_sha256 = revocation_head_sha256(&claimed_head)?;
+        let mut witness = b"hepta.kernel.authority.final-use-witness.v2\\0".to_vec();
+""",
+)
+insert_before(
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "fn frontier_for_state(state: &State) -> FinalUseFrontier {\n",
+    """fn revocation_head_sha256(head: &FinalUseRevocations) -> Result<[u8; 32], FinalUseError> {
+    let encoded = serde_json::to_vec(head).map_err(|_| FinalUseError::InvalidTrust)?;
+    let mut witness = b"hepta.kernel.authority.revocation-head.v1\\0".to_vec();
+    witness.extend_from_slice(&encoded);
+    Ok(Sha256::digest(&witness).into())
+}
+
+""",
+)
+insert_before(
+    "codex-rs/hepta-contracts/src/final_use_tests.rs",
+    "#[test]\nfn changing_signed_data_or_substituting_a_key_does_not_authorize() {\n",
+    """#[test]
+fn canonical_revocation_head_digest_tracks_only_the_trusted_head() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let first = authority.revocation_head_sha256().unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    assert_eq!(token.claimed_revocation_head_sha256(), first);
+    assert_eq!(authority.revocation_head_sha256().unwrap(), first);
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .unwrap();
+    assert_ne!(authority.revocation_head_sha256().unwrap(), first);
+}
+
+""",
+)
+
+replace(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    """pub enum NduOwnerError {
+    InvalidContext(&'static str),
+    Ndu(NduError),
+""",
+    """pub enum NduOwnerError {
+    InvalidContext(&'static str),
+    RevocationFrontierMismatch,
+    Ndu(NduError),
+""",
+)
+replace(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    """    #[must_use]
+    pub const fn production_policy_digest(&self) -> Digest32 {
+        self.production_policy_digest
+    }
+
+    pub fn evaluate(
+""",
+    """    #[must_use]
+    pub const fn production_policy_digest(&self) -> Digest32 {
+        self.production_policy_digest
+    }
+
+    pub fn refresh_revocation_frontier(
+        &mut self,
+        revocation_frontier_digest: Digest32,
+    ) -> Result<(), NduOwnerError> {
+        if revocation_frontier_digest.is_zero() {
+            return Err(NduOwnerError::InvalidContext("revocation frontier"));
+        }
+        self.context.revocation_frontier_digest = revocation_frontier_digest;
+        Ok(())
+    }
+
+    pub fn evaluate(
+""",
+)
+replace(
+    "codex-rs/hepta-ndu/src/owner.rs",
+    """        let token = authority.claim(signed, &expected)?;
+        authority
+            .with_verified_use(token, &expected, || match mutation {
+""",
+    """        let token = authority.claim(signed, &expected)?;
+        if Digest32::from_array(token.claimed_revocation_head_sha256())
+            != self.context.revocation_frontier_digest
+        {
+            return Err(NduOwnerError::RevocationFrontierMismatch);
+        }
+        authority
+            .with_verified_use(token, &expected, || match mutation {
+""",
+)
+replace(
+    "codex-rs/hepta-ndu/src/owner_tests.rs",
+    """    let owner = NduAuthenticatedOwnerV1::open(
+        store_dir.path(),
+        authority.clone(),
+""",
+    """    let revocation_frontier_digest = Digest32::from_array(
+        authority
+            .revocation_head_sha256()
+            .expect("current revocation head digest"),
+    );
+    let owner = NduAuthenticatedOwnerV1::open(
+        store_dir.path(),
+        authority.clone(),
+""",
+)
+replace(
+    "codex-rs/hepta-ndu/src/owner_tests.rs",
+    """            revocation_frontier_digest: digest("revocation-frontier"),
+""",
+    """            revocation_frontier_digest,
+""",
+)
+with (ROOT / "codex-rs/hepta-ndu/src/owner_tests.rs").open("a") as out:
+    out.write(
+        """
+#[test]
+fn unrelated_head_advance_rejects_a_stale_owner_context() {
+    let mut fixture = fixture();
+    let mutation = append_mutation("frontier-advanced");
+    let signed = fixture.sign(&mutation, "grant-frontier-advanced");
+    fixture
+        .authority
