@@ -407,6 +407,7 @@ impl AgentdPromptRuntimeOwner {
         }))
     }
 
+    #[cfg(test)]
     fn prepare(
         &self,
         request: PromptRuntimePrepareRequest,

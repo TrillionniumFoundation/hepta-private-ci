@@ -392,3 +392,12 @@ The bootstrap source-location obligation for `prompt.registry` is implemented by
 - `codex-rs/hepta-prompt-registry`
 
 The source candidate is subject to `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This paragraph records the required workflow, not a pass receipt for the current mutable branch. Exact source/test receipts must identify their actual commit and logs. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. Profile identity and bounded compatible views
+
+Admission, supersession and durable restore use the same `RealizationProfileKey`, including model ID and model version. `read_compatible_v2` sorts borrowed bindings and clones only the selected return set; omitted-count and canonical ordering semantics do not change. Compatible-set validation checks each binding, rejects reused realization identities across factors, enforces the required-factor bound and rejects missing required factors even when a caller recomputes the outer digest.
+
+Recovery-checkpoint preflight validates the existing private parent or its creatable final component before opening the registry writer lock. The later owner open revalidates filesystem identity and permissions; preflight is not a replacement for final filesystem checks. The regression `unsafe_checkpoint_parent_is_rejected_before_initial_registry_creation` verifies that correcting an invalid initial checkpoint configuration can still initialize and reopen safely.
+
+These changes do not close the production input-producer, long-term archive, complete-host rollback or independent provider-acceptance gates described in the module dossier. The test-only runtime `prepare` compatibility helper is not a production source endpoint.
