@@ -44,8 +44,7 @@ pub fn canonical_scored_outputs_digest_v2(
         return Err(CalibratedError::CandidateCountOutOfRange.into());
     }
     let mut bytes = b"hepta.intuition.scored-outputs.v2\0".to_vec();
-    let count =
-        u32::try_from(request.candidates.len()).map_err(|_| CalibratedError::Arithmetic)?;
+    let count = u32::try_from(request.candidates.len()).map_err(|_| CalibratedError::Arithmetic)?;
     bytes.extend_from_slice(&count.to_be_bytes());
     for candidate in &request.candidates {
         let id = candidate.candidate_id.as_str().as_bytes();
@@ -227,7 +226,8 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn fixture() -> Result<(CalibratedDecisionRequestV1, CanonicalPolicyProfileV1), Box<dyn Error>> {
+    fn fixture() -> Result<(CalibratedDecisionRequestV1, CanonicalPolicyProfileV1), Box<dyn Error>>
+    {
         let candidates = vec![CalibratedActionCandidateV1 {
             candidate_id: StableId::new("candidate:a")?,
             legal: true,
@@ -318,8 +318,8 @@ mod tests {
     }
 
     #[test]
-    fn assignment_change_preserves_scorer_digest_and_changes_runtime_payload(
-    ) -> Result<(), Box<dyn Error>> {
+    fn assignment_change_preserves_scorer_digest_and_changes_runtime_payload()
+    -> Result<(), Box<dyn Error>> {
         let (request, profile) = fixture()?;
         let scoring = ScoringCommitmentV2 {
             model_artifact_digest: profile.scorer.model_digest,
