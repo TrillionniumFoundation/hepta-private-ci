@@ -432,7 +432,7 @@
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "symbol": "ObjectiveRuntimeHost::submit",
-      "semantics": "signed AuthBus -> current trust authentication -> authenticated recompile/projection -> durable publication -> current-trust revalidation -> generation/fence-bound runtime admission"
+      "semantics": "signed AuthBus -> current trust -> exact durable replay or fresh authenticated compile/projection -> current trust/deadline -> generation/fence-bound runtime admission"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
@@ -458,6 +458,16 @@
       "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
       "symbol": "signed_compiled_objective_executes_once_reaches_terminal_and_does_not_resurrect",
       "semantics": "configured compiled compatibility host -> trusted context fixture -> signed Unix final-use grant -> physical App Server request to controlled HTTP/SSE model -> terminal -> reopened inference journal exact replay without resend; not autonomous seven-owner or live-provider qualification"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
+      "symbol": "resolve_authenticated_replay",
+      "semantics": "current authenticated full body identity -> checkpoint-backed original publication; no fresh-source readmission, new append or effect permit"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs",
+      "symbol": "delayed_exact_ack_replay_survives_source_age_but_not_revocation",
+      "semantics": "real daemon rejects a new stale source but preserves the original exact acknowledgement; revocation still rejects replay"
     }
   ],
   "exactSourceCandidate": {
@@ -507,7 +517,9 @@
       "scripts/test_hepta_objective_target_measure.py",
       "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts.rs",
-      "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs"
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
+      "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs"
     ],
     "role": "product_composition_source_identity"
   },
