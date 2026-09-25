@@ -253,8 +253,49 @@ impl ProductionAuthorityLease {
     }
 }
 
+#[path = "production_cognitive_commit.rs"]
+mod cognitive_commit;
+
+/// Opaque guard that linearizes one authority use against revocation.
+///
+/// A trusted verifier creates the guard only after atomically observing a
+/// current grant. Revocation acknowledgement must wait for every issued guard
+/// to drop. The owner holds this value across the complete SQLite mutation or
+/// recovery publication boundary, so a check cannot become stale while the
+/// caller waits for a lock, checkpoints a recovery image, or commits state.
+pub struct ProductionAuthorityUseGuard {
+    _guard: Box<dyn Send + 'static>,
+}
+
+impl ProductionAuthorityUseGuard {
+    /// Wrap a verifier-owned guard whose `Drop` releases the verifier's live-use
+    /// reservation. The verifier remains responsible for the actual
+    /// revocation/currentness protocol; this constructor grants no authority.
+    pub fn from_verified_use<G>(guard: G) -> Self
+    where
+        G: Send + 'static,
+    {
+        Self {
+            _guard: Box::new(guard),
+        }
+    }
+}
+
+impl fmt::Debug for ProductionAuthorityUseGuard {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ProductionAuthorityUseGuard")
+            .finish_non_exhaustive()
+    }
+}
+
 /// External verifier hook. Implementations should verify the signed grant,
 /// scope, epoch, and opaque token before returning `Ok(())`.
+///
+/// `enter_use` is the production linearization boundary. A verifier that only
+/// implements point-in-time `verify` remains usable for non-mutating
+/// preflight/qualification, but cannot authorize a semantic mutation or
+/// writable recovery publication.
 ///
 /// The writer never treats a boolean field on the lease as authority and has
 /// no built-in/self-signing implementation of this trait.
@@ -264,6 +305,14 @@ pub trait ProductionAuthorityVerifier: Send + Sync {
         authority: &ProductionAuthorityLease,
         expected_agent: &AgentId,
     ) -> Result<(), String>;
+
+    fn enter_use(
+        &self,
+        _authority: &ProductionAuthorityLease,
+        _expected_agent: &AgentId,
+    ) -> Result<ProductionAuthorityUseGuard, String> {
+        Err("authority verifier does not provide a linearized use guard".to_string())
+    }
 }
 
 impl<F> ProductionAuthorityVerifier for F
@@ -285,6 +334,133 @@ pub enum ProductionCognitiveMutationError {
     Authority(#[from] ProductionWriterError),
     #[error(transparent)]
     Store(#[from] CognitiveStoreError),
+    #[error("production cognitive mutation already has a durable terminal result")]
+    ObservedResult(Box<ProductionCognitiveMutationResultV1>),
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProductionCognitiveMutationResultStateV1 {
+    Queued,
+    Indeterminate,
+    Committed,
+    Rejected,
+    RolledBack,
+}
+
+impl ProductionCognitiveMutationResultStateV1 {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Queued => "queued",
+            Self::Indeterminate => "indeterminate",
+            Self::Committed => "committed",
+            Self::Rejected => "rejected",
+            Self::RolledBack => "rolled_back",
+        }
+    }
+}
+
+impl From<LocalOutcomeState> for ProductionCognitiveMutationResultStateV1 {
+    fn from(value: LocalOutcomeState) -> Self {
+        match value {
+            LocalOutcomeState::Queued => Self::Queued,
+            LocalOutcomeState::Indeterminate => Self::Indeterminate,
+            LocalOutcomeState::Committed => Self::Committed,
+            LocalOutcomeState::Rejected => Self::Rejected,
+            LocalOutcomeState::RolledBack => Self::RolledBack,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProductionCognitiveMutationCommitV1 {
+    pub schema_version: u32,
+    pub namespace: String,
+    pub operation_digest: Sha256Digest,
+    pub write_digest: Sha256Digest,
+    pub source_content_sha256: Sha256Digest,
+    pub source_observed_at_unix_seconds: i64,
+    pub memory_id: String,
+    pub memory_revision: u64,
+    pub source_id: String,
+    pub source_revision: u64,
+    pub projection_output_sha256: Sha256Digest,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct ProductionCognitiveMutationResultV1 {
+    pub schema_version: u32,
+    pub namespace: String,
+    pub state: ProductionCognitiveMutationResultStateV1,
+    pub mutation_kind: String,
+    pub operation_digest: Sha256Digest,
+    pub input_payload_sha256: Sha256Digest,
+    pub expected_predecessor_revision: Option<u64>,
+    pub owner_agent_id: AgentId,
+    pub authority_grant_digest: Sha256Digest,
+    pub authority_epoch: u64,
+    pub owner_epoch: u64,
+    pub lease_id: String,
+    pub generation: u64,
+    pub provenance_event_id: String,
+    pub provenance_outbox_id: String,
+    pub latest_event_id: String,
+    pub latest_event_kind: String,
+    pub latest_payload_json: String,
+    pub commit: Option<ProductionCognitiveMutationCommitV1>,
+    pub result_sha256: Sha256Digest,
+    pub external_effect: bool,
+}
+
+impl ProductionCognitiveMutationResultV1 {
+    #[must_use]
+    pub fn compute_result_sha256(&self) -> Sha256Digest {
+        production_cognitive_result_digest(self)
+    }
+
+    pub fn validate(&self) -> Result<(), ProductionWriterError> {
+        let terminal_shape_valid = match self.state {
+            ProductionCognitiveMutationResultStateV1::Committed => {
+                self.commit.as_ref().is_some_and(|commit| {
+                    self.latest_event_kind == "reconcile_committed"
+                        && commit.schema_version == PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION
+                        && commit.namespace == PRODUCTION_COGNITIVE_MUTATION_NAMESPACE
+                        && commit.operation_digest == self.operation_digest
+                        && serde_json::to_string(commit)
+                            .is_ok_and(|encoded| encoded == self.latest_payload_json)
+                })
+            }
+            ProductionCognitiveMutationResultStateV1::Queued
+            | ProductionCognitiveMutationResultStateV1::Indeterminate
+            | ProductionCognitiveMutationResultStateV1::Rejected
+            | ProductionCognitiveMutationResultStateV1::RolledBack => self.commit.is_none(),
+        };
+        let expected_operation = production_cognitive_operation_digest_parts(
+            &self.authority_grant_digest,
+            self.authority_epoch,
+            self.owner_epoch,
+            &self.lease_id,
+            self.generation,
+            &self.mutation_kind,
+            &self.input_payload_sha256,
+            self.expected_predecessor_revision,
+        );
+        if self.schema_version != PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION
+            || self.namespace != PRODUCTION_COGNITIVE_MUTATION_NAMESPACE
+            || self.external_effect
+            || self.generation == 0
+            || self.provenance_event_id.is_empty()
+            || self.provenance_outbox_id.is_empty()
+            || self.latest_event_id.is_empty()
+            || !terminal_shape_valid
+            || self.operation_digest != expected_operation
+            || self.result_sha256 != self.compute_result_sha256()
+        {
+            return Err(ProductionWriterError::StaleReceipt);
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -616,7 +792,9 @@ impl ProductionDurableWriter {
     }
 
     /// Open a writer with a verifier retained for every final-use authority
-    /// check. Production semantic mutation must use this constructor.
+    /// check. Production semantic mutation must use this constructor. The
+    /// verifier must also support a linearized use guard; a point-in-time-only
+    /// verifier cannot mint the semantic mutation capability.
     pub async fn open_with_live_verifier(
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
@@ -629,6 +807,7 @@ impl ProductionDurableWriter {
             Self::open(store, authority, verifier.as_ref(), lease_id, generation).await?;
         writer.live_verifier = Some(retained_verifier);
         writer.verify_authority().await?;
+        drop(writer.enter_authority_use()?);
         Ok(writer)
     }
 
@@ -685,6 +864,103 @@ impl ProductionDurableWriter {
         &self,
     ) -> Result<crate::CognitiveRecoveryAnchor, crate::CognitiveStoreError> {
         self.store.recovery_anchor().await
+    }
+
+    /// Inspect one semantic mutation by its stable operation digest. This is a
+    /// read-only result query, not permission to replay the mutation. It remains
+    /// available after response loss and after live authority revocation, while
+    /// the local lease/fence rules still govern which historical occurrence a
+    /// successor may observe.
+    pub async fn cognitive_mutation_result(
+        &self,
+        operation_digest: &Sha256Digest,
+    ) -> Result<Option<ProductionCognitiveMutationResultV1>, ProductionWriterError> {
+        let occurrence_key = format!("cognitive-mutation:{}", operation_digest.as_str());
+        let Some(observation) = self.lease.observe_occurrence(&occurrence_key).await? else {
+            return Ok(None);
+        };
+        if observation.topic != PRODUCTION_COGNITIVE_MUTATION_TOPIC {
+            return Err(production_cognitive_journal_corrupt(
+                "semantic mutation occurrence has an unexpected topic",
+            ));
+        }
+        let intent: ProductionCognitiveMutationIntentRecordV1 =
+            serde_json::from_str(&observation.admission_payload_json).map_err(|error| {
+                production_cognitive_journal_corrupt(format!(
+                    "semantic mutation intent is not canonical JSON: {error}"
+                ))
+            })?;
+        let expected_operation = production_cognitive_operation_digest_parts(
+            &intent.authority_grant_digest,
+            intent.authority_epoch,
+            intent.owner_epoch,
+            &intent.lease_id,
+            intent.generation,
+            &intent.mutation_kind,
+            &intent.input_payload_sha256,
+            intent.expected_predecessor_revision,
+        );
+        if intent.schema_version != PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION
+            || intent.namespace != PRODUCTION_COGNITIVE_MUTATION_NAMESPACE
+            || intent.operation_digest != *operation_digest
+            || expected_operation != *operation_digest
+            || intent.owner_agent_id != *self.store.owner_agent_id()
+            || intent.lease_id != self.lease_id()
+            || intent.generation == 0
+            || observation.occurrence_key != occurrence_key
+        {
+            return Err(production_cognitive_journal_corrupt(
+                "semantic mutation intent does not match its owner, lease, or operation digest",
+            ));
+        }
+        let state = ProductionCognitiveMutationResultStateV1::from(observation.state);
+        let commit = if state == ProductionCognitiveMutationResultStateV1::Committed {
+            if observation.latest_event_kind != "reconcile_committed" {
+                return Err(production_cognitive_journal_corrupt(
+                    "committed semantic mutation lacks its committed event",
+                ));
+            }
+            let commit: ProductionCognitiveMutationCommitV1 =
+                serde_json::from_str(&observation.latest_payload_json).map_err(|error| {
+                    production_cognitive_journal_corrupt(format!(
+                        "semantic mutation commit is not canonical JSON: {error}"
+                    ))
+                })?;
+            if commit.operation_digest != *operation_digest {
+                return Err(production_cognitive_journal_corrupt(
+                    "semantic mutation commit belongs to another operation",
+                ));
+            }
+            Some(commit)
+        } else {
+            None
+        };
+        let mut result = ProductionCognitiveMutationResultV1 {
+            schema_version: intent.schema_version,
+            namespace: intent.namespace,
+            state,
+            mutation_kind: intent.mutation_kind,
+            operation_digest: intent.operation_digest,
+            input_payload_sha256: intent.input_payload_sha256,
+            expected_predecessor_revision: intent.expected_predecessor_revision,
+            owner_agent_id: intent.owner_agent_id,
+            authority_grant_digest: intent.authority_grant_digest,
+            authority_epoch: intent.authority_epoch,
+            owner_epoch: intent.owner_epoch,
+            lease_id: intent.lease_id,
+            generation: intent.generation,
+            provenance_event_id: observation.admission_event_id,
+            provenance_outbox_id: observation.outbox_id,
+            latest_event_id: observation.latest_event_id,
+            latest_event_kind: observation.latest_event_kind,
+            latest_payload_json: observation.latest_payload_json,
+            commit,
+            result_sha256: Sha256Digest::for_bytes(b"pending"),
+            external_effect: false,
+        };
+        result.result_sha256 = result.compute_result_sha256();
+        result.validate()?;
+        Ok(Some(result))
     }
 
     pub(crate) fn store(&self) -> &CognitiveStore {
@@ -1077,6 +1353,16 @@ impl ProductionDurableWriter {
             head,
             "rolled_back",
         ))
+    }
+
+    fn enter_authority_use(&self) -> Result<ProductionAuthorityUseGuard, ProductionWriterError> {
+        self.authority
+            .validate_for_agent(self.store.owner_agent_id())?;
+        self.live_verifier
+            .as_ref()
+            .ok_or(ProductionWriterError::LiveVerifierRequired)?
+            .enter_use(&self.authority, self.store.owner_agent_id())
+            .map_err(ProductionWriterError::AuthorityRejected)
     }
 
     async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
@@ -1546,6 +1832,9 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
+            // A replay is still a scoped read of a durable result. Reject a
+            // foreign access context before the duplicate-observation path.
+            self.writer.store().authorize(access, &source.scope)?;
             let prepared =
                 self.prepare_semantic_mutation("remember", source, None, &(draft, facts))?;
             let mut transaction = self
@@ -1555,9 +1844,37 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .begin_with("BEGIN IMMEDIATE")
                 .await
                 .map_err(crate::cognitive_store::unavailable)?;
-            let queued = self
+            // Linearize external revocation only after acquiring the SQLite
+            // writer lock. The guard remains alive through the commit, while
+            // the local lease is revalidated inside this exact transaction.
+            let _authority_use = self.writer.enter_authority_use()?;
+            self.writer
+                .lease
+                .verify_current_hot_path_in_transaction(&mut transaction)
+                .await
+                .map_err(ProductionWriterError::from)?;
+            let queued = match self
                 .admit_prepared_mutation(&mut transaction, &prepared)
-                .await?;
+                .await
+            {
+                Ok(queued) => queued,
+                Err(error) => {
+                    transaction
+                        .rollback()
+                        .await
+                        .map_err(crate::cognitive_store::unavailable)?;
+                    if let Some(result) = self
+                        .writer
+                        .cognitive_mutation_result(&prepared.operation_digest)
+                        .await?
+                    {
+                        return Err(ProductionCognitiveMutationError::ObservedResult(Box::new(
+                            result,
+                        )));
+                    }
+                    return Err(error);
+                }
+            };
             let write = self
                 .writer
                 .store()
@@ -1566,11 +1883,14 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
-            transaction
-                .commit()
-                .await
-                .map_err(crate::cognitive_store::unavailable)?;
+            // Validate before durability; invalid receipts must not describe a
+            // mutation that already became visible. A use hold pins revocation,
+            // not the grant's absolute expiry.
             receipt.validate()?;
+            self.writer
+                .authority
+                .validate_for_agent(self.writer.store().owner_agent_id())?;
+            cognitive_commit::commit(transaction, _authority_use, Arc::clone(&self.writer)).await?;
             Ok(receipt)
         })
     }
@@ -1586,6 +1906,9 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
+            // A replay is still a scoped read of a durable result. Reject a
+            // foreign access context before the duplicate-observation path.
+            self.writer.store().authorize(access, &source.scope)?;
             let prepared = self.prepare_semantic_mutation(
                 "correct",
                 source,
@@ -1599,9 +1922,37 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .begin_with("BEGIN IMMEDIATE")
                 .await
                 .map_err(crate::cognitive_store::unavailable)?;
-            let queued = self
+            // Linearize external revocation only after acquiring the SQLite
+            // writer lock. The guard remains alive through the commit, while
+            // the local lease is revalidated inside this exact transaction.
+            let _authority_use = self.writer.enter_authority_use()?;
+            self.writer
+                .lease
+                .verify_current_hot_path_in_transaction(&mut transaction)
+                .await
+                .map_err(ProductionWriterError::from)?;
+            let queued = match self
                 .admit_prepared_mutation(&mut transaction, &prepared)
-                .await?;
+                .await
+            {
+                Ok(queued) => queued,
+                Err(error) => {
+                    transaction
+                        .rollback()
+                        .await
+                        .map_err(crate::cognitive_store::unavailable)?;
+                    if let Some(result) = self
+                        .writer
+                        .cognitive_mutation_result(&prepared.operation_digest)
+                        .await?
+                    {
+                        return Err(ProductionCognitiveMutationError::ObservedResult(Box::new(
+                            result,
+                        )));
+                    }
+                    return Err(error);
+                }
+            };
             let write = self
                 .writer
                 .store()
@@ -1620,11 +1971,14 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
-            transaction
-                .commit()
-                .await
-                .map_err(crate::cognitive_store::unavailable)?;
+            // Validate before durability; invalid receipts must not describe a
+            // mutation that already became visible. A use hold pins revocation,
+            // not the grant's absolute expiry.
             receipt.validate()?;
+            self.writer
+                .authority
+                .validate_for_agent(self.writer.store().owner_agent_id())?;
+            cognitive_commit::commit(transaction, _authority_use, Arc::clone(&self.writer)).await?;
             Ok(receipt)
         })
     }
@@ -1639,6 +1993,9 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
+            // A replay is still a scoped read of a durable result. Reject a
+            // foreign access context before the duplicate-observation path.
+            self.writer.store().authorize(access, &source.scope)?;
             let prepared = self.prepare_semantic_mutation(
                 "forget",
                 source,
@@ -1652,9 +2009,37 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .begin_with("BEGIN IMMEDIATE")
                 .await
                 .map_err(crate::cognitive_store::unavailable)?;
-            let queued = self
+            // Linearize external revocation only after acquiring the SQLite
+            // writer lock. The guard remains alive through the commit, while
+            // the local lease is revalidated inside this exact transaction.
+            let _authority_use = self.writer.enter_authority_use()?;
+            self.writer
+                .lease
+                .verify_current_hot_path_in_transaction(&mut transaction)
+                .await
+                .map_err(ProductionWriterError::from)?;
+            let queued = match self
                 .admit_prepared_mutation(&mut transaction, &prepared)
-                .await?;
+                .await
+            {
+                Ok(queued) => queued,
+                Err(error) => {
+                    transaction
+                        .rollback()
+                        .await
+                        .map_err(crate::cognitive_store::unavailable)?;
+                    if let Some(result) = self
+                        .writer
+                        .cognitive_mutation_result(&prepared.operation_digest)
+                        .await?
+                    {
+                        return Err(ProductionCognitiveMutationError::ObservedResult(Box::new(
+                            result,
+                        )));
+                    }
+                    return Err(error);
+                }
+            };
             let write = self
                 .writer
                 .store()
@@ -1670,11 +2055,14 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
-            transaction
-                .commit()
-                .await
-                .map_err(crate::cognitive_store::unavailable)?;
+            // Validate before durability; invalid receipts must not describe a
+            // mutation that already became visible. A use hold pins revocation,
+            // not the grant's absolute expiry.
             receipt.validate()?;
+            self.writer
+                .authority
+                .validate_for_agent(self.writer.store().owner_agent_id())?;
+            cognitive_commit::commit(transaction, _authority_use, Arc::clone(&self.writer)).await?;
             Ok(receipt)
         })
     }
@@ -1692,6 +2080,52 @@ struct PreparedProductionCognitiveMutation {
 }
 
 impl ProductionCognitiveMutationCapability {
+    pub fn remember_operation_digest(
+        &self,
+        source: &SourceDraft,
+        draft: &MemoryDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<Sha256Digest, ProductionCognitiveMutationError> {
+        Ok(self
+            .prepare_semantic_mutation("remember", source, None, &(draft, facts))?
+            .operation_digest)
+    }
+
+    pub fn correct_operation_digest(
+        &self,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &MemoryRevisionDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<Sha256Digest, ProductionCognitiveMutationError> {
+        Ok(self
+            .prepare_semantic_mutation(
+                "correct",
+                source,
+                Some(expected_revision),
+                &(memory_id.as_str(), draft, facts),
+            )?
+            .operation_digest)
+    }
+
+    pub fn forget_operation_digest(
+        &self,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &ForgetMemoryDraft,
+    ) -> Result<Sha256Digest, ProductionCognitiveMutationError> {
+        Ok(self
+            .prepare_semantic_mutation(
+                "forget",
+                source,
+                Some(expected_revision),
+                &(memory_id.as_str(), draft),
+            )?
+            .operation_digest)
+    }
+
     fn prepare_semantic_mutation<T: Serialize + ?Sized>(
         &self,
         mutation_kind: &str,
@@ -1765,20 +2199,21 @@ impl ProductionCognitiveMutationCapability {
         write: CognitiveWriteReceipt,
     ) -> Result<ProductionCognitiveMutationReceiptV1, ProductionCognitiveMutationError> {
         let write_digest = production_cognitive_write_digest(&write)?;
-        let commit_json = serde_json::to_string(&ProductionCognitiveMutationCommitJournalV1 {
+        let commit = ProductionCognitiveMutationCommitV1 {
             schema_version: PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION,
-            namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE,
-            operation_digest: &prepared.operation_digest,
-            write_digest: &write_digest,
-            source_content_sha256: &prepared.source_content_sha256,
+            namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE.to_string(),
+            operation_digest: prepared.operation_digest.clone(),
+            write_digest: write_digest.clone(),
+            source_content_sha256: prepared.source_content_sha256.clone(),
             source_observed_at_unix_seconds: prepared.source_observed_at_unix_seconds,
-            memory_id: write.memory.id.memory_id.as_str(),
+            memory_id: write.memory.id.memory_id.as_str().to_string(),
             memory_revision: write.memory.id.revision,
-            source_id: write.source.source_id.as_str(),
+            source_id: write.source.source_id.as_str().to_string(),
             source_revision: write.source.revision,
-            projection_output_sha256: &write.projection.output_sha256,
-        })
-        .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+            projection_output_sha256: write.projection.output_sha256.clone(),
+        };
+        let commit_json = serde_json::to_string(&commit)
+            .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
         let terminal = self
             .writer
             .lease
@@ -1830,19 +2265,21 @@ struct ProductionCognitiveMutationIntentJournalV1<'a> {
     owner_agent_id: &'a str,
 }
 
-#[derive(Serialize)]
-struct ProductionCognitiveMutationCommitJournalV1<'a> {
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ProductionCognitiveMutationIntentRecordV1 {
     schema_version: u32,
-    namespace: &'static str,
-    operation_digest: &'a Sha256Digest,
-    write_digest: &'a Sha256Digest,
-    source_content_sha256: &'a Sha256Digest,
-    source_observed_at_unix_seconds: i64,
-    memory_id: &'a str,
-    memory_revision: u64,
-    source_id: &'a str,
-    source_revision: u64,
-    projection_output_sha256: &'a Sha256Digest,
+    namespace: String,
+    mutation_kind: String,
+    operation_digest: Sha256Digest,
+    input_payload_sha256: Sha256Digest,
+    expected_predecessor_revision: Option<u64>,
+    authority_grant_digest: Sha256Digest,
+    authority_epoch: u64,
+    owner_epoch: u64,
+    lease_id: String,
+    generation: u64,
+    owner_agent_id: AgentId,
 }
 
 fn production_cognitive_input_digest<T: Serialize + ?Sized>(
@@ -1861,22 +2298,49 @@ fn production_cognitive_operation_digest(
     input_payload_sha256: &Sha256Digest,
     expected_predecessor_revision: Option<u64>,
 ) -> Sha256Digest {
+    production_cognitive_operation_digest_parts(
+        &writer.authority.grant_digest,
+        writer.authority.authority_epoch,
+        writer.authority.owner_epoch,
+        writer.lease_id(),
+        writer.generation(),
+        mutation_kind,
+        input_payload_sha256,
+        expected_predecessor_revision,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn production_cognitive_operation_digest_parts(
+    authority_grant_digest: &Sha256Digest,
+    authority_epoch: u64,
+    owner_epoch: u64,
+    lease_id: &str,
+    generation: u64,
+    mutation_kind: &str,
+    input_payload_sha256: &Sha256Digest,
+    expected_predecessor_revision: Option<u64>,
+) -> Sha256Digest {
     let predecessor = expected_predecessor_revision
         .map(u64::to_be_bytes)
         .unwrap_or([0; 8]);
     digest_framed(
         b"hepta:production-cognitive-mutation-operation:v1",
         &[
-            writer.authority.grant_digest.as_str().as_bytes(),
-            &writer.authority.authority_epoch.to_be_bytes(),
-            &writer.authority.owner_epoch.to_be_bytes(),
-            writer.lease_id().as_bytes(),
-            &writer.generation().to_be_bytes(),
+            authority_grant_digest.as_str().as_bytes(),
+            &authority_epoch.to_be_bytes(),
+            &owner_epoch.to_be_bytes(),
+            lease_id.as_bytes(),
+            &generation.to_be_bytes(),
             mutation_kind.as_bytes(),
             input_payload_sha256.as_str().as_bytes(),
             &predecessor,
         ],
     )
+}
+
+fn production_cognitive_journal_corrupt(message: impl Into<String>) -> ProductionWriterError {
+    ProductionWriterError::Local(LocalLeaseOutboxError::Corrupt(message.into()))
 }
 
 fn production_cognitive_write_digest(
@@ -1888,6 +2352,60 @@ fn production_cognitive_write_digest(
         b"hepta:production-cognitive-mutation-write:v1",
         &[&bytes],
     ))
+}
+
+fn production_cognitive_result_digest(
+    result: &ProductionCognitiveMutationResultV1,
+) -> Sha256Digest {
+    let predecessor = result
+        .expected_predecessor_revision
+        .map(u64::to_be_bytes)
+        .unwrap_or([0; 8]);
+    let mut parts = vec![
+        result.schema_version.to_be_bytes().to_vec(),
+        result.namespace.as_bytes().to_vec(),
+        result.state.as_str().as_bytes().to_vec(),
+        result.mutation_kind.as_bytes().to_vec(),
+        result.operation_digest.as_str().as_bytes().to_vec(),
+        result.input_payload_sha256.as_str().as_bytes().to_vec(),
+        predecessor.to_vec(),
+        result.owner_agent_id.as_str().as_bytes().to_vec(),
+        result.authority_grant_digest.as_str().as_bytes().to_vec(),
+        result.authority_epoch.to_be_bytes().to_vec(),
+        result.owner_epoch.to_be_bytes().to_vec(),
+        result.lease_id.as_bytes().to_vec(),
+        result.generation.to_be_bytes().to_vec(),
+        result.provenance_event_id.as_bytes().to_vec(),
+        result.provenance_outbox_id.as_bytes().to_vec(),
+        result.latest_event_id.as_bytes().to_vec(),
+        result.latest_event_kind.as_bytes().to_vec(),
+        result.latest_payload_json.as_bytes().to_vec(),
+        vec![u8::from(result.external_effect)],
+    ];
+    match &result.commit {
+        Some(commit) => {
+            parts.push(vec![1]);
+            parts.push(commit.schema_version.to_be_bytes().to_vec());
+            parts.push(commit.namespace.as_bytes().to_vec());
+            parts.push(commit.operation_digest.as_str().as_bytes().to_vec());
+            parts.push(commit.write_digest.as_str().as_bytes().to_vec());
+            parts.push(commit.source_content_sha256.as_str().as_bytes().to_vec());
+            parts.push(
+                commit
+                    .source_observed_at_unix_seconds
+                    .to_be_bytes()
+                    .to_vec(),
+            );
+            parts.push(commit.memory_id.as_bytes().to_vec());
+            parts.push(commit.memory_revision.to_be_bytes().to_vec());
+            parts.push(commit.source_id.as_bytes().to_vec());
+            parts.push(commit.source_revision.to_be_bytes().to_vec());
+            parts.push(commit.projection_output_sha256.as_str().as_bytes().to_vec());
+        }
+        None => parts.push(vec![0]),
+    }
+    let slices = parts.iter().map(Vec::as_slice).collect::<Vec<_>>();
+    digest_framed(b"hepta:production-cognitive-mutation-result:v1", &slices)
 }
 
 fn production_cognitive_receipt_digest(
@@ -2457,6 +2975,8 @@ mod tests {
     use crate::CognitiveScope;
     use codex_hepta_paths::HeptaFleetRoot;
     use codex_utils_absolute_path::AbsolutePathBuf;
+    use std::sync::Condvar;
+    use std::sync::Mutex;
     use std::sync::atomic::AtomicBool;
     use std::sync::atomic::AtomicUsize;
     use std::sync::atomic::Ordering;
@@ -2471,7 +2991,7 @@ mod tests {
         AgentId::parse(format!("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c{number:02x}")).unwrap()
     }
 
-    async fn store(temp: &TempDir) -> CognitiveStore {
+    pub(super) async fn store(temp: &TempDir) -> CognitiveStore {
         let fleet_root = temp.path().join("fleet");
         std::fs::create_dir_all(&fleet_root).unwrap();
         let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().unwrap()).unwrap();
@@ -2480,7 +3000,7 @@ mod tests {
             .unwrap()
     }
 
-    fn authority(agent: AgentId) -> ProductionAuthorityLease {
+    pub(super) fn authority(agent: AgentId) -> ProductionAuthorityLease {
         ProductionAuthorityLease::from_verified_parts(
             agent,
             Sha256Digest::for_bytes(b"signed-grant"),
@@ -2498,7 +3018,7 @@ mod tests {
         outcome: ProductionTargetOutcome,
     }
 
-    struct AllowVerifier;
+    pub(super) struct AllowVerifier;
 
     impl ProductionAuthorityVerifier for AllowVerifier {
         fn verify(
@@ -2507,6 +3027,14 @@ mod tests {
             _expected_agent: &AgentId,
         ) -> Result<(), String> {
             Ok(())
+        }
+
+        fn enter_use(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<ProductionAuthorityUseGuard, String> {
+            Ok(ProductionAuthorityUseGuard::from_verified_use(()))
         }
     }
 
@@ -2526,6 +3054,15 @@ mod tests {
                 Ok(())
             }
         }
+
+        fn enter_use(
+            &self,
+            authority: &ProductionAuthorityLease,
+            expected_agent: &AgentId,
+        ) -> Result<ProductionAuthorityUseGuard, String> {
+            self.verify(authority, expected_agent)?;
+            Ok(ProductionAuthorityUseGuard::from_verified_use(()))
+        }
     }
 
     struct DenyVerifier;
@@ -2537,6 +3074,157 @@ mod tests {
             _expected_agent: &AgentId,
         ) -> Result<(), String> {
             Err("no independent grant".to_string())
+        }
+    }
+
+    #[derive(Default)]
+    struct LinearizedAuthorityState {
+        revoked: bool,
+        active_uses: usize,
+        verify_calls: u64,
+        pause_next_enter: bool,
+        enter_paused: bool,
+        release_enter: bool,
+        revocation_requested: bool,
+    }
+
+    #[derive(Clone, Default)]
+    struct LinearizedAuthorityVerifier {
+        state: Arc<(Mutex<LinearizedAuthorityState>, Condvar)>,
+    }
+
+    struct LinearizedAuthorityUse {
+        state: Arc<(Mutex<LinearizedAuthorityState>, Condvar)>,
+    }
+
+    impl Drop for LinearizedAuthorityUse {
+        fn drop(&mut self) {
+            let (lock, changed) = &*self.state;
+            let mut state = lock.lock().expect("linearized authority state");
+            state.active_uses = state
+                .active_uses
+                .checked_sub(1)
+                .expect("authority use count is positive");
+            changed.notify_all();
+        }
+    }
+
+    impl LinearizedAuthorityVerifier {
+        fn verify_calls(&self) -> u64 {
+            self.state
+                .0
+                .lock()
+                .expect("linearized authority state")
+                .verify_calls
+        }
+
+        fn wait_for_verify_calls(&self, minimum: u64) {
+            let (lock, changed) = &*self.state;
+            let mut state = lock.lock().expect("linearized authority state");
+            while state.verify_calls < minimum {
+                state = changed
+                    .wait(state)
+                    .expect("linearized authority state after wait");
+            }
+        }
+
+        fn pause_next_enter(&self) {
+            let mut state = self.state.0.lock().expect("linearized authority state");
+            state.pause_next_enter = true;
+            state.release_enter = false;
+        }
+
+        fn wait_for_enter_pause(&self) {
+            let (lock, changed) = &*self.state;
+            let mut state = lock.lock().expect("linearized authority state");
+            while !state.enter_paused {
+                state = changed
+                    .wait(state)
+                    .expect("linearized authority state after wait");
+            }
+        }
+
+        fn release_enter(&self) {
+            let (lock, changed) = &*self.state;
+            let mut state = lock.lock().expect("linearized authority state");
+            state.release_enter = true;
+            changed.notify_all();
+        }
+
+        fn wait_for_revocation_request(&self) {
+            let (lock, changed) = &*self.state;
+            let mut state = lock.lock().expect("linearized authority state");
+            while !state.revocation_requested {
+                state = changed
+                    .wait(state)
+                    .expect("linearized authority state after wait");
+            }
+        }
+
+        fn revoke_and_wait(&self) {
+            let (lock, changed) = &*self.state;
+            let mut state = lock.lock().expect("linearized authority state");
+            state.revoked = true;
+            state.revocation_requested = true;
+            changed.notify_all();
+            while state.active_uses != 0 {
+                state = changed
+                    .wait(state)
+                    .expect("linearized authority state after wait");
+            }
+        }
+    }
+
+    impl ProductionAuthorityVerifier for LinearizedAuthorityVerifier {
+        fn verify(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<(), String> {
+            let (lock, changed) = &*self.state;
+            let mut state = lock
+                .lock()
+                .map_err(|_| "linearized authority state poisoned".to_string())?;
+            state.verify_calls = state.verify_calls.saturating_add(1);
+            changed.notify_all();
+            if state.revoked {
+                Err("linearized production authority revoked".to_string())
+            } else {
+                Ok(())
+            }
+        }
+
+        fn enter_use(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<ProductionAuthorityUseGuard, String> {
+            let (lock, changed) = &*self.state;
+            let mut state = lock
+                .lock()
+                .map_err(|_| "linearized authority state poisoned".to_string())?;
+            if state.revoked {
+                return Err("linearized production authority revoked".to_string());
+            }
+            state.active_uses = state.active_uses.saturating_add(1);
+            if state.pause_next_enter {
+                state.pause_next_enter = false;
+                state.enter_paused = true;
+                changed.notify_all();
+                while !state.release_enter {
+                    state = changed
+                        .wait(state)
+                        .map_err(|_| "linearized authority state poisoned".to_string())?;
+                }
+                state.release_enter = false;
+                state.enter_paused = false;
+            }
+            drop(state);
+            Ok(ProductionAuthorityUseGuard::from_verified_use(
+                LinearizedAuthorityUse {
+                    state: Arc::clone(&self.state),
+                },
+            ))
         }
     }
 
@@ -2678,6 +3366,154 @@ mod tests {
         assert_eq!(target.calls.load(Ordering::SeqCst), 0);
     }
 
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn revocation_while_waiting_for_writer_lock_rejects_before_mutation() {
+        let temp = TempDir::new().expect("temp");
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let verifier = Arc::new(LinearizedAuthorityVerifier::default());
+        let live_verifier: Arc<dyn ProductionAuthorityVerifier> = verifier.clone();
+        let writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                store.clone(),
+                authority(owner.clone()),
+                live_verifier,
+                "production:h4:writer-lock-revoke",
+                1,
+            )
+            .await
+            .expect("writer"),
+        );
+        let capability = writer
+            .cognitive_mutation_capability()
+            .expect("semantic capability");
+        let cut_before = writer.recovery_anchor().await.expect("cut before");
+        let verify_calls = verifier.verify_calls();
+        let blocker = store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .expect("writer-lock blocker");
+        let now = i64::try_from(now_unix_seconds().expect("clock")).expect("clock range");
+        let operation = tokio::spawn(async move {
+            capability
+                .remember_with_kg(
+                    &CognitiveAccess::agent_private(owner),
+                    &SourceDraft {
+                        scope: CognitiveScope::AgentPrivate,
+                        kind: crate::LedgerSourceKind::ExplicitMemoryDirective,
+                        event_key: "writer-lock-revoke-source".to_string(),
+                        content: b"writer-lock-revoke".to_vec(),
+                        observed_at_unix_seconds: now,
+                    },
+                    &MemoryDraft {
+                        stable_key: "writer-lock-revoke-memory".to_string(),
+                        revision: MemoryRevisionDraft {
+                            scope: CognitiveScope::AgentPrivate,
+                            content: "writer-lock-revoke".to_string(),
+                            verification: crate::MemoryVerification::Verified,
+                            lifecycle: crate::MemoryLifecycleState::Active,
+                            valid_from_unix_seconds: now,
+                            valid_to_unix_seconds: None,
+                            citations: Vec::new(),
+                        },
+                    },
+                    &KgFactSetDraft::default(),
+                )
+                .await
+        });
+        verifier.wait_for_verify_calls(verify_calls.saturating_add(1));
+        tokio::time::sleep(Duration::from_millis(25)).await;
+        verifier.revoke_and_wait();
+        blocker.rollback().await.expect("release writer lock");
+        let error = operation
+            .await
+            .expect("mutation task")
+            .expect_err("revoked mutation must fail");
+        assert!(matches!(
+            error,
+            ProductionCognitiveMutationError::Authority(ProductionWriterError::AuthorityRejected(
+                _
+            ))
+        ));
+        assert_eq!(
+            writer.recovery_anchor().await.expect("cut after"),
+            cut_before,
+            "revocation confirmed while the request waited for the writer lock must prevent every durable mutation"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn revocation_after_guard_entry_waits_for_the_authorized_commit() {
+        let temp = TempDir::new().expect("temp");
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let verifier = Arc::new(LinearizedAuthorityVerifier::default());
+        let live_verifier: Arc<dyn ProductionAuthorityVerifier> = verifier.clone();
+        let writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                store,
+                authority(owner.clone()),
+                live_verifier,
+                "production:h4:guarded-commit-revoke",
+                1,
+            )
+            .await
+            .expect("writer"),
+        );
+        let capability = writer
+            .cognitive_mutation_capability()
+            .expect("semantic capability");
+        verifier.pause_next_enter();
+        let now = i64::try_from(now_unix_seconds().expect("clock")).expect("clock range");
+        let operation = tokio::spawn(async move {
+            capability
+                .remember_with_kg(
+                    &CognitiveAccess::agent_private(owner),
+                    &SourceDraft {
+                        scope: CognitiveScope::AgentPrivate,
+                        kind: crate::LedgerSourceKind::ExplicitMemoryDirective,
+                        event_key: "guarded-commit-revoke-source".to_string(),
+                        content: b"guarded-commit-revoke".to_vec(),
+                        observed_at_unix_seconds: now,
+                    },
+                    &MemoryDraft {
+                        stable_key: "guarded-commit-revoke-memory".to_string(),
+                        revision: MemoryRevisionDraft {
+                            scope: CognitiveScope::AgentPrivate,
+                            content: "guarded-commit-revoke".to_string(),
+                            verification: crate::MemoryVerification::Verified,
+                            lifecycle: crate::MemoryLifecycleState::Active,
+                            valid_from_unix_seconds: now,
+                            valid_to_unix_seconds: None,
+                            citations: Vec::new(),
+                        },
+                    },
+                    &KgFactSetDraft::default(),
+                )
+                .await
+        });
+        verifier.wait_for_enter_pause();
+        let revoke_verifier = Arc::clone(&verifier);
+        let revocation = std::thread::spawn(move || revoke_verifier.revoke_and_wait());
+        verifier.wait_for_revocation_request();
+        assert!(
+            !revocation.is_finished(),
+            "revocation acknowledgement must wait for the active authority-use guard"
+        );
+        verifier.release_enter();
+        let receipt = operation
+            .await
+            .expect("mutation task")
+            .expect("guarded mutation commits before revocation acknowledgement");
+        receipt.validate().expect("committed receipt");
+        revocation.join().expect("revocation thread");
+        assert!(matches!(
+            writer.verify_current_authority().await,
+            Err(ProductionWriterError::AuthorityRejected(_))
+        ));
+    }
+
     #[tokio::test]
     async fn semantic_response_loss_restart_rejects_duplicate_and_preserves_committed_cut() {
         let temp = TempDir::new().unwrap();
@@ -2763,12 +3599,32 @@ mod tests {
         let retry = reopened_capability
             .remember_with_kg(&access, &source, &draft, &facts)
             .await;
-        assert!(matches!(
-            retry,
-            Err(ProductionCognitiveMutationError::Authority(
-                ProductionWriterError::Local(LocalLeaseOutboxError::IllegalTransition(ref message))
-            )) if message.contains("committed")
-        ));
+        let observed = match retry {
+            Err(ProductionCognitiveMutationError::ObservedResult(result)) => *result,
+            other => panic!("duplicate semantic request must return its typed result: {other:?}"),
+        };
+        observed.validate().expect("observed durable result");
+        assert_eq!(
+            observed.state,
+            ProductionCognitiveMutationResultStateV1::Committed
+        );
+        assert_eq!(observed.operation_digest, committed.operation_digest);
+        assert_eq!(
+            observed
+                .commit
+                .as_ref()
+                .expect("committed write summary")
+                .write_digest,
+            committed.write_digest
+        );
+        assert_eq!(
+            reopened_writer
+                .cognitive_mutation_result(&committed.operation_digest)
+                .await
+                .expect("query durable result")
+                .expect("committed durable result"),
+            observed
+        );
         assert_eq!(
             reopened_writer.status(&occurrence_key).await.unwrap(),
             LocalOutcomeState::Committed
@@ -3379,6 +4235,14 @@ mod takeover_regression_tests {
         ) -> Result<(), String> {
             Ok(())
         }
+
+        fn enter_use(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<ProductionAuthorityUseGuard, String> {
+            Ok(ProductionAuthorityUseGuard::from_verified_use(()))
+        }
     }
 
     async fn test_store(temp: &TempDir) -> CognitiveStore {
@@ -3517,6 +4381,14 @@ mod final_use_dispatch_tests {
             _expected_agent: &AgentId,
         ) -> Result<(), String> {
             Ok(())
+        }
+
+        fn enter_use(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<ProductionAuthorityUseGuard, String> {
+            Ok(ProductionAuthorityUseGuard::from_verified_use(()))
         }
     }
 
@@ -3917,3 +4789,7 @@ mod final_use_dispatch_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "production_cognitive_results_tests.rs"]
+mod cognitive_results_tests;

@@ -215,6 +215,24 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+### Live use and deterministic operation results
+
+Production mutations now acquire a verifier-owned `ProductionAuthorityUseGuard`
+after the SQLite writer lock and retain it through durable commit. The default
+`ProductionAuthorityVerifier::enter_use` rejects point-in-time-only verifiers.
+Revocation acknowledgement drains earlier holds; queued requests cannot reuse a
+stale preflight check. A cancelled response waiter does not release the hold
+before the owner commit task finishes. Receipt validation precedes commit.
+
+`ProductionDurableWriter::cognitive_mutation_result` and the matching Agentd host
+method observe the original operation and compact committed-result metadata.
+Identical retries return typed `ObservedResult`, not another mutation. Released
+or expired execution authority does not itself erase the historical result;
+owner, occurrence integrity and successor fence checks still apply. Full normal
+bootstrap/witness coordination and recoverable history archival are not claimed.
+See [production convergence](PRODUCTION_CLOSURE.md) for ordering, current API,
+qualification commands and remaining requirements.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md).

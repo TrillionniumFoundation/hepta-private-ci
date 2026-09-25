@@ -322,6 +322,23 @@ pub(crate) struct InheritedQueuedReceipt {
     pub payload_sha256: Sha256Digest,
 }
 
+/// Integrity-checked read view of one durable occurrence. This is not an
+/// execution capability: it exposes the immutable admitted intent, paired
+/// outbox identity, and latest append-only outcome so an owner can reconstruct
+/// a typed product result after response loss or restart.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct LocalOccurrenceObservation {
+    pub occurrence_key: String,
+    pub admission_event_id: String,
+    pub outbox_id: String,
+    pub topic: String,
+    pub admission_payload_json: String,
+    pub state: LocalOutcomeState,
+    pub latest_event_id: String,
+    pub latest_event_kind: String,
+    pub latest_payload_json: String,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct DurableOperationDispatchBinding {
     pub scope_sha256: Sha256Digest,
@@ -1014,13 +1031,27 @@ impl LocalLeaseOutbox {
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-        let lease = self.current_lease(&mut transaction).await?;
-        ensure_current_active(&lease, self)?;
+        self.verify_current_hot_path_in_transaction(&mut transaction)
+            .await?;
         transaction
             .commit()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(())
+    }
+
+    /// Revalidate the exact active lease under a caller-owned transaction.
+    /// Production semantic mutations call this only after acquiring the SQLite
+    /// writer lock and a linearized external-authority use guard. This closes
+    /// the stale-check window without paying a second full journal scan on the
+    /// ordinary hot path; full chains remain verified at open/recovery.
+    pub(crate) async fn verify_current_hot_path_in_transaction(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+    ) -> Result<LocalLease, LocalLeaseOutboxError> {
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        Ok(lease)
     }
 
     /// Verify the active lease and both append-only local chains inside a
@@ -2365,6 +2396,88 @@ impl LocalLeaseOutbox {
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(Some(state))
+    }
+
+    /// Return the exact immutable intent/outbox pair and latest outcome after
+    /// validating the current/inherited fence rules and all row digests. A
+    /// missing operation is represented as `None`; no error-string parsing is
+    /// required by product recovery code.
+    pub(crate) async fn observe_occurrence(
+        &self,
+        occurrence_key: impl Into<String>,
+    ) -> Result<Option<LocalOccurrenceObservation>, LocalLeaseOutboxError> {
+        let occurrence_key = occurrence_key.into();
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        // Read-only result observation remains legal after expiry or terminal
+        // release. A replaced writer still cannot use a stale identity/fence.
+        ensure_current_handle_fields(&lease, self)?;
+        let Some(admission) = find_admission(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        else {
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(None);
+        };
+        let outbox = find_outbox(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        verify_occurrence_pair_incremental(
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
+        ensure_occurrence_readable(&mut transaction, self, &admission, &outbox).await?;
+        let state = current_outcome(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?;
+        let latest = latest_occurrence_event(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| corrupt("admitted occurrence has no latest event"))?;
+        let observation = LocalOccurrenceObservation {
+            occurrence_key,
+            admission_event_id: admission.event_id,
+            outbox_id: outbox.outbox_id,
+            topic: outbox.topic,
+            admission_payload_json: admission.payload_json,
+            state,
+            latest_event_id: latest.event_id,
+            latest_event_kind: latest.kind,
+            latest_payload_json: latest.payload_json,
+        };
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(Some(observation))
     }
 
     /// Reconcile an indeterminate local intent.
