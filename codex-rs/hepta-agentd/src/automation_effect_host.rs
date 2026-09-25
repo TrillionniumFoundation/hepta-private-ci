@@ -355,13 +355,13 @@ impl AgentdAutomationEffectHost {
                 &preparation,
                 codex_hepta_automation::AuthorizedEffectDispatch {
                     authority: &self.authority,
-                    intent: intent,
-                    wire_payload: wire_payload,
+                    intent,
+                    wire_payload,
                     fence: &fence,
-                    signed_grant: signed_grant,
+                    signed_grant,
                     expected_binding: &binding,
-                    command_id: command_id,
-                    now_ms: now_ms,
+                    command_id,
+                    now_ms,
                 },
             )
             .await
@@ -394,6 +394,22 @@ impl AgentdAutomationEffectHost {
             .ok_or_else(|| {
                 AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
             })?;
+        if run.owner_agent_id != self.agent_id {
+            return Err(AgentdError::GenerationFenced(
+                "TaskFlow run is owned by a different Agent".to_string(),
+            ));
+        }
+        if let Some(receipt) = store
+            .read_prepared_product_effect_receipt(run_id, step_id, attempt)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("read settled product effect: {error}"))
+            })?
+        {
+            return Ok(AgentdAutomationEffectReconcileOutcome::Observed(Box::new(
+                receipt,
+            )));
+        }
         let fence = self.historical_fence(&run)?;
         if let Some(local) = store
             .settle_authorized_taskflow_effect_observation(run_id, step_id, attempt, &fence)
@@ -406,7 +422,8 @@ impl AgentdAutomationEffectHost {
         {
             match local {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
-                    if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
+                    if receipt.final_outcome.is_some()
+                        || receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
                     return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
                 }

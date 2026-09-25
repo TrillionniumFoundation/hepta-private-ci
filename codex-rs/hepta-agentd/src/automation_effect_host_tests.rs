@@ -4,7 +4,9 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AuthorizedEffectIntent;
+use codex_hepta_automation::TaskFlowReconcileOutcome;
 use codex_hepta_automation::TaskFlowStepObservation;
+use codex_hepta_automation::TaskFlowStepState;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -251,8 +253,22 @@ async fn host_prepares_and_dispatches_exact_wire_payload_once() {
         "provider_operation_id_sha256": provider_operation.as_str(),
         "status": "completed"
     });
+    // The wire endpoint takes one percent-encoded path segment. The raw
+    // provider identity contains colons; matching its unencoded spelling would
+    // return the mock's 404 instead of the independently observed terminal ack.
+    let lookup_segment = provider_key
+        .as_str()
+        .bytes()
+        .map(|byte| {
+            if byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b'~') {
+                char::from(byte).to_string()
+            } else {
+                format!("%{byte:02X}")
+            }
+        })
+        .collect::<String>();
     Mock::given(method("GET"))
-        .and(path(format!("/status/{}", provider_key.as_str())))
+        .and(path(format!("/status/{lookup_segment}")))
         .respond_with(ResponseTemplate::new(200).set_body_json(terminal_ack))
         .expect(1)
         .mount(&server)
@@ -323,10 +339,31 @@ async fn host_prepares_and_dispatches_exact_wire_payload_once() {
     let AgentdAutomationEffectReconcileOutcome::Observed(recovered) = recovered else {
         panic!("expected terminal recovered effect");
     };
+    // Recovery adds the terminal fact; it must not rewrite the original
+    // accepted-but-unknown provider observation into a historical success.
+    assert_eq!(recovered.state, TaskFlowStepState::Reconciled);
     assert_eq!(
         recovered.observation,
-        Some(TaskFlowStepObservation::Succeeded)
+        Some(TaskFlowStepObservation::Indeterminate)
     );
+    assert_eq!(
+        recovered.final_outcome,
+        Some(TaskFlowReconcileOutcome::Succeeded)
+    );
+    let repeated = rotated_host
+        .reconcile(
+            &recovered_store,
+            &intent.run_id,
+            &intent.step_id,
+            intent.attempt,
+            now_ms + AUTOMATION_EFFECT_PREPARATION_LEASE_MS + 11,
+        )
+        .await
+        .expect("reconcile from durable terminal fact without another GET");
+    let AgentdAutomationEffectReconcileOutcome::Observed(repeated) = repeated else {
+        panic!("durable terminal fact must remain available");
+    };
+    assert_eq!(*repeated, *recovered);
     let replay = rotated_host
         .execute(
             &recovered_store,

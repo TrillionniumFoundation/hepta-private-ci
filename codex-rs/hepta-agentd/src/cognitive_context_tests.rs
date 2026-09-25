@@ -386,8 +386,10 @@ async fn context_reads_a_candidate_beyond_the_first_owner_page() {
         1
     );
     assert_eq!(context.items.len(), 4);
-    assert_eq!(&context.items[0].memory_id, target_id);
-    assert_eq!(&context.items[0].content, target_token);
+    // Lexical and Recency channels are combined by RRF. The first item must
+    // match the independent complete ranking, not an assumed lexical winner.
+    assert_eq!(context.items[0].memory_id, expected[0].0);
+    assert_eq!(context.items[0].content, expected[0].1);
     let single = read(&store, &owner, 1, target_token, 1, None)
         .await
         .unwrap();

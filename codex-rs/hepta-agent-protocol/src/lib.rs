@@ -805,7 +805,7 @@ pub enum AgentdPayload {
     },
     AutomationTask(AutomationTask),
     AutomationThresholdCircuit(ThresholdCircuitDecisionV1),
-    AutomationEffectPreparation(ProductEffectPreparationV1),
+    AutomationEffectPreparation(Box<ProductEffectPreparationV1>),
     AutomationEffect(AutomationEffectSnapshot),
     AutomationEffectReconcile(AutomationEffectReconcileSnapshot),
     AutomationTasks {

@@ -640,6 +640,36 @@ impl AutomationStore {
         Ok(Some(step))
     }
 
+    /// Read an already-settled product effect using its original owner-held
+    /// preparation and command identity. Terminal runs have released their
+    /// active lease; this read never reclaims it or contacts the provider.
+    pub async fn read_prepared_product_effect_receipt(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<TaskFlowStepReceipt>, AuthorizedEffectError> {
+        let Some(prepared) = self
+            .product_effect_preparation_by_attempt(run_id, step_id, attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        let Some(durable) = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        if durable.provider_key.as_ref().map(ProviderEffectKey::as_str)
+            != Some(prepared.provider_key.as_str())
+        {
+            return Err(AuthorizedEffectError::BindingMismatch);
+        }
+        self.read_authorized_taskflow_effect_receipt(&prepared.intent, &durable.record_command_id)
+            .await
+    }
+
     /// Dispatch one already-claimed durable TaskFlow step through a final-use
     /// authorized provider seam.
     ///

@@ -682,7 +682,7 @@ impl AgentdState {
                     )
                     .await?;
                 self.fence_after_durable_change()?;
-                AgentdPayload::AutomationEffectPreparation(preparation)
+                AgentdPayload::AutomationEffectPreparation(Box::new(preparation))
             }
             crate::AgentdMethod::AutomationExecuteEffect {
                 intent,

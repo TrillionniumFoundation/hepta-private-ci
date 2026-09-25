@@ -123,8 +123,8 @@ impl AutomationStore {
                 ) {
                     return Ok(previous);
                 }
-            } else if let Some(run) = run.as_ref() {
-                if matches!(
+            } else if let Some(run) = run.as_ref()
+                && (matches!(
                     run.state,
                     TaskFlowRunState::Succeeded
                         | TaskFlowRunState::Failed
@@ -132,10 +132,9 @@ impl AutomationStore {
                 ) || (run
                     .lease_expires_at_ms
                     .is_some_and(|expires| expires > now_ms)
-                    && self.product_effect_is_ready(&previous).await?)
-                {
-                    return Ok(previous);
-                }
+                    && self.product_effect_is_ready(&previous).await?))
+            {
+                return Ok(previous);
             }
             if !proven_absent
                 && previous.prepared_generation == fence.generation

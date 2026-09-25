@@ -578,7 +578,7 @@ impl AgentdClient {
             .await?
             .payload
         {
-            AgentdPayload::AutomationEffectPreparation(preparation) => Ok(preparation),
+            AgentdPayload::AutomationEffectPreparation(preparation) => Ok(*preparation),
             payload => unexpected(payload),
         }
     }
