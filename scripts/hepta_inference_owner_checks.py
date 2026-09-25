@@ -6,6 +6,7 @@ replay nor history compaction is implemented by this suite; no receipt for those
 capabilities is emitted. Each real test must execute and pass, including when
 another test fails. The plan is shared by architecture and maintenance CI.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,9 +16,21 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = (
-    ("inference-growth", "history_growth_emits_update_recovery_memory_and_disk_curve", True),
-    ("inference-owner-handoff", "exclusive_owner_handoff_preserves_exact_history_and_pending_admission", False),
-    ("inference-process-loss", "process_loss_after_commit_reopens_without_duplicate_admission", False),
+    (
+        "inference-growth",
+        "history_growth_emits_update_recovery_memory_and_disk_curve",
+        True,
+    ),
+    (
+        "inference-owner-handoff",
+        "exclusive_owner_handoff_preserves_exact_history_and_pending_admission",
+        False,
+    ),
+    (
+        "inference-process-loss",
+        "process_loss_after_commit_reopens_without_duplicate_admission",
+        False,
+    ),
 )
 
 
@@ -25,10 +38,24 @@ def commands(output_dir: Path) -> list[list[str]]:
     result = []
     for label, test, ignored in TESTS:
         command = [
-            sys.executable, str(ROOT / "scripts/hepta_ci_exec.py"),
-            "--output", str(output_dir / f"{label}.json"), "--minimum-tests", "1", "--",
-            "just", "test", "--locked", "-p", "codex-hepta-infer-core", "--lib", "--retries", "0",
-            "-E", f"test({test})", "--no-capture",
+            sys.executable,
+            str(ROOT / "scripts/hepta_ci_exec.py"),
+            "--output",
+            str(output_dir / f"{label}.json"),
+            "--minimum-tests",
+            "1",
+            "--",
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-infer-core",
+            "--lib",
+            "--retries",
+            "0",
+            "-E",
+            f"test({test})",
+            "--no-capture",
         ]
         if ignored:
             command.extend(["--run-ignored", "only"])

@@ -871,7 +871,8 @@ def named_test_design_ids(text: str, root: Path) -> list[str]:
             r"^- (?:`([A-Z0-9-]+-[0-9]{2})`:|"
             r"\*\*([A-Z0-9-]+-[0-9]{2})(?: [—–-] [^*:\n]+)?:\*\*|"
             r"\*\*([A-Z0-9-]+-[0-9]{2})\*\*:|"
-            r"([A-Z0-9-]+-[0-9]{2}):)(?:\s|$)", line,
+            r"([A-Z0-9-]+-[0-9]{2}):)(?:\s|$)",
+            line,
         )
         if match:
             result.append(next(value for value in match.groups() if value is not None))
@@ -879,23 +880,33 @@ def named_test_design_ids(text: str, root: Path) -> list[str]:
         source = re.match(r"^- `(codex-rs/[^`]+\.rs)`:\s+\S", line)
         if source is not None:
             path = PurePosixPath(source.group(1))
-            if (str(path) != source.group(1) or ".." in path.parts
-                    or "\\" in source.group(1)
-                    or not (path.name.endswith("_tests.rs") or "tests" in path.parts)):
+            if (
+                str(path) != source.group(1)
+                or ".." in path.parts
+                or "\\" in source.group(1)
+                or not (path.name.endswith("_tests.rs") or "tests" in path.parts)
+            ):
                 raise Invalid("invalid named test source path")
             mode = subprocess.run(
                 ["git", "-C", str(root), "ls-tree", "HEAD", "--", str(path)],
-                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
             ).stdout
             if not mode.startswith(("100644 blob ", "100755 blob ")):
-                raise Invalid("named test source is not a committed regular file: " + str(path))
+                raise Invalid(
+                    "named test source is not a committed regular file: " + str(path)
+                )
             result.append("source:" + str(path))
     if not result or len(set(result)) != len(result):
         raise Invalid("missing or duplicate named product-test designs")
     return result
 
 
-def verify_details(base: Path, run_tests: bool = True, *, source_root: Path | None = None) -> int:
+def verify_details(
+    base: Path, run_tests: bool = True, *, source_root: Path | None = None
+) -> int:
     """Companion-only verification, deliberately not canonical repository CI."""
     index = load(base / "DETAILS.json")
     gaps = load(base / "DETAIL_GAPS.json")
@@ -1085,7 +1096,9 @@ def main() -> int:
         if args.command == "self-test":
             return self_test(args.fixture_dir or args.root / REL)
         if args.command == "verify-details":
-            return verify_details(args.fixture_dir or args.root / REL, source_root=args.root)
+            return verify_details(
+                args.fixture_dir or args.root / REL, source_root=args.root
+            )
         return verify(args.root)
     except (Invalid, OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
         print("FAIL_HEPTA_DETAILED_DESIGN: " + str(exc), file=sys.stderr)

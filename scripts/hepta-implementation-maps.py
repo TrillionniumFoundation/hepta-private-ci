@@ -1207,7 +1207,9 @@ def verify(
             (expected_tree, "expected-tree"),
         ):
             if value is not None and re.fullmatch(r"[0-9a-f]{40}", value) is None:
-                raise ValueError(f"--{label} must be an exact 40-character Git object id")
+                raise ValueError(
+                    f"--{label} must be an exact 40-character Git object id"
+                )
         if expected_sha is not None and candidate["commit"] != expected_sha:
             raise ValueError(
                 f"expected candidate SHA {expected_sha}, observed {candidate['commit']}"
@@ -1475,7 +1477,9 @@ def main():
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
         parser.error("--module applies only to migrate")
-    if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
+    if (
+        args.expected_sha is not None or args.expected_tree is not None
+    ) and args.command != "verify":
         parser.error("--expected-sha/--expected-tree apply only to verify")
     if args.command == "migrate":
         migrate(args.modules)

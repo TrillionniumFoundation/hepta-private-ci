@@ -45,7 +45,9 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
     if not policy.strip():
         raise VerificationError("empty boundary policy")
     modules = matrix.get("modules")
-    if not isinstance(modules, list) or not all(isinstance(row, dict) for row in modules):
+    if not isinstance(modules, list) or not all(
+        isinstance(row, dict) for row in modules
+    ):
         raise VerificationError("closed-world modules must be object rows")
     module_ids = [row.get("module") for row in modules]
     if not has_exact_module_membership(module_ids):
@@ -228,9 +230,9 @@ def self_test() -> None:
     matrix = read_json(MATRIX_PATH)
     validate_matrix(matrix)
     for mutation in (
-        lambda value: next(row for row in value["modules"] if row["module"] == "kernel.operations")["states"].__setitem__(
-            "durability", "durable"
-        ),
+        lambda value: next(
+            row for row in value["modules"] if row["module"] == "kernel.operations"
+        )["states"].__setitem__("durability", "durable"),
         lambda value: value["closure"].__setitem__("externalAcceptance", "closed"),
     ):
         invalid = deepcopy(matrix)

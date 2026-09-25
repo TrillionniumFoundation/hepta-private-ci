@@ -46,15 +46,17 @@ def shell(name: str) -> str:
 
 
 def engineering_step(name: str) -> str:
-    text = WORKFLOW.read_text(encoding="utf-8").split(
-        "  engineering-sandbox:\n", 1
-    )[1].split("  os-evidence:\n", 1)[0]
+    text = (
+        WORKFLOW.read_text(encoding="utf-8")
+        .split("  engineering-sandbox:\n", 1)[1]
+        .split("  os-evidence:\n", 1)[0]
+    )
     match = re.search(r"^      - name: " + re.escape(name) + r"\n", text, re.M)
     if match is None:
         raise AssertionError(f"missing engineering-sandbox step: {name}")
-    following = re.search(r"^      - ", text[match.end():], re.M)
+    following = re.search(r"^      - ", text[match.end() :], re.M)
     end = match.end() + following.start() if following else len(text)
-    return text[match.start():end]
+    return text[match.start() : end]
 
 
 def engineering_shell(name: str) -> str:
@@ -300,7 +302,9 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                 [
                     "bash",
                     "-c",
-                    engineering_shell("Bind exact engineering sandbox candidate identity"),
+                    engineering_shell(
+                        "Bind exact engineering sandbox candidate identity"
+                    ),
                 ],
                 cwd=self.repo,
                 env={**self.env, "GITHUB_ENV": str(output), **extra},

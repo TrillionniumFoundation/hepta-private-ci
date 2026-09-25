@@ -143,9 +143,7 @@ def delegated_owner_roots(
     bindings = registry.get("bindings")
     need(isinstance(bindings, list), "delegated source bindings")
     matches = [
-        row
-        for row in bindings
-        if isinstance(row, dict) and row.get("module") == owner
+        row for row in bindings if isinstance(row, dict) and row.get("module") == owner
     ]
     need(len(matches) == 1, f"unknown or ambiguous delegated owner {owner}")
     declared = matches[0].get("declaredRoots")

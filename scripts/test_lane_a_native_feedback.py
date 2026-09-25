@@ -34,10 +34,15 @@ class NativeFeedbackTests(unittest.TestCase):
                 FAIL_LINT=str(int(fail_lint)),
             )
             result = subprocess.run(
-                ["bash", str(SCRIPT)], env=env,
-                capture_output=True, text=True, timeout=30,
+                ["bash", str(SCRIPT)],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
-            commands = [line.rstrip("\t").split("\t") for line in log.read_text().splitlines()]
+            commands = [
+                line.rstrip("\t").split("\t") for line in log.read_text().splitlines()
+            ]
         self.assertEqual(len(commands), 4, result.stderr)
         self.assertEqual(commands[0][0], "just")
         self.assertIn("test", commands[0])
