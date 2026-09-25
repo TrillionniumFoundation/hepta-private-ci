@@ -471,7 +471,7 @@ impl RevocationRaceDriver {
         }
     }
 
-    fn join_revoker(&mut self) {
+    fn join_revoker_and_leave_pending(&mut self) {
         let result = self
             .revoker
             .take()
@@ -479,6 +479,9 @@ impl RevocationRaceDriver {
             .join()
             .expect("revocation thread join");
         assert_eq!(result, Err(FinalUseError::DispatchInProgress));
+    }
+
+    fn apply_pending_revocation(&self) {
         self.authority
             .update_revocations(FinalUseRevocations {
                 authority_epoch: 9,
@@ -897,6 +900,22 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
     let reopened = AutomationStore::open(&fixture.layout)
         .await
         .expect("reopen after provider-contact crash");
+    let witness = reopened
+        .authorized_taskflow_effect_authority_witness(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+        )
+        .await
+        .expect("read durable authority witness after crash")
+        .expect("dispatch-entry witness survives provider response loss");
+    witness.validate().expect("valid durable witness");
+    assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
+    assert!(matches!(
+        witness.authority_ref,
+        VerifiedUseAuthorityRefV1::FinalUse(ref reference)
+            if reference.grant_id == signed.grant.grant_id
+    ));
     let pending = reopened
         .pending_authorized_taskflow_effects(8)
         .await
@@ -1147,7 +1166,13 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
         TaskFlowRunState::Succeeded
     );
 
-    driver.join_revoker();
+    driver.join_revoker_and_leave_pending();
+    assert_eq!(
+        authority.claim(&signed, &expected),
+        Err(FinalUseError::RevocationPending),
+        "a blocked revocation must stop new authority admission until the exact update retries",
+    );
+    driver.apply_pending_revocation();
 
     let mut must_not_dispatch =
         RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"must-not-dispatch");

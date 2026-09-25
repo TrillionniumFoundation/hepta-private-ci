@@ -507,6 +507,99 @@ mod tests {
     }
 
     #[test]
+    fn single_writer_lock_fences_concurrent_owner_and_hands_off_after_drop() {
+        let (_temp, home, trust) = roots();
+        let first = AgentdFinalUseTrustStore::open(&trust, &home, "owner").unwrap();
+        assert!(AgentdFinalUseTrustStore::open(&trust, &home, "owner").is_err());
+        drop(first);
+        AgentdFinalUseTrustStore::open(&trust, &home, "owner").unwrap();
+    }
+
+    #[test]
+    fn restored_local_authority_snapshot_is_rejected_by_external_frontier() {
+        let (_temp, home, trust) = roots();
+        let authority_root = home.join("final-use-authority");
+        fs::create_dir(&authority_root).unwrap();
+        fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700)).unwrap();
+
+        let signer = SigningKey::from_bytes(&[41; 32]);
+        let head = FinalUseRevocations {
+            authority_epoch: 7,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        };
+        let initial = FinalUseFrontier::for_initial_head(&head).unwrap();
+        let trust_store = Arc::new(AgentdFinalUseTrustStore::open(&trust, &home, "owner").unwrap());
+        trust_store.ensure_initial_frontier(initial, true).unwrap();
+        let now = trust_store.now_unix_ms().unwrap();
+        let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
+            &authority_root,
+            "owner".to_string(),
+            vec![FinalUseIssuerTrustKey {
+                key_id: "issuer-a".to_string(),
+                verifying_key: signer.verifying_key().to_bytes(),
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
+            head.clone(),
+            trust_store.clone(),
+            trust_store.clone(),
+        )
+        .unwrap();
+        let claims_path = authority_root.join("authority.claims");
+        let claims_before = fs::read(&claims_path).unwrap();
+        let binding = FinalUseBinding {
+            subject_id: "agent-one".to_string(),
+            destination_id: "provider:fixture".to_string(),
+            request_sha256: [1; 32],
+            scope_sha256: [2; 32],
+            payload_sha256: [3; 32],
+        };
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "owner".to_string(),
+            authority_epoch: 7,
+            grant_id: "grant-one".to_string(),
+            nonce: [4; 32],
+            binding: binding.clone(),
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now + 60_000,
+        };
+        let signed = SignedFinalUseGrant {
+            signature: signer
+                .sign(&grant.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            grant,
+        };
+        let token = authority.claim(&signed, &binding).unwrap();
+        drop(token);
+        drop(authority);
+        drop(trust_store);
+
+        fs::write(&claims_path, claims_before).unwrap();
+        fs::set_permissions(&claims_path, fs::Permissions::from_mode(0o600)).unwrap();
+
+        let reopened_trust =
+            Arc::new(AgentdFinalUseTrustStore::open(&trust, &home, "owner").unwrap());
+        let error = FinalUseAuthority::open_state_dir_with_issuer_keys(
+            &authority_root,
+            "owner".to_string(),
+            vec![FinalUseIssuerTrustKey {
+                key_id: "issuer-a".to_string(),
+                verifying_key: signer.verifying_key().to_bytes(),
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
+            head,
+            reopened_trust.clone(),
+            reopened_trust,
+        )
+        .unwrap_err();
+        assert_eq!(error, FinalUseError::AntiRollbackViolation);
+    }
+
+    #[test]
     fn missing_frontier_cannot_be_created_for_existing_local_authority() {
         let (_temp, home, trust) = roots();
         let store = AgentdFinalUseTrustStore::open(&trust, &home, "owner").unwrap();
