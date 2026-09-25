@@ -528,7 +528,7 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "requestLocalReadOnlyProductExecutionProved": true,
+    "requestLocalReadOnlyProductExecutionProved": false,
     "authenticatedOwnerSourceImplemented": true,
     "authenticatedProductionProductExecutionProved": false,
     "productionWriterSourceImplemented": true,
@@ -540,8 +540,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "b3581605844729baac9cb6522e486af9746399f4",
+    "tree": "c7943ebe42481e53edd9841f83b814cc51f92759"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -687,5 +687,41 @@
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
       "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
     }
-  ]
+  ],
+  "historicalSourceBaselines": [
+    {
+      "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+      "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08",
+      "role": "historical_mapping_baseline",
+      "disposition": "history_only_nonancestor_after_source_integration_not_current_qualification"
+    }
+  ],
+  "historicalClaimBoundaries": [
+    {
+      "sourceBase": {
+        "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+        "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+      },
+      "claimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "requestLocalReadOnlyProductExecutionProved": true,
+        "authenticatedOwnerSourceImplemented": true,
+        "authenticatedProductionProductExecutionProved": false,
+        "productionWriterSourceImplemented": true,
+        "productionWriterActivated": false,
+        "stochasticAdmissionSourceImplemented": true,
+        "independentDecisionSourceImplemented": true,
+        "independentDecisionEvidenceProved": false,
+        "namedHostQualificationReceiptProved": false,
+        "implementedOperationMappingComplete": true
+      }
+    }
+  ],
+  "sourceBaseRole": "current_mapping_baseline_not_execution_receipt"
 }

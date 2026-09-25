@@ -293,6 +293,50 @@
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
       "sourcePathExists": true
+    },
+    {
+      "operation": "open_checkpointed_run_start_store",
+      "designOperation": "open_checkpointed_run_start_store",
+      "nativeSymbol": "open",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::rotates_at_capacity_and_reopens_one_global_chain"
+      ],
+      "state": "source_implemented_qualification_pending",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "compact_checkpointed_run_start_history",
+      "designOperation": "compact_checkpointed_run_start_history",
+      "nativeSymbol": "compact_expired_prefix",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::expired_prefix_compacts_to_checkpoint_bound_replay_index",
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::committed_compaction_cannot_be_replaced_by_older_valid_summary"
+      ],
+      "state": "source_implemented_qualification_pending",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "lookup_run_start_replay_identity",
+      "designOperation": "lookup_run_start_replay_identity",
+      "nativeSymbol": "index_entry",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::indexed_replay_identity_survives_rotation_compaction_and_reopen",
+        "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs::indexed_replay_lookup_rejects_uncertain_checkpoint_state"
+      ],
+      "state": "source_implemented_qualification_pending",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
