@@ -1,4 +1,4 @@
-name: Agentd convergence apply
+name: Prompt registry recovery apply
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: agentd-convergence-apply
+  group: prompt-registry-recovery-apply
   cancel-in-progress: false
 
 jobs:
@@ -19,7 +19,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      EXPECTED_PARENT: 1c270f87950daa397a52f00dd540cf785649fc0e
+      EXPECTED_PARENT: a19e57ca750378fa218eeec15ab659d40c9376d5
+      BRANCH: work/product-convergence-20260923
       CARGO_BUILD_JOBS: "2"
       RUST_BACKTRACE: "1"
     steps:
@@ -27,272 +28,59 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - name: Require the reviewed parent
+
+      - name: Require the reviewed exact branch head
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
-          test "$(git ls-remote origin refs/heads/work/product-convergence-20260923 | cut -f1)" = "$(git rev-parse HEAD)"
-      - name: Repair cancellation acknowledgement and control budgets
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$(git rev-parse HEAD)"
+          test -f scripts/hepta_apply_prompt_registry_recovery.py
+
+      - name: Apply guarded recovery implementation
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
+          python3 scripts/hepta_apply_prompt_registry_recovery.py
+          git rm -- scripts/hepta_apply_prompt_registry_recovery.py \
+            .github/workflows/agentd-convergence-apply.yml
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-prompt-registry
+          git diff --check
 
-          lane = Path("codex-rs/hepta-agentd/src/lane_b_runtime.rs")
-          source = lane.read_text()
-          old = '''        let record = self
-              .runs
-              .get_mut(run_id)
-              .ok_or(AgentRunError::RunNotFound)?;
-          require_revision(record, expected_revision)?;
-          let expired = expire_record(record, now_ms)?;
-          '''
-          new = '''        let record = self
-              .runs
-              .get_mut(run_id)
-              .ok_or(AgentRunError::RunNotFound)?;
-          // A lost cancellation acknowledgement may be retried with the exact
-          // predecessor revision after the acknowledgement deadline has advanced
-          // the run once into Indeterminate. Return the current receipt instead
-          // of hiding that committed transition behind StaleRevision.
-          if record.phase == RunPhase::Indeterminate
-              && record.cancel_reason.as_deref() == Some(reason)
-              && (expected_revision == record.revision
-                  || expected_revision.checked_add(1) == Some(record.revision))
-          {
-              return Ok((
-                  CancellationDisposition::CancellingAfterDispatch,
-                  receipt(record, /*idempotent*/ true),
-              ));
-          }
-          require_revision(record, expected_revision)?;
-          let expired = expire_record(record, now_ms)?;
-          '''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''                RunPhase::Cancelled => CancellationDisposition::AlreadyTerminal,
-                          RunPhase::Cancelling => CancellationDisposition::CancellingAfterDispatch,
-                          _ => return Err(AgentRunError::InvalidTransition),
-          '''
-          new = '''                RunPhase::Cancelled => CancellationDisposition::AlreadyTerminal,
-                          RunPhase::Cancelling | RunPhase::Indeterminate => {
-                              CancellationDisposition::CancellingAfterDispatch
-                          }
-                          _ => return Err(AgentRunError::InvalidTransition),
-          '''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''            RunPhase::Indeterminate => return Err(AgentRunError::TerminalObservationRequired),
-          '''
-          new = '''            RunPhase::Indeterminate => {
-                          if record.cancel_reason.as_deref() == Some(reason) {
-                              return Ok((
-                                  CancellationDisposition::CancellingAfterDispatch,
-                                  receipt(record, /*idempotent*/ true),
-                              ));
-                          }
-                          return Err(AgentRunError::Conflict);
-                      }
-          '''
-          assert source.count(old) == 1
-          lane.write_text(source.replace(old, new))
-
-          tests = Path("codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs")
-          source = tests.read_text()
-          anchor = '''#[test]
-          fn operation_identity_is_idempotent_only_for_equal_semantics() {
-          '''
-          regression = '''#[test]
-          fn cancellation_ack_timeout_returns_current_indeterminate_receipt_and_retries() {
-              let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
-              coordinator.start_run(100, snapshot()).expect("admit");
-              coordinator
-                  .attach_context(200, 1, attachment())
-                  .expect("attach");
-              coordinator
-                  .mark_dispatched(300, "run.1", 2)
-                  .expect("dispatch");
-              let cancelling = coordinator
-                  .cancel_run(400, "run.1", 3, "operator_request")
-                  .expect("begin cancellation");
-              assert_eq!(cancelling.1.revision, 4);
-              assert_eq!(cancelling.1.cancel_ack_deadline_ms, Some(3_400));
-
-              let timed_out = coordinator
-                  .cancel_run(3_400, "run.1", 4, "operator_request")
-                  .expect("surface indeterminate transition");
-              assert_eq!(
-                  timed_out.0,
-                  CancellationDisposition::CancellingAfterDispatch
-              );
-              assert_receipt(
-                  &timed_out.1,
-                  5,
-                  RunPhase::Indeterminate,
-                  Some("operator_request"),
-              );
-              assert!(!timed_out.1.idempotent);
-              assert_eq!(timed_out.1.cancel_ack_deadline_ms, None);
-
-              let lost_reply_retry = coordinator
-                  .cancel_run(3_401, "run.1", 4, "operator_request")
-                  .expect("retry predecessor revision after lost reply");
-              assert_eq!(lost_reply_retry.1.revision, timed_out.1.revision);
-              assert_eq!(lost_reply_retry.1.phase, RunPhase::Indeterminate);
-              assert!(lost_reply_retry.1.idempotent);
-              let current_revision_retry = coordinator
-                  .cancel_run(3_402, "run.1", 5, "operator_request")
-                  .expect("retry current revision");
-              assert_eq!(current_revision_retry.1.revision, timed_out.1.revision);
-              assert!(current_revision_retry.1.idempotent);
-              assert_eq!(
-                  coordinator.cancel_run(3_403, "run.1", 5, "different_reason"),
-                  Err(AgentRunError::Conflict)
-              );
-          }
-
-          '''
-          assert source.count(anchor) == 1
-          tests.write_text(source.replace(anchor, regression + anchor))
-
-          control = Path("codex-rs/hepta-agentd/src/control.rs")
-          source = control.read_text()
-          old = '''const CONNECTION_CAPACITY: usize = 32;
-          const IO_TIMEOUT: Duration = Duration::from_secs(2);
-          const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
-          '''
-          new = '''const CONNECTION_CAPACITY: usize = 32;
-          const TRANSPORT_IO_TIMEOUT: Duration = Duration::from_secs(2);
-          // Signed Objective admission is bounded to five minutes. This is only
-          // a safety backstop; individual owners and run deadlines remain stricter.
-          const CONTROL_OPERATION_TIMEOUT: Duration = Duration::from_secs(310);
-          const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
-          '''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''            tokio::spawn(async move {
-                          let _permit = permit;
-                          let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
-                      });
-          '''
-          new = '''            tokio::spawn(async move {
-                          let _permit = permit;
-                          // Read/write limits are transport concerns. Business work is
-                          // bounded separately below so a valid canonical preparation
-                          // is not cut off by the two-second socket timeout.
-                          let _ = serve_connection(stream, state).await;
-                      });
-          '''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''    let count = reader.read_until(b'\\n', &mut frame).await?;
-          '''
-          new = '''    let count = timeout(
-                  TRANSPORT_IO_TIMEOUT,
-                  reader.read_until(b'\\n', &mut frame),
-              )
-              .await
-              .map_err(|_| AgentdError::Protocol("agentd control request read timed out".to_string()))??;
-          '''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''    } else {
-                  match state
-                      .response(request.request_id, request.spawn_generation, request.method)
-                      .await
-                  {
-                      Ok(response) => response,
-                      Err(error) => error_response(
-                          &state,
-                          request.request_id,
-                          request.spawn_generation,
-                          "request_rejected",
-                          &error.to_string(),
-                      ),
-                  }
-              };
-          '''
-          new = '''    } else {
-                  match timeout(
-                      CONTROL_OPERATION_TIMEOUT,
-                      state.response(request.request_id, request.spawn_generation, request.method),
-                  )
-                  .await
-                  {
-                      Ok(Ok(response)) => response,
-                      Ok(Err(error)) => error_response(
-                          &state,
-                          request.request_id,
-                          request.spawn_generation,
-                          "request_rejected",
-                          &error.to_string(),
-                      ),
-                      Err(_) => error_response(
-                          &state,
-                          request.request_id,
-                          request.spawn_generation,
-                          "request_timed_out",
-                          "agentd control operation exceeded its maximum host budget",
-                      ),
-                  }
-              };
-          '''
-          assert source.count(old) == 1
-          source = source.replace(old, new)
-          old = '''    writer.write_all(&bytes).await?;
-              writer.shutdown().await?;
-              Ok(())
-          '''
-          new = '''    timeout(TRANSPORT_IO_TIMEOUT, async {
-                  writer.write_all(&bytes).await?;
-                  writer.shutdown().await
-              })
-              .await
-              .map_err(|_| AgentdError::Protocol("agentd control response write timed out".to_string()))??;
-              Ok(())
-          '''
-          assert source.count(old) == 1
-          control.write_text(source.replace(old, new))
-          PY
-          git rm -- .github/workflows/agentd-convergence-apply.yml
-      - name: Format owner sources
-        working-directory: codex-rs
-        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd -- --check
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Check manifest graph and V8 inputs
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_workspace.py
-          python3 scripts/hepta_ci_v8.py
-      - name: Run Agentd owner tests
+
+      - name: Run prompt registry package tests without retries
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --lib -p codex-hepta-agentd --test-threads=1
-      - name: Strict Agentd library lint
+          just test --locked -p codex-hepta-prompt-registry \
+            --retries 0 --failure-output immediate
+
+      - name: Check all prompt registry targets
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-agentd --no-deps --lib -- -D warnings
-      - name: Commit only after validation
-        env:
-          BRANCH: work/product-convergence-20260923
+        run: cargo check --locked -p codex-hepta-prompt-registry --all-targets
+
+      - name: Strict prompt registry lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-prompt-registry --all-targets -- -D warnings
+
+      - name: Commit only the qualified guarded recovery patch
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
           git config user.name "Hepta convergence bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add codex-rs/hepta-agentd/src/lane_b_runtime.rs \
-            codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs \
-            codex-rs/hepta-agentd/src/control.rs \
+          git add codex-rs/hepta-prompt-registry/src/durable.rs \
+            codex-rs/hepta-prompt-registry/src/durable_recovery.rs \
+            codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs \
+            scripts/hepta_apply_prompt_registry_recovery.py \
             .github/workflows/agentd-convergence-apply.yml
-          git commit -s -m "fix(agentd): reconcile cancellation and control budgets"
+          git diff --cached --check
+          git commit -s -m "fix(prompt.registry): fence recovery against backup rollback"
           remote_head="$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)"
           test "$remote_head" = "$GITHUB_SHA"
           git push origin "HEAD:refs/heads/$BRANCH"
