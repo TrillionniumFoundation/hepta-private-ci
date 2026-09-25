@@ -275,7 +275,7 @@ fn objective_envelope() -> ObjectiveSourceEnvelopeV1 {
                 normalization_profile_digest: digest("normalization-v1"),
             },
         },
-        source_trust_class: ObjectiveSourceTrustV1::Principal,
+        source_trust_class: ObjectiveSourceTrustV1::AuthorizedAdapter,
         locale: "en-US".to_string(),
         observed_at: "2026-09-08T10:00:00Z".to_string(),
         deadline: Some("2026-09-08T10:05:00Z".to_string()),
@@ -294,8 +294,8 @@ fn objective_context(
         revision: revision(7),
         now_unix_micros: NOW_MICROS,
         selected_profile_digest: profile.digest().expect("profile digest"),
-        source_authentication: ObjectiveSourceAuthenticationV1::Principal {
-            principal_scope_digest: envelope.principal_scope_digest,
+        source_authentication: ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
+            source_identity: id("adapter.console"),
             source_digest: envelope.structured_intent.provenance.source_digest,
         },
     }

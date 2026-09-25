@@ -20,21 +20,6 @@ fn durable_inputs() -> (
     let authority = directory.path().join("authority.json");
     let mut composition = product_test_coordinator().composition().clone();
     composition.agent_id = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12".to_string();
-    value.inputs.objective_envelope.source_trust_class =
-        codex_hepta_objective::ObjectiveSourceTrustV1::AuthorizedAdapter;
-    value.inputs.objective_envelope.intent_digest =
-        canonical_objective_intent_digest_v1(&value.inputs.objective_envelope)
-            .expect("adapter objective intent");
-    value.inputs.objective_context.source_authentication =
-        ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
-            source_identity: id("adapter.console"),
-            source_digest: value
-                .inputs
-                .objective_envelope
-                .structured_intent
-                .provenance
-                .source_digest,
-        };
     composition.agentd_generation = value.request.snapshot.body_generation().get();
     composition.supervisor_generation = composition.agentd_generation;
     let mut fence = b"hepta:agentd:objective-fence:v1\0".to_vec();
