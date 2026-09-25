@@ -255,6 +255,9 @@ The named source-level product composition is `EngineeringControlProduct`. On ev
 process open, call `startup_reconcile` before admitting new claims: it expires stale
 heartbeats, revalidates registration/lease/envelope frontiers, preserves indeterminate or
 awaiting-completion facts and releases abandoned capacity without redispatching an effect.
+`EngineeringControlProduct.claim()` enforces this ordering and fails closed with
+`product_startup_reconciliation_required` until recovery succeeds in the current process
+object; do not bypass it with a lower-layer claim helper in a product caller.
 Current repository CI executes this owner separately for exact source and deterministic
 base-merge identities. GitHub reviewer observations bind API reviewer IDs and commit SHAs
 but explicitly carry no independent-acceptance or merge authority.

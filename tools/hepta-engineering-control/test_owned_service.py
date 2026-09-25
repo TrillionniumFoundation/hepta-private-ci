@@ -96,7 +96,7 @@ class OwnedServiceTests(unittest.TestCase):
         diagnostic = failed.last_child_diagnostic
         self.assertIsInstance(diagnostic, dict)
         self.assertEqual(diagnostic["phase"], "startup")
-        self.assertIsInstance(diagnostic["exitCode"], int)
+        self.assertEqual(diagnostic["exitCode"], 76)
         self.assertLessEqual(diagnostic["stderrBytes"], 4096)
         self.assertEqual(len(diagnostic["stderrSha256"]), 64)
         self.assertNotIn("stderr", diagnostic)

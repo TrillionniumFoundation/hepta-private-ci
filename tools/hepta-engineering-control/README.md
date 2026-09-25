@@ -94,7 +94,9 @@ completion until an independent CI completion receipt is observed.
 
 `EngineeringControlProduct` is the named product owner composition used by the repository
 product gate. Its `startup_reconcile` entrypoint expires/reconciles persisted claims and
-releases abandoned capacity before new work is admitted. The historical
+releases abandoned capacity before new work is admitted. Product `claim()` enforces that
+startup ordering and fails closed until reconciliation succeeds in the current process
+object. The historical
 `hepta_engineering_control.py` remains compatibility-only and must not be used as a
 canonical native mapping.
 

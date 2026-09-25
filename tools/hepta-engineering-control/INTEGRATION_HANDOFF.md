@@ -37,7 +37,9 @@ Repository-local composition follows this sequence:
    capacity check, claim and reservation commit in one `BEGIN IMMEDIATE` transaction;
 5. after every process open, invoke `EngineeringControlProduct.startup_reconcile` before
    new claims so stale heartbeats, registrations, leases and envelope frontiers are
-   resolved without blind redispatch and abandoned capacity is released once;
+   resolved without blind redispatch and abandoned capacity is released once; the named
+   product `claim()` rejects until this recovery succeeds, so product callers must not use
+   the lower-layer claim helper as a bypass;
 6. for a multi-host production Worker, additionally verify a signed
    `DistributedFenceReceipt` bound to the same local epoch/token/paths/source and
    a current revocation frontier; admission re-reads the owner store and rejects a

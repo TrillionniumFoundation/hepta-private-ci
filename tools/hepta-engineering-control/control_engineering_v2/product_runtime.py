@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable
 
-from .control_plane import EngineeringStore, WorkEnvelope
+from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
 from .evidence import SignatureTrustStore
 from .integration_controller import (
     IntegrationQueueGeneration,
@@ -63,6 +63,7 @@ class EngineeringControlProduct:
         self.expected_repository = expected_repository
         self.trust_store = trust_store
         self.store = EngineeringStore(database)
+        self._startup_reconciled = False
 
     def __enter__(self) -> "EngineeringControlProduct":
         return self
@@ -140,7 +141,9 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
-        return recover_worker_lifecycle(self.store, now_ns=now_ns)
+        report = recover_worker_lifecycle(self.store, now_ns=now_ns)
+        self._startup_reconciled = True
+        return report
 
     def worker_capacity(self, worker_id: str):
         return worker_capacity_usage(self.store, worker_id)
@@ -168,6 +171,8 @@ class EngineeringControlProduct:
         heartbeat_ttl_ns: int,
         now_ns: int | None = None,
     ) -> WorkerClaim:
+        if not self._startup_reconciled:
+            raise EngineeringError("product_startup_reconciliation_required")
         return claim_assignment(
             self.store,
             generation_id,

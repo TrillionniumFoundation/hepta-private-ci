@@ -53,6 +53,8 @@ CANONICAL_WORK_PACKAGE_PATH = Path("docs/delivery/WORK_PACKAGES.json")
 CANONICAL_ENGINEERING_PACKAGE = "ECP-1-ENGINEERING-CONTROL-PLANE"
 MAX_CANONICAL_REGISTRY_BYTES = 4 * 1024 * 1024
 MAX_REVIEW_OBSERVATIONS = 256
+PRODUCT_EXECUTION_SCHEMA = "hepta.control-engineering-product-execution.v5"
+PRODUCT_RECEIPT_PAIR_SCHEMA = "hepta.control-engineering-product-receipt-pair.v3"
 
 
 class _RejectingTrustStore:
@@ -291,6 +293,7 @@ def build_product_receipt(
     integration_state = ""
     terminal_integration_state = ""
     reopened_terminal_integration_state = ""
+    initial_startup_recovery = None
     startup_recovery = None
     reopened_startup_recovery = None
     with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-") as directory:
@@ -301,6 +304,7 @@ def build_product_receipt(
             expected_repository=EXPECTED_REPOSITORY,
             trust_store=lifecycle_trust,
         ) as product:
+            initial_startup_recovery = product.startup_reconcile(now_ns=now)
             product.admit_repository_envelope(envelope, now_ns=now)
             plan = product.plan_work(
                 envelope,
@@ -667,9 +671,17 @@ def build_product_receipt(
         raise RuntimeError("product_integration_reconciliation_not_recovered")
     if replayed_ready_anchor != ready_anchor or final_anchor != terminal_anchor:
         raise RuntimeError("product_reopen_audit_anchor_drift")
-    if startup_recovery is None or reopened_startup_recovery is None:
+    if (
+        initial_startup_recovery is None
+        or startup_recovery is None
+        or reopened_startup_recovery is None
+    ):
         raise RuntimeError("product_startup_recovery_missing")
-    for report in (startup_recovery, reopened_startup_recovery):
+    for report in (
+        initial_startup_recovery,
+        startup_recovery,
+        reopened_startup_recovery,
+    ):
         if (
             report.active_claims
             or report.awaiting_completion_claims
@@ -685,7 +697,7 @@ def build_product_receipt(
         raise RuntimeError("product_caller_authority_delta")
 
     receipt = {
-        "schema": "hepta.control-engineering-product-execution.v4",
+        "schema": PRODUCT_EXECUTION_SCHEMA,
         "mode": mode,
         "ciIdentity": {
             "repository": repository_full_name,
@@ -718,6 +730,7 @@ def build_product_receipt(
             "independentlyObservedCompletion": False,
             "completionEvidenceClass": "ci_reference_hmac_fixture",
             "trustClass": "ci_reference_hmac_fixture",
+            "initialStartupRecovery": asdict(initial_startup_recovery),
             "startupRecovery": asdict(startup_recovery),
             "reopenedStartupRecovery": asdict(reopened_startup_recovery),
         },
@@ -761,7 +774,7 @@ def _verify_product_receipt(
     if not isinstance(value, Mapping):
         raise ValueError("product_receipt_shape")
     if (
-        value.get("schema") != "hepta.control-engineering-product-execution.v4"
+        value.get("schema") != PRODUCT_EXECUTION_SCHEMA
         or value.get("mode") != expected_lane
         or value.get("productCallerComposed") is not True
         or value.get("workerLifecycleFixtureExecuted") is not True
@@ -859,7 +872,11 @@ def _verify_product_receipt(
         or not lifecycle["claimId"]
     ):
         raise ValueError("product_receipt_worker_lifecycle")
-    for key in ("startupRecovery", "reopenedStartupRecovery"):
+    for key in (
+        "initialStartupRecovery",
+        "startupRecovery",
+        "reopenedStartupRecovery",
+    ):
         recovery = lifecycle.get(key)
         if (
             not isinstance(recovery, Mapping)
@@ -1084,7 +1101,7 @@ def verify_product_receipt_pair(
         )
 
     pair = {
-        "schema": "hepta.control-engineering-product-receipt-pair.v2",
+        "schema": PRODUCT_RECEIPT_PAIR_SCHEMA,
         "repository": expected_repository,
         "repositoryId": expected_repository_id,
         "runId": expected_run_id,
@@ -1159,7 +1176,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             json.dumps(
                 {
-                    "schema": "hepta.control-engineering-product-execution.v4",
+                    "schema": PRODUCT_EXECUTION_SCHEMA,
                     "status": "rejected",
                     "error": str(error),
                     "authorityGranted": False,

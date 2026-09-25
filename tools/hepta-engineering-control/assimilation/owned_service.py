@@ -332,6 +332,21 @@ class DisposableCounterService:
                         if termination_signal == signal.SIGKILL:
                             raise
         finally:
+            return_code = process.poll()
+            if (
+                self.last_child_diagnostic is not None
+                and self.last_child_diagnostic.get("exitCode") is None
+                and return_code is not None
+            ):
+                # The response channel can close just before poll() observes the
+                # child exit. Finalize the already-bounded diagnostic only after
+                # close() has reaped or terminated the owned process; never expose
+                # raw stderr or leave a successful startup failure with an unknown
+                # terminal process status.
+                self.last_child_diagnostic = {
+                    **self.last_child_diagnostic,
+                    "exitCode": int(return_code),
+                }
             process.stdin.close()
             process.stdout.close()
             if process.stderr is not None:

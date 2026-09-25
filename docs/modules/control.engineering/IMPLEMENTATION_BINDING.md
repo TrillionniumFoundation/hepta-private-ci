@@ -69,7 +69,9 @@ has a successful source/synthetic-merge execution receipt.
 `worker_lifecycle.py` owns durable claim/heartbeat/result state plus the v10
 cross-generation capacity reservations and startup reconciler; `product_runtime.py` is the
 named `EngineeringControlProduct` composition that invokes that recovery boundary after
-reopen. Worker self-report never substitutes for independently observed completion.
+every open. Its product `claim()` rejects until startup reconciliation has succeeded for that
+process object; direct lower-layer helpers remain state-machine/test surfaces, not a supported
+product bypass. Worker self-report never substitutes for independently observed completion.
 Product integration progression accepts only authenticated `IntegrationStageReceipt`
 values that bind the persisted queue/orchestration/envelope semantic digests, source
 commit/tree, integration base commit/tree and owner-context digest. Candidate evidence is

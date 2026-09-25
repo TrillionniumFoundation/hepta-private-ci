@@ -106,6 +106,20 @@ class EngineeringControlProductTests(unittest.TestCase):
                     expires_unix_ns=now + 5_000,
                     now_ns=now + 1,
                 )
+                with self.assertRaisesRegex(
+                    ValueError, "product_startup_reconciliation_required"
+                ):
+                    product.claim(
+                        plan.generation_id,
+                        "package-a",
+                        "worker-a",
+                        lease.lease_id,
+                        heartbeat_ttl_ns=100,
+                        now_ns=now + 2,
+                    )
+                initial = product.startup_reconcile(now_ns=now + 2)
+                self.assertEqual(initial.active_claims, ())
+                self.assertEqual(initial.active_capacity_reservations, 0)
                 claim = product.claim(
                     plan.generation_id,
                     "package-a",

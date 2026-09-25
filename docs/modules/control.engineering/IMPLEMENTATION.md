@@ -43,9 +43,10 @@ backup/restore, controlled disk-full rollback and complete candidate-sandbox cos
 removing exact Git-object materialization or post-check drift detection. Unrelated Rust/workspace
 failures remain merge blockers in their own jobs but do not suppress this module's
 product-execution receipt. CI retains both lane receipts, then a
-separate aggregation job recomputes each receipt digest, checks common repository/run/source
-identity, ordered merge parents, canonical ECP blob/package identity and zero authority,
-and emits `hepta.control-engineering-product-receipt-pair.v2`. Production-readiness
+separate aggregation job recomputes each v5 execution-receipt digest, checks common
+repository/run/source identity, ordered merge parents, canonical ECP blob/package identity,
+all three startup-recovery observations and zero authority, and emits
+`hepta.control-engineering-product-receipt-pair.v3`. Production-readiness
 projection requires both lane digests and their canonical receipt-set digest; one lane
 plus caller-supplied booleans cannot satisfy product composition. It is not a learned code
 generator, merge service or autonomous release agent.
@@ -185,7 +186,10 @@ acknowledgement-loss replay is revision/audit-stable, accepted CI completion dig
 reopen, and a claim must match the scheduler-selected worker and an active fenced path
 lease. Startup reconciliation expires heartbeat claims, rechecks registration/lease/envelope
 frontiers, releases capacity idempotently and preserves submitted results for the independent
-completion observer rather than redispatching them. A worker `success` result is non-terminal
+completion observer rather than redispatching them. The named product `claim()` fails closed
+with `product_startup_reconciliation_required` until that process generation has completed
+`startup_reconcile`; lower-level state-machine helpers are not the normal product admission
+surface. A worker `success` result is non-terminal
 until an independent CI completion receipt is observed. The generation semantic digest binds
 completion frontier, assignments, integration order and merge queue. A changed
 frontier or planning input requires a new generation ID. An assignment is still
