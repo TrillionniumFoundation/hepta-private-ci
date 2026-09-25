@@ -10,7 +10,6 @@ closed rather than treating unrelated rulesets as effective branch protection.
 from __future__ import annotations
 
 import argparse
-import base64
 import http.client
 import json
 import os
@@ -185,54 +184,85 @@ def observe(repository: str, expected_sha: str, evaluator_app: int) -> dict[str,
             "scope": "read-only observation; independent credential isolation is not established here"}
 
 
-def observe_write_transport_denial(repository: str, token: str) -> dict[str, Any]:
-    """Observe an explicit GitHub receive-pack denial without attempting a write.
+def observe_repository_push_denial(repository: str, token: str) -> dict[str, Any]:
+    """Observe that the exact authenticated token lacks repository push roles.
 
-    A GET of the smart-HTTP advertisement does not upload Git objects or update
-    refs. Only GitHub's explicit 403 write-access rejection qualifies; generic
-    HTTP failures, redirects, bad credentials and timeouts remain unknown. This
-    is not proof of branch-rule enforcement or independent credential custody.
+    The repository metadata GET is read-only and binds the observation to the
+    supplied token. Git smart-HTTP receive-pack advertisements are not used as
+    permission evidence because GitHub can serve them successfully even when a
+    later ref update would be denied. Missing or ambiguous permission fields
+    fail closed. This is not proof of branch-rule enforcement, pull-request
+    write denial, or independent credential custody.
     """
-    require(bool(REPOSITORY.fullmatch(repository))
-            and all(part not in (".", "..") for part in repository.split("/")), "Invalid repository")
+    require(
+        bool(REPOSITORY.fullmatch(repository))
+        and all(part not in (".", "..") for part in repository.split("/")),
+        "Invalid repository",
+    )
     require(isinstance(token, str) and bool(token.strip()), "Missing workflow token")
-    identity = api(f"repos/{repository}")
-    require(isinstance(identity, dict) and identity.get("full_name") == repository
-            and positive_integer(identity.get("id")), "Repository identity could not be confirmed")
-    authorization = base64.b64encode(f"x-access-token:{token}".encode()).decode("ascii")
     connection = http.client.HTTPSConnection(
-        "github.com", timeout=API_TIMEOUT_SECONDS, context=ssl.create_default_context())
+        "api.github.com", timeout=API_TIMEOUT_SECONDS, context=ssl.create_default_context()
+    )
     try:
-        connection.request("GET", f"/{repository}.git/info/refs?service=git-receive-pack",
-                           headers={"Authorization": f"Basic {authorization}",
-                                    "User-Agent": "hepta-read-only-control-observer"})
+        connection.request(
+            "GET",
+            f"/repos/{repository}",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+                "User-Agent": "hepta-read-only-control-observer",
+            },
+        )
         response = connection.getresponse()
         body = response.read(MAX_TRANSPORT_RESPONSE_BYTES + 1)
-        require(len(body) <= MAX_TRANSPORT_RESPONSE_BYTES, "Transport response exceeds the observation bound")
-        require(response.status == 403
-                and body.strip() == b"Write access to repository not granted.",
-                "Write transport did not return an explicit permission denial; authorization is unknown")
-    except (OSError, http.client.HTTPException) as error:
+        require(
+            len(body) <= MAX_TRANSPORT_RESPONSE_BYTES,
+            "Repository permission response exceeds the observation bound",
+        )
+        require(
+            response.status == 200,
+            "Repository permissions could not be observed; authorization is unknown",
+        )
+        identity = json.loads(body)
+        require(
+            isinstance(identity, dict)
+            and identity.get("full_name") == repository
+            and positive_integer(identity.get("id")),
+            "Repository identity could not be confirmed",
+        )
+        permissions = identity.get("permissions")
+        require(isinstance(permissions, dict), "Repository permissions are missing")
+        for capability in ("admin", "maintain", "push"):
+            require(
+                permissions.get(capability) is False,
+                f"Repository {capability} permission is allowed or unknown",
+            )
+    except (OSError, http.client.HTTPException, UnicodeDecodeError, json.JSONDecodeError) as error:
         # Do not include request headers, tokens or remote response bodies.
-        raise ControlError("Write-transport observation failed; authorization is unknown") from error
+        raise ControlError(
+            "Repository permission observation failed; authorization is unknown"
+        ) from error
     finally:
         connection.close()
-    return {"write_transport_denied": True, "activation_authorized": False,
-            "credential_separation_proven": False}
-
+    return {
+        "repository_push_permission_denied": True,
+        "activation_authorized": False,
+        "credential_separation_proven": False,
+    }
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", required=True)
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument("--probe-write-denial", action="store_true",
-                        help="require a non-mutating explicit write-transport rejection")
+                        help="require a read-only exact repository push-permission denial")
     args = parser.parse_args()
     try:
         app_id = int(os.environ.get("HEPTA_EVALUATOR_APP_ID", "0"))
         observation = observe(args.repo, args.expected_sha, app_id)
         if args.probe_write_denial:
-            observation["write_transport_observation"] = observe_write_transport_denial(
+            observation["repository_push_observation"] = observe_repository_push_denial(
                 args.repo, os.environ.get("GH_TOKEN", ""))
         print(json.dumps(observation, sort_keys=True))
         return 0
