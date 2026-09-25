@@ -429,6 +429,17 @@ The default `runtime.rs` path registers long-lived components through the existi
 
 The configured product profile now routes authenticated `ObjectiveStart` through the canonical runner and a host-owned invocation provider, then freezes the exact prepared envelope into the existing Agentd run/context lifecycle. The shipped CLI still has no in-repository native invocation-provider bootstrap; supplying runner authority flags alone is now an explicit startup error, not a functioning canonical profile. Native embedding must supply both components and the authenticated ingress configuration. The guard is not a claim that a real seven-owner provider has been implemented. Bare/compatibility profiles do not install that provider, do not advertise `intelligence.canonical_v1`, and compatibility `RunStart` is never counted as canonical execution. Real provider dispatch, durable product Decision/Outcome recovery and target-host qualification remain separate boundaries.
 
+The repository-owned `AgentdIntelligenceInvocationV1::authoritative_provider`
+constructor composes the request owner and the seven existing stage-input readers.
+Before reading any owner it checks the durable run's Agent identity, generation
+and existing Objective fence; after reading it validates the complete immutable
+RunStart bindings. Readers are invoked again on each preparation, stop on the
+first owner error, and do not grant authority. The constructor does not load a
+native daemon profile, synthesize missing owners or replace AuthBus verification.
+`intelligence_invocation_owner_tests.rs` exercises actual reader calls and the
+existing signed canonical preparation; its fixtures are not ordinary-daemon or
+Circuit-to-Cell qualification. The default bootstrap gap above remains open.
+
 ## 17. Source implementation receipt
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.

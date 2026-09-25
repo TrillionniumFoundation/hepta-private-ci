@@ -298,6 +298,29 @@
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
       "sourceSemantics": "Restore owner-persisted signed descriptor, complete bounded bundle and current source/ledger in a new process without a training candidate or retraining. Native composition retains external CURRENT floor and descriptor digest; not default daemon activation."
+    },
+    {
+      "designOperation": "compose_authoritative_owner_inputs",
+      "operation": "compose_authoritative_owner_inputs",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+        "symbol": "pub fn authoritative_provider(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_invocation_owner_tests.rs",
+          "kind": "native_owner_seam",
+          "command": "just test --locked -p codex-hepta-agentd --lib -E 'test(intelligence_ingress)' --retries 0"
+        }
+      ],
+      "sourceSemantics": "Composes host-installed request and seven-owner readers with exact Agent/run fencing and immutable RunStart validation; does not bootstrap the ordinary daemon or authorize effects.",
+      "nativeSymbol": "pub fn authoritative_provider(",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [

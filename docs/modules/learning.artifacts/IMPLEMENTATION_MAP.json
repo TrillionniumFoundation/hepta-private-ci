@@ -365,7 +365,12 @@
       "state": "source_implemented_qualification_consumer_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal",
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/owner_record_io_tests.rs",
+          "kind": "file_and_directory_sync_faults",
+          "command": "just test --locked -p codex-hepta-learning-artifacts --lib -E 'test(owner_host::record_io)' --retries 0"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "persist_selected_descriptor",

@@ -20,6 +20,7 @@ class ProviderWorkflowTests(unittest.TestCase):
         self.assertIn("codex-rs/hepta-agentd/src/objective_runtime.rs", text)
         self.assertIn("lane: [source-head, base-merge]", text)
         self.assertIn("contents: read", text)
+        self.assertIn(["python3", "scripts/test_hepta_provider_workflow.py"], workflow_commands(text))
         self.assertIn("persist-credentials: false", text)
 
     def test_behavioral_tests_and_lint_remain_independent(self):

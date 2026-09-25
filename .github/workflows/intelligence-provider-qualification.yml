@@ -89,6 +89,9 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
+      - name: Verify provider qualification wiring
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: python3 scripts/test_hepta_provider_workflow.py
       - name: Format check without mutation
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.rust.outcome == 'success' }}
         working-directory: codex-rs
