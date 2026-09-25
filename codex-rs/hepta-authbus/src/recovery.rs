@@ -386,21 +386,12 @@ pub(crate) async fn authority_frontier_digest_for_version(
     .await?;
     // Legacy hashing is only for validating an outstanding v4 witness.
     // Every newly published checkpoint uses DispatchV5 and binds dispatch time.
-    let reservation_sql;
-    let archive_sql;
-    match version {
-        FrontierVersion::LegacyV4 => {
-            let column = "||'|'||COALESCE(hex(dispatched_at_ms),'-')";
-            reservation_sql = RESERVATION_FRONTIER_SQL.replace(column, "");
-            archive_sql = ARCHIVE_FRONTIER_SQL.replace(column, "");
-        }
-        FrontierVersion::DispatchV5 => {
-            reservation_sql = RESERVATION_FRONTIER_SQL.to_owned();
-            archive_sql = ARCHIVE_FRONTIER_SQL.to_owned();
-        }
-    }
-    append_rows(tx, &mut bytes, "reservation", &reservation_sql).await?;
-    append_rows(tx, &mut bytes, "reservation_archive", &archive_sql).await?;
+    let (reservation_sql, archive_sql) = match version {
+        FrontierVersion::LegacyV4 => (LEGACY_RESERVATION_FRONTIER_SQL, LEGACY_ARCHIVE_FRONTIER_SQL),
+        FrontierVersion::DispatchV5 => (RESERVATION_FRONTIER_SQL, ARCHIVE_FRONTIER_SQL),
+    };
+    append_rows(tx, &mut bytes, "reservation", reservation_sql).await?;
+    append_rows(tx, &mut bytes, "reservation_archive", archive_sql).await?;
     append_rows(
         tx,
         &mut bytes,
@@ -435,11 +426,33 @@ const ARCHIVE_FRONTIER_SQL: &str =
             COALESCE(hex(settlement_digest),'-')||'|'||hex(archived_at_ms)
      FROM authbus_quota_reservation_archive ORDER BY reservation_id";
 
+const LEGACY_RESERVATION_FRONTIER_SQL: &str =
+    "SELECT reservation_id||'|'||operation_id||'|'||quota_key||'|'||period_id||'|'||
+            principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
+            hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
+            hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
+            hex(updated_at_ms)||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
+            COALESCE(hex(settlement_digest),'-')
+     FROM authbus_quota_reservation ORDER BY reservation_id";
+
+const LEGACY_ARCHIVE_FRONTIER_SQL: &str =
+    "SELECT reservation_id||'|'||operation_id||'|'||quota_key||'|'||period_id||'|'||
+            principal||'|'||hex(amount)||'|'||hex(effect_digest)||'|'||policy_id||'|'||
+            hex(policy_revision)||'|'||hex(policy_decision_digest)||'|'||state||'|'||
+            hex(revision)||'|'||hex(expires_at_ms)||'|'||hex(created_at_ms)||'|'||
+            hex(updated_at_ms)||'|'||
+            COALESCE(hex(dispatch_digest),'-')||'|'||COALESCE(hex(terminal_evidence),'-')||'|'||
+            COALESCE(hex(observed_cost),'-')||'|'||
+            COALESCE(hex(settlement_digest),'-')||'|'||hex(archived_at_ms)
+     FROM authbus_quota_reservation_archive ORDER BY reservation_id";
+
 async fn append_rows(
     tx: &mut Transaction<'_, Sqlite>,
     bytes: &mut Vec<u8>,
     tag: &str,
-    query: &str,
+    query: &'static str,
 ) -> Result<(), AuthBusAuthorityError> {
     push(bytes, tag.as_bytes());
     let rows: Vec<String> = sqlx::query_scalar(query)
