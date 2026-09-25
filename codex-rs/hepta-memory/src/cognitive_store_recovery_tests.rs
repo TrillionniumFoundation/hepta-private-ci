@@ -1058,17 +1058,21 @@ async fn recovered_owner_revision_and_forgetting_invalidate_federated_evidence()
             .expect("original binding revalidation"),
         crate::FederatedRevalidationStatus::Stale(crate::FederationRevalidationDrift::Memory)
     );
-    assert!(
-        reader
-            .retrieve(
-                &consumer_access,
-                &crate::RetrievalRequest::new("remembered fact", 201),
-            )
-            .await
-            .expect("old query after correction")
-            .candidates
-            .is_empty()
-    );
+    // Token/rank matching can legitimately return the corrected record for
+    // the previous query (both contain "fact"). It must never return the old
+    // revision or content, even though the old database is still retained.
+    let old_query_result = reader
+        .retrieve(
+            &consumer_access,
+            &crate::RetrievalRequest::new("remembered fact", 201),
+        )
+        .await
+        .expect("old query after correction");
+    assert!(old_query_result.candidates.iter().all(|candidate| {
+        candidate.candidate.memory.id.revision == corrected.id.revision
+            && candidate.candidate.memory.content == corrected.content
+            && candidate.candidate.memory.content != memory.content
+    }));
     let corrected_binding = reader
         .retrieve(
             &consumer_access,
