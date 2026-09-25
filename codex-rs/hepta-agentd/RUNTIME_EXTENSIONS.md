@@ -143,3 +143,14 @@ behavior, arbitrary cross-schema migration, multi-host handoff, target-host
 capacity, physical-effect completion, independent credential custody or
 future-window learning efficacy. No command definition or test source is a
 test-pass receipt.
+
+## Intelligence bootstrap completeness
+
+The ordinary runtime rejects a half-configured canonical Intelligence profile
+before opening domain owners or starting tasks. The runner and the authoritative
+invocation provider must either both be absent (the explicit compatibility
+profile) or both be installed. A runner-only authority configuration is not a
+working canonical product profile. This check does not construct owner inputs,
+install evaluation trust, select a model or establish a complete learning loop.
+`incomplete_intelligence_composition_is_rejected_before_startup` covers the four
+presence combinations; owner and run identity validation still happens afterward.

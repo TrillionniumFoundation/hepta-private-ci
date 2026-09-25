@@ -156,13 +156,15 @@
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "def validate_raw(",
+            "def rejection_bytes("
           ]
         },
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "function validateRaw(",
+            "function rejectionBytes("
           ]
         }
       ],
@@ -1168,7 +1170,7 @@
         "FleetAuthorityPort",
         "FleetAuthorityPort::issue",
         "AuthorityLeaseVerifier::verify_use",
-        "AuthorityLeaseVerifier::with_verified_use"
+        "dispatch_authority_lease_with_witness"
       ],
       "sourceEvidence": [
         {
@@ -1177,7 +1179,7 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use(",
+            "dispatch_authority_lease_with_witness(",
             "allocation_binding"
           ]
         },
@@ -1369,7 +1371,7 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         }
       ],
@@ -1424,7 +1426,7 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         }
       ],
@@ -1489,7 +1491,7 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         }
       ],
@@ -1520,7 +1522,7 @@
       "summary": "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default",
       "publicSymbols": [
         "AgentdConfig::with_production_operations",
-        "AgentdProductionOperationRuntimeConfig::open"
+        "AgentdProductionOperationRuntimeConfig::new"
       ],
       "sourceEvidence": [
         {
@@ -1534,10 +1536,9 @@
         {
           "path": "codex-rs/hepta-agentd/src/runtime.rs",
           "mustContain": [
-            "AgentdProductionOperationRuntimeConfig::open",
             "attach_production_operations",
             "run_production_operation_reconciler",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         },
         {
@@ -1546,6 +1547,14 @@
             "id = \"agentd_production_operation_runtime\"",
             "product_callers = [\"codex-rs/hepta-agentd/src/runtime.rs\"]",
             "forbidden = [\"ProductionAuthorityToken::from_verified_bytes\", \"SigningKey::from_bytes\"]"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "mustContain": [
+            "impl AgentdProductionOperationRuntimeConfig",
+            "pub(crate) async fn attach(",
+            "verify_current_authority().await?"
           ]
         }
       ],

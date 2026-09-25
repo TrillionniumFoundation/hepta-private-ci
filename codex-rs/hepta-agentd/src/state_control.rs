@@ -276,9 +276,11 @@ impl AgentdState {
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::RetrievalLearningInputs {
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
@@ -662,7 +664,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {

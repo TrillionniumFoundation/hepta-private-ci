@@ -485,3 +485,129 @@ fn query_result_digest_binds_complete_request_even_when_edges_match() {
         assert_ne!(baseline.result_digest, changed.result_digest);
     }
 }
+
+#[test]
+fn bounded_query_does_not_retain_capacity_for_omitted_history() {
+    for count in [1, 64, 1024] {
+        let mut nodes = vec![node("root", "root")];
+        let mut edges = Vec::new();
+        for index in 0..count {
+            let label = format!("target-{index:04}");
+            nodes.push(node(&label, &label));
+            edges.push(edge(
+                "root",
+                &label,
+                KnowledgeRelationKindV2::Supports,
+                &label,
+            ));
+        }
+        let graph =
+            build_complete_generation(generation(1), input(nodes, edges)).expect("complete graph");
+        for maximum_edges in [1, 3, 64] {
+            let result = query_relations(
+                &graph,
+                KnowledgeRelationQueryV2 {
+                    query_id: id("query:bounded-history"),
+                    generation_digest: graph.generation_digest,
+                    seed_node_ids: vec![id("node:root")],
+                    relation_kinds: Vec::new(),
+                    valid_at_unix_seconds: None,
+                    maximum_edges,
+                },
+            )
+            .expect("bounded query");
+            let retained = count.min(maximum_edges as usize);
+            assert_eq!(result.edges, graph.edges[..retained]);
+            assert_eq!(result.omitted_count as usize, count - retained);
+            assert!(
+                result.edges.capacity() <= retained.max(4).next_power_of_two(),
+                "omitted history must not reserve output storage: count={count}, limit={maximum_edges}, capacity={}",
+                result.edges.capacity()
+            );
+            assert_eq!(result.result_digest, compute_query_result_digest(&result));
+        }
+    }
+}
+
+#[test]
+fn bounded_query_counts_only_visible_matching_edges_and_filters_selected_supports() {
+    let mut hidden_node = node("hidden", "hidden");
+    hidden_node.supports[0].valid_to_unix_seconds = Some(100);
+    let mut mixed = edge("a", "b", KnowledgeRelationKindV2::Supports, "expired");
+    mixed.supports[0].valid_to_unix_seconds = Some(100);
+    mixed.supports.push(support("live", false));
+    let mut expired = edge("a", "c", KnowledgeRelationKindV2::Supports, "expired-only");
+    expired.supports[0].valid_to_unix_seconds = Some(100);
+    let graph = build_complete_generation(
+        generation(1),
+        input(
+            vec![
+                node("a", "a"),
+                node("b", "b"),
+                node("c", "c"),
+                node("d", "d"),
+                hidden_node,
+            ],
+            vec![
+                mixed,
+                expired,
+                edge("a", "d", KnowledgeRelationKindV2::Supports, "second-live"),
+                edge(
+                    "a",
+                    "hidden",
+                    KnowledgeRelationKindV2::Supports,
+                    "hidden-endpoint",
+                ),
+                edge("a", "c", KnowledgeRelationKindV2::Contradicts, "wrong-kind"),
+            ],
+        ),
+    )
+    .expect("complete timed graph");
+    let result = query_relations(
+        &graph,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:bounded-visible"),
+            generation_digest: graph.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: vec![KnowledgeRelationKindV2::Supports],
+            valid_at_unix_seconds: Some(100),
+            maximum_edges: 1,
+        },
+    )
+    .expect("bounded visible query");
+    assert_eq!(result.edges.len(), 1);
+    assert_eq!(result.edges[0].identity.target_node_id, id("node:b"));
+    assert_eq!(result.edges[0].supports, vec![support("live", false)]);
+    assert_eq!(result.omitted_count, 1);
+    assert_eq!(result.result_digest, compute_query_result_digest(&result));
+}
+
+#[test]
+fn bounded_query_still_rejects_tampering_beyond_returned_prefix() {
+    let mut graph = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b"), node("c", "c")],
+            vec![
+                edge("a", "b", KnowledgeRelationKindV2::Supports, "first"),
+                edge("a", "c", KnowledgeRelationKindV2::Supports, "second"),
+            ],
+        ),
+    )
+    .expect("complete graph");
+    graph.edges[1].supports[0].source_fact_digest = digest("tampered-omitted-support");
+    assert_eq!(
+        query_relations(
+            &graph,
+            KnowledgeRelationQueryV2 {
+                query_id: id("query:tampered-tail"),
+                generation_digest: graph.generation_digest,
+                seed_node_ids: vec![id("node:a")],
+                relation_kinds: Vec::new(),
+                valid_at_unix_seconds: None,
+                maximum_edges: 1,
+            }
+        ),
+        Err(KnowledgeGenerationErrorV2::DigestMismatch("generation"))
+    );
+}

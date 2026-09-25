@@ -312,3 +312,15 @@ The bootstrap source-location obligation for `knowledge.graph` is implemented by
 - `codex-rs/hepta-kg`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The cross-owner cognitive integration additionally depends on the `codex-hepta-memory` oracle/store tests and the Agentd product qualification suite; prompt-factor composition additionally depends on prompt.registry, the prompt-factor adapter tests and prompt.optimizer graph-consumer tests. These are source/test identities until an exact-candidate run records a passing receipt. The default Agentd crate profile now selects the scoped cognitive writer and fails closed when its store is unavailable, while ordinary Codex/App Server remains default-off. This receipt grants no model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Bounded relation result materialization
+
+`query_relations` retains only the requested canonical edge prefix, including
+only time-visible supports when a time cut is supplied. It still counts every
+visible matching edge to preserve the exact `omitted_count`. Omitted edges and
+their supports are not cloned into the output vector. The complete generation
+is still validated before querying, including records outside the returned
+prefix; this change does not establish indexed O(k) queries, incremental
+whole-generation updates, bounded-history recovery or target-host performance.
+The regression suite varies retained graph size and output limits, checks
+retained output capacity and temporal filtering, and rejects a tampered tail.

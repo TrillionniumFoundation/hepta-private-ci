@@ -113,7 +113,7 @@ async fn durable_preparation() -> (
     let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = outcome else {
         panic!("seven real owner stages");
     };
-    (prepared, record, composition)
+    (*prepared, record, composition)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

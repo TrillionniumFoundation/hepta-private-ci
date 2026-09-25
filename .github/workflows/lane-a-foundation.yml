@@ -12,6 +12,9 @@ on:
       - "scripts/lane_a_foundation_core.py"
       - "scripts/lane_a_foundation_lib.py"
       - "scripts/verify_lane_a_foundation.py"
+      - "scripts/run_lane_a_native_qualification.sh"
+      - "scripts/test_lane_a_membership.py"
+      - "scripts/test_lane_a_native_feedback.py"
       - "scripts/verify_lane_a_pr_tuple.py"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_kernel_authority_map_freshness.py"
@@ -48,6 +51,18 @@ jobs:
         shell: bash
         run: python3 scripts/verify_lane_a_pr_tuple.py --event "$GITHUB_EVENT_PATH"
 
+      - name: Bind exact source execution identity
+        id: identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_lane_a_native_feedback.py' -v
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_lane_a_membership.py' -v
+
       - name: Verify current implementation, traceability and nonclaims
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -71,9 +86,29 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Install native test entrypoint
+        id: native_tools
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Run Lane A native tests and strict lint
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.native_tools.outcome == 'success' }}
         shell: bash
-        run: scripts/run_lane_a_native_qualification.sh
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lane-a-feedback"
+          scripts/run_lane_a_native_qualification.sh 2>&1 | tee "$RUNNER_TEMP/lane-a-feedback/native.log"
+
+      - name: Retain independent native diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-a-native-feedback-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
+          path: ${{ runner.temp }}/lane-a-feedback/native.log
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Write exact-source and native receipts
         env:
@@ -124,6 +159,18 @@ jobs:
           author-email: hepta-lane-a-ci@users.noreply.github.com
           message: Synthetic Lane A merge
 
+      - name: Bind exact merge execution identity
+        id: identity
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_lane_a_native_feedback.py' -v
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_lane_a_membership.py' -v
+
       - name: Verify synthetic merge truth
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
@@ -147,9 +194,29 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Install native test entrypoint
+        id: native_tools
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Run Lane A native tests and strict lint on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.native_tools.outcome == 'success' }}
         shell: bash
-        run: scripts/run_lane_a_native_qualification.sh
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lane-a-feedback"
+          scripts/run_lane_a_native_qualification.sh 2>&1 | tee "$RUNNER_TEMP/lane-a-feedback/native.log"
+
+      - name: Retain independent native diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-a-native-feedback-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
+          path: ${{ runner.temp }}/lane-a-feedback/native.log
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Write synthetic-merge receipts
         env:

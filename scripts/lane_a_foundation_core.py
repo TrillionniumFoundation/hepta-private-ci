@@ -78,6 +78,16 @@ class VerificationError(RuntimeError):
     """Repository truth and a Lane A claim diverged."""
 
 
+def has_exact_module_membership(values: Any) -> bool:
+    """Module registries are sets; duplicates and undeclared owners still fail."""
+    return (
+        isinstance(values, list)
+        and all(isinstance(value, str) for value in values)
+        and len(values) == len(set(values))
+        and set(values) == set(EXPECTED_MODULES)
+    )
+
+
 def read_json(path: Path) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -189,9 +199,13 @@ def validate_capability_map(
                 raise VerificationError(f"{capability_id}: {field} required")
             for anchor in anchors:
                 validate_anchor(f"{capability_id}/{field}", anchor, root)
-    if observed != expected:
+    if (
+        len(observed) != len(set(observed))
+        or len(expected) != len(set(expected))
+        or set(observed) != set(expected)
+    ):
         raise VerificationError(
-            "capability map does not exactly cover ordered current capabilities"
+            "capability map does not exactly cover unique current capabilities"
         )
 
 
@@ -209,15 +223,15 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
         value.get("schema") != "hepta.native-source-observations.lane-a.v1"
         or value.get("schemaVersion") != 1
         or value.get("lane") != "LANE-A-FOUNDATION"
-        or value.get("moduleCoverage") != 7
-        or value.get("closedWorldModules") != EXPECTED_MODULES
+        or value.get("moduleCoverage") != len(EXPECTED_MODULES)
+        or not has_exact_module_membership(value.get("closedWorldModules"))
         or value.get("consumerCallsitesProved") is not False
         or value.get("productExecutionProved") is not False
         or value.get("sourceCodeCommitRole") != "provenance_only_non_authoritative"
         or value.get("candidateBinding") != "runtime_head_tree_and_source_blob_receipt"
         or not isinstance(rows, list)
-        or [row.get("module") for row in rows if isinstance(row, dict)]
-        != EXPECTED_MODULES
+        or not all(isinstance(row, dict) and isinstance(row.get("module"), str) for row in rows)
+        or not has_exact_module_membership([row["module"] for row in rows])
     ):
         raise VerificationError("Lane A native-binding header/module set mismatch")
     source_commit = str(value.get("sourceCodeCommit"))
@@ -231,7 +245,7 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
     if value.get("sourceObservationDigest") != observation_digest:
         raise VerificationError("native-binding observation digest mismatch")
     try:
-        current = observe_native_bindings(root, rows, EXPECTED_MODULES)
+        current = observe_native_bindings(root, rows, [row["module"] for row in rows])
     except BindingError as error:
         raise VerificationError(str(error)) from error
     value["currentSourceBinding"] = current

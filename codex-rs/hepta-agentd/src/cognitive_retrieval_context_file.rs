@@ -355,16 +355,15 @@ impl FileCurrentMemoryRetrievalContextV1 {
             .accepted
             .lock()
             .map_err(|_| "retrieval context frontier lock poisoned".to_string())?;
-        if let Some(previous) = *accepted {
-            if next.context_revision < previous.context_revision
+        if let Some(previous) = *accepted
+            && (next.context_revision < previous.context_revision
                 || next.authority_epoch < previous.authority_epoch
                 || (next.context_revision == previous.context_revision
                     && (next.authority_epoch != previous.authority_epoch
                         || next.context_digest != previous.context_digest
-                        || next.signed_payload_digest != previous.signed_payload_digest))
-            {
-                return Err("retrieval context regressed, forked or changed in place".to_string());
-            }
+                        || next.signed_payload_digest != previous.signed_payload_digest)))
+        {
+            return Err("retrieval context regressed, forked or changed in place".to_string());
         }
         *accepted = Some(next);
         Ok(())

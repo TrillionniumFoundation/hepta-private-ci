@@ -80,6 +80,10 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    require_intelligence_composition(
+        intelligence_product.is_some(),
+        intelligence_invocation.is_some(),
+    )?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -315,6 +319,16 @@ pub async fn run(
             drain_runtime(state).await
         })
         .await
+}
+
+fn require_intelligence_composition(runner: bool, provider: bool) -> Result<(), AgentdError> {
+    if runner != provider {
+        return Err(AgentdError::Invalid(
+            "canonical intelligence requires both a runner and an authoritative invocation provider"
+                .to_string(),
+        ));
+    }
+    Ok(())
 }
 
 fn require_cognitive_retrieval_context_for_mode(

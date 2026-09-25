@@ -402,38 +402,41 @@ pub fn query_relations(
             .map(|node| node.node_id.clone())
             .collect::<BTreeSet<_>>()
     });
-    let mut edges = generation
-        .edges
-        .iter()
-        .filter(|edge| {
-            (seeds.contains(&edge.identity.source_node_id)
-                || seeds.contains(&edge.identity.target_node_id))
-                && (relation_kinds.is_empty() || relation_kinds.contains(&edge.identity.relation))
-                && visible_nodes.as_ref().is_none_or(|visible| {
-                    visible.contains(&edge.identity.source_node_id)
-                        && visible.contains(&edge.identity.target_node_id)
-                })
-        })
-        .filter_map(|edge| {
-            let mut edge = edge.clone();
-            if let Some(at) = query.valid_at_unix_seconds {
-                edge.supports.retain(|support| support.visible_at(at));
-                if edge.supports.is_empty() {
-                    return None;
-                }
-            }
-            Some(edge)
-        })
-        .collect::<Vec<_>>();
-    let omitted_count = edges.len().saturating_sub(maximum_edges);
-    edges.truncate(maximum_edges);
+    // Scan to preserve the exact omitted count, but only materialize the
+    // admitted prefix. In particular, do not clone supports of omitted edges.
+    let mut edges = Vec::new();
+    let mut omitted_count = 0_u32;
+    for edge in &generation.edges {
+        if !(seeds.contains(&edge.identity.source_node_id)
+            || seeds.contains(&edge.identity.target_node_id))
+            || (!relation_kinds.is_empty() && !relation_kinds.contains(&edge.identity.relation))
+            || visible_nodes.as_ref().is_some_and(|visible| {
+                !visible.contains(&edge.identity.source_node_id)
+                    || !visible.contains(&edge.identity.target_node_id)
+            })
+            || query
+                .valid_at_unix_seconds
+                .is_some_and(|at| !edge.supports.iter().any(|support| support.visible_at(at)))
+        {
+            continue;
+        }
+        if edges.len() == maximum_edges {
+            omitted_count = omitted_count.saturating_add(1);
+            continue;
+        }
+        let mut selected = edge.clone();
+        if let Some(at) = query.valid_at_unix_seconds {
+            selected.supports.retain(|support| support.visible_at(at));
+        }
+        edges.push(selected);
+    }
     let mut result = KnowledgeRelationResultV2 {
         query_id: query.query_id,
         generation_digest: generation.generation_digest,
         valid_at_unix_seconds: query.valid_at_unix_seconds,
         request_digest,
         edges,
-        omitted_count: u32::try_from(omitted_count).unwrap_or(u32::MAX),
+        omitted_count,
         result_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };

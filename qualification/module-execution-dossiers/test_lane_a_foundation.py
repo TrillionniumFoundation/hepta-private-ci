@@ -28,11 +28,11 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         verify.validate_matrix(self.matrix)
 
     def test_closed_world_module_set(self) -> None:
-        self.assertEqual(
+        self.assertCountEqual(
             [row["module"] for row in self.matrix["modules"]],
             verify.EXPECTED_MODULES,
         )
-        self.assertEqual(self.matrix["moduleCoverage"], 7)
+        self.assertEqual(self.matrix["moduleCoverage"], len(verify.EXPECTED_MODULES))
 
     def test_every_current_capability_has_one_evidence_mapping(self) -> None:
         verify.validate_capability_map(self.matrix, self.capability_map)
@@ -63,7 +63,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
 
     def test_operations_cannot_claim_unimplemented_durability(self) -> None:
         value = deepcopy(self.matrix)
-        value["modules"][3]["states"]["durability"] = "durable"
+        next(row for row in value["modules"] if row["module"] == "kernel.operations")["states"]["durability"] = "durable"
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
@@ -75,13 +75,13 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         ):
             with self.subTest(capability=capability):
                 value = deepcopy(self.matrix)
-                value["modules"][5]["currentCapabilities"].append(capability)
+                next(row for row in value["modules"] if row["module"] == "auth.authbus")["currentCapabilities"].append(capability)
                 with self.assertRaises(verify.VerificationError):
                     verify.validate_matrix(value)
 
     def test_authbus_cannot_claim_all_replay_paths_are_durable(self) -> None:
         value = deepcopy(self.matrix)
-        value["modules"][5]["states"]["durability"] = "durable"
+        next(row for row in value["modules"] if row["module"] == "auth.authbus")["states"]["durability"] = "durable"
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
@@ -132,7 +132,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             output = Path(directory) / "receipt.json"
             verify.write_source_receipt(output, verify.git_value("rev-parse", "HEAD"))
             receipt = json.loads(output.read_text(encoding="utf-8"))
-        self.assertEqual(receipt["moduleCoverage"], 7)
+        self.assertEqual(receipt["moduleCoverage"], len(verify.EXPECTED_MODULES))
         self.assertEqual(
             receipt["capabilityCoverage"],
             self.capability_map["entryCount"]

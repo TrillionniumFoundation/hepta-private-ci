@@ -71,9 +71,11 @@ pub(crate) async fn read(
         query,
         limit,
         ranker,
-        None,
-        None,
-        None,
+        RetrievalLearningInputs {
+            current_retrieval: None,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
 }
@@ -95,11 +97,20 @@ pub(crate) async fn read_with_retrieval_context(
         query,
         limit,
         ranker,
-        current_retrieval,
-        None,
-        None,
+        RetrievalLearningInputs {
+            current_retrieval,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
+}
+
+/// Host-owned retrieval inputs travel together; wire callers cannot substitute them.
+pub(crate) struct RetrievalLearningInputs<'a> {
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    pub request_id: Option<u64>,
 }
 
 pub(crate) async fn read_with_retrieval_context_and_learning(
@@ -109,10 +120,13 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     query: &str,
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
-    request_id: Option<u64>,
+    inputs: RetrievalLearningInputs<'_>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    let RetrievalLearningInputs {
+        current_retrieval,
+        learning_sink,
+        request_id,
+    } = inputs;
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
