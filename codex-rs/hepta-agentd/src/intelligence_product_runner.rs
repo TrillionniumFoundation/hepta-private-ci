@@ -75,26 +75,31 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
-        inputs: AgentdIntelligenceOwnerInputsV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        self.prepare_composition_inner(composition, request, inputs, None)
+        let recall = inputs.canonical_recall.take();
+        self.prepare_composition_inner(composition, request, inputs, recall)
             .await
     }
 
-    /// Use the existing seven-owner runner with an explicit canonical recall input.
-    /// The context owner must match and retain each selected event as untrusted evidence.
-    /// Source currentness must already be established by the retrieval owner; this
-    /// method does not turn an arbitrary packet into an authenticated memory source.
+    /// Convenience adapter to the normal runner, not a parallel execution path.
+    /// Retrieval source authentication remains the retrieval owner's responsibility.
     pub async fn prepare_with_canonical_recall(
         &self,
         coordinator: &crate::AgentRunCoordinator,
         request: CanonicalIntelligenceRunRequestV1,
-        inputs: AgentdIntelligenceOwnerInputsV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
         recall: CanonicalRecallIntelligenceInputV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let composition = coordinator.composition().clone();
-        self.prepare_composition_inner(&composition, request, inputs, Some(recall))
-            .await
+        if inputs.canonical_recall.is_some() {
+            return Err(AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::CanonicalRecall(
+                    "conflicting canonical recall inputs".into(),
+                ),
+            ));
+        }
+        inputs.canonical_recall = Some(recall);
+        self.prepare(coordinator, request, inputs).await
     }
 
     async fn prepare_composition_inner(

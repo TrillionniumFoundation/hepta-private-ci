@@ -639,6 +639,7 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
+            canonical_recall: None,
             objective_envelope: envelope,
             objective_profile: profile,
             objective_context,

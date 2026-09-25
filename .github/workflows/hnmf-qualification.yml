@@ -61,6 +61,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: hnmf-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   canonical-contracts:
     name: canonical cognitive.types (${{ matrix.candidate }})
@@ -84,30 +88,15 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
           CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: |
-          python3 - <<'PY_ID'
-          import json, os, pathlib, subprocess
-          def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
-          actual = git("rev-parse", "HEAD")
-          parents = git("show", "-s", "--format=%P", "HEAD").split()
-          if os.environ["CANDIDATE_KIND"] == "exact-head":
-              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
-          else:
-              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
-          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
-                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
-                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
-                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
-          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
-          print(json.dumps(receipt, sort_keys=True))
-          PY_ID
+        run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
       - name: Verify HNMF closed-world registry
         id: check_02
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: |
+          python3 -m unittest discover -s qualification/cognitive-types-v1 -p 'test_*.py'
           python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-hnmf.py verify
 
@@ -164,7 +153,7 @@ jobs:
 
 
       - name: Preserve candidate and actual check outcomes
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
           CHECK_OUTCOMES: ${{ toJSON(steps) }}
         run: |
@@ -178,7 +167,7 @@ jobs:
           PY_OUT
 
       - name: Upload candidate execution record
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
@@ -207,25 +196,9 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
           CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: |
-          python3 - <<'PY_ID'
-          import json, os, pathlib, subprocess
-          def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
-          actual = git("rev-parse", "HEAD")
-          parents = git("show", "-s", "--format=%P", "HEAD").split()
-          if os.environ["CANDIDATE_KIND"] == "exact-head":
-              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
-          else:
-              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
-          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
-                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
-                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
-                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
-          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
-          print(json.dumps(receipt, sort_keys=True))
-          PY_ID
+        run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
       - name: Check formatting
         id: check_02
@@ -249,7 +222,7 @@ jobs:
 
 
       - name: Preserve candidate and actual check outcomes
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
           CHECK_OUTCOMES: ${{ toJSON(steps) }}
         run: |
@@ -263,7 +236,7 @@ jobs:
           PY_OUT
 
       - name: Upload candidate execution record
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
@@ -292,25 +265,9 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
           CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: |
-          python3 - <<'PY_ID'
-          import json, os, pathlib, subprocess
-          def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
-          actual = git("rev-parse", "HEAD")
-          parents = git("show", "-s", "--format=%P", "HEAD").split()
-          if os.environ["CANDIDATE_KIND"] == "exact-head":
-              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
-          else:
-              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
-          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
-                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
-                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
-                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
-          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
-          print(json.dumps(receipt, sort_keys=True))
-          PY_ID
+        run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
       - name: Check formatting
         id: check_02
@@ -334,7 +291,7 @@ jobs:
 
 
       - name: Preserve candidate and actual check outcomes
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
           CHECK_OUTCOMES: ${{ toJSON(steps) }}
         run: |
@@ -348,7 +305,7 @@ jobs:
           PY_OUT
 
       - name: Upload candidate execution record
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
@@ -377,25 +334,9 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
           CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: |
-          python3 - <<'PY_ID'
-          import json, os, pathlib, subprocess
-          def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
-          actual = git("rev-parse", "HEAD")
-          parents = git("show", "-s", "--format=%P", "HEAD").split()
-          if os.environ["CANDIDATE_KIND"] == "exact-head":
-              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
-          else:
-              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
-          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
-                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
-                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
-                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
-          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
-          print(json.dumps(receipt, sort_keys=True))
-          PY_ID
+        run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
       - name: Check formatting
         id: check_02
@@ -421,7 +362,7 @@ jobs:
 
 
       - name: Preserve candidate and actual check outcomes
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
           CHECK_OUTCOMES: ${{ toJSON(steps) }}
         run: |
@@ -435,7 +376,7 @@ jobs:
           PY_OUT
 
       - name: Upload candidate execution record
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
@@ -464,25 +405,9 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
           CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: |
-          python3 - <<'PY_ID'
-          import json, os, pathlib, subprocess
-          def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
-          actual = git("rev-parse", "HEAD")
-          parents = git("show", "-s", "--format=%P", "HEAD").split()
-          if os.environ["CANDIDATE_KIND"] == "exact-head":
-              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
-          else:
-              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
-          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
-                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
-                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
-                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
-          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
-          print(json.dumps(receipt, sort_keys=True))
-          PY_ID
+        run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
       - name: Check consumer formatting
         id: check_02
@@ -530,7 +455,7 @@ jobs:
 
 
       - name: Preserve candidate and actual check outcomes
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
           CHECK_OUTCOMES: ${{ toJSON(steps) }}
         run: |
@@ -544,7 +469,7 @@ jobs:
           PY_OUT
 
       - name: Upload candidate execution record
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}
@@ -573,25 +498,9 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
           CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: |
-          python3 - <<'PY_ID'
-          import json, os, pathlib, subprocess
-          def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
-          actual = git("rev-parse", "HEAD")
-          parents = git("show", "-s", "--format=%P", "HEAD").split()
-          if os.environ["CANDIDATE_KIND"] == "exact-head":
-              assert actual == os.environ["HEAD_SHA"], "exact-head drift"
-          else:
-              assert parents == [os.environ["BASE_SHA"], os.environ["HEAD_SHA"]], "synthetic merge parent drift"
-          receipt = {"schema": "hepta.cognitive-types.candidate.v1", "candidate": actual,
-                     "tree": git("rev-parse", "HEAD^{tree}"), "head": os.environ["HEAD_SHA"],
-                     "base": os.environ["BASE_SHA"], "kind": os.environ["CANDIDATE_KIND"],
-                     "parents": parents, "run_id": os.environ["GITHUB_RUN_ID"], "product_activation": False}
-          pathlib.Path(os.environ["RUNNER_TEMP"], "hnmf-candidate.json").write_text(json.dumps(receipt, indent=2) + "\n")
-          print(json.dumps(receipt, sort_keys=True))
-          PY_ID
+        run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
       - name: Check owner and product formatting
         id: check_02
@@ -631,8 +540,13 @@ jobs:
           cargo test --manifest-path codex-rs/Cargo.toml --locked
           -p codex-hepta-agentd --test cognitive_store_product_writer
 
+      - name: Test actual Agentd canonical context consumption
+        id: canonical_context
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --lib canonical_recall_tests
+
       - name: Preserve candidate and actual check outcomes
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
           CHECK_OUTCOMES: ${{ toJSON(steps) }}
         run: |
@@ -646,7 +560,7 @@ jobs:
           PY_OUT
 
       - name: Upload candidate execution record
-        if: ${{ always() && steps.identity.outcome == 'success' }}
+        if: ${{ always() && steps.check_01.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hnmf-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_attempt }}

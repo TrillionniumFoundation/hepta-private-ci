@@ -13,8 +13,8 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 ## Registry closure
 
 - Modules: **40**
-- Contracts: **205**
-- Critical protocols: **58**
+- Contracts: **209**
+- Critical protocols: **62**
 - Durable data domains: **67**
 - Work packages: **91**
 - Module technical guides: **40**
