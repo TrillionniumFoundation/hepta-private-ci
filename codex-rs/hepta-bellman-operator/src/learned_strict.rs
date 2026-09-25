@@ -9,13 +9,15 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 use codex_hepta_types::StableId;
 
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 use crate::TabularOperatorPredictionV1;
-use crate::fit_tabular_operator;
+use crate::learned::fit_tabular_operator;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
@@ -35,6 +37,7 @@ pub fn fit_tabular_operator_strict_v2(
     Ok(fit_tabular_operator(plan)?)
 }
 
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,

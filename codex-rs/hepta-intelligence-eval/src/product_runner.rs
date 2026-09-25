@@ -317,6 +317,42 @@ pub struct ProductQualificationReceiptV1 {
 }
 
 impl ProductQualificationReceiptV1 {
+    /// Re-authenticate the exact signed bundle against this already persisted
+    /// qualification. This is read-only consumption, never a way to mint a
+    /// qualification without the fenced runner and durable evidence sink.
+    pub fn verify_signed_bundle_current(
+        &self,
+        bundle: &IndependentEvaluationBundleV1,
+        roles: &[MetricRoleContractV2],
+        evidence: &SignedEvaluationEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), ProductEvaluationError> {
+        self.validate_integrity()?;
+        if self.decision.trust_digest != verifier.trust_digest()
+            || self.candidate_id != bundle.candidate_id
+            || self.objective_digest != bundle.objective_digest
+            || self.dataset_digest != bundle.dataset_digest
+            || self.generator != bundle.generator
+            || self.evaluator != bundle.evaluator
+            || self.snapshot_ids != bundle.snapshot_ids
+            || self.claim_scope != bundle.claim_scope
+        {
+            return Err(ProductEvaluationError::Binding(
+                "current qualification consumption",
+            ));
+        }
+        let payload = crate::evaluation_signing_payload_v2(bundle, roles)?;
+        let authenticated =
+            crate::signed_evaluation::authenticate(bundle, evidence, verifier, &payload, now)?;
+        if authenticated != self.decision.authentication_digest {
+            return Err(ProductEvaluationError::Integrity(
+                "qualification signed bundle",
+            ));
+        }
+        Ok(())
+    }
+
     pub fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
         if self.temporal_execution_digest.is_zero()
             || self.objective_digest.is_zero()

@@ -55,6 +55,41 @@ pub(super) async fn rejects_mismatched_admitted_lineage(
         );
     }
 
+    // Sign exact altered bytes through the real artifact owner. These inputs
+    // pass hash/signature checks and fail only the new recovery epoch contract.
+    let original = String::from_utf8(payload.clone()).unwrap();
+    let encoded_trust = ledger.trust_distribution_digest().to_string();
+    for (case, changed, expected) in [
+        (
+            "legacy-recovery-v1",
+            original.replacen("\"version\":2", "\"version\":1", 1),
+            "recovery version or canonical form",
+        ),
+        (
+            "other-learning-trust",
+            original.replacen(&encoded_trust, &digest("different-trust").to_string(), 1),
+            "current learning trust changed",
+        ),
+    ] {
+        assert_ne!(changed, original);
+        let artifacts = Artifacts::open(&root.join(case), None);
+        let selection = artifacts.publish(candidate.artifact(), changed.as_bytes());
+        let host = AgentdSharedReplayHostV1::new(
+            Arc::clone(&source),
+            consumer.clone(),
+            "domain.terminal".into(),
+            receiver.clone(),
+        )
+        .unwrap()
+        .with_artifact_owner(Arc::clone(&artifacts.owner), artifacts.selector.clone());
+        let result = host.load(ledger, selection, 50).await;
+        assert!(
+            matches!(result, Err(codex_hepta_agentd::SharedTerminalCellError::Binding(message))
+            if message == expected),
+            "wrong recovery rejection: {case}"
+        );
+    }
+
     let artifacts = Artifacts::open(&root.join("short-manifest-lifetime"), None);
     let selection = artifacts.publish_with_manifest(candidate.artifact(), &payload, |m| {
         m.expires_at = 51;

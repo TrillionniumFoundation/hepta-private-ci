@@ -512,6 +512,65 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
 
+    // Public consumers can only validate an existing sealed publication. These
+    // checks never call the sink again or consume another holdout allowance.
+    assert!(
+        qualified
+            .verify_signed_bundle_current(&bundle, &fixture.roles, &evidence, &verifier, 50)
+            .is_ok()
+    );
+    assert!(
+        qualified
+            .verify_signed_bundle_current(&bundle, &fixture.roles, &evidence, &verifier, 91)
+            .is_err()
+    );
+    let mut wrong_bundle = bundle.clone();
+    wrong_bundle.candidate_id = id("another-candidate");
+    assert!(matches!(
+        qualified.verify_signed_bundle_current(
+            &wrong_bundle,
+            &fixture.roles,
+            &evidence,
+            &verifier,
+            50
+        ),
+        Err(ProductEvaluationError::Binding(_))
+    ));
+    let mut replaced_metrics = bundle.clone();
+    replaced_metrics.metrics[0].candidate.lower = FixedQ32::ZERO;
+    assert!(
+        qualified
+            .verify_signed_bundle_current(
+                &replaced_metrics,
+                &fixture.roles,
+                &evidence,
+                &verifier,
+                50
+            )
+            .is_err()
+    );
+    let mut invalid_signature = evidence.clone();
+    invalid_signature.evaluator_bundle.signature[0] ^= 1;
+    assert!(
+        qualified
+            .verify_signed_bundle_current(
+                &bundle,
+                &fixture.roles,
+                &invalid_signature,
+                &verifier,
+                50
+            )
+            .is_err()
+    );
+    let mut replaced_publication = qualified.clone();
+    replaced_publication.publication_digest = digest("not-the-persisted-publication");
+    assert!(
+        replaced_publication
+            .verify_signed_bundle_current(&bundle, &fixture.roles, &evidence, &verifier, 50)
+            .is_err()
+    );
+    assert_eq!(sink.persisted, vec![qualified.publication_digest]);
+
     let mut changed_generator = qualified;
     changed_generator.generator.principal_id = id("substituted-generator");
     assert!(changed_generator.validate_integrity().is_err());

@@ -129,3 +129,12 @@ promotion or release evidence.
 head and ordered-parent synthetic merge pass the Lane E workflow including the
 mandatory learning-eval qualification artifact. External evidence gates remain
 open independently and must not be collapsed into source qualification.
+
+### Persisted qualification consumption
+
+`ProductQualificationReceiptV1::verify_signed_bundle_current` only verifies an
+already sealed, persisted result against its exact signed bundle and current
+trust; it cannot mint a new qualification. Agentd uses request-bound
+`AgentdSignedEvaluationV2`, and governed parameter proposals use
+`CandidateEvaluationAdmissionV2`. Both reject a raw signed-metrics substitute.
+The generic `decide_with_signed_evidence_v2` remains crate-private.

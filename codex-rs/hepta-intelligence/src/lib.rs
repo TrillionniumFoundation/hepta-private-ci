@@ -74,7 +74,7 @@ mod plasticity_product;
 
 pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
 pub use plasticity_product::AnchoredPlasticityWriterV1;
-pub use plasticity_product::CandidateEvaluationAdmissionV1;
+pub use plasticity_product::CandidateEvaluationAdmissionV2;
 pub use plasticity_product::ParameterPlasticityDispositionV1;
 pub use plasticity_product::ParameterPlasticityProductErrorV1;
 pub use plasticity_product::ParameterPlasticityProductReceiptV1;

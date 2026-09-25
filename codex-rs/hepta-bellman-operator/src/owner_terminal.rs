@@ -23,11 +23,11 @@ use crate::StrictLearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorSampleV1;
-use crate::fit_tabular_operator_strict_v2;
+use crate::learned_strict::fit_tabular_operator_strict_v2;
 
 const MAX_SOURCE_RECORDS: usize = 4096;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TerminalCellProfileV1 {
     pub artifact_id: StableId,
     pub producer_id: StableId,
@@ -44,6 +44,8 @@ pub struct TerminalCellProfileV1 {
 pub struct FrozenTerminalCellV1 {
     plan: TabularOperatorPlanV1,
     dataset: DatasetSnapshotReceiptV3,
+    profile: TerminalCellProfileV1,
+    trust_distribution_digest: Digest32,
 }
 
 impl FrozenTerminalCellV1 {
@@ -76,9 +78,56 @@ impl From<ProductionLedgerError> for TerminalCellError {
 pub fn freeze_terminal_cell_from_owner_v1(
     owner: &LedgerWriter,
     dataset: &DatasetSnapshotReceiptV3,
-    mut profile: TerminalCellProfileV1,
+    profile: TerminalCellProfileV1,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
+    let plan = materialize_terminal_cell_plan(owner, dataset, profile.clone(), now)?;
+    Ok(FrozenTerminalCellV1 {
+        plan,
+        dataset: dataset.clone(),
+        trust_distribution_digest: owner.trust_distribution_digest(),
+        profile,
+    })
+}
+
+/// Fit only after deriving the exact same rows from the current authoritative
+/// owner a second time. The opaque frozen value is deliberately not a promise
+/// that a previously materialized target remains current: corrections,
+/// withdrawals, owner replacement, or any in-memory content substitution must
+/// be observed before fitting.
+pub fn fit_terminal_cell_from_owner_v1(
+    owner: &LedgerWriter,
+    frozen: FrozenTerminalCellV1,
+    now: u64,
+) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
+    if owner.trust_distribution_digest() != frozen.trust_distribution_digest {
+        return Err(TerminalCellError::Unsupported(
+            "learning trust changed before fit",
+        ));
+    }
+    let current = materialize_terminal_cell_plan(owner, &frozen.dataset, frozen.profile, now)?;
+    require_exact_owner_materialization(&frozen.plan, &current)?;
+    fit_tabular_operator_strict_v2(current).map_err(TerminalCellError::Fit)
+}
+
+fn require_exact_owner_materialization(
+    frozen: &TabularOperatorPlanV1,
+    current: &TabularOperatorPlanV1,
+) -> Result<(), TerminalCellError> {
+    if frozen != current {
+        return Err(TerminalCellError::Unsupported(
+            "owner materialization changed before fit",
+        ));
+    }
+    Ok(())
+}
+
+fn materialize_terminal_cell_plan(
+    owner: &LedgerWriter,
+    dataset: &DatasetSnapshotReceiptV3,
+    mut profile: TerminalCellProfileV1,
+    now: u64,
+) -> Result<TabularOperatorPlanV1, TerminalCellError> {
     owner.revalidate_dataset_snapshot(dataset, now)?;
     if dataset.snapshot.objective_digest != profile.objective_digest
         || profile.objective_digest.is_zero()
@@ -183,7 +232,7 @@ pub fn freeze_terminal_cell_from_owner_v1(
         bytes.extend_from_slice(id.as_str().as_bytes());
     }
     let profile_digest = Digest32::of_bytes(&bytes);
-    let plan = TabularOperatorPlanV1 {
+    Ok(TabularOperatorPlanV1 {
         artifact_id: profile.artifact_id,
         producer_id: profile.producer_id,
         generation: profile.generation,
@@ -195,20 +244,9 @@ pub fn freeze_terminal_cell_from_owner_v1(
         sensor_ids: vec![profile.sensor_id],
         action_ids: profile.action_ids,
         samples,
-    };
-    Ok(FrozenTerminalCellV1 {
-        plan,
-        dataset: dataset.clone(),
     })
 }
 
-pub fn fit_terminal_cell_from_owner_v1(
-    owner: &LedgerWriter,
-    frozen: FrozenTerminalCellV1,
-    now: u64,
-) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
-    // Correction, withdrawal or a changed witness between freeze and fitting
-    // rejects the candidate rather than quietly training on a stale dataset.
-    owner.revalidate_dataset_snapshot(&frozen.dataset, now)?;
-    fit_tabular_operator_strict_v2(frozen.plan).map_err(TerminalCellError::Fit)
-}
+#[cfg(test)]
+#[path = "owner_terminal_tests.rs"]
+mod tests;

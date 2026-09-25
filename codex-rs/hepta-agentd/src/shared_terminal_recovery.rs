@@ -28,6 +28,7 @@ const MAX_DATASET_RECORDS: usize = 4096;
 #[serde(deny_unknown_fields)]
 struct Bundle {
     version: u32,
+    trust_distribution_digest: String,
     policy_id: String,
     policy_revision: u64,
     source_support: String,
@@ -67,6 +68,7 @@ struct Dataset {
 }
 
 pub(crate) struct RecoveredTerminal {
+    pub(crate) trust_distribution_digest: Digest32,
     pub(crate) policy_id: Sha256Digest,
     pub(crate) policy_revision: u64,
     pub(crate) source_support: Sha256Digest,
@@ -78,14 +80,21 @@ pub(crate) fn encode(
     artifact: &TabularOperatorArtifactV1,
     data: &DatasetSnapshotReceiptV3,
     source: &SharedExperienceUseV1,
+    trust_distribution_digest: Digest32,
 ) -> Result<Vec<u8>> {
-    if data.snapshot.source_record_digests.len() > MAX_DATASET_RECORDS {
+    if data.snapshot.source_record_digests.len() > MAX_DATASET_RECORDS
+        || trust_distribution_digest.is_zero()
+    {
         return Err(SharedTerminalCellError::Binding("recovery dataset bound"));
     }
     let s = &data.snapshot;
     let p = &data.producer;
     let bundle = Bundle {
-        version: 1,
+        // V1 did not bind the ledger trust epoch. It cannot be silently accepted
+        // under a different authority. Migrate only by independently publishing
+        // and selecting a newly trained V2 bundle.
+        version: 2,
+        trust_distribution_digest: trust_distribution_digest.to_string(),
         policy_id: source.policy_id().as_str().to_owned(),
         policy_revision: source.policy_revision(),
         source_support: source.source_support_digest().as_str().to_owned(),
@@ -149,7 +158,7 @@ pub(crate) fn decode(
     }
     let b: Bundle = serde_json::from_slice(bytes)
         .map_err(|_| SharedTerminalCellError::Binding("recovery encoding"))?;
-    if b.version != 1
+    if b.version != 2
         || b.policy_revision == 0
         || b.dataset.source_record_digests.len() > MAX_DATASET_RECORDS
         || serde_json::to_vec(&b)
@@ -229,7 +238,12 @@ pub(crate) fn decode(
     {
         return Err(SharedTerminalCellError::Binding("recovery model identity"));
     }
+    let trust_distribution_digest = digest(&b.trust_distribution_digest)?;
+    if trust_distribution_digest.is_zero() {
+        return Err(SharedTerminalCellError::Binding("recovery trust identity"));
+    }
     Ok(RecoveredTerminal {
+        trust_distribution_digest,
         policy_id: Sha256Digest::parse(b.policy_id)
             .map_err(|_| SharedTerminalCellError::Binding("recovery policy"))?,
         policy_revision: b.policy_revision,

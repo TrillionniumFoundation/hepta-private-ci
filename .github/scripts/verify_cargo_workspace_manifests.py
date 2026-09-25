@@ -26,6 +26,11 @@ UTILITY_NAME_EXCEPTIONS = {
     "path-utils": "codex-utils-path",
 }
 MANIFEST_FEATURE_EXCEPTIONS = {
+    # Raw operator fixtures are migration-only and have a Bazel testonly target.
+    # Agentd's real owner-backed test fixtures require no activation at all.
+    "codex-rs/hepta-bellman-operator/Cargo.toml": {
+        "default": (), "unchecked-qualification-inputs": (),
+    },
     "codex-rs/v8-poc/Cargo.toml": {"sandbox": ("v8/v8_enable_sandbox",)},
     # Temporary migration: retain existing opt-in Hepta profiles until their
     # qualification libraries/tests are extracted into dedicated Bazel targets.
@@ -57,7 +62,10 @@ MANIFEST_FEATURE_EXCEPTIONS = {
     },
 }
 OPTIONAL_DEPENDENCY_EXCEPTIONS = set()
-INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {}
+INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {
+    ("codex-rs/hepta-shadow-qualification/Cargo.toml", "dev-dependencies", "codex-hepta-bellman-operator"):
+        ("unchecked-qualification-inputs",),
+}
 
 
 def main() -> int:

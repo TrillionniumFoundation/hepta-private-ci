@@ -31,7 +31,12 @@ async fn restore_only_from_durable_owners() {
         segment: None,
         sealed: false,
     };
-    let ledger = ledger_fixture.recover_writer(64, frontier);
+    let mut ledger = ledger_fixture.recover_writer(64, frontier);
+    if std::env::var("HEPTA_SHARED_RESTORE_EXPECT").as_deref() == Ok("trust-changed") {
+        // The child receives the new root-authorized distribution independently
+        // of the old artifact files; old recovered bundles cannot select it away.
+        super::support::rotate_trust(&mut ledger);
+    }
     let artifacts = Artifacts::open(&PathBuf::from(field("artifact_root")), None);
     // This pin was retained outside the artifact files before process exit.
     assert_eq!(
@@ -57,6 +62,12 @@ async fn restore_only_from_durable_owners() {
     let pin = field("selection_digest").parse().unwrap();
     let result = host.restore(&ledger, pin, 50).await;
     match std::env::var("HEPTA_SHARED_RESTORE_EXPECT").as_deref() {
+        Ok("trust-changed") => assert!(matches!(
+            result,
+            Err(SharedTerminalCellError::Binding(
+                "current learning trust changed"
+            ))
+        )),
         Ok("source-withdrawn") => {
             assert!(matches!(result, Err(SharedTerminalCellError::Source(_))))
         }

@@ -139,3 +139,13 @@ test-group = 'hepta_neuron_durable_boundaries'
 threads-required = "num-test-threads"
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Explicit ignored benchmark: real authenticated ledger writes and acknowledged
+# recovery across three increasing histories. This is not a product latency gate.
+# Keep its full workload, serialize durable measurements, and never retry it.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-bellman-operator) & test(owner_terminal_quality_and_history_profile)'
+test-group = 'hepta_durable_capacity'
+threads-required = "num-test-threads"
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0

@@ -31,8 +31,8 @@ mod evaluation;
 pub use evaluation::AgentdEvaluationBindingV1;
 use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
-pub use evaluation::AgentdSignedEvaluationV1;
-pub use evaluation::intelligence_evaluation_binding_payload_v1;
+pub use evaluation::AgentdSignedEvaluationV2;
+pub use evaluation::intelligence_evaluation_binding_payload_v2;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -227,7 +227,7 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub intuition_request: CalibratedDecisionRequestV1,
     pub context_request: CompilationRequest,
     pub evaluation_request: EvaluationRequest,
-    pub signed_evaluation: Option<AgentdSignedEvaluationV1>,
+    pub signed_evaluation: Option<AgentdSignedEvaluationV2>,
 }
 
 struct AgentdOwnerPortsV1 {

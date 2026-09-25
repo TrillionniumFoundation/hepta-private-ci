@@ -384,24 +384,12 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.operator.md",
       "nativeMapping": "codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "legacy target builder retained; canonical tabular fit rejects duplicate evidence; dataset-bound and signed-admission V2 surfaces are additive",
+      "compatibility": "Raw input and prediction compatibility APIs require unchecked-qualification-inputs; default product training re-materializes authenticated LedgerWriter rows.",
       "operations": [
         {
           "operation": "build_targets",
           "nativeSymbol": "codex_hepta_bellman_operator::build_targets",
           "source": "codex-rs/hepta-bellman-operator/src/lib.rs",
-          "status": "implemented"
-        },
-        {
-          "operation": "validate_applicability_certificate",
-          "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_certificate",
-          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
-          "status": "implemented_existing"
-        },
-        {
-          "operation": "validate_applicability_with_signed_evidence_v2",
-          "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_with_signed_evidence_v2",
-          "source": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
           "status": "implemented"
         },
         {
@@ -417,28 +405,28 @@
           "status": "implemented"
         },
         {
-          "operation": "admit_operator_regularity",
-          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity",
+          "operation": "validate_applicability_certificate",
+          "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_certificate",
           "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
-          "status": "implemented_existing"
+          "status": "implemented"
         },
         {
-          "operation": "admit_operator_regularity_with_signed_evidence_v2",
-          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity_with_signed_evidence_v2",
+          "operation": "validate_applicability_with_signed_evidence_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_with_signed_evidence_v2",
           "source": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
           "status": "implemented"
         },
         {
-          "operation": "fit_transition_model",
-          "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model",
-          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
-          "status": "implemented_existing"
+          "operation": "fit_tabular_operator",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator",
+          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
+          "status": "implemented"
         },
         {
-          "operation": "predict_transition",
-          "nativeSymbol": "codex_hepta_bellman_operator::predict_transition",
-          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
-          "status": "implemented_existing"
+          "operation": "fit_tabular_operator_strict_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator_strict_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+          "status": "implemented"
         },
         {
           "operation": "verify_tabular_operator_plan_v2",
@@ -453,6 +441,42 @@
           "status": "implemented"
         },
         {
+          "operation": "predict_tabular_operator",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator",
+          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "encode_tabular_payload_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::encode_tabular_payload_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "load_pinned_tabular_operator_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::LoadedTabularOperatorV1::from_pinned_payload",
+          "source": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_operator_regularity",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_operator_regularity_with_signed_evidence_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity_with_signed_evidence_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_transition_model",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+          "status": "implemented"
+        },
+        {
           "operation": "verify_world_model_dataset_v2",
           "nativeSymbol": "codex_hepta_bellman_operator::verify_world_model_dataset_v2",
           "source": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
@@ -463,38 +487,27 @@
           "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model_verified_v2",
           "source": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "predict_transition",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_transition",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "freeze_terminal_cell_from_owner_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_terminal_cell_from_owner_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+          "status": "implemented"
         }
       ],
-      "supplementalOperations": [
-        {
-          "operation": "fit_tabular_operator",
-          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator",
-          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
-          "status": "implemented",
-          "profile": "complete_grid_v1_canonical_evidence_uniqueness"
-        },
-        {
-          "operation": "fit_tabular_operator_strict_v2",
-          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator_strict_v2",
-          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
-          "status": "implemented",
-          "profile": "compatibility_error_surface_over_canonical_fit"
-        },
-        {
-          "operation": "predict_tabular_operator",
-          "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator",
-          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
-          "status": "implemented",
-          "profile": "supported_cell_only_synthetic_deny_all_v1"
-        },
-        {
-          "operation": "LoadedTabularOperatorV1::from_pinned_payload",
-          "nativeSymbol": "codex_hepta_bellman_operator::LoadedTabularOperatorV1::from_pinned_payload",
-          "source": "codex-rs/hepta-bellman-operator/src/loaded.rs",
-          "status": "implemented",
-          "profile": "pinned_once_validated_persisted_candidate"
-        }
-      ],
+      "supplementalOperations": [],
       "tests": [
         "op_01_farthest_point_sensor_core_is_deterministic",
         "op_01_tabular_reference_produces_exact_targets_and_gaps",
@@ -512,7 +525,11 @@
         "op_06_tabular_fit_requires_exact_frozen_dataset_evidence",
         "op_06_world_model_requires_exact_frozen_dataset_evidence",
         "independent_pin_and_all_truncations_are_checked",
-        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
+        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining",
+        "owner_materialization_rejects_same_evidence_with_changed_training_content",
+        "actual_owner_rejects_target_action_and_profile_replacement_under_same_receipt",
+        "frozen_owner_trust_rotation_invalidates_prepared_training",
+        "actual_owner_correction_expiry_and_restart_preserve_training_identity"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [

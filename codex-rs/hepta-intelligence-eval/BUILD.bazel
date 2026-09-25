@@ -4,3 +4,9 @@ codex_rust_crate(
     name = "hepta-intelligence-eval",
     crate_name = "codex_hepta_intelligence_eval",
 )
+
+filegroup(
+    name = "product_qualification_fixture",
+    srcs = ["tests/support/product_qualification_fixture.rs"],
+    visibility = ["//codex-rs/hepta-agentd:__pkg__", "//codex-rs/hepta-intelligence:__pkg__"],
+)

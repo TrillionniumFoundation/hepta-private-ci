@@ -29,7 +29,7 @@ use codex_hepta_types::Digest32;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
-use crate::AgentdSignedEvaluationV1;
+use crate::AgentdSignedEvaluationV2;
 
 type RequestOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CanonicalIntelligenceRunRequestV1, AgentdError>
     + Send
@@ -77,7 +77,7 @@ type ContextOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<Compi
 type EvaluationOwnerV1 = dyn Fn(
         &AgentdIdentity,
         &RunStartRecordV1,
-    ) -> Result<(EvaluationRequest, Option<AgentdSignedEvaluationV1>), AgentdError>
+    ) -> Result<(EvaluationRequest, Option<AgentdSignedEvaluationV2>), AgentdError>
     + Send
     + Sync;
 
@@ -166,7 +166,7 @@ impl AgentdIntelligenceInvocationV1 {
                 &AgentdIdentity,
                 &RunStartRecordV1,
             )
-                -> Result<(EvaluationRequest, Option<AgentdSignedEvaluationV1>), AgentdError>
+                -> Result<(EvaluationRequest, Option<AgentdSignedEvaluationV2>), AgentdError>
             + Send
             + Sync
             + 'static,

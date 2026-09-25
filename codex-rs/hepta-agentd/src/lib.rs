@@ -163,13 +163,13 @@ pub use intelligence_product::AgentdIntelligenceOwnerInputsV1;
 pub use intelligence_product::AgentdIntelligenceProductError;
 pub use intelligence_product::AgentdIntelligenceProductOutcomeV1;
 pub use intelligence_product::AgentdIntelligenceProductRunnerV1;
-pub use intelligence_product::AgentdSignedEvaluationV1;
+pub use intelligence_product::AgentdSignedEvaluationV2;
 pub use intelligence_product::IntelligenceAuthorityFileV1;
 pub use intelligence_product::IntelligenceAuthorityOwnerFileV1;
 pub use intelligence_product::IntelligenceAuthorityVerifierV1;
 pub use intelligence_product::PendingIntelligenceLedgerAppendV1;
 pub use intelligence_product::PreparedAgentdIntelligenceRunV1;
-pub use intelligence_product::intelligence_evaluation_binding_payload_v1;
+pub use intelligence_product::intelligence_evaluation_binding_payload_v2;
 pub use intuition_policy::AgentdIntuitionDecisionReceiptV1;
 pub use intuition_policy::AgentdIntuitionPolicyError;
 pub use intuition_policy::AgentdIntuitionPolicyHostV1;
@@ -242,3 +242,6 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+#[cfg(test)]
+mod cognitive_operator_test_support;

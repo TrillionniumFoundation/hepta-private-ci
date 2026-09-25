@@ -1,6 +1,22 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-bellman-operator",
     crate_name = "codex_hepta_bellman_operator",
+)
+
+# No product target can depend on this raw fixture surface. The ordinary library
+# above remains feature-free; Cargo's corresponding activation is dev-only.
+rust_library(
+    name = "hepta-bellman-operator-qualification",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["unchecked-qualification-inputs"],
+    crate_name = "codex_hepta_bellman_operator",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//codex-rs/hepta-shadow-qualification:__pkg__"],
+    deps = all_crate_deps(),
 )

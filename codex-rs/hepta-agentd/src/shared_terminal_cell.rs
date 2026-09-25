@@ -53,13 +53,19 @@ pub struct SharedTerminalCandidateV1 {
     artifact: TabularOperatorArtifactV1,
     dataset: DatasetSnapshotReceiptV3,
     source: SharedExperienceUseV1,
+    trust_distribution_digest: Digest32,
 }
 
 impl SharedTerminalCandidateV1 {
     /// Persist these complete bytes through the existing artifact owner. The
     /// independent selector signs their digest, including all recovery metadata.
     pub fn encode_payload(&self) -> Result<Vec<u8>, SharedTerminalCellError> {
-        crate::shared_terminal_recovery::encode(&self.artifact, &self.dataset, &self.source)
+        crate::shared_terminal_recovery::encode(
+            &self.artifact,
+            &self.dataset,
+            &self.source,
+            self.trust_distribution_digest,
+        )
     }
 
     pub fn artifact(&self) -> &TabularOperatorArtifactV1 {
@@ -75,6 +81,7 @@ pub struct SharedTerminalModelV1 {
     selection: SignedArtifactSelectionV1,
     manifest: ArtifactManifest,
     manifest_expires_at: u64,
+    trust_distribution_digest: Digest32,
     closed: bool,
 }
 
@@ -163,10 +170,17 @@ impl AgentdSharedReplayHostV1 {
         let candidate = SharedTerminalCandidateV1 {
             artifact,
             dataset: dataset.clone(),
+            trust_distribution_digest: ledger.trust_distribution_digest(),
             source,
         };
-        self.revalidate(&candidate.source, &candidate.dataset, ledger, now)
-            .await?;
+        self.revalidate(
+            &candidate.source,
+            &candidate.dataset,
+            candidate.trust_distribution_digest,
+            ledger,
+            now,
+        )
+        .await?;
         Ok(candidate)
     }
 
@@ -246,8 +260,14 @@ impl AgentdSharedReplayHostV1 {
         }) {
             return Err(SharedTerminalCellError::Binding("decision source support"));
         }
-        self.revalidate(&source, &recovered.dataset, ledger, now)
-            .await?;
+        self.revalidate(
+            &source,
+            &recovered.dataset,
+            recovered.trust_distribution_digest,
+            ledger,
+            now,
+        )
+        .await?;
         // Source reads yield. Do not retain a CURRENT view across that boundary.
         let owner = binding
             .owner
@@ -272,6 +292,7 @@ impl AgentdSharedReplayHostV1 {
             selection,
             manifest,
             manifest_expires_at: admitted.manifest.expires_at,
+            trust_distribution_digest: recovered.trust_distribution_digest,
             closed: false,
         })
     }
@@ -295,8 +316,14 @@ impl AgentdSharedReplayHostV1 {
                 "artifact manifest expired",
             ));
         }
-        self.revalidate(&model.source, &model.dataset, ledger, now)
-            .await?;
+        self.revalidate(
+            &model.source,
+            &model.dataset,
+            model.trust_distribution_digest,
+            ledger,
+            now,
+        )
+        .await?;
         let binding = self
             .artifacts
             .as_ref()
@@ -333,9 +360,17 @@ impl AgentdSharedReplayHostV1 {
         &self,
         source: &SharedExperienceUseV1,
         dataset: &DatasetSnapshotReceiptV3,
+        trust_distribution_digest: Digest32,
         ledger: &LedgerWriter,
         now: u64,
     ) -> Result<(), SharedTerminalCellError> {
+        if trust_distribution_digest.is_zero()
+            || trust_distribution_digest != ledger.trust_distribution_digest()
+        {
+            return Err(SharedTerminalCellError::Binding(
+                "current learning trust changed",
+            ));
+        }
         let current = self
             .source
             .read_shared_experience(&self.consumer, source.policy_id(), &self.purpose)

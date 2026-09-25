@@ -360,6 +360,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     });
     std::fs::write(&case_path, serde_json::to_vec(&case).unwrap()).unwrap();
     super::shared_process_tests::child(&case_path, "success");
+    super::shared_process_tests::child(&case_path, "trust-changed");
     let ledger = fixture.recover_writer(64, frontier);
     let source = Arc::new(CognitiveStore::open(&fleet.agent(&owner_id)).await.unwrap());
     let artifact_owner = Artifacts::open(&artifact_root, Some(anchor));
