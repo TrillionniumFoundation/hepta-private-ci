@@ -467,3 +467,6 @@ async fn resume_cannot_turn_an_unsent_reservation_into_new_execution() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[path = "native_agentd_release_tests.rs"]
+mod agentd_release_tests;
