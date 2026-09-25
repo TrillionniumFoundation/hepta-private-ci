@@ -277,3 +277,94 @@ fn persisted_lifecycle_states_still_require_complete_metadata() {
         );
     }
 }
+
+#[test]
+fn late_renewal_cannot_reactivate_an_expired_or_revoked_lease() {
+    for terminal in [SecretLeaseStateV1::Expired, SecretLeaseStateV1::Revoked] {
+        let (_directory, mut registry) = registry();
+        registry
+            .prepare_issue("issue:late".into(), [3; 32])
+            .unwrap();
+        registry
+            .reconcile(
+                "issue:late",
+                ProviderLeaseObservationV1::IssueApplied {
+                    lease: active_lease(),
+                },
+            )
+            .unwrap();
+        registry
+            .prepare_renew("renew:late".into(), "lease:db:1".into(), [4; 32])
+            .unwrap();
+        if terminal == SecretLeaseStateV1::Expired {
+            registry.expire_at(61_000).unwrap();
+        } else {
+            registry
+                .prepare_revoke("revoke:late".into(), "lease:db:1".into(), [5; 32])
+                .unwrap();
+            registry
+                .reconcile(
+                    "revoke:late",
+                    ProviderLeaseObservationV1::RevokeApplied {
+                        lease_id: "lease:db:1".into(),
+                        observed_at_unix_ms: 30_000,
+                        provider_metadata_sha256: [6; 32],
+                    },
+                )
+                .unwrap();
+        }
+        assert_eq!(
+            registry.mark_unknown("renew:late"),
+            Err(LeaseRegistryErrorV1::InvalidTransition)
+        );
+        assert_eq!(
+            registry.reconcile(
+                "renew:late",
+                ProviderLeaseObservationV1::RenewApplied {
+                    lease_id: "lease:db:1".into(),
+                    observed_at_unix_ms: 20_000,
+                    expires_at_unix_ms: 120_000,
+                    renewable: true,
+                    provider_metadata_sha256: [7; 32],
+                }
+            ),
+            Err(LeaseRegistryErrorV1::InvalidTransition)
+        );
+        assert_eq!(registry.lease("lease:db:1").unwrap().state, terminal);
+    }
+}
+
+#[test]
+fn renewal_denial_cannot_clear_an_unrelated_unknown_revocation() {
+    let (_directory, mut registry) = registry();
+    registry
+        .prepare_issue("issue:cross".into(), [3; 32])
+        .unwrap();
+    registry
+        .reconcile(
+            "issue:cross",
+            ProviderLeaseObservationV1::IssueApplied {
+                lease: active_lease(),
+            },
+        )
+        .unwrap();
+    registry
+        .prepare_renew("renew:cross".into(), "lease:db:1".into(), [4; 32])
+        .unwrap();
+    registry
+        .prepare_revoke("revoke:cross".into(), "lease:db:1".into(), [5; 32])
+        .unwrap();
+    registry.mark_unknown("revoke:cross").unwrap();
+    assert_eq!(
+        registry.reconcile("renew:cross", ProviderLeaseObservationV1::NotApplied),
+        Err(LeaseRegistryErrorV1::InvalidTransition)
+    );
+    assert_eq!(
+        registry.lease("lease:db:1").unwrap().state,
+        SecretLeaseStateV1::RevokeUnknown
+    );
+    assert_eq!(
+        registry.operation("renew:cross").unwrap().state,
+        LeaseOperationStateV1::Prepared
+    );
+}

@@ -241,6 +241,14 @@ impl DurableLeaseRegistryV1 {
         operation.state = LeaseOperationStateV1::Unknown;
         if let Some(lease_id) = operation.lease_id.as_ref() {
             if let Some(lease) = next.leases.get_mut(lease_id) {
+                if matches!(
+                    lease.state,
+                    SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+                ) || (operation.kind == LeaseOperationKindV1::Renew
+                    && lease.state == SecretLeaseStateV1::RevokeUnknown)
+                {
+                    return Err(LeaseRegistryErrorV1::InvalidTransition);
+                }
                 lease.state = match operation.kind {
                     LeaseOperationKindV1::Renew => SecretLeaseStateV1::RenewUnknown,
                     LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
@@ -307,6 +315,12 @@ impl DurableLeaseRegistryV1 {
                     .leases
                     .get_mut(&lease_id)
                     .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+                if !matches!(
+                    lease.state,
+                    SecretLeaseStateV1::Active | SecretLeaseStateV1::RenewUnknown
+                ) {
+                    return Err(LeaseRegistryErrorV1::InvalidTransition);
+                }
                 lease.expires_at_unix_ms = expires_at_unix_ms;
                 lease.renewable = renewable;
                 lease.provider_metadata_sha256 = provider_metadata_sha256;
@@ -450,6 +464,18 @@ fn restore_unknown_lease_state(
         lease.state,
         SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
     ) {
+        if !matches!(
+            (operation.kind, lease.state),
+            (
+                LeaseOperationKindV1::Renew,
+                SecretLeaseStateV1::RenewUnknown
+            ) | (
+                LeaseOperationKindV1::Revoke,
+                SecretLeaseStateV1::RevokeUnknown
+            )
+        ) {
+            return Err(LeaseRegistryErrorV1::InvalidTransition);
+        }
         lease.state = SecretLeaseStateV1::Active;
     }
     Ok(())
