@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b732a0fb19f0a27dffbe098ca53efbd86a0180cf",
-    "tree": "68cf892b1343d1c9ab107d072fa2c9b50d560d38"
+    "commit": "46a00e6f16d06bce80214745c94b30131199c326",
+    "tree": "cd9c31e923482e5da1d41656aa6242752ff9a4c7"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -256,6 +256,96 @@
       "sourcePath": "apps/hepta-native/src/main.rs",
       "nativeSymbol": "fn run(",
       "role": "desktop_product_bootstrap"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-native",
+      "object": "1154a77c22554d9aac0bd88cc4a5befb69d69363"
+    },
+    {
+      "path": "apps/hepta-native/src/backend.rs",
+      "object": "95921190051b56bc339489b7782b87cab400b571"
+    },
+    {
+      "path": "apps/hepta-native/src/bin/hepta-native-updater.rs",
+      "object": "b80a0798f22099ad752332d0f61b16f28a0171ad"
+    },
+    {
+      "path": "apps/hepta-native/src/journal.rs",
+      "object": "648ee19e647db054be559e4726cce747baa0022a"
+    },
+    {
+      "path": "apps/hepta-native/src/main.rs",
+      "object": "18a14ee3b1e3d6e14ac67387c8c12aed639928fa"
+    },
+    {
+      "path": "apps/hepta-native/src/platform.rs",
+      "object": "a0f669b4d7b4ffaeface3db0431730dd6b870b7a"
+    },
+    {
+      "path": "apps/hepta-native/src/private_state.rs",
+      "object": "de2505d70d76ea9ef90aa6babb5a72f7c4d2ae19"
+    },
+    {
+      "path": "apps/hepta-native/src/runtime.rs",
+      "object": "a6c976bca8caed6335c845589f17b851b8d92965"
+    },
+    {
+      "path": "apps/hepta-native/src/security.rs",
+      "object": "a7d22c53d2940871d81d293100e69c66703180cd"
+    },
+    {
+      "path": "apps/hepta-native/src/session_store.rs",
+      "object": "2b2becacf111fc85750f933bd1eabd0a49f27036"
+    },
+    {
+      "path": "apps/hepta-native/src/ui.rs",
+      "object": "220d91add8bc36134439cdb32b2872c64d0b682e"
+    },
+    {
+      "path": "apps/hepta-native/src/updater.rs",
+      "object": "13900d1e4d8158e4e45e1497fadc7faccecbe21f"
+    },
+    {
+      "path": "apps/hepta-native/tests/backend.rs",
+      "object": "50394bd90b9ec5ba056aefd24bdab90900bce2c5"
+    },
+    {
+      "path": "apps/hepta-native/tests/private_state.rs",
+      "object": "d648203deece4b8dcefa4c6567dcd87a0124bf20"
+    },
+    {
+      "path": "apps/hepta-native/tests/runtime.rs",
+      "object": "0d08cba2c972575854e7c2f723f7c4a2896e1a6a"
+    },
+    {
+      "path": "apps/hepta-native/tests/security_updater.rs",
+      "object": "d3064426b01adec678388f997ddeb1e16c8fc19a"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "object": "467272b0f91d123d6fbbccd211dfb726c95965da"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "object": "b4e53a978fd570c614ad2a405cbaee521166b28f"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "object": "5088cb4bdf8a7a09a64c4d100f36a0b5c05e89a7"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/lib.rs",
+      "object": "1a1febc7b95e3e441bd6e3747dd38ebd857f8ebf"
+    },
+    {
+      "path": "codex-rs/hepta-private-state/src/lib.rs",
+      "object": "d69fe64a0314bf4fd49dd3cc8cbd37f2ad827e53"
+    },
+    {
+      "path": "docs/modules/ui.native/TECHNICAL.md",
+      "object": "b9ce495614d86cbf1d367339e579d3084c0755aa"
     }
   ]
 }
