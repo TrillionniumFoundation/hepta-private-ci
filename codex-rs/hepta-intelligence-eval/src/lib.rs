@@ -356,7 +356,7 @@ fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[Stabl
         bytes.extend_from_slice(metric.support_digest.as_array());
     }
     for id in failed {
-        push_id(bytes, id);
+        push_id(&mut bytes, id);
     }
     Digest32::of_bytes(&bytes)
 }
