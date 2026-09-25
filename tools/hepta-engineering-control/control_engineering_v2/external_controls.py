@@ -35,6 +35,7 @@ _AUDIT_STATE_TABLES = (
     "orchestration_generations",
     "worker_registrations",
     "worker_claims",
+    "worker_capacity_reservations",
     "worker_heartbeat_observations",
     "worker_result_observations",
     "worker_completion_observations",

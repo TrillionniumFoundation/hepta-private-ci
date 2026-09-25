@@ -14,8 +14,10 @@ from control_engineering_v2 import (
     ReviewCapacity,
     WorkerProfile,
     WorkEnvelope,
+    integration_context_binding,
     integration_queue_generation,
     integration_queue_item,
+    integration_receipt_context,
     observe_integration_stage,
     plan_engineering_work,
     publish_integration_queue,
@@ -41,6 +43,7 @@ class IntegrationControllerTests(unittest.TestCase):
         )
         self.base_commit = "e" * 40
         self.base_tree = "f" * 40
+        self.expected_value_q32 = 10
         self.trust = HmacTrustStore(
             {
                 ("integration_terminal_observer", "terminal-key"): b"terminal",
@@ -81,6 +84,7 @@ class IntegrationControllerTests(unittest.TestCase):
             signing_identity,
             observed,
             observed + 1_000_000,
+            **integration_receipt_context(self.binding),
         )
         return replace(
             value,
@@ -102,6 +106,7 @@ class IntegrationControllerTests(unittest.TestCase):
             "terminal-key",
             observed,
             observed + 1_000_000,
+            **integration_receipt_context(self.binding),
         )
         return replace(
             value,
@@ -123,7 +128,7 @@ class IntegrationControllerTests(unittest.TestCase):
                     ("src/a",),
                     required_skills=("python",),
                     review_roles=("architecture",),
-                    expected_value_q32=10,
+                    expected_value_q32=self.expected_value_q32,
                 ),
             ),
             (WorkerProfile("worker-a", ("python",), 1, ("src",)),),
@@ -135,7 +140,7 @@ class IntegrationControllerTests(unittest.TestCase):
         )
 
     def publish(self, store):
-        return publish_integration_queue(
+        queue = publish_integration_queue(
             store,
             self.plan(store),
             queue_generation_id="queue-a",
@@ -143,6 +148,85 @@ class IntegrationControllerTests(unittest.TestCase):
             base_tree=self.base_tree,
             now_ns=self.now + 1,
         )
+        self.binding = integration_context_binding(store, "queue-a", "package-a")
+        return queue
+
+    def test_signed_stage_receipt_is_bound_to_complete_owner_source_base_and_queue_context(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            original_envelope = self.envelope
+            original_base_commit = self.base_commit
+            original_base_tree = self.base_tree
+            original_expected_value = self.expected_value_q32
+            with EngineeringStore(Path(temporary) / "original.sqlite3") as original:
+                self.publish(original)
+                receipt = self.stage_receipt("candidate", "1" * 64)
+                accepted = observe_integration_stage(
+                    original,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    receipt=receipt,
+                    trust_store=self.trust,
+                    now_ns=self.now + 2,
+                )
+                self.assertEqual(accepted.state, "awaiting_review")
+
+            variants = (
+                (
+                    "source",
+                    replace(original_envelope, source_commit="9" * 40, source_tree="8" * 40),
+                    original_base_commit,
+                    original_base_tree,
+                    original_expected_value,
+                ),
+                (
+                    "base",
+                    original_envelope,
+                    "7" * 40,
+                    "6" * 40,
+                    original_expected_value,
+                ),
+                (
+                    "owner",
+                    replace(original_envelope, owner="architecture"),
+                    original_base_commit,
+                    original_base_tree,
+                    original_expected_value,
+                ),
+                (
+                    "queue-semantics",
+                    original_envelope,
+                    original_base_commit,
+                    original_base_tree,
+                    original_expected_value + 1,
+                ),
+            )
+            for name, envelope, base_commit, base_tree, expected_value in variants:
+                with self.subTest(name=name):
+                    self.envelope = envelope
+                    self.base_commit = base_commit
+                    self.base_tree = base_tree
+                    self.expected_value_q32 = expected_value
+                    with EngineeringStore(Path(temporary) / f"{name}.sqlite3") as store:
+                        self.publish(store)
+                        with self.assertRaisesRegex(
+                            ValueError, "integration_stage_receipt_binding"
+                        ):
+                            observe_integration_stage(
+                                store,
+                                "queue-a",
+                                "package-a",
+                                current_base_commit=base_commit,
+                                current_base_tree=base_tree,
+                                receipt=receipt,
+                                trust_store=self.trust,
+                                now_ns=self.now + 2,
+                            )
+            self.envelope = original_envelope
+            self.base_commit = original_base_commit
+            self.base_tree = original_base_tree
+            self.expected_value_q32 = original_expected_value
 
     def test_raw_reconciliation_is_not_a_package_root_product_surface(self):
         self.assertFalse(hasattr(control_engineering_v2, "reconcile_integration_item"))

@@ -3,7 +3,7 @@
 The canonical implementation guide is [IMPLEMENTATION.md](IMPLEMENTATION.md).
 Concrete source lives in `tools/hepta-engineering-control/control_engineering_v2/`;
 `__init__.py` exports the authenticated v2 public composition. `control_plane.py`
-directly owns the SQLite v9 schema/transactions; `orchestration.py` owns exact-source
+directly owns the SQLite v10 schema/transactions; `orchestration.py` owns exact-source
 admission and resource-aware planning; `candidate.py` is the sole candidate workspace
 owner; `sandbox_control.py` owns sandbox admission/retry ceilings; `mutation_testing.py`
 owns evaluator mutation testing; `integration_controller.py` owns base-bound durable
@@ -23,12 +23,15 @@ boolean-based `decide_integration()` can never produce review eligibility.
 
 [COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
 source/test navigation maps. They do not self-certify maturity or grant authority.
-`IMPLEMENTATION_MAP.json.sourceBase` is an integration baseline, not the self-referential
-candidate commit. This module opts into `mappingSourceIdentityMode=exact_blob`: every
-mapped operation records the Git blob OID of its current `sourcePath`, and the global
-implementation-map verifier recomputes `HEAD:<sourcePath>` before accepting the map.
-Exact candidate commit/tree identity remains the responsibility of source-head and
-deterministic synthetic-merge execution receipts.
+`IMPLEMENTATION_MAP.json.sourceBase` is immutable integration provenance, not the
+self-referential candidate commit. This module opts into
+`mappingSourceIdentityMode=exact_blob`: every mapped operation records the Git blob OID
+of its current `sourcePath`; `observedAtHead` covers the complete current source/evidence
+set; and the global verifier requires the provenance commit to be an ancestor, recomputes
+every `HEAD:<sourcePath>` blob and rejects a missing or stale current observation. A
+mapping migration updates the exact blobs and current observation without rewriting
+`sourceBase`. Exact candidate commit/tree execution identity remains the responsibility
+of source-head and deterministic synthetic-merge execution receipts.
 Historical `HARDENING.json`, `CLOSURE_V4.json`, `MATURITY.json` and copied package
 registries are retired; their useful behavior is in the current source, schema,
 implementation guide and behavioral regressions. No historical materializer,
@@ -66,4 +69,19 @@ separate externally evidenced deliverables. The repository product caller exists
 source but does not make `production_implementation` true until the exact candidate
 has a successful source/synthetic-merge execution receipt.
 
-`worker_lifecycle.py` owns durable claim/heartbeat/result state, while `product_runtime.py` is the named `EngineeringControlProduct` owner composition. Worker self-report never substitutes for independently observed completion. Product integration progression accepts only authenticated `IntegrationStageReceipt` values: candidate evidence is bound to `engineering_evidence_binder`, review observation to `github_review_observer`, and CI observation to `ci_executor`; the review observation remains distinct from independent semantic acceptance. The historical `hepta_engineering_control.py` remains compatibility-only and is not a native mapping for new callers.
+`worker_lifecycle.py` owns durable claim/heartbeat/result state plus the v10
+cross-generation capacity reservations and startup reconciler; `product_runtime.py` is the
+named `EngineeringControlProduct` composition that invokes that recovery boundary after
+every open. Its product `claim()` rejects until startup reconciliation has succeeded for that
+process object; direct lower-layer helpers remain state-machine/test surfaces, not a supported
+product bypass. Worker self-report never substitutes for independently observed completion.
+Product integration progression accepts only authenticated `IntegrationStageReceipt`
+values that bind the persisted queue/orchestration/envelope semantic digests, source
+commit/tree, integration base commit/tree and owner-context digest. Candidate evidence is
+bound to `engineering_evidence_binder`, review observation to
+`github_review_observer`, and CI observation to `ci_executor`; terminal merge/failure still
+requires `integration_terminal_observer`. The review observation remains distinct from
+independent semantic acceptance. `qualification_profile.py` measures the unchanged strong
+sandbox and durable-owner costs per exact lane without granting authority. The historical
+`hepta_engineering_control.py` remains compatibility-only and is not a native mapping for
+new callers.

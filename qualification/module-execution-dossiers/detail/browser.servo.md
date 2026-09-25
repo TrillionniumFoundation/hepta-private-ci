@@ -59,10 +59,10 @@ The dossier's pilot `<=16` concurrent-tab target remains a target, not a measure
 
 ## 7. Concrete verification cases
 
-- **BROWSER-01:** stale page generation rejects before dispatch; off-origin observations are quarantined. Real element-generation identity in a Servo DOM observation remains a worker-level acceptance gate.
-- **BROWSER-02:** typed action schemas reject ambient secret/path fields; Linux host path denies external network by namespace construction. Real worker/no-egress and credential-broker evidence remain required.
-- **BROWSER-03:** the host allocates a private per-session profile root and isolates the process namespace. Real Servo cookie/cache cross-principal qualification remains required.
-- **BROWSER-04:** durable intent is recorded before dispatch; post-dispatch driver error/timeout becomes indeterminate; process-loss recovery uses `reconcilePersistedOperation` without redispatch.
+- `BROWSER-01`: stale page generation rejects before dispatch; off-origin observations are quarantined. Real element-generation identity in a Servo DOM observation remains a worker-level acceptance gate.
+- `BROWSER-02`: typed action schemas reject ambient secret/path fields; Linux host path denies external network by namespace construction. Real worker/no-egress and credential-broker evidence remain required.
+- `BROWSER-03`: the host allocates a private per-session profile root and isolates the process namespace. Real Servo cookie/cache cross-principal qualification remains required.
+- `BROWSER-04`: durable intent is recorded before dispatch; post-dispatch driver error/timeout becomes indeterminate; process-loss recovery uses `reconcilePersistedOperation` without redispatch.
 
 Focused source tests additionally cover concurrent duplicate dispatch, final-use fencing, grant expiry recovery, journal tamper rejection, 300-terminal-operation retention/replay, proposal-to-effect bridging, private frame canonicalization, worker artifact digest drift and sandbox argv posture.
 

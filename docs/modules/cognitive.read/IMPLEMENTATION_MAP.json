@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -36,7 +36,8 @@
       "delegatedCallees": [
         "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
         "codex-rs/hepta-agentd/src/cognitive_context.rs"
-      ]
+      ],
+      "sourceBlob": "e56b2ef34038c35a0d7c179375ce21ad463f0347"
     },
     {
       "operation": "read_v2",
@@ -50,7 +51,8 @@
       "sourcePathExists": true,
       "designOperation": "bounded_compatibility_projection",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "67135f3f56c4779fbd27568ee69c389a38522e5c"
     },
     {
       "operation": "read_authoritative_compatibility",
@@ -64,7 +66,8 @@
       "sourcePathExists": true,
       "designOperation": "compatibility_authoritative_provider",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
     },
     {
       "operation": "durable_cognitive_snapshot",
@@ -78,7 +81,8 @@
       "sourcePathExists": true,
       "designOperation": "acquire_snapshot",
       "mappingClass": "existing_owner_adapter",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
     },
     {
       "operation": "final_use_revalidate",
@@ -104,7 +108,8 @@
         "codex-rs/hepta-infer-core/src/native_control.rs",
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
         "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
-      ]
+      ],
+      "sourceBlob": "494043d2e03a7f738ad1de3a065766a4423cef0b"
     },
     {
       "operation": "adapt_authoritative_read_to_canonical_shadow_v1",
@@ -123,7 +128,8 @@
           "symbol": "AuthoritativeReadResultV1::validate",
           "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs"
         }
-      ]
+      ],
+      "sourceBlob": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
     }
   ],
   "repositoryControlledGaps": [
@@ -267,7 +273,7 @@
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
-      "object": "43802ae3b7c27f212d9b9a0b2e246a61b62c2b00"
+      "object": "2b2d3071b82c73b965e3cd66ded398ae69d9d35b"
     }
   ],
   "productCallers": [
@@ -314,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",

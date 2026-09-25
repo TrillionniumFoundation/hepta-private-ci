@@ -30,16 +30,25 @@ Repository-local composition follows this sequence:
    edges; each receipt must reference a real immutable assignment generation in the
    owner store, bind that generation semantic digest, and name a package actually
    assigned under the same envelope/source frontier;
-3. run `plan_engineering_work` with explicit worker skills/path scope/capacity,
+3. run `plan_engineering_work` with explicit Worker skills/path scope/capacity,
    CI capacity, review topology, expected value, architecture debt and rollback cost;
-4. acquire the durable local path lease before any worker writes;
-5. for a multi-host production worker, additionally verify a signed
+   the persisted plan binds the current cross-generation capacity-reservation frontier;
+4. acquire the durable local path lease, then use `claim_assignment` so the final
+   capacity check, claim and reservation commit in one `BEGIN IMMEDIATE` transaction;
+5. after every process open, invoke `EngineeringControlProduct.startup_reconcile` before
+   new claims so stale heartbeats, registrations, leases and envelope frontiers are
+   resolved without blind redispatch and abandoned capacity is released once; the named
+   product `claim()` rejects until this recovery succeeds, so product callers must not use
+   the lower-layer claim helper as a bypass;
+6. for a multi-host production Worker, additionally verify a signed
    `DistributedFenceReceipt` bound to the same local epoch/token/paths/source and
    a current revocation frontier; admission re-reads the owner store and rejects a
    stale receipt if the local lease has been renewed, released, revoked or expired;
-6. qualify candidate bytes through the strong sandbox controller and mutation-testing
+7. qualify candidate bytes through the strong sandbox controller and mutation-testing
    gate, then verify exact source/merge/evaluator evidence and a sealed review binding;
-7. externally anchor the current SQLite audit head and prove hardware-backed key
+8. accept integration-stage and terminal receipts only when they bind the persisted
+   queue/orchestration/envelope digests, source/tree, integration base and owner context;
+9. externally anchor the current SQLite audit head and prove hardware-backed key
    custody outside the engineering process before deployment readiness may close.
 
 The resource-aware merge queue is a proposal only. An independently authorized merge
@@ -79,7 +88,15 @@ Mandatory failures: stale CAS; changed retry; acknowledgement loss; truncated ac
 
 Track separately: specification-ready, contract-compiles, tests-executed, source-implemented, host-composed, independently-evaluated, next-snapshot-loaded, rollback-qualified and longitudinally-validated. Do not rewrite existing claim ladders or mark a whole parent work package complete from a sub-slice.
 
-Every handoff needs exact DDL/schema or byte format, migration/recovery algorithm, public types and consumers, scalar oracle, error taxonomy, fault points and measured target-host budgets. Synthetic future labels cannot close LONG-1/2/3; fixture credentials cannot close observer/evaluator authentication; a deployment inventory cannot close physical safety, independent acceptance or production selection. These remain explicit blockers until their actual evidence exists.
+Every handoff needs exact DDL/schema or byte format, migration/recovery algorithm, public
+types and consumers, scalar oracle, error taxonomy, fault points and measured target-host
+budgets. For `control.engineering`, retain the exact-lane
+`hepta.control-engineering-host-profile.v1` artifact covering database operations, recovery,
+backup/restore, controlled disk-full rollback and the unchanged complete sandbox boundary.
+Synthetic future labels cannot close LONG-1/2/3; fixture credentials cannot close
+observer/evaluator authentication; a deployment inventory or local profile cannot close
+physical safety, independent acceptance or production selection. These remain explicit
+blockers until their actual evidence exists.
 
 ## 8. All-module execution dossier materialization
 
