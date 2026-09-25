@@ -125,6 +125,12 @@ class GitOwnerTransitionTests(unittest.TestCase):
         self.command("init", "-q")
         self.command("config", "user.name", "Owner transition test")
         self.command("config", "user.email", "test@example.invalid")
+        # This temporary repository has no maintenance lifetime beyond the test.
+        # Detached Git maintenance can race TemporaryDirectory cleanup after a
+        # successful commit. Disable it only in this fixture, not globally.
+        self.command("config", "gc.auto", "0")
+        self.command("config", "maintenance.auto", "false")
+        self.command("config", "gc.autoDetach", "false")
         self.write(
             "codex-rs/Cargo.toml",
             """[workspace]
@@ -171,6 +177,15 @@ members = ["outer", "outer/plugins/*", "host", "unrelated"]
         self.package("outer/plugins/new", "new-plugin")
         self.write("codex-rs/outer/plugins/new/data.txt", "after\n")
         return self.commit()
+
+    def test_temporary_repository_has_no_detached_maintenance_lifetime(self):
+        self.assertEqual(self.command("config", "--local", "--get", "gc.auto"), "0")
+        self.assertEqual(
+            self.command("config", "--local", "--get", "maintenance.auto"), "false"
+        )
+        self.assertEqual(
+            self.command("config", "--local", "--get", "gc.autoDetach"), "false"
+        )
 
     def test_glob_member_addition_without_workspace_edit_keeps_outer_consumer(self):
         head = self.split()
