@@ -163,8 +163,11 @@ Migration 0005 backfills legacy `DispatchAttempted` rows from their exact last
 update. Legacy indeterminate/terminal rows retain an unknown boundary rather
 than a fabricated time. Terminal rows remain readable and archiveable; an
 indeterminate row with no proven boundary cannot be newly settled/refunded.
-Finish an old-format checkpoint handshake before upgrading its binary: the
-same-version recovery tests do not qualify an unpromoted v4 witness migration.
+Migration 0005 retains the local frontier dialect. An already published v4
+witness is validated and promoted with the v1 digest, then separately advanced
+to the v2 digest that binds dispatch time. Once v2 is committed, a legacy digest
+cannot downgrade the owner. Migration regressions cover both sides of external
+publication and a second crash after local legacy promotion.
 
 An async permit and stable private database/checkpoint lock files serialize the
 complete predecessor-recovery, local commit, external publication and local

@@ -288,8 +288,9 @@ active epoch at admission; exact retries of already committed results remain
 readable after revocation. The immutable `dispatched_at_ms` is distinct from
 `updated_at_ms`, so later uncertainty cannot invalidate a legitimate earlier
 observation. Migration 0005 never invents missing legacy dispatch boundaries.
-Complete an old-format checkpoint handshake before migration; same-version
-recovery tests are not evidence for unfinished cross-version publication.
+Migration retains the old frontier dialect through an interrupted v4 witness
+handshake, then separately publishes the dispatch-bound v2 digest. Once migrated,
+the owner rejects legacy-digest downgrades.
 
 Focused regression sources are `hepta-authbus/src/host_tests.rs`,
 `settlement_boundary_tests.rs`, `migration_tests.rs`, and the evidence owner's

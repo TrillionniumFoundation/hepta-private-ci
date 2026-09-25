@@ -34,7 +34,7 @@
       "authority": "none",
       "state": "source_implemented_not_qualified",
       "tests": [
-        "codex-rs/hepta-authbus/src/signed.rs"
+        "codex-rs/hepta-authbus/src/signed_tests.rs"
       ],
       "delegatedCallees": []
     },
@@ -65,7 +65,8 @@
       "state": "source_implemented_not_qualified",
       "tests": [
         "codex-rs/hepta-authbus/src/host_tests.rs",
-        "codex-rs/hepta-authbus/src/migration_tests.rs"
+        "codex-rs/hepta-authbus/src/migration_tests.rs",
+        "codex-rs/hepta-authbus/src/migration_checkpoint_tests.rs"
       ],
       "delegatedCallees": [
         {
@@ -97,7 +98,8 @@
       "state": "source_implemented_not_qualified",
       "tests": [
         "codex-rs/hepta-authbus/src/host_tests.rs",
-        "codex-rs/hepta-authbus/src/migration_tests.rs"
+        "codex-rs/hepta-authbus/src/migration_tests.rs",
+        "codex-rs/hepta-authbus/src/migration_checkpoint_tests.rs"
       ],
       "delegatedCallees": [
         {
@@ -712,7 +714,7 @@
   ],
   "repositoryControlledGaps": [
     "Complete exact-candidate and deterministic synthetic-merge execution; source maps are not pass receipts.",
-    "Qualify cross-version upgrade with an externally published but locally unpromoted v4 checkpoint.",
+    "Execute the new versioned checkpoint migration regressions at the final exact candidate.",
     "Complete durable kernel.operations composition and ordinary-process target-host qualification."
   ],
   "externalEvidenceGates": [

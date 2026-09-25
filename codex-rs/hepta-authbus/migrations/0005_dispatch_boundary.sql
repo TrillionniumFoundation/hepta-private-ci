@@ -50,3 +50,6 @@ UPDATE authbus_authority_checkpoint_dirty
 SET dirty = 1
 WHERE singleton = 1
   AND EXISTS (SELECT 1 FROM authbus_authority_checkpoint WHERE singleton = 1);
+
+-- Keep the old digest dialect until its outstanding witness is reconciled.
+ALTER TABLE authbus_authority_checkpoint ADD COLUMN frontier_version INTEGER NOT NULL DEFAULT 1 CHECK (frontier_version IN (1, 2));

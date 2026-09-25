@@ -153,3 +153,7 @@ async fn dispatch_boundary_migration_preserves_legacy_terminal_rows() {
     assert_eq!(compacted.state, ReservationState::Settled);
     assert_eq!(compacted.dispatched_at_ms, None);
 }
+
+#[cfg(unix)]
+#[path = "migration_checkpoint_tests.rs"]
+mod checkpoint_tests;
