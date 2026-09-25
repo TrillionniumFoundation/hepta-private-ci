@@ -137,6 +137,7 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)
     }
 
+    #[cfg(test)]
     pub async fn recovery_required(&self) -> Result<bool, AuthBusAuthorityError> {
         let value: i64 = sqlx::query_scalar(
             "SELECT recovery_required FROM authbus_recovery_state WHERE singleton = 1",

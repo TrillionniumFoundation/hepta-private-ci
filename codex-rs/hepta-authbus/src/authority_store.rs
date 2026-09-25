@@ -67,6 +67,7 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)
     }
 
+    #[cfg(test)]
     pub async fn last_trusted_time(
         &self,
     ) -> Result<Option<TrustedTimeSample>, AuthBusAuthorityError> {
