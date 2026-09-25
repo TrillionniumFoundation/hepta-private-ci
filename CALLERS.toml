@@ -336,7 +336,7 @@ caller_markers = []
 [[boundary]]
 id = "bao_registered_final_use_host"
 symbol = "BaoFinalUseHost::consume_kv_v2"
-call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
+call_pattern = '(?s)(?=.*\bBaoFinalUseHost\b)\.\s*consume_kv_v2\s*\('
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
 product_callers = []
