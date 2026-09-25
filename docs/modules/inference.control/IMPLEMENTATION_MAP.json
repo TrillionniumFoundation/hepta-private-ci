@@ -16,7 +16,7 @@
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
   ],
-  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.",
+  "stateOwnerDisposition": "One retained DurableInferenceControl owns legacy/native records and future-byte liabilities, with a stable writer sidecar across checkpoint replacement; checkpoints retain all identities and unknown-effect responsibilities.",
   "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.",
   "operations": [
     {
@@ -110,12 +110,62 @@
       "nativeSymbol": "pub fn settle_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "compact_journal",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/journal_maintenance.rs",
+        "symbol": "pub fn compact_journal(",
+        "buildTarget": "codex-hepta-infer-core::durable_control"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_growth_tests.rs",
+          "kind": "checkpoint_crash_cuts",
+          "command": "just test --locked -p codex-hepta-infer-core --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+          "kind": "writer_liability_and_publication_failure",
+          "command": "just test --locked -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Validate and atomically replace superseded event history with retained current identities; no archive deletion or authority promotion.",
+      "operation": "compact_journal",
+      "nativeSymbol": "pub fn compact_journal(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/journal_maintenance.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "journal_capacity_status",
+      "designOperation": "journal_capacity_status",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "pub fn journal_capacity_status(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/journal_maintenance.rs",
+      "sourcePathExists": true,
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-core/src/journal_maintenance.rs",
+        "symbol": "pub fn journal_capacity_status(",
+        "role": "owner_entrypoint"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+          "kind": "reserved_bytes_boundary",
+          "command": "just test --locked --retries 0 -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Reports physical and reserved capacity from the same durable owner; not an economic quota or device allocation."
     }
   ],
   "repositoryControlledGaps": [
     "Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.",
     "Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.",
-    "Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history."
+    "Current-state checkpoints reclaim superseded events; content-addressed external archives, identity garbage collection and trusted backup anti-rollback remain unimplemented."
   ],
   "externalEvidenceGates": [
     "real provider deployment and crash/cancellation acceptance",
@@ -140,13 +190,32 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "native_hosted_caller_unqualified",
+  "productionWriterState": "single_writer_journal_unqualified",
   "owner": "inference-platform",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/inference.control/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "nativeSymbol": "pub async fn run(",
+      "disposition": "Actual AppServerModelDriver entry composes durable admission, dispatch, reconciliation and settlement. Presence is not deployed-provider qualification.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "kind": "checkpoint_reopen_no_redispatch",
+          "command": "just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E test(native_run_control)"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "kind": "real_agentd_native_boundary_and_checkpoint_retry",
+          "command": "just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E test(native_app_server)"
+        }
+      ]
+    }
   ]
 }

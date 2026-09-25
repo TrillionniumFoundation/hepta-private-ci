@@ -79,6 +79,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             },
         )
         .unwrap();
+    control.compact_journal().unwrap();
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     let cancellation = CancellationToken::new();
@@ -137,6 +138,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
         ..unknown
     };
     control.settle_native("r1", terminal.clone()).unwrap();
+    control.compact_journal().unwrap();
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(
