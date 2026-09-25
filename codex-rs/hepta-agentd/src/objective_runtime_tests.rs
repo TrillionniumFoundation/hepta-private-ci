@@ -1,7 +1,6 @@
 use std::sync::Mutex;
 
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
-use codex_hepta_learning_ledger::RunStartAnchor;
 use codex_hepta_learning_ledger::RunStartCheckpointOwnerV1;
 use codex_hepta_learning_ledger::RunStartCheckpointV1;
 use codex_hepta_learning_ledger::RunStartJournal;
