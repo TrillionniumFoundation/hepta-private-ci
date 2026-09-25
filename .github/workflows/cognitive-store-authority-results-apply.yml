@@ -33,20 +33,27 @@ jobs:
 
       - name: Bind the reviewed applicator
         shell: bash
+        env:
+          STAGING_COMMIT: 810d31e18c032fe796adb2a6fe9ea239de4a438e
+          PAYLOAD_PATH: scripts/.hepta_cognitive_authority_results.py.gz.b64
+          PAYLOAD_GIT_BLOB: f5f72375eb0195dee8fe43c2133a5ccfefbbfb93
+          PAYLOAD_SHA256: a828b4cc834a0e930f7cd9ab87ae7b7b320665639b62fd710b8200d90690728d
+          SOURCE_SHA256: de6f04e5fbee3359927c86de4086ea347bc188cc2698f3ba2d2eaaea6934eba1
         run: |
           set -euo pipefail
-          test -f scripts/hepta_apply_cognitive_authority_results.py
-          mapfile -t changed < <(git diff --name-only HEAD^ HEAD | sort)
-          expected=(
-            .github/workflows/cognitive-store-authority-results-apply.yml
-            scripts/hepta_apply_cognitive_authority_results.py
-          )
-          mapfile -t expected_sorted < <(printf '%s\n' "${expected[@]}" | sort)
-          diff -u <(printf '%s\n' "${expected_sorted[@]}") <(printf '%s\n' "${changed[@]}")
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git cat-file -e "$STAGING_COMMIT^{commit}"
+          git merge-base --is-ancestor "$STAGING_COMMIT" "$GITHUB_SHA"
+          test -f "$PAYLOAD_PATH"
+          test "$(git hash-object "$PAYLOAD_PATH")" = "$PAYLOAD_GIT_BLOB"
+          test "$(sha256sum "$PAYLOAD_PATH" | awk '{print $1}')" = "$PAYLOAD_SHA256"
+          base64 -d "$PAYLOAD_PATH" | gzip -dc > /tmp/hepta_apply_cognitive_authority_results.py
+          test "$(sha256sum /tmp/hepta_apply_cognitive_authority_results.py | awk '{print $1}')" = "$SOURCE_SHA256"
+          python3 -m py_compile /tmp/hepta_apply_cognitive_authority_results.py
           test -z "$(git status --porcelain --untracked-files=normal)"
 
       - name: Apply authority linearization and durable result lookup
-        run: python3 scripts/hepta_apply_cognitive_authority_results.py
+        run: python3 /tmp/hepta_apply_cognitive_authority_results.py
 
       - name: Prepare native build dependencies
         run: |
@@ -102,24 +109,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git rm -- scripts/hepta_apply_cognitive_authority_results.py \
+          source_paths=(
+            codex-rs/hepta-memory/src/production_writer.rs
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+            codex-rs/hepta-memory/src/lib.rs
+            codex-rs/hepta-cognitive-store/src/durable.rs
+            codex-rs/hepta-cognitive-store/src/lib.rs
+          )
+          carrier_paths=(
+            scripts/.hepta_cognitive_authority_results.py.gz.b64
             .github/workflows/cognitive-store-authority-results-apply.yml
+          )
+          mapfile -t unstaged < <(git diff --name-only | sort)
+          mapfile -t expected_sources < <(printf '%s\n' "${source_paths[@]}" | sort)
+          diff -u <(printf '%s\n' "${expected_sources[@]}") <(printf '%s\n' "${unstaged[@]}")
+          git add -- "${source_paths[@]}"
+          git rm -- "${carrier_paths[@]}"
           git diff --check
+          mapfile -t staged < <(git diff --cached --name-only | sort)
+          mapfile -t expected_staged < <(printf '%s\n' "${source_paths[@]}" "${carrier_paths[@]}" | sort)
+          diff -u <(printf '%s\n' "${expected_staged[@]}") <(printf '%s\n' "${staged[@]}")
+          test -z "$(git status --porcelain --untracked-files=normal | awk '$1 == "??" { print }')"
           git config user.name "Hepta convergence bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            codex-rs/hepta-memory/src/production_writer.rs \
-            codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
-            codex-rs/hepta-memory/src/lib.rs \
-            codex-rs/hepta-cognitive-store/src/durable.rs \
-            codex-rs/hepta-cognitive-store/src/lib.rs \
-            scripts/hepta_apply_cognitive_authority_results.py \
-            .github/workflows/cognitive-store-authority-results-apply.yml
           git commit -s -m "feat(cognitive.store): linearize authority and recover results"
 
       - name: Rebase, revalidate and fast-forward push
         env:
-          BRANCH: work/product-converence-20260923
+          BRANCH: work/product-convergence-20260923
         shell: bash
         run: |
           set -euo pipefail
@@ -144,7 +161,7 @@ jobs:
                 --all-targets
               cargo clippy --locked -p codex-hepta-memory --no-deps --lib --tests -- -D warnings
               cargo clippy --locked -p codex-hepta-cognitive-store --no-deps --lib --tests -- -D warnings
-          )
+            )
           }
           for attempt in 1 2 3; do
             git fetch origin "$BRANCH"
