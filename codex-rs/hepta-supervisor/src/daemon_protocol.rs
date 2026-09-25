@@ -48,7 +48,9 @@ impl SupervisordRequest {
             SupervisordMethod::Health
             | SupervisordMethod::Snapshot { .. }
             | SupervisordMethod::ReleaseSelection { .. }
-            | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
+            | SupervisordMethod::ProductionMutationStatus { .. }
+            | SupervisordMethod::ProductionMutationContext { .. }
+            | SupervisordMethod::ProductionMutationLookup { .. } => Ok(()),
             SupervisordMethod::Roster { limit } => {
                 if (1..=MAX_SUPERVISORD_ROSTER).contains(limit) {
                     Ok(())
@@ -93,6 +95,16 @@ pub enum SupervisordMethod {
     /// Authoritative durable projection of the current release transaction.
     ReleaseSelection {
         agent_id: AgentId,
+    },
+    /// Read-only signing context, atomically collected under the owner lock.
+    /// This context is not a grant and cannot authorize a mutation by itself.
+    ProductionMutationContext {
+        agent_id: AgentId,
+    },
+    /// Lookup current or retained terminal evidence by the original grant.
+    ProductionMutationLookup {
+        agent_id: AgentId,
+        grant_sha256: codex_hepta_contracts::Sha256Digest,
     },
     /// Query the last signed production mutation and its durable witness digests.
     ProductionMutationStatus {
@@ -341,6 +353,9 @@ pub enum SupervisordPayload {
     ProductionMutationStatus {
         state: Option<ProductionMutationState>,
     },
+    ProductionMutationContext {
+        context: ProductionMutationContext,
+    },
     MutationAccepted {
         operation: SupervisordMutation,
         accepted_state_digest: ControlStateDigest,
@@ -429,6 +444,16 @@ pub struct SupervisordMatrixStatus {
     pub binding_revision: Option<u64>,
     pub restart_attempt: u32,
     pub last_error: Option<String>,
+}
+
+/// Current public fences needed by an independent signer. Existing snapshot
+/// and mutation response shapes are unchanged; old servers reject this method.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProductionMutationContext {
+    pub agent: SupervisordAgentStatus,
+    pub control_revision: u64,
+    pub authority_epoch: u64,
 }
 
 #[cfg(test)]

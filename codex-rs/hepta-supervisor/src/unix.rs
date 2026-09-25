@@ -1,8 +1,4 @@
-use std::io::BufRead;
-use std::io::BufReader;
 use std::io::Read;
-use std::io::Write;
-use std::net::Shutdown;
 use std::path::PathBuf;
 use std::process::Child;
 use std::process::Command;
@@ -77,7 +73,6 @@ pub struct UnixManagedProcess {
     health_probe: HealthProbe,
     agent_control: Option<AgentHealthProbeIdentity>,
     drain_requested: bool,
-    next_drain_request_id: u64,
 }
 
 enum UnixProcessHandle {
@@ -130,14 +125,7 @@ impl ManagedProcess for UnixManagedProcess {
         };
         debug_assert!(running);
         let drained = if self.drain_requested {
-            match self.agent_control.as_ref() {
-                Some(identity) => {
-                    let request_id = self.next_drain_request_id;
-                    self.next_drain_request_id = self.next_drain_request_id.wrapping_add(1).max(1);
-                    query_agent_drain_once(identity, request_id)?
-                }
-                None => false,
-            }
+            self.health_probe.drain_observation()?
         } else {
             false
         };
@@ -151,15 +139,18 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        let Some(identity) = self.agent_control.as_ref() else {
+        if self.agent_control.is_none() {
             return Err(ProcessDriverError::new(
                 "managed process does not expose the Agentd drain protocol",
             ));
-        };
-        let request_id = self.next_drain_request_id;
-        self.next_drain_request_id = self.next_drain_request_id.wrapping_add(1).max(1);
-        let _ = query_agent_drain_once(identity, request_id)?;
+        }
+        // Queue on the existing probe thread. This is not a drain ACK and
+        // never performs socket I/O while the supervisor mutex is held.
         self.drain_requested = true;
+        self.health_probe
+            .drain
+            .requested
+            .store(true, Ordering::Release);
         Ok(())
     }
 
@@ -227,7 +218,6 @@ impl ProcessDriver for UnixProcessDriver {
                 health_probe,
                 agent_control: Some(agent_control),
                 drain_requested: false,
-                next_drain_request_id: 1,
             },
         })
     }
@@ -249,7 +239,6 @@ impl ProcessDriver for UnixProcessDriver {
                 health_probe,
                 agent_control: Some(agent_control),
                 drain_requested: false,
-                next_drain_request_id: 1,
             }));
         }
 
@@ -329,7 +318,6 @@ impl ProcessDriver for UnixProcessDriver {
                 health_probe,
                 agent_control: None,
                 drain_requested: false,
-                next_drain_request_id: 1,
             },
         })
     }
@@ -354,7 +342,6 @@ impl ProcessDriver for UnixProcessDriver {
                 health_probe,
                 agent_control: None,
                 drain_requested: false,
-                next_drain_request_id: 1,
             }));
         }
 
@@ -364,7 +351,14 @@ impl ProcessDriver for UnixProcessDriver {
     }
 }
 
+#[derive(Default)]
+struct DrainProbeState {
+    requested: AtomicBool,
+    observation: std::sync::Mutex<Option<Result<bool, String>>>,
+}
+
 struct HealthProbe {
+    drain: Arc<DrainProbeState>,
     ready: Arc<AtomicBool>,
     shutdown: Arc<AtomicBool>,
 }
@@ -375,11 +369,30 @@ impl HealthProbe {
         let shutdown = Arc::new(AtomicBool::new(false));
         let worker_ready = Arc::clone(&ready);
         let worker_shutdown = Arc::clone(&shutdown);
+        let drain = Arc::new(DrainProbeState::default());
+        let worker_drain = Arc::clone(&drain);
         std::thread::Builder::new()
             .name(format!("hepta-health-{}", identity.agent_id()))
-            .spawn(move || run_health_probe(identity, worker_ready, worker_shutdown))
+            .spawn(move || run_health_probe(identity, worker_ready, worker_shutdown, worker_drain))
             .map_err(ProcessDriverError::from)?;
-        Ok(Self { ready, shutdown })
+        Ok(Self {
+            ready,
+            shutdown,
+            drain,
+        })
+    }
+
+    fn drain_observation(&self) -> Result<bool, ProcessDriverError> {
+        let observation = self
+            .drain
+            .observation
+            .lock()
+            .map_err(|_| ProcessDriverError::new("drain observation lock poisoned"))?;
+        match observation.as_ref() {
+            Some(Ok(drained)) => Ok(*drained),
+            Some(Err(error)) => Err(ProcessDriverError::new(error.clone())),
+            None => Ok(false),
+        }
     }
 
     fn ready(&self) -> bool {
@@ -495,13 +508,25 @@ fn run_health_probe(
     identity: HealthProbeIdentity,
     ready: Arc<AtomicBool>,
     shutdown: Arc<AtomicBool>,
+    drain: Arc<DrainProbeState>,
 ) {
     let mut request_id = 1_u64;
     while !shutdown.load(Ordering::Acquire) {
-        ready.store(
-            probe_health_once(&identity, request_id).unwrap_or(false),
-            Ordering::Release,
-        );
+        if drain.requested.load(Ordering::Acquire) {
+            if let HealthProbeIdentity::Agentd(agent) = &identity {
+                let result =
+                    query_agent_drain_once(agent, request_id).map_err(|error| error.to_string());
+                if let Ok(mut observation) = drain.observation.lock() {
+                    *observation = Some(result);
+                }
+            }
+            ready.store(false, Ordering::Release);
+        } else {
+            ready.store(
+                probe_health_once(&identity, request_id).unwrap_or(false),
+                Ordering::Release,
+            );
+        }
         request_id = request_id.wrapping_add(1).max(1);
         std::thread::sleep(HEALTH_PROBE_INTERVAL);
     }
@@ -559,15 +584,13 @@ fn query_agent_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(&bytes)?;
-    stream.shutdown(Shutdown::Write)?;
-
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response_bytes = Vec::new();
-    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    let response_bytes = crate::unix_control_io::exchange(
+        &identity.control_socket,
+        &bytes,
+        MAX_CONTROL_FRAME_BYTES as usize,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )?;
+    let count = response_bytes.len();
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
         return Ok(HealthProbeObservation {
             exact_identity: false,
@@ -619,15 +642,12 @@ fn read_agent_drain_frame(
     identity: &AgentHealthProbeIdentity,
     request: &[u8],
 ) -> std::io::Result<Vec<u8>> {
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(request)?;
-    stream.shutdown(Shutdown::Write)?;
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response = Vec::new();
-    reader.read_until(b'\n', &mut response)?;
-    Ok(response)
+    crate::unix_control_io::exchange(
+        &identity.control_socket,
+        request,
+        MAX_CONTROL_FRAME_BYTES as usize,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )
 }
 
 fn query_agent_drain_once(
@@ -719,15 +739,13 @@ fn query_matrix_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(&bytes)?;
-    stream.shutdown(Shutdown::Write)?;
-
-    let mut reader = BufReader::new(stream).take(MAX_MATRIXD_CONTROL_FRAME_BYTES + 1);
-    let mut response_bytes = Vec::new();
-    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    let response_bytes = crate::unix_control_io::exchange(
+        &identity.control_socket,
+        &bytes,
+        MAX_MATRIXD_CONTROL_FRAME_BYTES as usize,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )?;
+    let count = response_bytes.len();
     if count == 0
         || count as u64 > MAX_MATRIXD_CONTROL_FRAME_BYTES
         || !response_bytes.ends_with(b"\n")
