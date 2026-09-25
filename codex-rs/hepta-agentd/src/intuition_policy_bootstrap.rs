@@ -36,6 +36,7 @@ struct IntuitionPolicyBootstrapFileV1 {
     agent_id: String,
     spawn_generation: u64,
     owner_implementation_digest: String,
+    revocation_frontier_digest: String,
     selected_profile_digest: String,
     policy_generation: u64,
     model_artifact_digest: String,
@@ -192,6 +193,10 @@ pub fn load_intuition_policy_bootstrap_v1(
             .map(|value| digest(value, "rng owner digest"))
             .transpose()?,
         trust_distribution_digest: activated.distribution_digest(),
+        revocation_frontier_digest: digest(
+            &file.revocation_frontier_digest,
+            "selected revocation frontier",
+        )?,
     };
     AgentdIntuitionPolicyHostV2::new(agent_id, spawn_generation, Arc::new(activated), pins)
         .map(Arc::new)

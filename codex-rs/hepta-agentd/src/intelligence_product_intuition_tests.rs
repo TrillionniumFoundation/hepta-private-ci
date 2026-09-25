@@ -76,12 +76,14 @@ fn rotated_trust_frontier_and_expired_evidence_are_rejected() {
     ));
     let mut revoked = current_binding(&value);
     revoked.revocation_frontier_digest = digest("new-frontier");
+    revoked.owner.revocation_frontier_digest = revoked.revocation_frontier_digest;
     assert!(matches!(
         value
             .intuition_host
             .decide(&agent, 1, revoked, value.inputs.intuition.clone(), now),
-        Err(AgentdIntuitionPolicyErrorV2::CurrentOwner)
+        Err(AgentdIntuitionPolicyErrorV2::CurrentTrust)
     ));
+    let value = fixture();
     let expired = value.inputs.intuition.runtime.expires_at + 1;
     assert!(matches!(
         value.intuition_host.decide(

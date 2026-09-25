@@ -40,6 +40,7 @@ pub struct AgentdIntuitionPolicyPinsV2 {
     pub scorer_contract_digest: Digest32,
     pub rng_owner_digest: Option<Digest32>,
     pub trust_distribution_digest: Digest32,
+    pub revocation_frontier_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -108,6 +109,10 @@ impl AgentdIntuitionPolicyHostV2 {
             ("model artifact", pins.model_artifact_digest),
             ("scorer contract", pins.scorer_contract_digest),
             ("trust distribution", pins.trust_distribution_digest),
+            (
+                "selected revocation frontier",
+                pins.revocation_frontier_digest,
+            ),
         ] {
             if digest.is_zero() {
                 return Err(AgentdIntuitionPolicyErrorV2::InvalidHost(label));
@@ -160,6 +165,10 @@ impl AgentdIntuitionPolicyHostV2 {
         now: u64,
     ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyErrorV2> {
         self.require_identity(agent_id, spawn_generation)?;
+        if current.revocation_frontier_digest != self.pins.revocation_frontier_digest {
+            self.retire();
+            return Err(AgentdIntuitionPolicyErrorV2::CurrentTrust);
+        }
         if current.snapshot_digest.is_zero()
             || current.authority_epoch == 0
             || current.revocation_frontier_digest.is_zero()

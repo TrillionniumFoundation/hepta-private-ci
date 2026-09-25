@@ -460,9 +460,11 @@ alternative production admission paths. The policy grants `DENY_ALL` authority.
 
 The host separately pins selected profile digest, policy generation, owner
 implementation digest, model artifact, scorer contract, optional RNG owner and
-activated trust distribution. Profile identity is not the implementation/code
+activated trust distribution and revocation frontier. Profile identity is not the implementation/code
 identity. The signed current-owner oracle supplies the owner generation, root
-key identity, key epoch and revocation frontier. The adapter re-reads it before
+key identity, key epoch and revocation frontier. A request with a newer frontier
+cannot reuse an older installed trust distribution, even if its root key is
+unchanged; install a freshly selected host instead. The adapter re-reads it before
 and after policy computation, and canonical preparation retains its final-use
 snapshot check. A detected current-owner change retires that host instance;
 restoring an old signed file cannot revive the retired in-process host.
@@ -483,7 +485,7 @@ Supply `--intuition-policy-file /absolute/path/descriptor.json` and
 authority options. The expected descriptor hash must be installed by trusted
 deployment configuration, not derived from untrusted request bytes at runtime.
 The descriptor binds schemaVersion=1, agentId, spawnGeneration,
-ownerImplementationDigest, selectedProfileDigest, policyGeneration,
+ownerImplementationDigest, revocationFrontierDigest, selectedProfileDigest, policyGeneration,
 modelArtifactDigest, scorerContractDigest, optional rngOwnerDigest and the root
 and signed signer distribution. Public verification material is allowed; private
 signing keys, model bytes, raw features and RNG state do not belong in this file.

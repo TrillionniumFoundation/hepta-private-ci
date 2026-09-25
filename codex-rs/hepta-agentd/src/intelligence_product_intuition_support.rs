@@ -279,6 +279,7 @@ pub(super) fn build(
         scorer_contract_digest,
         rng_owner_digest: None,
         trust_distribution_digest: trust.distribution_digest(),
+        revocation_frontier_digest: digest("revocation-frontier"),
     };
     let host = Arc::new(
         AgentdIntuitionPolicyHostV2::new(

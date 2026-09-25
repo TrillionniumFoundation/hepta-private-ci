@@ -964,11 +964,14 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
     let temp = tempfile::tempdir().expect("tempdir");
-    let runner = AgentdIntelligenceProductRunnerV1::new(
-        temp.path().join("authority.json"),
-        authority_verifier(),
-    )
-    .expect("runner");
+    let fixture = fixture();
+    let authority = temp.path().join("authority.json");
+    write_authority_file(
+        &authority,
+        &fixture.owners,
+        fixture.request.snapshot.revocation_frontier_digest(),
+    );
+    let runner = product_runner(authority, &fixture);
     let mut releases = Vec::new();
     let mut workers = Vec::new();
     for _ in 0..MAX_CANONICAL_OWNER_WORKERS {
@@ -989,7 +992,6 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         workers.push(worker);
     }
     assert_eq!(runner.worker_slots.available_permits(), 0);
-    let fixture = fixture();
     let result = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await;

@@ -1,4 +1,3 @@
-
 use super::*;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
@@ -58,6 +57,7 @@ fn bootstrap_accepts_exact_root_signature_and_rejects_tampering()
         "schemaVersion": 1,
         "agentId": "019153a4-3088-7e03-a56a-9b1964f75dde",
         "spawnGeneration": 1,
+        "revocationFrontierDigest": Digest32::of_bytes(b"revocation-frontier").to_string(),
         "ownerImplementationDigest": Digest32::of_bytes(b"intuition-implementation").to_string(),
         "selectedProfileDigest": Digest32::of_bytes(b"selected-profile").to_string(),
         "policyGeneration": 1,
@@ -101,9 +101,14 @@ fn bootstrap_accepts_exact_root_signature_and_rejects_tampering()
     let directory = tempfile::tempdir()?;
     let path = directory.path().join("intuition-bootstrap.json");
     std::fs::write(&path, serde_json::to_vec(&descriptor)?)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    }
     let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde")?;
     let pin = Digest32::of_bytes(&serde_json::to_vec(&descriptor)?);
-    assert!(load_intuition_policy_bootstrap_v1(&path, pin, agent_id.clone(), 1, now).is_ok());
+    let _host = load_intuition_policy_bootstrap_v1(&path, pin, agent_id.clone(), 1, now)?;
     assert!(
         load_intuition_policy_bootstrap_v1(&path, Digest32::ZERO, agent_id.clone(), 1, now)
             .is_err()
