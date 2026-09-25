@@ -85,6 +85,7 @@ pub use model::RetrievalAssignmentFact;
 pub use model::Revocation;
 pub use model::UnlearningLineageEventV1;
 pub use production::DatasetFreezePlanV2;
+pub use production::LearningAppendIdentityV1;
 pub use production::LedgerWriter;
 pub use production::ProductionDecisionV2;
 pub use production::ProductionLedgerError;

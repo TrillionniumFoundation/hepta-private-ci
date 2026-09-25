@@ -942,3 +942,6 @@ mod freeze_tests;
 
 #[path = "production_objective_index_tests.rs"]
 mod objective_index_tests;
+
+#[path = "production_recovery_tests.rs"]
+mod recovery_tests;

@@ -56,6 +56,10 @@ use crate::freeze_dataset_receipt_v3;
 use crate::validate_candidate_set_completeness;
 use crate::verify_dataset_snapshot_receipt_v3;
 
+#[path = "production_recovery.rs"]
+mod recovery;
+pub use recovery::LearningAppendIdentityV1;
+
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
