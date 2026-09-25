@@ -945,3 +945,62 @@ async fn durable_recovery_cursor_rotates_past_a_long_running_occurrence() {
             .collect::<std::collections::BTreeSet<_>>()
     );
 }
+
+#[tokio::test]
+async fn unknown_dispatch_cursor_rotates_and_survives_restart_without_requeue() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(UnknownQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    for (id, due) in [
+        ("019153a4-3088-7000-a56a-9b1964f75d01", 100),
+        ("019153a4-3088-7000-a56a-9b1964f75d02", 200),
+    ] {
+        store
+            .create_task(&draft(id, AutomationSchedule::Once, due))
+            .await
+            .expect("create");
+        assert!(matches!(
+            scheduler.tick(due).await.expect("tick"),
+            AutomationTick::DispatchUncertain { .. }
+        ));
+    }
+    let first = store
+        .next_uncertain_dispatch()
+        .await
+        .expect("first")
+        .expect("work");
+    drop(scheduler);
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
+    let second = reopened
+        .next_uncertain_dispatch()
+        .await
+        .expect("second")
+        .expect("work");
+    assert_ne!(first.task_id, second.task_id);
+    assert_eq!(
+        reopened
+            .next_uncertain_dispatch()
+            .await
+            .expect("wrap")
+            .expect("work"),
+        first
+    );
+    assert_eq!(
+        reopened
+            .uncertain_dispatches(8)
+            .await
+            .expect("still uncertain")
+            .len(),
+        2
+    );
+}

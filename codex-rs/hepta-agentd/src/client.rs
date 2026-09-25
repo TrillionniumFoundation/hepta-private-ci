@@ -10,6 +10,9 @@ use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
+use codex_hepta_automation::ProductEffectPreparationV1;
+use codex_hepta_automation::ThresholdCircuitDecisionV1;
+use codex_hepta_automation::ThresholdCircuitInvocationV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_uds::UnixStream;
@@ -509,6 +512,73 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::AutomationTask(task) => Ok(task),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn automation_run_threshold_circuit(
+        &self,
+        invocation: ThresholdCircuitInvocationV1,
+    ) -> Result<ThresholdCircuitDecisionV1, AgentdError> {
+        let capabilities = self.capabilities().await?;
+        let supported = capabilities.capabilities.iter().any(|capability| {
+            capability.id == crate::AGENTD_CAPABILITY_AUTOMATION_THRESHOLD_CIRCUIT
+                && capability.major == 1
+        });
+        if !supported {
+            return Err(AgentdError::Protocol(
+                "agentd does not advertise threshold-circuit control".to_string(),
+            ));
+        }
+        match self
+            .send(AgentdRequest::automation_run_threshold_circuit(
+                self.request_id(),
+                self.spawn_generation,
+                invocation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AutomationThresholdCircuit(decision) => Ok(decision),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn automation_prepare_effect(
+        &self,
+        operation_id: String,
+        wire_payload: &[u8],
+        expected_predecessor_digest: Option<codex_hepta_contracts::Sha256Digest>,
+        compensation_for: Option<String>,
+    ) -> Result<ProductEffectPreparationV1, AgentdError> {
+        if wire_payload.is_empty() || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES {
+            return Err(AgentdError::Invalid(
+                "automation effect wire payload is empty or too large".to_string(),
+            ));
+        }
+        let capabilities = self.capabilities().await?;
+        let supported = capabilities.capabilities.iter().any(|capability| {
+            capability.id == crate::AGENTD_CAPABILITY_AUTOMATION_EFFECT_PREPARATION
+                && capability.major == 1
+        });
+        if !supported {
+            return Err(AgentdError::Protocol(
+                "agentd does not advertise automation external-effect control".to_string(),
+            ));
+        }
+        match self
+            .send(AgentdRequest::automation_prepare_effect(
+                self.request_id(),
+                self.spawn_generation,
+                operation_id,
+                encode_hex(wire_payload),
+                expected_predecessor_digest,
+                compensation_for,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AutomationEffectPreparation(preparation) => Ok(preparation),
             payload => unexpected(payload),
         }
     }

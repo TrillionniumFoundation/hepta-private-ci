@@ -573,7 +573,7 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
                     expected_binding: &expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                },
+                }
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -754,7 +754,7 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
                     expected_binding: &wrong,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                },
+                }
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -1062,7 +1062,7 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
                     expected_binding: &expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                },
+                }
             )
             .await,
         Err(AuthorizedEffectError::Driver(
@@ -1162,7 +1162,7 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
                     expected_binding: &expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 31,
-                },
+                }
             )
             .await
             .is_err(),
@@ -1258,11 +1258,73 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
                     expected_binding: &expected,
                     command_id: "compensation-dispatch",
                     now_ms: 32,
-                },
+                }
             )
             .await
             .is_err(),
         "reconciled compensation must never be replayed as a new effect"
     );
     assert_eq!(must_not_dispatch.calls, 0);
+}
+
+#[tokio::test]
+async fn old_claim_cannot_cross_provider_entry_after_uncontacted_generation_takeover() {
+    struct CountingDriver(usize);
+    impl AuthorizedEffectDriver for CountingDriver {
+        fn dispatch(
+            &mut self,
+            _: &AuthorizedEffectRequest<'_>,
+        ) -> Result<
+            AuthorizedEffectProviderReceipt,
+            codex_hepta_automation::AuthorizedEffectDriverError,
+        > {
+            self.0 += 1;
+            Ok(AuthorizedEffectProviderReceipt {
+                outcome: AuthorizedEffectOutcome::Succeeded,
+                receipt_digest: Sha256Digest::for_bytes(b"late callback"),
+            })
+        }
+    }
+    let fixture = Fixture::new();
+    let (store, old_fence, effect, binding) = prepared_effect_store(&fixture).await;
+    let old_run = store
+        .taskflow_run(&effect.run_id)
+        .await
+        .expect("run")
+        .expect("run exists");
+    let now = old_run.lease_expires_at_ms.expect("lease") + 1;
+    let successor = TaskFlowFence::new(
+        old_fence.owner_agent_id.clone(),
+        old_fence.owner_id.clone(),
+        old_fence.owner_epoch + 1,
+        old_fence.generation + 1,
+        "successor-fence",
+    )
+    .expect("new fence");
+    store
+        .claim_taskflow_run(&effect.run_id, &successor, now, 60_000)
+        .await
+        .expect("uncontacted takeover");
+    let (authority, grant, _authority_dir) = final_use(binding.clone(), "stale-effect-entry");
+    let mut driver = CountingDriver(0);
+    let result = store
+        .execute_authorized_taskflow_effect(
+            &mut driver,
+            codex_hepta_automation::AuthorizedEffectDispatch {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &old_fence,
+                signed_grant: &grant,
+                expected_binding: &binding,
+                command_id: "late-old-dispatch",
+                now_ms: now,
+            },
+        )
+        .await;
+    assert!(result.is_err());
+    assert_eq!(
+        driver.0, 0,
+        "the old provider callback must not run before stale bookkeeping is rejected"
+    );
 }
