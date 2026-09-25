@@ -290,6 +290,16 @@ pub struct NeuronTickInputV1 {
 }
 
 impl NeuronTickInputV1 {
+    /// Canonical journal ownership scope; hosts must not invent a different
+    /// subject hashing dialect when composing the durable owner.
+    pub fn journal_scope(&self) -> Result<crate::JournalScope, NeuronRuntimeError> {
+        validate_tick_input(self)?;
+        Ok(crate::JournalScope {
+            scope_digest: subject_scope_digest(&self.subject_id)?,
+            objective_digest: self.objective_digest,
+        })
+    }
+
     pub fn semantic_digest(&self) -> Result<Digest32, NeuronRuntimeError> {
         validate_tick_input(self)?;
         let mut bytes = b"hepta.neuron.tick-input.v1".to_vec();
@@ -469,6 +479,7 @@ pub struct NeuronRuntimeOutputV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NeuronRuntimeError {
+    Admission(crate::NeuronAdmissionError),
     EmptyDigest(&'static str),
     InvalidConfig,
     InvalidCalibration,

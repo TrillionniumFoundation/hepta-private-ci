@@ -89,6 +89,7 @@ pub struct SparseJournal {
     max_records: usize,
     base_sequence: u64,
     base_anchor: Option<JournalAnchor>,
+    base_receipt: Option<SparseSignalReceipt>,
     data_offset: usize,
     entries: Vec<(Digest32, SparseSignalReceipt)>,
     current: Option<SparseCheckpoint>,
@@ -290,6 +291,7 @@ impl SparseJournal {
             max_records,
             base_sequence,
             base_anchor,
+            base_receipt: None,
             data_offset,
             entries: Vec::new(),
             current: seed,
@@ -358,7 +360,10 @@ impl SparseJournal {
             return Err(JournalError::Poisoned);
         }
         let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
-        Self::open_successor(file, self.config.clone(), self.scope, max_records, seed)
+        let mut successor =
+            Self::open_successor(file, self.config.clone(), self.scope, max_records, seed)?;
+        successor.base_receipt = self.receipt_at(seed.sequence())?.cloned();
+        Ok(successor)
     }
 
     /// Recover a successor segment using this journal's exact current checkpoint
@@ -373,18 +378,44 @@ impl SparseJournal {
             return Err(JournalError::Poisoned);
         }
         let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
-        Self::open_successor_anchored(
+        let mut successor = Self::open_successor_anchored(
             file,
             self.config.clone(),
             self.scope,
             max_records,
             seed,
             anchor,
-        )
+        )?;
+        successor.base_receipt = self.receipt_at(seed.sequence())?.cloned();
+        Ok(successor)
     }
 
-    /// Compare-and-append one tick. Equal retries return the exact committed
-    /// receipt, including after later ticks in the same segment.
+    /// Preflight before model execution/result preparation. This creates no
+    /// record and must be called under the same exclusively owned runtime.
+    pub(crate) fn admit_new_tick(
+        &self,
+        scope: JournalScope,
+        sequence: u64,
+    ) -> Result<(), JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if scope.scope_digest != self.scope.scope_digest
+            || scope.objective_digest != self.scope.objective_digest
+        {
+            return Err(JournalError::ContextMismatch);
+        }
+        if self.entries.len() >= self.max_records {
+            return Err(JournalError::Capacity);
+        }
+        let previous = self.current.as_ref().map_or(0, SparseCheckpoint::sequence);
+        if previous.checked_add(1) != Some(sequence) {
+            return Err(JournalError::Mechanism(SparseError::Sequence));
+        }
+        Ok(())
+    }
+
+    /// Compare-and-append; equal retries return the exact committed receipt.
     pub fn commit(
         &mut self,
         expected_predecessor: Digest32,
@@ -489,6 +520,25 @@ impl SparseJournal {
             .anchor_at(anchor.sequence)
             .is_some_and(|current| current == anchor))
     }
+    /// Native replay receipt, including a predecessor carried across a
+    /// successor transition. This does not change V1 on-disk bytes.
+    pub(crate) fn receipt_at(
+        &self,
+        sequence: u64,
+    ) -> Result<Option<&SparseSignalReceipt>, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if sequence == self.base_sequence {
+            return Ok(self.base_receipt.as_ref());
+        }
+        let index = sequence
+            .checked_sub(self.base_sequence)
+            .and_then(|relative| relative.checked_sub(1))
+            .and_then(|relative| usize::try_from(relative).ok());
+        Ok(index.and_then(|index| self.entries.get(index).map(|(_, receipt)| receipt)))
+    }
+
     pub fn remaining_capacity(&self) -> Result<usize, JournalError> {
         if self.poisoned {
             Err(JournalError::Poisoned)

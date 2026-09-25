@@ -384,6 +384,17 @@ impl FileNeuronOperationStore {
             .cloned())
     }
 
+    pub(crate) fn admit_new_operation(&self) -> Result<(), OperationStoreError> {
+        self.ensure_healthy()?;
+        if self.pending.is_some() {
+            return Err(OperationStoreError::Pending);
+        }
+        if self.completed.len() >= self.max_operations {
+            return Err(OperationStoreError::Capacity);
+        }
+        Ok(())
+    }
+
     pub(crate) fn prepare(
         &mut self,
         value: PreparedNeuronOperationV1,

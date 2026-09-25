@@ -177,6 +177,15 @@ impl SparseCheckpoint {
         self.sequence
     }
 
+    pub(crate) fn matches_tick(&self, tick: &SparseTick) -> bool {
+        self.scope == tick.scope_digest
+            && self.objective == tick.objective_digest
+            && self.body == tick.body_digest
+            && self.sequence == tick.sequence
+            && self.monotonic_micros == tick.monotonic_micros
+            && self.input == tick_input_binding_digest(tick)
+    }
+
     /// Exact predecessor committed into this checkpoint.
     pub fn predecessor_digest(&self) -> Digest32 {
         self.predecessor
@@ -274,6 +283,24 @@ impl SparseCheckpoint {
     }
 }
 
+/// Same byte binding used by both native replay and owner-result verification.
+pub(crate) fn tick_input_binding_digest(input: &SparseTick) -> Digest32 {
+    let mut binding = Vec::new();
+    for value in [
+        input.scope_digest,
+        input.objective_digest,
+        input.ndu_digest,
+        input.body_digest,
+        input.input_digest,
+    ] {
+        binding.extend_from_slice(value.as_array());
+    }
+    for value in input.drive_q24.iter().chain(&input.prediction_q24) {
+        binding.extend_from_slice(&value.to_be_bytes());
+    }
+    Digest32::of_bytes(&binding)
+}
+
 /// Compute a complete successor without mutating the selected config or prior state.
 /// The caller must CAS-publish state and receipt together; success here is not a commit.
 pub fn sparse_tick(
@@ -301,19 +328,7 @@ pub fn sparse_tick(
     {
         return Err(SparseError::InvalidInput);
     }
-    let mut binding = Vec::new();
-    for value in [
-        input.scope_digest,
-        input.objective_digest,
-        input.ndu_digest,
-        input.body_digest,
-        input.input_digest,
-    ] {
-        binding.extend_from_slice(value.as_array());
-    }
-    for value in input.drive_q24.iter().chain(&input.prediction_q24) {
-        binding.extend_from_slice(&value.to_be_bytes());
-    }
+    let input_binding = tick_input_binding_digest(input);
     let before = previous.map_or(Digest32::ZERO, SparseCheckpoint::digest);
     if let Some(prior) = previous {
         if prior.calculate_digest() != prior.digest {
@@ -347,7 +362,7 @@ pub fn sparse_tick(
         sequence: input.sequence,
         monotonic_micros: input.monotonic_micros,
         predecessor: before,
-        input: Digest32::of_bytes(&binding),
+        input: input_binding,
         temporal: vec![0; config.width],
         activation: vec![0; config.width],
         activity: vec![0; config.width],

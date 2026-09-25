@@ -85,6 +85,8 @@ pub use qualification::ablate_parameter_groups;
 pub use qualification::ablate_sparse_config;
 pub use qualification::requires_external_replay_ablation;
 pub use qualification::summarize_resource_samples;
+pub use runtime::NeuronAdmissionError;
+pub use runtime::NeuronAdmissionGuard;
 pub use runtime::NeuronRuntime;
 pub use runtime_types::AnchorWitnessStore;
 pub use runtime_types::LocalModelRuntimeReceiptV1;

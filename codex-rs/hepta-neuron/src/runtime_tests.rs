@@ -892,3 +892,9 @@ fn recovery_does_not_initialize_a_missing_operation_history() {
     );
     assert_eq!(checked(fs::read(operation_path)), before);
 }
+
+#[path = "runtime_admission_tests.rs"]
+mod admission;
+
+#[path = "runtime_process_tests.rs"]
+mod process;
