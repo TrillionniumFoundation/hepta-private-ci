@@ -14,7 +14,7 @@ use codex_hepta_intuition::ScoringCommitmentV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_types::Digest32;
 
-/// Immutable owner identities admitted by the Agentd product composition.
+/// Historical V1 owner pins retained for compatibility qualification.
 ///
 /// Agentd only pins identities. Model bytes, scorer behavior, learning evidence
 /// and RNG state remain with their authoritative owners.
@@ -25,6 +25,8 @@ pub struct AgentdIntuitionPolicyPinsV1 {
     pub rng_owner_digest: Option<Digest32>,
 }
 
+/// Compatibility-only host. The canonical product runner requires
+/// `AgentdIntuitionPolicyHostV2` with a selected profile and current trust frontier.
 pub struct AgentdIntuitionPolicyHostV1 {
     agent_id: AgentId,
     spawn_generation: u64,
