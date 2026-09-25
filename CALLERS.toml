@@ -557,7 +557,7 @@ caller_markers = []
 [[boundary]]
 id = "final_use_async_entry"
 symbol = "VerifiedUseToken::enter / FinalUseAuthority::enter_verified_use"
-call_pattern = '\.\s*enter\s*\('
+call_pattern = '(?:\bverified_use|\btoken)\s*\.\s*enter\s*\(|\.\s*enter_verified_use\s*\(|VerifiedUseToken\s*::\s*enter\s*\(|FinalUseAuthority\s*::\s*enter_verified_use\s*\('
 caller_type_marker = "VerifiedUseToken"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn enter(self", "pub fn enter_verified_use(", "StaleRevocationHead"]
