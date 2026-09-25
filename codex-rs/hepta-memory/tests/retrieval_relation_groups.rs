@@ -27,30 +27,25 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use tempfile::TempDir;
 
-async fn store(
-    suffix: &str,
-) -> (
+type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+type StoreFixture = (
     TempDir,
     AgentId,
     CognitiveStore,
     CognitiveAccess,
     CognitiveScope,
-) {
-    let temp = TempDir::new().expect("temporary root");
+);
+
+async fn store(suffix: &str) -> TestResult<StoreFixture> {
+    let temp = TempDir::new()?;
     let fleet = temp.path().join("fleet");
-    std::fs::create_dir_all(&fleet).expect("create fleet root");
-    let fleet = std::fs::canonicalize(&fleet).expect("canonical fleet root");
-    let owner =
-        AgentId::parse(format!("00000000-0000-4000-8000-{suffix}")).expect("agent identity");
-    let layout = HeptaFleetRoot::parse(fleet)
-        .expect("fleet root")
-        .layout()
-        .agent(&owner);
-    let store = CognitiveStore::open(&layout)
-        .await
-        .expect("cognitive store");
+    std::fs::create_dir_all(&fleet)?;
+    let fleet = std::fs::canonicalize(&fleet)?;
+    let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix}"))?;
+    let layout = HeptaFleetRoot::parse(fleet)?.layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await?;
     let access = CognitiveAccess::agent_private(owner.clone());
-    (temp, owner, store, access, CognitiveScope::AgentPrivate)
+    Ok((temp, owner, store, access, CognitiveScope::AgentPrivate))
 }
 
 async fn remember_relations(
@@ -59,7 +54,7 @@ async fn remember_relations(
     scope: &CognitiveScope,
     stable_key: &str,
     targets: &[&str],
-) {
+) -> TestResult {
     let content = format!("Beacon contradicts {}.", targets.join(" and "));
     let mut entities = vec![KgEntityFactDraft {
         key: "beacon".to_string(),
@@ -108,25 +103,25 @@ async fn remember_relations(
                 relations,
             },
         )
-        .await
-        .expect("remember typed contradiction relations");
+        .await?;
+    Ok(())
 }
 
 fn execution_context(
     cut: &codex_hepta_memory::DurableCognitiveSnapshot,
-) -> RetrievalExecutionContextV1 {
-    let policy = sqlite_owner_retrieval_policy_v1().expect("owner retrieval policy");
+) -> TestResult<RetrievalExecutionContextV1> {
+    let policy = sqlite_owner_retrieval_policy_v1()?;
     let common = Digest32::of_bytes(b"relation-group-integration-test");
     let generation_vector = codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1 {
         scope_id: cut.scope_id().clone(),
-        purpose_id: StableId::new("purpose:relation-group-integration-test").expect("purpose id"),
+        purpose_id: StableId::new("purpose:relation-group-integration-test")?,
         memory_ledger_frontier: cut.frontiers().memory,
         knowledge_fact_frontier: cut.frontiers().knowledge_facts,
         tombstone_frontier: cut.frontiers().tombstone,
         source_ledger_frontier: cut.frontiers().source,
         knowledge_graph_generation: cut.frontiers().knowledge_graph,
-        compact_checkpoint_generation: Generation::new(1).expect("compact generation"),
-        prompt_registry_revision: Revision::new(1).expect("prompt revision"),
+        compact_checkpoint_generation: Generation::new(1)?,
+        prompt_registry_revision: Revision::new(1)?,
         retrieval_profile_digest: policy.digest(),
         encoder_preprocessor_digest: common,
         authority_epoch: 1,
@@ -136,7 +131,7 @@ fn execution_context(
         tool_schema_digest: common,
     };
     let vector_digest = generation_vector.digest();
-    RetrievalExecutionContextV1 {
+    Ok(RetrievalExecutionContextV1 {
         generation_vector,
         objective_digest: Digest32::of_bytes(b"objective"),
         approved_context_digest: cut.snapshot().snapshot_digest,
@@ -147,21 +142,17 @@ fn execution_context(
             Digest32::of_bytes(b"empty-test-engram"),
             Vec::new(),
             Vec::new(),
-        )
-        .expect("empty engram"),
-        dynamics_policy: EngramDynamicsPolicyV1::product_default().expect("engram dynamics policy"),
-    }
+        )?,
+        dynamics_policy: EngramDynamicsPolicyV1::product_default()?,
+    })
 }
 
 #[tokio::test]
-async fn one_canonical_relation_group_is_stable_and_admitted() {
-    let (_temp, _owner, store, access, scope) = store("000000000201").await;
-    remember_relations(&store, &access, &scope, "one-group", &["TargetA"]).await;
+async fn one_canonical_relation_group_is_stable_and_admitted() -> TestResult {
+    let (_temp, _owner, store, access, scope) = store("000000000201").await?;
+    remember_relations(&store, &access, &scope, "one-group", &["TargetA"]).await?;
     let request = RetrievalRequest::new("Beacon", 200);
-    let observation = store
-        .observe_memory_retrieval(&access, &request)
-        .await
-        .expect("owner observation");
+    let observation = store.observe_memory_retrieval(&access, &request).await?;
     let candidate = observation
         .candidates()
         .iter()
@@ -170,13 +161,10 @@ async fn one_canonical_relation_group_is_stable_and_admitted() {
                 .channels
                 .contains(&codex_hepta_memory::RetrievalChannel::ContradictionSupport)
         })
-        .expect("contradiction candidate");
+        .ok_or("contradiction candidate")?;
     assert!(candidate.contradiction_groups_complete);
     assert_eq!(candidate.contradiction_group_sha256s.len(), 1);
-    let repeated = store
-        .observe_memory_retrieval(&access, &request)
-        .await
-        .expect("repeat owner observation");
+    let repeated = store.observe_memory_retrieval(&access, &request).await?;
     let repeated_candidate = repeated
         .candidates()
         .iter()
@@ -185,32 +173,27 @@ async fn one_canonical_relation_group_is_stable_and_admitted() {
                 .channels
                 .contains(&codex_hepta_memory::RetrievalChannel::ContradictionSupport)
         })
-        .expect("repeat contradiction candidate");
+        .ok_or("repeat contradiction candidate")?;
     assert_eq!(
         repeated_candidate.contradiction_group_sha256s,
         candidate.contradiction_group_sha256s
     );
 
-    let cut = store
-        .lane_c_snapshot(&access, &scope, 200)
-        .await
-        .expect("Lane C cut");
-    let context = execution_context(&cut);
-    let authoritative = cut
-        .bind_context(context.generation_vector.clone(), 200_000, 205_000)
-        .expect("authoritative cut");
+    let cut = store.lane_c_snapshot(&access, &scope, 200).await?;
+    let context = execution_context(&cut)?;
+    let authoritative = cut.bind_context(context.generation_vector.clone(), 200_000, 205_000)?;
     execute_owner_observation(
         &observation,
         &authoritative,
         &context,
         Digest32::of_bytes(b"Beacon"),
-    )
-    .expect("single exact contradiction group is representable");
+    )?;
+    Ok(())
 }
 
 #[tokio::test]
-async fn distinct_relations_do_not_collapse_into_one_observation_group() {
-    let (_temp, _owner, store, access, scope) = store("000000000202").await;
+async fn distinct_relations_do_not_collapse_into_one_observation_group() -> TestResult {
+    let (_temp, _owner, store, access, scope) = store("000000000202").await?;
     remember_relations(
         &store,
         &access,
@@ -218,11 +201,10 @@ async fn distinct_relations_do_not_collapse_into_one_observation_group() {
         "two-groups",
         &["TargetA", "TargetB"],
     )
-    .await;
+    .await?;
     let observation = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new("Beacon", 200))
-        .await
-        .expect("owner observation");
+        .await?;
     let candidate = observation
         .candidates()
         .iter()
@@ -231,7 +213,7 @@ async fn distinct_relations_do_not_collapse_into_one_observation_group() {
                 .channels
                 .contains(&codex_hepta_memory::RetrievalChannel::ContradictionSupport)
         })
-        .expect("contradiction candidate");
+        .ok_or("contradiction candidate")?;
     assert!(candidate.contradiction_groups_complete);
     assert_eq!(candidate.contradiction_group_sha256s.len(), 2);
     assert_ne!(
@@ -239,14 +221,9 @@ async fn distinct_relations_do_not_collapse_into_one_observation_group() {
         candidate.contradiction_group_sha256s[1]
     );
 
-    let cut = store
-        .lane_c_snapshot(&access, &scope, 200)
-        .await
-        .expect("Lane C cut");
-    let context = execution_context(&cut);
-    let authoritative = cut
-        .bind_context(context.generation_vector.clone(), 200_000, 205_000)
-        .expect("authoritative cut");
+    let cut = store.lane_c_snapshot(&access, &scope, 200).await?;
+    let context = execution_context(&cut)?;
+    let authoritative = cut.bind_context(context.generation_vector.clone(), 200_000, 205_000)?;
     assert!(matches!(
         execute_owner_observation(
             &observation,
@@ -256,4 +233,5 @@ async fn distinct_relations_do_not_collapse_into_one_observation_group() {
         ),
         Err(CognitiveStoreError::Conflict(_))
     ));
+    Ok(())
 }

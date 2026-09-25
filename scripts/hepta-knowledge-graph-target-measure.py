@@ -169,14 +169,35 @@ def run_benchmark(args: argparse.Namespace) -> tuple[dict[str, Any], int, str]:
 
     started = time.monotonic_ns()
     invocation = [
-        "just", "test", "--locked", "--release", "--retries", "0",
-        "-p", "codex-hepta-memory", "--lib", "--run-ignored", "only",
-        "-E", f"test(={TEST_NAME})", "--success-output", "immediate",
-        "--failure-output", "immediate", "--no-tests", "fail",
+        "just",
+        "test",
+        "--locked",
+        "--release",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "-E",
+        f"test(={TEST_NAME})",
+        "--success-output",
+        "immediate",
+        "--failure-output",
+        "immediate",
+        "--no-tests",
+        "fail",
     ]
-    result = subprocess.run(invocation, cwd=CARGO_ROOT, env=env, text=True,
-                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            check=False)
+    result = subprocess.run(
+        invocation,
+        cwd=CARGO_ROOT,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
     output = result.stdout
     # Preserve diagnostics even when the test or the receipt validator fails.
     raw = Path(args.raw_output or (str(args.output) + ".log"))
@@ -191,13 +212,18 @@ def run_benchmark(args: argparse.Namespace) -> tuple[dict[str, Any], int, str]:
 
 
 def check_parameters(receipt: dict[str, Any], args: argparse.Namespace) -> None:
-    for key, expected in (("writes", args.writes), ("querySamples", args.query_samples),
-                          ("reopenSamples", args.reopen_samples)):
+    for key, expected in (
+        ("writes", args.writes),
+        ("querySamples", args.query_samples),
+        ("reopenSamples", args.reopen_samples),
+    ):
         if receipt.get(key) != expected:
             fail(f"benchmark parameter mismatch: {key}")
     contention = receipt["contention"]
-    for key, expected in (("rounds", args.contention_rounds),
-                          ("readersPerRound", args.contention_readers)):
+    for key, expected in (
+        ("rounds", args.contention_rounds),
+        ("readersPerRound", args.contention_readers),
+    ):
         if contention.get(key) != expected:
             fail(f"contention parameter mismatch: {key}")
 
@@ -206,12 +232,15 @@ def self_test() -> int:
     fixture = {
         "schema": BENCHMARK_SCHEMA,
         "hostProfileId": "self-test",
-        "writes": 256, "querySamples": 20, "reopenSamples": 5,
+        "writes": 256,
+        "querySamples": 20,
+        "reopenSamples": 5,
         "mutationNs": {"p50": 1, "p95": 2, "p99": 3},
         "queryNs": {"p50": 1, "p95": 2, "p99": 3},
         "reopenNs": {"p50": 1, "p95": 2, "p99": 3},
         "contention": {
-            "rounds": 10, "readersPerRound": 4,
+            "rounds": 10,
+            "readersPerRound": 4,
             "writerNs": {"p50": 1, "p95": 2, "p99": 3},
             "readerNs": {"p50": 1, "p95": 2, "p99": 3},
             "roundNs": {"p50": 1, "p95": 2, "p99": 3},
@@ -326,8 +355,10 @@ def main() -> int:
 
     if args.self_test:
         return self_test()
-    if not args.expected_sha or len(args.expected_sha) != 40 or any(
-        character not in "0123456789abcdef" for character in args.expected_sha
+    if (
+        not args.expected_sha
+        or len(args.expected_sha) != 40
+        or any(character not in "0123456789abcdef" for character in args.expected_sha)
     ):
         parser.error("--expected-sha must be the exact 40-character candidate SHA")
     if not args.host_profile_id:
