@@ -127,7 +127,11 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
 
 async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
-    let root = temp.path().join("owner");
+    let root = temp
+        .path()
+        .canonicalize()
+        .expect("canonical owner root")
+        .join("owner");
     std::fs::create_dir(&root).expect("owner directory");
     let pool = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =

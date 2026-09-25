@@ -1828,9 +1828,15 @@ mod tests {
     async fn exact_pending_lookup_is_not_limited_by_the_discovery_page() {
         let temp = tempfile::tempdir().expect("owner root");
         let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner agent id");
-        let store = AutomationStore::open_root(temp.path().join("automation"), owner.clone())
-            .await
-            .expect("automation store");
+        let store = AutomationStore::open_root(
+            temp.path()
+                .canonicalize()
+                .expect("canonical owner root")
+                .join("automation"),
+            owner.clone(),
+        )
+        .await
+        .expect("automation store");
         let mut transaction = store.taskflow_pool().begin().await.expect("transaction");
         let mut exact_task = None;
         for index in 1_u64..=1_025 {
