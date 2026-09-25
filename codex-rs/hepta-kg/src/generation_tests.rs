@@ -761,3 +761,137 @@ fn measured_query_matches_collect_then_truncate_reference_for_every_bound() {
         }
     }
 }
+
+#[test]
+fn bulk_node_retirement_and_replacement_match_full_rebuild() {
+    for count in [16_usize, 128, 1024] {
+        let mut nodes = vec![node("hub", "hub")];
+        let mut edges = Vec::new();
+        for index in 0..count {
+            let label = format!("leaf-{index:05}");
+            nodes.push(node(&label, &label));
+            edges.push(edge(
+                "hub",
+                &label,
+                KnowledgeRelationKindV2::Supports,
+                &label,
+            ));
+        }
+        let first = build_complete_generation(generation(1), input(nodes, edges))
+            .unwrap_or_else(|error| panic!("first: {error}"));
+        let before = first.clone();
+        let removed = (0..count / 2)
+            .map(|index| id(&format!("node:leaf-{index:05}")))
+            .collect::<Vec<_>>();
+        // Reinsert a retired node and one of its edges. Other incident edges
+        // remain retired. Replacement of a surviving edge has the same order.
+        let replacement_node = node("leaf-00000", "new-payload");
+        let replacement_edge = edge(
+            "hub",
+            "leaf-00000",
+            KnowledgeRelationKindV2::Contradicts,
+            "new-support",
+        );
+        let last = format!("leaf-{:05}", count - 1);
+        let updated_edge = edge("hub", &last, KnowledgeRelationKindV2::Supports, "updated");
+        let removed_edge = first.edges[count - 2].identity.clone();
+        let mut expected_nodes = vec![node("hub", "hub"), replacement_node.clone()];
+        let mut expected_edges = vec![replacement_edge.clone(), updated_edge.clone()];
+        for index in count / 2..count {
+            let label = format!("leaf-{index:05}");
+            expected_nodes.push(node(&label, &label));
+            if index < count - 2 {
+                expected_edges.push(edge(
+                    "hub",
+                    &label,
+                    KnowledgeRelationKindV2::Supports,
+                    &label,
+                ));
+            }
+        }
+        let full = build_complete_generation(
+            generation(2),
+            KnowledgeProjectionInputV2 {
+                source_snapshot_digest: digest("snapshot:2"),
+                generation_vector_digest: digest("vector:2"),
+                graph_profile_digest: first.graph_profile_digest,
+                complete_source_cut: true,
+                nodes: expected_nodes,
+                edges: expected_edges,
+            },
+        )
+        .unwrap_or_else(|error| panic!("full: {error}"));
+        for reverse in [false, true] {
+            let mut remove_node_ids = removed.clone();
+            if reverse {
+                remove_node_ids.reverse();
+            }
+            let actual = apply_incremental_delta(
+                &first,
+                generation(2),
+                KnowledgeProjectionDeltaV2 {
+                    expected_predecessor_digest: first.generation_digest,
+                    source_snapshot_digest: digest("snapshot:2"),
+                    generation_vector_digest: digest("vector:2"),
+                    graph_profile_digest: first.graph_profile_digest,
+                    remove_node_ids,
+                    upsert_nodes: vec![replacement_node.clone()],
+                    remove_edge_identities: vec![
+                        removed_edge.clone(),
+                        updated_edge.identity.clone(),
+                    ],
+                    upsert_edges: vec![replacement_edge.clone(), updated_edge.clone()],
+                },
+            )
+            .unwrap_or_else(|error| panic!("delta: {error}"));
+            assert_eq!(actual, full);
+            assert_eq!(first, before);
+        }
+    }
+}
+
+#[test]
+#[ignore = "observational history-growth measurement; not a target-host qualification"]
+fn bulk_retirement_emits_history_growth_curve() {
+    for count in [1024_usize, 4096, 16384] {
+        let mut nodes = vec![node("hub", "hub")];
+        let mut edges = Vec::new();
+        for index in 0..count {
+            let label = format!("leaf-{index:05}");
+            nodes.push(node(&label, &label));
+            edges.push(edge(
+                "hub",
+                &label,
+                KnowledgeRelationKindV2::Supports,
+                &label,
+            ));
+        }
+        let first = build_complete_generation(generation(1), input(nodes, edges))
+            .unwrap_or_else(|error| panic!("first: {error}"));
+        let delta = KnowledgeProjectionDeltaV2 {
+            expected_predecessor_digest: first.generation_digest,
+            source_snapshot_digest: digest("snapshot:2"),
+            generation_vector_digest: digest("vector:2"),
+            graph_profile_digest: first.graph_profile_digest,
+            remove_node_ids: (0..count / 2)
+                .map(|index| id(&format!("node:leaf-{index:05}")))
+                .collect(),
+            upsert_nodes: Vec::new(),
+            remove_edge_identities: Vec::new(),
+            upsert_edges: Vec::new(),
+        };
+        let started = std::time::Instant::now();
+        let result = apply_incremental_delta(&first, generation(2), delta)
+            .unwrap_or_else(|error| panic!("delta: {error}"));
+        let elapsed_ns = started.elapsed().as_nanos();
+        assert_eq!(result.edges.len(), count / 2);
+        assert_eq!(result.nodes.len(), count / 2 + 1);
+        println!(
+            "KG_BULK_RETIREMENT nodes={} edges={} removed={} retained_edges={} elapsed_ns={elapsed_ns}",
+            count + 1,
+            count,
+            count / 2,
+            result.edges.len()
+        );
+    }
+}

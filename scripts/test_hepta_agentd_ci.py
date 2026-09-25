@@ -14,6 +14,8 @@ import subprocess
 import sys
 import unittest
 
+from scripts.hepta_workflow_commands import workflow_commands
+
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / ".github/scripts/check_ci_results.py"
 WORKFLOW = ROOT / ".github/workflows/hepta-gap-agentd-process.yml"
@@ -190,6 +192,100 @@ class WorkflowDependencyTests(unittest.TestCase):
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )
         self.assertNotIn("continue-on-error", process)
+
+    def test_native_fixture_build_precedes_executed_tests_and_disables_retries(self):
+        commands = workflow_commands(self.jobs["process-qualification"])
+        build = [
+            "cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-app-server",
+            "--bin",
+            "codex-app-server",
+        ]
+        build_index = commands.index(build)
+        tests = [
+            (index, command)
+            for index, command in enumerate(commands)
+            if command[:2] == ["just", "test"]
+        ]
+        self.assertTrue(tests)
+        for index, command in tests:
+            self.assertGreater(index, build_index)
+            self.assertIn("--retries", command)
+            self.assertEqual(command[command.index("--retries") + 1], "0")
+        self.assertIn(["test", "-x", "$target/debug/codex-app-server"], commands)
+        exports = [command for command in commands if command[0] == "printf"]
+        self.assertTrue(
+            any(
+                "HEPTA_TEST_CODEX_EXE=" in command[1] and "$GITHUB_ENV" in command
+                for command in exports
+            )
+        )
+        # Comments or echoed command text are not executable prerequisites.
+        for prefix in ("# ", "echo "):
+            decoy = "run: " + prefix + " ".join(build)
+            self.assertNotIn(build, workflow_commands(decoy))
+
+    def test_native_lanes_resolve_one_exact_target_graph_and_reuse_only_metadata(self):
+        metadata = "$RUNNER_TEMP/hepta-nextest-metadata.json"
+        for filename in (
+            "hepta-gap-agentd-process.yml",
+            "hepta-architecture-convergence.yml",
+        ):
+            with self.subTest(workflow=filename):
+                text = (ROOT / ".github/workflows" / filename).read_text()
+                parts = re.split(
+                    r"^  ([a-z][a-z0-9-]*):\s*$",
+                    text.split("\njobs:\n", 1)[1],
+                    flags=re.M,
+                )
+                jobs = dict(zip(parts[1::2], parts[2::2]))
+                job = (
+                    "process-qualification"
+                    if filename == "hepta-gap-agentd-process.yml"
+                    else "qualification"
+                )
+                commands = workflow_commands(jobs[job])
+                # Unwrap only the repository's actual execution recorder, never
+                # comments, echo commands or an arbitrary matching substring.
+                commands = [
+                    command[command.index("--") + 1 :]
+                    if command[:1] == ["python3"]
+                    and len(command) > 1
+                    and Path(command[1]).name == "hepta_ci_exec.py"
+                    and "--" in command
+                    else command
+                    for command in commands
+                ]
+                graph = [
+                    (index, command)
+                    for index, command in enumerate(commands)
+                    if command[:2] == ["cargo", "metadata"]
+                    and "--all-features" in command
+                ]
+                self.assertEqual(len(graph), 1)
+                graph_index, command = graph[0]
+                self.assertIn("--locked", command)
+                self.assertIn("--filter-platform", command)
+                self.assertIn(metadata, command)
+                tests = [
+                    (index, command)
+                    for index, command in enumerate(commands)
+                    if command[:2] == ["just", "test"]
+                ]
+                self.assertTrue(tests)
+                for index, command in tests:
+                    self.assertGreater(index, graph_index)
+                    self.assertEqual(
+                        command[command.index("--cargo-metadata") + 1], metadata
+                    )
+                    self.assertIn("--locked", command)
+                    self.assertEqual(command[command.index("--retries") + 1], "0")
+                    self.assertNotIn("--binaries-metadata", command)
+                    self.assertNotIn("--archive-file", command)
+                    self.assertNotIn("--manifest-path", command)
 
     def test_catalog_and_formatter_use_the_repository_toolchain_directory(self):
         for name in ("owner-formatting", "catalog-admission"):

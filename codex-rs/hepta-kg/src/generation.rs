@@ -259,42 +259,40 @@ pub fn apply_incremental_delta(
         return Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity);
     }
 
-    let mut nodes = predecessor
+    // Resolve removals and replacements before copying retained payloads.
+    // Repeated per-node `retain` scanned all edges once for every deletion.
+    // The sets preserve remove-before-upsert semantics with one history pass.
+    let removed_nodes = delta.remove_node_ids.iter().collect::<BTreeSet<_>>();
+    let removed_edges = delta.remove_edge_identities.iter().collect::<BTreeSet<_>>();
+    let nodes = predecessor
         .nodes
         .iter()
+        .filter(|node| {
+            !removed_nodes.contains(&node.node_id) && !upsert_node_ids.contains(&node.node_id)
+        })
         .cloned()
-        .map(|node| (node.node_id.clone(), node))
-        .collect::<BTreeMap<_, _>>();
-    let mut edges = predecessor
+        .chain(delta.upsert_nodes)
+        .collect();
+    let edges = predecessor
         .edges
         .iter()
+        .filter(|edge| {
+            !removed_nodes.contains(&edge.identity.source_node_id)
+                && !removed_nodes.contains(&edge.identity.target_node_id)
+                && !removed_edges.contains(&edge.identity)
+                && !upsert_edge_ids.contains(&edge.identity)
+        })
         .cloned()
-        .map(|edge| (edge.identity.clone(), edge))
-        .collect::<BTreeMap<_, _>>();
-
-    for node_id in delta.remove_node_ids {
-        nodes.remove(&node_id);
-        edges.retain(|identity, _| {
-            identity.source_node_id != node_id && identity.target_node_id != node_id
-        });
-    }
-    for node in delta.upsert_nodes {
-        nodes.insert(node.node_id.clone(), node);
-    }
-    for identity in delta.remove_edge_identities {
-        edges.remove(&identity);
-    }
-    for edge in delta.upsert_edges {
-        edges.insert(edge.identity.clone(), edge);
-    }
+        .chain(delta.upsert_edges)
+        .collect();
 
     canonicalize_generation(
         generation,
         delta.source_snapshot_digest,
         delta.generation_vector_digest,
         delta.graph_profile_digest,
-        nodes.into_values().collect(),
-        edges.into_values().collect(),
+        nodes,
+        edges,
     )
 }
 

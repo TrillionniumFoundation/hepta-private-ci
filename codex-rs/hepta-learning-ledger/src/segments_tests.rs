@@ -413,13 +413,20 @@ fn history_exceeds_v1_record_capacity_without_resetting_chain_or_limits() {
     let snapshot = must(ledger.snapshot());
     assert_eq!(checkpoint.anchor.sequence, 8200);
     drop(ledger);
-    let reopened = must(SegmentedLedger::recover(
+    let mut opened = 0;
+    let reopened = must(SegmentedLedger::recover_with_opener(
         f.file("owner"),
-        f.files(count),
+        count,
+        |index| {
+            assert_eq!(index, opened);
+            opened += 1;
+            Ok(f.file(&index.to_string()))
+        },
         binding(),
         configured,
         checkpoint,
     ));
+    assert_eq!(opened, count);
     assert_eq!(must(reopened.snapshot()), snapshot);
 }
 
@@ -484,4 +491,160 @@ fn process_exit_after_seal_or_successor_preserves_unknown_outcome_without_redisp
         assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
         assert_eq!(must(recovered.anchor()).sequence, 2);
     }
+}
+
+#[test]
+fn streamed_recovery_rejects_invalid_inventory_without_opening_any_segment() {
+    let f = Fixture::new();
+    let ledger = f.create();
+    let minimum = must(ledger.checkpoint());
+    drop(ledger);
+    for count in [0, MAX_LEDGER_SEGMENTS + 1] {
+        let result = SegmentedLedger::recover_with_opener(
+            f.file("owner"),
+            count,
+            |_| panic!("invalid inventory must reject before segment access"),
+            binding(),
+            limits(),
+            minimum,
+        );
+        assert!(matches!(result, Err(DurableLedgerError::InvalidLimit)));
+        let result = inspect_ledger_segments_with_opener(
+            count,
+            |_| panic!("invalid inventory must not open evidence"),
+            binding(),
+            limits(),
+            minimum.anchor,
+        );
+        assert!(matches!(result, Err(DurableLedgerError::InvalidLimit)));
+    }
+}
+
+#[test]
+fn streamed_recovery_releases_previous_segment_and_owner_on_open_failure() {
+    let f = Fixture::new();
+    let mut ledger = f.create();
+    append(&mut ledger, decision(0));
+    let anchor = must(ledger.anchor());
+    must(ledger.rotate(f.new_file("1"), anchor));
+    append(&mut ledger, decision(1));
+    let minimum = must(ledger.checkpoint());
+    let expected = must(ledger.snapshot());
+    drop(ledger);
+    let before = must(fs::read(f.root.join("0")));
+    let mut opened = 0;
+    let result = SegmentedLedger::recover_with_opener(
+        f.file("owner"),
+        2,
+        |index| {
+            assert_eq!(index, opened);
+            opened += 1;
+            let contender = f.file("owner");
+            assert!(matches!(
+                contender.try_lock(),
+                Err(std::fs::TryLockError::WouldBlock)
+            ));
+            if index == 1 {
+                let previous = must(LockedFile::acquire(f.file("0")));
+                drop(previous);
+                return Err(std::io::Error::other("injected segment-open failure").into());
+            }
+            Ok(f.file(&index.to_string()))
+        },
+        binding(),
+        limits(),
+        minimum,
+    );
+    assert!(result.is_err());
+    assert_eq!(opened, 2);
+    assert_eq!(must(fs::read(f.root.join("0"))), before);
+    assert_eq!(must(must(f.recover(2, minimum)).snapshot()), expected);
+}
+
+#[cfg(unix)]
+#[test]
+fn streamed_history_child() {
+    let Ok(root) = std::env::var("HEPTA_STREAMED_SEGMENT_FIXTURE") else {
+        return;
+    };
+    let root = PathBuf::from(root);
+    let open = |name: &str| {
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(root.join(name))
+    };
+    let bytes: [u8; 32] = must(must(fs::read(root.join("retained-anchor"))).try_into());
+    let minimum = LedgerSegmentCheckpoint {
+        segment: 127,
+        anchor: LedgerAnchor {
+            sequence: 128,
+            chain_digest: Digest32::from_array(bytes),
+        },
+        sealed: false,
+    };
+    let configured = LedgerSegmentLimits {
+        records: 1,
+        bytes: 4096,
+    };
+    let mut reopened = must(SegmentedLedger::recover_with_opener(
+        must(open("owner")),
+        128,
+        |index| open(&index.to_string()).map_err(Into::into),
+        binding(),
+        configured,
+        minimum,
+    ));
+    assert_eq!(must(reopened.checkpoint()), minimum);
+    assert_eq!(must(reopened.snapshot()).records.len(), 128);
+    must(reopened.seal(minimum.anchor));
+    drop(reopened);
+    let inspected = must(inspect_ledger_segments_with_opener(
+        128,
+        |index| File::open(root.join(index.to_string())).map_err(Into::into),
+        binding(),
+        configured,
+        minimum.anchor,
+    ));
+    assert_eq!(inspected.records.len(), 128);
+}
+
+#[cfg(unix)]
+#[test]
+fn streamed_recovery_and_inspection_fit_below_historical_descriptor_count() {
+    let f = Fixture::new();
+    let configured = LedgerSegmentLimits {
+        records: 1,
+        bytes: 4096,
+    };
+    let mut ledger = must(SegmentedLedger::create(
+        f.file("owner"),
+        f.file("0"),
+        binding(),
+        configured,
+    ));
+    for index in 0..128 {
+        if index > 0 {
+            let anchor = must(ledger.anchor());
+            must(ledger.rotate(f.new_file(&index.to_string()), anchor));
+        }
+        append(&mut ledger, decision(index));
+    }
+    let anchor = must(ledger.anchor());
+    must(fs::write(
+        f.root.join("retained-anchor"),
+        anchor.chain_digest.as_array(),
+    ));
+    drop(ledger);
+    let output = must(Command::new("sh")
+        .args(["-c", r#"ulimit -n 64 && exec "$1" --exact segments::tests::streamed_history_child --nocapture"#, "sh"])
+        .arg(must(std::env::current_exe()))
+        .env("HEPTA_STREAMED_SEGMENT_FIXTURE", &f.root)
+        .output());
+    assert!(
+        output.status.success(),
+        "{}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }

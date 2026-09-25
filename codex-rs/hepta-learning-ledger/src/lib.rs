@@ -143,6 +143,7 @@ pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
 pub use segments::SegmentedLedger;
 pub use segments::inspect_ledger_segments;
+pub use segments::inspect_ledger_segments_with_opener;
 pub use shadow::ShadowAppendReceipt;
 pub use shadow::ShadowDecisionArtifact;
 pub use shadow::ShadowDecisionError;

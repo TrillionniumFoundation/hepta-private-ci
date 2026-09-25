@@ -107,7 +107,7 @@ fn draft(
 
 #[tokio::test]
 async fn claim_freezes_schedule_revision_before_occurrence_materialization() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75100",
@@ -147,7 +147,7 @@ async fn claim_freezes_schedule_revision_before_occurrence_materialization() {
 
 #[tokio::test]
 async fn queue_submission_is_not_occurrence_or_taskflow_success() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75101",
@@ -238,7 +238,7 @@ async fn queue_submission_is_not_occurrence_or_taskflow_success() {
 
 #[tokio::test]
 async fn allow_overlap_advances_recurrence_without_terminalizing_prior_occurrence() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75104",
@@ -303,7 +303,7 @@ async fn allow_overlap_advances_recurrence_without_terminalizing_prior_occurrenc
 
 #[tokio::test]
 async fn forbid_overlap_parks_recurrence_until_terminal_observation() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75102",
@@ -384,7 +384,7 @@ async fn forbid_overlap_parks_recurrence_until_terminal_observation() {
 
 #[tokio::test]
 async fn terminal_observer_cursor_is_durable_bounded_progress() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75108",
@@ -495,7 +495,7 @@ async fn terminal_observer_cursor_is_durable_bounded_progress() {
 
 #[tokio::test]
 async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75103",
@@ -614,7 +614,7 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
 
 #[tokio::test]
 async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75105",
@@ -711,7 +711,7 @@ async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurren
 
 #[tokio::test]
 async fn stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_occurrence() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75106",
@@ -771,7 +771,7 @@ async fn stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_
 
 #[tokio::test]
 async fn retired_stale_generation_before_uncertainty_closes_without_provider_contact() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75107",
@@ -824,7 +824,7 @@ async fn retired_stale_generation_before_uncertainty_closes_without_provider_con
 
 #[tokio::test]
 async fn reopen_rejects_tampered_canonical_occurrence_identity() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75107",
@@ -878,7 +878,7 @@ async fn reopen_rejects_tampered_canonical_occurrence_identity() {
 
 #[tokio::test]
 async fn durable_recovery_cursor_rotates_past_a_long_running_occurrence() {
-    let fixture = Fixture::new().expect("valid owner fixture");
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let scheduler = AutomationScheduler::new(
         store.clone(),

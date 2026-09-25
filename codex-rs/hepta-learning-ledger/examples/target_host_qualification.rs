@@ -171,12 +171,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let storage_bytes = directory_bytes(&root)?;
     let reopen_start = Instant::now();
-    let segments = (0..segment_count)
-        .map(|index| read_write(&root.join(index.to_string())))
-        .collect::<Result<Vec<_>, _>>()?;
-    let recovered = SegmentedLedger::recover(
+    let recovered = SegmentedLedger::recover_with_opener(
         read_write(&root.join("owner"))?,
-        segments,
+        segment_count,
+        |index| read_write(&root.join(index.to_string())).map_err(Into::into),
         binding,
         limits,
         checkpoint,

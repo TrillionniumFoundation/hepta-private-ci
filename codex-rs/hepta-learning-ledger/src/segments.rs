@@ -109,19 +109,49 @@ impl SegmentedLedger {
         limits: LedgerSegmentLimits,
         minimum: LedgerSegmentCheckpoint,
     ) -> Result<Self, DurableLedgerError> {
+        let count = segments.len();
+        let mut segments = segments.into_iter();
+        Self::recover_with_opener(
+            owner_lock,
+            count,
+            |_| segments.next().ok_or(DurableLedgerError::InvalidLimit),
+            binding,
+            limits,
+            minimum,
+        )
+    }
+
+    /// Recover through the host's ordered segment opener without retaining one
+    /// descriptor per historical segment. The stable owner lock is held before
+    /// any opener call; each historical segment is verified and closed before
+    /// the next opens. Only the final segment remains writable after recovery.
+    ///
+    /// The host must resolve its existing authenticated segment inventory. This
+    /// callback grants no path authority, permits no missing history, and does
+    /// not turn full-history replay into checkpoint-and-tail recovery.
+    pub fn recover_with_opener<F>(
+        owner_lock: File,
+        count: usize,
+        mut open_segment: F,
+        binding: Digest32,
+        limits: LedgerSegmentLimits,
+        minimum: LedgerSegmentCheckpoint,
+    ) -> Result<Self, DurableLedgerError>
+    where
+        F: FnMut(usize) -> Result<File, DurableLedgerError>,
+    {
         validate(binding, limits)?;
-        if segments.is_empty() || segments.len() > MAX_LEDGER_SEGMENTS {
+        if count == 0 || count > MAX_LEDGER_SEGMENTS {
             return Err(DurableLedgerError::InvalidLimit);
         }
         let owner = LockedFile::acquire(owner_lock)?;
-        let count = segments.len();
         if minimum.segment >= count {
             return Err(DurableLedgerError::AcknowledgedHistoryMissing);
         }
         let mut core = LearningLedger::new();
         let mut final_file = None;
-        for (index, file) in segments.into_iter().enumerate() {
-            let mut file = LockedFile::acquire(file)?;
+        for index in 0..count {
+            let mut file = LockedFile::acquire(open_segment(index)?)?;
             let predecessor = current_anchor(&core);
             let parsed =
                 segment_codec::replay(&mut file, binding, limits, index, predecessor, &mut core)?;
@@ -341,13 +371,38 @@ pub fn inspect_ledger_segments(
     limits: LedgerSegmentLimits,
     anchor: LedgerAnchor,
 ) -> Result<LedgerSnapshot, DurableLedgerError> {
+    let count = segments.len();
+    let mut segments = segments.into_iter();
+    inspect_ledger_segments_with_opener(
+        count,
+        |_| segments.next().ok_or(DurableLedgerError::InvalidLimit),
+        binding,
+        limits,
+        anchor,
+    )
+}
+
+/// Read a witnessed sealed history with one open segment at a time. The host
+/// owns the same explicit inventory as recovery; all ordinal, seal, predecessor
+/// and witness checks remain required. No live writer or erasure authority is
+/// acquired and the resulting projection still retains full bounded history.
+pub fn inspect_ledger_segments_with_opener<F>(
+    count: usize,
+    mut open_segment: F,
+    binding: Digest32,
+    limits: LedgerSegmentLimits,
+    anchor: LedgerAnchor,
+) -> Result<LedgerSnapshot, DurableLedgerError>
+where
+    F: FnMut(usize) -> Result<File, DurableLedgerError>,
+{
     validate(binding, limits)?;
-    if segments.is_empty() || segments.len() > MAX_LEDGER_SEGMENTS {
+    if count == 0 || count > MAX_LEDGER_SEGMENTS {
         return Err(DurableLedgerError::InvalidLimit);
     }
     let mut core = LearningLedger::new();
-    for (index, file) in segments.into_iter().enumerate() {
-        let mut guard = segment_codec::SharedSegment::acquire(file)?;
+    for index in 0..count {
+        let mut guard = segment_codec::SharedSegment::acquire(open_segment(index)?)?;
         let predecessor = current_anchor(&core);
         let parsed =
             segment_codec::replay(&mut guard.0, binding, limits, index, predecessor, &mut core)?;

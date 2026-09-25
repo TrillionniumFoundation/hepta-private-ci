@@ -385,6 +385,13 @@ async fn context_reads_a_candidate_beyond_the_first_owner_page() {
             .count(),
         1
     );
+    assert_eq!(context.items.len(), 4);
+    assert_eq!(&context.items[0].memory_id, target_id);
+    assert_eq!(&context.items[0].content, target_token);
+    let single = read(&store, &owner, 1, target_token, 1, None)
+        .await
+        .unwrap();
+    assert_eq!(single.items, vec![context.items[0].clone()]);
     revalidate(
         &store,
         &owner,
