@@ -67,6 +67,10 @@ use crate::RetrievalRequest;
 #[path = "cognitive_runtime_identity.rs"]
 mod identity;
 
+#[cfg(test)]
+#[path = "cognitive_federation_discovery_tests.rs"]
+mod discovery_tests;
+
 const PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(2);
 const PRODUCT_FEDERATION_DISCOVERY_BUDGET: Duration = Duration::from_secs(1);
 const PRODUCT_FEDERATION_OWNER_DISCOVERY_BUDGET: Duration = Duration::from_millis(250);

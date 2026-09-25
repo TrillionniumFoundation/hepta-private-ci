@@ -86,7 +86,7 @@ async fn federation_product_local_capacity_measurement() {
             .with_federation_sources(consumer_id.clone(), layouts.clone());
         let mut recall_us = Vec::new();
         let mut final_use_us = Vec::new();
-        for _ in 0..5 {
+        for _ in 0..100 {
             let start = Instant::now();
             let (batch, coverage) = runtime
                 .retrieve_product_federated(
@@ -123,10 +123,12 @@ async fn federation_product_local_capacity_measurement() {
             "FEDERATION_LOCAL_MEASUREMENT {}",
             serde_json::json!({
                 "profile":"local-sqlite-debug-smoke-not-production-slo",
-                "peers":count,"records_per_peer":8,"samples":5,
+                "peers":count,"records_per_peer":8,"samples":100,
                 "recall_us":recall_us,"final_use_us":final_use_us,
-                "recall_median_us":recall_us[2],"recall_max_us":recall_us[4],
-                "final_use_median_us":final_use_us[2],"final_use_max_us":final_use_us[4],
+                "recall_p50_us":recall_us[49],"recall_p95_us":recall_us[94],
+                "recall_p99_us":recall_us[98],"recall_max_us":recall_us[99],
+                "final_use_p50_us":final_use_us[49],"final_use_p95_us":final_use_us[94],
+                "final_use_p99_us":final_use_us[98],"final_use_max_us":final_use_us[99],
                 "all_peers_completed":true,"failed_peers":0
             })
         );
