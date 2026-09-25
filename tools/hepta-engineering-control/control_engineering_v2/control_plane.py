@@ -340,6 +340,9 @@ class EngineeringStore:
                     _error("store_schema_version_mismatch")
                 self._validate_schema_objects()
                 self._configure_durability()
+                self._validate_store_integrity()
+                self._verify_capacity_reservations()
+                self.verify_audit_chain()
             else:
                 if version == 0:
                     if tables:
@@ -347,11 +350,16 @@ class EngineeringStore:
                 elif metadata_version != version:
                     _error("store_schema_version_mismatch")
                 self._configure_durability()
-                self._create_schema(version)
-                self._validate_schema_objects()
-            self._validate_store_integrity()
-            self._verify_capacity_reservations()
-            self.verify_audit_chain()
+                # Schema creation/backfill, version publication and every startup
+                # validation belong to one outer transaction.  A malformed or
+                # unrecoverable predecessor must remain the same predecessor after
+                # rejection instead of being stamped as the current schema.
+                with self._transaction():
+                    self._create_schema(version)
+                    self._validate_schema_objects()
+                    self._validate_store_integrity()
+                    self._verify_capacity_reservations()
+                    self.verify_audit_chain()
         except Exception:
             self.connection.close()
             raise
