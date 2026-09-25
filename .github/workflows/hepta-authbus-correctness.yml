@@ -165,8 +165,17 @@ jobs:
           --minimum-tests 1 --timeout-seconds 3600 --
           just test --locked -p codex-hepta-bao-adapter --all-targets --retries 0 --test-threads 2
 
-      - name: Exercise the ordinary Agentd text product path
+      - name: Prepare verified V8 only for the Agentd product path
+        id: v8
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.native.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/scripts
+        run: python3 ../scripts/hepta_ci_v8.py
+
+      - name: Exercise the ordinary Agentd text product path
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.native.outcome == 'success' && steps.v8.outcome == 'success' }}
         working-directory: codex-rs
         run: >-
           python3 ../scripts/hepta_ci_exec.py
