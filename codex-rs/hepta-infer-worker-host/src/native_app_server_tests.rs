@@ -500,6 +500,28 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     assert_eq!(accepted_record.observation.as_ref(), Some(&accepted));
     assert_eq!(accepted_record.pre_dispatch_stop, None);
 
+    // Reopen the actual product owner through the new checkpoint format.
+    // An exact retry must return the observed result without another provider
+    // attempt or consuming another independent final-use grant.
+    durable.compact_journal()?;
+    drop(durable);
+    let mut durable = DurableInferenceControl::open(&journal, 8)?;
+    let before_retry = durable.journal_capacity_status();
+    let recovered = driver
+        .run(
+            &mut durable,
+            NativeAdmission {
+                request_id: ACCEPT_REQUEST_ID.to_string(),
+                maximum_in_flight: 1,
+            },
+            "answer from the verified memory".to_string(),
+            Some("lemon".to_string()),
+            &CancellationToken::new(),
+        )
+        .await?;
+    assert_eq!(recovered, accepted);
+    assert_eq!(durable.journal_capacity_status(), before_retry);
+
     assert_eq!(
         response_mock.requests().len(),
         1,

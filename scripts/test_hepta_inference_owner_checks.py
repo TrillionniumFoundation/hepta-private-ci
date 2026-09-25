@@ -13,7 +13,7 @@ class InferenceOwnerCheckTests(unittest.TestCase):
         self,
     ):
         plans = checks.commands(Path("/tmp/records"))
-        self.assertEqual(len(plans), 3)
+        self.assertEqual(len(plans), len(checks.TESTS))
         for command in plans:
             self.assertEqual(command[command.index("--minimum-tests") + 1], "1")
             start = command.index("--") + 1
@@ -28,10 +28,13 @@ class InferenceOwnerCheckTests(unittest.TestCase):
         self,
     ):
         with tempfile.TemporaryDirectory() as directory:
-            results = [subprocess.CompletedProcess([], code) for code in [1, 0, 0]]
+            results = [
+                subprocess.CompletedProcess([], code)
+                for code in [1] + [0] * (len(checks.TESTS) - 1)
+            ]
             with patch.object(checks.subprocess, "run", side_effect=results) as run:
                 self.assertEqual(checks.run_suite(Path(directory)), 1)
-                self.assertEqual(run.call_count, 3)
+                self.assertEqual(run.call_count, len(checks.TESTS))
                 self.assertTrue(
                     all(call.kwargs["check"] is False for call in run.call_args_list)
                 )
@@ -46,9 +49,12 @@ class InferenceOwnerCheckTests(unittest.TestCase):
                 self.assertEqual(checks.run_suite(Path(directory)), 0)
 
     def test_test_filters_name_existing_source_tests_not_speculative_capabilities(self):
-        source = (
-            checks.ROOT / "codex-rs/hepta-infer-core/src/native_growth_tests.rs"
-        ).read_text()
+        source = "\n".join(
+            path.read_text()
+            for path in (checks.ROOT / "codex-rs/hepta-infer-core/src").glob(
+                "*_tests.rs"
+            )
+        )
         for _, name, _ in checks.TESTS:
             self.assertIn(f"fn {name}()", source)
         names = " ".join(name for _, name, _ in checks.TESTS)
@@ -74,6 +80,21 @@ class InferenceOwnerCheckTests(unittest.TestCase):
         self.assertTrue(scope["native"])
         self.assertTrue(scope["inference"])
         self.assertFalse(scope["effects"])
+
+    def test_native_product_job_does_not_depend_on_registry_or_owner_success(self):
+        workflow = (
+            checks.ROOT / ".github/workflows/hepta-inference-maintenance.yml"
+        ).read_text()
+        product = workflow.split("  native-product-regression:", 1)[1]
+        self.assertNotIn("needs:", product)
+        self.assertIn("--retries 0 -p codex-hepta-infer-worker-host --lib", product)
+        self.assertIn("--minimum-tests 1", product)
+        self.assertLess(
+            product.index("Execute native authorization"),
+            product.index("Verify exact source navigation"),
+        )
+        self.assertIn("always() && steps.identity.outcome == 'success'", product)
+        self.assertIn('["source-head","base-merge"]', product)
 
 
 if __name__ == "__main__":

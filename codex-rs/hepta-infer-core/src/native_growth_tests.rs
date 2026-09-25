@@ -1,5 +1,6 @@
-//! Real file-backed owner curves. This measures the implemented exclusive-writer
-//! journal, not a multi-writer protocol or a compaction implementation.
+//! Real file-backed owner curves. This measurement exercises append/replay growth
+//! without requesting compaction; separate crash-cut tests qualify current-state
+//! checkpoint compaction. Neither suite proves multi-writer replay or archival.
 use super::*;
 use std::time::Instant;
 
@@ -182,5 +183,65 @@ fn process_loss_after_commit_reopens_without_duplicate_admission() {
         NativeReservationState::Released
     );
     drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+#[ignore = "entry point called only by the parent compaction crash test"]
+fn native_compaction_crash_child() {
+    let Some(path) = std::env::var_os("HEPTA_INFERENCE_COMPACTION_JOURNAL") else {
+        return;
+    };
+    let stage =
+        std::env::var("HEPTA_INFERENCE_COMPACTION_CRASH_STAGE").expect("compaction crash stage");
+    assert!(matches!(stage.as_str(), "before_rename" | "after_rename"));
+    let mut control = DurableInferenceControl::open(PathBuf::from(path), 8).unwrap();
+    let _ = control.compact_journal().unwrap();
+    panic!("compaction crash hook did not terminate the child");
+}
+
+#[test]
+fn compaction_crash_cuts_reopen_one_exact_state_without_duplicate_release() {
+    let path = path("compaction-crash-cuts");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut observed = output(NativeRunStatus::Completed, Some(1));
+    observed.output = "x".repeat(64 * 1024);
+    for tokens in 1..=4 {
+        observed.observed_output_tokens = Some(tokens);
+        control.settle_native("r1", observed.clone()).unwrap();
+    }
+    let expected = control.native_record("r1").unwrap().clone();
+    drop(control);
+
+    for (stage, exit_code) in [("before_rename", 74), ("after_rename", 75)] {
+        let status = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "durable_control::native::tests::growth::native_compaction_crash_child",
+                "--ignored",
+                "--nocapture",
+            ])
+            .env("HEPTA_INFERENCE_COMPACTION_JOURNAL", &path)
+            .env("HEPTA_INFERENCE_COMPACTION_CRASH_STAGE", stage)
+            .status()
+            .unwrap();
+        assert_eq!(status.code(), Some(exit_code), "stage={stage}");
+
+        let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+        assert_eq!(reopened.native_record("r1"), Some(&expected));
+        assert_eq!(reopened.native.active_reservations, 0);
+        let before_duplicate = reopened.journal_capacity_status().journal_bytes;
+        assert_eq!(
+            reopened.settle_native("r1", observed.clone()).unwrap(),
+            expected
+        );
+        assert_eq!(
+            reopened.journal_capacity_status().journal_bytes,
+            before_duplicate
+        );
+        drop(reopened);
+    }
+    assert!(!crate::durable_control::compaction_path(&path).exists());
     std::fs::remove_file(path).unwrap();
 }

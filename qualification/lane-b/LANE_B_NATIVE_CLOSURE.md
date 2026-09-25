@@ -121,7 +121,7 @@ External evidence gates:
 
 ## 6. `inference.control`
 
-The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.
+One retained DurableInferenceControl owns legacy/native records and future-byte liabilities, with a stable writer sidecar across checkpoint replacement; checkpoints retain all identities and unknown-effect responsibilities.
 
 The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.
 
@@ -131,12 +131,14 @@ The actual Agent-fenced App Server client supplies matching turn observations th
 | `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn dispatch_native(` |
 | `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn cancel_native(` |
 | `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn settle_native(` |
+| `compact_journal` | `owner_native` | `codex-rs/hepta-infer-core/src/journal_maintenance.rs` — `pub fn compact_journal(` |
+| `journal_capacity_status` | `owner_native` | `codex-rs/hepta-infer-core/src/journal_maintenance.rs` — `pub fn journal_capacity_status(` |
 
 Remaining repository implementation gaps:
 
 - Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.
 - Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.
-- Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history.
+- Current-state checkpoints reclaim superseded events; content-addressed external archives, identity garbage collection and trusted backup anti-rollback remain unimplemented.
 
 External evidence gates:
 
@@ -266,6 +268,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 54 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 56 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.

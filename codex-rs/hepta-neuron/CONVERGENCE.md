@@ -59,3 +59,13 @@ consumption remain implementation work. Target-host model measurements,
 future-window retention/unlearning, independent review and operator acceptance
 remain separate evidence gates. Execution records must bind actual source/merge
 commits and retain failed attempts; this document is not a test-pass receipt.
+
+## Concurrent integration advance
+
+During this continuation the integration branch advanced from `19426443...` to
+`6ca21fbd539ecadf52684b336215b6a81f14167d`. Its inference-control terminal-capacity,
+checkpoint maintenance, native-host tests and lane evidence changes are retained.
+There were no Neuron/Agentd source conflicts. Overlapping implementation-map
+source-observation identities are regenerated from the reconciled tree instead
+of selecting either earlier identity as current proof. This does not transfer
+the earlier integration's test results onto the new dependency source.
