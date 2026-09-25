@@ -360,3 +360,43 @@ fn owner_result_metadata_must_match_the_independently_replayed_native_receipt() 
     checked(runtime.rollover(fixture.named_file("next-segment"), /*max_records*/ 16));
     checked(runtime.validate_committed_operation(&original));
 }
+
+#[test]
+fn full_witness_rejects_before_model_or_prepare_and_keeps_history_queryable() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = checked(crate::FileAnchorWitnessStore::open(
+        fixture.named_file("witness"),
+        scope(),
+        native.generation,
+        /*max_records*/ 1,
+    ));
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        fixture.operations(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        /*max_operations*/ 16,
+        config,
+        witness,
+    ));
+    let mut model = FakeModel::new();
+    let first_input = input(1, Digest32::ZERO);
+    let first = checked(runtime.tick(&mut model, first_input.clone()));
+    let before = checked(fs::read(fixture.0.join("operations")));
+    let result = runtime.tick(&mut model, input(2, first.tick.checkpoint_after));
+    assert_eq!(
+        result.err(),
+        Some(NeuronRuntimeError::Witness(WitnessStoreError::Capacity))
+    );
+    assert_eq!(model.calls, 1);
+    assert_eq!(checked(runtime.operations.pending()), None);
+    assert_eq!(checked(fs::read(fixture.0.join("operations"))), before);
+    assert_eq!(
+        checked(runtime.query_result(&first_input.tick_id, checked(first_input.semantic_digest()))),
+        Some(first.clone())
+    );
+    assert_eq!(checked(runtime.tick(&mut model, first_input)), first);
+}

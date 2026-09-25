@@ -35,6 +35,13 @@ fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
 struct Witness(Arc<Mutex<Option<JournalAnchor>>>);
 
 impl AnchorWitnessStore for Witness {
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        if self.current()? != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        Ok(())
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         self.0
             .lock()

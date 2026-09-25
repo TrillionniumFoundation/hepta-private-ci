@@ -130,6 +130,19 @@ impl FileAnchorWitnessStore {
 }
 
 impl AnchorWitnessStore for FileAnchorWitnessStore {
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        if self.poisoned {
+            return Err(WitnessStoreError::Poisoned);
+        }
+        if self.current != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        if self.records >= self.max_records {
+            return Err(WitnessStoreError::Capacity);
+        }
+        Ok(())
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         if self.poisoned {
             Err(WitnessStoreError::Poisoned)
@@ -143,17 +156,9 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
         expected: Option<JournalAnchor>,
         next: JournalAnchor,
     ) -> Result<(), WitnessStoreError> {
-        if self.poisoned {
-            return Err(WitnessStoreError::Poisoned);
-        }
-        if self.current != expected {
-            return Err(WitnessStoreError::Conflict);
-        }
+        self.admit_new_anchor(expected)?;
         if !is_successor(expected, next) {
             return Err(WitnessStoreError::InvalidAnchor);
-        }
-        if self.records >= self.max_records {
-            return Err(WitnessStoreError::Capacity);
         }
         let record = encode_record(expected, next);
         let expected_length = (HEADER + self.records * RECORD) as u64;

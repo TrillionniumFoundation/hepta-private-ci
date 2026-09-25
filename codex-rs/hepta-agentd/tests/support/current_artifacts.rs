@@ -139,15 +139,6 @@ impl Artifacts {
         bytes: &[u8],
         change: impl FnOnce(&mut LearningArtifactManifestV2),
     ) -> SignedArtifactSelectionV1 {
-        let owner = self.owner.lock().unwrap();
-        let mut registry = owner.recover_current_registry(50).unwrap();
-        let previous = registry.snapshot().head_digest;
-        let generation = owner
-            .discover_current_head(50)
-            .unwrap()
-            .map_or(Generation::new(1).unwrap(), |h| {
-                h.signed.witness.generation.next().unwrap()
-            });
         let mut manifest = LearningArtifactManifestV2 {
             artifact_id: artifact.artifact_id.clone(),
             kind: ArtifactKind::Policy,
@@ -171,6 +162,24 @@ impl Artifacts {
             expires_at: 1000,
         };
         change(&mut manifest);
+        self.publish_manifest(manifest, bytes)
+    }
+
+    pub(super) fn publish_manifest(
+        &self,
+        manifest: LearningArtifactManifestV2,
+        bytes: &[u8],
+    ) -> SignedArtifactSelectionV1 {
+        let owner = self.owner.lock().unwrap();
+        let mut registry = owner.recover_current_registry(50).unwrap();
+        let previous = registry.snapshot().head_digest;
+        let generation = owner
+            .discover_current_head(50)
+            .unwrap()
+            .map_or(Generation::new(1).unwrap(), |h| {
+                h.signed.witness.generation.next().unwrap()
+            });
+        let artifact_id = manifest.artifact_id.clone();
         let admission = admit_manifest_at_withdrawal_head_v3(
             &self.withdrawals,
             self.withdrawals.head_digest(),
@@ -180,7 +189,7 @@ impl Artifacts {
         .unwrap();
         let mut tx = owner
             .begin_publication(
-                id(&format!("publish.{}", artifact.generation.get())),
+                id(&format!("publish.{artifact_id}")),
                 admission,
                 &self.withdrawals,
                 &registry,
@@ -209,7 +218,7 @@ impl Artifacts {
             .unwrap();
         owner.acknowledge(&mut tx, &self.withdrawals, 50).unwrap();
         drop(owner);
-        self.select(&artifact.artifact_id)
+        self.select(&artifact_id)
     }
 
     pub(super) fn select(&self, artifact: &StableId) -> SignedArtifactSelectionV1 {

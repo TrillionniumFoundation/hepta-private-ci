@@ -53,7 +53,7 @@ actual committed-state handoff to intuition. Its qualification feature backend
 remains a deterministic test implementation, not a selected production model.
 
 A concrete authenticated startup/input factory, selected feature backend and
-selected-artifact/calibration/OOD trust remain integration/deployment work.
+deployment of the selected-artifact/calibration/OOD guard remain integration/deployment work.
 Versioned V2/DecisionCell durable migration and actual base/organ/cell parameter
 consumption remain implementation work. Target-host model measurements,
 future-window retention/unlearning, independent review and operator acceptance
@@ -69,3 +69,24 @@ There were no Neuron/Agentd source conflicts. Overlapping implementation-map
 source-observation identities are regenerated from the reconciled tree instead
 of selecting either earlier identity as current proof. This does not transfer
 the earlier integration's test results onto the new dependency source.
+
+## This continuation
+
+The current continuation absorbs integration commit
+`80891ea44b7e2fdfa347cae6dac055f36503eab5` into the existing Neuron candidate
+`4d3e4e13f49596c2d5017b1e38055c26370a11ae`; source merge commit is
+`57dd8a9de079041b01771c08aa491272ea0dd6fc`. Rust sources merged without conflicts.
+Conflicting generated maps retain the newer integrated owner records, then rebind
+only actual changed source. Detailed-design hashes are computed from merged files.
+
+A new red/green regression exposed and repairs witness-capacity failure after
+model execution and journal commit. All witness implementations explicitly admit
+new anchors before work; completed history remains queryable at capacity.
+
+The concrete Agentd selected-artifact guard now verifies real signed CURRENT,
+independent selections, exact model manifest/weights and calibration/OOD summary
+bytes tied to a non-circular execution profile. It reuses the existing artifact
+owner and its publication lock. It is available through `into_selected_shared`;
+it does not provide the still-missing authenticated CLI invocation factory or a
+real inference-control feature backend, and does not assert V2 migration, Laya
+activation or independently accepted empirical results.

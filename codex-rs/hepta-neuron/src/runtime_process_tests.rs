@@ -35,6 +35,9 @@ struct ExitWitness {
     cut: String,
 }
 impl AnchorWitnessStore for ExitWitness {
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        self.inner.admit_new_anchor(expected)
+    }
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         self.inner.current()
     }

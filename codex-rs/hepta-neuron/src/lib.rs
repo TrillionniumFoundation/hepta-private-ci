@@ -15,6 +15,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod artifact_binding;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -30,6 +31,8 @@ mod runtime_types;
 mod sparse;
 mod witness;
 
+pub use artifact_binding::NEURON_CALIBRATION_SUMMARY_SCHEMA_V1;
+pub use artifact_binding::NEURON_OOD_SUMMARY_SCHEMA_V1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;

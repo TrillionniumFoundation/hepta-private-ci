@@ -346,3 +346,6 @@ mod shared_process_tests;
 
 #[path = "support/shared_terminal_manifest_tests.rs"]
 mod shared_manifest_tests;
+
+#[path = "support/neuron_artifact_tests.rs"]
+mod neuron_artifact_tests;

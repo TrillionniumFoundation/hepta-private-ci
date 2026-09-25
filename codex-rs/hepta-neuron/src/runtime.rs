@@ -174,6 +174,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(runtime)
     }
 
+    /// Frozen owner configuration for native product composition. This exposes
+    /// no mutation or authority; recovery validates its durable identity first.
+    pub fn configuration(&self) -> &NeuronRuntimeConfigV1 {
+        &self.config
+    }
+
     /// Exact immutable identity frozen by the operation-store header.
     pub fn configuration_digest(&self) -> Result<Digest32, NeuronRuntimeError> {
         self.config.semantic_digest()

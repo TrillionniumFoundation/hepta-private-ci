@@ -90,6 +90,8 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             checkpoint_digest: checkpoint.digest(),
         });
 
+        self.witness.admit_new_anchor(expected_anchor)?;
+
         let started = Instant::now();
         let model_output = model.execute(&model_request)?;
         validate_model_output(&self.config, &model_output)?;

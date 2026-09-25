@@ -78,6 +78,13 @@ impl MemoryWitness {
 }
 
 impl AnchorWitnessStore for MemoryWitness {
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        if self.current()? != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        Ok(())
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         self.current
             .lock()
@@ -119,6 +126,13 @@ impl AckLossWitness {
 }
 
 impl AnchorWitnessStore for AckLossWitness {
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        if self.current()? != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        Ok(())
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         if self.fail_next_read.swap(false, Ordering::SeqCst) {
             return Err(WitnessStoreError::Unavailable);
@@ -898,3 +912,6 @@ mod admission;
 
 #[path = "runtime_process_tests.rs"]
 mod process;
+
+#[path = "artifact_binding_tests.rs"]
+mod artifact_binding;

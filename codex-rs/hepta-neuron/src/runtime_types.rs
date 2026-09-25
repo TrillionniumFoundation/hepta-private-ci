@@ -100,7 +100,7 @@ pub struct NeuronCalibrationProfileV1 {
 }
 
 impl NeuronCalibrationProfileV1 {
-    fn validate(&self, generation: Generation) -> Result<(), NeuronRuntimeError> {
+    pub(crate) fn validate(&self, generation: Generation) -> Result<(), NeuronRuntimeError> {
         if self.calibration_artifact_digest.is_zero() {
             return Err(NeuronRuntimeError::EmptyDigest("calibration artifact"));
         }
@@ -422,6 +422,12 @@ impl From<io::Error> for WitnessStoreError {
 /// returning success.
 pub trait AnchorWitnessStore {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
+
+    /// Check the current predecessor and reserve availability under this owner's
+    /// exclusive writer lifetime before model execution or operation prepare.
+    /// Implementations must reject a full or poisoned store. Historical result
+    /// lookup and reconciliation of an already written anchor do not call this.
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError>;
 
     fn compare_and_swap(
         &mut self,

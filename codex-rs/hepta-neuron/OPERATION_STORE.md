@@ -40,7 +40,7 @@ The owner transaction order is:
 
 ```text
 check live host admission and exact input identity
-reject scope/sequence/journal capacity/result capacity before model execution
+reject scope/sequence/journal capacity/result capacity/witness capacity before model execution
 verify the selected model output tuple and compute the pure sparse successor
 check live host admission again
 sync the prepared operation and exact result
@@ -128,3 +128,15 @@ output, and verifies that the model-call log contains one call across retries.
 This covers process teardown/reopen, not disk-controller power loss, a selected
 production model or independent learning efficacy. The existing exhaustive
 partial-byte journal and operation-store tests remain enabled.
+
+## Witness capacity before preparation
+
+`AnchorWitnessStore::admit_new_anchor` is an explicit required native contract.
+Under the exclusive writer lifetime, it rejects a poisoned/full witness or a
+mismatched predecessor before new model execution or durable preparation. The
+file witness reuses the same check at CAS. Historical result lookup and completed
+retries do not consume new capacity; an existing exact witness successor is still
+reconciled without another append. A full witness must not leave a newly committed
+journal successor with a permanently incomplete operation. Capacity exhaustion is
+an admission failure, not a reason to delete acknowledgement history or silently
+raise a configured bound. This adds no new on-disk format or rollover semantics.
