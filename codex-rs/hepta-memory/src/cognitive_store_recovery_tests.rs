@@ -75,7 +75,6 @@ fn recovery_authority(owner: &AgentId) -> crate::ProductionAuthorityLease {
 struct LinearizedRecoveryState {
     revoked: bool,
     active_uses: usize,
-    verify_calls: u64,
     revocation_requested: bool,
 }
 
@@ -101,24 +100,6 @@ impl Drop for LinearizedRecoveryUse {
 }
 
 impl LinearizedRecoveryVerifier {
-    fn verify_calls(&self) -> u64 {
-        self.state
-            .0
-            .lock()
-            .expect("linearized recovery state")
-            .verify_calls
-    }
-
-    fn wait_for_verify_calls(&self, minimum: u64) {
-        let (lock, changed) = &*self.state;
-        let mut state = lock.lock().expect("linearized recovery state");
-        while state.verify_calls < minimum {
-            state = changed
-                .wait(state)
-                .expect("linearized recovery state after wait");
-        }
-    }
-
     fn wait_for_revocation_request(&self) {
         let (lock, changed) = &*self.state;
         let mut state = lock.lock().expect("linearized recovery state");
@@ -149,12 +130,11 @@ impl crate::ProductionAuthorityVerifier for LinearizedRecoveryVerifier {
         authority: &crate::ProductionAuthorityLease,
         expected_agent: &AgentId,
     ) -> Result<(), String> {
-        let (lock, changed) = &*self.state;
-        let mut state = lock
+        let state = self
+            .state
+            .0
             .lock()
             .map_err(|_| "linearized recovery state poisoned".to_string())?;
-        state.verify_calls = state.verify_calls.saturating_add(1);
-        changed.notify_all();
         if state.revoked {
             return Err("recovery authority revoked".to_string());
         }

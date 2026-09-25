@@ -164,3 +164,29 @@ async fn concurrent_identical_mutations_observe_one_committed_operation() {
     tampered.result_sha256 = tampered.compute_result_sha256();
     assert!(tampered.validate().is_err());
 }
+
+#[tokio::test]
+async fn point_in_time_only_verifier_cannot_leave_a_durable_lease_behind() {
+    let temp = TempDir::new().unwrap();
+    let store = store(&temp).await;
+    let before = store.recovery_anchor().await.unwrap();
+    let point_check = |_authority: &ProductionAuthorityLease, _owner: &AgentId| Ok(());
+    let result = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority(store.owner_agent_id().clone()),
+        Arc::new(point_check),
+        "production:guard-required-before-lease",
+        1,
+    )
+    .await;
+    assert!(matches!(
+        result,
+        Err(ProductionWriterError::AuthorityRejected(_))
+    ));
+    assert_eq!(store.recovery_anchor().await.unwrap(), before);
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_local_leases")
+        .fetch_one(&store.pool)
+        .await
+        .unwrap();
+    assert_eq!(count, 0);
+}

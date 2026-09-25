@@ -403,3 +403,14 @@ The bootstrap source-location obligation for `cognitive.store` is implemented by
 - `codex-rs/hepta-cognitive-store`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Bounded production request identity
+
+Production semantic request hashing preserves the canonical JSON identity while
+streaming into SHA-256. The existing 1 MiB source bound is checked before encoding;
+the encoded request has an 8 MiB hard budget, independent of semantic validation.
+Oversize serialization stops before transaction admission, rather than first
+allocating an unbounded duplicate payload. See `production_cognitive_digest.rs`
+and `production_cognitive_digest_tests.rs` in the existing hepta-memory owner.
+Live writer acquisition obtains an external authority use hold before creating or
+taking over a lease; missing hold support leaves the exact database cut unchanged.

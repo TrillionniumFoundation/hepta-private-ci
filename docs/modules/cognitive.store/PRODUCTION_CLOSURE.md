@@ -43,6 +43,11 @@ transaction and hold in a commit task when the waiting caller is cancelled, so
 an in-flight SQLite COMMIT cannot outlive the hold merely because its response
 was abandoned. Observe the operation result before retrying an uncertain commit.
 
+Creating or taking over the production lease is itself a durable mutation.
+Live writer startup obtains the same external hold before calling the lease
+owner. A point-in-time-only verifier fails without leaving a lease behind.
+The startup task retains that hold even when its response waiter is cancelled.
+
 Receipt validation and the lease deadline check precede final commit. Recovery
 checks expiry again before publishing the active generation. A revocation hold
 does not extend the signed absolute expiry. Process shutdown, physical storage
@@ -67,6 +72,11 @@ VFS placeholder, and not proof that a deployed host has retained the latest cut.
 ## 4. Deterministic result observation and retry
 
 Before dispatch, retain the operation digest computed by the semantic capability.
+Input digesting streams the existing canonical JSON into SHA-256 instead of
+allocating a full second payload. Source bytes retain the existing 1 MiB owner
+bound; encoded request hashing stops at 8 MiB, before transaction admission.
+This resource bound does not replace the owner field/identity validation.
+Valid accepted inputs keep their existing JSON bytes and operation identities.
 `ProductionDurableWriter::cognitive_mutation_result` and the Agentd host's matching
 read-only method return the durable admitted intent identity and terminal result
 metadata. Committed results bind the actual Memory/source revisions, projection,
@@ -131,7 +141,9 @@ python3 scripts/hepta-implementation-maps.py verify
 The dedicated read-only cognitive qualification runs owner, crash, lint, product
 and performance checks without depending on the unrelated whole-workspace test
 step. Each record binds the actual source or deterministic merge candidate.
-The existing PERF-DURABLE executable uses 256 and 16,384 record profiles; a timeout,
+The existing PERF-DURABLE executable uses 256 and 16,384 record profiles on
+both the exact source and deterministic merge where applicable. Strict lint also
+covers the Agentd product test and supervisor handoff targets. A timeout,
 skipped step or build failure is not a measurement. Host-specific performance
 acceptance and independent release decisions are not inferred from CI.
 

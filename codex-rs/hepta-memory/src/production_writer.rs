@@ -255,6 +255,8 @@ impl ProductionAuthorityLease {
 
 #[path = "production_cognitive_commit.rs"]
 mod cognitive_commit;
+#[path = "production_cognitive_digest.rs"]
+mod cognitive_digest;
 
 /// Opaque guard that linearizes one authority use against revocation.
 ///
@@ -802,13 +804,34 @@ impl ProductionDurableWriter {
         lease_id: impl Into<String>,
         generation: u64,
     ) -> Result<Self, ProductionWriterError> {
-        let retained_verifier = Arc::clone(&verifier);
-        let mut writer =
-            Self::open(store, authority, verifier.as_ref(), lease_id, generation).await?;
-        writer.live_verifier = Some(retained_verifier);
-        writer.verify_authority().await?;
-        drop(writer.enter_authority_use()?);
-        Ok(writer)
+        // Creating or taking over a durable lease already mutates the owner.
+        // Reject a point-in-time-only verifier before that mutation, not after
+        // Self::open has committed a lease that the caller cannot safely use.
+        authority.validate_for_agent(store.owner_agent_id())?;
+        let guard = verifier
+            .enter_use(&authority, store.owner_agent_id())
+            .map_err(ProductionWriterError::AuthorityRejected)?;
+        let lease_id = lease_id.into();
+        let runtime = tokio::runtime::Handle::try_current()
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        tokio::task::spawn_blocking(move || {
+            // The waiter may disappear during SQLx lease COMMIT. Retain the
+            // external authority hold until that worker has actually answered.
+            let outcome = runtime.block_on(async move {
+                let retained_verifier = Arc::clone(&verifier);
+                let mut writer =
+                    Self::open(store, authority, verifier.as_ref(), lease_id, generation).await?;
+                writer.live_verifier = Some(retained_verifier);
+                writer.verify_authority().await?;
+                Ok(writer)
+            });
+            drop(guard);
+            outcome
+        })
+        .await
+        .map_err(|error| ProductionWriterError::Durability(format!(
+            "production writer admission task terminated; inspect the durable lease before retry: {error}"
+        )))?
     }
 
     /// Revalidate the external authority immediately before a semantic owner
@@ -2287,9 +2310,13 @@ fn production_cognitive_input_digest<T: Serialize + ?Sized>(
     source: &SourceDraft,
     semantic_input: &T,
 ) -> Result<Sha256Digest, ProductionWriterError> {
-    let bytes = serde_json::to_vec(&(mutation_kind, source, semantic_input))
-        .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
-    Ok(Sha256Digest::for_bytes(&bytes))
+    if source.content.is_empty() || source.content.len() > crate::cognitive_model::MAX_SOURCE_BYTES
+    {
+        return Err(ProductionWriterError::Invalid(
+            "production cognitive source content exceeds its owner bound".to_string(),
+        ));
+    }
+    cognitive_digest::input_digest(&(mutation_kind, source, semantic_input))
 }
 
 fn production_cognitive_operation_digest(
