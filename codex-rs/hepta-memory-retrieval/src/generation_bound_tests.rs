@@ -535,6 +535,43 @@ fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
 }
 
 #[test]
+fn generation_bound_product_recall_binds_canonical_and_legacy_identity() {
+    let cue = cue();
+    let policy = policy();
+    let first = record(1);
+    let second = record(2);
+    let legacy = recall(
+        &cue,
+        &policy,
+        vec![
+            candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
+            candidate(first, RetrievalChannelV1::Entity, 1),
+            candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
+            candidate(second, RetrievalChannelV1::Entity, 2),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("legacy recall: {error}"));
+    let product = adapt_generation_bound_recall_to_canonical_v1(
+        ContractIdV1::new("operation:canonical-recall").expect("operation id"),
+        &legacy,
+        canonical_context(&legacy, 2),
+    )
+    .unwrap_or_else(|error| panic!("canonical product recall: {error}"));
+    product
+        .validate()
+        .unwrap_or_else(|error| panic!("product validation: {error}"));
+    assert_eq!(
+        product
+            .consumer_binding
+            .compatibility_payload_sha256
+            .expect("legacy packet")
+            .digest(),
+        legacy.packet_digest
+    );
+    assert!(product.consumer_binding.currentness_revalidation_required);
+}
+
+#[test]
 fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
     let cue = cue();
     let policy = policy();

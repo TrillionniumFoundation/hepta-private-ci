@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use std::collections::BTreeSet;
 
 fn set<T: Ord>(values: impl IntoIterator<Item = T>) -> BTreeSet<T> {
@@ -12,16 +13,19 @@ fn digest(character: char) -> String {
 fn event(
     id: EventId,
     episode_id: u64,
-    modalities: &[hnmf_reference::ModalityKind],
+    modalities: &[hnmf_reference::ReferenceModalityKind],
     keys: &[&str],
 ) -> MemoryEvent {
     MemoryEvent {
         id,
         episode_id,
+        canonical_event_id: ContractIdV1::new(format!("event:{id}")).expect("event id"),
+        canonical_episode_id: ContractIdV1::new(format!("episode:{episode_id}"))
+            .expect("episode id"),
         modalities: set(modalities.iter().copied()),
         semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
         source_sha256: set([digest(char::from_digit(id as u32 % 6 + 10, 16).unwrap())]),
-        privacy: hnmf_reference::PrivacyClass::AgentPrivate,
+        privacy: hnmf_reference::ReferencePrivacyClass::AgentPrivate,
         valid_from_unix_ms: 1,
         valid_to_unix_ms: None,
         utility_ppm: 100_000,
@@ -33,7 +37,7 @@ fn event(
 fn node(
     id: NodeId,
     population: EngramPopulation,
-    modalities: &[hnmf_reference::ModalityKind],
+    modalities: &[hnmf_reference::ReferenceModalityKind],
     keys: &[&str],
     support_events: &[EventId],
 ) -> EngramNode {
@@ -69,7 +73,7 @@ fn synapse(
 
 fn cue(keys: &[&str]) -> MemoryCue {
     MemoryCue {
-        modalities: set([hnmf_reference::ModalityKind::Text]),
+        modalities: set([hnmf_reference::ReferenceModalityKind::Text]),
         semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
         seed_nodes: BTreeSet::new(),
         now_unix_ms: 10,
@@ -83,7 +87,7 @@ fn fabric() -> HardenedFabric {
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
         ))
         .unwrap();
@@ -91,7 +95,7 @@ fn fabric() -> HardenedFabric {
         .insert_event(event(
             2,
             2,
-            &[hnmf_reference::ModalityKind::Audio],
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
         ))
         .unwrap();
@@ -99,7 +103,7 @@ fn fabric() -> HardenedFabric {
         .insert_node(node(
             1,
             EngramPopulation::SensoryTrace,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
             &[1],
         ))
@@ -108,7 +112,7 @@ fn fabric() -> HardenedFabric {
         .insert_node(node(
             2,
             EngramPopulation::EpisodicBinding,
-            &[hnmf_reference::ModalityKind::Audio],
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
             &[2],
         ))
@@ -253,7 +257,7 @@ fn storage_and_query_candidate_bounds_are_distinct() {
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["alpha"],
         ))
         .unwrap();
@@ -261,7 +265,7 @@ fn storage_and_query_candidate_bounds_are_distinct() {
         .insert_event(event(
             2,
             2,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["beta"],
         ))
         .unwrap();
@@ -269,7 +273,7 @@ fn storage_and_query_candidate_bounds_are_distinct() {
         fabric.insert_event(event(
             3,
             3,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["gamma"],
         )),
         Err(HardeningError::BoundExceeded("stored events"))
@@ -288,7 +292,7 @@ fn generation_overflow_fails_closed() {
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["alpha"],
         ))
         .unwrap();
@@ -325,7 +329,7 @@ fn insertion_order_is_deterministic() {
         .insert_event(event(
             2,
             2,
-            &[hnmf_reference::ModalityKind::Audio],
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
         ))
         .unwrap();
@@ -333,7 +337,7 @@ fn insertion_order_is_deterministic() {
         .insert_event(event(
             1,
             1,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
         ))
         .unwrap();
@@ -341,7 +345,7 @@ fn insertion_order_is_deterministic() {
         .insert_node(node(
             2,
             EngramPopulation::EpisodicBinding,
-            &[hnmf_reference::ModalityKind::Audio],
+            &[hnmf_reference::ReferenceModalityKind::Audio],
             &["alarm"],
             &[2],
         ))
@@ -350,7 +354,7 @@ fn insertion_order_is_deterministic() {
         .insert_node(node(
             1,
             EngramPopulation::SensoryTrace,
-            &[hnmf_reference::ModalityKind::Text],
+            &[hnmf_reference::ReferenceModalityKind::Text],
             &["door"],
             &[1],
         ))

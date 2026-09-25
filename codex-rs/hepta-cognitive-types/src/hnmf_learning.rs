@@ -25,8 +25,11 @@ pub const MAX_ACTIVE_PER_POPULATION: usize = 64;
 pub const MAX_RECURRENT_STEPS: u8 = 4;
 pub const MAX_RECALL_EVENTS: usize = 16;
 pub const MAX_ACTIVATION_PATHS: usize = 32;
+pub const MAX_CONTRADICTIONS: usize = 256;
 pub const MAX_REPLAY_CANDIDATES: usize = 4_096;
 pub const MAX_REPLAY_SELECTION: usize = 256;
+pub const MAX_PLASTICITY_PROPOSALS: usize = 512;
+pub const MAX_FORGET_REFERENCES: usize = 128;
 pub const MAX_WEIGHT_DELTA_PPM: i32 = 50_000;
 pub const Q16_ONE: i32 = 65_536;
 
@@ -397,6 +400,7 @@ impl RecallPacketV1 {
         if self.selected_events.len() > MAX_RECALL_EVENTS
             || self.active_nodes.len() > MAX_ACTIVE_NODES
             || self.activation_paths.len() > MAX_ACTIVATION_PATHS
+            || self.contradictions.len() > MAX_CONTRADICTIONS
         {
             return Err(HnmfContractError::Invalid("recall collection bound"));
         }
@@ -407,14 +411,35 @@ impl RecallPacketV1 {
         ensure_strict_order(&self.active_nodes, "activeNodes")?;
         ensure_strict_order(&self.activation_paths, "activationPaths")?;
         ensure_strict_order(&self.contradictions, "contradictions")?;
+
+        let mut selected_identities = BTreeSet::new();
         for selected in &self.selected_events {
             selected.validate()?;
+            if !selected_identities.insert((selected.event_id.clone(), selected.revision)) {
+                return Err(HnmfContractError::DuplicateIdentity(
+                    "selectedEventIdentity",
+                ));
+            }
         }
+        let mut active_node_ids = BTreeSet::new();
         for node in &self.active_nodes {
             node.validate()?;
+            if !active_node_ids.insert(node.node_id.clone()) {
+                return Err(HnmfContractError::DuplicateIdentity("activeNodeId"));
+            }
         }
+        let mut activation_path_identities = BTreeSet::new();
         for path in &self.activation_paths {
             path.validate()?;
+            if !activation_path_identities.insert((
+                path.source_node_id.clone(),
+                path.target_node_id.clone(),
+                path.relation,
+            )) {
+                return Err(HnmfContractError::DuplicateIdentity(
+                    "activationPathIdentity",
+                ));
+            }
         }
         for contradiction in &self.contradictions {
             contradiction.validate()?;
@@ -610,13 +635,43 @@ impl PlasticityBatchV1 {
                 "plasticity generation/authority",
             ));
         }
+        let proposal_count = self
+            .weight_proposals
+            .len()
+            .checked_add(self.threshold_proposals.len())
+            .ok_or(HnmfContractError::Invalid(
+                "plasticity proposal count overflow",
+            ))?;
+        if proposal_count > MAX_PLASTICITY_PROPOSALS {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "plasticityProposals",
+                actual: proposal_count,
+                maximum: MAX_PLASTICITY_PROPOSALS,
+            });
+        }
         ensure_strict_order(&self.weight_proposals, "weightProposals")?;
         ensure_strict_order(&self.threshold_proposals, "thresholdProposals")?;
+        let mut weight_identities = BTreeSet::new();
         for proposal in &self.weight_proposals {
             proposal.validate()?;
+            if !weight_identities.insert((
+                proposal.source_node_id.clone(),
+                proposal.target_node_id.clone(),
+                proposal.relation,
+            )) {
+                return Err(HnmfContractError::DuplicateIdentity(
+                    "weightProposalIdentity",
+                ));
+            }
         }
+        let mut threshold_node_ids = BTreeSet::new();
         for proposal in &self.threshold_proposals {
             proposal.validate()?;
+            if !threshold_node_ids.insert(proposal.node_id.clone()) {
+                return Err(HnmfContractError::DuplicateIdentity(
+                    "thresholdProposalNodeId",
+                ));
+            }
         }
         Ok(())
     }
@@ -680,11 +735,23 @@ impl TopologyTypedNodesEdgesV1 {
         }
         ensure_strict_order(&self.nodes, "topologyNodes")?;
         ensure_strict_order(&self.edges, "topologyEdges")?;
+        let mut node_ids = BTreeSet::new();
         for node in &self.nodes {
             node.validate()?;
+            if !node_ids.insert(node.node_id.clone()) {
+                return Err(HnmfContractError::DuplicateIdentity("topologyNodeId"));
+            }
         }
+        let mut edge_identities = BTreeSet::new();
         for edge in &self.edges {
             edge.validate()?;
+            if !edge_identities.insert((
+                edge.source_node_id.clone(),
+                edge.target_node_id.clone(),
+                edge.relation,
+            )) {
+                return Err(HnmfContractError::DuplicateIdentity("topologyEdgeIdentity"));
+            }
         }
         Ok(())
     }
@@ -735,6 +802,15 @@ pub struct RetiredSynapseRefV1 {
     pub relation: SynapseRelationV1,
 }
 
+impl RetiredSynapseRefV1 {
+    fn validate(&self) -> Result<(), HnmfContractError> {
+        if self.source_node_id == self.target_node_id {
+            return Err(HnmfContractError::Invalid("retired synapse self-loop"));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ForgetPropagationReceiptV1 {
@@ -755,8 +831,26 @@ impl ForgetPropagationReceiptV1 {
         {
             return Err(HnmfContractError::Conflict("forget propagation"));
         }
+        let reference_count = self
+            .retired_node_ids
+            .len()
+            .checked_add(self.retired_synapses.len())
+            .ok_or(HnmfContractError::Invalid(
+                "forget reference count overflow",
+            ))?;
+        if reference_count > MAX_FORGET_REFERENCES {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "forgetReferences",
+                actual: reference_count,
+                maximum: MAX_FORGET_REFERENCES,
+            });
+        }
         ensure_strict_order(&self.retired_node_ids, "retiredNodeIds")?;
-        ensure_strict_order(&self.retired_synapses, "retiredSynapses")
+        ensure_strict_order(&self.retired_synapses, "retiredSynapses")?;
+        for retired in &self.retired_synapses {
+            retired.validate()?;
+        }
+        Ok(())
     }
 }
 

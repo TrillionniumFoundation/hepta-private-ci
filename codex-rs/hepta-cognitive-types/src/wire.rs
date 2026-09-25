@@ -28,6 +28,10 @@ use crate::hnmf_learning::RecallPacketV1;
 use crate::hnmf_learning::ReplaySelectionReceiptV1;
 use crate::hnmf_learning::SynapseV1;
 use crate::hnmf_learning::TopologyProposalV1;
+use crate::shared_experience::SharedExperiencePublicationV2;
+use crate::shared_experience::SharedExperienceRevocationReceiptV2;
+use crate::shared_experience::SharedExperienceSnapshotV2;
+use crate::shared_experience::SharedExperienceUseReceiptV2;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
@@ -138,6 +142,34 @@ impl_contract!(
     "hepta.hnmf.forget-propagation-receipt.v1",
     65_536,
     ForgetPropagationReceiptV1::validate
+);
+impl_contract!(
+    SharedExperiencePublicationV2,
+    "SharedExperiencePublicationV2",
+    "hepta.shared-experience.publication.v2",
+    262_144,
+    SharedExperiencePublicationV2::validate
+);
+impl_contract!(
+    SharedExperienceSnapshotV2,
+    "SharedExperienceSnapshotV2",
+    "hepta.shared-experience.snapshot.v2",
+    1_048_576,
+    SharedExperienceSnapshotV2::validate
+);
+impl_contract!(
+    SharedExperienceUseReceiptV2,
+    "SharedExperienceUseReceiptV2",
+    "hepta.shared-experience.use-receipt.v2",
+    65_536,
+    SharedExperienceUseReceiptV2::validate
+);
+impl_contract!(
+    SharedExperienceRevocationReceiptV2,
+    "SharedExperienceRevocationReceiptV2",
+    "hepta.shared-experience.revocation-receipt.v2",
+    1_048_576,
+    SharedExperienceRevocationReceiptV2::validate
 );
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

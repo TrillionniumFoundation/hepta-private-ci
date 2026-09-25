@@ -77,6 +77,38 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let recall = inputs.canonical_recall.take();
+        self.prepare_composition_inner(composition, request, inputs, recall)
+            .await
+    }
+
+    /// Convenience adapter to the normal runner, not a parallel execution path.
+    /// Retrieval source authentication remains the retrieval owner's responsibility.
+    pub async fn prepare_with_canonical_recall(
+        &self,
+        coordinator: &crate::AgentRunCoordinator,
+        request: CanonicalIntelligenceRunRequestV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        recall: CanonicalRecallIntelligenceInputV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        if inputs.canonical_recall.is_some() {
+            return Err(AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::CanonicalRecall(
+                    "conflicting canonical recall inputs".into(),
+                ),
+            ));
+        }
+        inputs.canonical_recall = Some(recall);
+        self.prepare(coordinator, request, inputs).await
+    }
+
+    async fn prepare_composition_inner(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        recall: Option<CanonicalRecallIntelligenceInputV1>,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -138,7 +170,15 @@ impl AgentdIntelligenceProductRunnerV1 {
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            match recall {
+                Some(recall) => prepare_intelligence_run_with_canonical_recall(
+                    request,
+                    recall,
+                    &mut ports,
+                    &mut oracle,
+                ),
+                None => prepare_intelligence_run(request, &mut ports, &mut oracle),
+            }
         })?;
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await

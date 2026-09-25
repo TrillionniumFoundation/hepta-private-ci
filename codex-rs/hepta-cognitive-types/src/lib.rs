@@ -5,9 +5,11 @@
 
 #![forbid(unsafe_code)]
 
+pub mod consumer;
 pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
+pub mod shared_experience;
 pub mod wire;
 
 use std::collections::BTreeSet;
@@ -249,3 +251,9 @@ mod tests;
 #[cfg(test)]
 #[path = "contract_tests.rs"]
 mod contract_tests;
+
+#[cfg(test)]
+mod consumer_tests;
+
+#[cfg(test)]
+mod shared_experience_tests;

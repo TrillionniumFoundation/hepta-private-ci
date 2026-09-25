@@ -2,6 +2,7 @@ use std::collections::BTreeSet;
 
 use crate::hnmf::*;
 use crate::hnmf_learning::*;
+use crate::shared_experience::*;
 use crate::wire::*;
 
 fn id(value: &str) -> ContractIdV1 {
@@ -664,6 +665,10 @@ fn bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts() {
         let _ = decode_wire_v1::<PlasticityBatchV1>(&bytes);
         let _ = decode_wire_v1::<TopologyProposalV1>(&bytes);
         let _ = decode_wire_v1::<ForgetPropagationReceiptV1>(&bytes);
+        let _ = decode_wire_v1::<SharedExperiencePublicationV2>(&bytes);
+        let _ = decode_wire_v1::<SharedExperienceSnapshotV2>(&bytes);
+        let _ = decode_wire_v1::<SharedExperienceUseReceiptV2>(&bytes);
+        let _ = decode_wire_v1::<SharedExperienceRevocationReceiptV2>(&bytes);
     }
 }
 
@@ -694,4 +699,335 @@ fn canonical_wire_roundtrip_property_holds_across_registered_contracts() {
     roundtrip!(plasticity(), PlasticityBatchV1);
     roundtrip!(topology(), TopologyProposalV1);
     roundtrip!(forget(), ForgetPropagationReceiptV1);
+}
+
+#[test]
+fn logical_identity_conflicts_are_rejected_before_wire_publication() {
+    let mut duplicate_event = recall_packet();
+    let mut conflicting_event = duplicate_event.selected_events[0].clone();
+    conflicting_event.event_digest = digest('9');
+    duplicate_event.selected_events.push(conflicting_event);
+    duplicate_event.resource_receipt.candidate_event_count = 2;
+    assert_eq!(
+        duplicate_event.validate(),
+        Err(HnmfContractError::DuplicateIdentity(
+            "selectedEventIdentity"
+        ))
+    );
+    assert!(encode_wire_v1(&duplicate_event).is_err());
+
+    let mut duplicate_active_node = recall_packet();
+    let mut conflicting_activation = duplicate_active_node.active_nodes[0].clone();
+    conflicting_activation.activation_ppm += 1;
+    duplicate_active_node
+        .active_nodes
+        .push(conflicting_activation);
+    duplicate_active_node.resource_receipt.node_count = 2;
+    duplicate_active_node.resource_receipt.active_node_count = 2;
+    assert_eq!(
+        duplicate_active_node.validate(),
+        Err(HnmfContractError::DuplicateIdentity("activeNodeId"))
+    );
+    assert!(encode_wire_v1(&duplicate_active_node).is_err());
+
+    let mut duplicate_weight = plasticity();
+    let mut conflicting_weight = duplicate_weight.weight_proposals[0].clone();
+    conflicting_weight.new_weight_q16 = 1_024;
+    conflicting_weight.delta_ppm = 15_625;
+    duplicate_weight.weight_proposals.push(conflicting_weight);
+    duplicate_weight.weight_proposals.sort();
+    assert_eq!(
+        duplicate_weight.validate(),
+        Err(HnmfContractError::DuplicateIdentity(
+            "weightProposalIdentity"
+        ))
+    );
+    assert!(encode_wire_v1(&duplicate_weight).is_err());
+
+    let mut duplicate_threshold = plasticity();
+    let mut conflicting_threshold = duplicate_threshold.threshold_proposals[0].clone();
+    conflicting_threshold.new_threshold_q16 = -1_024;
+    conflicting_threshold.delta_ppm = -15_625;
+    duplicate_threshold
+        .threshold_proposals
+        .push(conflicting_threshold);
+    duplicate_threshold.threshold_proposals.sort();
+    assert_eq!(
+        duplicate_threshold.validate(),
+        Err(HnmfContractError::DuplicateIdentity(
+            "thresholdProposalNodeId"
+        ))
+    );
+    assert!(encode_wire_v1(&duplicate_threshold).is_err());
+
+    let mut duplicate_topology_node = topology();
+    let mut conflicting_node = duplicate_topology_node.typed_nodes_edges.nodes[0].clone();
+    conflicting_node.label = "new-node-z".to_string();
+    duplicate_topology_node
+        .typed_nodes_edges
+        .nodes
+        .push(conflicting_node);
+    duplicate_topology_node.typed_nodes_edges.nodes.sort();
+    duplicate_topology_node.resource_delta.node_delta = 2;
+    assert_eq!(
+        duplicate_topology_node.validate(),
+        Err(HnmfContractError::DuplicateIdentity("topologyNodeId"))
+    );
+    assert!(encode_wire_v1(&duplicate_topology_node).is_err());
+}
+
+#[derive(Clone, Copy)]
+struct FixedSelectorResolver(bool);
+
+impl AssetSelectorResolverV1 for FixedSelectorResolver {
+    fn selector_exists(
+        &self,
+        _manifest: &AssetManifestV1,
+        _span: &ModalitySpanRefV1,
+    ) -> Result<bool, HnmfContractError> {
+        Ok(self.0)
+    }
+}
+
+#[test]
+fn json_pointer_and_symbolic_selector_resolution_fail_closed() {
+    let mut span = text_span();
+    span.modality = ModalityKindV1::StructuredData;
+    span.range = SpanRangeV1::JsonPointer {
+        pointer: "/a~2".to_string(),
+    };
+    assert_eq!(
+        span.validate(),
+        Err(HnmfContractError::Invalid("JSON pointer escape"))
+    );
+    assert!(encode_wire_v1(&span).is_err());
+
+    for pointer in ["", "/a~0b", "/a~1b"] {
+        span.range = SpanRangeV1::JsonPointer {
+            pointer: pointer.to_string(),
+        };
+        span.validate()
+            .unwrap_or_else(|error| panic!("valid JSON pointer {pointer}: {error}"));
+    }
+
+    let manifest = AssetManifestV1 {
+        asset_sha256: span.asset_sha256,
+        modality: ModalityKindV1::StructuredData,
+        extent: AssetExtentV1::StructuredData,
+        preprocessor_manifest_sha256: span.preprocessor_manifest_sha256,
+    };
+    validate_span_against_manifest_v1(&manifest, &span)
+        .unwrap_or_else(|error| panic!("structural manifest validation: {error}"));
+    assert_eq!(
+        validate_span_for_asset_access_v1(&manifest, &span, &FixedSelectorResolver(false)),
+        Err(HnmfContractError::Missing("asset selector"))
+    );
+    validate_span_for_asset_access_v1(&manifest, &span, &FixedSelectorResolver(true))
+        .unwrap_or_else(|error| panic!("owner-confirmed selector: {error}"));
+
+    let text = text_span();
+    let text_manifest = AssetManifestV1 {
+        asset_sha256: text.asset_sha256,
+        modality: ModalityKindV1::Text,
+        extent: AssetExtentV1::Bytes { byte_len: 4 },
+        preprocessor_manifest_sha256: text.preprocessor_manifest_sha256,
+    };
+    validate_span_for_asset_access_v1(&text_manifest, &text, &FixedSelectorResolver(false))
+        .unwrap_or_else(|error| panic!("numeric ranges need no symbolic resolver: {error}"));
+}
+
+#[test]
+fn retired_references_and_pre_serialization_collection_bounds_fail_closed() {
+    let mut self_loop = forget();
+    self_loop.retired_synapses = vec![RetiredSynapseRefV1 {
+        source_node_id: id("node:1"),
+        target_node_id: id("node:1"),
+        relation: SynapseRelationV1::Associative,
+    }];
+    assert_eq!(
+        self_loop.validate(),
+        Err(HnmfContractError::Invalid("retired synapse self-loop"))
+    );
+    assert!(encode_wire_v1(&self_loop).is_err());
+
+    let mut excessive_contradictions = recall_packet();
+    excessive_contradictions.contradictions = (0..=MAX_CONTRADICTIONS)
+        .map(|index| ContradictionV1 {
+            left_node_id: id(&format!("node:left:{index:04}")),
+            right_node_id: id(&format!("node:right:{index:04}")),
+        })
+        .collect();
+    assert!(excessive_contradictions.validate().is_err());
+
+    let mut excessive_plasticity = plasticity();
+    excessive_plasticity.weight_proposals = (0..=MAX_PLASTICITY_PROPOSALS)
+        .map(|index| WeightProposalV1 {
+            source_node_id: id(&format!("node:source:{index:04}")),
+            target_node_id: id(&format!("node:target:{index:04}")),
+            relation: SynapseRelationV1::Associative,
+            old_weight_q16: 0,
+            new_weight_q16: 0,
+            delta_ppm: 0,
+        })
+        .collect();
+    excessive_plasticity.threshold_proposals.clear();
+    assert_eq!(
+        excessive_plasticity.validate(),
+        Err(HnmfContractError::LimitExceeded {
+            field: "plasticityProposals",
+            actual: MAX_PLASTICITY_PROPOSALS + 1,
+            maximum: MAX_PLASTICITY_PROPOSALS,
+        })
+    );
+
+    let mut excessive_forget = forget();
+    excessive_forget.retired_node_ids = (0..=MAX_FORGET_REFERENCES)
+        .map(|index| id(&format!("node:retired:{index:04}")))
+        .collect();
+    assert_eq!(
+        excessive_forget.validate(),
+        Err(HnmfContractError::LimitExceeded {
+            field: "forgetReferences",
+            actual: MAX_FORGET_REFERENCES + 1,
+            maximum: MAX_FORGET_REFERENCES,
+        })
+    );
+}
+
+#[test]
+fn structured_valid_span_property_matrix_roundtrips_deterministically() {
+    for index in 0..128u64 {
+        let mut value = text_span();
+        value.span_id = id(&format!("span:property:{index:03}"));
+        value.range = SpanRangeV1::ByteRange {
+            start: index,
+            end: index + 1,
+        };
+        value.uncertainty_ppm = u32::try_from(index * 1_000).expect("bounded ppm");
+        let bytes = encode_wire_v1(&value).expect("structured property encode");
+        let decoded =
+            decode_wire_v1::<ModalitySpanRefV1>(&bytes).expect("structured property decode");
+        assert_eq!(decoded, value);
+        assert_eq!(
+            encode_wire_v1(&decoded).expect("structured property re-encode"),
+            bytes
+        );
+    }
+}
+
+#[test]
+fn checked_in_cross_language_negative_vectors_are_rejected() {
+    let document: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../qualification/cognitive-types-v1/negative-vectors.json"
+    ))
+    .expect("negative vector document");
+    let cases = document["cases"].as_array().expect("negative vector cases");
+    assert_eq!(cases.len(), 7);
+    for case in cases {
+        let name = case["name"].as_str().expect("negative vector name");
+        let contract = case["contract"].as_str().expect("negative vector contract");
+        let wire = case["wire"].as_str().expect("negative vector wire");
+        let expected = case["expectedErrorContains"]
+            .as_str()
+            .expect("negative vector expected error");
+        let error = match contract {
+            "ModalitySpanRefV1" => decode_wire_v1::<ModalitySpanRefV1>(wire.as_bytes())
+                .map(|_| ())
+                .expect_err(name),
+            "RecallPacketV1" => decode_wire_v1::<RecallPacketV1>(wire.as_bytes())
+                .map(|_| ())
+                .expect_err(name),
+            "PlasticityBatchV1" => decode_wire_v1::<PlasticityBatchV1>(wire.as_bytes())
+                .map(|_| ())
+                .expect_err(name),
+            "TopologyProposalV1" => decode_wire_v1::<TopologyProposalV1>(wire.as_bytes())
+                .map(|_| ())
+                .expect_err(name),
+            "ForgetPropagationReceiptV1" => {
+                decode_wire_v1::<ForgetPropagationReceiptV1>(wire.as_bytes())
+                    .map(|_| ())
+                    .expect_err(name)
+            }
+            other => panic!("unregistered negative-vector contract: {other}"),
+        };
+        assert!(
+            error.to_string().contains(expected),
+            "{name}: unexpected error {error}"
+        );
+    }
+}
+
+#[test]
+fn provenance_source_revision_cannot_bind_conflicting_digests() {
+    let mut value = event();
+    let mut duplicate = value.provenance[0].clone();
+    duplicate.source_sha256 = digest('f');
+    value.provenance.push(duplicate);
+    value.provenance.sort();
+    assert_eq!(
+        value.validate(),
+        Err(HnmfContractError::DuplicateIdentity(
+            "provenanceSourceRevision"
+        ))
+    );
+    assert!(encode_wire_v1(&value).is_err());
+}
+
+#[test]
+fn structured_property_matrix_covers_all_modality_selectors() {
+    for modality in ModalityKindV1::ALL {
+        for index in 0..32u32 {
+            let mut span = text_span();
+            span.modality = modality;
+            let start = u64::from(index);
+            span.range = match modality {
+                ModalityKindV1::Text => SpanRangeV1::ByteRange {
+                    start,
+                    end: start + 1,
+                },
+                ModalityKindV1::Image => SpanRangeV1::PixelRect {
+                    x: index,
+                    y: index,
+                    width: 1,
+                    height: 1,
+                },
+                ModalityKindV1::Audio => SpanRangeV1::SampleRange {
+                    start,
+                    end: start + 1,
+                    sample_rate_hz: 48_000,
+                },
+                ModalityKindV1::Video => SpanRangeV1::FrameRange {
+                    start,
+                    end: start + 1,
+                    timebase_num: 1,
+                    timebase_den: 30,
+                },
+                ModalityKindV1::CodeAst => SpanRangeV1::AstPath {
+                    path: format!("module/nodes/{index}"),
+                },
+                ModalityKindV1::GuiState => SpanRangeV1::GuiNode {
+                    stable_node_id: id(&format!("gui:{index}")),
+                },
+                ModalityKindV1::ToolTrajectory => SpanRangeV1::EventRange {
+                    start,
+                    end: start + 1,
+                },
+                ModalityKindV1::StructuredData => SpanRangeV1::JsonPointer {
+                    pointer: format!("/keys/{index}~1item"),
+                },
+                ModalityKindV1::Sensor => SpanRangeV1::SensorRange {
+                    start,
+                    end: start + 1,
+                    unit: "kelvin".to_owned(),
+                },
+            };
+            let bytes = encode_wire_v1(&span).expect("valid modality selector");
+            assert_eq!(
+                decode_wire_v1::<ModalitySpanRefV1>(&bytes).expect("decode"),
+                span
+            );
+            span.uncertainty_ppm = PPM + 1;
+            assert!(encode_wire_v1(&span).is_err());
+        }
+    }
 }
