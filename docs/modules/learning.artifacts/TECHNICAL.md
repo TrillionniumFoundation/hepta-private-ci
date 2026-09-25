@@ -44,25 +44,6 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
-### 2.1 Current native source surface
-
-The current source is materially beyond the original V1 bootstrap while preserving the V1 registry and payload formats as compatibility surfaces. The crate now contains:
-
-- `registry.rs` and `storage.rs`: append-only V1 registry, create-only payload/snapshot/head-witness storage, bounded reads, and contained prevalidated writes beneath a host-designated trusted root;
-- `closure_v2.rs`: complete `LearningArtifactManifestV2`, scoped dataset-withdrawal registry, registry-head requirements, and lifecycle transition validation;
-- `admission_v3.rs`: withdrawal-head admission that is additionally bound to `authority_domain_id + registry_id + scope_id`; unscoped registries fail closed for V3 admission;
-- `publication.rs`: crash-recoverable host publication transaction contract that binds the complete V2 admission to the exact V1 compatibility-registry snapshot and independently validated current-head witness before acknowledgement, revalidates the current scoped withdrawal frontier during durable publication, and exposes a deny-all read-only status projection;
-- `lifecycle_journal.rs`: predecessor-bound lifecycle journal whose historical replay validates actor evidence at the event occurrence time rather than at process-recovery time;
-- `durable_snapshots.rs`: create-only, canonical, receipt-bound durable snapshots for scoped withdrawal state and lifecycle state;
-- `pinned.rs` and `dataset_revocation.rs`: exact pinned loading, current-view revalidation, and snapshot-local revocation preparation;
-- `iteration.rs` and `iteration_ledger.rs`: bounded authority-free iteration envelopes, candidates, externally evidenced transitions, and replayable iteration bookkeeping. These records do not run sandboxes or grant selection, promotion, merge or release authority.
-- `owner_host.rs` and `owner_service.rs`: the named fenced product writer, signed writer-lease validation, signed CURRENT chain discovery, durable publication recovery, old-backup/authority-epoch rollback rejection, and opaque `VerifiedCurrentRegistryViewV1` issuance for final-use readers.
-- `selection.rs`: an independent selector trust domain bound to the exact artifact-owner trust snapshot; selector keys must not collide with writer/head authority keys, signed selection binds CURRENT + complete V1 manifest/payload identity, and verified selection yields DENY_ALL load eligibility rather than activation authority.
-
-The shared durable state ceiling is `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This deliberately aligns accepted artifact-registry, withdrawal and lifecycle record counts with the supported bounded snapshot formats so an in-memory state cannot cross a record-count threshold that the crate refuses to persist.
-
-Source implementation is therefore not equivalent to product activation. The crate now has a named source-composed owner service with an exclusive OS writer fence, signed writer/head authentication and bounded local CURRENT discovery. The exact candidate remains qualification-dependent; trusted deployment namespace/parent-directory durability, external CURRENT distribution transport, live selector trust enrollment/private keys, independent canary/operator acceptance/promotion/release and target-host power-loss evidence remain host/external responsibilities.
-
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
