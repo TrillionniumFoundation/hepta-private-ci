@@ -63,8 +63,8 @@ record = {"schema": "hepta.platform-types.consumer-execution.v1", "sourceHead": 
           "productActivation": False, "independentAcceptance": False}
 (evidence / "execution.json").write_text(json.dumps(record, indent=2) + "\n")
 print(json.dumps({key: record[key] for key in ("sourceHead", "checksPassed", "qualified")}))
-if not unchanged:
-    raise SystemExit("candidate changed during consumer qualification")
+if not unchanged or not clean:
+    raise SystemExit("consumer qualification requires a clean, unchanged source candidate")
 RECEIPT
 receipt_rc=$?
 if (( receipt_rc != 0 )); then failed=1; fi

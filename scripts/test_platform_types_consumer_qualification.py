@@ -94,7 +94,7 @@ class ConsumerExecutionTests(unittest.TestCase):
 
     def test_success_requires_all_checks_and_retains_exact_source(self):
         process, record, _ = self.execute("")
-        self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
+        self.assertEqual(process.returncode, 0 if record["cleanWorktree"] else 1, process.stdout + process.stderr)
         self.assertTrue(record["checksPassed"])
         self.assertEqual(len(record["checks"]), 16)
         self.assertEqual(
