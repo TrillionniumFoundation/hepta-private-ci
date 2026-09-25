@@ -32,6 +32,13 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
+fn must_err<T, E>(result: Result<T, E>) -> E {
+    match result {
+        Err(error) => error,
+        Ok(_) => panic!("expected an error"),
+    }
+}
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
@@ -140,17 +147,23 @@ fn receipt() -> FeasiblePlanReceiptV1 {
 fn hash_chain_round_trips_and_preserves_selected_pointer() {
     let mut journal = PlannerJournalV1::new();
     let receipt = receipt();
+    let operation_identity = digest("plan-operation");
     must(journal.append(
         PlannerJournalKindV1::Snapshot,
         digest("snapshot-identity"),
         digest("snapshot"),
     ));
     must(journal.record_decision(&receipt));
+    must(journal.record_operation_result(operation_identity, &receipt));
     must(journal.select_plan(digest("selection-operation"), &receipt));
     let bytes = journal.export_bytes();
     let reopened = must(PlannerJournalV1::reopen(&bytes));
 
     assert_eq!(reopened.entries(), journal.entries());
+    assert_eq!(
+        reopened.operation_result_digest(operation_identity),
+        Some(receipt.receipt_digest())
+    );
     assert_eq!(
         reopened.selected_plan_digest(),
         Some(receipt.receipt_digest())
@@ -168,13 +181,11 @@ fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
     assert_eq!(journal.entries().len(), 1);
 
     assert_eq!(
-        journal
-            .append(
-                PlannerJournalKindV1::Decision,
-                identity,
-                digest("different-payload"),
-            )
-            .expect_err("payload drift must conflict"),
+        must_err(journal.append(
+            PlannerJournalKindV1::Decision,
+            identity,
+            digest("different-payload"),
+        )),
         PlannerJournalError::IdentityConflict
     );
 }
@@ -189,8 +200,7 @@ fn truncation_and_tampering_fail_closed() {
     ));
     let bytes = journal.export_bytes();
     assert_eq!(
-        PlannerJournalV1::reopen(&bytes[..bytes.len() - 1])
-            .expect_err("truncated journal must reject"),
+        must_err(PlannerJournalV1::reopen(&bytes[..bytes.len() - 1])),
         PlannerJournalError::Truncated
     );
 
@@ -198,7 +208,7 @@ fn truncation_and_tampering_fail_closed() {
     let last = tampered.len() - 1;
     tampered[last] ^= 1;
     assert_eq!(
-        PlannerJournalV1::reopen(&tampered).expect_err("tamper must reject"),
+        must_err(PlannerJournalV1::reopen(&tampered)),
         PlannerJournalError::CorruptEntryDigest
     );
 }
@@ -212,9 +222,61 @@ fn revocation_clears_selection_and_prevents_reselection() {
     must(journal.revoke(digest("revoke-1"), receipt.receipt_digest()));
     assert_eq!(journal.selected_plan_digest(), None);
     assert_eq!(
-        journal
-            .select_plan(digest("select-2"), &receipt)
-            .expect_err("revoked plan must not be reselected"),
+        must_err(journal.select_plan(digest("select-2"), &receipt)),
         PlannerJournalError::RevokedPlan
+    );
+}
+
+#[test]
+fn isolated_selection_cannot_be_appended() {
+    let mut journal = PlannerJournalV1::new();
+    assert_eq!(
+        must_err(journal.append(
+            PlannerJournalKindV1::SelectedPlan,
+            digest("isolated-selection-operation"),
+            digest("unrecorded-decision"),
+        )),
+        PlannerJournalError::DecisionNotRecorded
+    );
+}
+
+#[test]
+fn operation_result_requires_a_recorded_decision() {
+    let mut journal = PlannerJournalV1::new();
+    assert_eq!(
+        must_err(journal.append(
+            PlannerJournalKindV1::OperationResult,
+            digest("plan-operation"),
+            digest("unrecorded-decision"),
+        )),
+        PlannerJournalError::DecisionNotRecorded
+    );
+}
+
+#[test]
+fn hash_valid_isolated_selection_cannot_be_reopened() {
+    let identity = digest("isolated-selection-operation");
+    let payload = digest("unrecorded-decision");
+    let predecessor = Digest32::ZERO;
+    let entry_digest = super::digest_entry(
+        1,
+        PlannerJournalKindV1::SelectedPlan,
+        identity,
+        payload,
+        predecessor,
+    );
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(super::MAGIC);
+    bytes.extend_from_slice(&1_u32.to_be_bytes());
+    bytes.extend_from_slice(&1_u64.to_be_bytes());
+    bytes.push(PlannerJournalKindV1::SelectedPlan.tag());
+    bytes.extend_from_slice(identity.as_array());
+    bytes.extend_from_slice(payload.as_array());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(entry_digest.as_array());
+
+    assert_eq!(
+        must_err(PlannerJournalV1::reopen(&bytes)),
+        PlannerJournalError::DecisionNotRecorded
     );
 }

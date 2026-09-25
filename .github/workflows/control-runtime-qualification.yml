@@ -1,0 +1,209 @@
+name: Control runtime qualification
+
+on:
+  pull_request:
+    paths:
+      - CALLERS.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-authbus/**
+      - codex-rs/state/**
+      - codex-rs/hepta-agentd/src/cognitive_context.rs
+      - codex-rs/hepta-agentd/src/runtime.rs
+      - docs/modules/control.runtime/**
+      - docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
+      - docs/readiness/CONTROL_RUNTIME_EXECUTION.md
+      - docs/readiness/LANE_D_MATURITY.json
+      - qualification/module-execution-dossiers/detail/control.runtime.md
+      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-lane-d-semantic-conformance.py
+      - scripts/verify_hepta_callers.py
+      - .github/workflows/control-runtime-qualification.yml
+  push:
+    branches: [main]
+    paths:
+      - CALLERS.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-authbus/**
+      - codex-rs/state/**
+      - codex-rs/hepta-agentd/src/cognitive_context.rs
+      - codex-rs/hepta-agentd/src/runtime.rs
+      - docs/modules/control.runtime/**
+      - docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
+      - docs/readiness/CONTROL_RUNTIME_EXECUTION.md
+      - docs/readiness/LANE_D_MATURITY.json
+      - qualification/module-execution-dossiers/detail/control.runtime.md
+      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-lane-d-semantic-conformance.py
+      - scripts/verify_hepta_callers.py
+      - .github/workflows/control-runtime-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    name: Control runtime (${{ matrix.candidate }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic synthetic merge
+        if: matrix.candidate == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Control Runtime CI
+          author-email: hepta-control-runtime-ci@users.noreply.github.com
+          message: Control runtime deterministic synthetic merge
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Record exact tested identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          tested_sha="$(git rev-parse HEAD)"
+          tested_tree="$(git rev-parse HEAD^{tree})"
+          printf '%s\n' "source_sha=${SOURCE_SHA}" "base_sha=${BASE_SHA}" \
+            "candidate=${{ matrix.candidate }}" "tested_sha=${tested_sha}" \
+            "tested_tree=${tested_tree}" | tee "$RUNNER_TEMP/control-runtime-identity.txt"
+
+      - name: Closed-world caller proof
+        run: python3 scripts/verify_hepta_callers.py verify
+
+      - name: Lane-D semantic conformance
+        run: python3 scripts/hepta-lane-d-semantic-conformance.py verify
+
+      - name: Implementation-map proof
+        run: python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Rust format
+        working-directory: codex-rs
+        run: >-
+          cargo fmt --check
+          --package codex-hepta-control-plane
+          --package codex-hepta-supervisor
+          --package codex-hepta-operations
+          --package codex-hepta-ndu
+          --package codex-hepta-authbus
+          --package codex-state
+          --package codex-hepta-agentd
+
+      - name: All-target compilation
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-control-plane
+          -p codex-hepta-supervisor
+          -p codex-hepta-operations
+          -p codex-hepta-ndu
+          -p codex-hepta-authbus
+          -p codex-state
+          -p codex-hepta-agentd
+          --all-targets
+
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-control-plane
+          -p codex-hepta-supervisor
+          -p codex-hepta-operations
+          -p codex-hepta-ndu
+          -p codex-hepta-authbus
+          -p codex-state
+          -p codex-hepta-agentd
+          --all-targets -- -D warnings
+
+      - name: Control plane tests
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-control-plane --retries 0
+
+      - name: Named host tests
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-supervisor --retries 0
+
+      - name: Dependency-chain tests
+        working-directory: codex-rs
+        run: |
+          just test --locked -p codex-hepta-operations --retries 0
+          just test --locked -p codex-hepta-ndu --retries 0
+          just test --locked -p codex-hepta-authbus --retries 0
+          just test --locked -p codex-state --retries 0
+
+      - name: Verify clean tracked state
+        shell: bash
+        run: test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Write qualification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+          receipt = {
+              "schema": "hepta.control-runtime-qualification-receipt.v1",
+              "candidate": "${{ matrix.candidate }}",
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "baseSha": os.environ["BASE_SHA"],
+              "testedSha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "testedTree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "checks": [
+                  "caller_closed_set",
+                  "lane_d_semantics",
+                  "implementation_map",
+                  "format",
+                  "all_targets",
+                  "strict_clippy",
+                  "control_plane_tests",
+                  "named_host_tests",
+                  "dependency_chain_tests",
+                  "clean_tracked_state",
+              ],
+              "authorityGranted": False,
+          }
+          path = pathlib.Path(os.environ["RUNNER_TEMP"]) / "control-runtime-receipt.json"
+          path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+          print(path.read_text(encoding="utf-8"))
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-${{ matrix.candidate }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/control-runtime-identity.txt
+            ${{ runner.temp }}/control-runtime-receipt.json
+          if-no-files-found: error
+          retention-days: 30

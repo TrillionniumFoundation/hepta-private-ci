@@ -13,6 +13,13 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
+fn must_err<T, E>(result: Result<T, E>) -> E {
+    match result {
+        Err(error) => error,
+        Ok(_) => panic!("expected an error"),
+    }
+}
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
@@ -66,15 +73,13 @@ fn identity_replay_is_idempotent_and_drift_conflicts() {
     assert_eq!(journal.entries().len(), 1);
 
     assert_eq!(
-        journal
-            .append_projection(
-                NduProjectionKindV1::Utility,
-                identity,
-                objective,
-                subject,
-                digest("different-projection"),
-            )
-            .expect_err("semantic drift must conflict"),
+        must_err(journal.append_projection(
+            NduProjectionKindV1::Utility,
+            identity,
+            objective,
+            subject,
+            digest("different-projection"),
+        )),
         NduProjectionJournalError::IdentityConflict
     );
 }
@@ -101,9 +106,12 @@ fn revocation_prevents_projection_resurrection() {
     ));
     assert_eq!(journal.selected_projection_digest(objective, subject), None);
     assert_eq!(
-        journal
-            .select_projection(digest("second-selection"), objective, subject, projection,)
-            .expect_err("revoked projection must not be reselected"),
+        must_err(journal.select_projection(
+            digest("second-selection"),
+            objective,
+            subject,
+            projection,
+        )),
         NduProjectionJournalError::RevokedProjection
     );
 }
@@ -148,14 +156,12 @@ fn revocation_is_scoped_to_objective_and_subject() {
 fn revocation_requires_a_recorded_projection() {
     let mut journal = NduProjectionJournalV1::new();
     assert_eq!(
-        journal
-            .revoke_projection(
-                digest("revocation"),
-                digest("objective"),
-                digest("subject"),
-                digest("projection"),
-            )
-            .expect_err("unknown projection cannot be revoked"),
+        must_err(journal.revoke_projection(
+            digest("revocation"),
+            digest("objective"),
+            digest("subject"),
+            digest("projection"),
+        )),
         NduProjectionJournalError::ProjectionNotRecorded
     );
 }
@@ -172,8 +178,7 @@ fn reopen_rejects_well_hashed_selection_without_projection() {
     ));
 
     assert_eq!(
-        NduProjectionJournalV1::reopen(&forged.export_bytes())
-            .expect_err("semantic replay must reject selection without projection"),
+        must_err(NduProjectionJournalV1::reopen(&forged.export_bytes())),
         NduProjectionJournalError::ProjectionNotRecorded
     );
 }
@@ -190,8 +195,7 @@ fn reopen_rejects_well_hashed_revocation_without_projection() {
     ));
 
     assert_eq!(
-        NduProjectionJournalV1::reopen(&forged.export_bytes())
-            .expect_err("semantic replay must reject revocation without projection"),
+        must_err(NduProjectionJournalV1::reopen(&forged.export_bytes())),
         NduProjectionJournalError::ProjectionNotRecorded
     );
 }
@@ -208,8 +212,7 @@ fn truncation_and_tampering_fail_closed() {
     ));
     let bytes = journal.export_bytes();
     assert_eq!(
-        NduProjectionJournalV1::reopen(&bytes[..bytes.len() - 1])
-            .expect_err("truncation must reject"),
+        must_err(NduProjectionJournalV1::reopen(&bytes[..bytes.len() - 1])),
         NduProjectionJournalError::Truncated
     );
 
@@ -217,7 +220,43 @@ fn truncation_and_tampering_fail_closed() {
     let last = tampered.len() - 1;
     tampered[last] ^= 1;
     assert_eq!(
-        NduProjectionJournalV1::reopen(&tampered).expect_err("tamper must reject"),
+        must_err(NduProjectionJournalV1::reopen(&tampered)),
         NduProjectionJournalError::CorruptEntryDigest
     );
+}
+
+#[test]
+fn live_selection_and_revocation_require_a_recorded_projection() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let mut journal = NduProjectionJournalV1::new();
+
+    assert_eq!(
+        must_err(journal.select_projection(digest("selection"), objective, subject, projection,)),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+    assert_eq!(
+        must_err(journal.revoke_projection(digest("revocation"), objective, subject, projection,)),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+}
+
+#[test]
+fn hash_valid_but_semantically_impossible_recovery_rejects() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+
+    for (kind, identity) in [
+        (NduProjectionKindV1::SelectedProjection, digest("selection")),
+        (NduProjectionKindV1::Revocation, digest("revocation")),
+    ] {
+        let mut forged = NduProjectionJournalV1::new();
+        must(forged.append(kind, identity, objective, subject, projection));
+        assert_eq!(
+            must_err(NduProjectionJournalV1::reopen(&forged.export_bytes())),
+            NduProjectionJournalError::ProjectionNotRecorded
+        );
+    }
 }

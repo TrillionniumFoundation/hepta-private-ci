@@ -1,7 +1,7 @@
 # control.runtime: implementation design
 
 Parent: `docs/modules/control.runtime/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: source candidate global planner and owner-local decision journal implemented; product composition and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `docs/readiness/CONTROL_RUNTIME_EXECUTION.md`.
+Status: hardened source candidate with exact-budget binding, one durable planner owner and one named Supervisor global host source-composed; default-daemon activation, target-host qualification and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `docs/readiness/CONTROL_RUNTIME_EXECUTION.md`.
 
 ## 1. Source and work envelope
 
@@ -36,7 +36,7 @@ Every prepared input, evaluation binding, plan receipt and grant-request set is 
 
 `FeasiblePlanReceiptV1` binds snapshot, configuration, current revocation frontier, both candidate sets, resource rejections, NDU policy/evaluation/binding digests, disposition, uncertainty, selected plan and expiry. It claims only a result over the bounded supplied set.
 
-`PlannerJournalV1` provides a bounded append-only reference for snapshot/decision/selection/revocation records. It validates sequence, predecessor hashes, semantic identities and entry hashes on reopen. A revoked decision cannot be reselected or resurrected through restart.
+`PlannerJournalV1` provides a bounded append-only reference for snapshot/decision/operation-result/selection/revocation records. It validates sequence, predecessor hashes, semantic identities and entry hashes on reopen. The original plan operation identity recovers the exact committed receipt digest after response loss. A revoked decision cannot be reselected or resurrected through restart.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -72,6 +72,8 @@ Metrics include source ages, missing/stale/unavailable masks, resource rejection
 - `RCP-08`: grant requests bind final payloads and remain deny-all.
 - `RCP-09`: journal reopen preserves selection.
 - `RCP-10`: journal truncation/tampering fails closed and revocation prevents reselection.
+- `RCP-16`: response loss recovers the same committed receipt digest by the original plan operation identity without re-execution.
+- `RCP-17`: final-use rejects a planner request at or after its monotonic expiry before consuming the signed grant nonce.
 
 Native tests are registered in the implementation map. Product-callsite, production-store and named-host evidence are not inferred from unit tests.
 
@@ -91,4 +93,28 @@ This candidate grants no model, provider, tool, network, filesystem, secret, Mat
 - **State and recovery:** GlobalStateSnapshotV1 binds owner readiness/frontiers and expiry; missing/stale owners block planning. PlannerJournalV1 provides bounded hash-chain replay. OrganHostV1 runs trusted compiled-in read-only handlers and is not a sandbox or effect executor. Failed owner-callback restoration now quarantines predecessor dispatch and retains rollback errors; this is not a durable writer migration service. Native handoff matches host-owned protocol/profile/version/schema before graph construction. SyntheticCartIoV1 owns only an in-memory deterministic Q24 plant; read_sensor checks age/calibration and dispatch checks actuator identity, observation binding and DENY_ALL before a simulator step. Recreating the adapter resets this simulated plant; it is not physical-device recovery.
 - **Source tests:** [codex-rs/hepta-control-plane/src/planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs), [codex-rs/hepta-control-plane/src/planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs), [codex-rs/hepta-control-plane/src/organ_runtime_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime_tests.rs), [codex-rs/hepta-control-plane/src/organ_wire_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_wire_tests.rs), [codex-rs/hepta-control-plane/src/embodiment/io.rs](../../../codex-rs/hepta-control-plane/src/embodiment/io.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/CONTROL_RUNTIME_EXECUTION.md](../../../docs/readiness/CONTROL_RUNTIME_EXECUTION.md), [codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md](../../../codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md), [codex-rs/hepta-control-plane/src/ORGAN_WIRE.md](../../../codex-rs/hepta-control-plane/src/ORGAN_WIRE.md), [docs/readiness/EMBODIED_TYPED_IO.md](../../../docs/readiness/EMBODIED_TYPED_IO.md).
-- **Remaining work:** Compose authenticated owner ports and durable product publication; a grant request remains DENY_ALL and the planner does not issue execution authority or an independent NDU convergence decision. Authenticated canonical producer wiring, durable stateful handoff, real simulator/HIL/device adapters and physical terminal reconciliation remain separate implementations and qualification.
+- **Remaining work:** Select and provision the named global host in a default daemon, supply production trust and an independently current recovery floor, and complete target-host power-loss qualification. A grant request remains DENY_ALL; the planner does not issue execution authority or an independent NDU convergence decision. Real simulator/HIL/device adapters and physical terminal reconciliation remain separate implementations and qualification.
+
+
+## 9. Current convergence delta
+
+The current delta adds `canonical_resource_reservation_digest`, the semantic
+append/reopen journal checks, `PlannerJournalStoreV1`, authenticated owner/fleet
+composition, the exact final-use bridge and `GlobalControlHostV1`. The journal
+also persists an operation-result edge from `plan_id` to the committed receipt
+identity so acknowledgement loss is queryable without recomputation. The owner
+store is the only writer of the global planner journal; its prefix and revocation
+floor checks prevent an old backup from becoming current merely because its own
+hash chain is valid. A publish-stage I/O uncertainty fail-stops the writer until
+reopen determines which state became current.
+
+Path-level status is intentionally split:
+
+- Agentd cognitive-context planning: composed local product caller;
+- Supervisor `GlobalControlHostV1`: named source composition, not default-daemon
+  activated;
+- `PlannerJournalStoreV1`: durable source owner, target-host/power-loss
+  qualification pending;
+- final-use dispatch: unexpired planner request, independent signed grant and
+  current trusted revocation head required, no control-owned grant issuance;
+- acceptance, promotion and release: not established.

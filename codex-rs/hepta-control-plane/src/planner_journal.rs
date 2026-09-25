@@ -18,6 +18,7 @@ pub enum PlannerJournalKindV1 {
     Decision,
     SelectedPlan,
     Revocation,
+    OperationResult,
 }
 
 impl PlannerJournalKindV1 {
@@ -27,6 +28,7 @@ impl PlannerJournalKindV1 {
             Self::Decision => 1,
             Self::SelectedPlan => 2,
             Self::Revocation => 3,
+            Self::OperationResult => 4,
         }
     }
 
@@ -36,6 +38,7 @@ impl PlannerJournalKindV1 {
             1 => Ok(Self::Decision),
             2 => Ok(Self::SelectedPlan),
             3 => Ok(Self::Revocation),
+            4 => Ok(Self::OperationResult),
             _ => Err(PlannerJournalError::UnknownKind(value)),
         }
     }
@@ -123,6 +126,18 @@ impl PlannerJournalV1 {
         )
     }
 
+    pub fn record_operation_result(
+        &mut self,
+        operation_identity_digest: Digest32,
+        receipt: &FeasiblePlanReceiptV1,
+    ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
+        self.append(
+            PlannerJournalKindV1::OperationResult,
+            operation_identity_digest,
+            receipt.receipt_digest(),
+        )
+    }
+
     pub fn select_plan(
         &mut self,
         operation_identity_digest: Digest32,
@@ -154,6 +169,15 @@ impl PlannerJournalV1 {
             revocation_identity_digest,
             target_digest,
         )
+    }
+
+    #[must_use]
+    pub fn operation_result_digest(&self, operation_identity_digest: Digest32) -> Option<Digest32> {
+        self.identities
+            .get(&operation_identity_digest)
+            .and_then(|(kind, payload)| {
+                (*kind == PlannerJournalKindV1::OperationResult).then_some(*payload)
+            })
     }
 
     #[must_use]
@@ -195,6 +219,7 @@ impl PlannerJournalV1 {
             }
             return Err(PlannerJournalError::IdentityConflict);
         }
+        self.validate_semantic_transition(kind, payload_digest)?;
         if self.entries.len() >= MAX_RECORDS {
             return Err(PlannerJournalError::RecordLimitExceeded);
         }
@@ -314,6 +339,7 @@ impl PlannerJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(PlannerJournalError::DuplicateSerializedIdentity);
             }
+            journal.validate_semantic_transition(kind, payload_digest)?;
             journal
                 .identities
                 .insert(identity_digest, (kind, payload_digest));
@@ -327,6 +353,41 @@ impl PlannerJournalV1 {
             });
         }
         Ok(journal)
+    }
+
+    fn validate_semantic_transition(
+        &self,
+        kind: PlannerJournalKindV1,
+        payload_digest: Digest32,
+    ) -> Result<(), PlannerJournalError> {
+        match kind {
+            PlannerJournalKindV1::SelectedPlan => {
+                if !self.entries.iter().any(|entry| {
+                    entry.kind == PlannerJournalKindV1::Decision
+                        && entry.payload_digest == payload_digest
+                }) {
+                    return Err(PlannerJournalError::DecisionNotRecorded);
+                }
+                if self.revoked_digests().contains(&payload_digest) {
+                    return Err(PlannerJournalError::RevokedPlan);
+                }
+            }
+            PlannerJournalKindV1::OperationResult | PlannerJournalKindV1::Revocation => {
+                if !self.entries.iter().any(|entry| {
+                    entry.kind == PlannerJournalKindV1::Decision
+                        && entry.payload_digest == payload_digest
+                }) {
+                    return Err(PlannerJournalError::DecisionNotRecorded);
+                }
+            }
+            PlannerJournalKindV1::Snapshot | PlannerJournalKindV1::Decision => {}
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn revoked_decision_digests(&self) -> Vec<Digest32> {
+        self.revoked_digests().into_iter().collect()
     }
 
     fn revoked_digests(&self) -> BTreeSet<Digest32> {

@@ -182,6 +182,7 @@ pub struct PreparedPlanInputV1 {
     snapshot_digest: Digest32,
     evaluation_policy_digest: Digest32,
     resource_profile_digest: Digest32,
+    resource_reservation_digest: Digest32,
     source_candidate_set_digest: Digest32,
     candidate_set_digest: Digest32,
     feasible_candidates: Vec<PlanCandidateV1>,
@@ -223,6 +224,10 @@ impl PreparedPlanInputV1 {
     #[must_use]
     pub const fn resource_profile_digest(&self) -> Digest32 {
         self.resource_profile_digest
+    }
+    #[must_use]
+    pub const fn resource_reservation_digest(&self) -> Digest32 {
+        self.resource_reservation_digest
     }
     #[must_use]
     pub const fn source_candidate_set_digest(&self) -> Digest32 {
@@ -390,6 +395,7 @@ pub struct FeasiblePlanReceiptV1 {
     candidate_set_digest: Digest32,
     prepared_digest: Digest32,
     resource_profile_digest: Digest32,
+    resource_reservation_digest: Digest32,
     resource_rejected_candidate_ids: Vec<StableId>,
     evaluation_policy_digest: Digest32,
     ndu_evaluation_digest: Digest32,
@@ -444,6 +450,10 @@ impl FeasiblePlanReceiptV1 {
     #[must_use]
     pub const fn resource_profile_digest(&self) -> Digest32 {
         self.resource_profile_digest
+    }
+    #[must_use]
+    pub const fn resource_reservation_digest(&self) -> Digest32 {
+        self.resource_reservation_digest
     }
     #[must_use]
     pub fn resource_rejected_candidate_ids(&self) -> &[StableId] {
@@ -633,6 +643,22 @@ impl fmt::Display for PlannerError {
 
 impl StdError for PlannerError {}
 
+/// Canonical digest of the exact resource endowments and essential floors used
+/// for one planning attempt. This is distinct from the caller-selected profile
+/// identity and prevents two materially different budgets from sharing one
+/// prepared-plan identity merely because they produce the same feasible set.
+pub fn canonical_resource_reservation_digest(
+    reservations: &[ResourceReservationV1],
+) -> Result<Digest32, PlannerError> {
+    if reservations.is_empty() || reservations.len() > MAX_RESOURCE_RESERVATIONS {
+        return Err(PlannerError::LimitExceeded("resource reservations"));
+    }
+    let mut normalized = reservations.to_vec();
+    normalized.sort_by(|left, right| left.axis.cmp(&right.axis));
+    validate_reservations(&normalized)?;
+    Ok(digest_resource_reservations(&normalized))
+}
+
 pub fn collect_snapshot(
     mut request: SnapshotRequestV1,
     mut owner_summaries: Vec<OwnerSummaryV1>,
@@ -759,6 +785,8 @@ pub fn prepare_plan(
         .resource_reservations
         .sort_by(|left, right| left.axis.cmp(&right.axis));
     validate_reservations(&request.resource_reservations)?;
+    let resource_reservation_digest =
+        canonical_resource_reservation_digest(&request.resource_reservations)?;
 
     let source_candidate_set_digest = digest_candidates(&request.candidates);
     let reservation_map: BTreeMap<_, _> = request
@@ -800,6 +828,7 @@ pub fn prepare_plan(
         snapshot_digest: snapshot.snapshot_digest,
         evaluation_policy_digest: request.evaluation_policy_digest,
         resource_profile_digest: request.resource_profile_digest,
+        resource_reservation_digest,
         source_candidate_set_digest,
         candidate_set_digest,
         feasible_candidates,
@@ -948,6 +977,7 @@ pub fn finalize_plan(
         candidate_set_digest: prepared.candidate_set_digest,
         prepared_digest: prepared.prepared_digest,
         resource_profile_digest: prepared.resource_profile_digest,
+        resource_reservation_digest: prepared.resource_reservation_digest,
         resource_rejected_candidate_ids: prepared.resource_rejected_candidate_ids.clone(),
         evaluation_policy_digest: evaluation.evaluation_policy_digest,
         ndu_evaluation_digest: evaluation.evaluation_digest,
@@ -982,6 +1012,7 @@ pub fn request_execution_grants(
         || receipt.candidate_set_digest != prepared.candidate_set_digest
         || receipt.prepared_digest != prepared.prepared_digest
         || receipt.resource_profile_digest != prepared.resource_profile_digest
+        || receipt.resource_reservation_digest != prepared.resource_reservation_digest
         || receipt.evaluation_policy_digest != prepared.evaluation_policy_digest
         || receipt.objective_digest != snapshot.objective_digest
         || receipt.body_generation != snapshot.body_generation
@@ -1038,6 +1069,11 @@ fn validate_snapshot_for_planning(
 ) -> Result<(), PlannerError> {
     if snapshot.snapshot_digest != digest_snapshot(snapshot) {
         return Err(PlannerError::PreparedPlanMismatch);
+    }
+    if now_micros < snapshot.collected_at_micros {
+        return Err(PlannerError::InvalidTime(
+            "current time before snapshot collection",
+        ));
     }
     if now_micros >= snapshot.expires_at_micros {
         return Err(PlannerError::SnapshotExpired);
@@ -1298,6 +1334,18 @@ fn digest_candidates(candidates: &[PlanCandidateV1]) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+fn digest_resource_reservations(reservations: &[ResourceReservationV1]) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.control.resource-reservations.v1");
+    push_len(&mut bytes, reservations.len());
+    for reservation in reservations {
+        push_id(&mut bytes, &reservation.axis);
+        bytes.extend_from_slice(&reservation.endowment.raw().to_be_bytes());
+        bytes.extend_from_slice(&reservation.essential_floor.raw().to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 fn digest_prepared_plan(prepared: &PreparedPlanInputV1) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.control.prepared-plan.v1");
@@ -1309,6 +1357,7 @@ fn digest_prepared_plan(prepared: &PreparedPlanInputV1) -> Digest32 {
     push_digest(&mut bytes, prepared.snapshot_digest);
     push_digest(&mut bytes, prepared.evaluation_policy_digest);
     push_digest(&mut bytes, prepared.resource_profile_digest);
+    push_digest(&mut bytes, prepared.resource_reservation_digest);
     push_digest(&mut bytes, prepared.source_candidate_set_digest);
     push_digest(&mut bytes, prepared.candidate_set_digest);
     push_ids(&mut bytes, &prepared.resource_rejected_candidate_ids);
@@ -1345,6 +1394,7 @@ fn digest_plan_receipt(receipt: &FeasiblePlanReceiptV1) -> Digest32 {
     push_digest(&mut bytes, receipt.candidate_set_digest);
     push_digest(&mut bytes, receipt.prepared_digest);
     push_digest(&mut bytes, receipt.resource_profile_digest);
+    push_digest(&mut bytes, receipt.resource_reservation_digest);
     push_ids(&mut bytes, &receipt.resource_rejected_candidate_ids);
     push_digest(&mut bytes, receipt.evaluation_policy_digest);
     push_digest(&mut bytes, receipt.ndu_evaluation_digest);

@@ -178,13 +178,13 @@ Each `GrantRequestV1` binds:
 - current revocation-frontier digest;
 - expiry.
 
-The resulting `GrantRequestSetV1` is a deterministic request batch with a semantic digest and `AuthorityPosture::DENY_ALL`. A grant request is not an authority token. `kernel.authority` must independently check principal scope, current revocations, final payload, effect boundary, deadlines and any required human confirmation immediately before dispatch.
+The resulting `GrantRequestSetV1` is a deterministic request batch with a semantic digest and `AuthorityPosture::DENY_ALL`. A grant request is not an authority token. `kernel.authority` must independently check principal scope, current revocations, final payload, effect boundary, deadlines and any required human confirmation immediately before dispatch. The named Supervisor bridge additionally rejects a request when its host-supplied monotonic time has reached the sealed planner expiry, before claiming the signed final-use grant.
 
 A candidate with no effect payload, including abstain, produces an empty request set. The planner never fabricates a no-op capability.
 
 ## 8. Decision journal, restart and non-resurrection
 
-`PlannerJournalV1` is a bounded owner-local durability reference for snapshot, decision, selection and revocation records. It is not an activated production store.
+`PlannerJournalV1` is a bounded owner-local durability reference for snapshot, decision, operation-result, selection and revocation records. It is not an activated production store.
 
 Each entry contains sequence, kind, idempotency identity, payload digest, predecessor-entry digest and entry digest. The journal provides:
 
@@ -195,10 +195,11 @@ Each entry contains sequence, kind, idempotency identity, payload digest, predec
 - exact byte export and reopen;
 - sequence, predecessor and entry-digest verification;
 - truncation and unknown-kind rejection;
+- operation-identity lookup of the exact committed decision digest after response loss;
 - selected-plan projection;
 - revocation edges that prevent reselection and restart resurrection.
 
-A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
+An operation result and a selected plan must already have a decision record. A repeated operation identity is idempotent only for the same decision digest and conflicts with drift. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
 
 ## 9. Failure and degradation semantics
 
@@ -217,7 +218,7 @@ Failures are classified as:
 - prepared-plan or payload mismatch;
 - journal integrity, truncation, identity conflict or revocation.
 
-A failure before finalization leaves no plan receipt. A failure after durable decision publication but before acknowledgement is recovered by the original operation identity and equal digest. Unknown external effects remain indeterminate and are reconciled by the existing effect owner; the planner cannot infer success from queue admission or handler return.
+A failure before finalization leaves no plan receipt. A failure after durable decision publication but before acknowledgement is recovered by the original plan operation identity as the exact committed receipt digest, without replaying owner admission or recomputing against changed fleet state. The digest is terminal planner evidence, not permission to infer an external effect; unknown external effects remain indeterminate and are reconciled by the existing effect owner.
 
 Central outage never enters a qualified local reflex or emergency-stop loop. Local controllers continue only within previously qualified envelopes. The global planner may become unavailable without disabling an independent safety stop.
 
@@ -265,6 +266,8 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
 - `RCP-13`: operation, payload, resource or required-owner mutation after finalization rejects before grant-request construction.
 - `RCP-14`: grant-request construction revalidates snapshot masks and digest.
 - `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
+- `RCP-16`: response loss is recovered by the original plan operation identity as the same committed receipt digest, without re-execution.
+- `RCP-17`: the final-use bridge rejects a sealed planner request at or after its monotonic expiry before consuming a grant nonce or entering dispatch.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
@@ -323,3 +326,41 @@ global revocation frontier. Existing host authorization and generation checks
 remain required before and after the read. Context bytes exclude the planning
 metadata to avoid a self-referential digest; the host separately bounds the final
 response envelope. Neither helper grants effects or proves long-term improvement.
+
+## Current convergence candidate
+
+The current candidate closes four previously reproducible source gaps:
+
+1. the exact resource endowment and essential-floor vector is canonically bound
+   through preparation and the final plan receipt;
+2. an isolated `SelectedPlan` cannot enter through raw append or through a
+   hash-valid serialized journal;
+3. planner time earlier than snapshot collection is rejected; and
+4. the bounded journal has an owner-local durable store with monotone history
+   and an externally supplied revocation recovery floor. A publish-stage I/O
+   uncertainty fences that writer until reopen and reconciliation.
+
+The named global composition is
+`codex-rs/hepta-supervisor/src/global_control.rs::GlobalControlHostV1`. Non-fleet
+owner summaries consume durable AuthBus replay in `HeptaEvidenceStore`; the
+fleet owner is projected from one current `LeaseLedger` allocation; NDU is
+executed through `evaluate_prepared_plan_with_ndu`; and snapshot, decision, operation result and selection are fsync-complete
+before the host returns. `CALLERS.toml` enforces
+this Supervisor host as the sole global composition and sole planner-store
+open/persist caller. The final-use bridge still
+requires an independently signed grant, checks the exact request binding and
+host-supplied monotonic planner expiry before claim, accepts trusted live
+revocation-head updates through the same authority owner, and revalidates the
+request at the bounded local `dispatch_final_use` boundary.
+
+This is a source-composed host, not a daemon activation statement. The repository
+change does not choose production trust material, a state directory, an operator
+revocation-floor feed, a hardware adapter or a release route. The pre-existing
+Agentd cognitive-context call remains the only activated local product use.
+
+The source qualification matrix for this candidate includes package tests,
+`--all-targets` compilation, strict Clippy, caller closed-set verification,
+Lane-D semantic conformance, implementation-map verification, exact source-head
+execution and a deterministic synthetic-merge execution. A merge receipt is
+valid only when it names the exact candidate and base used to construct the
+synthetic tree.

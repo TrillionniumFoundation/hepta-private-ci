@@ -67,7 +67,7 @@ impl AuthBusAuthorityStore {
         if let Err(error) = result {
             if error
                 .as_database_error()
-                .is_some_and(|database| database.is_unique_violation())
+                .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
             {
                 return Err(AuthBusAuthorityError::AlreadyExists);
             }

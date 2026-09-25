@@ -315,16 +315,25 @@ def verify() -> int:
     for row in maturity["modules"]:
         module = row["module"]
         product_caller = row["dimensions"]["productCaller"]["state"]
-        if module == "objective.compiler":
-            need(
-                product_caller == "source_composed_authenticated_agentd_not_activated",
-                f"truth boundary {module} productCaller",
-            )
-        else:
-            need(
-                product_caller == "not_established",
-                f"truth boundary {module} productCaller",
-            )
+        expected_product_callers = {
+            "objective.compiler": "source_composed_authenticated_agentd_not_activated",
+            "utility.ndu": "request_local_read_only_established_authenticated_production_not_composed",
+            "control.runtime": "local_agentd_composed_global_supervisor_host_source_composed_not_activated",
+        }
+        need(
+            product_caller == expected_product_callers[module],
+            f"truth boundary {module} productCaller",
+        )
+        expected_production_writers = {
+            "objective.compiler": "destination_owner_journal_source_composed_not_deployed",
+            "utility.ndu": "durable_writer_source_candidate_not_selected_or_activated",
+            "control.runtime": "planner_journal_store_source_implemented_not_deployment_activated",
+        }
+        need(
+            row["dimensions"]["productionWriter"]["state"]
+            == expected_production_writers[module],
+            f"truth boundary {module} productionWriter",
+        )
         for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",

@@ -20,6 +20,20 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
+fn must_err<T, E>(result: Result<T, E>) -> E {
+    match result {
+        Err(error) => error,
+        Ok(_) => panic!("expected an error"),
+    }
+}
+
+fn must_some<T>(value: Option<T>) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("expected a value"),
+    }
+}
+
 fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }
@@ -61,7 +75,7 @@ fn local_step_requires_complete_context_before_protocol_publication() {
     let context = context("agent-a");
     let bound = must(bind_solver_iteration_receipt_v1(
         &context,
-        receipts.first().expect("first solver receipt"),
+        must_some(receipts.first()),
     ));
 
     assert_eq!(bound.subject_id, context.subject_id);
@@ -77,9 +91,10 @@ fn zero_context_digest_rejects_before_protocol_publication() {
     let mut context = context("agent-a");
     context.objective_digest = Digest32::ZERO;
 
-    let error =
-        bind_solver_iteration_receipt_v1(&context, receipts.first().expect("first solver receipt"))
-            .expect_err("zero objective digest must reject");
+    let error = must_err(bind_solver_iteration_receipt_v1(
+        &context,
+        must_some(receipts.first()),
+    ));
     assert_eq!(error.code(), "NDU-E002");
 }
 
@@ -88,9 +103,10 @@ fn solver_receipt_cannot_be_rebound_to_another_subject() {
     let receipts = agent_receipts();
     let context = context("agent-b");
 
-    let error =
-        bind_solver_iteration_receipt_v1(&context, receipts.first().expect("first solver receipt"))
-            .expect_err("subject mismatch must reject");
+    let error = must_err(bind_solver_iteration_receipt_v1(
+        &context,
+        must_some(receipts.first()),
+    ));
     assert_eq!(error, NduError::ProtocolSubjectMismatch);
     assert_eq!(error.code(), "NDU-E002");
 }

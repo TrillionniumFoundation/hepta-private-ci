@@ -275,6 +275,18 @@ impl SqliteConfig {
         Ok(pool)
     }
 
+    /// Open a single-connection transient reference database.
+    ///
+    /// This is for schema/reference construction only. It carries no authority
+    /// or durable product state and remains inside the centralized connection
+    /// shim so individual owners cannot grow ambient SQLite policies.
+    pub async fn open_transient_reference_pool() -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect("sqlite::memory:")
+            .await
+    }
+
     /// Open a writable Codex SQLite database, creating it if necessary.
     pub async fn open_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()
@@ -297,6 +309,22 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        self.open_durable_evidence_pool_with_limit(path, 5).await
+    }
+
+    /// Open an append-only evidence database while preserving the owner's
+    /// reviewed connection bound. The durability and pragma profile remains
+    /// centralized here; callers may only narrow the bounded pool size.
+    pub async fn open_durable_evidence_pool_with_limit(
+        &self,
+        path: &Path,
+        max_connections: u32,
+    ) -> Result<SqlitePool, Error> {
+        if max_connections == 0 || max_connections > 32 {
+            return Err(Error::Protocol(
+                "durable evidence pool size must be within 1..=32".to_string(),
+            ));
+        }
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -306,7 +334,7 @@ impl SqliteConfig {
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
-            .max_connections(5)
+            .max_connections(max_connections)
             .connect_with(options)
             .await
     }

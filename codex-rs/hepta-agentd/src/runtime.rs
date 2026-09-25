@@ -392,7 +392,9 @@ async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(
 ) -> Result<CognitiveRuntime, AgentdError>
 where
     Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<CognitiveStore, codex_hepta_memory::CognitiveStoreError>>,
+    OpenFuture: Future<
+        Output = Result<CognitiveStore, codex_hepta_cognitive_store::DurableCognitiveStoreError>,
+    >,
 {
     state.refresh_generation()?;
     let cognitive_runtime = CognitiveRuntime::from_open_result(open().await);
