@@ -149,3 +149,18 @@ test-group = 'hepta_durable_capacity'
 threads-required = "num-test-threads"
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Explicit ignored PERF-LIBRARY measurement, never an ordinary product test.
+# The full workload includes 256 durable writes, graph queries, concurrent
+# readers/writers and repeated reopen. Its watchdog is not a latency SLO.
+# Preserve the default correctness deadlines and all benchmark input counts.
+[profile.knowledge-graph-measurement]
+inherits = "default"
+retries = 0
+
+[[profile.knowledge-graph-measurement.overrides]]
+filter = 'package(codex-hepta-memory) & test(=cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt)'
+test-group = 'hepta_durable_capacity'
+threads-required = "num-test-threads"
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
