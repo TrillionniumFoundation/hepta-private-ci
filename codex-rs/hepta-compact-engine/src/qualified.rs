@@ -159,7 +159,7 @@ impl CanonicalCompactionInputV1 {
             || self
                 .consumer_binding
                 .compatibility_payload_sha256
-                .map(|value| value.digest())
+                .map(codex_hepta_cognitive_types::hnmf::ContractDigestV1::digest)
                 != Some(canonical_compaction_input_digest(&self.input))
             || self.consumer_binding.migration_posture
                 != CanonicalMigrationPostureV1::CompatibilityBound
