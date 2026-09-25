@@ -74,15 +74,15 @@ fn v1_session_does_not_report_v2_metadata_binding_as_effective() -> Result<(), B
         &NegotiationOffer::current(),
         WireCapabilities::NONE,
     )?;
-    assert_eq!(negotiated.version, WireVersion::V1);
+    assert_eq!(negotiated.version(), WireVersion::V1);
     assert!(
         negotiated
-            .common_advertised_capabilities
+            .common_advertised_capabilities()
             .contains(WireCapabilities::METADATA_BOUND_DIGEST)
     );
     assert!(
         !negotiated
-            .capabilities
+            .capabilities()
             .contains(WireCapabilities::METADATA_BOUND_DIGEST)
     );
     Ok(())

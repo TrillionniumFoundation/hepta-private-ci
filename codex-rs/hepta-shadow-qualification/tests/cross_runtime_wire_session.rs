@@ -13,6 +13,7 @@ use codex_hepta_wire::WireCapabilities;
 use codex_hepta_wire::WireEnvelopeV2;
 use codex_hepta_wire::WireV2Error;
 use codex_hepta_wire::negotiate;
+use serde::Deserialize;
 use serde_json::Value;
 use std::error::Error;
 use std::io::Write;
@@ -58,6 +59,8 @@ offer_end = 16 + count * 2
 if len(raw) < offer_end + 54:
     raise SystemExit('session truncated')
 versions = list(struct.unpack('!' + ('H' * count), raw[16:offer_end]))
+if 0 in versions:
+    raise SystemExit('invalid version')
 if versions != sorted(set(versions)):
     raise SystemExit('noncanonical versions')
 unknown_caps = capabilities & ~0x7
@@ -89,9 +92,15 @@ end = fixed + schema_len + producer_len + payload_len
 if len(frame) != end:
     raise SystemExit('frame length mismatch')
 
-schema = frame[fixed:fixed + schema_len].decode('utf-8')
 producer_start = fixed + schema_len
-producer = frame[producer_start:producer_start + producer_len].decode('utf-8')
+try:
+    schema = frame[fixed:producer_start].decode('ascii')
+    producer = frame[producer_start:producer_start + producer_len].decode('ascii')
+except UnicodeDecodeError:
+    raise SystemExit('identity encoding')
+allowed_identity = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-:'
+if any(character not in allowed_identity for identity in (schema, producer) for character in identity):
+    raise SystemExit('identity encoding')
 payload = frame[producer_start + producer_len:end]
 
 preimage = (
@@ -107,10 +116,12 @@ if observed != expected:
 if schema != 'hepta.integration.v2':
     raise SystemExit('unknown schema')
 message = json.loads(payload, object_pairs_hook=strict_object)
-if set(message) != {'objective', 'authority', 'step'}:
+if type(message) is not dict or set(message) != {'objective', 'authority', 'step'}:
     raise SystemExit('unknown or missing critical field')
 if type(message['objective']) is not str or type(message['step']) is not int:
     raise SystemExit('typed field mismatch')
+if not 0 <= message['step'] <= 18446744073709551615:
+    raise SystemExit('step outside u64')
 if message['authority'] != 'deny_all':
     raise SystemExit('authority fixture mismatch')
 
@@ -127,18 +138,18 @@ python_frame = encode_frame(
     reply_payload,
 )
 
-print(json.dumps({
-    'selected_version': selected,
-    'schema': schema,
-    'producer': producer,
-    'generation': generation,
-    'objective': message['objective'],
-    'step': message['step'],
-    'frame_digest': observed.hex(),
-    'python_offer': list(python_offer),
-    'python_frame': list(python_frame),
-}, sort_keys=True))
+sys.stdout.buffer.write(python_offer + python_frame)
 "#;
+
+// The reference schema has the same closed fields and integer domain in both
+// runtimes. A JSON Value alone would silently collapse duplicate object keys.
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct IntegrationRequest {
+    objective: String,
+    authority: String,
+    step: u64,
+}
 
 fn run_python(session: &[u8]) -> Result<std::process::Output, Box<dyn Error>> {
     let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
@@ -174,18 +185,13 @@ fn encode_session(offer: &NegotiationOffer, envelope: &WireEnvelopeV2) -> Vec<u8
     encoded
 }
 
-fn value_bytes(value: &Value, field: &str) -> Result<Vec<u8>, Box<dyn Error>> {
-    value[field]
-        .as_array()
-        .ok_or_else(|| format!("{field} is not a byte array"))?
-        .iter()
-        .map(|value| {
-            value
-                .as_u64()
-                .and_then(|value| u8::try_from(value).ok())
-                .ok_or_else(|| format!("{field} contains a non-byte value").into())
-        })
-        .collect()
+fn split_python_reply(bytes: &[u8]) -> Result<(NegotiationOffer, &[u8]), Box<dyn Error>> {
+    let header = bytes.get(..16).ok_or("truncated Python HPTN header")?;
+    let offer_length = 16 + usize::from(header[6]) * 2;
+    let offer = bytes
+        .get(..offer_length)
+        .ok_or("truncated Python HPTN offer")?;
+    Ok((NegotiationOffer::decode(offer)?, &bytes[offer_length..]))
 }
 
 #[test]
@@ -193,27 +199,29 @@ fn rust_python_bidirectional_session_negotiates_and_loads_typed_payload()
 -> Result<(), Box<dyn Error>> {
     let (offer, envelope) =
         session(br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec())?;
+    let request: IntegrationRequest = serde_json::from_slice(envelope.payload())?;
+    assert_eq!(
+        (
+            request.objective.as_str(),
+            request.authority.as_str(),
+            request.step
+        ),
+        ("ndu", "deny_all", 1)
+    );
     let output = run_python(&encode_session(&offer, &envelope))?;
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(output.status.success(), "python session failed: {stderr}");
-    let report: Value = serde_json::from_slice(&output.stdout)?;
-    assert_eq!(report["selected_version"], 2);
-    assert_eq!(report["schema"], "hepta.integration.v2");
-    assert_eq!(report["producer"], "hepta-shadow-qualification");
-    assert_eq!(report["generation"], 7);
-    assert_eq!(report["objective"], "ndu");
-    assert_eq!(report["step"], 1);
-    assert_eq!(report["frame_digest"], envelope.frame_digest().to_string());
-
-    let python_offer = NegotiationOffer::decode(&value_bytes(&report, "python_offer")?)?;
+    // The return direction is raw HPTN + HPTA bytes as well, not a JSON
+    // report carrying a byte array that bypasses the peer's framing boundary.
+    let (python_offer, python_frame) = split_python_reply(&output.stdout)?;
     let negotiated = negotiate(
         &NegotiationOffer::current(),
         &python_offer,
         WireCapabilities::METADATA_BOUND_DIGEST.union(WireCapabilities::SCHEMA_ADMISSION),
     )?;
-    let python_frame = value_bytes(&report, "python_frame")?;
     let mut decoder = NegotiatedStreamingDecoder::new(negotiated);
-    let decoded = decoder.push(&python_frame)?;
+    let (decoded, terminal_error) = decoder.push_batch(python_frame).into_parts();
+    assert_eq!(terminal_error, None);
     assert_eq!(decoded.len(), 1);
     let DecodedEnvelope::V2(reply) = &decoded[0] else {
         panic!("Python reply did not use HPTA V2");
@@ -258,12 +266,83 @@ fn python_reference_rejects_bool_integer_and_duplicate_critical_fields()
             br#"{"objective":"ndu","authority":"deny_all","step":0,"step":1}"#.to_vec(),
             "duplicate critical field",
         ),
+        (
+            br#"{"objective":"ndu","authority":"deny_all","step":-1}"#.to_vec(),
+            "step outside u64",
+        ),
+        (
+            br#"{"objective":"ndu","authority":"deny_all","step":18446744073709551616}"#.to_vec(),
+            "step outside u64",
+        ),
+        (
+            br#"["objective","authority","step"]"#.to_vec(),
+            "unknown or missing critical field",
+        ),
     ] {
+        assert!(serde_json::from_slice::<IntegrationRequest>(&payload).is_err());
         let (offer, envelope) = session(payload)?;
         let output = run_python(&encode_session(&offer, &envelope))?;
         assert!(!output.status.success());
         let stderr = String::from_utf8_lossy(&output.stderr);
         assert!(stderr.contains(expected), "{stderr}");
+    }
+    Ok(())
+}
+
+#[test]
+fn rust_python_reject_invalid_hello_version_and_frame_identity() -> Result<(), Box<dyn Error>> {
+    let (offer, envelope) =
+        session(br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec())?;
+    let mut invalid_offer = offer.encode();
+    invalid_offer[16..18].copy_from_slice(&0_u16.to_be_bytes());
+    assert!(NegotiationOffer::decode(&invalid_offer).is_err());
+    invalid_offer.extend_from_slice(&envelope.encode());
+    let rejected = run_python(&invalid_offer)?;
+    assert!(!rejected.status.success());
+    assert!(String::from_utf8_lossy(&rejected.stderr).contains("invalid version"));
+
+    for invalid in [b'/', b' ', 0xff] {
+        let mut frame = envelope.encode();
+        frame[54 + envelope.schema().as_str().len()] = invalid;
+        let digest = codex_hepta_types::Digest32::of_parts(&[
+            b"HPTA-WIRE-V2\0",
+            &frame[..18],
+            &frame[50..54],
+            &frame[54..],
+        ]);
+        frame[18..50].copy_from_slice(digest.as_array());
+        assert!(matches!(
+            WireEnvelopeV2::decode(&frame),
+            Err(WireV2Error::IdentityEncoding)
+        ));
+        let mut bytes = offer.encode();
+        bytes.extend_from_slice(&frame);
+        let rejected = run_python(&bytes)?;
+        assert!(!rejected.status.success());
+        assert!(String::from_utf8_lossy(&rejected.stderr).contains("identity encoding"));
+    }
+    Ok(())
+}
+
+#[test]
+fn rust_python_accept_both_u64_schema_boundaries() -> Result<(), Box<dyn Error>> {
+    for step in [0_u64, u64::MAX] {
+        let payload = serde_json::to_vec(&serde_json::json!({
+            "objective": "ndu", "authority": "deny_all", "step": step,
+        }))?;
+        let request: IntegrationRequest = serde_json::from_slice(&payload)?;
+        assert_eq!(request.step, step);
+        let (offer, envelope) = session(payload)?;
+        let output = run_python(&encode_session(&offer, &envelope))?;
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let (_offer, frame) = split_python_reply(&output.stdout)?;
+        let reply = WireEnvelopeV2::decode(frame)?;
+        let reply: Value = serde_json::from_slice(reply.payload())?;
+        assert_eq!(reply["accepted_step"].as_u64(), Some(step));
     }
     Ok(())
 }

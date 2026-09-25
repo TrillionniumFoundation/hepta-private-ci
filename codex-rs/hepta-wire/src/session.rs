@@ -9,6 +9,7 @@ use crate::WireVersion;
 
 /// Completed frames admitted for one negotiated session, plus an optional
 /// terminal connection error observed later in the same chunk.
+#[must_use = "consume the completed prefix and inspect the terminal error"]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NegotiatedDecodeBatch {
     frames: Vec<DecodedEnvelope>,
@@ -49,7 +50,7 @@ impl NegotiatedStreamingDecoder {
     pub fn new(negotiated: NegotiatedWire) -> Self {
         Self {
             negotiated,
-            stream: StreamingDecoder::for_negotiated_version(negotiated.version),
+            stream: StreamingDecoder::for_negotiated_version(negotiated.version()),
             terminal_error: None,
         }
     }
@@ -83,11 +84,11 @@ impl NegotiatedStreamingDecoder {
         let mut admitted = Vec::with_capacity(decoded.len());
         for frame in decoded {
             let observed = frame.version();
-            if observed != self.negotiated.version {
+            if observed != self.negotiated.version() {
                 return self.fail(
                     admitted,
                     NegotiatedDecodeError::VersionMismatch {
-                        negotiated: self.negotiated.version,
+                        negotiated: self.negotiated.version(),
                         observed,
                     },
                 );

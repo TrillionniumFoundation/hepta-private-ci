@@ -66,6 +66,12 @@ binding and preserves every field used by the domain request digest. Both use
 HPTA frame version 2; the payload schema revision is independent of the frame
 version.
 
+`NegotiatedWire` exposes read-only accessors for the selected version, effective
+capabilities, common advertised capabilities and required capabilities. Only
+`negotiate` constructs it: a caller cannot replace the selected version or erase
+requirements before passing it into `NegotiatedStreamingDecoder`. This is a
+protocol-consistency invariant, not authentication of the peer or transcript.
+
 ## Durability and activation
 
 The wire library is stateless. Streaming and negotiation state is
@@ -126,10 +132,12 @@ Current source evidence includes:
   and partial-buffer release after a version mismatch;
 - schema admission tests for missing and unknown critical fields;
 - stream tests for chunking-invariant prefix delivery, true header-first
-  rejection, poison state, buffer bounds and many-small-frame processing;
+  rejection, poison state, buffer bounds, multi-frame prefixes before digest
+  failure, maximum V2 frames and many-small-frame processing;
 - deterministic property tests and a cargo-fuzz target;
 - bidirectional raw-binary Rust↔Python HPTN/HPTA V2 tests, including duplicate
-  JSON key and boolean-as-integer rejection;
+  JSON key and boolean-as-integer rejection, unsigned-64-bit boundaries, zero
+  hello-version rejection and exact StableId producer grammar;
 - native-gateway content-negotiation tests;
 - `context.compiler` strict schema/producer tests;
 - runtime.codex V2 compatibility tests and V3 complete-binding

@@ -240,3 +240,55 @@ fn compatibility_push_returns_valid_prefix_before_latched_error() -> Result<(), 
     assert_eq!(decoder.push(&valid), Err(StreamDecodeError::Magic));
     Ok(())
 }
+
+#[test]
+fn digest_error_preserves_multiple_prefix_frames_at_every_split() -> Result<(), Box<dyn Error>> {
+    let v1 = WireEnvelope::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?;
+    let v2 = WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(2)?, vec![2])?;
+    let mut bad = v2.encode();
+    *bad.last_mut().ok_or("empty frame")? ^= 1;
+    let mut bytes = v1.encode();
+    bytes.extend_from_slice(&v2.encode());
+    bytes.extend_from_slice(&bad);
+    let expected = vec![DecodedEnvelope::V1(v1), DecodedEnvelope::V2(v2)];
+    for split in 0..=bytes.len() {
+        let mut decoder = StreamingDecoder::new();
+        let (mut frames, first_error) = decoder.push_batch(&bytes[..split]).into_parts();
+        let (tail, last_error) = decoder.push_batch(&bytes[split..]).into_parts();
+        frames.extend(tail);
+        assert_eq!(frames, expected, "split {split}");
+        assert!(matches!(
+            first_error.or(last_error),
+            Some(StreamDecodeError::Frame(DecodeFrameError::V2(
+                crate::WireV2Error::DigestMismatch { .. }
+            )))
+        ));
+        assert!(decoder.is_poisoned());
+        assert_eq!(decoder.buffered_len(), 0);
+    }
+    Ok(())
+}
+
+#[test]
+fn maximum_v2_frame_round_trips_across_header_and_body_boundaries() -> Result<(), Box<dyn Error>> {
+    let envelope = WireEnvelopeV2::new(
+        stable(&"s".repeat(128))?,
+        stable(&"p".repeat(128))?,
+        Generation::new(u64::MAX)?,
+        vec![0xa5; MAX_WIRE_PAYLOAD_BYTES],
+    )?;
+    let frame = envelope.encode();
+    assert_eq!(frame.len(), MAX_WIRE_FRAME_BYTES);
+    for chunk_size in [53, 54, 55, 4096, frame.len() - 1, frame.len()] {
+        let mut decoder = StreamingDecoder::with_max_buffered_frames(1)?;
+        let mut frames = Vec::new();
+        for chunk in frame.chunks(chunk_size) {
+            let (complete, error) = decoder.push_batch(chunk).into_parts();
+            assert!(error.is_none(), "chunk size {chunk_size}: {error:?}");
+            frames.extend(complete);
+        }
+        assert_eq!(frames, vec![DecodedEnvelope::V2(envelope.clone())]);
+        assert_eq!(decoder.buffered_len(), 0);
+    }
+    Ok(())
+}

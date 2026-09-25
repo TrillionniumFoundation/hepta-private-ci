@@ -24,6 +24,7 @@ struct FrameHeader {
 /// A caller must process `frames` even when `terminal_error` is present. The
 /// decoder becomes poisoned after a terminal error and accepts no more bytes
 /// until `clear` is called for an explicitly new connection/session.
+#[must_use = "consume the completed prefix and inspect the terminal error"]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StreamDecodeBatch {
     frames: Vec<DecodedEnvelope>,

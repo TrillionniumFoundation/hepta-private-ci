@@ -96,3 +96,13 @@ the peer sends no body. Completed prefix frames are returned in the same batch;
 all partial bytes are discarded and subsequent feeds retain the terminal error.
 This is connection policy, not authentication: transport/session owners still
 bind the actual peer and transcript using their existing security boundary.
+
+## Native session result
+
+`NegotiatedWire` is constructed only by `negotiate`. Its read-only `version()`,
+`capabilities()`, `common_advertised_capabilities()` and
+`required_capabilities()` accessors distinguish effective session properties
+from peer advertisements. No public field mutation or DTO deserialization can
+replace the selected version or remove the caller's required capabilities.
+This native API constraint neither authenticates the HPTN transcript nor grants
+execution authority; those checks remain at the existing security owner.

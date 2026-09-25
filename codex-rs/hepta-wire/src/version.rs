@@ -204,20 +204,41 @@ impl NegotiationOffer {
     }
 }
 
+/// Immutable result of `negotiate`; consumers cannot replace the selected
+/// version or remove required capabilities before constructing a session.
+/// This enforces protocol consistency, not peer authentication or authority.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct NegotiatedWire {
-    pub version: WireVersion,
+    version: WireVersion,
     /// Capabilities that are effective for the selected version.
     ///
     /// Version-scoped properties advertised by both peers are removed when the
     /// selected version does not provide them. For example, a V1 session never
     /// reports `METADATA_BOUND_DIGEST` as effective.
-    pub capabilities: WireCapabilities,
+    capabilities: WireCapabilities,
     /// Raw capability intersection advertised by both peers. This is retained
     /// for diagnostics and must not be used as the selected session posture.
-    pub common_advertised_capabilities: WireCapabilities,
+    common_advertised_capabilities: WireCapabilities,
     /// Capabilities the caller required when negotiating this session.
-    pub required_capabilities: WireCapabilities,
+    required_capabilities: WireCapabilities,
+}
+
+impl NegotiatedWire {
+    pub const fn version(self) -> WireVersion {
+        self.version
+    }
+
+    pub const fn capabilities(self) -> WireCapabilities {
+        self.capabilities
+    }
+
+    pub const fn common_advertised_capabilities(self) -> WireCapabilities {
+        self.common_advertised_capabilities
+    }
+
+    pub const fn required_capabilities(self) -> WireCapabilities {
+        self.required_capabilities
+    }
 }
 
 /// Select the highest explicitly common implemented version that satisfies all
