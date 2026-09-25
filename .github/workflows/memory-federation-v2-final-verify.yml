@@ -53,7 +53,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}
+  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.event.pull_request.base.sha || github.event.before }}
   cancel-in-progress: true
 
 jobs:
@@ -122,6 +122,18 @@ jobs:
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-agentd -p codex-app-server
+
+      - name: Execute real Agentd federation grant and revoke
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-app-server --bin codex-app-server
+          target_dir=$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+          export HEPTA_TEST_CODEX_EXE="$target_dir/debug/codex-app-server"
+          test -x "$HEPTA_TEST_CODEX_EXE"
+          just test --locked --retries 0 --no-tests fail -p codex-hepta-agentd --test cognitive_product_e2e \
+            -E 'test(running_consumer_observes_owner_control_grant_and_revoke_without_restart) | test(five_running_agents_share_only_with_the_explicit_consumer)' --test-threads 1
 
       - name: Strict lint canonical and product crates
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
@@ -229,6 +241,18 @@ jobs:
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-agentd -p codex-app-server
+
+      - name: Execute real Agentd federation grant and revoke
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-app-server --bin codex-app-server
+          target_dir=$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+          export HEPTA_TEST_CODEX_EXE="$target_dir/debug/codex-app-server"
+          test -x "$HEPTA_TEST_CODEX_EXE"
+          just test --locked --retries 0 --no-tests fail -p codex-hepta-agentd --test cognitive_product_e2e \
+            -E 'test(running_consumer_observes_owner_control_grant_and_revoke_without_restart) | test(five_running_agents_share_only_with_the_explicit_consumer)' --test-threads 1
 
       - name: Strict lint canonical and product crates on merge candidate
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
