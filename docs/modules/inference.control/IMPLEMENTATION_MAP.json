@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "addfa146f289059cb7007c44fd4c3df5507e72b3",
-    "tree": "9cb9616cf4715ffef58ad7625959e1c361aae384"
+    "commit": "e68b64b1949190581fa3a5527fdc945d8b633629",
+    "tree": "3d1a9bedbfb19264212cd547700c4e79b48cab1f"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
@@ -216,6 +216,44 @@
           "command": "just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E test(native_app_server)"
         }
       ]
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-infer-core",
+      "object": "7f9acdf8119b918354303bee5bf8d8a50466c7b4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/journal_maintenance.rs",
+      "object": "3709d333d7b7440df7867ea21c01cf5e5dccab5c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "8ec352581930d9c4ea6955ee116d182c6119f57a"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "object": "b152aabcd10af9f4e3601428a72df565b06af8cc"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_growth_tests.rs",
+      "object": "1f0dd91d8d7be0d7556fb93f856dc5fb91364582"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+      "object": "e23feccb76a657b33575ff34b53c611ffbd95002"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "object": "d378670412d30caf71feac26064c5cd476f6f1ca"
+    },
+    {
+      "path": "codex-rs/hepta-inferd",
+      "object": "803e2f4c6efc0dafbea8ea0beff338270b0d1b1b"
+    },
+    {
+      "path": "docs/modules/inference.control/TECHNICAL.md",
+      "object": "7cbbb25708a325b54895a334dc304ee986fadd28"
     }
   ]
 }
