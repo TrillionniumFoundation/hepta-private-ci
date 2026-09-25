@@ -586,6 +586,7 @@ async fn retrieve_federated_product(
         let authority = ProductReaderAuthority {
             owner_layout,
             consumer_agent_id,
+            expected_owner_generation_sha256: reader.owner_generation_sha256(),
             expected_capability: reader.capability(),
             logical_start_ms,
             started_at,
@@ -949,6 +950,7 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
 struct ProductReaderAuthority<'a> {
     owner_layout: &'a HeptaAgentLayout,
     consumer_agent_id: &'a AgentId,
+    expected_owner_generation_sha256: &'a Sha256Digest,
     expected_capability: &'a FederationCapability,
     logical_start_ms: u64,
     started_at: Instant,
@@ -976,7 +978,11 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
                 .find(|reader| reader.capability().id() == self.expected_capability.id());
             let state = match current {
                 None => FederationAuthorityStateV2::Revoked,
-                Some(reader) if reader.capability() == self.expected_capability => {
+                Some(reader)
+                    if reader.capability() == self.expected_capability
+                        && reader.owner_generation_sha256()
+                            == self.expected_owner_generation_sha256 =>
+                {
                     FederationAuthorityStateV2::Current
                 }
                 Some(_) => FederationAuthorityStateV2::StaleGeneration,
@@ -1040,6 +1046,7 @@ fn build_product_query_and_lease(
     let generation_vector_digest = domain_digest32(
         b"hepta.memory-federation.product-generation.v2",
         &[
+            reader.owner_generation_sha256().as_str().as_bytes(),
             capability.id().as_str().as_bytes(),
             &capability.generation().to_be_bytes(),
             &capability.revision().to_be_bytes(),

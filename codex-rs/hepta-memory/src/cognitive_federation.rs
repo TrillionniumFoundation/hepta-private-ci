@@ -25,6 +25,7 @@ use crate::RetrievalCandidate;
 use crate::RetrievalRequest;
 use crate::RevalidationStatus;
 use crate::cognitive_path::canonical_path_without_redirection;
+use crate::cognitive_store::CognitiveStoreReadGeneration;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
@@ -35,7 +36,6 @@ pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
 const FEDERATION_REFRESH_TIMEOUT: Duration = Duration::from_secs(2);
 
-const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const CAPABILITY_ID_PREFIX: &str = "federation:v1:";
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -202,6 +202,7 @@ pub enum FederationRevalidationDrift {
     CapabilityMissing,
     CapabilityRevision,
     CapabilityGeneration,
+    OwnerGeneration,
     Revoked,
     NotYetEffective,
     Expired,
@@ -213,6 +214,7 @@ pub enum FederationRevalidationDrift {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FederatedMemoryRevalidationBinding {
     pub source_agent_id: AgentId,
+    pub owner_generation_sha256: Sha256Digest,
     pub capability: FederationCapability,
     pub memory: MemoryRevalidationBinding,
 }
@@ -233,6 +235,7 @@ pub struct FederatedRetrievalBatch {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FederatedMemoryExplanation {
     pub source_agent_id: AgentId,
+    pub owner_generation_sha256: Sha256Digest,
     pub capability: FederationCapability,
     pub explanation: MemoryExplanation,
 }
@@ -558,6 +561,8 @@ impl CognitiveStore {
 #[derive(Clone)]
 pub struct FederatedMemoryReader {
     owner: Arc<CognitiveStore>,
+    owner_layout: HeptaAgentLayout,
+    owner_generation_sha256: Sha256Digest,
     capability: FederationCapability,
 }
 
@@ -570,7 +575,10 @@ impl FederatedMemoryReader {
         if owner_layout.agent_id() == consumer_agent_id {
             return Ok(Vec::new());
         }
-        let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
+        let read_generation = CognitiveStore::bind_current_read_generation(owner_layout)?;
+        let database_path = read_generation.database_path().to_path_buf();
+        let owner_generation_sha256 =
+            federation_owner_generation_digest(owner_layout.agent_id(), &database_path)?;
         let pool = open_read_only_pool(&database_path).await?;
         verify_read_only_store(&pool, owner_layout.agent_id()).await?;
         let rows = sqlx::query(
@@ -604,6 +612,8 @@ impl FederatedMemoryReader {
             {
                 readers.push(Self {
                     owner: Arc::clone(&owner),
+                    owner_layout: owner_layout.clone(),
+                    owner_generation_sha256: owner_generation_sha256.clone(),
                     capability: event.capability,
                 });
             }
@@ -621,6 +631,25 @@ impl FederatedMemoryReader {
         &self.capability
     }
 
+    pub fn owner_generation_sha256(&self) -> &Sha256Digest {
+        &self.owner_generation_sha256
+    }
+
+    fn bind_current_owner_generation(
+        &self,
+    ) -> Result<Option<CognitiveStoreReadGeneration>, CognitiveStoreError> {
+        let generation = CognitiveStore::bind_current_read_generation(&self.owner_layout)?;
+        if generation.database_path() != self.owner.path()
+            || federation_owner_generation_digest(
+                self.owner_layout.agent_id(),
+                generation.database_path(),
+            )? != self.owner_generation_sha256
+        {
+            return Ok(None);
+        }
+        Ok(Some(generation))
+    }
+
     pub async fn retrieve(
         &self,
         access: &FederationConsumerAccess,
@@ -635,8 +664,13 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<(FederatedRetrievalBatch, u64), CognitiveStoreError> {
+        let Some(_generation) = self.bind_current_owner_generation()? else {
+            return Err(CognitiveStoreError::AccessDenied(
+                "memory federation owner generation is not current".to_string(),
+            ));
+        };
         require_authorized(
-            self.validate_capability(access, request.now_unix_seconds())
+            self.validate_capability_in_generation(access, request.now_unix_seconds())
                 .await?,
         )?;
         let owner_access = owner_access(&self.capability);
@@ -649,7 +683,7 @@ impl FederatedMemoryReader {
             )
             .await?;
         require_authorized(
-            self.validate_capability(access, request.now_unix_seconds())
+            self.validate_capability_in_generation(access, request.now_unix_seconds())
                 .await?,
         )?;
         let candidates = batch
@@ -659,6 +693,7 @@ impl FederatedMemoryReader {
                 source_agent_id: self.capability.owner_agent_id.clone(),
                 revalidation: FederatedMemoryRevalidationBinding {
                     source_agent_id: self.capability.owner_agent_id.clone(),
+                    owner_generation_sha256: self.owner_generation_sha256.clone(),
                     capability: self.capability.clone(),
                     memory: candidate.revalidation.clone(),
                 },
@@ -703,13 +738,25 @@ impl FederatedMemoryReader {
             return Ok(Vec::new());
         }
         let stale_all = |drift| vec![FederatedRevalidationStatus::Stale(drift); bindings.len()];
+        let Some(_generation) = self.bind_current_owner_generation()? else {
+            return Ok(stale_all(FederationRevalidationDrift::OwnerGeneration));
+        };
         if bindings.iter().any(|binding| {
             binding.source_agent_id != self.capability.owner_agent_id
-                || binding.capability != self.capability
+                || binding.owner_generation_sha256 != self.owner_generation_sha256
         }) {
+            return Ok(stale_all(FederationRevalidationDrift::OwnerGeneration));
+        }
+        if bindings
+            .iter()
+            .any(|binding| binding.capability != self.capability)
+        {
             return Ok(stale_all(FederationRevalidationDrift::CapabilityRevision));
         }
-        if let Some(drift) = self.validate_capability(access, now_unix_seconds).await? {
+        if let Some(drift) = self
+            .validate_capability_in_generation(access, now_unix_seconds)
+            .await?
+        {
             return Ok(stale_all(drift));
         }
         if bindings
@@ -735,7 +782,10 @@ impl FederatedMemoryReader {
                 "federated batch revalidation changed result cardinality".to_string(),
             ));
         }
-        if let Some(drift) = self.validate_capability(access, now_unix_seconds).await? {
+        if let Some(drift) = self
+            .validate_capability_in_generation(access, now_unix_seconds)
+            .await?
+        {
             return Ok(stale_all(drift));
         }
         Ok(statuses
@@ -744,6 +794,7 @@ impl FederatedMemoryReader {
                 RevalidationStatus::Current(explanation) => {
                     FederatedRevalidationStatus::Current(Box::new(FederatedMemoryExplanation {
                         source_agent_id: self.capability.owner_agent_id.clone(),
+                        owner_generation_sha256: self.owner_generation_sha256.clone(),
                         capability: self.capability.clone(),
                         explanation: *explanation,
                     }))
@@ -755,7 +806,7 @@ impl FederatedMemoryReader {
             .collect())
     }
 
-    async fn validate_capability(
+    async fn validate_capability_in_generation(
         &self,
         access: &FederationConsumerAccess,
         now_unix_seconds: i64,
@@ -1117,6 +1168,27 @@ fn owner_access(capability: &FederationCapability) -> CognitiveAccess {
             )
         }
     }
+}
+
+fn federation_owner_generation_digest(
+    owner_agent_id: &AgentId,
+    database_path: &Path,
+) -> Result<Sha256Digest, CognitiveStoreError> {
+    let mut hasher = Sha256::new();
+    frame_part(
+        &mut hasher,
+        b"hepta:cognitive:federation-owner-generation:v1",
+    );
+    frame_part(&mut hasher, owner_agent_id.as_str().as_bytes());
+    frame_part(&mut hasher, database_path.as_os_str().as_encoded_bytes());
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let metadata = std::fs::metadata(database_path).map_err(unavailable)?;
+        frame_part(&mut hasher, &metadata.dev().to_be_bytes());
+        frame_part(&mut hasher, &metadata.ino().to_be_bytes());
+    }
+    Sha256Digest::parse(format!("{:x}", hasher.finalize())).map_err(CognitiveStoreError::Corrupt)
 }
 
 fn require_authorized(

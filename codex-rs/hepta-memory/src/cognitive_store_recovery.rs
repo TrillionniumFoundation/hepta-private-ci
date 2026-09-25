@@ -27,6 +27,7 @@ use sqlx::ValueRef;
 
 use super::CognitiveStore;
 use super::CognitiveStoreError;
+use super::CognitiveStoreGenerationGuard;
 use super::CognitiveStoreOpenGuard;
 use super::REQUIRED_SCHEMA_OBJECTS;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
@@ -210,6 +211,9 @@ impl CognitiveStore {
         }
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+        let _generation_guard =
+            CognitiveStoreGenerationGuard::acquire_exclusive_or_create(&canonical_root)
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         observer.observe(CognitiveRecoveryPhase::BeforeAuthorityUse);
         // The point-in-time preflight above is not enough: authority may be
         // revoked after it and before the exclusive owner fence is obtained. Enter a
