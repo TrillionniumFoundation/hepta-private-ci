@@ -291,13 +291,18 @@ def main() -> int:
             "evidence output must be empty; previous receipts may not be overwritten"
         )
     output.mkdir(parents=True, exist_ok=True)
-    tmp = output / "host-filesystem"
-    tmp.mkdir(exist_ok=True)
+    host_filesystem = Path(os.environ.get("HEPTA_NDU_HOST_FILESYSTEM", "/tmp")).resolve()
+    if not host_filesystem.is_dir():
+        parser.error("HEPTA_NDU_HOST_FILESYSTEM must name an existing directory")
+    if len(str(host_filesystem).encode()) > 32:
+        parser.error(
+            "HEPTA_NDU_HOST_FILESYSTEM must be a short path so AF_UNIX endpoints remain below SUN_LEN"
+        )
     env = dict(os.environ)
     env.update(
         HEPTA_NDU_HOST_ID=platform.node(),
         HEPTA_NDU_FS_PROFILE=subprocess.check_output(
-            ["stat", "-f", "-c", "%T", str(tmp)], text=True
+            ["stat", "-f", "-c", "%T", str(host_filesystem)], text=True
         ).strip(),
         HEPTA_NDU_RUSTC=subprocess.check_output(
             ["rustc", "--version"], cwd=ROOT / "codex-rs", text=True
@@ -307,7 +312,7 @@ def main() -> int:
         HEPTA_NDU_SOURCE_SHA=sha,
         HEPTA_NDU_SOURCE_TREE=tree,
         HEPTA_NDU_QUALIFICATION_LANE=args.lane,
-        TMPDIR=str(tmp),
+        TMPDIR=str(host_filesystem),
     )
     env.setdefault("NEXTEST_TEST_THREADS", "2")
     records = []
