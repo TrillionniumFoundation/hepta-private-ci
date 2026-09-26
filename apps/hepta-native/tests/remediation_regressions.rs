@@ -91,7 +91,9 @@ impl PlatformAdapter for Platform {
         let mut state = self.state.lock().unwrap();
         state.permission_calls += 1;
         if state.permission_fails {
-            return Err(ShellError::Platform("injected permission failure".to_owned()));
+            return Err(ShellError::Platform(
+                "injected permission failure".to_owned(),
+            ));
         }
         Ok(PermissionDecision {
             allowed: false,
@@ -199,7 +201,12 @@ fn revision_never_aliases_across_upstream_generations() {
 fn genesis_zero_remains_compatible_without_revision_aliasing() {
     let temp = private_tempdir();
     let state = Arc::new(Mutex::new(State::default()));
-    let mut shell = runtime(temp.path().join("operations.json"), state, vec![0, 1], false);
+    let mut shell = runtime(
+        temp.path().join("operations.json"),
+        state,
+        vec![0, 1],
+        false,
+    );
     shell.connect_runtime(&manifest()).unwrap();
     let (first, raw) = shell.refresh_runtime_view().unwrap();
     assert_eq!(raw["state"]["runtime_snapshot_generation"], 0);
@@ -212,7 +219,12 @@ fn genesis_zero_remains_compatible_without_revision_aliasing() {
 fn raw_generation_regression_is_not_hidden_by_genesis_projection() {
     let temp = private_tempdir();
     let state = Arc::new(Mutex::new(State::default()));
-    let mut shell = runtime(temp.path().join("operations.json"), state, vec![1, 0], false);
+    let mut shell = runtime(
+        temp.path().join("operations.json"),
+        state,
+        vec![1, 0],
+        false,
+    );
     shell.connect_runtime(&manifest()).unwrap();
     shell.refresh_runtime_view().unwrap();
     let error = shell.refresh_runtime_view().unwrap_err();

@@ -258,7 +258,8 @@ impl NativeShellRuntime {
             Ok(permission) => permission,
             Err(error) => return self.reject_without_dispatch(prepared, &error.to_string()),
         };
-        if let Err(error) = validate_digest(&permission.outcome_digest, "permission.outcome_digest") {
+        if let Err(error) = validate_digest(&permission.outcome_digest, "permission.outcome_digest")
+        {
             return self.reject_without_dispatch(prepared, &error.to_string());
         }
         if !permission.allowed {

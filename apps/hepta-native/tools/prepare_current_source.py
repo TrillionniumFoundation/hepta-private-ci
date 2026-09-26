@@ -8,6 +8,7 @@ create implementation, alter owner authority, or turn test sources into passes.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -15,7 +16,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/hepta-native"
 BASE = "7ddbfac88525196e7a4b31387ceae194958275f5"
-BRANCH = "work/ui-native-current-source-20260925"
+CANONICAL_BRANCH = "work/ui-native-current-source-20260925"
+WRITE_BRANCH = os.environ.get("HEPTA_UI_NATIVE_WRITE_BRANCH", CANONICAL_BRANCH)
 INTEGRATION_ROOTS = (
     ROOT / "codex-rs/hepta-native-gateway",
     ROOT / "codex-rs/hepta-private-state",
@@ -65,10 +67,10 @@ def committed_blob(path):
 
 def require_branch():
     branch = git("branch", "--show-current")
-    if branch == BRANCH:
+    if branch == WRITE_BRANCH:
         return
     if not branch and subprocess.run(
-        ["git", "merge-base", "--is-ancestor", f"refs/remotes/origin/{BRANCH}", "HEAD"],
+        ["git", "merge-base", "--is-ancestor", f"refs/remotes/origin/{WRITE_BRANCH}", "HEAD"],
         cwd=ROOT, check=False,
     ).returncode == 0:
         return
@@ -137,7 +139,7 @@ def fingerprint(write):
                     "baselineCommit": BASE,
                     "baselineRole": "initial_convergence_ancestor",
                     "historicalSourceCommit": "3198549d80d6c59887b82e2c50018ab818217c53",
-                    "canonicalBranch": BRANCH,
+                    "canonicalBranch": CANONICAL_BRANCH,
                     "files": observed,
                     "productionQualified": False,
                     "releaseAuthorized": False,
