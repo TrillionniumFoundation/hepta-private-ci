@@ -36,6 +36,7 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::authbus_trust::hex_bytes;
+use crate::evidence_mode::EvidenceRuntimeMode;
 use crate::evidence_trust::EvidenceTrust;
 
 pub(crate) struct EvidenceHost {
@@ -50,18 +51,49 @@ impl EvidenceHost {
         recovery_frontier: Option<(PathBuf, PathBuf)>,
     ) -> Result<Self, AgentdError> {
         EvidenceTrust::load(&trust_file, identity)?;
+        let policy = crate::evidence_mode::evidence_runtime_policy();
+        policy.validate()?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(evidence_error)?;
-        if let Some((frontier_file, signer_trust_file)) = recovery_frontier {
-            crate::evidence_frontier::verify_evidence_recovery_frontier(
-                identity,
-                &store,
-                &frontier_file,
-                &signer_trust_file,
-            )
-            .await?;
+
+        match (policy.mode, recovery_frontier, policy.production.as_ref()) {
+            (EvidenceRuntimeMode::Development, Some((frontier_file, signer_trust_file)), None) => {
+                crate::evidence_frontier::verify_evidence_recovery_frontier(
+                    identity,
+                    &store,
+                    &frontier_file,
+                    &signer_trust_file,
+                )
+                .await?;
+            }
+            (EvidenceRuntimeMode::Development, None, None) => {}
+            (
+                EvidenceRuntimeMode::Production,
+                Some((frontier_file, signer_trust_file)),
+                Some(production),
+            ) => {
+                crate::evidence_production::verify_production_evidence_recovery_frontier(
+                    identity,
+                    &store,
+                    &trust_file,
+                    &frontier_file,
+                    &signer_trust_file,
+                    production,
+                )
+                .await?;
+            }
+            (EvidenceRuntimeMode::Production, None, _) => {
+                return Err(invalid(
+                    "production mode requires a signed recovery frontier and signer trust",
+                ));
+            }
+            _ => {
+                return Err(invalid(
+                    "evidence runtime policy and production admission inputs are inconsistent",
+                ));
+            }
         }
         Ok(Self { store, trust_file })
     }
