@@ -1,183 +1,221 @@
-//! Explicit Agentd-owned product caller for `browser.servo`.
+//! Persistent Agentd-owned product service for `browser.servo`.
 //!
-//! This one-shot host deliberately has no Browser listener. It opens the real
-//! persistent final-use authority, verifies the selected Browser service and
-//! Servo worker artifacts, starts the private Browser child, performs one
-//! bounded module-port call, and exits. Production daemon activation can reuse
-//! the same port once a live revocation owner is composed; it must not invent a
-//! permissive default authority.
+//! Calls use bounded newline-delimited JSON on inherited stdin/stdout. The
+//! process retains the private Browser child, durable authority and live
+//! revocation feed across calls; it exposes no Browser TCP or UDS listener.
 
-use std::collections::BTreeSet;
-use std::io::Read;
-use std::path::PathBuf;
+use std::fs;
+use std::io::{BufRead, BufReader, Write};
+use std::path::{Path, PathBuf};
 
-use codex_hepta_agentd::BrowserFinalUseInvocation;
-use codex_hepta_agentd::BrowserServoCall;
-use codex_hepta_agentd::BrowserServoMethod;
-use codex_hepta_agentd::BrowserServoPort;
-use codex_hepta_agentd::BrowserServoProcessConfig;
-use codex_hepta_agentd::ChildBrowserTransport;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
-use serde::Deserialize;
-use serde_json::Value;
+use serde_json::{Value, json};
 
-const MAX_HOST_CONFIG_BYTES: u64 = 65_536;
-const MAX_CALL_BYTES: u64 = 65_536;
+#[path = "../browser_revocation_feed.rs"]
+mod browser_revocation_feed;
+#[path = "../browser_servo_admission_frame.rs"]
+mod browser_servo_admission_frame;
+#[path = "../browser_servo_admission_transport.rs"]
+mod browser_servo_admission_transport;
+#[path = "../browser_servo_product.rs"]
+mod browser_servo_product;
+#[path = "../browser_servo_product_host.rs"]
+mod browser_servo_product_host;
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct HostConfig {
-    signer_id: String,
-    verifying_key: [u8; 32],
-    authority_state_dir: PathBuf,
-    authority_epoch: u64,
-    revocation_revision: u64,
-    revoked_grant_ids: BTreeSet<String>,
-    node_path: PathBuf,
-    service_path: PathBuf,
-    service_sha256: String,
-    worker_path: PathBuf,
-    worker_sha256: String,
-    profile_root: PathBuf,
-    journal_path: PathBuf,
-    bwrap_path: PathBuf,
-    driver_timeout_ms: u64,
-}
+use browser_servo_product::BrowserServoError;
+use browser_servo_product_host::{
+    PersistentBrowserProduct, ProductCall, ProductHostConfig,
+};
 
-#[derive(Clone, Copy, Deserialize)]
-#[serde(rename_all = "snake_case")]
-enum HostMethod {
-    OpenProfile,
-    AdmitEffectGrant,
-    ObservePage,
-    NavigateOrAct,
-    ReconcileOperation,
-    ReconcilePersistedOperation,
-    CloseProfile,
-}
-
-impl HostMethod {
-    fn module_method(self) -> BrowserServoMethod {
-        match self {
-            Self::OpenProfile => BrowserServoMethod::OpenProfile,
-            Self::AdmitEffectGrant => BrowserServoMethod::AdmitEffectGrant,
-            Self::ObservePage => BrowserServoMethod::ObservePage,
-            Self::NavigateOrAct => BrowserServoMethod::NavigateOrAct,
-            Self::ReconcileOperation => BrowserServoMethod::ReconcileOperation,
-            Self::ReconcilePersistedOperation => BrowserServoMethod::ReconcilePersistedOperation,
-            Self::CloseProfile => BrowserServoMethod::CloseProfile,
-        }
-    }
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct HostCall {
-    method: HostMethod,
-    input: Value,
-    signed_grant: Option<SignedFinalUseGrant>,
-    binding: Option<FinalUseBinding>,
-}
+const MAX_CONFIG_BYTES: u64 = 1_048_576;
+const MAX_REQUEST_BYTES: usize = 1_048_576;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args_os().skip(1);
-    let config_path = args
+    let mut arguments = std::env::args_os().skip(1);
+    let config_path = arguments
         .next()
-        .ok_or("usage: hepta-agentd-browser HOST_CONFIG.json < CALL.json")?;
-    if args.next().is_some() {
-        return Err("usage: hepta-agentd-browser HOST_CONFIG.json < CALL.json".into());
+        .ok_or("usage: hepta-agentd-browser PRODUCT_CONFIG.json")?;
+    if arguments.next().is_some() {
+        return Err(
+            "usage: hepta-agentd-browser PRODUCT_CONFIG.json".into(),
+        );
     }
-    let config: HostConfig = serde_json::from_slice(&bounded_file(
-        PathBuf::from(config_path),
-        MAX_HOST_CONFIG_BYTES,
-    )?)?;
-    let call: HostCall = serde_json::from_slice(&bounded_stdin(MAX_CALL_BYTES)?)?;
-
-    let authority = FinalUseAuthority::open_state_dir(
-        &config.authority_state_dir,
-        config.signer_id,
-        config.verifying_key,
-        FinalUseRevocations {
-            authority_epoch: config.authority_epoch,
-            revision: config.revocation_revision,
-            revoked_grant_ids: config.revoked_grant_ids,
-        },
+    let config: ProductHostConfig = serde_json::from_slice(
+        &bounded_private_file(
+            PathBuf::from(config_path).as_path(),
+            MAX_CONFIG_BYTES,
+        )?,
     )?;
-    let process = BrowserServoProcessConfig {
-        node_path: config.node_path,
-        service_path: config.service_path,
-        service_sha256: parse_digest(&config.service_sha256, "service_sha256")?,
-        worker_path: config.worker_path,
-        worker_sha256: parse_digest(&config.worker_sha256, "worker_sha256")?,
-        profile_root: config.profile_root,
-        journal_path: config.journal_path,
-        bwrap_path: config.bwrap_path,
-        driver_timeout_ms: config.driver_timeout_ms,
-    };
-    let transport = ChildBrowserTransport::spawn(&process)?;
-    let port = BrowserServoPort::new(authority, transport);
-    let module_method = call.method.module_method();
-    let request = if matches!(module_method, BrowserServoMethod::NavigateOrAct) {
-        let signed_grant = call
-            .signed_grant
-            .ok_or("navigate_or_act requires independently signed final-use grant")?;
-        let binding = call
-            .binding
-            .ok_or("navigate_or_act requires exact FinalUseBinding")?;
-        BrowserServoCall::effect(
-            call.input,
-            BrowserFinalUseInvocation {
-                signed_grant,
-                binding,
-            },
-        )?
-    } else {
-        if call.signed_grant.is_some() || call.binding.is_some() {
-            return Err("non-effect Browser calls must not carry final-use authority".into());
+    let mut product = PersistentBrowserProduct::from_config(config)?;
+    let mut input = BufReader::new(std::io::stdin().lock());
+    let mut output = std::io::BufWriter::new(std::io::stdout().lock());
+    let mut next_request_id = 1_u64;
+
+    loop {
+        let Some(bytes) = read_bounded_line(&mut input)? else {
+            output.flush()?;
+            return Ok(());
+        };
+        let call: ProductCall = match serde_json::from_slice(&bytes) {
+            Ok(call) => call,
+            Err(error) => {
+                respond(
+                    &mut output,
+                    json!({
+                        "requestId": Value::Null,
+                        "ok": false,
+                        "error": bounded(format!(
+                            "invalid Browser call JSON: {error}"
+                        )),
+                    }),
+                )?;
+                continue;
+            }
+        };
+        let request_id = match call.request_id.as_deref() {
+            Some(value) => {
+                stable_id(value)?;
+                value.to_owned()
+            }
+            None => {
+                let value = format!("browser.host.{next_request_id}");
+                next_request_id = next_request_id
+                    .checked_add(1)
+                    .ok_or("Browser host request id exhausted")?;
+                value
+            }
+        };
+        match product.call(call) {
+            Ok(result) => respond(
+                &mut output,
+                json!({
+                    "requestId": request_id,
+                    "ok": true,
+                    "result": result,
+                }),
+            )?,
+            Err(error) => respond(
+                &mut output,
+                json!({
+                    "requestId": request_id,
+                    "ok": false,
+                    "error": bounded(error.to_string()),
+                    "indeterminate": matches!(
+                        error,
+                        BrowserServoError::Indeterminate(_)
+                    ),
+                }),
+            )?,
         }
-        BrowserServoCall::read(module_method, call.input)?
-    };
-    let result = port.call(request)?;
-    serde_json::to_writer(std::io::stdout(), &result)?;
-    println!();
+    }
+}
+
+fn read_bounded_line(
+    input: &mut impl BufRead,
+) -> Result<Option<Vec<u8>>, Box<dyn std::error::Error>> {
+    let mut bytes = Vec::new();
+    loop {
+        let available = input.fill_buf()?;
+        if available.is_empty() {
+            if bytes.is_empty() {
+                return Ok(None);
+            }
+            return Err(
+                "Browser call channel ended with a partial frame".into(),
+            );
+        }
+        if let Some(position) = available
+            .iter()
+            .position(|byte| *byte == b'\n')
+        {
+            let consumed = position + 1;
+            if bytes.len() + consumed > MAX_REQUEST_BYTES + 1 {
+                return Err(
+                    "Browser call exceeds the bounded line protocol".into(),
+                );
+            }
+            bytes.extend_from_slice(&available[..consumed]);
+            input.consume(consumed);
+            break;
+        }
+        if bytes.len() + available.len() > MAX_REQUEST_BYTES {
+            return Err(
+                "Browser call exceeds the bounded line protocol".into(),
+            );
+        }
+        let consumed = available.len();
+        bytes.extend_from_slice(available);
+        input.consume(consumed);
+    }
+    bytes.pop();
+    if bytes.is_empty() {
+        return Err("Browser call line is empty".into());
+    }
+    Ok(Some(bytes))
+}
+
+fn respond(
+    output: &mut impl Write,
+    value: Value,
+) -> Result<(), Box<dyn std::error::Error>> {
+    serde_json::to_writer(&mut *output, &value)?;
+    output.write_all(b"\n")?;
+    output.flush()?;
     Ok(())
 }
 
-fn bounded_file(path: PathBuf, maximum: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    let mut bytes = Vec::new();
-    std::fs::File::open(&path)?
-        .take(maximum + 1)
-        .read_to_end(&mut bytes)?;
-    if bytes.len() as u64 > maximum {
-        return Err(format!("{} exceeds {maximum} bytes", path.display()).into());
+fn bounded_private_file(
+    path: &Path,
+    maximum: u64,
+) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let metadata = fs::symlink_metadata(path)?;
+    if metadata.file_type().is_symlink()
+        || !metadata.is_file()
+        || metadata.len() == 0
+    {
+        return Err(format!(
+            "{} must be a non-empty regular non-symlink file",
+            path.display()
+        )
+        .into());
     }
-    Ok(bytes)
+    if metadata.len() > maximum {
+        return Err(format!(
+            "{} exceeds {maximum} bytes",
+            path.display()
+        )
+        .into());
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o077 != 0 {
+            return Err(format!(
+                "{} permissions are too broad",
+                path.display()
+            )
+            .into());
+        }
+    }
+    Ok(fs::read(path)?)
 }
 
-fn bounded_stdin(maximum: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    let mut bytes = Vec::new();
-    std::io::stdin().take(maximum + 1).read_to_end(&mut bytes)?;
-    if bytes.len() as u64 > maximum {
-        return Err(format!("Browser call exceeds {maximum} bytes").into());
-    }
-    Ok(bytes)
-}
-
-fn parse_digest(value: &str, name: &str) -> Result<[u8; 32], Box<dyn std::error::Error>> {
-    if value.len() != 64
+fn stable_id(value: &str) -> Result<(), Box<dyn std::error::Error>> {
+    if value.is_empty()
+        || value.len() > 128
         || !value
             .bytes()
-            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+            .all(|byte| {
+                byte.is_ascii_alphanumeric()
+                    || b"._:-".contains(&byte)
+            })
     {
-        return Err(format!("{name} must be lowercase SHA-256 hex").into());
+        return Err(
+            "Browser request_id must be a bounded stable identifier".into(),
+        );
     }
-    let mut output = [0u8; 32];
-    for (index, slot) in output.iter_mut().enumerate() {
-        let start = index * 2;
-        *slot = u8::from_str_radix(&value[start..start + 2], 16)?;
-    }
-    Ok(output)
+    Ok(())
+}
+
+fn bounded(value: impl AsRef<str>) -> String {
+    value.as_ref().chars().take(512).collect()
 }
