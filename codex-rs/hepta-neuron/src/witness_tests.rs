@@ -3,6 +3,7 @@ use super::*;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -41,8 +42,21 @@ impl Fixture {
         self.0.join("witness")
     }
 
+    fn successor_path(&self) -> PathBuf {
+        self.0.join("witness-2")
+    }
+
     fn file(&self) -> File {
         checked(OpenOptions::new().read(true).write(true).open(self.path()))
+    }
+
+    fn successor_file(&self) -> File {
+        checked(
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(self.successor_path()),
+        )
     }
 }
 
@@ -173,8 +187,102 @@ fn witness_capacity_and_independent_writer_are_bounded() {
         Some(WitnessStoreError::Busy)
     );
     checked(store.compare_and_swap(None, anchor(1)));
+    assert_eq!(checked(store.remaining_capacity()), 0);
     assert_eq!(
         store.compare_and_swap(Some(anchor(1)), anchor(2)),
         Err(WitnessStoreError::Capacity)
     );
+}
+
+#[test]
+fn full_root_rolls_to_bound_successor_without_losing_frontier() {
+    let fixture = Fixture::new();
+    let seed = {
+        let mut root = checked(FileAnchorWitnessStore::open(
+            fixture.file(),
+            scope(),
+            generation(),
+            /*max_records*/ 1,
+        ));
+        checked(root.compare_and_swap(None, anchor(1)));
+        checked(root.current()).expect("root anchor")
+    };
+
+    {
+        let mut successor = checked(FileAnchorWitnessStore::create_successor(
+            &fixture.successor_path(),
+            scope(),
+            generation(),
+            /*max_records*/ 2,
+            seed,
+        ));
+        assert_eq!(successor.segment_seed(), Some(seed));
+        assert_eq!(checked(successor.current()), Some(seed));
+        checked(successor.compare_and_swap(Some(seed), anchor(2)));
+        assert_eq!(checked(successor.remaining_capacity()), 1);
+    }
+
+    let mut reopened = checked(FileAnchorWitnessStore::open_successor(
+        fixture.successor_file(),
+        scope(),
+        generation(),
+        /*max_records*/ 2,
+        seed,
+    ));
+    assert_eq!(reopened.segment_seed(), Some(seed));
+    assert_eq!(checked(reopened.current()), Some(anchor(2)));
+    checked(reopened.compare_and_swap(Some(anchor(2)), anchor(3)));
+    assert_eq!(checked(reopened.current()), Some(anchor(3)));
+}
+
+#[test]
+fn successor_seed_mismatch_and_partial_tail_fail_closed_without_rewrite() {
+    let fixture = Fixture::new();
+    let seed = anchor(7);
+    {
+        let mut successor = checked(FileAnchorWitnessStore::create_successor(
+            &fixture.successor_path(),
+            scope(),
+            generation(),
+            /*max_records*/ 2,
+            seed,
+        ));
+        checked(successor.compare_and_swap(Some(seed), anchor(8)));
+    }
+    let original = checked(fs::read(fixture.successor_path()));
+    assert_eq!(
+        FileAnchorWitnessStore::open_successor(
+            fixture.successor_file(),
+            scope(),
+            generation(),
+            /*max_records*/ 2,
+            anchor(6),
+        )
+        .err(),
+        Some(WitnessStoreError::ContextMismatch)
+    );
+    assert_eq!(checked(fs::read(fixture.successor_path())), original);
+
+    {
+        let mut file = checked(
+            OpenOptions::new()
+                .append(true)
+                .open(fixture.successor_path()),
+        );
+        checked(file.write_all(&[1, 2, 3]));
+        checked(file.sync_all());
+    }
+    let partial = checked(fs::read(fixture.successor_path()));
+    assert_eq!(
+        FileAnchorWitnessStore::open_successor(
+            fixture.successor_file(),
+            scope(),
+            generation(),
+            /*max_records*/ 2,
+            seed,
+        )
+        .err(),
+        Some(WitnessStoreError::Corrupt)
+    );
+    assert_eq!(checked(fs::read(fixture.successor_path())), partial);
 }
