@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.memory-retrieval.slo-thresholds.v1",
+  "profile": "github-hosted-qualification-not-production",
+  "phases": {
+    "sqlite-owner": {
+      "retrieval_p95_us": 30000,
+      "retrieval_p99_us": 40000,
+      "revalidation_p95_us": 30000,
+      "revalidation_p99_us": 40000,
+      "maximum_rss_kb": 2500000
+    },
+    "hnmf": {
+      "p95_us": 12000,
+      "p99_us": 16000,
+      "maximum_rss_kb": 750000
+    },
+    "hnmf-full-ceiling": {
+      "p95_us": 130000,
+      "p99_us": 160000,
+      "maximum_rss_kb": 500000
+    }
+  }
+}
