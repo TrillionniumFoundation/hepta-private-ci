@@ -1,0 +1,78 @@
+name: Learning operator exact-source diagnostics
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/learning-operator-diagnostics.yml'
+      - 'scripts/hepta*'
+      - 'codex-rs/hepta-*/**'
+      - 'docs/lane-e/**'
+      - 'docs/modules/learning.operator/**'
+      - 'qualification/lane-e/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-operator-diagnostics-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    if: github.head_ref == 'codex/learning-operator-full-convergence-20260926' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Preserve immutable tracked source for reproducible diagnosis
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/operator-diagnostics"
+          git rev-parse HEAD > "$RUNNER_TEMP/operator-diagnostics/source-sha.txt"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/operator-diagnostics/source.tar.gz"
+      - name: Execute all source verifiers independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+          commands = [
+              ['python3', 'scripts/hepta-module-execution-dossiers.py', 'verify'],
+              ['python3', 'scripts/hepta-implementation-maps.py', 'verify'],
+              ['python3', 'scripts/hepta-lane-e-closure.py', 'self-test'],
+              ['python3', 'scripts/hepta-lane-e-closure.py', 'verify'],
+              ['git', 'diff', '--exit-code'],
+          ]
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'operator-diagnostics'
+          results = []
+          for index, command in enumerate(commands):
+              result = subprocess.run(command, capture_output=True, text=True, timeout=120)
+              (root / f'{index}.stdout.txt').write_text(result.stdout)
+              (root / f'{index}.stderr.txt').write_text(result.stderr)
+              print('COMMAND:', ' '.join(command), 'EXIT:', result.returncode, flush=True)
+              print(result.stdout, flush=True)
+              print(result.stderr, flush=True)
+              results.append({'command': command, 'exit_code': result.returncode})
+          (root / 'results.json').write_text(json.dumps(results, indent=2) + '\n')
+          raise SystemExit(int(any(result['exit_code'] != 0 for result in results)))
+          PY
+      - name: Upload diagnostics even when source gates reject
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-diagnostics-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/operator-diagnostics/
+          if-no-files-found: error
+          retention-days: 3
