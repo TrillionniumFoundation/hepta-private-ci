@@ -76,14 +76,15 @@ jobs:
           -p codex-hepta-agentd
           --all-targets
 
-      - name: Owner regression and signed qualification
+      - name: Owner and consumer regression
         working-directory: codex-rs
         run: |
           set -euo pipefail
           just test --locked -p codex-hepta-intelligence-eval --test-threads=1
           just test --locked -p codex-hepta-intelligence-eval signed_qualification_e2e --test-threads=1
           just test --locked -p codex-hepta-intelligence evaluated_shadow --test-threads=1
-          just test --locked -p codex-hepta-agentd intelligence_evaluation --test-threads=1
+          just test --locked -p codex-hepta-intelligence plasticity_product --test-threads=1
+          just test --locked -p codex-hepta-agentd signed_candidate_passes_only_on_bound_current_owner_and_context --test-threads=1
 
       - name: Deterministic fault-injection matrix
         shell: bash
@@ -117,13 +118,14 @@ jobs:
           assert value['holdout']['afterBytes'] < value['holdout']['beforeBytes']
           PY
 
-      - name: Evaluator line coverage threshold
+      - name: Evaluator library line coverage threshold
         shell: bash
         run: |
           set -euo pipefail
           cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
             -p codex-hepta-intelligence-eval \
-            --all-targets \
+            --lib \
+            --all-features \
             --fail-under-lines 85 \
             --json \
             --output-path .hepta-evidence/learning-eval/coverage.json
