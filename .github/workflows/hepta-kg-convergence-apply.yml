@@ -20,6 +20,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CANDIDATE_BRANCH: work/product-convergence-20260923
 
 jobs:
   apply:
@@ -42,32 +43,53 @@ jobs:
           git diff --cached --quiet
           test -z "$(git status --porcelain)"
 
-      - name: Apply exact phase-one transformations
+      - name: Apply and finalize exact transformations
         id: transform
         continue-on-error: true
         shell: bash
         run: |
           set +e
-          {
-            python3 -m py_compile scripts/hepta-kg-convergence-apply-phase1.py
-            python3 scripts/hepta-kg-convergence-apply-phase1.py
-          } 2>&1 | tee "$RUNNER_TEMP/phase1-transform.log"
-          status=${PIPESTATUS[0]}
-          if [ "$status" = 0 ]; then
-            rm scripts/hepta-kg-convergence-apply-phase1.py
-            rm .github/workflows/hepta-kg-convergence-apply.yml
+          python3 -m py_compile \
+            scripts/hepta-kg-convergence-apply-phase1.py \
+            scripts/hepta-kg-convergence-finalize.py
+          compile_status=$?
+          transform_status=$compile_status
+          finalize_status=125
+          if [ "$compile_status" = 0 ]; then
+            python3 scripts/hepta-kg-convergence-apply-phase1.py 2>&1 \
+              | tee "$RUNNER_TEMP/phase1-transform.log"
+            transform_status=${PIPESTATUS[0]}
           fi
-          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          if [ "$transform_status" = 0 ]; then
+            python3 scripts/hepta-kg-convergence-finalize.py 2>&1 \
+              | tee "$RUNNER_TEMP/phase1-finalize.log"
+            finalize_status=${PIPESTATUS[0]}
+          fi
+          printf 'compile_status=%s\n' "$compile_status" >> "$GITHUB_OUTPUT"
+          printf 'transform_status=%s\n' "$transform_status" >> "$GITHUB_OUTPUT"
+          printf 'finalize_status=%s\n' "$finalize_status" >> "$GITHUB_OUTPUT"
+          if [ "$compile_status" = 0 ] && [ "$transform_status" = 0 ] && [ "$finalize_status" = 0 ]; then
+            printf 'status=0\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'status=1\n' >> "$GITHUB_OUTPUT"
+          fi
           exit 0
 
-      - name: Retain transformation diagnostics
+      - name: Retain transformed source and diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-phase1-transform-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/phase1-transform.log
+          name: knowledge-graph-transformed-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/phase1-transform.log
+            ${{ runner.temp }}/phase1-finalize.log
+            codex-rs/hepta-kg/src/generation.rs
+            codex-rs/hepta-kg/src/generation_convergence_tests.rs
+            docs/modules/knowledge.graph/TECHNICAL.md
+            docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+            scripts/test_hepta_knowledge_graph_target_measure.py
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
 
       - name: Enforce transformation
         shell: bash
@@ -77,26 +99,27 @@ jobs:
           set -euo pipefail
           test "$TRANSFORM_STATUS" = 0
 
-      - name: Capture cargo check and lock refresh
+      - name: Capture cargo check
         id: cargo_check
         continue-on-error: true
         working-directory: codex-rs
         shell: bash
         run: |
           set +e
-          cargo check -p codex-hepta-kg 2>&1 | tee "$RUNNER_TEMP/phase1-cargo-check.log"
+          cargo check --locked -p codex-hepta-kg 2>&1 \
+            | tee "$RUNNER_TEMP/phase1-cargo-check.log"
           status=${PIPESTATUS[0]}
           printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Retain phase-one cargo diagnostics
+      - name: Retain cargo diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-phase1-cargo-${{ github.run_id }}-${{ github.run_attempt }}
+          name: knowledge-graph-cargo-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/phase1-cargo-check.log
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
 
       - name: Enforce cargo check
         shell: bash
@@ -140,16 +163,16 @@ jobs:
           printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Retain kernel test and lint diagnostics
+      - name: Retain test and lint diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-phase1-kernel-${{ github.run_id }}-${{ github.run_attempt }}
+          name: knowledge-graph-kernel-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/phase1-kernel-tests.log
             ${{ runner.temp }}/phase1-kernel-clippy.log
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
 
       - name: Enforce kernel tests and lint
         shell: bash
@@ -161,15 +184,20 @@ jobs:
           test "$TEST_STATUS" = 0
           test "$LINT_STATUS" = 0
 
-      - name: Refresh governed document indexes
+      - name: Refresh governed documents and remove one-shot machinery
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-module-docs.py refresh-indexes
           python3 scripts/hepta-module-docs.py verify
+          rm scripts/hepta-kg-convergence-apply-phase1.py
+          rm scripts/hepta-kg-convergence-finalize.py
+          rm .github/workflows/hepta-kg-convergence-apply.yml
+          rm -f .github/workflows/hepta-kg-source-diagnostic.yml
           git diff --check
 
-      - name: Commit tested phase-one source
+      - name: Commit tested source candidate
+        id: source_commit
         shell: bash
         run: |
           set -euo pipefail
@@ -179,17 +207,106 @@ jobs:
           git commit -s -m "knowledge.graph: bound indexed generation queries"
           test -z "$(git status --porcelain)"
 
-      - name: Rebind exact knowledge.graph source map
+          git fetch origin "$CANDIDATE_BRANCH"
+          remote_sha="$(git rev-parse "origin/$CANDIDATE_BRANCH")"
+          if [ "$remote_sha" != "$SOURCE_SHA" ]; then
+            git rebase "origin/$CANDIDATE_BRANCH"
+          fi
+          test -z "$(git status --porcelain)"
+          candidate_sha="$(git rev-parse HEAD)"
+          candidate_tree="$(git rev-parse HEAD^{tree})"
+          printf 'sha=%s\n' "$candidate_sha" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$candidate_tree" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$candidate_sha" > "$RUNNER_TEMP/kg-source-sha.txt"
+
+      - name: Publish tested source before long measurement
         shell: bash
         run: |
           set -euo pipefail
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+      - name: Measure exact source candidate
+        id: benchmark
+        continue-on-error: true
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ steps.source_commit.outputs.sha }}
+        run: |
+          set +e
+          timeout --signal=TERM 25m \
+            python3 scripts/hepta-knowledge-graph-target-measure.py \
+              --expected-sha "$CANDIDATE_SHA" \
+              --host-profile-id github-hosted-debug-nonqualifying \
+              --writes 32 \
+              --query-samples 10 \
+              --reopen-samples 3 \
+              --contention-readers 2 \
+              --contention-rounds 3 \
+              --target-dir "$RUNNER_TEMP/kg-target" \
+              --output "$RUNNER_TEMP/kg-benchmark.json" \
+              --raw-output "$RUNNER_TEMP/kg-benchmark-raw.log" 2>&1 \
+            | tee "$RUNNER_TEMP/kg-benchmark-driver.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Retain benchmark JSON and raw log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-exact-source-benchmark-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/kg-source-sha.txt
+            ${{ runner.temp }}/kg-benchmark.json
+            ${{ runner.temp }}/kg-benchmark-raw.log
+            ${{ runner.temp }}/kg-benchmark-driver.log
+          if-no-files-found: error
+          retention-days: 365
+
+      - name: Enforce exact-source benchmark
+        shell: bash
+        env:
+          BENCHMARK_STATUS: ${{ steps.benchmark.outputs.status }}
+        run: |
+          set -euo pipefail
+          test "$BENCHMARK_STATUS" = 0
+
+      - name: Rebind exact knowledge.graph source map
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ steps.source_commit.outputs.sha }}
+          CANDIDATE_TREE: ${{ steps.source_commit.outputs.tree }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$CANDIDATE_TREE"
           python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$CANDIDATE_SHA" --expected-tree "$CANDIDATE_TREE"
           git diff --check
           git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
-          git commit -s -m "docs(knowledge.graph): bind phase-one source identity"
+          git commit -s -m "docs(knowledge.graph): bind exact measured source identity"
+          test -z "$(git status --porcelain)"
+
+      - name: Reconcile map with concurrent branch progress
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$CANDIDATE_BRANCH"
+          remote_sha="$(git rev-parse "origin/$CANDIDATE_BRANCH")"
+          if ! git merge-base --is-ancestor "$remote_sha" HEAD; then
+            git rebase "$remote_sha"
+            python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+            git diff --check
+            if ! git diff --quiet; then
+              git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+              git commit -s -m "docs(knowledge.graph): refresh post-rebase source observation"
+            fi
+          fi
           test -z "$(git status --porcelain)"
 
       - name: Verify final committed candidate
+        working-directory: .
         shell: bash
         run: |
           set -euo pipefail
@@ -199,11 +316,14 @@ jobs:
             --expected-sha "$SHA" --expected-tree "$TREE"
           python3 scripts/hepta-technical-closure.py verify
           python3 scripts/test_hepta_knowledge_graph_target_measure.py
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-kg
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg --all-targets --no-deps -- -D warnings
           git diff --check
           test -z "$(git status --porcelain)"
 
-      - name: Push tested candidate
+      - name: Push measured map candidate
         shell: bash
         run: |
           set -euo pipefail
-          git push origin HEAD:work/product-convergence-20260923
+          git push origin "HEAD:$CANDIDATE_BRANCH"
