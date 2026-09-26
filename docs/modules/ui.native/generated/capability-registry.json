@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.ui.native.capability-registry.v1",
+  "source": "apps/hepta-native/src/model.rs",
+  "actions": [
+    {
+      "id": "open_path",
+      "rustVariant": "OpenPath",
+      "payloadVariant": "OpenPath",
+      "terminalReceiptRequired": true,
+      "finalUseGrantRequired": true
+    },
+    {
+      "id": "reveal_path",
+      "rustVariant": "RevealPath",
+      "payloadVariant": "RevealPath",
+      "terminalReceiptRequired": true,
+      "finalUseGrantRequired": true
+    },
+    {
+      "id": "copy_text",
+      "rustVariant": "CopyText",
+      "payloadVariant": "CopyText",
+      "terminalReceiptRequired": true,
+      "finalUseGrantRequired": true
+    },
+    {
+      "id": "notify",
+      "rustVariant": "Notify",
+      "payloadVariant": "Notify",
+      "terminalReceiptRequired": true,
+      "finalUseGrantRequired": true
+    }
+  ],
+  "limits": {
+    "stableIdBytes": 128,
+    "copyTextBytes": 262144,
+    "notificationTitleBytes": 256,
+    "notificationBodyBytes": 4096
+  },
+  "bindingContext": [
+    "endpoint_id",
+    "session_id",
+    "session_generation",
+    "subject_id",
+    "operation_id",
+    "displayed_revision",
+    "action",
+    "payload_digest",
+    "binding_digest",
+    "grant_digest"
+  ],
+  "durablePhases": [
+    "prepared",
+    "invoking",
+    "indeterminate",
+    "terminal"
+  ],
+  "terminalStatuses": [
+    "succeeded",
+    "failed",
+    "rejected",
+    "quarantined"
+  ]
+}

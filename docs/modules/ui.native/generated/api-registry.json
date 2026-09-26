@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.ui.native.api-registry.v1",
+  "canonicalImplementation": {
+    "language": "rust",
+    "productRoot": "apps/hepta-native",
+    "bootstrap": "apps/hepta-native/src/main.rs::run"
+  },
+  "historyInheritance": {
+    "allowed": false,
+    "rule": "Only files and receipts bound to the current candidate source identity may establish capability.",
+    "retiredEntrypoints": [
+      "apps/hepta-native/src/native.js",
+      "apps/hepta-native/src/shell-runtime.js"
+    ]
+  },
+  "operations": [
+    {
+      "id": "connect_runtime",
+      "path": "apps/hepta-native/src/runtime.rs",
+      "symbol": "pub fn connect_runtime(",
+      "boundary": "authenticated_session_bootstrap"
+    },
+    {
+      "id": "render_runtime_view",
+      "path": "apps/hepta-native/src/runtime.rs",
+      "symbol": "pub fn refresh_runtime_view(",
+      "boundary": "authenticated_monotonic_runtime_snapshot"
+    },
+    {
+      "id": "request_platform_capability",
+      "path": "apps/hepta-native/src/runtime.rs",
+      "symbol": "pub fn request_platform_capability(",
+      "boundary": "durable_final_use_authorized_effect"
+    },
+    {
+      "id": "reconcile_pending",
+      "path": "apps/hepta-native/src/runtime.rs",
+      "symbol": "pub fn reconcile_pending(",
+      "boundary": "crash_safe_non_replay_reconciliation"
+    },
+    {
+      "id": "apply_shell_update",
+      "path": "apps/hepta-native/src/updater.rs",
+      "symbol": "pub fn verify_and_stage(",
+      "boundary": "signed_predecessor_bound_staging"
+    },
+    {
+      "id": "confirm_running_update",
+      "path": "apps/hepta-native/src/updater.rs",
+      "symbol": "pub fn confirm_running_process(",
+      "boundary": "active_digest_and_runtime_health_confirmation"
+    }
+  ]
+}

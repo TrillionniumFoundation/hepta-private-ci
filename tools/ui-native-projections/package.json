@@ -1,0 +1,18 @@
+{
+  "name": "@hepta/ui-native-projections",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "generate": "node ./generate.mjs --write",
+    "lint": "node --check ./generate.mjs && node --check ./receipt.mjs && node --check ./sbom.mjs && node --check ./signing-dry-run.mjs && node --check ./test/generate.test.mjs",
+    "typecheck": "node ./generate.mjs --verify",
+    "test": "node --test ./test/generate.test.mjs",
+    "signing-dry-run": "node ./signing-dry-run.mjs",
+    "sbom": "node ./sbom.mjs",
+    "receipt": "node ./receipt.mjs"
+  }
+}

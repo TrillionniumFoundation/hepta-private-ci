@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.ui.native.test-registry.v1",
+  "sourceDiscovery": {
+    "root": "apps/hepta-native/tests",
+    "fileCount": 13,
+    "manifestDigest": "c94722cd128d52220b4f9433311dba48a23f68a06b49de78bfcb21160e3e1a1f"
+  },
+  "files": [
+    {
+      "path": "apps/hepta-native/tests/backend.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/backend_security.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/common/mod.rs",
+      "role": "support"
+    },
+    {
+      "path": "apps/hepta-native/tests/file_input.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/journal.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/journal_regressions.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/launch_config.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/private_state.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/runtime.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/security_updater.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/session_store.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/update_handoff.rs",
+      "role": "integration_test"
+    },
+    {
+      "path": "apps/hepta-native/tests/update_product.rs",
+      "role": "integration_test"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "projection_tooling",
+      "command": "npm test",
+      "workingDirectory": "tools/ui-native-projections"
+    },
+    {
+      "id": "native_application",
+      "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets",
+      "workingDirectory": "."
+    },
+    {
+      "id": "gateway_authority",
+      "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features",
+      "workingDirectory": "."
+    },
+    {
+      "id": "release_fault_profile",
+      "command": "hepta-native --qualification-e2e",
+      "workingDirectory": "packaged artifact"
+    }
+  ],
+  "requiredEvidence": [
+    "exact_head",
+    "deterministic_synthetic_merge",
+    "linux",
+    "macos",
+    "windows",
+    "package_integrity",
+    "fault_injection",
+    "crash_restart_recovery",
+    "accessibility_automation",
+    "signing_dry_run"
+  ]
+}
