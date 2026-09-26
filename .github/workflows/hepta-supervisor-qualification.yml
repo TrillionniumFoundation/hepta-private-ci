@@ -71,7 +71,6 @@ jobs:
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-supervisor-target
       RUST_BACKTRACE: "1"
       TMPDIR: /tmp
     defaults:
@@ -101,6 +100,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CANDIDATE"
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/hepta-supervisor-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           mkdir -p "$RUNNER_TEMP/hepta-supervisor/records"
           git diff --check
       - name: Install Linux process prerequisites
