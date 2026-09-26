@@ -9,6 +9,8 @@ on:
       - codex-rs/hepta-context-compiler/src/product.rs
       - codex-rs/hepta-intelligence/src/prompt_delivery_v3.rs
       - codex-rs/hepta-intelligence/src/prompt_delivery_v3_tests.rs
+      - codex-rs/hepta-agentd/src/prompt_compiler_adapters.rs
+      - codex-rs/hepta-agentd/src/prompt_compiler_adapters_tests.rs
       - .github/workflows/context-compiler-foundation-apply.yml
 
 permissions:
@@ -23,7 +25,7 @@ jobs:
     runs-on:
       group: trillionnium-android-gpu
       labels: [self-hosted, linux, x64]
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - name: Check out closure branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -41,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           base64 --decode scripts/apply-context-compiler-foundation.py.gz.b64 | gzip --decompress > /tmp/apply-context-compiler-foundation.py
-          test "$(sha256sum /tmp/apply-context-compiler-foundation.py | cut -d' ' -f1)" = "79cb899f1318ec54f2a3c31575ff6bbbb0578d966f520fde5cf292e2898e1b5e"
+          test "$(sha256sum /tmp/apply-context-compiler-foundation.py | cut -d' ' -f1)" = "83dc4808dd94700d4ef8ba4a555bd8e19a9b7f27b63c649e285c1e4e801c6ff2"
           python3 -m py_compile /tmp/apply-context-compiler-foundation.py
       - name: Apply guarded source edits
         run: python3 /tmp/apply-context-compiler-foundation.py
@@ -50,21 +52,25 @@ jobs:
         run: |
           cargo fmt --package codex-hepta-context-compiler
           cargo fmt --package codex-hepta-intelligence
+          cargo fmt --package codex-hepta-agentd
       - name: Check closure crates
         working-directory: codex-rs
         run: |
           cargo check --locked -p codex-hepta-context-compiler --all-targets
           cargo check --locked -p codex-hepta-intelligence --all-targets
+          cargo check --locked -p codex-hepta-agentd --all-targets
       - name: Strict lint closure crates
         working-directory: codex-rs
         run: |
           cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
           cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Test closure crates
         working-directory: codex-rs
         run: |
           cargo test --locked -p codex-hepta-context-compiler
           cargo test --locked -p codex-hepta-intelligence
+          cargo test --locked -p codex-hepta-agentd --lib
       - name: Verify patch hygiene
         run: git diff --check
       - name: Commit foundation closure
@@ -75,5 +81,5 @@ jobs:
           git config user.email "hepta-context-compiler-closure@users.noreply.github.com"
           git add -A
           test -n "$(git status --porcelain)"
-          git commit -m "feat(context.compiler): bind typed serialization and product V3"
+          git commit -m "feat(context.compiler): bind typed serialization and product adapters"
           git push origin HEAD:work/context-compiler-v2-closure-20260927
