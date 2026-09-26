@@ -1,0 +1,120 @@
+name: control.engineering closure bootstrap
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-production-closure-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-engineering-closure-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout the closure branch with write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/control-engineering-production-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Expand the audited closure payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .bootstrap/payload.part* | base64 -d > "$RUNNER_TEMP/control-engineering-closure.zip"
+          python3 - <<'PYZIP'
+          from pathlib import Path
+          import os
+          import zipfile
+          archive = Path(os.environ['RUNNER_TEMP']) / 'control-engineering-closure.zip'
+          root = Path.cwd().resolve()
+          with zipfile.ZipFile(archive) as value:
+              for member in value.infolist():
+                  target = (root / member.filename).resolve()
+                  target.relative_to(root)
+              value.extractall(root)
+          PYZIP
+          rm -rf .bootstrap
+
+      - name: Configure deterministic integration author
+        run: |
+          git config user.name 'Hepta Engineering Closure'
+          git config user.email 'hepta-engineering-closure@users.noreply.github.com'
+
+      - name: Apply audited edits to existing source, API and required CI
+        run: |
+          set -euo pipefail
+          python3 scripts/control_engineering_closure_bootstrap.py apply-source
+          if ! git diff --quiet; then
+            git add --all
+            git commit -m 'control.engineering: add production closure source and required gate'
+          fi
+
+      - name: Generate and commit the public API snapshot
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_control_engineering_api.py --write
+          if ! git diff --quiet; then
+            git add tools/hepta-engineering-control/PUBLIC_API.json
+            git commit -m 'control.engineering: bind public API snapshot'
+          fi
+
+      - name: Add the new operation inventory to the implementation map
+        run: |
+          set -euo pipefail
+          python3 scripts/control_engineering_closure_bootstrap.py prepare-map
+          if ! git diff --quiet; then
+            git add docs/modules/control.engineering/IMPLEMENTATION_MAP.json
+            git commit -m 'docs(control.engineering): register production closure operations'
+          fi
+
+      - name: Rebind exact blobs and current source observation from a clean commit
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module control.engineering
+          if ! git diff --quiet; then
+            git add docs/modules/control.engineering/IMPLEMENTATION_MAP.json
+            git commit -m 'docs(control.engineering): bind exact closure source objects'
+          fi
+
+      - name: Refresh deterministic status and derived document registries
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_control_engineering_status.py --write
+          python3 scripts/hepta-module-docs.py refresh-derived
+          if ! git diff --quiet; then
+            git add --all
+            git commit -m 'docs(control.engineering): publish canonical closure status'
+          fi
+
+      - name: Verify generated state and focused regressions before push
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONPATH: tools/hepta-engineering-control
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_control_engineering_api.py --check
+          python3 scripts/hepta_control_engineering_status.py --check
+          python3 scripts/hepta-gap-closure.py verify
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse 'HEAD^{tree}')"
+          python3 -m unittest -v \
+            scripts.test_hepta_exact_blob_squash \
+            scripts.test_hepta_control_engineering_merge_policy
+          python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Push all clean generated commits to the closure branch
+        run: |
+          set -euo pipefail
+          git push origin HEAD:codex/control-engineering-production-closure-20260927
