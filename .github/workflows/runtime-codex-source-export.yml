@@ -39,11 +39,7 @@ jobs:
           set -euo pipefail
           tar -czf runtime-codex-source.tar.gz \
             runtime-codex-export-identity.txt \
-            Cargo.toml \
-            Cargo.lock \
-            rust-toolchain.toml \
             justfile \
-            .cargo \
             .github/actions \
             .github/scripts \
             .github/workflows \
@@ -51,6 +47,10 @@ jobs:
             docs/modules/runtime.codex \
             docs/readiness \
             qualification/module-execution-dossiers \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/rust-toolchain.toml \
+            codex-rs/.cargo \
             codex-rs/hepta-agent-protocol \
             codex-rs/hepta-agentd \
             codex-rs/hepta-contracts \
