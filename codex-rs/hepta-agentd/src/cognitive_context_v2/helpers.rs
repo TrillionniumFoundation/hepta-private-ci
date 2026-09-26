@@ -235,9 +235,7 @@ pub(super) fn register_issued_seal(
     Ok(digest)
 }
 
-pub(super) fn issued_seal(
-    digest: Digest32,
-) -> Result<IssuedContextSealV2, CognitiveContextError> {
+pub(super) fn issued_seal(digest: Digest32) -> Result<IssuedContextSealV2, CognitiveContextError> {
     let now = monotonic_micros()?;
     let mut issued = ISSUED_CONTEXT_SEALS
         .get_or_init(|| Mutex::new(BTreeMap::new()))
@@ -291,10 +289,9 @@ pub(super) fn parse_digest(
     value: &str,
     name: &'static str,
 ) -> Result<Digest32, CognitiveContextError> {
-    value.parse().map_err(|error| {
-        CognitiveStoreError::Invalid(format!("invalid {name}: {error}"))
-            .into()
-    })
+    value
+        .parse()
+        .map_err(|error| CognitiveStoreError::Invalid(format!("invalid {name}: {error}")).into())
 }
 
 pub(super) fn monotonic_micros() -> Result<u64, CognitiveContextError> {
@@ -318,11 +315,7 @@ fn legacy_now_seconds() -> Result<i64, CognitiveContextError> {
 }
 
 pub(super) fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) {
-    bytes.extend_from_slice(
-        &u64::try_from(value.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(value);
 }
 

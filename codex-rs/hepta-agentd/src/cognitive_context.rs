@@ -5,10 +5,10 @@
 //! into a process-generation-bound, monotonic, owner-read-authenticated seal
 //! and verifies that seal immediately before final use.
 
-#[path = "cognitive_context_legacy.rs"]
-mod legacy;
 #[path = "cognitive_context_v2/mod.rs"]
 mod cognitive_context_v2;
+#[path = "cognitive_context_legacy.rs"]
+mod legacy;
 
 pub(crate) use cognitive_context_v2::read_with_retrieval_context_and_learning;
 pub(crate) use cognitive_context_v2::revalidate_with_retrieval_context;

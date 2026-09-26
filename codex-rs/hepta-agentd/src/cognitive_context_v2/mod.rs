@@ -47,8 +47,7 @@ const MAX_ISSUED_CONTEXT_SEALS: usize = 4096;
 const CONTEXT_LEASE_MICROS: u64 = 1_000_000;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
 const CONTEXT_RECORD_SET_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-record-set.v2";
-const CONTEXT_REQUEST_BINDING_DOMAIN: &[u8] =
-    b"hepta.agentd.cognitive-context-request-binding.v2";
+const CONTEXT_REQUEST_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-request-binding.v2";
 const CONTEXT_DELIVERY_SEAL_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-delivery-seal.v2";
 const CONTEXT_PLAN_PREFIX: &str = "context-plan-v2";
 

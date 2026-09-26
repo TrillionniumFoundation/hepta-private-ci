@@ -152,8 +152,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             "cognitive context plan disappeared before sealing".to_string(),
         )
     })?;
-    plan.plan_receipt_digest =
-        helpers::encode_plan_binding(raw_plan_receipt_digest, seal_digest);
+    plan.plan_receipt_digest = helpers::encode_plan_binding(raw_plan_receipt_digest, seal_digest);
 
     if serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?

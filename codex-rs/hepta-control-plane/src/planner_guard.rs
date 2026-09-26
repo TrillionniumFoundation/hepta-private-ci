@@ -139,8 +139,8 @@ mod tests {
 
     #[test]
     fn duplicate_final_payload_is_rejected_instead_of_silently_deduplicated() {
-        let snapshot = collect_snapshot(request(), vec![summary("planner")])
-            .expect("coherent snapshot");
+        let snapshot =
+            collect_snapshot(request(), vec![summary("planner")]).expect("coherent snapshot");
         let duplicated = digest("payload");
         let error = prepare_plan(
             &snapshot,

@@ -410,9 +410,10 @@ impl PlannerStoreImageV1 {
     fn validate_parent_links(&self) -> Result<(), PlannerStoreError> {
         for body in self.bodies.values() {
             if let Some(parent) = body.parent_digest {
-                let journal_knows_parent = self.journal.entries().iter().any(|entry| {
-                    entry.identity_digest == parent || entry.payload_digest == parent
-                });
+                let journal_knows_parent =
+                    self.journal.entries().iter().any(|entry| {
+                        entry.identity_digest == parent || entry.payload_digest == parent
+                    });
                 if !self.bodies.contains_key(&parent) && !journal_knows_parent {
                     return Err(PlannerStoreError::MissingParent);
                 }
@@ -441,9 +442,11 @@ impl PlannerStoreImageV1 {
             return Err(PlannerStoreError::BodyLimitExceeded);
         }
         if let Some(parent) = parent_digest {
-            let journal_knows_parent = self.journal.entries().iter().any(|entry| {
-                entry.identity_digest == parent || entry.payload_digest == parent
-            });
+            let journal_knows_parent = self
+                .journal
+                .entries()
+                .iter()
+                .any(|entry| entry.identity_digest == parent || entry.payload_digest == parent);
             if !self.bodies.contains_key(&parent) && !journal_knows_parent {
                 return Err(PlannerStoreError::MissingParent);
             }
@@ -648,7 +651,10 @@ impl PlannerStoreV1 {
         parent_digest: Digest32,
         canonical_body: &[u8],
     ) -> Result<StoredPlannerBodyV1, PlannerStoreError> {
-        if matches!(kind, PlannerBodyKindV1::Snapshot | PlannerBodyKindV1::Decision) {
+        if matches!(
+            kind,
+            PlannerBodyKindV1::Snapshot | PlannerBodyKindV1::Decision
+        ) {
             return Err(PlannerStoreError::CorruptBody);
         }
         self.commit(|image| {
@@ -903,9 +909,7 @@ fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, PlannerStor
 }
 
 fn read_digest_at(bytes: &[u8], offset: usize) -> Result<Digest32, PlannerStoreError> {
-    let end = offset
-        .checked_add(32)
-        .ok_or(PlannerStoreError::Truncated)?;
+    let end = offset.checked_add(32).ok_or(PlannerStoreError::Truncated)?;
     let array: [u8; 32] = bytes
         .get(offset..end)
         .ok_or(PlannerStoreError::Truncated)?

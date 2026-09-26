@@ -77,13 +77,8 @@ pub(crate) async fn revalidate_with_retrieval_context(
     if retrieval_context_digest != seal.retrieval_context_digest {
         return Err(CognitiveContextError::RetrievalContextUnavailable);
     }
-    let ranker_policy_digest = helpers::current_ranker_policy_digest(
-        ranker,
-        owner,
-        body_generation,
-        &seal.query,
-    )
-    .await?;
+    let ranker_policy_digest =
+        helpers::current_ranker_policy_digest(ranker, owner, body_generation, &seal.query).await?;
     if ranker_policy_digest != seal.ranker_policy_digest {
         return Err(CognitiveContextError::RankerUnavailable);
     }
