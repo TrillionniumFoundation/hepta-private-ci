@@ -46,9 +46,10 @@ jobs:
           text = text.replace(regex_needle, regex_replacement)
 
           lane_count = "    expected=2,\n"
-          if text.count(lane_count) != 1:
-              raise SystemExit("unexpected legacy-test insertion count shape")
-          text = text.replace(lane_count, "    expected=1,\n")
+          if text.count(lane_count) != 2:
+              raise SystemExit("unexpected expected=2 cardinality")
+          head, tail = text.rsplit(lane_count, 1)
+          text = head + "    expected=1,\n" + tail
           path.write_text(text, encoding="utf-8")
           PY
           python3 -m py_compile \
