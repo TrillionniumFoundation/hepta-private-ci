@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -45,7 +45,7 @@ jobs:
             | tar -xf - -C /tmp/cognitive-types-source/repository
           git rev-parse HEAD > /tmp/cognitive-types-source/EXACT_HEAD
           git rev-parse HEAD^{tree} > /tmp/cognitive-types-source/EXACT_TREE
-          sha256sum /tmp/cognitive-types-source/EXACT_HEAD /tmp/cognitive-types-source/EXACT_TREE \
+          shasum -a 256 /tmp/cognitive-types-source/EXACT_HEAD /tmp/cognitive-types-source/EXACT_TREE \
             > /tmp/cognitive-types-source/SOURCE_RECEIPT.sha256
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
