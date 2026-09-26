@@ -54,17 +54,11 @@ jobs:
       - name: Reject whitespace errors
         run: git diff --check
 
-      - name: Commit verified integration
+      - name: Commit compiled integration sources
         shell: bash
         run: |
-          rm scripts/_context_compiler_delivery_patch.py
-          rm scripts/_context_compiler_runtime_bridge_patch.py
-          rm scripts/_context_compiler_terminal_bridge_patch.py
-          rm scripts/_context_compiler_observation_patch.py
-          rm scripts/_context_compiler_agentd_patch.py
-          rm .github/workflows/context-compiler-v2-integration.yml
           git config user.name "hepta-ci-bot"
           git config user.email "hepta-ci-bot@users.noreply.github.com"
-          git add -A
+          git add codex-rs
           git commit -m "context.compiler: integrate exact V2 provider closure [context-v2-integrated]"
           git push origin HEAD:revision/context-compiler-v2-provider-closure-2026-09-27
