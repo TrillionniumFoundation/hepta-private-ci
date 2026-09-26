@@ -11,6 +11,17 @@ on:
       - 'codex-rs/state/**'
       - 'qualification/cognitive-types-v1/**'
       - '.github/workflows/cognitive-types-qualification.yml'
+  push:
+    branches:
+      - 'codex/cognitive-types-*'
+    paths:
+      - 'codex-rs/hepta-cognitive-types/**'
+      - 'codex-rs/hepta-cognitive-store/**'
+      - 'codex-rs/hepta-cognitive-read/**'
+      - 'codex-rs/hepta-operations/**'
+      - 'codex-rs/state/**'
+      - 'qualification/cognitive-types-v1/**'
+      - '.github/workflows/cognitive-types-qualification.yml'
   workflow_dispatch:
 
 permissions:
