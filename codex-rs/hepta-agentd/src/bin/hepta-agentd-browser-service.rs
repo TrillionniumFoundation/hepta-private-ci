@@ -122,14 +122,12 @@ struct ServiceClosureEntry {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
     let config_path = PathBuf::from(
-        args.next().ok_or(
-            "usage: hepta-agentd-browser-service HOST_CONFIG.json SERVICE_CLOSURE.json",
-        )?,
+        args.next()
+            .ok_or("usage: hepta-agentd-browser-service HOST_CONFIG.json SERVICE_CLOSURE.json")?,
     );
     let closure_path = PathBuf::from(
-        args.next().ok_or(
-            "usage: hepta-agentd-browser-service HOST_CONFIG.json SERVICE_CLOSURE.json",
-        )?,
+        args.next()
+            .ok_or("usage: hepta-agentd-browser-service HOST_CONFIG.json SERVICE_CLOSURE.json")?,
     );
     if args.next().is_some() {
         return Err(
@@ -265,7 +263,9 @@ fn verify_service_closure(
         .collect::<BTreeSet<_>>();
     let actual = manifest.entries.keys().cloned().collect::<BTreeSet<_>>();
     if actual != required {
-        return Err("Browser service closure roles are incomplete or contain unknown entries".into());
+        return Err(
+            "Browser service closure roles are incomplete or contain unknown entries".into(),
+        );
     }
 
     for (role, expected_name) in REQUIRED_CLOSURE {
@@ -312,13 +312,17 @@ fn verify_closure_file(
         || before.len() == 0
         || before.len() > MAX_CLOSURE_FILE_BYTES
     {
-        return Err(format!("Browser service closure file for {role} is unsafe or unbounded").into());
+        return Err(
+            format!("Browser service closure file for {role} is unsafe or unbounded").into(),
+        );
     }
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
         if before.permissions().mode() & 0o022 != 0 {
-            return Err(format!("Browser service closure file for {role} is group/world writable").into());
+            return Err(
+                format!("Browser service closure file for {role} is group/world writable").into(),
+            );
         }
     }
 
@@ -333,7 +337,9 @@ fn verify_closure_file(
             || opened.dev() != after.dev()
             || opened.ino() != after.ino()
         {
-            return Err(format!("Browser service closure file for {role} changed during open").into());
+            return Err(
+                format!("Browser service closure file for {role} changed during open").into(),
+            );
         }
     }
     let mut bytes = Vec::with_capacity(usize::try_from(opened.len()).unwrap_or(0));
@@ -387,10 +393,7 @@ fn read_frame(reader: &mut impl Read) -> Result<Option<Vec<u8>>, Box<dyn std::er
     Ok(Some(body))
 }
 
-fn write_frame(
-    writer: &mut impl Write,
-    body: &[u8],
-) -> Result<(), Box<dyn std::error::Error>> {
+fn write_frame(writer: &mut impl Write, body: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
     if body.is_empty() || body.len() > MAX_FRAME_BYTES {
         return Err("Browser service response frame length is outside bounds".into());
     }
