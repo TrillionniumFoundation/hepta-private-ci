@@ -42,7 +42,7 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
-          allowed='^(codex-rs/hepta-agentd/src/(config|intelligence_learning|intelligence_product|intelligence_product_tests|lane_b_runtime|lib|objective_runtime|runtime|state)\.rs|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP|TEST_TRACEABILITY)\.json|scripts/hepta-intelligence-control-status\.py)$'
+          allowed='^(codex-rs/hepta-agentd/src/(config|intelligence_learning|intelligence_product|intelligence_product_tests|lane_b_runtime|lib|objective_runtime|runtime|state)\.rs|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP|TEST_TRACEABILITY)\.json|docs/modules/intelligence\.control/TECHNICAL\.md|qualification/module-execution-dossiers/detail/intelligence\.control\.md|scripts/hepta-intelligence-control-status\.py)$'
           unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             printf 'unexpected rewrite paths:\n%s\n' "$unexpected" >&2
@@ -70,6 +70,8 @@ jobs:
             codex-rs/hepta-agentd/src/state.rs \
             docs/modules/intelligence.control/IMPLEMENTATION_MAP.json \
             docs/modules/intelligence.control/TEST_TRACEABILITY.json \
+            docs/modules/intelligence.control/TECHNICAL.md \
+            qualification/module-execution-dossiers/detail/intelligence.control.md \
             scripts/hepta-intelligence-control-status.py
           git commit -m 'feat(intelligence): apply exact product closure rewrites'
           git push origin HEAD:codex/intelligence-control-product-closure-20260926
