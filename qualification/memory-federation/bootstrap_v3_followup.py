@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply required-CI follow-up edits after the V3 integration bootstrap."""
+"""Apply required-CI and cross-host follow-up edits after V3 bootstrap."""
 
 from pathlib import Path
 
@@ -12,6 +12,14 @@ def rewrite(relative: str, transform) -> None:
     result = transform(source)
     if result != source:
         target.write_text(result, encoding="utf-8")
+
+
+def replace_once(source: str, old: str, new: str, label: str) -> str:
+    if new in source:
+        return source
+    if source.count(old) != 1:
+        raise SystemExit(f"{label}: replacement anchor is missing or ambiguous")
+    return source.replace(old, new, 1)
 
 
 def patch_blocking(source: str) -> str:
@@ -35,23 +43,58 @@ def patch_blocking(source: str) -> str:
         f"      base_ref: {expression}\n"
         "    secrets: inherit\n"
     )
-    if new in source:
-        return source
-    if source.count(old) != 1:
-        raise SystemExit("blocking-ci federation job anchor is missing or ambiguous")
-    return source.replace(old, new, 1)
+    return replace_once(source, old, new, "blocking-ci federation job")
 
 
 def patch_qualification(source: str) -> str:
     # Pull requests enter through blocking-ci so qualification participates in
     # the single protected CI fan-in instead of running as an optional duplicate.
     start = source.find("  pull_request:\n")
-    if start < 0:
-        return source
-    end = source.find("  workflow_dispatch:\n", start)
-    if end < 0:
-        raise SystemExit("qualification pull-request block has no dispatch boundary")
-    return source[:start] + source[end:]
+    if start >= 0:
+        end = source.find("  workflow_dispatch:\n", start)
+        if end < 0:
+            raise SystemExit("qualification pull-request block has no dispatch boundary")
+        source = source[:start] + source[end:]
+    old = (
+        "        lane: ${{ fromJSON((github.event_name == 'pull_request' || "
+        "(github.event_name == 'workflow_dispatch' && inputs.run_merge_candidate)) && "
+        "'[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+    )
+    new = (
+        "        lane: ${{ fromJSON(inputs.run_merge_candidate && "
+        "'[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+    )
+    return replace_once(source, old, new, "qualification matrix")
+
+
+def patch_protocol(source: str) -> str:
+    source = replace_once(
+        source,
+        "        if self.generation < previous.generation || self.frontier < previous.frontier {\n"
+        "            return Err(FederationProtocolError::FrontierRollback);\n"
+        "        }",
+        "        if self.generation < previous.generation\n"
+        "            || self.frontier < previous.frontier\n"
+        "            || (self.generation == previous.generation\n"
+        "                && self.frontier == previous.frontier)\n"
+        "        {\n"
+        "            return Err(FederationProtocolError::FrontierRollback);\n"
+        "        }",
+        "frontier strict progress",
+    )
+    source = replace_once(
+        source,
+        "        self.nonce.validate()?;\n        self.message.validate()",
+        "        self.nonce.validate()?;\n"
+        "        if let FederationWireMessageV1::Response(response) = &self.message {\n"
+        "            if response.frontier.owner_peer_id != self.sender_peer_id {\n"
+        "                return Err(FederationProtocolError::FrontierOwnerMismatch);\n"
+        "            }\n"
+        "        }\n"
+        "        self.message.validate()",
+        "response frontier sender binding",
+    )
+    return source
 
 
 def main() -> None:
@@ -59,6 +102,10 @@ def main() -> None:
     rewrite(
         ".github/workflows/memory-federation-v3-qualification.yml",
         patch_qualification,
+    )
+    rewrite(
+        "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+        patch_protocol,
     )
 
 
