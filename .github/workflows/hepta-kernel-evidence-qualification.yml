@@ -2,23 +2,6 @@ name: Kernel evidence qualification
 
 on:
   workflow_call:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-evidence/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-agent-protocol/**"
-      - "docs/modules/kernel.evidence/**"
-      - "docs/lane-a-foundation/kernel.evidence/**"
-      - "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json"
-      - "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
-      - "qualification/kernel-evidence/**"
-      - "qualification/module-execution-dossiers/detail/kernel.evidence.md"
-      - "scripts/lane_a_foundation_core.py"
-      - "scripts/build_kernel_evidence_status.py"
-      - ".github/workflows/hepta-kernel-evidence-qualification.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
