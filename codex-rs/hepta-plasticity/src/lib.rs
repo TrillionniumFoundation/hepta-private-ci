@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+mod generator_coverage_v1;
 mod generator_v3;
 mod legacy;
 mod parameter_mutation_policy_v1;
@@ -24,6 +25,14 @@ pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
+pub use generator_coverage_v1::GeneratorCoverageErrorV1;
+pub use generator_coverage_v1::GeneratorCoverageMissingParameterV1;
+pub use generator_coverage_v1::GeneratorCoverageMissingReasonV1;
+pub use generator_coverage_v1::GeneratorCoverageReceiptV1;
+pub use generator_coverage_v1::GeneratorCoverageTerminalV1;
+pub use generator_coverage_v1::build_generator_coverage_receipt_v1;
+pub use generator_coverage_v1::generator_coverage_signing_payload_v1;
+pub use generator_coverage_v1::verify_generator_coverage_receipt_v1;
 pub use generator_v3::GeneratedParameterCandidateSetV3;
 pub use generator_v3::ParameterGeneratorErrorV3;
 pub use generator_v3::ParameterGeneratorProfileV3;
