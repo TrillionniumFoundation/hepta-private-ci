@@ -6,12 +6,22 @@ on:
       - codex/learning-operator-full-convergence-20260926
     paths:
       - .github/workflows/learning-operator-writer-verifier-fix.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/learning-operator-writer-verifier-fix.yml
 
 permissions:
   contents: write
 
+concurrency:
+  group: learning-operator-writer-verifier-fix
+  cancel-in-progress: false
+
 jobs:
   materialize:
+    if: github.event_name == 'push' || github.head_ref == 'codex/learning-operator-full-convergence-20260926'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
