@@ -227,7 +227,7 @@ fn named_host_has_one_writer_and_recovers_selection() -> TestResult<()> {
     drop(fixture.host);
     drop(fixture.authority);
     let authority = FinalUseAuthority::open_state_dir(
-        authority_path,
+        &authority_path,
         "ndu-product-issuer".to_string(),
         fixture.signing.verifying_key().to_bytes(),
         head,
