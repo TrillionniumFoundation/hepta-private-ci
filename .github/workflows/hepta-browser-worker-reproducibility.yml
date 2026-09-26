@@ -1,0 +1,184 @@
+name: Hepta Browser worker reproducibility
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hepta-browser/servo-worker/**'
+      - 'third_party/servo-patches/**'
+      - '.github/workflows/hepta-browser-worker-reproducibility.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/hepta-browser/servo-worker/**'
+      - 'third_party/servo-patches/**'
+      - '.github/workflows/hepta-browser-worker-reproducibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-browser-worker-reproducibility-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  SERVO_PIN: b5a1f5e6ec6f8685d40cd389802ced7abe4980f6
+  WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
+  WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
+
+jobs:
+  independent-build:
+    name: Worker independent build ${{ matrix.builder }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        builder: [a, b]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact reviewed source and lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -s "$WORKER_LOCK"
+          test "$(git ls-files --error-unmatch "$WORKER_LOCK")" = "$WORKER_LOCK"
+          grep -F "$SERVO_PIN" "$WORKER_MANIFEST"
+          grep -F "$SERVO_PIN" "$WORKER_LOCK"
+          git diff --exit-code -- "$WORKER_LOCK"
+          mkdir -p "$RUNNER_TEMP/repro"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/repro/source-identity.txt"
+          sha256sum "$WORKER_LOCK" > "$RUNNER_TEMP/repro/Cargo.lock.sha256"
+
+      - name: Install exact Rust and Servo prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup override set 1.88.0
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake git libdbus-1-dev libfontconfig1-dev \
+            libfreetype6-dev libgl1-mesa-dev libglib2.0-dev libssl-dev \
+            libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3
+          rustc -vV > "$RUNNER_TEMP/repro/rustc-vV.txt"
+          cargo -vV > "$RUNNER_TEMP/repro/cargo-vV.txt"
+          printf 'builder=%s\nrunner=%s\nos=%s\narch=%s\n' \
+            '${{ matrix.builder }}' "$RUNNER_NAME" "$RUNNER_OS" "$RUNNER_ARCH" \
+            > "$RUNNER_TEMP/repro/builder-environment.txt"
+
+      - name: Verify locked dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --format-version 1 \
+            --manifest-path "$WORKER_MANIFEST" \
+            > "$RUNNER_TEMP/repro/cargo-metadata.json"
+          cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features \
+            > "$RUNNER_TEMP/repro/cargo-tree-features.txt"
+          ! grep -Eq '(^|[[:space:]])webdriver_server([[:space:]]|$)' \
+            "$RUNNER_TEMP/repro/cargo-tree-features.txt"
+          grep -F "$SERVO_PIN" "$RUNNER_TEMP/repro/cargo-metadata.json"
+
+      - name: Build exact release artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          export CARGO_INCREMENTAL=0
+          export CARGO_TERM_COLOR=never
+          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src -C debuginfo=0"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/target-${{ matrix.builder }}"
+          cargo build --release --locked --manifest-path "$WORKER_MANIFEST"
+          binary="$CARGO_TARGET_DIR/release/hepta-servo-worker"
+          test -x "$binary"
+          install -m 0555 "$binary" "$RUNNER_TEMP/repro/hepta-servo-worker"
+          sha256sum "$RUNNER_TEMP/repro/hepta-servo-worker" \
+            > "$RUNNER_TEMP/repro/hepta-servo-worker.sha256"
+          ldd "$RUNNER_TEMP/repro/hepta-servo-worker" \
+            > "$RUNNER_TEMP/repro/hepta-servo-worker.ldd.txt"
+          ! grep -F 'not found' "$RUNNER_TEMP/repro/hepta-servo-worker.ldd.txt"
+
+      - name: Preserve independent build
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-worker-repro-${{ matrix.builder }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/repro
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Verify source stayed immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  compare:
+    name: Worker reproducibility required
+    needs: independent-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Download builder A
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: browser-worker-repro-a-${{ env.SOURCE_SHA }}
+          path: build-a
+
+      - name: Download builder B
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: browser-worker-repro-b-${{ env.SOURCE_SHA }}
+          path: build-b
+
+      - name: Require byte-identical independently built workers
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp --silent build-a/hepta-servo-worker build-b/hepta-servo-worker
+          test "$(cat build-a/Cargo.lock.sha256)" = "$(cat build-b/Cargo.lock.sha256)"
+          sha256sum build-a/hepta-servo-worker build-b/hepta-servo-worker
+          mkdir -p reproducibility-receipt
+          A_SHA="$(sha256sum build-a/hepta-servo-worker | awk '{print $1}')" \
+          B_SHA="$(sha256sum build-b/hepta-servo-worker | awk '{print $1}')" \
+          python3 - <<'PY'
+          import json, os, pathlib
+          receipt = {
+              "schema": "hepta.browser.worker-reproducibility.v2",
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "builderAWorkerSha256": os.environ["A_SHA"],
+              "builderBWorkerSha256": os.environ["B_SHA"],
+              "byteIdentical": os.environ["A_SHA"] == os.environ["B_SHA"],
+              "committedLockOnly": True,
+              "independentHostedRunners": True,
+              "operatorAcceptance": False,
+              "promotion": False,
+              "releaseQualified": False,
+          }
+          assert receipt["byteIdentical"] is True
+          pathlib.Path("reproducibility-receipt/receipt.json").write_text(
+              json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          sha256sum reproducibility-receipt/receipt.json \
+            > reproducibility-receipt/receipt.json.sha256
+
+      - name: Preserve comparison receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-worker-reproducibility-${{ env.SOURCE_SHA }}
+          path: reproducibility-receipt
+          if-no-files-found: error
+          retention-days: 30

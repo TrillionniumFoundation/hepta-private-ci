@@ -1,0 +1,225 @@
+#!/usr/bin/env node
+
+import { execFileSync } from "node:child_process";
+import { readFile, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
+
+const root = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
+const outputPath = resolve(
+  root,
+  "docs/modules/browser.servo/GENERATED_SOURCE_REGISTRY.json",
+);
+
+const RPCS = [
+  "open_profile",
+  "admit_effect_grant",
+  "observe_page",
+  "navigate_or_act",
+  "reconcile_operation",
+  "reconcile_persisted_operation",
+  "close_profile",
+];
+const ACTIONS = [
+  "navigate",
+  "click",
+  "type",
+  "credential",
+  "upload",
+  "download",
+  "focus",
+  "scroll",
+  "wait",
+];
+const EXECUTABLE_ACTIONS = ["navigate", "click", "type", "focus", "scroll", "wait"];
+const FAIL_CLOSED_ACTIONS = ["credential", "upload", "download"];
+const SOURCE_PATHS = [
+  "apps/hepta-browser/service-manifest.json",
+  "apps/hepta-browser/src/action.js",
+  "apps/hepta-browser/src/agentd-protocol.js",
+  "apps/hepta-browser/src/agentd-service-main.js",
+  "apps/hepta-browser/src/agentd-service-production-main.js",
+  "apps/hepta-browser/src/agentd-service.js",
+  "apps/hepta-browser/src/bridge.js",
+  "apps/hepta-browser/src/egress-broker.js",
+  "apps/hepta-browser/src/journal.js",
+  "apps/hepta-browser/src/journal-core.js",
+  "apps/hepta-browser/src/persisted-reconciler.js",
+  "apps/hepta-browser/src/production-launcher.js",
+  "apps/hepta-browser/src/runtime-boundary.js",
+  "apps/hepta-browser/src/runtime-contract.js",
+  "apps/hepta-browser/src/runtime-host.js",
+  "apps/hepta-browser/src/runtime.js",
+  "apps/hepta-browser/src/verified-service-bootstrap.js",
+  "apps/hepta-browser/src/worker-driver.js",
+  "apps/hepta-browser/src/worker-protocol.js",
+  "apps/hepta-browser/servo-worker/Cargo.toml",
+  "apps/hepta-browser/servo-worker/Cargo.lock",
+  "apps/hepta-browser/servo-worker/src/main.rs",
+  "codex-rs/hepta-agentd/Cargo.toml",
+  "codex-rs/hepta-agentd/src/lib.rs",
+  "codex-rs/hepta-agentd/src/browser_servo.rs",
+  "codex-rs/hepta-agentd/src/browser_revocation_feed.rs",
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+];
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function quotedItems(source, pattern, name) {
+  const match = source.match(pattern);
+  assert(match, `${name} registry was not found`);
+  return [...match[1].matchAll(/"([a-z_]+)"/g)].map((entry) => entry[1]);
+}
+
+function sameArray(actual, expected, name) {
+  assert(
+    JSON.stringify(actual) === JSON.stringify(expected),
+    `${name} drifted: ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`,
+  );
+}
+
+async function text(path) {
+  return readFile(resolve(root, path), "utf8");
+}
+
+function gitBlob(path) {
+  return execFileSync("git", ["hash-object", path], {
+    cwd: root,
+    encoding: "utf8",
+  }).trim();
+}
+
+const service = await text("apps/hepta-browser/src/agentd-service.js");
+const productionService = await text(
+  "apps/hepta-browser/src/agentd-service-production-main.js",
+);
+const serviceManifest = await text("apps/hepta-browser/service-manifest.json");
+const serviceBootstrap = await text(
+  "apps/hepta-browser/src/verified-service-bootstrap.js",
+);
+const action = await text("apps/hepta-browser/src/action.js");
+const worker = await text("apps/hepta-browser/servo-worker/src/main.rs");
+const runtime = await text("apps/hepta-browser/src/runtime-host.js");
+const driver = await text("apps/hepta-browser/src/worker-driver.js");
+const productionLauncher = await text(
+  "apps/hepta-browser/src/production-launcher.js",
+);
+const egress = await text("apps/hepta-browser/src/egress-broker.js");
+const journal = await text("apps/hepta-browser/src/journal.js");
+const browserServoRust = await text(
+  "codex-rs/hepta-agentd/src/browser_servo.rs",
+);
+const revocationRust = await text(
+  "codex-rs/hepta-agentd/src/browser_revocation_feed.rs",
+);
+const browserdRust = await text(
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+);
+
+const rpcMethods = quotedItems(
+  service,
+  /const SERVICE_METHODS = new Set\(\[([\s\S]*?)\]\);/,
+  "Browser RPC",
+);
+sameArray(rpcMethods, RPCS, "Browser RPC closed world");
+
+const actionKinds = [...action.matchAll(/case "([a-z_]+)":/g)].map((entry) => entry[1]);
+sameArray(actionKinds, ACTIONS, "typed Browser action closed world");
+
+for (const name of EXECUTABLE_ACTIONS) {
+  assert(worker.includes(`"${name}"`), `Servo worker lacks ${name} action`);
+}
+for (const name of FAIL_CLOSED_ACTIONS) {
+  assert(worker.includes(`"${name}"`), `Servo worker lacks fail-closed ${name} action`);
+}
+
+const markers = {
+  workerAdmissionReceipt:
+    worker.includes("dispatch_boundary") &&
+    driver.includes("dispatch_boundary"),
+  pageRevisionRevalidation:
+    worker.includes("navigationEpoch") &&
+    worker.includes("actionableSurfaceDigest"),
+  semanticObservation:
+    worker.includes("visibleText") &&
+    worker.includes("forms") &&
+    worker.includes("links"),
+  grantScopedEgress:
+    egress.includes("MAX_DNS_ANSWERS") &&
+    egress.includes("blocked.addSubnet") &&
+    egress.includes("ClientHello"),
+  persistedReconciliation: runtime.includes("reconcilePersistedOperation"),
+  monotonicJournalOwner:
+    journal.includes("BrowserJournalOwnerLockedError") &&
+    journal.includes("foldObservation"),
+  strongLinuxIsolation:
+    productionLauncher.includes("--seccomp") &&
+    productionLauncher.includes("cgroup.procs") &&
+    productionLauncher.includes("memory.max") &&
+    productionService.includes("linux-isolation-policy.v1"),
+  verifiedServiceClosure:
+    serviceManifest.includes("service-closure-manifest.v1") &&
+    serviceBootstrap.includes("EXPECTED_MANIFEST_SHA256") &&
+    serviceBootstrap.includes("gitBlobId") &&
+    serviceBootstrap.includes("await import"),
+  longRunningAgentdOwner:
+    browserdRust.includes("PersistentBrowserServoControl") &&
+    browserdRust.includes("loop {") &&
+    browserServoRust.includes("PersistentBrowserServoControl"),
+  liveRevocationFeed:
+    revocationRust.includes("update_revocations") &&
+    browserServoRust.includes("BrowserRevocationFeed"),
+  redactedServiceMetrics:
+    browserdRust.includes("hepta.browser.service-metric.v1") &&
+    browserdRust.includes("elapsedMicros") &&
+    !browserdRust.includes("finalPayloadDigest\":") &&
+    !browserdRust.includes("typedAction\":"),
+};
+for (const [name, present] of Object.entries(markers)) {
+  assert(present, `Browser capability marker ${name} is absent`);
+}
+
+const sourceBlobs = Object.fromEntries(
+  SOURCE_PATHS.map((path) => [path, gitBlob(path)]),
+);
+const registry = {
+  schema: "hepta.browser.generated-source-registry.v1",
+  schemaVersion: 1,
+  module: "browser.servo",
+  rpcRegistry: rpcMethods,
+  workerCapabilityMatrix: {
+    registeredActions: actionKinds,
+    executableActions: EXECUTABLE_ACTIONS,
+    failClosedActions: FAIL_CLOSED_ACTIONS,
+    credentialBrokerConnected: false,
+    uploadBrokerConnected: false,
+    downloadObserverConnected: false,
+    networkControlListener: false,
+    callerProvidedJavaScript: false,
+    workerAdmissionReceipt: markers.workerAdmissionReceipt,
+    pageRevisionRevalidation: markers.pageRevisionRevalidation,
+    semanticObservation: markers.semanticObservation,
+    grantScopedEgress: markers.grantScopedEgress,
+    persistedReconciliation: markers.persistedReconciliation,
+    monotonicJournalOwner: markers.monotonicJournalOwner,
+    strongLinuxIsolation: markers.strongLinuxIsolation,
+    verifiedServiceClosure: markers.verifiedServiceClosure,
+    longRunningAgentdOwner: markers.longRunningAgentdOwner,
+    liveRevocationFeed: markers.liveRevocationFeed,
+    redactedServiceMetrics: markers.redactedServiceMetrics,
+  },
+  sourceBlobs,
+};
+const rendered = `${JSON.stringify(registry, null, 2)}\n`;
+
+if (process.argv.includes("--check")) {
+  const current = await readFile(outputPath, "utf8");
+  assert(current === rendered, "generated Browser source registry is stale");
+  process.stdout.write(rendered);
+} else {
+  await writeFile(outputPath, rendered, "utf8");
+  process.stdout.write(rendered);
+}

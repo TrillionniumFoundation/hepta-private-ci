@@ -1,13 +1,26 @@
 name: Hepta Browser Agentd composition
 
 on:
-  push:
-    branches: [codex/browser-servo-agentd-composition-20260917]
+  pull_request:
     paths:
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
-      - 'apps/hepta-browser/src/agentd-*.js'
-      - 'apps/hepta-browser/test/agentd-service.test.js'
+      - 'codex-rs/hepta-contracts/**'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
       - '.github/workflows/hepta-browser-agentd-composition.yml'
   workflow_dispatch:
 
@@ -15,17 +28,20 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-browser-agentd-composition-${{ github.ref }}
+  group: hepta-browser-agentd-composition-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   exact-composition:
+    name: Browser Agentd composition
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -33,14 +49,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Verify Browser private-parent protocol tests
+      - name: Verify complete Browser owner boundary
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/agentd-service.test.js apps/hepta-browser/test/worker-driver.test.js
+          for test_file in apps/hepta-browser/test/*.test.js; do
+            echo "::group::browser-node-test $test_file"
+            timeout 90s node --test "$test_file"
+            echo "::endgroup::"
+          done
+          find apps/hepta-browser/src apps/hepta-browser/scripts \
+            -type f -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
+
+      - name: Verify generated Browser source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/browser-source-registry.js --check >/dev/null
 
       - name: Verify Agentd Browser formatting
         shell: bash
@@ -48,32 +78,40 @@ jobs:
           set -euo pipefail
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
 
-      - name: Exercise real FinalUseAuthority handoff tests
+      - name: Exercise FinalUseAuthority, worker admission and revocation-feed tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo test --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --locked -p codex-hepta-agentd browser_revocation_feed --lib
 
-      - name: Compile named Agentd Browser product caller
+      - name: Compile diagnostic and long-running Agentd Browser owners
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser
+          cargo check --locked -p codex-hepta-agentd \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browserd
 
       - name: Deny Agentd Browser lint warnings
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd \
+            --lib \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browserd \
+            --no-deps -- -D warnings
 
       - name: Verify source stayed clean
         if: always()
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
