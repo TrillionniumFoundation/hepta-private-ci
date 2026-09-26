@@ -9,8 +9,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-deterministic-hardening-${{ github.sha }}
-  cancel-in-progress: false
+  group: cognitive-read-deterministic-hardening-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   apply:
@@ -26,7 +26,7 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: true
 
       - name: Materialize and validate asserted source migration
