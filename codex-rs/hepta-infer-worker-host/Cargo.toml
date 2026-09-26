@@ -5,6 +5,12 @@ name = "codex-hepta-infer-worker-host"
 version.workspace = true
 publish = false
 
+[features]
+default = []
+# The local model profile is deliberately excluded from the default product
+# surface until target hardware and independent acceptance are present.
+experimental-local-model = ["dep:ed25519-dalek"]
+
 [lib]
 name = "codex_hepta_infer_worker_host"
 path = "src/lib.rs"
@@ -21,11 +27,12 @@ codex-hepta-agentd = { workspace = true }
 codex-hepta-codex-adapter = { path = "../hepta-codex-adapter" }
 codex-hepta-contracts = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
+ed25519-dalek = { workspace = true, optional = true }
 libc = { workspace = true }
 rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-tokio = { workspace = true, features = ["io-std", "io-util", "macros", "net", "rt-multi-thread", "signal", "time"] }
+tokio = { workspace = true, features = ["io-std", "io-util", "macros", "net", "rt-multi-thread", "signal", "sync", "time"] }
 tokio-util = { workspace = true }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 sha2 = { workspace = true }

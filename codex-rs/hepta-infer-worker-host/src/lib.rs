@@ -1,17 +1,27 @@
-//! Authority-checked inference worker boundary.
+//! Authority-checked inference worker boundaries.
 //!
-//! The legacy boundary validates a pre-existing request, lease and reservation.
-//! The native App Server profile invokes the owning Agent's configured provider
-//! and observes its turn events. Neither profile issues grants, mutates fleet
-//! state, infers success from queue acceptance, promotes or releases artifacts.
+//! [`native_app_server`] is the hosted App Server production-candidate profile.
+//! The legacy receipt functions in this crate are validation-only and never prove
+//! provider execution. The local model profile is hidden behind the
+//! `experimental-local-model` feature and cannot be used as product evidence.
+//! No profile issues grants, mutates fleet state, infers success from queue
+//! acceptance, promotes artifacts or authorizes release.
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
-pub mod model_worker;
-
 pub mod final_use_authorizer;
 pub mod native_app_server;
+pub mod profiles;
+
+/// Signed, resource-accounted local execution. This remains explicitly
+/// experimental and is excluded from the default product surface.
+#[cfg(feature = "experimental-local-model")]
+pub mod local_model;
+
+/// Pre-existing fake-driver state-machine tests remain available to the crate
+/// test harness, but the module is not exported to product callers.
+#[cfg(test)]
+mod model_worker;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -22,6 +32,10 @@ use codex_hepta_types::StableId;
 
 const MAX_TOKENS: u32 = 1_000_000;
 
+/// Validation-only request used by the legacy receipt boundary.
+///
+/// This type and [`execute`] validate an already-observed tuple. They do not
+/// invoke a provider and are not execution evidence.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InferenceRequest {
     pub request_id: StableId,
@@ -116,6 +130,10 @@ pub fn request_digest(request: &InferenceRequest) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+/// Validate an already-observed legacy request/lease/reservation tuple.
+///
+/// This function is deliberately validation-only. A returned receipt is not
+/// proof that a model, provider, weight set or device was invoked.
 pub fn execute(
     now_ms: u64,
     request: InferenceRequest,
