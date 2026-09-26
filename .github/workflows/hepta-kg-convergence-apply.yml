@@ -1,6 +1,7 @@
 name: Apply knowledge.graph convergence phase one
 
 on:
+  workflow_dispatch:
   push:
     branches: [work/product-convergence-20260923]
     paths:
