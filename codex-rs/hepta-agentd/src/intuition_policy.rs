@@ -1,3 +1,11 @@
+//! Agentd-owned intuition.policy product boundary.
+//!
+//! The host authenticates generator/evaluator/observer evidence, pins the full
+//! selected policy profile, and prepares the exact durable Decision.  A separate
+//! generator signature is then verified by the sole `LedgerWriter` during
+//! commit.  Prepared values are advisory and cannot be dispatched; only a
+//! committed receipt may cross the physical execution boundary.
+
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
@@ -30,10 +38,11 @@ use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::candidate_ids_digest_v2;
 use codex_hepta_learning_ledger::candidate_order_digest_v2;
+use codex_hepta_learning_ledger::decision_signing_payload_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-/// Immutable owner identities admitted by the legacy Agentd composition.
+/// Immutable owner identities admitted by the historical Agentd composition.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIntuitionPolicyPinsV1 {
     pub model_artifact_digest: Digest32,
@@ -41,8 +50,8 @@ pub struct AgentdIntuitionPolicyPinsV1 {
     pub rng_owner_digest: Option<Digest32>,
 }
 
-/// Complete production profile pins.  A signed evaluator profile is necessary
-/// but cannot silently change any of these host-selected semantics.
+/// Complete product pins. A valid evaluator signature does not grant authority
+/// to silently replace any host-selected policy semantics.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIntuitionPolicyPinsV2 {
     pub policy_profile_digest: Digest32,
@@ -66,12 +75,11 @@ pub struct AgentdIntuitionPolicyHostV1 {
     agent_id: AgentId,
     spawn_generation: u64,
     verifier: Arc<LearningEvidenceVerifierV1>,
-    pins: AgentdIntuitionPolicyPinsV1,
+    legacy_pins: AgentdIntuitionPolicyPinsV1,
     product: Option<AgentdIntuitionProductRuntimeV1>,
 }
 
-/// The sole Agentd-owned durable Decision sink for intuition.policy.
-/// Raw ledger mutation never escapes this adapter.
+/// Sole Agentd-owned durable Decision sink for this module.
 pub struct IntuitionPolicyLearningSink {
     writer: Mutex<LedgerWriter>,
 }
@@ -122,14 +130,58 @@ pub struct AgentdIntuitionDecisionReceiptV1 {
     pub host_binding_digest: Digest32,
 }
 
+/// Non-dispatchable result of authenticated policy preparation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PreparedAgentdIntuitionDecisionV3 {
+    decision: AuthenticatedIntuitionDecisionV3,
+    host_binding_digest: Digest32,
+    production: Option<ProductionDecisionV2>,
+    owner_agent_id: AgentId,
+    owner_spawn_generation: u64,
+    owner_trust_digest: Digest32,
+    prepared_digest: Digest32,
+}
+
+impl PreparedAgentdIntuitionDecisionV3 {
+    #[must_use]
+    pub fn decision(&self) -> &AuthenticatedIntuitionDecisionV3 {
+        &self.decision
+    }
+
+    #[must_use]
+    pub fn host_binding_digest(&self) -> Digest32 {
+        self.host_binding_digest
+    }
+
+    #[must_use]
+    pub fn production_decision(&self) -> Option<&ProductionDecisionV2> {
+        self.production.as_ref()
+    }
+
+    #[must_use]
+    pub fn prepared_digest(&self) -> Digest32 {
+        self.prepared_digest
+    }
+
+    pub fn decision_signing_payload(
+        &self,
+    ) -> Result<Option<Vec<u8>>, AgentdIntuitionPolicyError> {
+        self.production
+            .as_ref()
+            .map(decision_signing_payload_v2)
+            .transpose()
+            .map_err(AgentdIntuitionPolicyError::Learning)
+    }
+}
+
+/// Final product receipt. A selected result always contains a durable append.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIntuitionDecisionReceiptV2 {
     pub decision: AuthenticatedIntuitionDecisionV3,
     pub host_binding_digest: Digest32,
     pub production_record_id: Option<StableId>,
-    /// `None` means abstain/slow-path: nothing may be dispatched and no selected
-    /// Decision is fabricated. `Some` is a durable or idempotent ledger receipt.
     pub learning: Option<AppendReceipt>,
+    pub service_receipt_digest: Digest32,
 }
 
 #[derive(Debug)]
@@ -149,6 +201,9 @@ pub enum AgentdIntuitionPolicyError {
     EmptyRunSnapshot,
     InvalidEpisode,
     SelectedPropensityMissing,
+    PreparedOwnerMismatch,
+    MissingDecisionEvidence,
+    UnexpectedDecisionEvidence,
     Qualification(IntuitionQualificationError),
     QualificationV3(IntuitionQualificationErrorV3),
     LearningLockPoisoned,
@@ -180,6 +235,11 @@ impl AgentdIntuitionPolicyError {
             Self::InvalidEpisode => "agentd.intuition.invalid_episode",
             Self::SelectedPropensityMissing => {
                 "agentd.intuition.selected_propensity_missing"
+            }
+            Self::PreparedOwnerMismatch => "agentd.intuition.prepared_owner_mismatch",
+            Self::MissingDecisionEvidence => "agentd.intuition.missing_decision_evidence",
+            Self::UnexpectedDecisionEvidence => {
+                "agentd.intuition.unexpected_decision_evidence"
             }
             Self::Qualification(_) => "agentd.intuition.legacy_qualification_rejected",
             Self::QualificationV3(source) => source.code(),
@@ -222,8 +282,7 @@ impl From<IntuitionQualificationErrorV3> for AgentdIntuitionPolicyError {
 }
 
 impl AgentdIntuitionPolicyHostV1 {
-    /// Legacy constructor retained for replay and migration. It cannot enter the
-    /// product serving method because it has no complete profile pins or writer.
+    /// Historical constructor retained for replay/migration only.
     pub fn new(
         agent_id: AgentId,
         spawn_generation: u64,
@@ -235,13 +294,13 @@ impl AgentdIntuitionPolicyHostV1 {
             agent_id,
             spawn_generation,
             verifier,
-            pins,
+            legacy_pins: pins,
             product: None,
         })
     }
 
-    /// Current product constructor.  The policy verifier and durable writer must
-    /// share the same immutable trust snapshot.
+    /// Current product constructor. Policy and ledger verification must use the
+    /// same immutable trust snapshot.
     pub fn new_product(
         agent_id: AgentId,
         spawn_generation: u64,
@@ -255,7 +314,7 @@ impl AgentdIntuitionPolicyHostV1 {
                 "policy and ledger trust snapshots differ",
             ));
         }
-        let legacy = AgentdIntuitionPolicyPinsV1 {
+        let legacy_pins = AgentdIntuitionPolicyPinsV1 {
             model_artifact_digest: pins.model_artifact_digest,
             scorer_contract_digest: pins.scorer_contract_digest,
             rng_owner_digest: pins.rng_owner_digest,
@@ -264,7 +323,7 @@ impl AgentdIntuitionPolicyHostV1 {
             agent_id,
             spawn_generation,
             verifier,
-            pins: legacy,
+            legacy_pins,
             product: Some(AgentdIntuitionProductRuntimeV1 { pins, learning }),
         })
     }
@@ -280,8 +339,12 @@ impl AgentdIntuitionPolicyHostV1 {
         Ok(())
     }
 
-    /// Historical authenticated V2 path. Product serving must call
-    /// `decide_and_record_v3` instead.
+    #[must_use]
+    pub fn is_product_ready(&self) -> bool {
+        self.product.is_some()
+    }
+
+    /// Historical authenticated V2 path. Product serving uses prepare/commit V3.
     #[allow(clippy::too_many_arguments)]
     pub fn decide(
         &self,
@@ -295,17 +358,17 @@ impl AgentdIntuitionPolicyHostV1 {
         now: u64,
     ) -> Result<AgentdIntuitionDecisionReceiptV1, AgentdIntuitionPolicyError> {
         self.require_identity(agent_id, spawn_generation)?;
-        if profile.scorer.model_digest != self.pins.model_artifact_digest
-            || scoring.model_artifact_digest != self.pins.model_artifact_digest
+        if profile.scorer.model_digest != self.legacy_pins.model_artifact_digest
+            || scoring.model_artifact_digest != self.legacy_pins.model_artifact_digest
         {
             return Err(AgentdIntuitionPolicyError::ModelPinMismatch);
         }
-        if profile.scorer.scorer_contract_digest != self.pins.scorer_contract_digest
-            || scoring.scorer_contract_digest != self.pins.scorer_contract_digest
+        if profile.scorer.scorer_contract_digest != self.legacy_pins.scorer_contract_digest
+            || scoring.scorer_contract_digest != self.legacy_pins.scorer_contract_digest
         {
             return Err(AgentdIntuitionPolicyError::ScorerPinMismatch);
         }
-        match (&assignment, self.pins.rng_owner_digest) {
+        match (&assignment, self.legacy_pins.rng_owner_digest) {
             (AssignmentCommitmentV1::Deterministic, _) => {}
             (
                 AssignmentCommitmentV1::CounterBased {
@@ -331,7 +394,7 @@ impl AgentdIntuitionPolicyHostV1 {
             &self.agent_id,
             self.spawn_generation,
             self.verifier.trust_digest(),
-            &self.pins,
+            &self.legacy_pins,
             decision.authentication_digest,
         );
         Ok(AgentdIntuitionDecisionReceiptV1 {
@@ -340,11 +403,10 @@ impl AgentdIntuitionPolicyHostV1 {
         })
     }
 
-    /// Real Agentd serving path: enforce the complete pin set, authenticate V3,
-    /// and append a selected Decision through the unique product writer before
-    /// returning a dispatchable receipt. Abstain and slow-path remain advisory.
+    /// Authenticate and prepare the exact durable Decision. No ledger mutation
+    /// or effect authority is issued by this phase.
     #[allow(clippy::too_many_arguments)]
-    pub fn decide_and_record_v3(
+    pub fn prepare_v3(
         &self,
         agent_id: &AgentId,
         spawn_generation: u64,
@@ -355,10 +417,8 @@ impl AgentdIntuitionPolicyHostV1 {
         qualification: IntuitionQualificationEvidenceV2<'_>,
         episode_id: StableId,
         run_snapshot_digest: Digest32,
-        expected_ledger_head: Digest32,
-        decision_evidence: SignedLearningEvidenceV1,
         now: u64,
-    ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyError> {
+    ) -> Result<PreparedAgentdIntuitionDecisionV3, AgentdIntuitionPolicyError> {
         self.require_identity(agent_id, spawn_generation)?;
         if run_snapshot_digest.is_zero() {
             return Err(AgentdIntuitionPolicyError::EmptyRunSnapshot);
@@ -371,7 +431,7 @@ impl AgentdIntuitionPolicyHostV1 {
             .as_ref()
             .ok_or(AgentdIntuitionPolicyError::ProductHostRequired)?;
         validate_current_pins(&product.pins, &request, &profile, &scoring, &assignment)?;
-
+        let generator_id = qualification.completeness.principal_id.clone();
         let decision = decide_authenticated_intuition_v3(
             request.clone(),
             profile,
@@ -388,88 +448,173 @@ impl AgentdIntuitionPolicyHostV1 {
             &product.pins,
             decision.authentication_digest,
         );
-
-        let ProductionDispositionV1::Selected(selected_candidate_id) =
-            &decision.decision.disposition
-        else {
-            return Ok(AgentdIntuitionDecisionReceiptV2 {
-                decision,
-                host_binding_digest,
-                production_record_id: None,
-                learning: None,
-            });
-        };
-        let selected_propensity = decision
-            .decision
-            .propensities
-            .iter()
-            .find(|row| row.candidate_id == *selected_candidate_id)
-            .map(|row| row.probability)
-            .filter(|value| value.raw() > 0)
-            .ok_or(AgentdIntuitionPolicyError::SelectedPropensityMissing)?;
-        let record_id = intuition_policy_record_id_v1(
+        let production = production_decision_from_authenticated(
             &self.agent_id,
             self.spawn_generation,
-            &request.decision_id,
-            request.policy_digest,
-            request.sequence,
-        )?;
-        let candidate_ids = request
-            .candidates
-            .iter()
-            .map(|candidate| candidate.candidate_id.clone())
-            .collect::<Vec<_>>();
-        let completeness = CandidateSetCompletenessReceiptV1 {
-            set_id: request.decision_id.clone(),
-            state_digest: request.state_digest,
-            generator_id: decision_evidence.principal_id.clone(),
-            generator_code_digest: request.completeness.generator_digest,
-            grammar_digest: request.completeness.grammar_digest,
-            hard_filter_digest: request.completeness.hard_filter_digest,
-            truncation_digest: request.completeness.truncation_digest,
-            candidates_digest: candidate_ids_digest_v2(&candidate_ids),
-            candidate_count: u32::try_from(candidate_ids.len()).map_err(|_| {
-                AgentdIntuitionPolicyError::InvalidHost("candidate count overflow")
-            })?,
-            omitted_count_bound: request.completeness.omitted_count_bound,
-            canonical_order_digest: candidate_order_digest_v2(&candidate_ids),
-            complete_for_generator: request.completeness.omitted_count_bound == 0,
-        };
-        let mut support = b"hepta.agentd.intuition-production-decision.v1\0".to_vec();
-        for digest in [
-            host_binding_digest,
-            decision.authentication_digest,
-            decision.decision.receipt_digest,
-            request.completeness.receipt_digest,
-        ] {
-            support.extend_from_slice(digest.as_array());
-        }
-        let production = ProductionDecisionV2 {
-            record_id: record_id.clone(),
+            &request,
+            &decision,
+            generator_id,
             episode_id,
             run_snapshot_digest,
-            objective_digest: request.objective_digest,
-            policy_digest: request.policy_digest,
-            candidate_ids,
-            selected_candidate_id: selected_candidate_id.clone(),
-            selected_propensity,
-            completeness,
-            support_digest: Digest32::of_bytes(&support),
-        };
-        let learning = product.learning.append_decision(
-            expected_ledger_head,
-            production,
-            decision_evidence,
-            now,
+            host_binding_digest,
         )?;
-
-        Ok(AgentdIntuitionDecisionReceiptV2 {
+        let mut bytes = b"hepta.agentd.prepared-intuition.v1\0".to_vec();
+        bytes.extend_from_slice(host_binding_digest.as_array());
+        bytes.extend_from_slice(decision.authentication_digest.as_array());
+        match &production {
+            Some(value) => {
+                bytes.push(1);
+                bytes.extend_from_slice(
+                    Digest32::of_bytes(&decision_signing_payload_v2(value)?).as_array(),
+                );
+            }
+            None => bytes.push(0),
+        }
+        Ok(PreparedAgentdIntuitionDecisionV3 {
             decision,
             host_binding_digest,
-            production_record_id: Some(record_id),
-            learning: Some(learning),
+            production,
+            owner_agent_id: self.agent_id.clone(),
+            owner_spawn_generation: self.spawn_generation,
+            owner_trust_digest: self.verifier.trust_digest(),
+            prepared_digest: Digest32::of_bytes(&bytes),
         })
     }
+
+    /// Verify the exact generator signature and durably append the prepared
+    /// Decision. A selected decision without an append never returns success.
+    pub fn commit_v3(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+        prepared: PreparedAgentdIntuitionDecisionV3,
+        expected_ledger_head: Digest32,
+        decision_evidence: Option<SignedLearningEvidenceV1>,
+        now: u64,
+    ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyError> {
+        self.require_identity(agent_id, spawn_generation)?;
+        let product = self
+            .product
+            .as_ref()
+            .ok_or(AgentdIntuitionPolicyError::ProductHostRequired)?;
+        if prepared.owner_agent_id != self.agent_id
+            || prepared.owner_spawn_generation != self.spawn_generation
+            || prepared.owner_trust_digest != self.verifier.trust_digest()
+        {
+            return Err(AgentdIntuitionPolicyError::PreparedOwnerMismatch);
+        }
+
+        let (production_record_id, learning) = match (prepared.production, decision_evidence) {
+            (Some(production), Some(evidence)) => {
+                let record_id = production.record_id.clone();
+                let receipt = product.learning.append_decision(
+                    expected_ledger_head,
+                    production,
+                    evidence,
+                    now,
+                )?;
+                (Some(record_id), Some(receipt))
+            }
+            (Some(_), None) => return Err(AgentdIntuitionPolicyError::MissingDecisionEvidence),
+            (None, Some(_)) => {
+                return Err(AgentdIntuitionPolicyError::UnexpectedDecisionEvidence);
+            }
+            (None, None) => (None, None),
+        };
+
+        let mut bytes = b"hepta.agentd.committed-intuition.v1\0".to_vec();
+        bytes.extend_from_slice(prepared.prepared_digest.as_array());
+        match &learning {
+            Some(receipt) => {
+                bytes.push(1);
+                bytes.extend_from_slice(receipt.event_digest.as_array());
+                bytes.extend_from_slice(receipt.chain_digest.as_array());
+                bytes.extend_from_slice(&receipt.sequence.get().to_be_bytes());
+            }
+            None => bytes.push(0),
+        }
+        Ok(AgentdIntuitionDecisionReceiptV2 {
+            decision: prepared.decision,
+            host_binding_digest: prepared.host_binding_digest,
+            production_record_id,
+            learning,
+            service_receipt_digest: Digest32::of_bytes(&bytes),
+        })
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn production_decision_from_authenticated(
+    agent_id: &AgentId,
+    spawn_generation: u64,
+    request: &CalibratedDecisionRequestV1,
+    decision: &AuthenticatedIntuitionDecisionV3,
+    generator_id: StableId,
+    episode_id: StableId,
+    run_snapshot_digest: Digest32,
+    host_binding_digest: Digest32,
+) -> Result<Option<ProductionDecisionV2>, AgentdIntuitionPolicyError> {
+    let ProductionDispositionV1::Selected(selected_candidate_id) =
+        &decision.decision.disposition
+    else {
+        return Ok(None);
+    };
+    let selected_propensity = decision
+        .decision
+        .propensities
+        .iter()
+        .find(|row| row.candidate_id == *selected_candidate_id)
+        .map(|row| row.probability)
+        .filter(|value| value.raw() > 0)
+        .ok_or(AgentdIntuitionPolicyError::SelectedPropensityMissing)?;
+    let record_id = intuition_policy_record_id_v1(
+        agent_id,
+        spawn_generation,
+        &request.decision_id,
+        request.policy_digest,
+        request.sequence,
+    )?;
+    let candidate_ids = request
+        .candidates
+        .iter()
+        .map(|candidate| candidate.candidate_id.clone())
+        .collect::<Vec<_>>();
+    let completeness = CandidateSetCompletenessReceiptV1 {
+        set_id: request.decision_id.clone(),
+        state_digest: request.state_digest,
+        generator_id,
+        generator_code_digest: request.completeness.generator_digest,
+        grammar_digest: request.completeness.grammar_digest,
+        hard_filter_digest: request.completeness.hard_filter_digest,
+        truncation_digest: request.completeness.truncation_digest,
+        candidates_digest: candidate_ids_digest_v2(&candidate_ids),
+        candidate_count: u32::try_from(candidate_ids.len())
+            .map_err(|_| AgentdIntuitionPolicyError::InvalidHost("candidate count overflow"))?,
+        omitted_count_bound: request.completeness.omitted_count_bound,
+        canonical_order_digest: candidate_order_digest_v2(&candidate_ids),
+        complete_for_generator: request.completeness.omitted_count_bound == 0,
+    };
+    let mut support = b"hepta.agentd.intuition-production-decision.v1\0".to_vec();
+    for digest in [
+        host_binding_digest,
+        decision.authentication_digest,
+        decision.decision.receipt_digest,
+        request.completeness.receipt_digest,
+    ] {
+        support.extend_from_slice(digest.as_array());
+    }
+    Ok(Some(ProductionDecisionV2 {
+        record_id,
+        episode_id,
+        run_snapshot_digest,
+        objective_digest: request.objective_digest,
+        policy_digest: request.policy_digest,
+        candidate_ids,
+        selected_candidate_id: selected_candidate_id.clone(),
+        selected_propensity,
+        completeness,
+        support_digest: Digest32::of_bytes(&support),
+    }))
 }
 
 pub fn intuition_policy_record_id_v1(
@@ -483,9 +628,9 @@ pub fn intuition_policy_record_id_v1(
         return Err(AgentdIntuitionPolicyError::GenerationFence);
     }
     let mut bytes = b"hepta.agentd.intuition-record-id.v1\0".to_vec();
-    let agent = agent_id.as_str().as_bytes();
+    let agent = agent_id.to_string();
     bytes.extend_from_slice(&(agent.len() as u64).to_be_bytes());
-    bytes.extend_from_slice(agent);
+    bytes.extend_from_slice(agent.as_bytes());
     bytes.extend_from_slice(&spawn_generation.to_be_bytes());
     let decision = decision_id.as_str().as_bytes();
     bytes.extend_from_slice(&(decision.len() as u64).to_be_bytes());
@@ -506,7 +651,9 @@ pub fn intuition_risk_rule_digest_v1(rule: CanonicalRiskRuleV1) -> Digest32 {
         CanonicalRiskRuleV1::ElevatedAndHighSlowPath => 1,
         CanonicalRiskRuleV1::AlwaysSlowPath => 2,
     };
-    Digest32::of_bytes(&[b"hepta.agentd.intuition-risk-rule.v1\0".as_slice(), &[code]].concat())
+    let mut bytes = b"hepta.agentd.intuition-risk-rule.v1\0".to_vec();
+    bytes.push(code);
+    Digest32::of_bytes(&bytes)
 }
 
 fn validate_legacy_pins(
@@ -747,6 +894,7 @@ mod tests {
             host.require_identity(&agent_id, 8),
             Err(AgentdIntuitionPolicyError::GenerationFence)
         ));
+        assert!(!host.is_product_ready());
         assert_eq!(
             AgentdIntuitionPolicyError::GenerationFence.code(),
             "agentd.intuition.generation_fenced"
