@@ -4,8 +4,8 @@
 The manifest carries a non-self-referential source anchor. The generator proves
 that every mapped source/evidence path is unchanged from that anchor to HEAD,
 then emits the implementation map, current-state JSON, Markdown summaries and a
-machine-readable execution-dossier status companion. No generated projection
-can grant production implementation, activation or release.
+machine-readable execution-dossier status companion. Generated projections
+cannot grant production implementation, activation or release.
 """
 
 from __future__ import annotations
@@ -31,6 +31,7 @@ OUTPUTS = {
     / "qualification/module-execution-dossiers/detail/kernel.authority.status.json",
 }
 SHA1 = re.compile(r"[0-9a-f]{40}")
+SYMBOL = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*")
 EXECUTION_CLAIMS = (
     "productionImplementation",
     "productExecutionProved",
@@ -65,7 +66,7 @@ def load_manifest() -> dict[str, Any]:
     return value
 
 
-def git(*args: str, input_text: str | None = None) -> str:
+def git(*args: str) -> str:
     env = {
         key: value for key, value in os.environ.items() if not key.startswith("GIT_")
     }
@@ -81,7 +82,6 @@ def git(*args: str, input_text: str | None = None) -> str:
         ["git", "--literal-pathspecs", "-c", "core.fsmonitor=false", *args],
         cwd=ROOT,
         env=env,
-        input=input_text,
         text=True,
         capture_output=True,
         check=True,
@@ -97,6 +97,12 @@ def identifier(value: Any) -> bool:
     return isinstance(value, str) and bool(
         re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}", value)
     )
+
+
+def native_symbol(value: Any, name: str) -> str:
+    if not isinstance(value, str) or SYMBOL.fullmatch(value) is None:
+        raise StatusError(f"{name} must name one atomic code symbol")
+    return value
 
 
 def string_list(value: Any, name: str, *, nonempty: bool = True) -> list[str]:
@@ -154,7 +160,10 @@ def validate_manifest(manifest: dict[str, Any]) -> tuple[dict[str, str], list[st
     anchor = manifest.get("sourceAnchor")
     if not isinstance(anchor, dict) or set(anchor) != {"commit", "tree"}:
         raise StatusError("sourceAnchor requires exact commit/tree")
-    if any(not isinstance(anchor[key], str) or SHA1.fullmatch(anchor[key]) is None for key in anchor):
+    if any(
+        not isinstance(anchor[key], str) or SHA1.fullmatch(anchor[key]) is None
+        for key in anchor
+    ):
         raise StatusError("sourceAnchor values must be lowercase SHA-1 values")
     if git("cat-file", "-t", anchor["commit"]) != "commit":
         raise StatusError("sourceAnchor commit is not a commit")
@@ -179,7 +188,7 @@ def validate_manifest(manifest: dict[str, Any]) -> tuple[dict[str, str], list[st
         if type(claims.get(field)) is not bool:
             raise StatusError(f"claimBoundary.{field} must be boolean")
     if any(claims[field] for field in EXECUTION_CLAIMS):
-        raise StatusError("repository status projections cannot self-grant execution claims")
+        raise StatusError("repository projections cannot self-grant execution claims")
 
     roots = string_list(manifest.get("declaredRoots"), "declaredRoots")
     for root in roots:
@@ -200,7 +209,8 @@ def validate_manifest(manifest: dict[str, Any]) -> tuple[dict[str, str], list[st
         if not identifier(operation_id) or operation_id in operation_ids:
             raise StatusError(f"invalid or duplicate operation: {operation_id}")
         operation_ids.add(operation_id)
-        for field in ("nativeSymbol", "state", "authority", "designOperation", "mappingClass"):
+        native_symbol(row.get("nativeSymbol"), f"{operation_id}.nativeSymbol")
+        for field in ("state", "authority", "designOperation", "mappingClass"):
             if not isinstance(row.get(field), str) or not row[field]:
                 raise StatusError(f"{operation_id}: invalid {field}")
         paths.update(operation_paths(row))
@@ -216,9 +226,9 @@ def validate_manifest(manifest: dict[str, Any]) -> tuple[dict[str, str], list[st
         if not identifier(caller_id) or caller_id in caller_ids:
             raise StatusError(f"invalid or duplicate product caller: {caller_id}")
         caller_ids.add(caller_id)
-        for field in ("nativeSymbol", "state"):
-            if not isinstance(row.get(field), str) or not row[field]:
-                raise StatusError(f"{caller_id}: invalid {field}")
+        native_symbol(row.get("nativeSymbol"), f"{caller_id}.nativeSymbol")
+        if not isinstance(row.get("state"), str) or not row["state"]:
+            raise StatusError(f"{caller_id}: invalid state")
         paths.update(caller_paths(row))
 
     for path in string_list(manifest.get("trackedPaths"), "trackedPaths"):
@@ -228,8 +238,8 @@ def validate_manifest(manifest: dict[str, Any]) -> tuple[dict[str, str], list[st
 
     tracked = sorted(paths)
     for path in tracked:
-        if git("cat-file", "-t", f"HEAD:{path}") not in {"blob", "tree"}:
-            raise StatusError(f"tracked status source is not committed: {path}")
+        if git("cat-file", "-t", f"HEAD:{path}") != "blob":
+            raise StatusError(f"tracked status source is not a committed blob: {path}")
     changed = git(
         "diff",
         "--no-ext-diff",
@@ -248,14 +258,8 @@ def validate_manifest(manifest: dict[str, Any]) -> tuple[dict[str, str], list[st
     return {"commit": anchor["commit"], "tree": anchor["tree"]}, tracked
 
 
-def source_objects(paths: list[str]) -> list[dict[str, str]]:
-    return [
-        {"path": path, "object": git("rev-parse", f"HEAD:{path}")} for path in paths
-    ]
-
-
 def implementation_map(
-    manifest: dict[str, Any], anchor: dict[str, str], paths: list[str]
+    manifest: dict[str, Any], anchor: dict[str, str]
 ) -> dict[str, Any]:
     operations = []
     for original in manifest["operations"]:
@@ -267,6 +271,9 @@ def implementation_map(
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": anchor,
+        "mappingSourceIdentityMode": "path_only",
+        "exactSourceEvidenceMode":
+            "lane_a_runtime_wiring_only_no_product_execution_claim",
         "laneId": manifest["laneId"],
         "module": manifest["module"],
         "owner": manifest["owner"],
@@ -286,14 +293,15 @@ def implementation_map(
         "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
         "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
         "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md",
-        "productionTrustProfile": "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
+        "productionTrustProfile":
+            "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
         "productionClosure": "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md",
-        "capacityQualification": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
+        "capacityQualification":
+            "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
         "statusManifest": "qualification/kernel-authority/status_manifest.json",
         "statusGenerator": "qualification/kernel-authority/generate_status.py",
         "productCallers": manifest["productCallers"],
         "evidencePrograms": manifest["evidencePrograms"],
-        "sourceObjects": source_objects(paths),
     }
 
 
@@ -319,12 +327,20 @@ def current_state(manifest: dict[str, Any], anchor: dict[str, str]) -> dict[str,
 
 
 def markdown_table(headers: list[str], rows: list[list[str]]) -> list[str]:
-    lines = ["| " + " | ".join(headers) + " |", "|" + "|".join(["---"] * len(headers)) + "|"]
-    lines.extend("| " + " | ".join(cell.replace("|", "\\|") for cell in row) + " |" for row in rows)
+    lines = [
+        "| " + " | ".join(headers) + " |",
+        "|" + "|".join(["---"] * len(headers)) + "|",
+    ]
+    lines.extend(
+        "| " + " | ".join(cell.replace("|", "\\|") for cell in row) + " |"
+        for row in rows
+    )
     return lines
 
 
-def current_implementation_md(manifest: dict[str, Any], anchor: dict[str, str]) -> str:
+def current_implementation_md(
+    manifest: dict[str, Any], anchor: dict[str, str]
+) -> str:
     lines = [
         "# kernel.authority current implementation",
         "",
@@ -332,9 +348,13 @@ def current_implementation_md(manifest: dict[str, Any], anchor: dict[str, str]) 
         "",
         f"Status: **{manifest['status']}**.",
         "",
-        f"Source anchor: `{anchor['commit']}` / tree `{anchor['tree']}`. The generator proves mapped source paths are unchanged from this anchor to the checked candidate.",
+        f"Source anchor: `{anchor['commit']}` / tree `{anchor['tree']}`. "
+        "Mapped source paths are proven unchanged from this anchor to the candidate.",
         "",
-        "Repository source closure is implemented, but production implementation, product execution proof, independent acceptance, activation and release remain false. External trust and target-host evidence cannot be manufactured by repository tests.",
+        "Repository source closure is implemented, but production implementation, "
+        "product execution proof, independent acceptance, activation and release "
+        "remain false. External trust and target-host evidence cannot be manufactured "
+        "by repository tests.",
         "",
         "## Native operations",
         "",
@@ -351,7 +371,12 @@ def current_implementation_md(manifest: dict[str, Any], anchor: dict[str, str]) 
     lines.extend(markdown_table(["Operation", "Native symbol", "Source", "State"], rows))
     lines.extend(["", "## Product callers", ""])
     caller_rows = [
-        [f"`{row['id']}`", f"`{row['nativeSymbol']}`", f"`{row['sourcePath']}`", row["state"]]
+        [
+            f"`{row['id']}`",
+            f"`{row['nativeSymbol']}`",
+            f"`{row['sourcePath']}`",
+            row["state"],
+        ]
         for row in manifest["productCallers"]
     ]
     lines.extend(markdown_table(["Caller", "Boundary", "Source", "State"], caller_rows))
@@ -362,7 +387,8 @@ def current_implementation_md(manifest: dict[str, Any], anchor: dict[str, str]) 
     lines.extend(
         [
             "",
-            "Detailed contracts: `TECHNICAL.md`, `LINEARIZATION.md`, `PRODUCTION_TRUST_PROFILE.md` and `PRODUCTION_CLOSURE.md`.",
+            "Detailed contracts: `TECHNICAL.md`, `LINEARIZATION.md`, "
+            "`PRODUCTION_TRUST_PROFILE.md` and `PRODUCTION_CLOSURE.md`.",
             "",
         ]
     )
@@ -396,12 +422,17 @@ def traceability_md(manifest: dict[str, Any], anchor: dict[str, str]) -> str:
     caller_rows = []
     for row in manifest["productCallers"]:
         tests = "<br>".join(f"`{path}`" for path in row.get("tests", [])) or "—"
-        caller_rows.append([f"`{row['id']}`", f"`{row['sourcePath']}`", tests, row["state"]])
-    lines.extend(markdown_table(["Caller", "Source", "Tests/evidence", "Claim"], caller_rows))
+        caller_rows.append(
+            [f"`{row['id']}`", f"`{row['sourcePath']}`", tests, row["state"]]
+        )
+    lines.extend(
+        markdown_table(["Caller", "Source", "Tests/evidence", "Claim"], caller_rows)
+    )
     lines.extend(
         [
             "",
-            "Every exact-head or synthetic-merge receipt is candidate-bound. Test identity or source composition alone does not establish deployment activation.",
+            "Every exact-head or synthetic-merge receipt is candidate-bound. "
+            "Test identity or source composition alone does not establish deployment activation.",
             "",
         ]
     )
@@ -431,7 +462,10 @@ def status_md(manifest: dict[str, Any], anchor: dict[str, str]) -> str:
     lines.extend(
         [
             "",
-            "The repository contains the mandatory production trust-bundle contract, closed final-use/dispatch APIs, candidate-bound Fleet and Browser/Agentd process pilots, performance measurement and a WAL/checkpoint/sharding reference model. Target deployment evidence remains external and fail-closed.",
+            "The repository contains the mandatory production trust-bundle contract, "
+            "closed final-use/dispatch APIs, candidate-bound Fleet and Browser/Agentd "
+            "process pilots, performance measurement and a WAL/checkpoint/sharding "
+            "reference model. Target deployment evidence remains external and fail-closed.",
             "",
             "See `CURRENT_IMPLEMENTATION.md`, `TRACEABILITY.md` and `PRODUCTION_CLOSURE.md`.",
             "",
@@ -462,10 +496,10 @@ def dossier_status(manifest: dict[str, Any], anchor: dict[str, str]) -> dict[str
 
 def render() -> dict[Path, bytes]:
     manifest = load_manifest()
-    anchor, paths = validate_manifest(manifest)
+    anchor, _paths = validate_manifest(manifest)
     return {
         OUTPUTS["implementationMap"]: canonical_json(
-            implementation_map(manifest, anchor, paths)
+            implementation_map(manifest, anchor)
         ),
         OUTPUTS["currentState"]: canonical_json(current_state(manifest, anchor)),
         OUTPUTS["currentImplementation"]: current_implementation_md(
@@ -500,7 +534,8 @@ def main() -> int:
             path.write_bytes(content)
     if failures:
         print(
-            "kernel.authority generated projections are stale: " + ", ".join(failures),
+            "kernel.authority generated projections are stale: "
+            + ", ".join(failures),
             file=sys.stderr,
         )
         return 1
