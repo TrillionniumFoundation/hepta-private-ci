@@ -12,11 +12,11 @@ permissions:
 
 concurrency:
   group: cognitive-read-map-materialize-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
-    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): materialize implementation map' }}"
+    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): harden source and materialize map' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -24,6 +24,67 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
+
+      - name: Close deterministic source-level lint drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-agentd/src/cognitive_context.rs')
+          text = path.read_text(encoding='utf-8')
+          old = '''fn planned_context_encoded_len(
+              response: &CognitiveContextSnapshot,
+          ) -> Result<usize, CognitiveStoreError> {
+              let zero = Digest32::ZERO.to_string();
+              [false, true]
+                  .into_iter()
+                  .map(|read_allowed| {
+                      let mut candidate = response.clone();
+                      candidate.snapshot_digest = zero.clone();
+                      candidate.read_digest = zero.clone();
+                      candidate.plan = Some(CognitiveContextPlan {
+                          evaluated_context_digest: zero.clone(),
+                          plan_receipt_digest: zero.clone(),
+                          read_allowed,
+                      });
+                      serde_json::to_vec(&candidate)
+                          .map(|encoded| encoded.len())
+                          .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+                  })
+                  .collect::<Result<Vec<_>, _>>()?
+                  .into_iter()
+                  .max()
+                  .ok_or_else(|| CognitiveStoreError::Invalid("missing context plan shape".to_string()))
+          }
+          '''
+          new = '''fn planned_context_encoded_len(
+              response: &CognitiveContextSnapshot,
+          ) -> Result<usize, CognitiveStoreError> {
+              let zero = Digest32::ZERO.to_string();
+              let mut maximum = 0;
+              for read_allowed in [false, true] {
+                  let mut candidate = response.clone();
+                  candidate.snapshot_digest = zero.clone();
+                  candidate.read_digest = zero.clone();
+                  candidate.plan = Some(CognitiveContextPlan {
+                      evaluated_context_digest: zero.clone(),
+                      plan_receipt_digest: zero.clone(),
+                      read_allowed,
+                  });
+                  let encoded = serde_json::to_vec(&candidate)
+                      .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+                  maximum = maximum.max(encoded.len());
+              }
+              Ok(maximum)
+          }
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('planned_context_encoded_len source shape drifted')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          git diff --check
 
       - name: Rebind cognitive.read source navigation
         shell: bash
@@ -34,13 +95,14 @@ jobs:
           git diff --check
           test -n "$(git status --porcelain -- docs/modules/cognitive.read/IMPLEMENTATION_MAP.json)"
 
-      - name: Commit generated map and remove temporary materializer
+      - name: Commit generated source and map, then remove materializer
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'hepta-ci-convergence'
           git config user.email 'hepta-ci-convergence@users.noreply.github.com'
           git rm .github/workflows/cognitive-read-map-materialize.yml
+          git add codex-rs/hepta-agentd/src/cognitive_context.rs
           git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
-          git commit -m 'docs(cognitive.read): bind implementation map to converged source'
+          git commit -m 'fix(cognitive.read): close lint and bind exact source map'
           git push origin "HEAD:${GITHUB_REF_NAME}"
