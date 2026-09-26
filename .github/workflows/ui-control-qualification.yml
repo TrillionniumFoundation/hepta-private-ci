@@ -72,8 +72,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test -f package-lock.json
+          sha256sum package-lock.json > ../../ui-control-evidence/dependency-lock.sha256
           npm ci --ignore-scripts --no-audit --no-fund
-          npm ls --json > ../../ui-control-evidence/npm-resolution.json
+          npm ls --all --json > ../../ui-control-evidence/npm-resolution.json
 
       - name: Lint and unsafe-sink checks
         working-directory: ${{ env.UI_CONTROL_APP }}
@@ -120,6 +122,7 @@ jobs:
       - name: Emit exact-head qualification receipt
         working-directory: ${{ env.UI_CONTROL_APP }}
         env:
+          UI_CONTROL_DEPENDENCY_LOCK: passed
           UI_CONTROL_LINT: passed
           UI_CONTROL_UNIT: passed
           UI_CONTROL_CONTRACT: passed
@@ -148,6 +151,7 @@ jobs:
             echo
             echo "- SHA: \`$(git rev-parse HEAD)\`"
             echo "- Tree: \`$(git rev-parse HEAD^{tree})\`"
+            echo '- Exact dependency lock: passed'
             echo '- Unit/concurrency: passed'
             echo '- Package/contract: passed'
             echo '- Chromium/Firefox/WebKit: passed'
@@ -210,7 +214,10 @@ jobs:
       - name: Install exact locked merge-test dependencies
         working-directory: ${{ env.UI_CONTROL_APP }}
         shell: bash
-        run: npm ci --ignore-scripts --no-audit --no-fund
+        run: |
+          set -euo pipefail
+          test -f package-lock.json
+          npm ci --ignore-scripts --no-audit --no-fund
 
       - name: Requalify merged core and truth projections
         env:
