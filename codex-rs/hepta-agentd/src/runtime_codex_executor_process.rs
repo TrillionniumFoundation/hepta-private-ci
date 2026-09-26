@@ -23,6 +23,8 @@ use super::RuntimeCodexOwnerV1;
 use super::persistence::OperationPaths;
 use super::persistence::RuntimeCodexJobManifestV1;
 use super::persistence::deadline_instant;
+use super::persistence::dispatch_is_fenced;
+use super::persistence::mark_dispatch_fenced;
 use super::persistence::validate_manifest_owner;
 use crate::AgentdError;
 
@@ -87,6 +89,28 @@ pub(super) async fn spawn_worker(
         }
     } else {
         command.arg("--resume");
+    }
+
+    if cancellation.is_cancelled() {
+        return Err(AgentdError::Protocol(
+            "runtime.codex execution was cancelled before dispatch fencing".to_string(),
+        ));
+    }
+    if fresh_input.is_some() {
+        if dispatch_is_fenced(paths, manifest)? {
+            return Err(AgentdError::Protocol(
+                "runtime.codex operation was already dispatch-fenced; fresh dispatch is forbidden"
+                    .to_string(),
+            ));
+        }
+        // This is the monotonic point of no blind redispatch. A crash after this
+        // fsync and before process creation may sacrifice liveness, but recovery
+        // can only invoke the worker's reconcile-only `--resume` path.
+        mark_dispatch_fenced(paths, manifest)?;
+    } else if !dispatch_is_fenced(paths, manifest)? {
+        return Err(AgentdError::Protocol(
+            "runtime.codex resume requires an immutable dispatch fence".to_string(),
+        ));
     }
 
     let mut child = command.spawn()?;
