@@ -25,9 +25,16 @@ pub(super) fn production_policy_digest(
     let scalarization = policy
         .scalarization
         .clone()
-        .map(|profile| {
-            crate::ValidatedScalarizationProfileV1::try_new(&policy.utility_profile, profile)
-                .map(|validated| validated.scalarization_digest())
+        .map(|profile| -> Result<Digest32, NduOwnerError> {
+            let canonical = canonical_scalarization_digest(&profile)?;
+            let validated = crate::ValidatedScalarizationProfileV1::try_new(
+                &policy.utility_profile,
+                profile,
+            )?;
+            if validated.scalarization_digest() != canonical {
+                return Err(NduOwnerError::InvalidContext("scalarization digest"));
+            }
+            Ok(canonical)
         })
         .transpose()?;
 
