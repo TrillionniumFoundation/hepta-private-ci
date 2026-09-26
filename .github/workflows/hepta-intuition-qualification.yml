@@ -60,6 +60,59 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  compose-closure:
+    name: Compose intuition closure source once
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/intuition-policy-production-closure-20260927'
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Check out exact closure source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Apply deterministic serving composition
+        run: |
+          python3 scripts/intuition_finalize_branch.py
+          python3 scripts/intuition_legacy_imports.py
+      - name: Format, compile, lint and test composed surfaces
+        working-directory: codex-rs
+        run: |
+          cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-agentd
+          cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
+          cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_product
+          if test -f hepta-agentd/tests/intuition_policy_product_v3.rs; then
+            cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
+          fi
+          cargo run --locked --release -p codex-hepta-intuition --example fast_gate
+          cargo run --locked --release -p codex-hepta-intelligence --example intuition_authenticated_fast_gate
+      - name: Commit source and exact provenance locally
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Intuition Integrator"
+          git config user.email "hepta-intuition-ci@users.noreply.github.com"
+          git add codex-rs/hepta-agentd codex-rs/hepta-intuition codex-rs/hepta-intelligence docs/modules/intuition.policy/TECHNICAL.md
+          if ! git diff --cached --quiet; then
+            git commit -m "feat(intuition): enforce authenticated product gate in Agentd serving"
+          fi
+          python3 scripts/hepta-implementation-maps.py migrate --module intuition.policy
+          git add docs/modules/intuition.policy/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(intuition): bind composed source objects"
+          fi
+          python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
+          git push origin HEAD:codex/intuition-policy-production-closure-20260927
+
   source-head:
     name: Intuition exact source qualification
     runs-on: ubuntu-24.04
