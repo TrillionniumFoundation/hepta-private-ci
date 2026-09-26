@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "2d9ecb5d5079da79aae06421853488cefa564125",
-    "tree": "3f478a11db9bc28c894f16e0e3d309e1b85380d7"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -169,7 +169,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-      "object": "835f19cba9c59b92db2f0229cd82cf40b2a70bee"
+      "object": "5ffd7ce992aad6a6cea7d3d0307c32d9d2ae163a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -197,7 +197,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "edc5bc3fd7b353f416c2877c072f9a2e741a52a6"
+      "object": "d68bfdf8188b8ec65fc0cff0693bf39a648a4c00"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -253,11 +253,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0"
+      "object": "bdd11b358ee2e8e7bf03a3427dd5877d34e7314d"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "567ded38b6ab9f122932ec134c938fc7d55e2c44"
+      "object": "fb213ef5baf0f488bd11f95f103c170bd095f72b"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -291,7 +291,7 @@
     },
     {
       "role": "control_protocol",
-      "blobSha": "835f19cba9c59b92db2f0229cd82cf40b2a70bee",
+      "blobSha": "5ffd7ce992aad6a6cea7d3d0307c32d9d2ae163a",
       "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "nativeSymbol": "CognitiveContextRevalidate {"
     },
@@ -303,7 +303,7 @@
     },
     {
       "role": "model_effect_consumer",
-      "blobSha": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+      "blobSha": "bdd11b358ee2e8e7bf03a3427dd5877d34e7314d",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "nativeSymbol": "owner.revalidate_cognitive_context(snapshot).await"
     },
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "2d9ecb5d5079da79aae06421853488cefa564125",
-    "tree": "3f478a11db9bc28c894f16e0e3d309e1b85380d7"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
