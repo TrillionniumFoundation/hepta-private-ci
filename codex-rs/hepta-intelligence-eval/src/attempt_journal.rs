@@ -1,8 +1,8 @@
 //! Durable-CAS state machine for product evaluation attempts.
 //!
 //! The journal makes the post-holdout failure window explicit. Once a final
-//! holdout advances without a terminal temporal receipt, the same attempt ID is
-//! retry-forbidden and requires operator reconciliation rather than silent reuse.
+//! holdout advances—or its commit status becomes unknown—its plan and attempt are
+//! retry-forbidden and require operator reconciliation rather than silent reuse.
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -22,6 +22,9 @@ pub enum EvaluationAttemptPhaseV1 {
     QualificationRejected,
     PublicationIndeterminate,
     Published,
+    /// The holdout CAS may have committed, but the owner could not determine the
+    /// authoritative state. Recovery must reconcile the store before reuse.
+    HoldoutConsumptionIndeterminate,
 }
 
 impl EvaluationAttemptPhaseV1 {
@@ -34,6 +37,7 @@ impl EvaluationAttemptPhaseV1 {
             Self::QualificationRejected => 4,
             Self::PublicationIndeterminate => 5,
             Self::Published => 6,
+            Self::HoldoutConsumptionIndeterminate => 7,
         }
     }
 
@@ -42,6 +46,8 @@ impl EvaluationAttemptPhaseV1 {
         matches!(
             self,
             Self::HoldoutConsumedWithoutTerminalReceipt
+                | Self::HoldoutConsumptionIndeterminate
+                | Self::TemporalEvaluated
                 | Self::QualificationRejected
                 | Self::PublicationIndeterminate
                 | Self::Published
@@ -65,6 +71,7 @@ pub struct EvaluationAttemptEventV1 {
 }
 
 impl EvaluationAttemptEventV1 {
+    #[allow(clippy::too_many_arguments)]
     fn new(
         attempt_id: StableId,
         plan_digest: Digest32,
@@ -155,6 +162,16 @@ pub enum EvaluationAttemptCasStoreErrorV1 {
     Indeterminate,
 }
 
+impl fmt::Display for EvaluationAttemptCasStoreErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+impl StdError for EvaluationAttemptCasStoreErrorV1 {}
+
+/// Host-provided authoritative attempt-state store. CAS must be linearizable
+/// across every process participating in the same binding. An uncertain commit
+/// must return `Indeterminate`.
 pub trait EvaluationAttemptCasStoreV1 {
     fn load(
         &mut self,
@@ -230,6 +247,14 @@ impl<S: EvaluationAttemptCasStoreV1> EvaluationAttemptJournalV1<S> {
             {
                 return Ok(latest.clone());
             }
+            return Err(EvaluationAttemptErrorV1::RetryForbidden);
+        }
+        if self
+            .snapshot
+            .events
+            .iter()
+            .any(|event| event.plan_digest == plan_digest)
+        {
             return Err(EvaluationAttemptErrorV1::RetryForbidden);
         }
         self.append(
@@ -338,11 +363,10 @@ impl<S: EvaluationAttemptCasStoreV1> EvaluationAttemptJournalV1<S> {
         next_snapshot.events.push(event.clone());
         next_snapshot.head_digest = event.event_digest;
         let next = EvaluationAttemptCasRecordV1::new(self.binding, next_snapshot.clone())?;
-        match self.store.compare_and_swap(
-            self.binding,
-            Some(self.state_digest),
-            &next,
-        ) {
+        match self
+            .store
+            .compare_and_swap(self.binding, Some(self.state_digest), &next)
+        {
             Ok(()) => {
                 self.snapshot = next_snapshot;
                 self.state_digest = next.state_digest;
@@ -369,10 +393,19 @@ fn validate_snapshot(snapshot: &EvaluationAttemptSnapshotV1) -> Result<(), Evalu
     }
     let mut previous = Digest32::ZERO;
     let mut latest: BTreeMap<&StableId, &EvaluationAttemptEventV1> = BTreeMap::new();
+    let mut plan_owners: BTreeMap<[u8; 32], &StableId> = BTreeMap::new();
     for (index, event) in snapshot.events.iter().enumerate() {
         event.validate()?;
         if event.sequence != index as u64 + 1 || event.previous_digest != previous {
             return Err(EvaluationAttemptErrorV1::Corrupt);
+        }
+        let plan_key = *event.plan_digest.as_array();
+        if let Some(owner) = plan_owners.get(&plan_key) {
+            if *owner != &event.attempt_id {
+                return Err(EvaluationAttemptErrorV1::Corrupt);
+            }
+        } else {
+            plan_owners.insert(plan_key, &event.attempt_id);
         }
         if let Some(prior) = latest.get(&event.attempt_id) {
             if prior.plan_digest != event.plan_digest
@@ -410,6 +443,12 @@ fn validate_phase_fields(event: &EvaluationAttemptEventV1) -> Result<(), Evaluat
         }
         EvaluationAttemptPhaseV1::HoldoutConsumedWithoutTerminalReceipt => {
             holdout_advanced
+                && event.execution_digest.is_zero()
+                && event.publication_digest.is_zero()
+                && !event.failure_digest.is_zero()
+        }
+        EvaluationAttemptPhaseV1::HoldoutConsumptionIndeterminate => {
+            !holdout_advanced
                 && event.execution_digest.is_zero()
                 && event.publication_digest.is_zero()
                 && !event.failure_digest.is_zero()
@@ -456,6 +495,7 @@ const fn valid_transition(
             EvaluationAttemptPhaseV1::Started,
             EvaluationAttemptPhaseV1::RejectedBeforeHoldout
                 | EvaluationAttemptPhaseV1::HoldoutConsumedWithoutTerminalReceipt
+                | EvaluationAttemptPhaseV1::HoldoutConsumptionIndeterminate
                 | EvaluationAttemptPhaseV1::TemporalEvaluated
         ) | (
             EvaluationAttemptPhaseV1::TemporalEvaluated,
@@ -566,7 +606,11 @@ mod tests {
             binding: Digest32,
         ) -> Result<Option<EvaluationAttemptCasRecordV1>, EvaluationAttemptCasStoreErrorV1>
         {
-            if self.record.as_ref().is_some_and(|record| record.binding != binding) {
+            if self
+                .record
+                .as_ref()
+                .is_some_and(|record| record.binding != binding)
+            {
                 return Err(EvaluationAttemptCasStoreErrorV1::Conflict);
             }
             Ok(self.record.clone())
@@ -604,11 +648,9 @@ mod tests {
     #[test]
     fn post_holdout_failure_is_a_retry_forbidden_terminal_state() {
         let binding = digest("binding");
-        let mut journal = EvaluationAttemptJournalV1::initialize(
-            MemoryStore::default(),
-            binding,
-        )
-        .expect("initialize");
+        let mut journal =
+            EvaluationAttemptJournalV1::initialize(MemoryStore::default(), binding)
+                .expect("initialize");
         let attempt = id("attempt");
         journal
             .begin(attempt.clone(), digest("plan"), digest("before"))
@@ -627,6 +669,52 @@ mod tests {
             .expect("terminal failure");
         assert_eq!(
             journal.begin(attempt, digest("plan"), digest("before")),
+            Err(EvaluationAttemptErrorV1::RetryForbidden)
+        );
+    }
+
+    #[test]
+    fn holdout_commit_unknown_is_explicit_and_retry_forbidden() {
+        let mut journal = EvaluationAttemptJournalV1::initialize(
+            MemoryStore::default(),
+            digest("binding"),
+        )
+        .expect("initialize");
+        let attempt = id("attempt");
+        journal
+            .begin(attempt.clone(), digest("plan"), digest("before"))
+            .expect("begin");
+        let terminal = journal
+            .transition(
+                attempt.clone(),
+                digest("plan"),
+                EvaluationAttemptPhaseV1::HoldoutConsumptionIndeterminate,
+                digest("before"),
+                digest("before"),
+                Digest32::ZERO,
+                Digest32::ZERO,
+                digest("unknown-cas"),
+            )
+            .expect("indeterminate");
+        assert!(terminal.phase.retry_forbidden());
+        assert_eq!(
+            journal.begin(attempt, digest("plan"), digest("before")),
+            Err(EvaluationAttemptErrorV1::RetryForbidden)
+        );
+    }
+
+    #[test]
+    fn a_plan_cannot_be_rebound_to_a_different_attempt_id() {
+        let mut journal = EvaluationAttemptJournalV1::initialize(
+            MemoryStore::default(),
+            digest("binding"),
+        )
+        .expect("initialize");
+        journal
+            .begin(id("attempt-a"), digest("plan"), digest("before"))
+            .expect("first attempt");
+        assert_eq!(
+            journal.begin(id("attempt-b"), digest("plan"), digest("before")),
             Err(EvaluationAttemptErrorV1::RetryForbidden)
         );
     }
@@ -701,11 +789,9 @@ mod tests {
     #[test]
     fn accepted_or_unknown_cas_poisons_writer_until_recovery() {
         let binding = digest("binding");
-        let mut journal = EvaluationAttemptJournalV1::initialize(
-            MemoryStore::default(),
-            binding,
-        )
-        .expect("initialize");
+        let mut journal =
+            EvaluationAttemptJournalV1::initialize(MemoryStore::default(), binding)
+                .expect("initialize");
         journal.store.next_error = Some(EvaluationAttemptCasStoreErrorV1::Indeterminate);
         journal.store.commit_before_error = true;
         assert_eq!(
@@ -730,7 +816,8 @@ mod tests {
         let store = MemoryStore::default();
         let first = EvaluationAttemptJournalV1::initialize(store, binding).expect("initialize");
         let shared = first.into_store();
-        let mut left = EvaluationAttemptJournalV1::recover(shared.clone(), binding).expect("left");
+        let mut left =
+            EvaluationAttemptJournalV1::recover(shared.clone(), binding).expect("left");
         let mut right = EvaluationAttemptJournalV1::recover(shared, binding).expect("right");
         left.begin(id("left"), digest("plan-left"), digest("before"))
             .expect("left commit");
