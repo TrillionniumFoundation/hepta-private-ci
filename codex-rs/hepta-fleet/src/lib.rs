@@ -17,6 +17,7 @@ mod error;
 mod model;
 mod module_catalog;
 mod registry;
+mod registry_coordination;
 mod release;
 mod resource;
 

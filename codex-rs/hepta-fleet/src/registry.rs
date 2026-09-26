@@ -20,12 +20,44 @@ use crate::AgentLifecycleState;
 use crate::AgentManifest;
 use crate::AgentReleaseState;
 use crate::FleetRegistryError;
+use crate::registry_coordination::RegistryMutationGuard;
+use crate::registry_coordination::persist_workspace_reservations;
 use crate::release::initialize_release_state;
 use crate::release::load_release_state;
 
 const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+#[cfg(test)]
+const FAILPOINT_NONE: u8 = 0;
+#[cfg(test)]
+const FAILPOINT_AFTER_REGISTER_RENAME: u8 = 1;
+#[cfg(test)]
+const FAILPOINT_AFTER_LIFECYCLE_LINK: u8 = 2;
+
+#[cfg(test)]
+thread_local! {
+    static REGISTRY_FAILPOINT: std::cell::Cell<u8> = const {
+        std::cell::Cell::new(FAILPOINT_NONE)
+    };
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) enum RegistryTestFailpoint {
+    AfterRegisterRename,
+    AfterLifecycleLink,
+}
+
+#[cfg(test)]
+pub(super) fn set_registry_test_failpoint(failpoint: RegistryTestFailpoint) {
+    let value = match failpoint {
+        RegistryTestFailpoint::AfterRegisterRename => FAILPOINT_AFTER_REGISTER_RENAME,
+        RegistryTestFailpoint::AfterLifecycleLink => FAILPOINT_AFTER_LIFECYCLE_LINK,
+    };
+    REGISTRY_FAILPOINT.with(|current| current.set(value));
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRecord {
@@ -65,8 +97,12 @@ impl FleetRegistry {
             std::fs::create_dir_all(directory)?;
             validate_physical_directory(directory)?;
         }
-        sync_directory(layout.fleet_root().as_path())?;
-        Ok(Self { layout })
+        let registry = Self { layout };
+        let _mutation = RegistryMutationGuard::acquire(registry.layout.state_root())?;
+        cleanup_staging_roots(registry.layout.agents_root())?;
+        registry.persist_workspace_reservations(&FleetSnapshot::default())?;
+        sync_directory(registry.layout.fleet_root().as_path())?;
+        Ok(registry)
     }
 
     pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
@@ -82,8 +118,11 @@ impl FleetRegistry {
         ] {
             validate_physical_directory(directory)?;
         }
+        let _mutation = RegistryMutationGuard::acquire(registry.layout.state_root())?;
+        cleanup_staging_roots(registry.layout.agents_root())?;
         registry.migrate_legacy_matrix_roots()?;
-        registry.load()?;
+        let snapshot = registry.load()?;
+        registry.persist_workspace_reservations(&snapshot)?;
         Ok(registry)
     }
 
@@ -118,39 +157,55 @@ impl FleetRegistry {
 
     pub fn register(&self, manifest: AgentManifest) -> Result<AgentRecord, FleetRegistryError> {
         manifest.validate(self.layout.fleet_root())?;
+        let _mutation = RegistryMutationGuard::acquire(self.layout.state_root())?;
+        cleanup_staging_roots(self.layout.agents_root())?;
         let snapshot = self.load()?;
         if snapshot.agent(&manifest.agent_id).is_some() {
             return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));
         }
         validate_manifest_workspace(&manifest, &snapshot.agents)?;
 
-        let staging_root = staging_root(self.layout.agents_root(), &manifest.agent_id);
+        let agent_id = manifest.agent_id.clone();
+        let staging_root = staging_root(self.layout.agents_root(), &agent_id);
         create_private_directory(&staging_root)?;
-        let registration = self.stage_registration(&staging_root, &manifest);
-        if let Err(error) = registration {
+        if let Err(error) = self.stage_registration(&staging_root, &manifest) {
             let _ = std::fs::remove_dir_all(&staging_root);
             return Err(error);
         }
 
-        let final_root = self
-            .layout
-            .agent(&manifest.agent_id)
-            .agent_root()
-            .to_path_buf();
+        let final_root = self.layout.agent(&agent_id).agent_root().to_path_buf();
         if final_root.exists() {
             let _ = std::fs::remove_dir_all(&staging_root);
-            return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));
+            return Err(FleetRegistryError::AlreadyRegistered(agent_id));
         }
         if let Err(error) = std::fs::rename(&staging_root, &final_root) {
             let _ = std::fs::remove_dir_all(&staging_root);
             return if error.kind() == ErrorKind::AlreadyExists {
-                Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id))
+                Err(FleetRegistryError::AlreadyRegistered(agent_id))
             } else {
                 Err(error.into())
             };
         }
-        sync_directory(self.layout.agents_root())?;
-        self.load_agent(&manifest.agent_id)
+        if let Err(error) = fail_after_register_rename()
+            .and_then(|()| sync_directory(self.layout.agents_root()))
+        {
+            return Err(indeterminate(
+                "register_agent",
+                agent_id.to_string(),
+                error,
+            ));
+        }
+        let record = self.load_agent(&agent_id).map_err(|error| {
+            indeterminate("register_agent", agent_id.to_string(), error)
+        })?;
+        let committed = self.load().map_err(|error| {
+            indeterminate("register_agent", agent_id.to_string(), error)
+        })?;
+        self.persist_workspace_reservations(&committed)
+            .map_err(|error| {
+                indeterminate("register_agent", agent_id.to_string(), error)
+            })?;
+        Ok(record)
     }
 
     /// One-time, fail-closed upgrade for Agent roots created before the Matrix
@@ -186,6 +241,7 @@ impl FleetRegistry {
         expected_generation: u64,
         requested: AgentLifecycle,
     ) -> Result<AgentLifecycleState, FleetRegistryError> {
+        let _mutation = RegistryMutationGuard::acquire(self.layout.state_root())?;
         let current = self.load_agent(agent_id)?.lifecycle;
         if current.generation != expected_generation {
             return Err(FleetRegistryError::StaleGeneration {
@@ -243,16 +299,6 @@ impl FleetRegistry {
     }
 
     /// Read and validate one registered Agent without enumerating its peers.
-    ///
-    /// This is a fresh owner-local control read, not a cached grant or a fleet
-    /// admission check. Registration and `load` retain global workspace-isolation
-    /// validation. Runtime callers must additionally compare the returned roots,
-    /// resource budget and lifecycle generation with their immutable launch
-    /// identity. Missing or corrupt local state remains an error; an unrelated
-    /// Agent's state is outside this read's failure domain.
-    ///
-    /// Cost depends on this Agent's retained lifecycle/release history, not on
-    /// fleet size. History compaction is a separate owner-controlled operation.
     pub fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {
         let layout = self.layout.agent(agent_id);
         for directory in [
@@ -290,6 +336,22 @@ impl FleetRegistry {
             layout,
         })
     }
+
+    fn persist_workspace_reservations(
+        &self,
+        snapshot: &FleetSnapshot,
+    ) -> Result<(), FleetRegistryError> {
+        persist_workspace_reservations(
+            self.layout.state_root(),
+            snapshot.agents.values().map(|record| {
+                (
+                    record.manifest.agent_id.to_string(),
+                    record.manifest.workspace.as_path().to_path_buf(),
+                )
+            }),
+        )?;
+        Ok(())
+    }
 }
 
 enum PublishOutcome {
@@ -318,7 +380,16 @@ fn publish_lifecycle(
         }
     };
     let _ = std::fs::remove_file(temp_path);
-    sync_directory(run_root)?;
+    if matches!(outcome, PublishOutcome::Published)
+        && let Err(error) =
+            fail_after_lifecycle_link().and_then(|()| sync_directory(run_root))
+    {
+        return Err(indeterminate(
+            "lifecycle_transition",
+            format!("{}:{}", state.agent_id, state.generation),
+            error,
+        ));
+    }
     Ok(outcome)
 }
 
@@ -381,9 +452,6 @@ fn load_lifecycle(
 fn validate_workspace_isolation(
     agents: &BTreeMap<AgentId, AgentRecord>,
 ) -> Result<(), FleetRegistryError> {
-    // Canonical Path ordering groups a directory with all of its descendants.
-    // Any overlapping pair therefore has an adjacent overlapping witness. Keep
-    // the global invariant without comparing every agent with every other one.
     let mut ordered = agents.values().collect::<Vec<_>>();
     ordered.sort_unstable_by(|left, right| {
         left.manifest
@@ -425,6 +493,34 @@ fn validate_manifest_workspace(
                 registered_agent_id: registered_id.clone(),
             });
         }
+    }
+    Ok(())
+}
+
+fn cleanup_staging_roots(agents_root: &Path) -> Result<(), FleetRegistryError> {
+    let mut removed = false;
+    for entry in std::fs::read_dir(agents_root)? {
+        let entry = entry?;
+        let Some(name) = entry.file_name().to_str().map(str::to_owned) else {
+            return Err(FleetRegistryError::Corrupt(
+                "agent directory name is not UTF-8".to_string(),
+            ));
+        };
+        if !name.starts_with(".staging-") {
+            continue;
+        }
+        let metadata = std::fs::symlink_metadata(entry.path())?;
+        if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {
+            return Err(FleetRegistryError::Corrupt(format!(
+                "staging root is not a physical directory: {}",
+                entry.path().display()
+            )));
+        }
+        std::fs::remove_dir_all(entry.path())?;
+        removed = true;
+    }
+    if removed {
+        sync_directory(agents_root)?;
     }
     Ok(())
 }
@@ -518,7 +614,60 @@ fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegis
         }
         Err(error) => return Err(error.into()),
     }
-    sync_directory(parent)
+    sync_directory(parent)?;
+    Ok(())
+}
+
+fn indeterminate(
+    operation: &'static str,
+    recovery_key: String,
+    detail: impl std::fmt::Display,
+) -> FleetRegistryError {
+    FleetRegistryError::IndeterminateCommit {
+        operation,
+        recovery_key,
+        detail: detail.to_string(),
+    }
+}
+
+fn fail_after_register_rename() -> std::io::Result<()> {
+    #[cfg(test)]
+    {
+        let triggered = REGISTRY_FAILPOINT.with(|current| {
+            if current.get() == FAILPOINT_AFTER_REGISTER_RENAME {
+                current.set(FAILPOINT_NONE);
+                true
+            } else {
+                false
+            }
+        });
+        if triggered {
+            return Err(std::io::Error::other(
+                "injected failure after registration rename",
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn fail_after_lifecycle_link() -> std::io::Result<()> {
+    #[cfg(test)]
+    {
+        let triggered = REGISTRY_FAILPOINT.with(|current| {
+            if current.get() == FAILPOINT_AFTER_LIFECYCLE_LINK {
+                current.set(FAILPOINT_NONE);
+                true
+            } else {
+                false
+            }
+        });
+        if triggered {
+            return Err(std::io::Error::other(
+                "injected failure after lifecycle hard link",
+            ));
+        }
+    }
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -567,13 +716,12 @@ fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
 }
 
 #[cfg(unix)]
-fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
-    Ok(())
+fn sync_directory(path: &Path) -> std::io::Result<()> {
+    File::open(path)?.sync_all()
 }
 
 #[cfg(not(unix))]
-fn sync_directory(_path: &Path) -> Result<(), FleetRegistryError> {
+fn sync_directory(_path: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
@@ -584,3 +732,7 @@ mod tests;
 #[cfg(test)]
 #[path = "registry_isolation_tests.rs"]
 mod isolation_tests;
+
+#[cfg(test)]
+#[path = "registry_coordination_tests.rs"]
+mod coordination_tests;

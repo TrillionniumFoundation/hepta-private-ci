@@ -46,6 +46,12 @@ pub enum FleetRegistryError {
         current: AgentLifecycle,
         requested: AgentLifecycle,
     },
+    #[error("indeterminate fleet commit during {operation} for {recovery_key}: {detail}")]
+    IndeterminateCommit {
+        operation: &'static str,
+        recovery_key: String,
+        detail: String,
+    },
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("agent manifest encoding failed: {0}")]

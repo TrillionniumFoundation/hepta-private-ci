@@ -2,8 +2,6 @@
 //!
 //! A vector carries an explicit axis mask. A requirement is compatible with a
 //! capacity only when every required axis is supported and every amount fits.
-//! Zero on a supported axis is meaningful; zero on an unsupported axis is
-//! rejected. The semantic digest binds the schema, mask, units and all values.
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -93,7 +91,7 @@ pub enum ResourceRoundingV1 {
     Exact,
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ResourceVectorV1 {
     pub schema_version: u32,
@@ -104,6 +102,21 @@ pub struct ResourceVectorV1 {
     pub concurrent_turns: u64,
     pub tool_processes: u64,
     pub turn_queue_slots: u64,
+}
+
+impl Default for ResourceVectorV1 {
+    fn default() -> Self {
+        Self {
+            schema_version: RESOURCE_VECTOR_SCHEMA_VERSION,
+            supported_axes: 0,
+            cpu_millis: 0,
+            memory_bytes: 0,
+            accelerator_millis: 0,
+            concurrent_turns: 0,
+            tool_processes: 0,
+            turn_queue_slots: 0,
+        }
+    }
 }
 
 impl ResourceVectorV1 {
