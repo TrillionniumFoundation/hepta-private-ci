@@ -12,7 +12,7 @@ permissions:
 jobs:
   source-audit:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -24,6 +24,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
           mkdir -p "$RUNNER_TEMP/retrieval-source-audit"
           git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source-audit/source.tar.gz"
           git bundle create "$RUNNER_TEMP/retrieval-source-audit/source.bundle" HEAD
@@ -36,18 +37,30 @@ jobs:
           retention-days: 7
           compression-level: 0
           if-no-files-found: error
-      - name: Export repository-pinned offline compiler separately from source
+      - name: Export locked dependency source inputs for offline native verification
+        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
-          mkdir -p "$RUNNER_TEMP/retrieval-compiler"
-          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/retrieval-compiler/compiler.tar.gz" .
-          (cd "$RUNNER_TEMP/retrieval-compiler" && sha256sum compiler.tar.gz > SHA256SUMS)
+          cargo fetch --locked
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/retrieval-cargo-inputs"
+          cargo_home="${CARGO_HOME:-$HOME/.cargo}"
+          # Only public dependency source/cache/index data, never credentials,
+          # config, tokens, executables, build outputs or runtime databases.
+          roots=()
+          for dir in registry/cache registry/index registry/src git/db git/checkouts; do
+            if test -d "$cargo_home/$dir"; then roots+=("$dir"); fi
+          done
+          test "${#roots[@]}" -gt 0
+          tar -C "$cargo_home" -czf "$RUNNER_TEMP/retrieval-cargo-inputs/cargo-inputs.tar.gz" "${roots[@]}"
+          cp Cargo.lock "$RUNNER_TEMP/retrieval-cargo-inputs/Cargo.lock"
+          printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/retrieval-cargo-inputs/identity.txt"
+          (cd "$RUNNER_TEMP/retrieval-cargo-inputs" && sha256sum cargo-inputs.tar.gz Cargo.lock identity.txt > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: memory-retrieval-compiler-${{ github.sha }}
-          path: ${{ runner.temp }}/retrieval-compiler/
+          name: memory-retrieval-cargo-inputs-${{ github.sha }}
+          path: ${{ runner.temp }}/retrieval-cargo-inputs/
           retention-days: 7
           compression-level: 0
           if-no-files-found: error
