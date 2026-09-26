@@ -43,6 +43,7 @@ COMMANDS = (
     "cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory "
     "-p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check",
     "cargo test -p codex-hepta-memory-federation --lib",
+    "cargo test -p codex-hepta-memory-federation --features legacy-v1 --lib",
     "cargo test -p codex-hepta-memory --lib cognitive_runtime_tests",
     "cargo test -p codex-hepta-memory --lib cognitive_federation_tests",
     "cargo test -p codex-hepta-memory-extension --lib cognitive::federation",

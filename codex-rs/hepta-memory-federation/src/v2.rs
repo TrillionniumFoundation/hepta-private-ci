@@ -174,6 +174,14 @@ impl FederatedEvidenceItemV2 {
     }
 }
 
+/// Completeness of one authenticated peer observation.
+///
+/// `Complete` means the peer proved a terminal non-empty result within the
+/// requested bound without known omission. `Partial` means coverage cannot be
+/// proven exhaustive, including an exact top-K ceiling, source-side omission,
+/// truncation, or a post-I/O authority invalidation. `Empty` is a terminal,
+/// valid zero-result observation at the bound frontier. `Indeterminate` has no
+/// admissible terminal observation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FederatedCompletenessV2 {
     Complete,
@@ -438,6 +446,8 @@ pub struct FederatedCoverageV2 {
     pub requested_peers: u32,
     pub completed_peers: u32,
     pub failed_peers: u32,
+    /// Terminal peer observations that cannot prove complete coverage.
+    pub partial_peers: u32,
     pub truncated_peers: u32,
     pub omitted_peer_candidates: u32,
     pub truncated_items: u32,
@@ -471,6 +481,7 @@ impl FederatedResultV2 {
         }
         if self.coverage.requested_peers != 1
             || u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers) != 1
+            || self.coverage.partial_peers > self.coverage.completed_peers
             || self.coverage.truncated_peers != 0
             || self.coverage.omitted_peer_candidates != 0
             || self.coverage.failures.total() != u64::from(self.coverage.failed_peers)
@@ -490,11 +501,17 @@ impl FederatedResultV2 {
                 || self.remote_response_digest.is_some()
                 || self.authority_observation_digest.is_some()
                 || self.coverage.failed_peers != 1
+                || self.coverage.partial_peers != 0
                 || self.coverage.truncated_items != 0
             {
                 return Err(FederationV2Error::InvalidCompleteness);
             }
         } else {
+            if self.coverage.partial_peers
+                != u32::from(matches!(self.completeness, FederatedCompletenessV2::Partial))
+            {
+                return Err(FederationV2Error::InvalidCompleteness);
+            }
             if self.observed_frontier.is_none()
                 || self.remote_response_digest.is_none()
                 || self.authority_observation_digest.is_none()
@@ -559,6 +576,7 @@ impl FederatedResultV2 {
         push_u64(&mut bytes, u64::from(self.coverage.requested_peers));
         push_u64(&mut bytes, u64::from(self.coverage.completed_peers));
         push_u64(&mut bytes, u64::from(self.coverage.failed_peers));
+        push_u64(&mut bytes, u64::from(self.coverage.partial_peers));
         push_u64(&mut bytes, u64::from(self.coverage.truncated_peers));
         push_u64(&mut bytes, u64::from(self.coverage.omitted_peer_candidates));
         push_u64(&mut bytes, u64::from(self.coverage.truncated_items));
@@ -650,6 +668,7 @@ where
                     requested_peers: 1,
                     completed_peers: 0,
                     failed_peers: 1,
+                    partial_peers: 0,
                     truncated_peers: 0,
                     omitted_peer_candidates: 0,
                     truncated_items: 0,
@@ -746,6 +765,10 @@ where
                     requested_peers: 1,
                     completed_peers: 1,
                     failed_peers: 0,
+                    partial_peers: u32::from(matches!(
+                        completeness,
+                        FederatedCompletenessV2::Partial
+                    )),
                     truncated_peers: 0,
                     omitted_peer_candidates: 0,
                     truncated_items: u32::try_from(truncated_items).unwrap_or(u32::MAX),

@@ -6,6 +6,7 @@ use tempfile::TempDir;
 use crate::CognitiveRuntime;
 use crate::CognitiveStore;
 use crate::CognitiveUnavailableReason;
+use crate::MemoryFederationHostProfile;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 
@@ -71,8 +72,29 @@ async fn federated_identity_includes_consumer_enrollment_and_omission_coverage()
         consumer_agent_id: consumer,
         owner_layouts: Arc::new(owners),
         omitted_owner_candidates: 1,
+        host_profile: MemoryFederationHostProfile::default(),
     };
     assert_ne!(installed, changed_coverage);
+    let constrained = MemoryFederationHostProfile::try_new(
+        std::time::Duration::from_millis(250),
+        2,
+        1,
+        1,
+        1,
+        1,
+    )
+    .expect("profile");
+    assert_ne!(
+        installed,
+        CognitiveRuntime::Available(Arc::clone(
+            installed.available_store().expect("store")
+        ))
+        .with_federation_sources_profile(
+            agent_id(1),
+            vec![layout(&temp, &agent_id(2)), layout(&temp, &agent_id(3))],
+            constrained,
+        )
+    );
 }
 
 #[test]
@@ -86,4 +108,61 @@ fn unavailable_reasons_are_not_collapsed_into_absence() {
         unavailable,
         CognitiveRuntime::Unavailable(CognitiveUnavailableReason::CorruptStore)
     );
+}
+
+
+#[test]
+fn federation_host_profile_rejects_zero_and_architecture_widening() {
+    use std::time::Duration;
+
+    assert!(MemoryFederationHostProfile::try_new(Duration::ZERO, 1, 1, 1, 1, 1).is_err());
+    assert!(MemoryFederationHostProfile::try_new(
+        Duration::from_nanos(1),
+        1,
+        1,
+        1,
+        1,
+        1,
+    )
+    .is_err());
+    assert!(MemoryFederationHostProfile::try_new(
+        crate::MAX_PRODUCT_FEDERATION_TOTAL_BUDGET + Duration::from_millis(1),
+        1,
+        1,
+        1,
+        1,
+        1,
+    )
+    .is_err());
+    assert!(MemoryFederationHostProfile::try_new(
+        Duration::from_millis(1),
+        crate::MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS + 1,
+        1,
+        1,
+        1,
+        1,
+    )
+    .is_err());
+    assert!(MemoryFederationHostProfile::try_new(
+        Duration::from_millis(1),
+        1,
+        1,
+        2,
+        1,
+        1,
+    )
+    .is_err());
+
+    let constrained = MemoryFederationHostProfile::try_new(
+        Duration::from_millis(250),
+        4,
+        2,
+        2,
+        2,
+        2,
+    )
+    .expect("bounded profile");
+    assert_eq!(constrained.total_budget(), Duration::from_millis(250));
+    assert_eq!(constrained.max_owner_candidates(), 4);
+    assert_eq!(constrained.max_admitted_peers(), 2);
 }

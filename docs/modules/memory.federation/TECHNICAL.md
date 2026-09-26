@@ -320,3 +320,34 @@ The bootstrap source-location obligation for `memory.federation` is implemented 
 - `codex-rs/hepta-memory-federation`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 14. Product host profile and partial-degradation boundary
+
+`AvailableFederatedV2` now carries an immutable `MemoryFederationHostProfile`.
+The product caller can supply the validated profile explicitly through `with_federation_sources_profile`. Agentd currently composes the bounded default profile; external host configuration is not claimed until that separate host-wiring change is reviewed and qualified.
+
+Discovery, admitted peer attempts and owner/capability revalidation use separate
+bounded streaming concurrency. One unavailable owner contributes typed failed
+coverage during retrieval and does not erase evidence from other owners.
+Revalidation likewise returns owner-local `Unavailable` or `TimedOut` stale
+statuses instead of aborting unrelated groups.
+
+This partial degradation stops at the physical-send boundary. A prepared
+attachment may contain only the bindings selected from successful peers, and
+the final-use guard still requires every one of those exact bindings to be
+`Current`. It never silently deletes a stale binding from an already approved
+payload because doing so would change the content and source-binding digests.
+
+Completeness and truncation are distinct:
+
+- `Empty` is a valid terminal zero-result observation;
+- `Complete` is a non-empty observation below the requested top-K ceiling with
+  no known omission;
+- `Partial` includes an exact top-K ceiling, source-side incomplete coverage,
+  post-I/O invalidation, or known truncation;
+- `partial_peers` counts terminal peers that cannot prove complete coverage;
+- `truncated_items` counts items known to have been dropped by a bound.
+
+The legacy V1 receipt API is no longer in the default crate surface. It is
+available only through the explicit `legacy-v1` Cargo feature for migrations
+and regression tests; product composition remains V2-only.

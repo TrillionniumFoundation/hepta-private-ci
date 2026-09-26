@@ -208,6 +208,8 @@ pub enum FederationRevalidationDrift {
     Consumer,
     Scope,
     Memory,
+    Unavailable,
+    TimedOut,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]

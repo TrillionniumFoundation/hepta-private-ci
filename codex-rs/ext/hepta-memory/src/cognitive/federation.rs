@@ -52,7 +52,7 @@ use combined_digest_table::intern_combined_digests;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 3;
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 4;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
 
@@ -70,6 +70,7 @@ struct FederatedAttachmentCoverage {
     requested_peers: u32,
     completed_peers: u32,
     failed_peers: u32,
+    partial_peers: u32,
     truncated_peers: u32,
     omitted_peer_candidates: u32,
     truncated_items: u32,
@@ -82,6 +83,7 @@ impl From<&FederatedCoverageV2> for FederatedAttachmentCoverage {
             requested_peers: coverage.requested_peers,
             completed_peers: coverage.completed_peers,
             failed_peers: coverage.failed_peers,
+            partial_peers: coverage.partial_peers,
             truncated_peers: coverage.truncated_peers,
             omitted_peer_candidates: coverage.omitted_peer_candidates,
             truncated_items: coverage.truncated_items,
