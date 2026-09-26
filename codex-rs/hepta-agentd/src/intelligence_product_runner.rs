@@ -2,6 +2,19 @@
 
 use super::*;
 
+struct AgentdIntelligenceWorkerV1<T> {
+    handle: tokio::task::JoinHandle<T>,
+    timed_out: Arc<std::sync::atomic::AtomicBool>,
+    finished: Arc<std::sync::atomic::AtomicBool>,
+}
+
+impl<T> AgentdIntelligenceWorkerV1<T> {
+    fn mark_timed_out(&self) {
+        self.timed_out
+            .store(true, std::sync::atomic::Ordering::Release);
+    }
+}
+
 impl AgentdIntelligenceProductRunnerV1 {
     pub fn new(
         authority_file: PathBuf,
@@ -16,12 +29,14 @@ impl AgentdIntelligenceProductRunnerV1 {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
         }
         Ok(Self {
-            worker_slots: std::sync::Arc::new(tokio::sync::Semaphore::new(
-                MAX_CANONICAL_OWNER_WORKERS,
-            )),
+            worker_slots: Arc::new(tokio::sync::Semaphore::new(MAX_CANONICAL_OWNER_WORKERS)),
             authority_file,
             authority_verifier,
             evaluation_trust: None,
+            telemetry: Arc::new(crate::AgentdIntelligenceTelemetryV1::new(
+                MAX_CANONICAL_OWNER_WORKERS,
+            )),
+            hard_timeout_process_exit_grace: None,
         })
     }
 
@@ -34,28 +49,124 @@ impl AgentdIntelligenceProductRunnerV1 {
         if self.evaluation_trust.is_some() {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
         }
-        self.evaluation_trust = Some(std::sync::Arc::new(trust));
+        self.evaluation_trust = Some(Arc::new(trust));
         Ok(self)
+    }
+
+    /// Explicit production isolation policy for synchronous owner code that
+    /// cannot cooperatively cancel. If a timed-out blocking worker is still
+    /// alive after this grace, Agentd exits with a dedicated software-error code
+    /// and the Supervisor recovers a fresh fenced process generation. The policy
+    /// is opt-in so library tests and compatibility profiles never terminate the
+    /// embedding process unexpectedly.
+    pub fn with_hard_timeout_process_exit(
+        mut self,
+        grace: Duration,
+    ) -> Result<Self, AgentdIntelligenceProductError> {
+        if grace.is_zero() || grace > Duration::from_secs(300) {
+            return Err(AgentdIntelligenceProductError::InvalidWorkerPolicy);
+        }
+        self.hard_timeout_process_exit_grace = Some(grace);
+        Ok(self)
+    }
+
+    #[must_use]
+    pub fn telemetry(&self) -> Arc<crate::AgentdIntelligenceTelemetryV1> {
+        Arc::clone(&self.telemetry)
+    }
+
+    #[must_use]
+    pub fn capability_profile_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.agentd.intelligence-capability-profile.v1\0".to_vec();
+        bytes.extend_from_slice(self.authority_file.to_string_lossy().as_bytes());
+        bytes.extend_from_slice(self.authority_verifier.signer_id.as_bytes());
+        bytes.extend_from_slice(&self.authority_verifier.verifying_key);
+        bytes.extend_from_slice(&(MAX_CANONICAL_OWNER_WORKERS as u64).to_be_bytes());
+        let grace_ms = self
+            .hard_timeout_process_exit_grace
+            .map(|value| u64::try_from(value.as_millis()).unwrap_or(u64::MAX))
+            .unwrap_or(0);
+        bytes.extend_from_slice(&grace_ms.to_be_bytes());
+        match self.evaluation_trust.as_ref() {
+            Some(trust) => {
+                bytes.push(1);
+                bytes.extend_from_slice(trust.distribution_digest().as_array());
+                bytes.extend_from_slice(&trust.generation().to_be_bytes());
+            }
+            None => bytes.push(0),
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
+    #[must_use]
+    pub const fn hard_timeout_process_exit_enabled(&self) -> bool {
+        self.hard_timeout_process_exit_grace.is_some()
     }
 
     // The permit belongs to the worker, not the request future. Aborting a
     // running spawn_blocking task cannot stop its computation; releasing its
     // permit on request timeout would allow unbounded abandoned work.
-    pub(super) fn spawn_owner_work<F, T>(
+    fn spawn_owner_work<F, T>(
         &self,
         work: F,
-    ) -> Result<tokio::task::JoinHandle<T>, AgentdIntelligenceProductError>
+    ) -> Result<AgentdIntelligenceWorkerV1<T>, AgentdIntelligenceProductError>
     where
         F: FnOnce() -> T + Send + 'static,
         T: Send + 'static,
     {
-        let permit = std::sync::Arc::clone(&self.worker_slots)
-            .try_acquire_owned()
-            .map_err(|_| AgentdIntelligenceProductError::Busy)?;
-        Ok(tokio::task::spawn_blocking(move || {
+        let permit = match Arc::clone(&self.worker_slots).try_acquire_owned() {
+            Ok(permit) => permit,
+            Err(_) => {
+                self.telemetry.record_busy();
+                return Err(AgentdIntelligenceProductError::Busy);
+            }
+        };
+        let guard = self.telemetry.worker_started();
+        let timed_out = guard.timed_out_flag();
+        let finished = guard.finished_flag();
+        let handle = tokio::task::spawn_blocking(move || {
             let _permit = permit;
+            let _guard = guard;
             work()
-        }))
+        });
+        Ok(AgentdIntelligenceWorkerV1 {
+            handle,
+            timed_out,
+            finished,
+        })
+    }
+
+    fn arm_hard_timeout_exit(&self, finished: Arc<std::sync::atomic::AtomicBool>) {
+        let Some(grace) = self.hard_timeout_process_exit_grace else {
+            return;
+        };
+        let telemetry = Arc::clone(&self.telemetry);
+        tokio::spawn(async move {
+            tokio::time::sleep(grace).await;
+            if !finished.load(std::sync::atomic::Ordering::Acquire) {
+                telemetry.record_hard_timeout_trip();
+                // EX_SOFTWARE. The process generation is fenced by Supervisor
+                // recovery; no in-process authority survives this boundary.
+                std::process::exit(70);
+            }
+        });
+    }
+
+    fn record_canonical_error(&self, error: &CanonicalIntelligenceError) {
+        match error {
+            CanonicalIntelligenceError::FreshnessUnavailable(_)
+            | CanonicalIntelligenceError::StaleOwner(_)
+            | CanonicalIntelligenceError::KeyDrift(_)
+            | CanonicalIntelligenceError::AuthorityEpochDrift(_)
+            | CanonicalIntelligenceError::RevocationFrontierDrift(_) => {
+                self.telemetry.record_currentness_rejection();
+            }
+            CanonicalIntelligenceError::PortFailure { stage, class, .. } => {
+                self.telemetry.record_stage_failure(*stage, *class);
+                self.telemetry.record_canonical_rejection();
+            }
+            _ => self.telemetry.record_canonical_rejection(),
+        }
     }
 
     pub async fn prepare(
@@ -77,38 +188,55 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let candidate_ids = request
-            .legal_candidates
-            .candidates
-            .iter()
-            .map(|candidate| candidate.candidate_id.clone())
-            .collect::<Vec<_>>();
-        let intuition_ids = inputs
+        let Some(run_identity) = inputs.run_identity.take() else {
+            self.telemetry.record_run_identity_rejection();
+            return Err(AgentdIntelligenceProductError::MissingRunIdentity);
+        };
+        if run_identity
+            .validate_process_binding(&composition.agent_id, composition.supervisor_generation)
+            .is_err()
+            || run_identity.validate_request(&request).is_err()
+        {
+            self.telemetry.record_run_identity_rejection();
+            return Err(AgentdIntelligenceProductError::RunIdentityMismatch);
+        }
+
+        let candidate_ids = match canonical_candidate_ids_v1(&request.legal_candidates) {
+            Ok(value) => value,
+            Err(error) => {
+                self.record_canonical_error(&error);
+                return Err(AgentdIntelligenceProductError::Canonical(error));
+            }
+        };
+        let mut intuition_ids = inputs
             .intuition_request
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
+        intuition_ids.sort();
         if candidate_ids != intuition_ids {
+            self.telemetry.record_canonical_rejection();
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
-        // Freeze the identity of the existing owner, never a new coordinator
-        // or a caller-selected body/model generation. Agentd validates this
-        // fence again at the actual admission and attachment boundary.
-        let generation = composition.agentd_generation;
-        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
+        let request_for_validation = request.clone();
+        let total_timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
-        let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
-        let deadline_ms = started_ms
-            .checked_add(timeout_ms.max(1))
-            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        let remaining_ms = match run_identity
+            .deadline_ms
+            .checked_sub(started_ms)
+            .filter(|remaining| *remaining != 0)
+        {
+            Some(value) => value,
+            None => {
+                self.telemetry.record_run_identity_rejection();
+                return Err(AgentdIntelligenceProductError::RunIdentityMismatch);
+            }
+        };
+        let remaining_micros = remaining_ms.saturating_mul(1_000);
+        let timeout_micros = total_timeout_micros.min(remaining_micros);
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
         let evaluation_session = match inputs.signed_evaluation.take() {
@@ -118,63 +246,95 @@ impl AgentdIntelligenceProductRunnerV1 {
                     .evaluation_trust
                     .as_ref()
                     .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let mut oracle = FileBackedFreshnessOracleV1::new(
+                let mut oracle = FileBackedFreshnessOracleV1::new_observed(
                     authority_file.clone(),
                     authority_verifier.clone(),
+                    Arc::clone(&self.telemetry),
                 );
                 let owner_id = StableId::new("learning.eval")
                     .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let current_owner = oracle
-                    .current(&owner_id)
-                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+                let current_owner = match oracle.current(&owner_id) {
+                    Ok(value) => value,
+                    Err(error) => {
+                        self.record_canonical_error(&error);
+                        return Err(AgentdIntelligenceProductError::Canonical(error));
+                    }
+                };
                 Some(AgentdEvaluationSessionV1 {
                     run_id: request.run_id.clone(),
                     current_owner,
-                    trust: std::sync::Arc::clone(trust),
+                    trust: Arc::clone(trust),
                     signed,
                 })
             }
         };
+        let worker_telemetry = Arc::clone(&self.telemetry);
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
-            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
+            let mut ports =
+                AgentdOwnerPortsV1::new(inputs, evaluation_session, Arc::clone(&worker_telemetry));
+            let mut oracle = FileBackedFreshnessOracleV1::new_observed(
+                authority_file,
+                authority_verifier,
+                worker_telemetry,
+            );
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;
-        let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
-            .await
-            .map_err(|_| {
-                worker.abort();
-                AgentdIntelligenceProductError::TimedOut
-            })?
-            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
-            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let joined = match timeout(Duration::from_micros(timeout_micros), &mut worker.handle).await
+        {
+            Ok(value) => value,
+            Err(_) => {
+                worker.mark_timed_out();
+                worker.handle.abort();
+                self.telemetry.record_request_timeout();
+                self.arm_hard_timeout_exit(Arc::clone(&worker.finished));
+                return Err(AgentdIntelligenceProductError::TimedOut);
+            }
+        };
+        let canonical = match joined {
+            Ok(value) => value,
+            Err(_) => {
+                self.telemetry.record_worker_crash();
+                return Err(AgentdIntelligenceProductError::WorkerCrashed);
+            }
+        };
+        let outcome = match canonical {
+            Ok(value) => value,
+            Err(error) => {
+                self.record_canonical_error(&error);
+                return Err(AgentdIntelligenceProductError::Canonical(error));
+            }
+        };
+        if let Err(error) = validate_canonical_outcome_v1(&request_for_validation, &outcome) {
+            self.record_canonical_error(&error);
+            return Err(AgentdIntelligenceProductError::Canonical(error));
+        }
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
-                let mut oracle = FileBackedFreshnessOracleV1::new(
+                let mut oracle = FileBackedFreshnessOracleV1::new_observed(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),
+                    Arc::clone(&self.telemetry),
                 );
-                validate_current_snapshot(&snapshot, &mut oracle)
-                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+                if let Err(error) = validate_current_snapshot(&snapshot, &mut oracle) {
+                    self.record_canonical_error(&error);
+                    return Err(AgentdIntelligenceProductError::Canonical(error));
+                }
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
+                bytes.extend_from_slice(run_identity.request_digest.as_array());
                 let dispatch_proposal_digest = Digest32::of_bytes(&bytes);
-                let mut body = b"hepta.agentd.intelligence-body.v1\0".to_vec();
-                body.extend_from_slice(snapshot.digest().as_array());
-                body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
-                let body_digest = Digest32::of_bytes(&body);
                 let run_snapshot = crate::AgentRunSnapshot {
-                    run_id: envelope.run_id.to_string(),
-                    request_digest: envelope.trace_digest.to_string(),
-                    objective_digest: envelope.objective_digest.to_string(),
-                    body_digest: body_digest.to_string(),
-                    artifact_set_digest: snapshot.digest().to_string(),
-                    authority_epoch: snapshot.authority_epoch(),
-                    generation,
-                    fence_digest,
-                    deadline_ms,
+                    run_id: run_identity.run_id.to_string(),
+                    request_digest: run_identity.request_digest.to_string(),
+                    objective_digest: run_identity.objective_digest.to_string(),
+                    body_digest: run_identity.body_digest.to_string(),
+                    artifact_set_digest: run_identity.artifact_set_digest.to_string(),
+                    authority_epoch: run_identity.authority_epoch,
+                    generation: run_identity.generation,
+                    fence_digest: run_identity.fence_digest.to_string(),
+                    deadline_ms: run_identity.deadline_ms,
                 };
                 let context_attachment = crate::AgentContextAttachment {
                     run_id: run_snapshot.run_id.clone(),
@@ -189,6 +349,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     context_digest: envelope.context_receipt_digest.to_string(),
                     compilation_receipt_digest: envelope.envelope_digest.to_string(),
                 };
+                self.telemetry.record_ready();
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(
                     PreparedAgentdIntelligenceRunV1 {
                         envelope,
@@ -201,9 +362,13 @@ impl AgentdIntelligenceProductRunnerV1 {
                 ))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
+                self.telemetry.record_abstained();
                 Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
             }
-            CanonicalRunOutcomeV1::SlowPath(_) => Ok(AgentdIntelligenceProductOutcomeV1::SlowPath),
+            CanonicalRunOutcomeV1::SlowPath(_) => {
+                self.telemetry.record_slow_path();
+                Ok(AgentdIntelligenceProductOutcomeV1::SlowPath)
+            }
         }
     }
 
@@ -221,7 +386,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
                 let snapshot = prepared.run_snapshot();
                 let admitted = coordinator
-                    .start_run(
+                    .start_bound_run(
                         wall_clock_ms()?,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,

@@ -53,6 +53,7 @@ codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
 codex-hepta-intelligence = { path = "../hepta-intelligence" }
 codex-hepta-intuition = { path = "../hepta-intuition" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-operations = { workspace = true }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
 codex-hepta-contracts = { workspace = true }
@@ -100,7 +101,6 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }

@@ -2,7 +2,7 @@ fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.product".to_string(),
         supervisor_generation: 1,
-        agentd_generation: 1,
+        agentd_generation: 2,
         configuration_digest: digest("runtime-config").to_string(),
         ports_digest: digest("runtime-ports").to_string(),
         max_active_runs: 8,
@@ -572,7 +572,7 @@ fn fixture() -> Fixture {
     let snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
         objective_digest,
         authority_epoch: 11,
-        body_generation: generation(7),
+        body_generation: generation(2),
         configuration_digest: digest("agentd-intelligence-config"),
         revocation_frontier_digest: digest("revocation-frontier"),
         owner_bindings: owners.clone(),
@@ -612,6 +612,18 @@ fn fixture() -> Fixture {
         }],
     };
 
+    let run_identity = crate::AgentdIntelligenceRunIdentityV1 {
+        run_id: id("run:agentd-intelligence"),
+        request_digest: digest("durable-run-start-identity"),
+        objective_digest,
+        body_digest: digest("body"),
+        artifact_set_digest: digest("artifact-set"),
+        authority_epoch: 11,
+        generation: 2,
+        fence_digest: crate::objective_run_fence_digest_v1("agent.product", 1, 2),
+        deadline_ms: u64::MAX - 1,
+    };
+
     Fixture {
         request: CanonicalIntelligenceRunRequestV1 {
             run_id: id("run:agentd-intelligence"),
@@ -639,6 +651,7 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
+            run_identity: Some(run_identity),
             objective_envelope: envelope,
             objective_profile: profile,
             objective_context,

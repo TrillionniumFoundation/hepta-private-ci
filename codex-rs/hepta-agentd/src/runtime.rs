@@ -40,6 +40,7 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let intelligence_learning = config.take_intelligence_learning_runtime();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -115,6 +116,9 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+        if let Some(runner) = state.intelligence_product.get() {
+            runner.telemetry().set_provider_configured(true);
+        }
     }
     if let Some(current) = retrieval_context {
         state
@@ -249,6 +253,19 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(runtime) = intelligence_learning {
+            let (host, interval, max_batch) = runtime.into_parts();
+            tasks.spawn_required(
+                "intelligence-learning-reconciler",
+                crate::intelligence_learning_runtime::run_intelligence_learning_runtime_v1(
+                    host,
+                    Arc::clone(&state),
+                    interval,
+                    max_batch,
+                    cancellation.clone(),
+                ),
+            )?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",

@@ -93,6 +93,7 @@ pub struct AgentdConfig {
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    intelligence_learning_runtime: Option<crate::AgentdIntelligenceLearningRuntimeConfigV1>,
 }
 
 impl AgentdConfig {
@@ -215,6 +216,7 @@ impl AgentdConfig {
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
+            intelligence_learning_runtime: None,
         })
     }
 
@@ -532,6 +534,82 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Atomically install the canonical product runner and the host-owned source
+    /// that derives all seven owner inputs. This is the preferred product
+    /// composition API: a partial profile is never observable from the returned
+    /// configuration and therefore cannot accidentally advertise capability.
+    pub fn with_canonical_intelligence_profile<F>(
+        mut self,
+        runner: std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>,
+        factory: F,
+    ) -> Result<Self, AgentdError>
+    where
+        F: Fn(
+                &crate::AgentdIdentity,
+                &codex_hepta_learning_ledger::RunStartRecordV1,
+            ) -> Result<crate::AgentdIntelligenceInvocationV1, AgentdError>
+            + Send
+            + Sync
+            + 'static,
+    {
+        if self.intelligence_product_runner.is_some()
+            || self.intelligence_invocation_provider.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence profile already or partially configured".to_string(),
+            ));
+        }
+        runner.telemetry().set_provider_configured(true);
+        self.intelligence_product_runner = Some(runner);
+        self.intelligence_invocation_provider = Some(std::sync::Arc::new(
+            crate::HostOwnedAgentdIntelligenceInvocationProviderV1::new(factory),
+        ));
+        Ok(self)
+    }
+
+    /// Attach the daemon-owned scheduler for the already constructed
+    /// product learning host. The canonical profile must be complete first;
+    /// default process startup never manufactures a ledger writer or grant.
+    pub fn with_intelligence_learning_runtime(
+        mut self,
+        runtime: crate::AgentdIntelligenceLearningRuntimeConfigV1,
+    ) -> Result<Self, AgentdError> {
+        if self.intelligence_product_runner.is_none()
+            || self.intelligence_invocation_provider.is_none()
+        {
+            return Err(AgentdError::Invalid(
+                "intelligence learning runtime requires a complete canonical intelligence profile"
+                    .to_string(),
+            ));
+        }
+        if self.intelligence_learning_runtime.is_some() {
+            return Err(AgentdError::Invalid(
+                "intelligence learning runtime already configured".to_string(),
+            ));
+        }
+        let expected_generation =
+            self.identity
+                .spawn_generation
+                .checked_add(1)
+                .ok_or_else(|| {
+                    AgentdError::Invalid("Agentd running generation overflow".to_string())
+                })?;
+        if runtime.owner_generation() != expected_generation {
+            return Err(AgentdError::GenerationFenced(format!(
+                "intelligence learning runtime generation {} does not match expected Running generation {expected_generation}",
+                runtime.owner_generation()
+            )));
+        }
+        self.intelligence_learning_runtime = Some(runtime);
+        Ok(self)
+    }
+
+    pub(crate) fn take_intelligence_learning_runtime(
+        &mut self,
+    ) -> Option<crate::AgentdIntelligenceLearningRuntimeConfigV1> {
+        self.intelligence_learning_runtime.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

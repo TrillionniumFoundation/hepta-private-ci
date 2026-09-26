@@ -1,134 +1,2021 @@
 {
-  "schema": "hepta.intelligence-control-test-traceability.v1",
-  "schemaVersion": 1,
+  "schema": "hepta.intelligence-control-test-traceability.v2",
+  "schemaVersion": 2,
   "module": "intelligence.control",
+  "sourceIdentity": {
+    "policy": "ci_exact_head_artifact_v1",
+    "commit": "CI_EXACT_HEAD",
+    "lane": "tracked",
+    "executionStatus": "pending",
+    "commitMustEqualCheckoutHead": true
+  },
+  "generatedBy": "scripts/hepta-intelligence-control-status.py",
   "canonicalFacade": "prepare_intelligence_run",
-  "namedProductCaller": "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRuntimeHost::submit -> AgentdState::start_canonical_intelligence -> AgentdIntelligenceProductRunnerV1::prepare_for_composition (configured canonical profile; physical provider qualification separate)",
-  "compatibilitySurfaces": [
-    "compose",
-    "run_read_only_vertical",
-    "run_shadow_pipeline",
-    "run_shadow_pipeline_v2",
-    "run_evaluated_shadow_v1"
+  "namedProductRoute": "ObjectiveRuntimeHost::submit -> AgentdState::start_canonical_intelligence -> AgentdIntelligenceProductRunnerV1::prepare_for_composition -> AgentRunCoordinator::start_bound_run",
+  "requirements": [
+    {
+      "requirement": "generation_fence_single_source",
+      "sourceFacts": [
+        "durableRunIdentityPresent",
+        "singleFenceConstructorPresent",
+        "boundCoordinatorAdmissionPresent"
+      ],
+      "tests": [
+        "forged_generation_or_fence_is_rejected_before_mutation",
+        "running_generation_differs_from_spawn_and_is_admitted"
+      ]
+    },
+    {
+      "requirement": "canonical_candidate_membership_and_order",
+      "sourceFacts": [
+        "selectedMembershipInvariantPresent",
+        "rawCandidateOrderCanonicalized"
+      ],
+      "tests": [
+        "duplicate_candidate_is_rejected",
+        "malicious_selected_candidate_outside_legal_set_is_rejected",
+        "raw_candidate_order_does_not_change_canonical_identity",
+        "zero_propensity_selection_is_rejected"
+      ]
+    },
+    {
+      "requirement": "seven_owner_currentness_and_revocation",
+      "sourceFacts": [
+        "canonicalOutcomeFinalGatePresent"
+      ],
+      "tests": [
+        "automation_generation_change_during_open_remains_fail_closed",
+        "canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+        "final_use_revocation_race_fails_before_decision_publication",
+        "generation_change_during_open_is_fenced_before_serving",
+        "key_rotation_and_wrong_owner_receipt_fail_closed",
+        "missing_current_owner_fails_before_product_use",
+        "owner_generation_change_between_call_and_publication_fails_closed",
+        "revocation_after_compilation_blocks_attachment_preparation",
+        "revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+        "revocation_during_queue_request_prevents_success_ack",
+        "running_socket_uses_launch_bound_model_and_isolates_ranker_revocation"
+      ]
+    },
+    {
+      "requirement": "durable_decision_outcome_closure",
+      "sourceFacts": [
+        "formalDecisionWriterPresent",
+        "formalOutcomeWriterPresent",
+        "durableLearningOutboxPresent",
+        "restartReconciliationPresent",
+        "exactLearningEvidenceBindingPresent",
+        "exactDestinationEventObservationPresent",
+        "daemonLearningReconcilerPresent",
+        "physicalTerminalBindingPresent"
+      ],
+      "tests": [
+        "evidence_payload_rejects_role_substitution",
+        "exact_destination_observation_binds_controller_identity",
+        "learning_runtime_policy_is_bounded",
+        "operation_ids_are_kind_separated_and_stable",
+        "persisted_evidence_binding_rejects_signed_identity_substitution",
+        "persisted_principal_binding_rejects_key_and_credential_substitution",
+        "real_owner_product_path_records_decision_outcome_and_reopens"
+      ]
+    },
+    {
+      "requirement": "bounded_execution_observability",
+      "sourceFacts": [
+        "stageTelemetryPresent",
+        "workerSaturationTelemetryPresent",
+        "lateWorkerTelemetryPresent",
+        "runPhaseDwellTelemetryPresent",
+        "hardTimeoutProcessFencePresent"
+      ],
+      "tests": [
+        "run_phase_dwell_accumulates_exact_transitions",
+        "same_phase_idempotent_replay_does_not_reset_dwell",
+        "stage_failure_classes_remain_separate",
+        "total_budget_timeout_never_creates_a_dispatch_or_ledger_capability",
+        "worker_timeout_is_visible_after_late_completion"
+      ]
+    },
+    {
+      "requirement": "physical_turn_no_redispatch",
+      "sourceFacts": [
+        "physicalTurnBindingPresent"
+      ],
+      "tests": [
+        "agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "automation_reconcile_payload_uses_stable_client_identity",
+        "indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity",
+        "indeterminate_terminal_reopens_blocked_and_reconciles_monotonically",
+        "intelligence_handoff_is_committed_to_native_admission_identity",
+        "lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread",
+        "newer_generation_reopen_reconciles_applied_destination_without_redispatch"
+      ]
+    }
   ],
-  "operations": [
+  "ordinaryProductTests": [
     {
-      "operation": "build_legal_candidates",
-      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
-      ]
+      "name": "agentd_forces_explicit_cognitive_write_profile_state",
+      "sourcePath": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "prepare_intelligence_run",
-      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs::abstention_stops_before_context_and_evaluation",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
-      ]
+      "name": "agentd_forces_hepta_turn_recovery_on",
+      "sourcePath": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "decide_boundary",
-      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs::abstention_stops_before_context_and_evaluation"
-      ]
+      "name": "manifest_queue_capacity_reaches_app_server_runtime_options_exactly",
+      "sourcePath": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "assemble_context",
-      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
-      ]
+      "name": "abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "validate_current_snapshot",
-      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs::owner_generation_change_between_call_and_publication_fails_closed",
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs::key_rotation_and_wrong_owner_receipt_fail_closed",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::final_use_revocation_race_fails_before_decision_publication",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::missing_current_owner_fails_before_product_use"
-      ]
+      "name": "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "AgentdIntelligenceProductRunnerV1::prepare",
-      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
-      ],
-      "note": "Pure composition worker; a prepared envelope is not a physical-turn binding until prepare_and_admit crosses the Agentd run coordinator."
+      "name": "matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "AgentdIntelligenceProductRunnerV1::append_decision",
-      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::final_use_revocation_race_fails_before_decision_publication"
-      ]
+      "name": "ready_generation_and_owner_private_trust_are_required_before_admission",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "AgentdIntelligenceProductRunnerV1::append_outcome",
-      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
-      ]
+      "name": "revocation_during_queue_request_prevents_success_ack",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "AgentdIntelligenceProductRunnerV1::reconcile_ledger_append",
-      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
-      ],
-      "note": "The real-file test proves acknowledged reopen and exact idempotent replay. A host-induced fsync Indeterminate remains target fault-injection evidence, not synthesized success."
+      "name": "automation_reconcile_payload_uses_stable_client_identity",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "signed_currentness_manifest",
-      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::unsigned_currentness_substitution_fails_before_owner_use",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::final_use_revocation_race_fails_before_decision_publication",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::missing_current_owner_fails_before_product_use"
-      ]
+      "name": "dispatch_retry_budget_is_bounded_and_progress_resets_it",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "Agentd run lifecycle",
-      "source": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "protocol": "codex-rs/hepta-agent-protocol/src/lib.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
-        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity",
-        "codex-rs/hepta-agent-protocol/src/lib.rs::run_lifecycle_wire_is_strict_bounded_and_keeps_owner_time_out_of_request"
-      ]
+      "name": "queue_failures_after_admission_seam_are_never_dispatch_retries",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "AppServerModelDriver::run_intelligence",
-      "source": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "delegatedPhysicalBoundary": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "tests": [
-        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-        "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs"
-      ],
-      "note": "Source binds ContextAttached -> durable native dispatch -> Agentd Dispatched -> turn/start -> terminal/Indeterminate reconciliation. Exact-candidate real-process intelligence-bound App Server E2E remains pending."
+      "name": "host_dispatches_exact_wire_payload_once",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "Agentd daemon intelligence ingress",
-      "source": "not_implemented",
-      "tests": [],
-      "note": "AgentdState stores the configured runner, but no AgentdMethod/App Server ingress currently invokes prepare/append_decision/append_outcome. Capability advertisement remains disabled until this exists."
+      "name": "cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
     },
     {
-      "operation": "AgentdIntelligenceProductRunnerV1::prepare_and_admit",
-      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "tests": [
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
-      ],
-      "note": "Canonical composition and Agentd RunStart+ContextAttached are one public runner operation. This closes the manual lifecycle bypass in source tests but is not yet a daemon UDS/App Server ingress."
+      "name": "process_shutdown_does_not_turn_into_durable_timer_retirement",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "production_constructor_keeps_retired_timer_absent_after_reopen",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "production_constructor_never_resumes_a_draining_owner",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "production_constructor_rejects_mismatched_identity_before_spawn",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "production_service_retirement_drains_owner_then_unpublishes_only_automation",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "challenge_request_digest_must_match_signed_final_use_binding",
+      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "non_effect_calls_never_enter_final_use_authority",
+      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "learned_ranker_can_select_a_candidate_outside_legacy_top_four",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "learned_winner_survives_legacy_byte_cut_and_response_stays_bounded",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "oversized_learned_winner_does_not_consume_the_only_result_slot",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "changed_hnmf_context_before_publication_fails_closed",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "current_hnmf_context_filters_owner_candidates_before_delivery",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "final_use_revalidation_rejects_changed_hnmf_context",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "context_reads_real_owner_content_and_removes_committed_tombstones",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "encoded_read_budget_unavailability_is_local_not_store_failure",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "final_use_binds_complete_owner_cut_not_only_memory_snapshot",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "different_rpc_ids_create_distinct_assignment_records",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "indexed_historical_identity_does_not_accept_changed_assignment",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "same_rpc_and_observation_replays_idempotently",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "same_rpc_with_different_assignment_is_identity_conflict",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "cognitive_retrieval_process_profile_is_explicit_and_fail_closed",
+      "sourcePath": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "config_binds_exact_registered_agent_roots_and_workspace",
+      "sourcePath": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "bounded_buffer_reports_cursor_gap_and_resumes",
+      "sourcePath": "codex-rs/hepta-agentd/src/event_buffer.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "signed_use_rejects_context_snapshot_candidate_set_and_run_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "evidence_payload_rejects_role_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "exact_destination_observation_binds_controller_identity",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "operation_ids_are_kind_separated_and_stable",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "persisted_evidence_binding_rejects_signed_identity_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "persisted_principal_binding_rejects_key_and_credential_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "learning_runtime_policy_is_bounded",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "run_phase_dwell_accumulates_exact_transitions",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "same_phase_idempotent_replay_does_not_reset_dwell",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "stage_failure_classes_remain_separate",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "worker_timeout_is_visible_after_late_completion",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "signed_evaluation_completes_existing_owner_preparation_and_run_admission",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "signed_input_cannot_install_host_trust_or_change_actual_context",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "aborted_owner_work_retains_its_budget_until_computation_finishes",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "missing_current_owner_fails_before_product_use",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "total_budget_timeout_never_creates_a_dispatch_or_ledger_capability",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "unsigned_currentness_substitution_fails_before_owner_use",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "host_identity_and_owner_pins_fail_closed_before_policy_admission",
+      "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "forged_generation_or_fence_is_rejected_before_mutation",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "running_generation_differs_from_spawn_and_is_admitted",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "active_run_capacity_is_bound_by_runtime_composition",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "cancellation_preserves_the_dispatch_boundary_and_reason",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "drain_closes_admission_and_preserves_dispatch_uncertainty",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "freezes_the_complete_run_tuple_before_context_attachment",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "lifecycle_deadline_is_enforced_after_admission",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "operation_identity_is_idempotent_only_for_equal_semantics",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "recovery_rehydrates_only_an_indeterminate_non_redispatchable_run",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "revalidated_durable_explicit_abstain_never_enters_runtime_admission",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "agentd_neuron_owner_is_a_compiled_product_surface",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "_assert_digest_is_send",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_dispatch.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "durable_authentication_frontier_allows_only_exact_replay",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "legacy_record_without_protocol_identity_is_rejected_at_final_use",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "recovered_authentication_rejects_revoked_and_stale_owner_trust",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "runtime_consumes_compiled_record_but_not_explicit_abstain",
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "configured_host_create_is_terminal_and_reopen_is_idempotent",
+      "sourcePath": "codex-rs/hepta-agentd/src/operations_host_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "newer_generation_reopen_reconciles_applied_destination_without_redispatch",
+      "sourcePath": "codex-rs/hepta-agentd/src/operations_host_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "journal_never_discards_a_complete_invalid_frame",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "journal_preserves_committed_anchor_across_reopen_and_generation_rollover",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "journal_repairs_only_an_incomplete_crash_tail",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_evidence_policy_rejects_authenticated_wrong_owner",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_evidence_receipt_is_context_bound",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_evidence_rejects_context_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_evidence_rejects_parameter_signal_value_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_evidence_set_includes_mutation_policy_and_canonical_kinds",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "real_append_ack_crash_then_registry_rollback_is_rejected_on_restart",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "retained_external_anchor_blocks_rolled_back_registry_reopen",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "concrete_dataset_and_policy_adapters_bind_live_frontiers",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "descriptor_digest_rejects_byte_substitution",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "mutable_owner_hardlink_alias_is_rejected",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "runtime_queue_capacity_is_bounded",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "fail_directory_sync_after_rename_once",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "final_delivered_terminal_releases_staged_turn",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "indeterminate_terminal_reopens_blocked_and_reconciles_monotonically",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_remains_send_sync_with_fault_injection",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "staged_attachment_is_bound_to_exact_thread_and_turn",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "empty_or_oversized_images_never_produce_a_manifest_fallback",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_executable_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "implementation_changes_when_code_changes_without_manifest_change",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_executable_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "module_and_manifest_are_separate_from_shared_executable_identity",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_executable_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "process_observation_caches_actual_executable_bytes",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_executable_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "runtime_module_state_catalog_and_host_admit_the_same_explicit_classes",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_module_state_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "runtime_module_state_every_canonical_module_is_consumable_by_the_host",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_module_state_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "runtime_module_state_preserves_explicit_persistence_classes",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_module_state_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "runtime_module_state_rejects_unknown_and_substring_aliases",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_module_state_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "abi_bound_replacements_reuse_one_slot_and_reject_stale_retirement",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_abi_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "incompatible_abi_never_starts_factory_or_consumes_a_slot",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_abi_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "a_drain_timeout_does_not_free_the_slot_or_acknowledge_retirement",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_generation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "failed_retirement_callback_fences_host_without_releasing_identity",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_generation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "quarantined_failure_is_not_an_acknowledged_retirement",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_generation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "rejected_registration_never_invokes_factory_or_advances_fence",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_generation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "replacements_reuse_one_slot_even_at_full_identity_capacity",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_generation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "retired_legacy_name_cannot_bypass_its_single_use_contract",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_generation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "stale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_generation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "a_writer_fence_during_retirement_still_propagates",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "failed_drain_is_quarantine_not_retirement",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "forty_first_running_service_retires_without_stopping_other_services",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_retirement_rejection_or_panic_never_publishes_success",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "rejected_service_factory_is_never_invoked",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "retirement_cannot_stop_required_or_legacy_uncontracted_tasks",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "retirement_keeps_observing_unrelated_failures",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "retirement_timeout_never_acknowledges_unfinished_drain",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_retirement_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "sqlite_writer_rotates_256_times_without_consuming_new_service_identities",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_service_writer_rotation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "observed_required_failure_latches_stop_even_when_caller_handles_error",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_fence_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "rejected_or_panicking_retirement_callback_latches_host_failure",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_fence_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "retirement_timeout_does_not_masquerade_as_a_shared_fence",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_fence_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "retirement_writer_fence_cancels_siblings_and_blocks_fresh_names",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_fence_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "successful_optional_quarantine_does_not_latch_host_failure",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_fence_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "dropped_retirement_wait_does_not_erase_an_unacknowledged_abort",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "isolated_optional_failure_does_not_poison_healthy_host",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "late_owner_acknowledgement_after_timeout_preserves_clean_shutdown",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "observed_required_failure_cannot_become_cancelled_success",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "ordinary_host_abort_does_not_invent_a_retirement_request",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "rejected_quarantine_cannot_be_reclassified_as_normal_shutdown",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "rejected_retirement_remains_failed_after_cleanup",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "shutdown_listener_failure_is_latched_across_reentry",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "successful_optional_retirement_preserves_clean_host_outcome",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "timed_out_retirement_aborted_by_shutdown_remains_failed",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "admission_is_bounded_and_rejects_duplicate_or_invalid_names",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "cancelled_observation_keeps_completion_identity",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "cooperative_shutdown_precedes_forced_abort",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "forty_first_service_executes_and_failure_preserves_required_services",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "generation_fence_cannot_be_downgraded_to_optional_availability",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "optional_panic_preserves_registered_identity_and_quarantines_once",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "quarantine_panic_is_fatal_and_still_drains",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "quarantine_rejection_is_fatal_and_reaps_other_tasks",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "required_clean_exit_is_not_misreported_as_success",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "shutdown_grace_cannot_be_zero_or_unbounded",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "shutdown_listener_error_does_not_detach_live_tasks",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "automation_generation_change_during_open_remains_fail_closed",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "automation_owner_fence_still_terminates_the_runtime_monitor",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "automation_owner_mismatch_remains_fail_closed",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "compatibility_retrieval_mode_does_not_require_hnmf_context",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "duplicate_automation_attachment_does_not_replace_the_live_store",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "generation_change_during_open_is_fenced_before_serving",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "generation_monitor_honors_host_cancellation_during_readiness_probe",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "hnmf_required_retrieval_mode_fails_closed_without_current_context",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "product_write_profile_fails_closed_when_cognitive_store_is_unavailable",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "qualification_host_binds_one_local_turn_and_replays_exactly_once",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "qualification_prepare_takes_over_expired_registry_head_without_evidence",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "read_only_profile_preserves_degraded_cognitive_runtime_behavior",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "runtime_automation_store_failure_stops_only_the_scheduler_plane",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "stale_generation_is_fenced_before_cognitive_store_open",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "unavailable_automation_store_degrades_without_startup_failure",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "unavailable_cognitive_store_degrades_without_leaking_open_error",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "current_durable_run_start_requires_live_owner_trust",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "daemon_control_owns_the_run_lifecycle_and_advertises_it",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "missing_local_record_immediately_fences_the_serving_agent",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "serving_agent_survives_unrelated_registry_corruption",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "targeted_read_preserves_lifecycle_and_resource_fences",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "topology_anchor_store_preserves_fence_and_anchor",
+      "sourcePath": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart",
+      "sourcePath": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "connected_issuer_peer_uid_must_match_configured_owner",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "endpoint_denial_updates_head_and_old_head_cannot_roll_back",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "exact_signed_grant_becomes_one_entry_verified_token",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "forged_grant_never_reaches_effect_entry",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "payload_drift_is_rejected",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "revoked_lease_is_rejected",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "terminal_success_requires_exact_authority_binding",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "timeout_never_becomes_success",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "token_limit_is_enforced",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "unobserved_terminal_state_is_indeterminate",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "executes_authenticated_neuron_feature_tuple_from_loaded_manifest",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "loads_runs_and_unloads_exact_model_tuple",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "lost_driver_terminality_is_indeterminate",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "neuron_feature_path_rejects_payload_drift_and_driver_identity_drift",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "neuron_feature_worker_projects_exact_inference_control_receipt",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "rejects_changed_tokenizer_model_or_payload_tuple",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "install_final_revalidation_test_hook",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "pause_before_final_revalidation_for_test",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "actual_usage_is_bound_monotonic_and_survives_terminal_failure",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "in_progress_is_not_a_terminal_observation",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "late_completed_cannot_upgrade_cancelled_or_timed_out_boundary",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "only_the_bound_turn_can_complete_the_native_request",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "output_is_observed_bounded_and_never_predeclares_success",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_loss_stays_denied_after_interrupt_grace_observes_completed",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_timeout_and_terminal_first_selection_cannot_authorize_success",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "success_requires_both_matching_completion_and_final_ready_owner",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "intelligence_handoff_is_committed_to_native_admission_identity",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "malicious_selected_candidate_outside_legal_set_is_rejected",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "raw_candidate_order_does_not_change_canonical_identity",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "zero_propensity_selection_is_rejected",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "abstention_stops_before_context_and_evaluation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "key_rotation_and_wrong_owner_receipt_fail_closed",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "legal_candidate_set_rejects_replay_identity_with_duplicate_semantics",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "owner_generation_change_between_call_and_publication_fails_closed",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "absent_optional_capability_composes_without_neural_or_model_artifact",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "declaration_reordering_is_stable_but_replacement_changes_actual_plan",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "duplicate_unknown_and_wrong_owner_are_not_admitted",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "optional_absence_keeps_existing_selection_and_hard_veto_semantics",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "optional_add_remove_is_explicit_and_does_not_weaken_requirements",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "required_missing_and_fabricated_zero_artifact_reject",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "snapshot_binds_core_freshness_and_bounded_unique_requirements",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "canonical_candidate_limit_is_enforced",
+      "sourcePath": "codex-rs/hepta-intelligence/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "duplicate_candidate_is_rejected",
+      "sourcePath": "codex-rs/hepta-intelligence/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "hard_veto_is_never_overridden",
+      "sourcePath": "codex-rs/hepta-intelligence/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "highest_eligible_candidate_is_selected_without_effect_authority",
+      "sourcePath": "codex-rs/hepta-intelligence/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "maximum_candidate_receipt_is_canonical_and_digest_complete",
+      "sourcePath": "codex-rs/hepta-intelligence/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "no_eligible_candidate_abstains",
+      "sourcePath": "codex-rs/hepta-intelligence/src/lib_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "current_artifact_and_independent_evidence_compose_to_deny_all_admission",
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "withdrawal_frontier_change_invalidates_previously_admitted_artifact",
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "named_product_caller_runs_through_runtime_without_extra_authority",
+      "sourcePath": "codex-rs/hepta-intelligence/src/neuron_runtime_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "authenticated_objective_is_durable_before_product_receipt_returns",
+      "sourcePath": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "compiler_conflict_is_durably_published_without_runtime_snapshot",
+      "sourcePath": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "exact_product_retry_is_idempotent_and_semantic_drift_conflicts",
+      "sourcePath": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "credit_failure_preserves_outcome_for_exact_reconciliation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "product_path_records_outcome_correction_then_conserved_credit",
+      "sourcePath": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "run_episode_mismatch_rejects_before_any_outcome_append",
+      "sourcePath": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "full_shadow_path_is_ordered_and_authority_free",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "invalid_budget_fails_before_any_port_call",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "ledger_failure_overrides_advisory_decision",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "mixed_snapshot_rejects_before_next_stage",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "non_intuition_stage_cannot_report_an_advisory_decision",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "optional_neuron_outage_uses_bounded_fallback",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "persisted_receipt_rejects_dispatch_without_required_stages",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "persisted_receipt_rejects_trace_mutation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "raw_port_authority_widening_rejects_before_trusted_receipt",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "recomputed_digest_cannot_hide_a_missing_required_stage",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "required_objective_failure_is_terminal_and_receipted",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "slow_path_skips_context_and_dispatch_but_records_decision",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "trace_digest_is_deterministic_for_equal_port_receipts",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "absent_core_is_rejected_even_when_manifest_omits_its_requirement",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "abstention_does_not_dispatch_but_preserves_learning_stage",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "existing_stage_engine_runs_without_neural_or_model_artifacts",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "mixed_snapshot_receipt_still_fails_existing_engine_validation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "optional_add_remove_changes_routing_and_versioned_receipt",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "self_consistent_wrong_owner_is_rejected_before_any_stage_call",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "admission_payload_binds_current_frontiers_and_generator",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "product_writer_refuses_unanchored_nonempty_bootstrap",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "anchor_commit_failure_poison_writer_after_durable_append",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "durable_v2_evaluation_digest_binds_governed_admission_context",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "no_admissible_update_is_independently_attested_and_durably_recorded",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "product_path_rejects_generator_evaluator_controller_collision",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "product_path_rejects_observer_evaluator_controller_collision",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "product_path_rejects_tampered_frontier_witness",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "compiler_rejects_registry_and_context_model_drift",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "exercised_registry_payload_is_the_exact_context_attachment_input",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "materialization_drift_after_compilation_blocks_attachment_preparation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "revocation_after_compilation_blocks_attachment_preparation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "serialization_without_selected_prompt_bytes_fails_closed",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "payload_binds_every_caller_asserted_canary_fact",
+      "sourcePath": "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "authenticated_topology_path_verifies_three_roles_and_persists_governed_record",
+      "sourcePath": "codex-rs/hepta-intelligence/src/topology_product.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "candidate_outside_compiled_legal_actions_fails_closed",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "objective_soft_dimensions_must_bind_the_ndu_profile",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "omitted_cognitive_read_evidence_fails_closed",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "selected_objective_profile_digest_cannot_be_replaced",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "tampered_read_evidence_binding_fails_before_context_compilation",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "vertical_facade_selects_only_a_legal_objective_action_without_authority",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "vertical_receipt_is_stable_under_canonical_input_reordering",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    }
+  ],
+  "qualificationOnlyTests": [
+    {
+      "name": "final_use_revocation_race_fails_before_decision_publication",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "qualificationOnly": true,
+      "ignored": false
+    },
+    {
+      "name": "real_owner_product_path_records_decision_outcome_and_reopens",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "qualificationOnly": true,
+      "ignored": false
     }
   ],
   "claimBoundary": {
@@ -136,25 +2023,43 @@
     "exactHeadExecuted": false,
     "deterministicMergeExecuted": false,
     "targetHostQualified": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
+    "realProcessProviderE2E": false,
     "activation": false,
-    "release": false,
-    "productRouteSourceComposed": false,
-    "physicalTurnSourceBound": true,
-    "namedRunnerSourcePresent": true
+    "release": false
   },
-  "namedPhysicalCaller": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs::AppServerModelDriver::run_intelligence",
-  "faultCoverage": {
-    "staleOwner": "covered_source",
-    "wrongOwner": "covered_source",
-    "keyRotation": "covered_source",
-    "unsignedCurrentnessSubstitution": "covered_source",
-    "revocationRace": "covered_source",
-    "cognitionTimeout": "covered_source",
-    "ledgerIndeterminate": "in_memory_replay_object_present_process_loss_recovery_pending",
-    "turnStartLostAck": "source_reconciliation_present_real_process_e2e_pending",
-    "providerTerminalReconciliation": "source_present_real_process_e2e_pending",
-    "processRestart": "pending_daemon_routed_product_e2e_and_durable_pending_recovery"
+  "sourceFacts": {
+    "canonicalFacadePresent": true,
+    "canonicalCandidateDigestPresent": true,
+    "selectedMembershipInvariantPresent": true,
+    "rawCandidateOrderCanonicalized": true,
+    "maliciousSelectionTestPresent": true,
+    "durableRunIdentityPresent": true,
+    "singleFenceConstructorPresent": true,
+    "concreteProviderPresent": true,
+    "atomicProfileCompositionPresent": true,
+    "boundCoordinatorAdmissionPresent": true,
+    "spawnCurrentLifecycleTestPresent": true,
+    "preparedRunInheritsDurableIdentity": true,
+    "canonicalOutcomeFinalGatePresent": true,
+    "formalDecisionWriterPresent": true,
+    "formalOutcomeWriterPresent": true,
+    "durableLearningOutboxPresent": true,
+    "restartReconciliationPresent": true,
+    "exactLearningEvidenceBindingPresent": true,
+    "exactDestinationEventObservationPresent": true,
+    "daemonLearningReconcilerPresent": true,
+    "physicalTerminalBindingPresent": true,
+    "explicitLearningTerminalStatesPresent": true,
+    "stageTelemetryPresent": true,
+    "workerSaturationTelemetryPresent": true,
+    "lateWorkerTelemetryPresent": true,
+    "authorityEpochTelemetryPresent": true,
+    "runPhaseDwellTelemetryPresent": true,
+    "hardTimeoutProcessFencePresent": true,
+    "capabilityProfileDigestPresent": true,
+    "daemonObjectiveRoutePresent": true,
+    "physicalTurnBindingPresent": true,
+    "defaultBinaryCanonicalProfileComposed": false,
+    "capabilityAllOrNoneGuardPresent": true
   }
 }

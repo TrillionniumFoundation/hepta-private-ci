@@ -570,6 +570,23 @@ impl AgentdState {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
     }
 
+    pub(crate) fn record_intelligence_run_receipt(
+        &self,
+        receipt: &crate::RunReceipt,
+        initialize: bool,
+    ) {
+        let Some(runner) = self.intelligence_product.get() else {
+            return;
+        };
+        let telemetry = runner.telemetry();
+        if !initialize && !telemetry.tracks_run(&receipt.run_id) {
+            return;
+        }
+        if let Ok(now_ms) = unix_now_ms() {
+            telemetry.observe_run_receipt(receipt, now_ms);
+        }
+    }
+
     /// Prepare the exact durable Objective through the configured canonical
     /// seven-owner composition, then atomically freeze its run/context identity
     /// into the sole Agentd run coordinator. None is explicit compatibility
@@ -619,7 +636,7 @@ impl AgentdState {
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
                 let admitted = runs
-                    .start_run(
+                    .start_bound_run(
                         now_ms,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,
@@ -634,6 +651,7 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
+                runner.telemetry().observe_run_receipt(&admitted, now_ms);
                 let run_receipt = runs
                     .attach_context(
                         now_ms,
@@ -653,6 +671,7 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
+                runner.telemetry().observe_run_receipt(&run_receipt, now_ms);
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
                     run_receipt,
@@ -798,11 +817,12 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    crate::objective_run_fence_digest_v1(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
+    .to_string()
 }
 
 fn unix_now_ms() -> Result<u64, AgentdError> {
