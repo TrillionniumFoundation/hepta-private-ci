@@ -16,6 +16,7 @@ use crate::EvaluationAttemptCasStoreV1;
 use crate::EvaluationAttemptErrorV1;
 use crate::EvaluationAttemptJournalV1;
 use crate::EvaluationAttemptPhaseV1;
+use crate::FinalHoldoutCasStoreError;
 use crate::FinalHoldoutCasStoreV1;
 use crate::FinalHoldoutProviderV1;
 use crate::FencedHoldoutError;
@@ -210,9 +211,11 @@ fn holdout_commit_unknown(error: &ProductEvaluationError) -> bool {
     matches!(
         error,
         ProductEvaluationError::Holdout(
-            FencedHoldoutError::Indeterminate
-                | FencedHoldoutError::Conflict
-                | FencedHoldoutError::Poisoned
+            FencedHoldoutError::Poisoned
+                | FencedHoldoutError::Store(
+                    FinalHoldoutCasStoreError::Conflict
+                        | FinalHoldoutCasStoreError::Indeterminate
+                )
         )
     )
 }
