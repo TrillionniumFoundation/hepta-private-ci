@@ -28,13 +28,40 @@ jobs:
           persist-credentials: true
 
       - name: Apply runtime closure patch
-        run: python3 scripts/apply_memory_federation_runtime_closure.py
+        id: apply-runtime
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 scripts/apply_memory_federation_runtime_closure.py 2>&1 | tee /tmp/memory-federation-bootstrap.log
+
+      - name: Persist bootstrap failure diagnostics
+        if: steps.apply-runtime.outcome == 'failure'
+        run: |
+          set -euo pipefail
+          mkdir -p qualification/memory-federation
+          {
+            printf '%s\n' '# memory.federation runtime bootstrap failure'
+            printf '\n- source commit: `%s`\n' "$(git rev-parse HEAD)"
+            printf '\n```text\n'
+            cat /tmp/memory-federation-bootstrap.log
+            printf '\n```\n'
+          } > qualification/memory-federation/BOOTSTRAP_FAILURE.md
+          git config user.name "Hepta Memory Federation Automation"
+          git config user.email "hepta-memory-federation@users.noreply.github.com"
+          git add qualification/memory-federation/BOOTSTRAP_FAILURE.md
+          git commit -m "chore(memory-federation): retain bootstrap failure diagnostic
+
+          Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
+          git push origin HEAD:feat/memory-federation-production-closure-20260926
+          exit 1
 
       - name: Format changed Rust
+        if: steps.apply-runtime.outcome == 'success'
         working-directory: codex-rs
         run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-memory-extension
 
       - name: Validate patch shape
+        if: steps.apply-runtime.outcome == 'success'
         run: |
           set -euo pipefail
           python3 -m py_compile scripts/memory_federation_attestation.py
@@ -43,10 +70,12 @@ jobs:
           test -n "$(git status --porcelain)"
 
       - name: Commit generated source
+        if: steps.apply-runtime.outcome == 'success'
         run: |
           set -euo pipefail
           git rm .github/workflows/memory-federation-runtime-bootstrap.yml
           git rm scripts/apply_memory_federation_runtime_closure.py
+          git rm -f qualification/memory-federation/BOOTSTRAP_FAILURE.md || true
           git config user.name "Hepta Memory Federation Automation"
           git config user.email "hepta-memory-federation@users.noreply.github.com"
           git add -A
