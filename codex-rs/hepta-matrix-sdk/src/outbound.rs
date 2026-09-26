@@ -35,7 +35,7 @@ pub trait MatrixOutboundTransport: Send + Sync {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum MatrixTransportError {
-    #[error("Matrix transport failed transiently")]
+    #[error("Matrix transport failed transiently or its effect is unknown")]
     Retryable,
     #[error("Matrix transport rejected the outbound event permanently")]
     Permanent,
@@ -66,13 +66,18 @@ impl Default for OutboxDispatchConfig {
 
 impl OutboxDispatchConfig {
     fn is_valid(&self) -> bool {
-        self.lease_ms > 0
+        self.lease_ms > 1
             && self.retry_delay_ms > 0
             && self.max_retry_delay_ms >= self.retry_delay_ms
             && (1..=64).contains(&self.max_attempts)
             && (1..=256).contains(&self.claim_limit)
             && !self.idle_poll.is_zero()
             && self.idle_poll <= Duration::from_secs(5)
+    }
+
+    fn physical_send_deadline(&self) -> Duration {
+        // A network future is never allowed to outlive the durable claim lease.
+        Duration::from_millis(self.lease_ms.saturating_sub(1))
     }
 }
 
@@ -166,17 +171,14 @@ pub async fn dispatch_outbox_once<
             .authority()
             .claim(&signed, &request.binding)
             .map_err(|_| OutboxDispatchError::Authority)?;
-
-        // Enter the physical adapter under the exact live revocation fence.
-        // MatrixOutboundTransport::send is required to be lazy, so no external
-        // I/O occurs until the future is polled below.
-        let (send_future, frontier) = authorizer
-            .authority()
-            .with_verified_use_at_frontier(token, &request.binding, || transport.send(&record))
-            .map_err(|_| OutboxDispatchError::Authority)?;
-        if frontier.authority_epoch != signed.grant.authority_epoch {
+        let claimed_authority_epoch = token.claimed_authority_epoch();
+        let claimed_revocation_revision = token.claimed_revocation_revision();
+        if claimed_authority_epoch != signed.grant.authority_epoch {
             return Err(OutboxDispatchError::Authority);
         }
+
+        // The claim is durable before physical effect entry. No Matrix network
+        // future exists yet, so a crash here cannot cross the external boundary.
         let claimed_at_ms = system_time_ms()?;
         store
             .record_dispatch_authority_claim(
@@ -189,8 +191,8 @@ pub async fn dispatch_outbox_once<
                     matrix_user_id: request.matrix_user_id.clone(),
                     device_id: request.device_id.clone(),
                     session_generation: request.session_generation,
-                    authority_epoch: frontier.authority_epoch,
-                    revocation_revision: frontier.revision,
+                    authority_epoch: claimed_authority_epoch,
+                    revocation_revision: claimed_revocation_revision,
                     grant_id: signed.grant.grant_id.clone(),
                     request_digest: request.request_digest.clone(),
                     scope_digest: request.scope_digest.clone(),
@@ -203,10 +205,33 @@ pub async fn dispatch_outbox_once<
             .await
             .map_err(store_error)?;
 
-        // After final-use adapter entry, do not cancel the future: the external
-        // effect may already have crossed the boundary. Transport timeout and
-        // reconciliation semantics own its terminal/indeterminate result.
-        let result = send_future.await;
+        // Refresh after every asynchronous persistence boundary, then consume
+        // the exact-frontier token immediately before constructing/polling the
+        // lazy transport future. A changed or revoked head fails with zero
+        // Matrix network I/O and requires a fresh attempt/grant.
+        authorizer
+            .refresh_revocations()
+            .map_err(authority_error)?;
+        let entered = authorizer
+            .authority()
+            .enter_verified_use(token, &request.binding)
+            .map_err(|_| OutboxDispatchError::Authority)?;
+        if !entered.matches(&request.binding) {
+            return Err(OutboxDispatchError::Authority);
+        }
+
+        // Once final-use entry succeeds, cancellation or timeout means the
+        // external effect may have crossed the boundary. Preserve the stable
+        // transaction and reconcile; never manufacture terminal failure.
+        let result = match tokio::time::timeout(
+            config.physical_send_deadline(),
+            transport.send(&record),
+        )
+        .await
+        {
+            Ok(result) => result,
+            Err(_) => Err(MatrixTransportError::Retryable),
+        };
         match result {
             Ok(event_id) => {
                 let observed = store

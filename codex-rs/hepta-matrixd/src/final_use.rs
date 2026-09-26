@@ -106,12 +106,15 @@ impl MatrixFinalUseBroker {
                 .map_err(|_| MatrixAuthorityError::Unavailable)?;
         let current = self
             .authority
-            .frontier()
+            .revocation_head()
             .map_err(|_| MatrixAuthorityError::Unavailable)?;
         if head.authority_epoch == current.authority_epoch && head.revision == current.revision {
             return Ok(());
         }
-        if head.authority_epoch < current.authority_epoch || head.revision <= current.revision {
+        if head.authority_epoch < current.authority_epoch
+            || (head.authority_epoch == current.authority_epoch
+                && head.revision <= current.revision)
+        {
             return Err(MatrixAuthorityError::Rejected);
         }
         self.authority
@@ -189,6 +192,10 @@ impl MatrixOutboundAuthorizer for MatrixFinalUseBroker {
     fn signed_grant<'a>(&'a self, request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a> {
         Box::pin(async move { self.request_grant(request).await })
     }
+
+    fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
+        MatrixFinalUseBroker::refresh_revocations(self)
+    }
 }
 
 #[cfg(not(unix))]
@@ -211,6 +218,10 @@ impl MatrixOutboundAuthorizer for MatrixFinalUseBroker {
 
     fn signed_grant<'a>(&'a self, _request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a> {
         Box::pin(async { Err(MatrixAuthorityError::Unavailable) })
+    }
+
+    fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
+        Err(MatrixAuthorityError::Unavailable)
     }
 }
 
@@ -381,7 +392,7 @@ mod tests {
             broker.refresh_revocations(),
             Err(MatrixAuthorityError::Rejected),
         );
-        assert_eq!(broker.authority.frontier()?.revision, 3);
+        assert_eq!(broker.authority.revocation_head()?.revision, 3);
         Ok(())
     }
 
@@ -391,7 +402,7 @@ mod tests {
         let (_directory, broker) =
             test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
         broker.refresh_revocations()?;
-        let frontier = broker.authority.frontier()?;
+        let frontier = broker.authority.revocation_head()?;
         assert_eq!(frontier.authority_epoch, 17);
         assert_eq!(frontier.revision, 2);
         Ok(())

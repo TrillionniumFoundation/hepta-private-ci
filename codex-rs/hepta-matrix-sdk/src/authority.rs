@@ -3,8 +3,10 @@ use std::pin::Pin;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseFrontier;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_matrix_store::MatrixDispatchRecord;
 use codex_hepta_matrix_store::OutboxRecord;
 use serde::Deserialize;
@@ -134,6 +136,53 @@ pub trait MatrixOutboundAuthorizer: Send + Sync {
     fn authority(&self) -> &FinalUseAuthority;
 
     fn signed_grant<'a>(&'a self, request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a>;
+
+    /// Refresh the independently owned revocation frontier immediately before
+    /// physical adapter entry. In-memory qualification authorizers may retain
+    /// the already-current local frontier; named production hosts must override
+    /// this method and read their authenticated monotonic feed.
+    fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
+        Ok(())
+    }
+
+    /// Compatibility adapter for the historical Matrix crash-cut fixtures.
+    ///
+    /// The durable sender does not use this method. It persists the authority
+    /// claim first, refreshes revocations, and then calls `enter_verified_use`
+    /// directly. Keeping this adapter local to channel.matrix avoids restoring
+    /// a removed kernel.authority API.
+    #[doc(hidden)]
+    fn with_verified_use_at_frontier<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<(T, FinalUseFrontier), MatrixAuthorityError>
+    where
+        Self: Sized,
+    {
+        let frontier = self
+            .authority()
+            .frontier()
+            .map_err(|_| MatrixAuthorityError::Rejected)?;
+        self.authority()
+            .enter_verified_use(token, expected)
+            .map_err(|_| MatrixAuthorityError::Rejected)?;
+        Ok((consumer(), frontier))
+    }
+}
+
+/// Let historical Matrix-only crash fixtures call the local compatibility
+/// adapter on the kernel authority value returned by a test authorizer. This
+/// implementation cannot mint a grant and is never a production authorizer.
+impl MatrixOutboundAuthorizer for FinalUseAuthority {
+    fn authority(&self) -> &FinalUseAuthority {
+        self
+    }
+
+    fn signed_grant<'a>(&'a self, _request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a> {
+        Box::pin(async { Err(MatrixAuthorityError::Unavailable) })
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
