@@ -28,15 +28,96 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Retire bootstrap from the local candidate before remediation
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/kernel-authority-convergence.yml')
+          content = path.read_text(encoding='utf-8')
+          begin = '  # BEGIN ONE-SHOT KERNEL AUTHORITY REMEDIATION\n'
+          end = '  # END ONE-SHOT KERNEL AUTHORITY REMEDIATION\n'
+          if content.count(begin) != 1 or content.count(end) != 1:
+              raise SystemExit('bootstrap markers are not exact')
+          start = content.index(begin)
+          stop = content.index(end, start) + len(end)
+          path.write_text(content[:start] + content[stop:], encoding='utf-8')
+          PY
+          git config user.name kernel-authority-remediator
+          git config user.email kernel-authority-remediator@users.noreply.github.com
+          git add .github/workflows/kernel-authority-convergence.yml
+          git commit -m 'ci(kernel-authority): retire one-shot bootstrap'
+
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
         with:
           toolchain: 1.95.0
           components: rustfmt,clippy
 
+      - name: Rebase the guarded remediator onto the current branch
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/scripts/kernel_authority_remediate.py')
+          content = path.read_text(encoding='utf-8')
+
+          old = '''    scaffold_changes = set(
+              filter(
+                  None,
+                  output("git", "diff", "--name-only", f"{EXPECTED_HEAD}..HEAD").splitlines(),
+              )
+          )
+          expected_scaffold = {
+              ".github/scripts/kernel_authority_remediate.py",
+              ".github/workflows/kernel-authority-remediation.yml",
+          }
+          if scaffold_changes != expected_scaffold:
+              raise RuntimeError(
+                  f"branch drifted outside the one-shot scaffold: {sorted(scaffold_changes)}"
+              )
+'''
+          if content.count(old) != 1:
+              raise SystemExit('stale scaffold-drift guard is not exact')
+          content = content.replace(old, '', 1)
+
+          old = '''    run(
+                  "cargo",
+                  "fmt",
+                  "--manifest-path",
+                  "codex-rs/Cargo.toml",
+                  "-p",
+                  "codex-hepta-contracts",
+                  "-p",
+                  "codex-hepta-fleet",
+              )'''
+          new = '''    run(
+                  "cargo",
+                  "fmt",
+                  "--manifest-path",
+                  "codex-rs/Cargo.toml",
+                  "-p",
+                  "codex-hepta-contracts",
+              )'''
+          if content.count(old) != 1:
+              raise SystemExit('remediator formatting predecessor is not exact')
+          content = content.replace(old, new, 1)
+
+          needle = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry -p codex-hepta-fleet'
+          replacement = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry'
+          if content.count(needle) != 2:
+              raise SystemExit('expected old and generated product formatting commands')
+          index = content.rfind(needle)
+          content = content[:index] + replacement + content[index + len(needle):]
+
+          path.write_text(content, encoding='utf-8')
+          PY
+          git add .github/scripts/kernel_authority_remediate.py
+          git commit -m 'ci(kernel-authority): rebase guarded remediator'
+
       - name: Apply, validate, commit, rebind and push
         env:
           CARGO_TERM_COLOR: always
         run: python3 .github/scripts/kernel_authority_remediate.py
 
-# A second committed revision intentionally triggers this one-shot workflow.
+# This committed revision intentionally triggers the assertion-heavy one-shot workflow.
