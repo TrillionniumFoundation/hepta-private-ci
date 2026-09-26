@@ -6,6 +6,7 @@ on:
       - control-runtime-production-closure-v1
     paths:
       - "scripts/control_runtime_closure.py"
+      - "scripts/control_runtime_fixups.py"
       - ".github/workflows/control-runtime-closure-bootstrap.yml"
   workflow_dispatch:
 
@@ -29,7 +30,9 @@ jobs:
           persist-credentials: true
 
       - name: Apply exact closure patch
-        run: python3 scripts/control_runtime_closure.py
+        run: |
+          python3 scripts/control_runtime_closure.py
+          python3 scripts/control_runtime_fixups.py
 
       - name: Format Rust sources
         working-directory: codex-rs
