@@ -77,31 +77,36 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let candidate_ids = request
+        // Compare canonical candidate identities, not caller vector order. The
+        // canonical facade still rejects duplicate legal candidates and any
+        // selected identity outside this set.
+        let mut candidate_ids = request
             .legal_candidates
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
-        let intuition_ids = inputs
+        let mut intuition_ids = inputs
             .intuition_request
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
+        candidate_ids.sort();
+        intuition_ids.sort();
         if candidate_ids != intuition_ids {
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
-        // Freeze the identity of the existing owner, never a new coordinator
-        // or a caller-selected body/model generation. Agentd validates this
-        // fence again at the actual admission and attachment boundary.
-        let generation = composition.agentd_generation;
-        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
+        // Freeze the single process-launch -> Running epoch identity used by
+        // ObjectiveStart and the run coordinator. Never reconstruct a fence by
+        // repeating the current generation or by accepting caller-selected data.
+        let generation = composition
+            .admission_generation()
+            .map_err(AgentdIntelligenceProductError::Run)?;
+        let fence_digest = composition
+            .objective_fence_digest()
+            .map_err(AgentdIntelligenceProductError::Run)?;
         let snapshot = request.snapshot.clone();
         let timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
