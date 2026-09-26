@@ -10,7 +10,6 @@ on:
       - 'docs/modules/cognitive.store/**'
       - 'tools/cognitive-store-host-bootstrap/**'
       - 'scripts/cognitive_store_*.py'
-      - 'scripts/hepta-implementation-maps.py'
       - '.github/workflows/cognitive-store-qualification.yml'
   push:
     branches:
@@ -24,8 +23,11 @@ on:
       - 'docs/modules/cognitive.store/**'
       - 'tools/cognitive-store-host-bootstrap/**'
       - 'scripts/cognitive_store_*.py'
-      - 'scripts/hepta-implementation-maps.py'
       - '.github/workflows/cognitive-store-qualification.yml'
+
+concurrency:
+  group: cognitive-store-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -54,10 +56,13 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=normal)"
       - name: Verify closed-world architecture
         run: python3 scripts/cognitive_store_architecture.py
+      - name: Verify exact cognitive.store map
+        run: |
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$SOURCE_SHA" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
       - name: Test authenticated host bootstrap
         run: python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
-      - name: Verify cognitive.store map
-        run: python3 scripts/hepta-implementation-maps.py verify --module cognitive.store --expected-sha "$SOURCE_SHA" --expected-tree "$(git rev-parse HEAD^{tree})"
 
   qualification:
     name: cognitive.store exact candidate (${{ matrix.lane }})
@@ -130,6 +135,8 @@ jobs:
         run: python3 scripts/hepta_ci_v8.py
       - name: Architecture receipt
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cognitive-store-records/architecture.json" --minimum-tests 0 -- python3 scripts/cognitive_store_architecture.py
+      - name: Map receipt
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cognitive-store-records/map.json" --minimum-tests 0 -- python3 scripts/cognitive_store_map_verify.py --expected-sha "$SOURCE_SHA" --expected-tree "$(git rev-parse HEAD^{tree})"
       - name: Format receipt
         working-directory: codex-rs
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cognitive-store-records/format.json" -- cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd -- --check
