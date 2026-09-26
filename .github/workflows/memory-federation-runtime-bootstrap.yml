@@ -107,9 +107,12 @@ jobs:
       - name: Rebind implementation map
         run: |
           set -euo pipefail
+          git fetch --no-tags --unshallow origin feat/memory-federation-production-closure-20260926
+          test "$(git rev-parse --is-shallow-repository)" = "false"
           SOURCE_BASE="$(python3 -c 'import json; print(json.load(open("docs/modules/memory.federation/IMPLEMENTATION_MAP.json", encoding="utf-8"))["sourceBase"]["commit"])')"
           test -n "$SOURCE_BASE"
-          git fetch --no-tags --depth=1 origin "$SOURCE_BASE"
+          git cat-file -e "$SOURCE_BASE^{commit}"
+          git merge-base --is-ancestor "$SOURCE_BASE" HEAD
           python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
           git diff --check
           git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
