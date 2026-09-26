@@ -1,23 +1,19 @@
-name: Materialize deterministic Lane E writer verifier
+name: Materialize learning.operator convergence
 
 on:
   push:
-    branches:
-      - codex/learning-operator-full-convergence-20260926
-    paths:
-      - .github/workflows/learning-operator-writer-verifier-fix.yml
+    branches: [codex/learning-operator-full-convergence-20260926]
+    paths: [.github/workflows/learning-operator-writer-verifier-fix.yml]
   pull_request:
-    branches:
-      - main
-    paths:
-      - .github/workflows/learning-operator-writer-verifier-fix.yml
+    branches: [main]
+    paths: [.github/workflows/learning-operator-writer-verifier-fix.yml]
 
 permissions:
   contents: write
 
 concurrency:
-  group: learning-operator-writer-verifier-fix
-  cancel-in-progress: false
+  group: learning-operator-full-convergence
+  cancel-in-progress: true
 
 jobs:
   materialize:
@@ -28,13 +24,19 @@ jobs:
         with:
           ref: codex/learning-operator-full-convergence-20260926
           fetch-depth: 0
-      - name: Replace regex scanning with deterministic token scanning
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Materialize source, tests, and operator guidance
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
+          # Make the legacy-writer exception verifier deterministic. The old
+          # regex keys accidentally searched for literal backspace boundaries.
           path = Path('scripts/hepta-lane-e-closure.py')
           text = path.read_text(encoding='utf-8')
           old = '''    forbidden = {
@@ -53,9 +55,10 @@ jobs:
               "LedgerEvent::Revocation": "raw V1 Revocation append",
           }
           '''
-          if text.count(old) != 1:
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
               raise SystemExit('unexpected forbidden-token block')
-          text = text.replace(old, new, 1)
           old = '''        for pattern, description in forbidden.items():
                       if re.search(pattern, text) is None:
                           continue
@@ -64,10 +67,424 @@ jobs:
                       if token not in text:
                           continue
           '''
-          if text.count(old) != 1:
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
               raise SystemExit('unexpected writer scan loop')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          path.write_text(text, encoding='utf-8')
+
+          # Export the production V3 admission and V2 persisted identity APIs.
+          path = Path('codex-rs/hepta-bellman-operator/src/lib.rs')
+          text = path.read_text(encoding='utf-8')
+          old = '''pub use loaded::LoadedTabularOperatorV1;
+          pub use loaded::TabularPayloadError;
+          pub use loaded::TabularPayloadPinV1;
+          pub use loaded::encode_tabular_payload_v1;
+          '''
+          new = '''pub use loaded::LoadedTabularOperatorV1;
+          pub use loaded::LoadedTabularOperatorV2;
+          pub use loaded::TabularPayloadError;
+          pub use loaded::TabularPayloadPinV1;
+          pub use loaded::TabularPayloadPinV2;
+          pub use loaded::ValidatedTabularOperatorV1;
+          pub use loaded::encode_tabular_payload_v1;
+          pub use loaded::validate_tabular_artifact_v1;
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif 'pub use loaded::LoadedTabularOperatorV2;' not in text:
+              raise SystemExit('unexpected loaded export block')
+          old = '''pub use dataset_bound::VerifiedTabularOperatorPlanV2;
+          pub use dataset_bound::VerifiedWorldModelDatasetV2;
+          pub use dataset_bound::fit_tabular_operator_verified_v2;
+          pub use dataset_bound::fit_transition_model_verified_v2;
+          pub use dataset_bound::verify_tabular_operator_plan_v2;
+          pub use dataset_bound::verify_world_model_dataset_v2;
+          '''
+          new = '''pub use dataset_bound::VerifiedTabularOperatorPlanV2;
+          pub use dataset_bound::VerifiedTabularOperatorPlanV3;
+          pub use dataset_bound::VerifiedWorldModelDatasetV2;
+          pub use dataset_bound::VerifiedWorldModelDatasetV3;
+          pub use dataset_bound::fit_tabular_operator_verified_v2;
+          pub use dataset_bound::fit_tabular_operator_verified_v3;
+          pub use dataset_bound::fit_transition_model_verified_v2;
+          pub use dataset_bound::fit_transition_model_verified_v3;
+          pub use dataset_bound::verify_tabular_operator_plan_v2;
+          pub use dataset_bound::verify_tabular_operator_plan_v3;
+          pub use dataset_bound::verify_world_model_dataset_v2;
+          pub use dataset_bound::verify_world_model_dataset_v3;
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif 'pub use dataset_bound::VerifiedTabularOperatorPlanV3;' not in text:
+              raise SystemExit('unexpected dataset export block')
+          path.write_text(text, encoding='utf-8')
+
+          # Add complete persisted identity binding and immutable validated API.
+          path = Path('codex-rs/hepta-bellman-operator/src/loaded.rs')
+          text = path.read_text(encoding='utf-8')
+          if 'use std::sync::Arc;' not in text:
+              text = text.replace('use std::fmt;\n', 'use std::fmt;\nuse std::sync::Arc;\n', 1)
+          if 'pub struct TabularPayloadPinV2' not in text:
+              marker = '\n#[cfg(test)]\n#[path = "loaded_tests.rs"]\nmod tests;'
+              if marker not in text:
+                  raise SystemExit('loaded test marker missing')
+              addition = r'''
+
+pub const TABULAR_ARTIFACT_SCHEMA_V1: u32 = 1;
+pub const TABULAR_PAYLOAD_SCHEMA_V1: u32 = 1;
+
+/// Complete host-selected persisted identity. In addition to the V1 numerical
+/// binding this pins artifact/producer identity, schema versions, runtime
+/// profile, trust snapshot, authority epoch and current registry head.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TabularPayloadPinV2 {
+    pub artifact_id: StableId,
+    pub producer_id: StableId,
+    pub artifact_schema_version: u32,
+    pub payload_schema_version: u32,
+    pub payload_digest: Digest32,
+    pub artifact_digest: Digest32,
+    pub objective_digest: Digest32,
+    pub dataset_digest: Digest32,
+    pub sensor_core_digest: Digest32,
+    pub training_profile_digest: Digest32,
+    pub runtime_profile_digest: Digest32,
+    pub trust_digest: Digest32,
+    pub registry_head_digest: Digest32,
+    pub authority_epoch: u64,
+    pub generation: Generation,
+}
+
+/// Structurally validated immutable artifact. It cannot be mutated after
+/// construction and predictions use canonical binary search.
+#[derive(Clone, Debug)]
+pub struct ValidatedTabularOperatorV1 {
+    artifact: Arc<TabularOperatorArtifactV1>,
+}
+
+impl ValidatedTabularOperatorV1 {
+    #[must_use]
+    pub fn artifact_id(&self) -> &StableId {
+        &self.artifact.artifact_id
+    }
+
+    #[must_use]
+    pub fn producer_id(&self) -> &StableId {
+        &self.artifact.producer_id
+    }
+
+    pub fn predict(
+        &self,
+        sensor: &StableId,
+        action: &StableId,
+    ) -> Result<TabularOperatorPredictionV1, TabularPayloadError> {
+        let index = self
+            .artifact
+            .cells
+            .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor, action)))
+            .map_err(|_| TabularPayloadError::UnsupportedCell)?;
+        let cell = &self.artifact.cells[index];
+        Ok(TabularOperatorPredictionV1 {
+            artifact_id: self.artifact.artifact_id.clone(),
+            sensor_id: cell.sensor_id.clone(),
+            action_id: cell.action_id.clone(),
+            value: cell.mean_target,
+            cell_evidence_digest: cell.evidence_digest,
+            learned: true,
+            synthetic: true,
+            authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+}
+
+pub fn validate_tabular_artifact_v1(
+    artifact: TabularOperatorArtifactV1,
+) -> Result<ValidatedTabularOperatorV1, TabularPayloadError> {
+    validate(&artifact)?;
+    Ok(ValidatedTabularOperatorV1 {
+        artifact: Arc::new(artifact),
+    })
+}
+
+/// Production loader retaining the complete admission context. The runtime,
+/// trust and registry digests are supplied by the host, never derived from the
+/// payload under review.
+#[derive(Clone, Debug)]
+pub struct LoadedTabularOperatorV2 {
+    validated: ValidatedTabularOperatorV1,
+    runtime_profile_digest: Digest32,
+    trust_digest: Digest32,
+    registry_head_digest: Digest32,
+    authority_epoch: u64,
+}
+
+impl LoadedTabularOperatorV2 {
+    pub fn from_pinned_payload_v2(
+        bytes: &[u8],
+        pin: &TabularPayloadPinV2,
+    ) -> Result<Self, TabularPayloadError> {
+        if bytes.len() > MAX_BYTES
+            || pin.artifact_schema_version != TABULAR_ARTIFACT_SCHEMA_V1
+            || pin.payload_schema_version != TABULAR_PAYLOAD_SCHEMA_V1
+            || pin.authority_epoch == 0
+            || [
+                pin.payload_digest,
+                pin.artifact_digest,
+                pin.objective_digest,
+                pin.dataset_digest,
+                pin.sensor_core_digest,
+                pin.training_profile_digest,
+                pin.runtime_profile_digest,
+                pin.trust_digest,
+                pin.registry_head_digest,
+            ]
+            .into_iter()
+            .any(Digest32::is_zero)
+            || Digest32::of_bytes(bytes) != pin.payload_digest
+        {
+            return Err(TabularPayloadError::Binding);
+        }
+        let artifact = decode(bytes)?;
+        if artifact.artifact_id != pin.artifact_id
+            || artifact.producer_id != pin.producer_id
+            || artifact.generation != pin.generation
+            || artifact.artifact_digest != pin.artifact_digest
+            || artifact.objective_digest != pin.objective_digest
+            || artifact.dataset_digest != pin.dataset_digest
+            || artifact.sensor_core_digest != pin.sensor_core_digest
+            || artifact.training_profile_digest != pin.training_profile_digest
+        {
+            return Err(TabularPayloadError::Binding);
+        }
+        Ok(Self {
+            validated: validate_tabular_artifact_v1(artifact)?,
+            runtime_profile_digest: pin.runtime_profile_digest,
+            trust_digest: pin.trust_digest,
+            registry_head_digest: pin.registry_head_digest,
+            authority_epoch: pin.authority_epoch,
+        })
+    }
+
+    pub fn predict(
+        &self,
+        sensor: &StableId,
+        action: &StableId,
+    ) -> Result<TabularOperatorPredictionV1, TabularPayloadError> {
+        self.validated.predict(sensor, action)
+    }
+
+    #[must_use]
+    pub const fn runtime_profile_digest(&self) -> Digest32 {
+        self.runtime_profile_digest
+    }
+
+    #[must_use]
+    pub const fn trust_digest(&self) -> Digest32 {
+        self.trust_digest
+    }
+
+    #[must_use]
+    pub const fn registry_head_digest(&self) -> Digest32 {
+        self.registry_head_digest
+    }
+
+    #[must_use]
+    pub const fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
+    }
+}
+'''
+              text = text.replace(marker, addition + marker, 1)
+          path.write_text(text, encoding='utf-8')
+
+          # Semantic provenance must change under any row mutation.
+          path = Path('codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs')
+          text = path.read_text(encoding='utf-8')
+          if 'op_07_row_semantics_payload_binds_every_tabular_field' not in text:
+              text += r'''
+
+#[test]
+fn op_07_row_semantics_payload_binds_every_tabular_field() {
+    let records = [digest("record-a"), digest("record-b")];
+    let receipt = receipt(records.to_vec());
+    let mut plan = tabular_plan(receipt.snapshot.dataset_digest, records);
+    let baseline = canonical_tabular_row_semantics_v1(&plan, &receipt).expect("canonical");
+    plan.samples[0].target = FixedQ32::from_raw(11);
+    let changed = canonical_tabular_row_semantics_v1(&plan, &receipt).expect("canonical");
+    assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed));
+}
+
+#[test]
+fn op_07_world_model_payload_binds_transition_semantics() {
+    let records = [digest("record-a")];
+    let receipt = receipt(records.to_vec());
+    let mut rows = vec![WorldModelSampleV1 {
+        sample_id: id("sample-a"),
+        state_id: id("state"),
+        action_id: id("action"),
+        next_state_id: id("next"),
+        outcome: FixedQ32::from_raw(10),
+        evidence_digest: records[0],
+    }];
+    let baseline = canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt)
+        .expect("canonical");
+    rows[0].next_state_id = id("changed-next");
+    let changed = canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt)
+        .expect("canonical");
+    assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed));
+}
+'''
+          path.write_text(text, encoding='utf-8')
+
+          path = Path('codex-rs/hepta-bellman-operator/src/loaded_tests.rs')
+          text = path.read_text(encoding='utf-8')
+          if 'v2_pin_binds_identity_runtime_trust_and_registry' not in text:
+              text += r'''
+
+fn pin_v2(artifact: &TabularOperatorArtifactV1, bytes: &[u8]) -> TabularPayloadPinV2 {
+    TabularPayloadPinV2 {
+        artifact_id: artifact.artifact_id.clone(),
+        producer_id: artifact.producer_id.clone(),
+        artifact_schema_version: TABULAR_ARTIFACT_SCHEMA_V1,
+        payload_schema_version: TABULAR_PAYLOAD_SCHEMA_V1,
+        payload_digest: Digest32::of_bytes(bytes),
+        artifact_digest: artifact.artifact_digest,
+        objective_digest: artifact.objective_digest,
+        dataset_digest: artifact.dataset_digest,
+        sensor_core_digest: artifact.sensor_core_digest,
+        training_profile_digest: artifact.training_profile_digest,
+        runtime_profile_digest: hash("runtime-profile"),
+        trust_digest: hash("trust-snapshot"),
+        registry_head_digest: hash("registry-head"),
+        authority_epoch: 9,
+        generation: artifact.generation,
+    }
+}
+
+#[test]
+fn v2_pin_binds_identity_runtime_trust_and_registry() {
+    let artifact = fitted(3, 13);
+    let bytes = encode_tabular_payload_v1(&artifact).expect("encode");
+    let pin = pin_v2(&artifact, &bytes);
+    let loaded = LoadedTabularOperatorV2::from_pinned_payload_v2(&bytes, &pin).expect("load");
+    assert_eq!(loaded.predict(&id("state"), &id("read")).unwrap().value.raw(), 13);
+    assert_eq!(loaded.authority_epoch(), 9);
+
+    let mut wrong = pin.clone();
+    wrong.artifact_id = id("other-artifact");
+    assert!(LoadedTabularOperatorV2::from_pinned_payload_v2(&bytes, &wrong).is_err());
+    let mut wrong = pin.clone();
+    wrong.runtime_profile_digest = Digest32::ZERO;
+    assert!(LoadedTabularOperatorV2::from_pinned_payload_v2(&bytes, &wrong).is_err());
+    let mut wrong = pin.clone();
+    wrong.trust_digest = Digest32::ZERO;
+    assert!(LoadedTabularOperatorV2::from_pinned_payload_v2(&bytes, &wrong).is_err());
+    let mut wrong = pin;
+    wrong.registry_head_digest = Digest32::ZERO;
+    assert!(LoadedTabularOperatorV2::from_pinned_payload_v2(&bytes, &wrong).is_err());
+}
+'''
+          path.write_text(text, encoding='utf-8')
           PY
+
+          mkdir -p docs/modules/learning.operator
+          cat > docs/modules/learning.operator/DEVELOPER_GUIDE.md <<'EOF'
+          # learning.operator developer guide
+
+          ## Supported production sequence
+
+          1. Replay `learning.ledger` and freeze `DatasetSnapshotReceiptV3`.
+          2. Rebind the receipt with `verify_dataset_snapshot_receipt_against_ledger_v3`.
+          3. Build `LearningEvidenceVerifierV1` only from host-owned trust state.
+          4. Canonically encode every training row, including row identity, state/sensor,
+             action, target/outcome and source evidence digest.
+          5. Require an Ed25519 `Observer` attestation over those exact bytes.
+          6. Call `verify_tabular_operator_plan_v3` or
+             `verify_world_model_dataset_v3`; only the opaque result may reach the V3 fit.
+          7. Persist create-only payload bytes and a host-selected `TabularPayloadPinV2`.
+          8. Independently evaluate and select the exact artifact.
+          9. In a fresh process load through `LoadedTabularOperatorV2` or the evaluated
+             ranker path. Keep the result read-only and deny-all during shadow operation.
+
+          V2 dataset admission and V1 payload pins are compatibility surfaces. They are
+          not sufficient evidence for production promotion.
+
+          ## Local qualification
+
+          ```bash
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-bellman-operator --locked
+          cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-bellman-operator --all-targets --locked -- -D warnings
+          ```
+
+          ## Failure handling
+
+          Receipt, ledger-head, trust-epoch, signature, row-payload, registry-head or
+          runtime-profile mismatch is a global admission failure. Unsupported prediction
+          cells abstain. No path may repair or silently quarantine a semantically changed
+          training row.
+          EOF
+
+          cat > docs/modules/learning.operator/OPERATIONS_RUNBOOK.md <<'EOF'
+          # learning.operator operations runbook
+
+          ## Revocation and key rotation
+
+          Freeze the current trust digest and authority epoch with every selection. A key
+          rotation creates a new immutable trust snapshot; it never rewrites prior evidence.
+          At or after `revoked_at`, re-verification must fail and the candidate must be
+          removed from the eligible shadow set. Never derive trust keys from candidate data.
+
+          ## Rollback
+
+          Rollback selects an already persisted immutable predecessor payload and its
+          original complete pin. Do not retrain, rewrite, or recompute the predecessor.
+          Confirm artifact ID, producer ID, generation, schema versions, runtime profile,
+          trust digest, authority epoch and registry head before opening the payload.
+
+          ## Incident stop conditions
+
+          Stop shadow admission on ledger rollback, stale registry head, trust epoch drift,
+          signature failure, semantic-row digest drift, unsupported cell-rate breach,
+          calibration breach, resource-budget breach or missing independent evaluation.
+          Production writes remain disabled throughout qualification.
+          EOF
+
+          cat > docs/modules/learning.operator/COMPATIBILITY_AND_MIGRATION.md <<'EOF'
+          # Compatibility and migration policy
+
+          * V1 payload bytes remain decodable while their schema is explicitly pinned.
+          * V1 pins and V2 dataset wrappers are read-only compatibility inputs and cannot
+            independently authorize promotion.
+          * V2 pins add identity, schemas, runtime, trust epoch and registry-head binding.
+          * New schema versions use a new domain separator and decoder. Unknown versions
+            fail closed; there is no best-effort field defaulting.
+          * Migration is decode-old, fully validate-old, encode-new, compare semantic
+            projection, persist create-only, then independently re-evaluate. In-place
+            mutation of an accepted artifact is forbidden.
+          EOF
+
+          cat > docs/modules/learning.operator/RESOURCE_AND_SHADOW_POLICY.md <<'EOF'
+          # Resource budgets and shadow acceptance
+
+          Hard input ceilings remain 1,000,000 rows, 262,144 tabular cells, 4,096 sensors,
+          128 actions and 64 MiB payloads. Qualification must additionally publish peak
+          resident memory, wall time and prediction p50/p95/p99 for the largest admitted
+          profile; a ceiling without a measured budget is not acceptance evidence.
+
+          Shadow promotion requires all of the following over a preregistered longitudinal
+          window: zero identity/trust/ledger violations; zero unauthorized writes; stable
+          calibration and subgroup coverage; bounded abstention/OOD rates; no regression in
+          independently measured utility; successful fresh-process load and immutable
+          predecessor rollback. Thresholds are fixed before outcomes and stored with the
+          evaluator receipt. A single hard-bound violation rejects the candidate.
+          EOF
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-bellman-operator -- --check
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-bellman-operator --locked
+          cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-bellman-operator --all-targets --locked -- -D warnings
           python3 -m py_compile scripts/hepta-lane-e-closure.py
           python3 scripts/hepta-lane-e-closure.py self-test
           set +e
@@ -76,9 +493,10 @@ jobs:
           set -e
           python3 -m json.tool qualification/lane-e/latest-verify.json >/dev/null
           test "$status" -eq 0
+
           rm .github/workflows/learning-operator-writer-verifier-fix.yml
           git config user.name "openai-codex[bot]"
           git config user.email "openai-codex[bot]@users.noreply.github.com"
-          git add scripts/hepta-lane-e-closure.py qualification/lane-e/latest-verify.json .github/workflows/learning-operator-writer-verifier-fix.yml
-          git commit -m "fix(lane-e): make writer exception verification deterministic"
+          git add -A
+          git commit -m "feat(learning.operator): close trusted admission and persisted identity"
           git push origin HEAD:codex/learning-operator-full-convergence-20260926
