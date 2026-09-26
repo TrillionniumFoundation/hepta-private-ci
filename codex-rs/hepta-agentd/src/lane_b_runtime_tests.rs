@@ -23,6 +23,12 @@ fn composition() -> RuntimeComposition {
     }
 }
 
+fn fence() -> String {
+    composition()
+        .objective_fence_digest()
+        .expect("canonical objective fence")
+}
+
 fn snapshot() -> RunSnapshot {
     RunSnapshot {
         run_id: "run.1".to_string(),
@@ -32,7 +38,7 @@ fn snapshot() -> RunSnapshot {
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
         generation: 3,
-        fence_digest: digest('9'),
+        fence_digest: fence(),
         deadline_ms: 10_000,
     }
 }
@@ -46,7 +52,7 @@ fn attachment() -> ContextAttachment {
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
         generation: 3,
-        fence_digest: digest('9'),
+        fence_digest: fence(),
         deadline_ms: 10_000,
         context_digest: digest('7'),
         compilation_receipt_digest: digest('8'),
@@ -64,9 +70,47 @@ fn assert_receipt(
     assert_eq!(receipt.phase, phase);
     assert_eq!(receipt.authority_epoch, 7);
     assert_eq!(receipt.generation, 3);
-    assert_eq!(receipt.fence_digest, digest('9'));
+    assert_eq!(receipt.fence_digest, fence());
     assert_eq!(receipt.deadline_ms, 10_000);
     assert_eq!(receipt.cancel_reason.as_deref(), cancel_reason);
+}
+
+#[test]
+fn runtime_composition_rejects_wrong_generation_or_fence() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    let mut wrong_generation = snapshot();
+    wrong_generation.generation = 2;
+    assert_eq!(
+        coordinator.start_run(100, wrong_generation),
+        Err(AgentRunError::CompositionMismatch("generation"))
+    );
+
+    let mut wrong_fence = snapshot();
+    wrong_fence.fence_digest = digest('9');
+    assert_eq!(
+        coordinator.start_run(100, wrong_fence),
+        Err(AgentRunError::CompositionMismatch("fence"))
+    );
+    assert_eq!(coordinator.active_run_count(), 0);
+}
+
+#[test]
+fn starting_composition_normalizes_only_to_its_running_successor() {
+    let starting = RuntimeComposition {
+        agentd_generation: 2,
+        ..composition()
+    };
+    assert_eq!(starting.admission_generation().unwrap(), 3);
+    assert_eq!(
+        starting.objective_fence_digest().unwrap(),
+        composition().objective_fence_digest().unwrap()
+    );
+
+    let invalid = RuntimeComposition {
+        agentd_generation: 4,
+        ..composition()
+    };
+    assert_eq!(invalid.admission_generation(), Err(AgentRunError::InvalidGeneration));
 }
 
 #[test]
@@ -405,6 +449,7 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
 fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence() {
     let id = |value: &str| StableId::new(value).expect("stable id");
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
+    let expected_fence: Digest32 = fence().parse().expect("typed objective fence");
     let record = RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
             signed_body_bytes: Vec::new(),
@@ -439,7 +484,7 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
             artifact_set_digest: d("artifacts"),
             authority_epoch: 7,
             generation: 3,
-            fence_digest: d("fence"),
+            fence_digest: expected_fence,
         },
         runtime_body_digest: d("body"),
         objective_semantic_bytes: vec![1],
@@ -468,6 +513,7 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
 fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
     let id = |value: &str| StableId::new(value).expect("stable id");
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
+    let expected_fence: Digest32 = fence().parse().expect("typed objective fence");
     let record = RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
             signed_body_bytes: Vec::new(),
@@ -502,7 +548,7 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
             artifact_set_digest: d("artifacts"),
             authority_epoch: 7,
             generation: 3,
-            fence_digest: d("fence"),
+            fence_digest: expected_fence,
         },
         runtime_body_digest: d("body"),
         objective_semantic_bytes: vec![1],

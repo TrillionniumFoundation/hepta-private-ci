@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_types::Digest32;
 
 #[path = "run_start_projection.rs"]
 mod run_start_projection;
@@ -43,11 +44,44 @@ impl RunPhase {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RuntimeComposition {
     pub agent_id: String,
+    /// Process launch generation. The Fleet Running generation is exactly the
+    /// next generation and is the only generation allowed to admit work.
     pub supervisor_generation: u64,
+    /// Current/expected Agentd generation. Older constructors may still pass
+    /// the launch generation while the daemon is Starting; this is normalized
+    /// to the single Running successor rather than treated as a second epoch.
     pub agentd_generation: u64,
     pub configuration_digest: String,
     pub ports_digest: String,
     pub max_active_runs: usize,
+}
+
+impl RuntimeComposition {
+    /// Return the sole generation on which this process may admit a run.
+    /// Agentd accepts work only in Fleet Running, which is launch + 1. A value
+    /// already set to that successor is accepted; any other distance is fenced.
+    pub fn admission_generation(&self) -> Result<u64, AgentRunError> {
+        let running = self
+            .supervisor_generation
+            .checked_add(1)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
+        if self.supervisor_generation == 0
+            || !(self.agentd_generation == self.supervisor_generation
+                || self.agentd_generation == running)
+        {
+            return Err(AgentRunError::InvalidGeneration);
+        }
+        Ok(running)
+    }
+
+    /// Canonical fence for the exact process launch and admitting Fleet epoch.
+    pub fn objective_fence_digest(&self) -> Result<String, AgentRunError> {
+        objective_run_fence_digest(
+            &self.agent_id,
+            self.supervisor_generation,
+            self.admission_generation()?,
+        )
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -126,6 +160,7 @@ pub enum AgentRunError {
     InvalidTransition,
     StaleRevision,
     MixedSnapshot,
+    CompositionMismatch(&'static str),
     ContextRequired,
     TerminalObservationRequired,
     ArithmeticOverflow,
@@ -162,9 +197,8 @@ impl AgentRunCoordinator {
         validate_identity(&composition.agent_id, "agent")?;
         validate_digest(&composition.configuration_digest, "configuration")?;
         validate_digest(&composition.ports_digest, "ports")?;
-        if composition.supervisor_generation == 0 || composition.agentd_generation == 0 {
-            return Err(AgentRunError::InvalidGeneration);
-        }
+        composition.admission_generation()?;
+        composition.objective_fence_digest()?;
         if !(1..=MAX_SUPPORTED_ACTIVE_RUNS).contains(&composition.max_active_runs) {
             return Err(AgentRunError::CapacityExceeded);
         }
@@ -189,12 +223,23 @@ impl AgentRunCoordinator {
         self.accepting_runs = false;
     }
 
+    fn require_composition_snapshot(&self, snapshot: &RunSnapshot) -> Result<(), AgentRunError> {
+        if snapshot.generation != self.composition.admission_generation()? {
+            return Err(AgentRunError::CompositionMismatch("generation"));
+        }
+        if snapshot.fence_digest != self.composition.objective_fence_digest()? {
+            return Err(AgentRunError::CompositionMismatch("fence"));
+        }
+        Ok(())
+    }
+
     pub fn start_run(
         &mut self,
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_snapshot(now_ms, &snapshot)?;
+        self.require_composition_snapshot(&snapshot)?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
                 return Ok(receipt(current, /*idempotent*/ true));
@@ -528,6 +573,27 @@ impl AgentRunCoordinator {
             .filter(|record| record.phase.unresolved_after_dispatch())
             .count()
     }
+}
+
+/// One normative fence formula for Objective publication, canonical
+/// composition, run admission and physical handoff.
+pub(crate) fn objective_run_fence_digest(
+    agent_id: &str,
+    spawn_generation: u64,
+    current_generation: u64,
+) -> Result<String, AgentRunError> {
+    validate_identity(agent_id, "agent")?;
+    if spawn_generation == 0
+        || current_generation == 0
+        || current_generation != spawn_generation.saturating_add(1)
+    {
+        return Err(AgentRunError::InvalidGeneration);
+    }
+    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    bytes.extend_from_slice(agent_id.as_bytes());
+    bytes.extend_from_slice(&spawn_generation.to_be_bytes());
+    bytes.extend_from_slice(&current_generation.to_be_bytes());
+    Ok(Digest32::of_bytes(&bytes).to_string())
 }
 
 fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunError> {

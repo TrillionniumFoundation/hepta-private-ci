@@ -1,0 +1,164 @@
+name: intelligence.control closure qualification
+
+on:
+  push:
+    branches:
+      - work/intelligence-control-full-closure-20260926
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "docs/modules/intelligence.control/**"
+      - "qualification/module-execution-dossiers/detail/intelligence.control.md"
+      - "scripts/hepta-intelligence-control-truth.py"
+      - ".github/workflows/intelligence-control-closure.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  rust:
+    name: ${{ matrix.case.name }} (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+        case:
+          - name: intelligence core tests
+            command: cargo test --locked -p codex-hepta-intelligence --lib --no-fail-fast
+          - name: Agentd all-target check
+            command: cargo check --locked -p codex-hepta-agentd --all-targets
+          - name: Agentd library tests
+            command: cargo test --locked -p codex-hepta-agentd --lib --no-fail-fast
+          - name: Agentd strict clippy
+            command: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Intelligence CI
+          author-email: hepta-intelligence-ci@users.noreply.github.com
+          message: Synthetic intelligence.control merge
+
+      - name: Bind exact candidate identity
+        id: identity
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'sha=%s\n' "$TESTED_SHA" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Prepare native workspace prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Run ${{ matrix.case.name }}
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-control-target
+          HEPTA_INTELLIGENCE_TESTED_SHA: ${{ steps.identity.outputs.sha }}
+          HEPTA_INTELLIGENCE_TESTED_TREE: ${{ steps.identity.outputs.tree }}
+          HEPTA_INTELLIGENCE_LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ${{ matrix.case.command }}
+
+  formatting:
+    name: formatting and tracked-source cleanliness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Check intelligence source formatting
+        working-directory: codex-rs
+        run: cargo fmt --check -p codex-hepta-intelligence -p codex-hepta-agentd
+      - name: Verify source stayed clean
+        run: |
+          set -euo pipefail
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
