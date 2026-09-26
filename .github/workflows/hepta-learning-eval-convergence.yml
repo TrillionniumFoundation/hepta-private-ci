@@ -1,0 +1,271 @@
+name: Hepta learning.eval convergence
+
+on:
+  push:
+    branches:
+      - main
+      - fix/learning-eval-full-convergence-20260926
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: hepta-learning-eval-convergence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install qualification tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.1
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt,llvm-tools-preview
+
+      - name: Bind exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify generated source truth and external gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          python3 scripts/hepta-learning-eval-status.py verify \
+            2>&1 | tee .hepta-evidence/learning-eval/status-verification.log
+          python3 scripts/hepta-learning-eval-target-host.py self-test \
+            2>&1 | tee .hepta-evidence/learning-eval/target-host-verifier.log
+
+      - name: Compiler-enforced API surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/hepta-learning-eval-api-surface.sh \
+            2>&1 | tee .hepta-evidence/learning-eval/api-surface.log
+
+      - name: Compile owner and consumers
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-agentd
+          --all-targets
+
+      - name: Owner regression and signed qualification
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-intelligence-eval --test-threads=1
+          just test --locked -p codex-hepta-intelligence-eval signed_qualification_e2e --test-threads=1
+          just test --locked -p codex-hepta-intelligence evaluated_shadow --test-threads=1
+          just test --locked -p codex-hepta-agentd intelligence_evaluation --test-threads=1
+
+      - name: Deterministic fault-injection matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/hepta-learning-eval-faults.sh \
+            --json .hepta-evidence/learning-eval/faults.json \
+            --log .hepta-evidence/learning-eval/faults.log
+
+      - name: Storage capacity, recovery and compaction profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo run --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --bin learning_eval_storage_profile -- \
+            --attempts 1024 \
+            --fences 512 \
+            --output .hepta-evidence/learning-eval/storage-profile.json \
+            2>&1 | tee .hepta-evidence/learning-eval/storage-profile.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('.hepta-evidence/learning-eval/storage-profile.json')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          assert value['schema'] == 'hepta.learning-eval.storage-profile.v1'
+          assert value['attempts']['attemptCount'] == 1024
+          assert value['attempts']['eventCount'] == 2048
+          assert value['holdout']['fenceTransitions'] == 512
+          assert value['holdout']['anchorPreserved'] is True
+          assert value['holdout']['afterBytes'] < value['holdout']['beforeBytes']
+          PY
+
+      - name: Evaluator line coverage threshold
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --all-targets \
+            --fail-under-lines 85 \
+            --json \
+            --output-path .hepta-evidence/learning-eval/coverage.json
+
+      - name: Strict lint and formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd \
+            -- --check
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Emit exact-source convergence manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          root = Path.cwd()
+          evidence = root / '.hepta-evidence' / 'learning-eval'
+
+          def sha256(path: Path) -> str:
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          def source_sha(path: str) -> str:
+              return sha256(root / path)
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(['git', *args], text=True).strip()
+
+          coverage_path = evidence / 'coverage.json'
+          coverage = json.loads(coverage_path.read_text(encoding='utf-8'))
+          totals = coverage['data'][0]['totals']['lines']
+          line_percent = float(totals['percent'])
+          if line_percent < 85.0:
+              raise SystemExit('coverage below 85 percent')
+
+          now = dt.datetime.now(dt.timezone.utc)
+          manifest = {
+              'schema': 'hepta.learning-eval.convergence-evidence.v1',
+              'source': {
+                  'commit': git('rev-parse', 'HEAD'),
+                  'tree': git('rev-parse', 'HEAD^{tree}'),
+              },
+              'build': {
+                  'repository': os.environ['GITHUB_REPOSITORY'],
+                  'workflow': os.environ['GITHUB_WORKFLOW'],
+                  'runId': os.environ['GITHUB_RUN_ID'],
+                  'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                  'job': os.environ['GITHUB_JOB'],
+                  'actor': os.environ['GITHUB_ACTOR'],
+              },
+              'inputs': {
+                  'cargoLockSha256': source_sha('codex-rs/Cargo.lock'),
+                  'productionContractSha256': source_sha('codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md'),
+                  'nativeMappingSha256': source_sha('codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md'),
+                  'implementationMapSha256': source_sha('docs/modules/learning.eval/IMPLEMENTATION_MAP.json'),
+                  'currentStatusSha256': source_sha('docs/modules/learning.eval/CURRENT_STATUS.json'),
+                  'traceabilitySha256': source_sha('qualification/lane-e/TEST_TRACEABILITY.json'),
+                  'apiSurfaceScriptSha256': source_sha('scripts/hepta-learning-eval-api-surface.sh'),
+                  'faultScriptSha256': source_sha('scripts/hepta-learning-eval-faults.sh'),
+                  'targetHostVerifierSha256': source_sha('scripts/hepta-learning-eval-target-host.py'),
+              },
+              'outputs': {
+                  name: {
+                      'path': f'.hepta-evidence/learning-eval/{filename}',
+                      'sha256': sha256(evidence / filename),
+                  }
+                  for name, filename in {
+                      'apiSurface': 'api-surface.log',
+                      'faultMatrix': 'faults.json',
+                      'faultLog': 'faults.log',
+                      'storageProfile': 'storage-profile.json',
+                      'storageProfileLog': 'storage-profile.log',
+                      'coverage': 'coverage.json',
+                      'statusVerification': 'status-verification.log',
+                      'targetHostVerifier': 'target-host-verifier.log',
+                  }.items()
+              },
+              'coverage': {
+                  'linePercent': line_percent,
+                  'linesCount': totals['count'],
+                  'linesCovered': totals['covered'],
+                  'thresholdPct': 85,
+              },
+              'faults': json.loads((evidence / 'faults.json').read_text(encoding='utf-8')),
+              'storageProfile': json.loads((evidence / 'storage-profile.json').read_text(encoding='utf-8')),
+              'publicApi': {
+                  'consumerBoundAdmissionPublic': True,
+                  'lowLevelV2Public': False,
+                  'lowLevelV3Public': False,
+              },
+              'createdAt': now.isoformat().replace('+00:00', 'Z'),
+              'expiresAt': (now + dt.timedelta(days=30)).isoformat().replace('+00:00', 'Z'),
+              'authority': 'DENY_ALL',
+              'claims': {
+                  'sourceQualifiedByThisRun': True,
+                  'targetHostQualified': False,
+                  'independentAcceptance': False,
+                  'activationAuthorized': False,
+                  'releaseAuthorized': False,
+              },
+          }
+          if manifest['source']['commit'] != os.environ['SOURCE_SHA']:
+              raise SystemExit('source SHA drift')
+          input_rows = [
+              f'{name}={value}' for name, value in sorted(manifest['inputs'].items())
+          ]
+          manifest['qualificationInputSetSha256'] = hashlib.sha256(
+              ('\n'.join(input_rows) + '\n').encode()
+          ).hexdigest()
+          output = evidence / 'convergence.json'
+          output.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          print(output.read_text(encoding='utf-8'))
+          PY
+
+      - name: Retain exact-source convergence evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-convergence-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/learning-eval/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attest exact-source convergence evidence
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-evidence/learning-eval/convergence.json
