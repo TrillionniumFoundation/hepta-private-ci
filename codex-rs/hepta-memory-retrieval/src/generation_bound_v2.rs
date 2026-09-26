@@ -1,9 +1,6 @@
-//! Policy-admitted generation-bound recall semantics.
-//!
-//! Legacy native structures are retained. This compatibility wrapper restricts
-//! OOD and channel coverage to the admitted set. Its legacy contradiction
-//! accessor still infers stance from channels and is NOT explicit owner-issued
-//! proposition/polarity evidence; that migration remains an activation blocker.
+//! Policy-admitted native recall with explicit owner-issued statement stances.
+//! Union/packet commitments bind the actual proposition/polarity pairs.
+//! Legacy group digests are uninterpreted compatibility metadata.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -48,47 +45,47 @@ pub struct ContradictionEvidenceV1 {
 
 impl RetrievalChannelCandidateV1 {
     #[must_use]
-    pub fn contradiction_evidence(&self) -> Option<ContradictionEvidenceV1> {
-        self.contradiction_group_digest
-            .map(|proposition_digest| ContradictionEvidenceV1 {
-                proposition_digest,
-                polarity: polarity_for_channel(self.channel),
-            })
+    pub fn contradiction_evidence(&self) -> &[ContradictionEvidenceV1] {
+        &self.contradiction_evidence
     }
 }
 
 impl CandidateUnionEntryV1 {
     #[must_use]
-    pub fn contradiction_evidence(&self) -> Vec<ContradictionEvidenceV1> {
-        let polarities = self
-            .channels
-            .iter()
-            .copied()
-            .map(polarity_for_channel)
-            .collect::<BTreeSet<_>>();
-        let mut evidence = self
-            .contradiction_group_digests
-            .iter()
-            .flat_map(|proposition_digest| {
-                polarities
-                    .iter()
-                    .map(move |polarity| ContradictionEvidenceV1 {
-                        proposition_digest: *proposition_digest,
-                        polarity: *polarity,
-                    })
-            })
-            .collect::<Vec<_>>();
-        evidence.sort();
-        evidence.dedup();
-        evidence
+    pub fn contradiction_evidence(&self) -> &[ContradictionEvidenceV1] {
+        &self.contradiction_evidence
     }
 }
 
-const fn polarity_for_channel(channel: RetrievalChannelV1) -> ContradictionPolarityV1 {
-    if matches!(channel, RetrievalChannelV1::ContradictionSupport) {
-        ContradictionPolarityV1::Opposes
-    } else {
-        ContradictionPolarityV1::Supports
+pub(crate) fn validate_contradiction_evidence(
+    evidence: &[ContradictionEvidenceV1],
+) -> Result<(), RecallErrorV1> {
+    if evidence.len() > 64 {
+        return Err(RecallErrorV1::CandidateLimitExceeded);
+    }
+    if evidence
+        .iter()
+        .any(|item| item.proposition_digest.is_zero())
+        || evidence.windows(2).any(|pair| pair[0] >= pair[1])
+    {
+        return Err(RecallErrorV1::NonCanonicalCollection(
+            "explicit_contradiction_evidence",
+        ));
+    }
+    Ok(())
+}
+
+pub(crate) fn encode_contradiction_evidence(
+    bytes: &mut Vec<u8>,
+    evidence: &[ContradictionEvidenceV1],
+) {
+    bytes.extend_from_slice(&(evidence.len() as u64).to_be_bytes());
+    for item in evidence {
+        bytes.extend_from_slice(item.proposition_digest.as_array());
+        bytes.push(match item.polarity {
+            ContradictionPolarityV1::Supports => 0,
+            ContradictionPolarityV1::Opposes => 1,
+        });
     }
 }
 
@@ -200,7 +197,10 @@ pub(crate) fn policy_admitted_union(
     let entries = union
         .entries
         .iter()
-        .filter(|entry| entry.weighted_score >= policy.minimum_total_score)
+        .filter(|entry| {
+            entry.weighted_score > FixedQ32::ZERO
+                && entry.weighted_score >= policy.minimum_total_score
+        })
         .cloned()
         .collect::<Vec<_>>();
     let channels = entries
@@ -251,6 +251,7 @@ fn selection_from_entry(entry: &CandidateUnionEntryV1) -> RecallSelectionV1 {
         maximum_ood: entry.maximum_ood,
         channels: entry.channels.clone(),
         support_digests: entry.support_digests.clone(),
+        contradiction_evidence: entry.contradiction_evidence.clone(),
         contradiction_group_digests: entry.contradiction_group_digests.clone(),
     }
 }
@@ -258,3 +259,7 @@ fn selection_from_entry(entry: &CandidateUnionEntryV1) -> RecallSelectionV1 {
 #[cfg(test)]
 #[path = "generation_bound_semantic_tests.rs"]
 mod semantic_tests;
+
+#[cfg(test)]
+#[path = "explicit_evidence_tests.rs"]
+mod explicit_evidence_tests;

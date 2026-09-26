@@ -85,6 +85,7 @@ fn candidate(
         normalized_score: score,
         ood,
         support_digest: digest(&format!("support:{number}:{channel:?}")),
+        contradiction_evidence: Vec::new(),
         contradiction_group_digest: proposition,
         generation_vector_digest: cue().snapshot_key.vector_digest,
     }

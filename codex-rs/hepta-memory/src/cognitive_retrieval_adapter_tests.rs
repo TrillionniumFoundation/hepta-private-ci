@@ -308,8 +308,11 @@ async fn typed_kg_relations_route_to_exact_owner_channels_without_generic_relabe
         .expect("contradiction generator");
     assert!(
         contradiction.candidates[0]
-            .contradiction_group_digest
-            .is_some()
+            .contradiction_evidence
+            .is_empty()
+            && contradiction.candidates[0]
+                .contradiction_group_digest
+                .is_none()
     );
 }
 
@@ -367,3 +370,6 @@ async fn owner_adapter_rejects_observation_from_a_different_cut() {
         Err(CognitiveStoreError::Conflict(_))
     ));
 }
+
+#[path = "cognitive_retrieval_proposition_tests.rs"]
+mod proposition_tests;

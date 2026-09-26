@@ -267,6 +267,7 @@ pub fn generate_vector_batch_v1(
                 normalized_score: score,
                 ood: row.ood,
                 support_digest: support_digest(snapshot, query, row, score),
+                contradiction_evidence: Vec::new(),
                 contradiction_group_digest: None,
                 generation_vector_digest: snapshot.generation_vector_digest,
             })

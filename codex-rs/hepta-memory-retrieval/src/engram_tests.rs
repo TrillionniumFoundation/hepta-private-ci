@@ -79,6 +79,7 @@ fn candidate(number: u64, score_raw: i64) -> RetrievalChannelCandidateV1 {
         normalized_score: FixedQ32::from_raw(score_raw),
         ood: ProbabilityQ32::ZERO,
         support_digest: digest(&format!("support:{number}")),
+        contradiction_evidence: Vec::new(),
         contradiction_group_digest: None,
         generation_vector_digest: cue().snapshot_key.vector_digest,
     }

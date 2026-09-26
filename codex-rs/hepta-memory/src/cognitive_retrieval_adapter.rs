@@ -43,7 +43,6 @@ use crate::RetrievalObservation;
 const OWNER_GENERATION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-owner-generation.v1";
 const OWNER_SUPPORT_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-support.v1";
 const OWNER_POLICY_ID: &str = "policy:sqlite-owner-retrieval-v2";
-const OWNER_CONTRADICTION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-contradiction-group.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RetrievalExecutionContextV1 {
@@ -211,9 +210,8 @@ pub(crate) fn generated_input_from_owner_observation(
                     &record,
                     *channel_rank,
                 ),
-                contradiction_group_digest: (semantic_channel
-                    == RetrievalChannelV1::ContradictionSupport)
-                    .then(|| owner_contradiction_group_digest(owner_observation_digest)),
+                contradiction_evidence: observed.contradiction_evidence.clone(),
+                contradiction_group_digest: None,
                 generation_vector_digest: snapshot_key.vector_digest,
             });
         }
@@ -419,13 +417,6 @@ const fn owner_channel_code(channel: RetrievalChannel) -> u8 {
         RetrievalChannel::Procedural => 5,
         RetrievalChannel::ContradictionSupport => 6,
     }
-}
-
-fn owner_contradiction_group_digest(observation_digest: Digest32) -> Digest32 {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(OWNER_CONTRADICTION_DOMAIN);
-    bytes.extend_from_slice(observation_digest.as_array());
-    Digest32::of_bytes(&bytes)
 }
 
 #[cfg(test)]

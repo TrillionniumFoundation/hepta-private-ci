@@ -114,6 +114,7 @@ fn candidate(
     RetrievalChannelCandidateV1 {
         generation_vector_digest: cue().snapshot_key.vector_digest,
         support_digest: digest(&format!("support-{}-{channel:?}", record.record_id)),
+        contradiction_evidence: Vec::new(),
         contradiction_group_digest: None,
         normalized_score: FixedQ32::ONE,
         ood: probability(1_u64 << 28),

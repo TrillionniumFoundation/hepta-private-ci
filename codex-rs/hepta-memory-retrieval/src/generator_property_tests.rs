@@ -70,6 +70,7 @@ fn candidates(count: usize) -> Vec<RetrievalChannelCandidateV1> {
                 normalized_score: FixedQ32::ONE,
                 ood: ProbabilityQ32::ZERO,
                 support_digest: digest(&format!("support:{number}")),
+                contradiction_evidence: Vec::new(),
                 contradiction_group_digest: None,
                 generation_vector_digest: snapshot_key().vector_digest,
             }

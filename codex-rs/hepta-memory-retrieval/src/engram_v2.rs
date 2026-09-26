@@ -1027,6 +1027,7 @@ pub fn recall_with_engram(
                 maximum_ood: entry.maximum_ood,
                 channels: entry.channels.clone(),
                 support_digests: entry.support_digests.clone(),
+                contradiction_evidence: entry.contradiction_evidence.clone(),
                 contradiction_group_digests: entry.contradiction_group_digests.clone(),
             })
             .collect::<Vec<_>>();

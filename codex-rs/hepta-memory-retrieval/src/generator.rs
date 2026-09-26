@@ -202,6 +202,10 @@ impl RetrievalGeneratorBatchV1 {
             {
                 return Err(GeneratorErrorV1::ScoreOutOfRange);
             }
+            crate::generation_bound::validate_contradiction_evidence(
+                &candidate.contradiction_evidence,
+            )
+            .map_err(GeneratorErrorV1::Recall)?;
             ensure_digest("generator_candidate_support", candidate.support_digest)?;
             if let Some(group) = candidate.contradiction_group_digest {
                 ensure_digest("generator_contradiction_group", group)?;
@@ -290,6 +294,11 @@ impl GeneratedCandidateInputV1 {
                     ood: candidate.ood,
                     support_digests: BTreeSet::new(),
                     receipt_digests: BTreeSet::new(),
+                    contradiction_evidence: candidate
+                        .contradiction_evidence
+                        .iter()
+                        .copied()
+                        .collect(),
                     contradiction_group_digest: candidate.contradiction_group_digest,
                     generation_vector_digest: candidate.generation_vector_digest,
                 });
@@ -313,6 +322,9 @@ impl GeneratedCandidateInputV1 {
                     (None, Some(group)) => value.contradiction_group_digest = Some(group),
                     _ => {}
                 }
+                value
+                    .contradiction_evidence
+                    .extend(candidate.contradiction_evidence.iter().copied());
                 value.support_digests.insert(candidate.support_digest);
                 value.receipt_digests.insert(batch.receipt.receipt_digest);
             }
@@ -628,13 +640,22 @@ struct MergedCandidate {
     ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
     receipt_digests: BTreeSet<Digest32>,
+    contradiction_evidence: BTreeSet<crate::ContradictionEvidenceV1>,
     contradiction_group_digest: Option<Digest32>,
     generation_vector_digest: Digest32,
 }
 
 impl MergedCandidate {
     fn finish(self) -> RetrievalChannelCandidateV1 {
-        let mut bytes = b"hepta.retrieval-merged-support.v1".to_vec();
+        let mut bytes = b"hepta.retrieval-merged-support.v2".to_vec();
+        crate::generation_bound::encode_contradiction_evidence(
+            &mut bytes,
+            &self
+                .contradiction_evidence
+                .iter()
+                .copied()
+                .collect::<Vec<_>>(),
+        );
         push_len(&mut bytes, self.support_digests.len());
         for digest in self.support_digests {
             push_digest(&mut bytes, digest);
@@ -650,6 +671,7 @@ impl MergedCandidate {
             normalized_score: self.normalized_score,
             ood: self.ood,
             support_digest: Digest32::of_bytes(&bytes),
+            contradiction_evidence: self.contradiction_evidence.into_iter().collect(),
             contradiction_group_digest: self.contradiction_group_digest,
             generation_vector_digest: self.generation_vector_digest,
         }

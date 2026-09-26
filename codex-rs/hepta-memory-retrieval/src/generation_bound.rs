@@ -37,8 +37,8 @@ pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
 pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
-const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
-const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v1";
+const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v2";
+const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v2";
 const RETRIEVAL_CHANNEL_COUNT: u32 = 8;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -177,6 +177,7 @@ pub struct RetrievalChannelCandidateV1 {
     pub normalized_score: FixedQ32,
     pub ood: ProbabilityQ32,
     pub support_digest: Digest32,
+    pub contradiction_evidence: Vec<crate::ContradictionEvidenceV1>,
     pub contradiction_group_digest: Option<Digest32>,
     pub generation_vector_digest: Digest32,
 }
@@ -197,6 +198,7 @@ impl RetrievalChannelCandidateV1 {
         if self.normalized_score < FixedQ32::ZERO || self.normalized_score > FixedQ32::ONE {
             return Err(RecallErrorV1::ScoreOutOfRange("candidate_score"));
         }
+        super::validate_contradiction_evidence(&self.contradiction_evidence)?;
         ensure_digest("candidate_support", self.support_digest)?;
         if let Some(group) = self.contradiction_group_digest {
             ensure_digest("contradiction_group", group)?;
@@ -218,6 +220,7 @@ pub struct CandidateUnionEntryV1 {
     pub weighted_score: FixedQ32,
     pub maximum_ood: ProbabilityQ32,
     pub support_digests: Vec<Digest32>,
+    pub contradiction_evidence: Vec<crate::ContradictionEvidenceV1>,
     pub contradiction_group_digests: Vec<Digest32>,
 }
 
@@ -293,6 +296,7 @@ impl CandidateUnionV1 {
                     "union_contradiction_groups",
                 ));
             }
+            super::validate_contradiction_evidence(&entry.contradiction_evidence)?;
             observed_channels.extend(entry.channels.iter().copied());
             if let Some(left) = previous {
                 let ordered = left.weighted_score > entry.weighted_score
@@ -339,6 +343,7 @@ impl CandidateUnionV1 {
             for digest in &entry.support_digests {
                 push_digest(&mut bytes, *digest);
             }
+            super::encode_contradiction_evidence(&mut bytes, &entry.contradiction_evidence);
             push_len(&mut bytes, entry.contradiction_group_digests.len());
             for digest in &entry.contradiction_group_digests {
                 push_digest(&mut bytes, *digest);
@@ -372,6 +377,7 @@ pub struct RecallSelectionV1 {
     pub maximum_ood: ProbabilityQ32,
     pub channels: Vec<RetrievalChannelV1>,
     pub support_digests: Vec<Digest32>,
+    pub contradiction_evidence: Vec<crate::ContradictionEvidenceV1>,
     pub contradiction_group_digests: Vec<Digest32>,
 }
 
@@ -455,6 +461,7 @@ impl RecallPacketV1 {
         let mut identities = BTreeSet::new();
         let mut previous: Option<&RecallSelectionV1> = None;
         for selection in &self.selections {
+            super::validate_contradiction_evidence(&selection.contradiction_evidence)?;
             ensure_digest("selection_record", selection.record_digest)?;
             if selection.weighted_score < FixedQ32::ZERO || selection.weighted_score > FixedQ32::ONE
             {
@@ -575,6 +582,7 @@ impl RecallPacketV1 {
             for digest in &selection.support_digests {
                 push_digest(&mut bytes, *digest);
             }
+            super::encode_contradiction_evidence(&mut bytes, &selection.contradiction_evidence);
             push_len(&mut bytes, selection.contradiction_group_digests.len());
             for digest in &selection.contradiction_group_digests {
                 push_digest(&mut bytes, *digest);
@@ -802,6 +810,7 @@ pub fn build_candidate_union(
             weighted_score: FixedQ32::ZERO,
             maximum_ood: ProbabilityQ32::ZERO,
             support_digests: BTreeSet::new(),
+            contradiction_evidence: BTreeSet::new(),
             contradiction_group_digests: BTreeSet::new(),
         });
         if builder.record.record_digest() != candidate.record.record_digest() {
@@ -819,6 +828,9 @@ pub fn build_candidate_union(
         if candidate.ood > builder.maximum_ood {
             builder.maximum_ood = candidate.ood;
         }
+        builder
+            .contradiction_evidence
+            .extend(candidate.contradiction_evidence);
         builder.support_digests.insert(candidate.support_digest);
         if let Some(group) = candidate.contradiction_group_digest {
             builder.contradiction_group_digests.insert(group);
@@ -903,6 +915,7 @@ pub fn recall(
                     maximum_ood: entry.maximum_ood,
                     channels: entry.channels.clone(),
                     support_digests: entry.support_digests.clone(),
+                    contradiction_evidence: entry.contradiction_evidence.clone(),
                     contradiction_group_digests: entry.contradiction_group_digests.clone(),
                 })
                 .collect::<Vec<_>>();
@@ -938,6 +951,7 @@ struct UnionBuilder {
     weighted_score: FixedQ32,
     maximum_ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
+    contradiction_evidence: BTreeSet<crate::ContradictionEvidenceV1>,
     contradiction_group_digests: BTreeSet<Digest32>,
 }
 
@@ -949,6 +963,7 @@ impl UnionBuilder {
             weighted_score: self.weighted_score,
             maximum_ood: self.maximum_ood,
             support_digests: self.support_digests.into_iter().collect(),
+            contradiction_evidence: self.contradiction_evidence.into_iter().collect(),
             contradiction_group_digests: self.contradiction_group_digests.into_iter().collect(),
         }
     }

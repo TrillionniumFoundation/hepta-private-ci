@@ -80,6 +80,18 @@ fn candidate(
         normalized_score: score,
         ood,
         support_digest: digest(&format!("support:{number}:{channel:?}")),
+        // Fixture stances are explicit; production never infers from channels.
+        contradiction_evidence: proposition
+            .map(|proposition_digest| ContradictionEvidenceV1 {
+                proposition_digest,
+                polarity: if channel == RetrievalChannelV1::ContradictionSupport {
+                    ContradictionPolarityV1::Opposes
+                } else {
+                    ContradictionPolarityV1::Supports
+                },
+            })
+            .into_iter()
+            .collect(),
         contradiction_group_digest: proposition,
         generation_vector_digest: cue().snapshot_key.vector_digest,
     }

@@ -4,6 +4,9 @@
 
 use super::*;
 
+#[path = "cognitive_retrieval_propositions.rs"]
+mod propositions;
+
 /// Whether the executed channel queries and generator exhausted their input.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 pub enum RetrievalLimitObservation {
@@ -41,6 +44,8 @@ pub struct RetrievalChannelObservation {
 /// Digest-only source and scoring facts; raw memory/citation content is absent.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct ObservedRetrievalCandidate {
+    #[serde(serialize_with = "propositions::serialize_evidence")]
+    pub contradiction_evidence: Vec<codex_hepta_memory_retrieval::ContradictionEvidenceV1>,
     pub revalidation: MemoryRevalidationBinding,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
@@ -108,12 +113,22 @@ impl CognitiveStore {
         let mut observed = candidates
             .iter()
             .map(|candidate| ObservedRetrievalCandidate {
+                contradiction_evidence: Vec::new(),
                 revalidation: candidate.revalidation.clone(),
                 reciprocal_rank_score: candidate.reciprocal_rank_score,
                 channels: candidate.channels.clone(),
                 channel_ranks: candidate.channel_ranks.clone(),
             })
             .collect::<Vec<_>>();
+        for candidate in &mut observed {
+            candidate.contradiction_evidence = propositions::read_evidence(
+                &mut transaction,
+                self.owner_agent_id.as_str(),
+                &candidate.revalidation,
+                request.now_unix_seconds,
+            )
+            .await?;
+        }
         observed.sort_by(|left, right| {
             left.revalidation
                 .memory
@@ -132,7 +147,7 @@ impl CognitiveStore {
             candidates,
         };
         let bytes = serde_json::to_vec(&(
-            "hepta:cognitive:retrieval-observation:v1",
+            "hepta:cognitive:retrieval-observation:v2",
             &self.owner_agent_id,
             access.workspace_sha256(),
             &batch.query_sha256,
