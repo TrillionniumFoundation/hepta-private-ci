@@ -1,0 +1,41 @@
+name: memory federation isolated smoke
+
+on:
+  push:
+    branches:
+      - feat/memory-federation-production-closure-20260926
+    paths:
+      - ".github/workflows/memory-federation-slim-smoke.yml"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "scripts/run_memory_federation_qualification.sh"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-federation-isolated-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-slim
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config libssl-dev
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0 --component rustfmt,clippy
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Run exact qualification matrix
+        shell: bash
+        run: bash scripts/run_memory_federation_qualification.sh

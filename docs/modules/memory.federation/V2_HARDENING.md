@@ -167,3 +167,16 @@ This hardening wave does not by itself establish:
 - promotion/release authority.
 
 Those remain separate gates in the module qualification framework.
+
+### Target-host profile and degradation contract
+
+The V2 product runtime binds a validated target-host profile into runtime
+identity. Owner discovery, peer attempts, and final revalidation have separate
+bounded concurrency. Retrieval may degrade per failed peer with explicit
+coverage, while provider dispatch remains all-current for the exact selected
+binding set. `partial_peers` records unproven peer completeness separately from
+known `truncated_items`. Reaching the top-K ceiling is conservatively partial,
+not an assertion that no additional matching evidence exists.
+
+V1 compatibility is feature-gated behind `legacy-v1` and is absent from the
+default product dependency surface.

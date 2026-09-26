@@ -10,7 +10,8 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use futures::future::join_all;
+use futures::StreamExt;
+use futures::stream;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -63,9 +64,126 @@ use crate::RetrievalRequest;
 #[path = "cognitive_runtime_identity.rs"]
 mod identity;
 
-const PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(2);
-const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;
+pub const MAX_PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(30);
+pub const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;
+pub const MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY: usize = 32;
+pub const MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY: usize = 16;
+pub const MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY: usize = 16;
 const PRODUCT_FEDERATION_PURPOSE: &[u8] = b"hepta.cognitive.federated-recall.product.v2";
+
+/// Target-host limits for one product federation composition.
+///
+/// Every value is validated against an architecture ceiling before it can be
+/// installed. A host may reduce limits without changing the canonical V2
+/// contract, but it cannot widen the product beyond reviewed bounds.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MemoryFederationHostProfile {
+    total_budget: Duration,
+    max_owner_candidates: usize,
+    max_admitted_peers: usize,
+    discovery_concurrency: usize,
+    attempt_concurrency: usize,
+    revalidation_concurrency: usize,
+}
+
+impl MemoryFederationHostProfile {
+    pub fn try_new(
+        total_budget: Duration,
+        max_owner_candidates: usize,
+        max_admitted_peers: usize,
+        discovery_concurrency: usize,
+        attempt_concurrency: usize,
+        revalidation_concurrency: usize,
+    ) -> Result<Self, CognitiveStoreError> {
+        if total_budget < Duration::from_millis(1) || total_budget > MAX_PRODUCT_FEDERATION_TOTAL_BUDGET {
+            return Err(CognitiveStoreError::Invalid(format!(
+                "memory federation total budget must be 1ms..={}ms",
+                MAX_PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()
+            )));
+        }
+        if !(1..=MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS).contains(&max_owner_candidates) {
+            return Err(CognitiveStoreError::Invalid(format!(
+                "memory federation owner candidates must be 1..={MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS}"
+            )));
+        }
+        if !(1..=MAX_FEDERATION_SOURCES_PER_AGENT).contains(&max_admitted_peers) {
+            return Err(CognitiveStoreError::Invalid(format!(
+                "memory federation admitted peers must be 1..={MAX_FEDERATION_SOURCES_PER_AGENT}"
+            )));
+        }
+        if !(1..=MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY)
+            .contains(&discovery_concurrency)
+            || discovery_concurrency > max_owner_candidates
+        {
+            return Err(CognitiveStoreError::Invalid(format!(
+                "memory federation discovery concurrency must be 1..={} and no larger than owner candidates",
+                MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY
+            )));
+        }
+        if !(1..=MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY).contains(&attempt_concurrency)
+            || attempt_concurrency > max_admitted_peers
+        {
+            return Err(CognitiveStoreError::Invalid(format!(
+                "memory federation attempt concurrency must be 1..={} and no larger than admitted peers",
+                MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY
+            )));
+        }
+        if !(1..=MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY)
+            .contains(&revalidation_concurrency)
+            || revalidation_concurrency > max_admitted_peers
+        {
+            return Err(CognitiveStoreError::Invalid(format!(
+                "memory federation revalidation concurrency must be 1..={} and no larger than admitted peers",
+                MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY
+            )));
+        }
+        Ok(Self {
+            total_budget,
+            max_owner_candidates,
+            max_admitted_peers,
+            discovery_concurrency,
+            attempt_concurrency,
+            revalidation_concurrency,
+        })
+    }
+
+    pub const fn total_budget(self) -> Duration {
+        self.total_budget
+    }
+
+    pub const fn max_owner_candidates(self) -> usize {
+        self.max_owner_candidates
+    }
+
+    pub const fn max_admitted_peers(self) -> usize {
+        self.max_admitted_peers
+    }
+
+    pub const fn discovery_concurrency(self) -> usize {
+        self.discovery_concurrency
+    }
+
+    pub const fn attempt_concurrency(self) -> usize {
+        self.attempt_concurrency
+    }
+
+    pub const fn revalidation_concurrency(self) -> usize {
+        self.revalidation_concurrency
+    }
+}
+
+impl Default for MemoryFederationHostProfile {
+    fn default() -> Self {
+        Self {
+            total_budget: Duration::from_secs(2),
+            max_owner_candidates: MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS,
+            max_admitted_peers: MAX_FEDERATION_SOURCES_PER_AGENT,
+            discovery_concurrency: 8,
+            attempt_concurrency: MAX_FEDERATION_SOURCES_PER_AGENT,
+            revalidation_concurrency: 8,
+        }
+    }
+}
 static PRODUCT_FEDERATION_ATTEMPT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 /// Sanitized reason why an owning runtime could not open its Cognitive Plane.
@@ -127,6 +245,7 @@ pub enum CognitiveRuntime {
         consumer_agent_id: AgentId,
         owner_layouts: Arc<Vec<HeptaAgentLayout>>,
         omitted_owner_candidates: u32,
+        host_profile: MemoryFederationHostProfile,
     },
     Unavailable(CognitiveUnavailableReason),
 }
@@ -176,17 +295,31 @@ impl CognitiveRuntime {
     pub fn with_federation_sources(
         self,
         consumer_agent_id: AgentId,
+        owner_layouts: Vec<HeptaAgentLayout>,
+    ) -> Self {
+        self.with_federation_sources_profile(
+            consumer_agent_id,
+            owner_layouts,
+            MemoryFederationHostProfile::default(),
+        )
+    }
+
+    /// Product composition with an explicitly validated target-host profile.
+    pub fn with_federation_sources_profile(
+        self,
+        consumer_agent_id: AgentId,
         mut owner_layouts: Vec<HeptaAgentLayout>,
+        host_profile: MemoryFederationHostProfile,
     ) -> Self {
         owner_layouts.sort_by(|left, right| left.agent_id().cmp(right.agent_id()));
         owner_layouts.dedup_by(|left, right| left.agent_id() == right.agent_id());
         let omitted_owner_candidates = u32::try_from(
             owner_layouts
                 .len()
-                .saturating_sub(MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS),
+                .saturating_sub(host_profile.max_owner_candidates()),
         )
         .unwrap_or(u32::MAX);
-        owner_layouts.truncate(MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS);
+        owner_layouts.truncate(host_profile.max_owner_candidates());
         if owner_layouts.is_empty() {
             return self;
         }
@@ -198,6 +331,7 @@ impl CognitiveRuntime {
                 consumer_agent_id,
                 owner_layouts: Arc::new(owner_layouts),
                 omitted_owner_candidates,
+                host_profile,
             },
             Self::Absent | Self::Unavailable(_) => self,
         }
@@ -260,6 +394,7 @@ impl CognitiveRuntime {
                         requested_peers: 1,
                         completed_peers: 1,
                         failed_peers: 0,
+                        partial_peers: 0,
                         truncated_peers: 0,
                         omitted_peer_candidates: 0,
                         truncated_items: 0,
@@ -271,12 +406,14 @@ impl CognitiveRuntime {
                 consumer_agent_id,
                 owner_layouts,
                 omitted_owner_candidates,
+                host_profile,
                 ..
             } => {
                 retrieve_federated_product(
                     consumer_agent_id,
                     owner_layouts.as_slice(),
                     *omitted_owner_candidates,
+                    host_profile,
                     access,
                     request,
                 )
@@ -302,12 +439,14 @@ impl CognitiveRuntime {
                 consumer_agent_id,
                 owner_layouts,
                 omitted_owner_candidates,
+                host_profile,
                 ..
             } => {
                 retrieve_federated_product(
                     consumer_agent_id,
                     owner_layouts.as_slice(),
                     *omitted_owner_candidates,
+                    host_profile,
                     access,
                     request,
                 )
@@ -356,11 +495,13 @@ impl CognitiveRuntime {
             Self::AvailableFederatedV2 {
                 consumer_agent_id,
                 owner_layouts,
+                host_profile,
                 ..
             } => {
                 revalidate_federated_product_batch(
                     consumer_agent_id,
                     owner_layouts.as_slice(),
+                    host_profile,
                     access,
                     bindings,
                     now_unix_seconds,
@@ -394,11 +535,13 @@ impl CognitiveRuntime {
             Self::AvailableFederatedV2 {
                 consumer_agent_id,
                 owner_layouts,
+                host_profile,
                 ..
             } => {
                 revalidate_federated_product(
                     consumer_agent_id,
                     owner_layouts.as_slice(),
+                    host_profile,
                     access,
                     binding,
                     now_unix_seconds,
@@ -476,6 +619,7 @@ async fn retrieve_federated_product(
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
     omitted_owner_candidates: u32,
+    host_profile: &MemoryFederationHostProfile,
     access: &FederationConsumerAccess,
     request: &RetrievalRequest,
 ) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
@@ -488,51 +632,48 @@ async fn retrieve_federated_product(
     let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
     let started_at = Instant::now();
     let global_deadline_ms = logical_start_ms
-        .checked_add(u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX))
+        .checked_add(
+            u64::try_from(host_profile.total_budget().as_millis()).unwrap_or(u64::MAX),
+        )
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
-    let discovery = async {
-        let outcomes = join_all(owner_layouts.iter().map(|owner_layout| async move {
-            (
-                owner_layout.clone(),
-                FederatedMemoryReader::discover(
-                    owner_layout,
-                    consumer_agent_id,
-                    request.now_unix_seconds(),
-                )
-                .await,
+    let discovery = stream::iter(owner_layouts.iter().cloned())
+        .map(|owner_layout| async move {
+            let outcome = FederatedMemoryReader::discover(
+                &owner_layout,
+                consumer_agent_id,
+                request.now_unix_seconds(),
             )
-        }))
-        .await;
-        let mut readers = Vec::new();
-        let mut discovery_failures = 0usize;
-        for (owner_layout, outcome) in outcomes {
-            match outcome {
-                Ok(discovered) => {
-                    for reader in discovered {
-                        if reader.capability().scope().consumer_workspace_sha256()
-                            != access.workspace_sha256()
-                        {
-                            continue;
-                        }
-                        readers.push((owner_layout.clone(), reader));
+            .await;
+            (owner_layout, outcome)
+        })
+        .buffer_unordered(host_profile.discovery_concurrency())
+        .collect::<Vec<_>>();
+    let outcomes = tokio::time::timeout(host_profile.total_budget(), discovery)
+        .await
+        .map_err(|_| {
+            CognitiveStoreError::Unavailable("memory federation discovery timed out".to_string())
+        })?;
+    let mut readers = Vec::new();
+    let mut discovery_failures = 0usize;
+    for (owner_layout, outcome) in outcomes {
+        match outcome {
+            Ok(discovered) => {
+                for reader in discovered {
+                    if reader.capability().scope().consumer_workspace_sha256()
+                        != access.workspace_sha256()
+                    {
+                        continue;
                     }
-                }
-                Err(_) => {
-                    discovery_failures = discovery_failures.saturating_add(1);
+                    readers.push((owner_layout.clone(), reader));
                 }
             }
+            Err(_) => {
+                discovery_failures = discovery_failures.saturating_add(1);
+            }
         }
-        (readers, discovery_failures)
-    };
-    let (mut readers, discovery_failures) =
-        tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, discovery)
-            .await
-            .map_err(|_| {
-                CognitiveStoreError::Unavailable(
-                    "memory federation discovery timed out".to_string(),
-                )
-            })?;
+    }
+
     readers.sort_by(|(_, left), (_, right)| {
         left.capability()
             .owner_agent_id()
@@ -541,17 +682,22 @@ async fn retrieve_federated_product(
     });
     readers.dedup_by(|(_, left), (_, right)| left.capability().id() == right.capability().id());
     let observable_peer_slots = readers.len().saturating_add(discovery_failures);
-    let truncated_peers = observable_peer_slots.saturating_sub(MAX_FEDERATION_SOURCES_PER_AGENT);
-    readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
+    let truncated_peers =
+        observable_peer_slots.saturating_sub(host_profile.max_admitted_peers());
+    readers.truncate(host_profile.max_admitted_peers());
 
-    let discovery_failure_slots =
-        discovery_failures.min(MAX_FEDERATION_SOURCES_PER_AGENT.saturating_sub(readers.len()));
+    let discovery_failure_slots = discovery_failures.min(
+        host_profile
+            .max_admitted_peers()
+            .saturating_sub(readers.len()),
+    );
     let requested_peer_slots = readers.len().saturating_add(discovery_failure_slots);
     let query_sha256 = Sha256Digest::for_bytes(request.query().as_bytes());
     let mut coverage = FederatedCoverageV2 {
         requested_peers: u32::try_from(requested_peer_slots).unwrap_or(u32::MAX),
         completed_peers: 0,
         failed_peers: u32::try_from(discovery_failure_slots).unwrap_or(u32::MAX),
+        partial_peers: 0,
         truncated_peers: u32::try_from(truncated_peers).unwrap_or(u32::MAX),
         omitted_peer_candidates: omitted_owner_candidates,
         truncated_items: 0,
@@ -562,50 +708,53 @@ async fn retrieve_federated_product(
     };
     let mut candidates = Vec::new();
 
-    let attempts = join_all(readers.iter().map(|(owner_layout, reader)| async move {
-        if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
-            return Ok((
-                Err(FederationV2Error::DeadlineExpired),
-                Arc::new(Mutex::new(None)),
-            ));
-        }
-        let (query, lease) = build_product_query_and_lease(
-            reader,
-            access,
-            request,
-            logical_start_ms,
-            global_deadline_ms,
-        )?;
-        let captured = Arc::new(Mutex::new(None));
-        let transport = ProductReaderTransport {
-            reader,
-            access,
-            request,
-            captured: Arc::clone(&captured),
-        };
-        let authority = ProductReaderAuthority {
-            owner_layout,
-            consumer_agent_id,
-            expected_capability: reader.capability(),
-            logical_start_ms,
-            started_at,
-        };
-        let control = ProductAttemptControl {
-            logical_start_ms,
-            started_at,
-        };
-        let result = execute_once(
-            &transport,
-            &authority,
-            &control,
-            logical_start_ms,
-            query,
-            &lease,
-        )
+    let attempts = stream::iter(readers.iter())
+        .map(|(owner_layout, reader)| async move {
+            if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
+                return Ok((
+                    Err(FederationV2Error::DeadlineExpired),
+                    Arc::new(Mutex::new(None)),
+                ));
+            }
+            let (query, lease) = build_product_query_and_lease(
+                reader,
+                access,
+                request,
+                logical_start_ms,
+                global_deadline_ms,
+            )?;
+            let captured = Arc::new(Mutex::new(None));
+            let transport = ProductReaderTransport {
+                reader,
+                access,
+                request,
+                captured: Arc::clone(&captured),
+            };
+            let authority = ProductReaderAuthority {
+                owner_layout,
+                consumer_agent_id,
+                expected_capability: reader.capability(),
+                logical_start_ms,
+                started_at,
+            };
+            let control = ProductAttemptControl {
+                logical_start_ms,
+                started_at,
+            };
+            let result = execute_once(
+                &transport,
+                &authority,
+                &control,
+                logical_start_ms,
+                query,
+                &lease,
+            )
+            .await;
+            Ok::<_, CognitiveStoreError>((result, captured))
+        })
+        .buffer_unordered(host_profile.attempt_concurrency())
+        .collect::<Vec<_>>()
         .await;
-        Ok::<_, CognitiveStoreError>((result, captured))
-    }))
-    .await;
 
     for attempt in attempts {
         let (result, captured) = attempt?;
@@ -702,6 +851,9 @@ fn merge_product_coverage(
         .saturating_add(attempt.truncated_items);
     merge_failure_coverage(&mut aggregate.failures, &attempt.failures);
     if validity == FederatedValidityV2::Valid {
+        aggregate.partial_peers = aggregate
+            .partial_peers
+            .saturating_add(attempt.partial_peers);
         aggregate.completed_peers = aggregate
             .completed_peers
             .saturating_add(attempt.completed_peers);
@@ -779,6 +931,7 @@ fn record_product_failure(failures: &mut FederatedFailureCoverageV2, error: &Fed
 async fn revalidate_federated_product(
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
+    host_profile: &MemoryFederationHostProfile,
     access: &FederationConsumerAccess,
     binding: &FederatedMemoryRevalidationBinding,
     now_unix_seconds: i64,
@@ -786,6 +939,7 @@ async fn revalidate_federated_product(
     revalidate_federated_product_batch(
         consumer_agent_id,
         owner_layouts,
+        host_profile,
         access,
         std::slice::from_ref(binding),
         now_unix_seconds,
@@ -802,6 +956,7 @@ async fn revalidate_federated_product(
 async fn revalidate_federated_product_batch(
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
+    host_profile: &MemoryFederationHostProfile,
     access: &FederationConsumerAccess,
     bindings: &[FederatedMemoryRevalidationBinding],
     now_unix_seconds: i64,
@@ -817,82 +972,114 @@ async fn revalidate_federated_product_batch(
             bindings.len()
         ]);
     }
-    let revalidation = async {
-        let mut statuses = vec![None; bindings.len()];
 
-        for owner_layout in owner_layouts {
-            let owner_indices = bindings
-                .iter()
-                .enumerate()
-                .filter_map(|(index, binding)| {
-                    (binding.source_agent_id == *owner_layout.agent_id()).then_some(index)
-                })
-                .collect::<Vec<_>>();
-            if owner_indices.is_empty() {
-                continue;
-            }
-
-            let readers =
-                FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds)
-                    .await?;
-            let capability_ids = owner_indices
-                .iter()
-                .map(|index| bindings[*index].capability.id().as_str())
-                .collect::<BTreeSet<_>>();
-
-            for capability_id in capability_ids {
-                let group_indices = owner_indices
-                    .iter()
-                    .copied()
-                    .filter(|index| bindings[*index].capability.id().as_str() == capability_id)
-                    .collect::<Vec<_>>();
-                let Some(reader) = readers
-                    .iter()
-                    .find(|reader| reader.capability().id().as_str() == capability_id)
-                else {
-                    for index in group_indices {
-                        statuses[index] = Some(FederatedRevalidationStatus::Stale(
-                            FederationRevalidationDrift::CapabilityMissing,
-                        ));
-                    }
-                    continue;
-                };
-                let group_bindings = group_indices
-                    .iter()
-                    .map(|index| bindings[*index].clone())
-                    .collect::<Vec<_>>();
-                let group_statuses = reader
-                    .revalidate_many(access, &group_bindings, now_unix_seconds)
-                    .await?;
-                if group_statuses.len() != group_indices.len() {
-                    return Err(CognitiveStoreError::Corrupt(
-                        "product federation batch revalidation changed result cardinality"
-                            .to_string(),
-                    ));
-                }
-                for (index, status) in group_indices.into_iter().zip(group_statuses) {
-                    statuses[index] = Some(status);
-                }
-            }
-        }
-
-        Ok(statuses
-            .into_iter()
-            .map(|status| {
-                status.unwrap_or(FederatedRevalidationStatus::Stale(
-                    FederationRevalidationDrift::CapabilityMissing,
-                ))
+    let mut groups = Vec::new();
+    for owner_layout in owner_layouts {
+        let owner_indices = bindings
+            .iter()
+            .enumerate()
+            .filter_map(|(index, binding)| {
+                (binding.source_agent_id == *owner_layout.agent_id()).then_some(index)
             })
-            .collect::<Vec<_>>())
-    };
+            .collect::<Vec<_>>();
+        if owner_indices.is_empty() {
+            continue;
+        }
+        let capability_ids = owner_indices
+            .iter()
+            .map(|index| bindings[*index].capability.id().as_str().to_string())
+            .collect::<BTreeSet<_>>();
+        for capability_id in capability_ids {
+            let indexed_bindings = owner_indices
+                .iter()
+                .copied()
+                .filter(|index| bindings[*index].capability.id().as_str() == capability_id)
+                .map(|index| (index, bindings[index].clone()))
+                .collect::<Vec<_>>();
+            groups.push((owner_layout.clone(), capability_id, indexed_bindings));
+        }
+    }
 
-    tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, revalidation)
-        .await
-        .map_err(|_| {
-            CognitiveStoreError::Unavailable(
-                "memory federation final batch revalidation timed out".to_string(),
-            )
-        })?
+    let deadline = tokio::time::Instant::now() + host_profile.total_budget();
+    let access = access.clone();
+    let consumer_agent_id = consumer_agent_id.clone();
+    let outcomes = stream::iter(groups)
+        .map(|(owner_layout, capability_id, indexed_bindings)| {
+            let access = access.clone();
+            let consumer_agent_id = consumer_agent_id.clone();
+            async move {
+                let group_indices = indexed_bindings
+                    .iter()
+                    .map(|(index, _)| *index)
+                    .collect::<Vec<_>>();
+                let group_bindings = indexed_bindings
+                    .into_iter()
+                    .map(|(_, binding)| binding)
+                    .collect::<Vec<_>>();
+                let operation = async {
+                    let readers = FederatedMemoryReader::discover(
+                        &owner_layout,
+                        &consumer_agent_id,
+                        now_unix_seconds,
+                    )
+                    .await?;
+                    let Some(reader) = readers
+                        .iter()
+                        .find(|reader| reader.capability().id().as_str() == capability_id)
+                    else {
+                        return Ok(vec![
+                            FederatedRevalidationStatus::Stale(
+                                FederationRevalidationDrift::CapabilityMissing,
+                            );
+                            group_bindings.len()
+                        ]);
+                    };
+                    reader
+                        .revalidate_many(&access, &group_bindings, now_unix_seconds)
+                        .await
+                };
+                let statuses = match tokio::time::timeout_at(deadline, operation).await {
+                    Err(_) => vec![
+                        FederatedRevalidationStatus::Stale(
+                            FederationRevalidationDrift::TimedOut,
+                        );
+                        group_indices.len()
+                    ],
+                    Ok(Err(_)) => vec![
+                        FederatedRevalidationStatus::Stale(
+                            FederationRevalidationDrift::Unavailable,
+                        );
+                        group_indices.len()
+                    ],
+                    Ok(Ok(statuses)) if statuses.len() == group_indices.len() => statuses,
+                    Ok(Ok(_)) => vec![
+                        FederatedRevalidationStatus::Stale(
+                            FederationRevalidationDrift::Unavailable,
+                        );
+                        group_indices.len()
+                    ],
+                };
+                group_indices.into_iter().zip(statuses).collect::<Vec<_>>()
+            }
+        })
+        .buffer_unordered(host_profile.revalidation_concurrency())
+        .collect::<Vec<_>>()
+        .await;
+
+    let mut statuses = vec![None; bindings.len()];
+    for outcome in outcomes {
+        for (index, status) in outcome {
+            statuses[index] = Some(status);
+        }
+    }
+    Ok(statuses
+        .into_iter()
+        .map(|status| {
+            status.unwrap_or(FederatedRevalidationStatus::Stale(
+                FederationRevalidationDrift::CapabilityMissing,
+            ))
+        })
+        .collect())
 }
 
 struct ProductReaderTransport<'a> {
@@ -915,8 +1102,14 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
                 .iter()
                 .map(product_evidence_item)
                 .collect::<Result<Vec<_>, _>>()?;
+            let maximum_results =
+                usize::try_from(query.maximum_results).unwrap_or(usize::MAX);
             let completeness = if items.is_empty() {
                 FederatedCompletenessV2::Empty
+            } else if items.len() >= maximum_results {
+                // Reaching the bounded top-K ceiling does not prove that
+                // the owner scope has no additional matching evidence.
+                FederatedCompletenessV2::Partial
             } else {
                 FederatedCompletenessV2::Complete
             };

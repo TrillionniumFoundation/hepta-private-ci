@@ -1,0 +1,33 @@
+name: memory federation qualification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/blocking-ci.yml"
+      - ".github/workflows/memory-federation-pr-qualification.yml"
+      - ".github/workflows/memory-federation-v2-final-verify.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/app-server/**"
+      - "docs/modules/memory.federation/**"
+      - "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json"
+      - "qualification/memory-federation/**"
+      - "qualification/module-execution-dossiers/detail/memory.federation.md"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - "scripts/hepta-implementation-maps.py"
+      - "scripts/memory_federation_attestation.py"
+      - "scripts/run_memory_federation_qualification.sh"
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    uses: ./.github/workflows/memory-federation-v2-final-verify.yml
+    with:
+      expected_sha: ${{ github.event.pull_request.head.sha }}
