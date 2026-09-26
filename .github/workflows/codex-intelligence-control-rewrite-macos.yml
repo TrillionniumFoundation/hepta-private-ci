@@ -35,34 +35,56 @@ jobs:
           (cd codex-rs && cargo fmt --all)
           git diff --check
           python3 - <<'PY'
-          import re
           from pathlib import Path
 
           source = Path("codex-rs/hepta-agentd/src/intelligence_learning.rs").read_text()
-          start = source.index("pub async fn reconcile_unsettled")
-          end = source.index("pub async fn backlog_metrics", start)
-          reconcile = source[start:end]
-          patterns = (
-              r"fn observe_applied_payload\(",
-              r"let binding = record\.intent\.final_use_binding\(\);",
-              r"self\.grants\s*\.signed_grant\(&binding\)\?",
-              r"claim_final_use\(&self\.authority,\s*&signed,\s*&binding\)",
-              r"dispatch_final_use\(\s*&self\.authority,\s*token,\s*&binding,\s*\|\| apply_payload",
-              r"FinalUseError::EpochMismatch",
-              r"FinalUseError::Revoked",
-              r"ReconciliationOutcome::Applied",
-              r"ReconciliationOutcome::NotApplied",
-              r"ReconciliationOutcome::Quarantined",
+          normalized = " ".join(source.split())
+          start = normalized.index("pub async fn reconcile_unsettled")
+          end = normalized.index("pub async fn backlog_metrics", start)
+          reconcile = normalized[start:end]
+
+          required_source = (
+              "fn observe_applied_payload(",
+              "FinalUseError::EpochMismatch",
+              "FinalUseError::Revoked",
+              "ReconciliationOutcome::Applied",
+              "ReconciliationOutcome::NotApplied",
+              "ReconciliationOutcome::Quarantined",
+              "Ok(Some(receipt)) => ApplyObservation::Acknowledged(receipt)",
           )
-          missing = [pattern for pattern in patterns if re.search(pattern, source) is None]
-          if missing:
-              raise SystemExit(f"fresh-authority rewrite missing required source patterns: {missing}")
-          if "match observe_applied_payload(&writer, &payload)" not in reconcile:
-              raise SystemExit("restart reconciliation does not observe destination before replay")
-          if "Ok(Some(receipt)) => ApplyObservation::Acknowledged(receipt)" not in source:
-              raise SystemExit("destination observation cannot recognize an already-applied payload")
-          if "ApplyObservation::Acknowledged(receipt) => {" not in reconcile:
-              raise SystemExit("already-applied replay does not settle without consuming authority")
+          missing_source = [item for item in required_source if item not in normalized]
+          if missing_source:
+              raise SystemExit(
+                  f"fresh-authority rewrite missing required source anchors: {missing_source}"
+              )
+
+          required_reconcile = (
+              "let binding = record.intent.final_use_binding();",
+              "self.grants.signed_grant(&binding)?",
+              "claim_final_use(&self.authority, &signed, &binding)",
+              "dispatch_final_use(",
+              "&self.authority, token, &binding,",
+              "apply_payload(&mut writer, &payload)",
+              "ApplyObservation::Acknowledged(receipt)",
+          )
+          missing_reconcile = [item for item in required_reconcile if item not in reconcile]
+          if missing_reconcile:
+              raise SystemExit(
+                  f"restart reconciliation missing authority anchors: {missing_reconcile}"
+              )
+
+          ordered = (
+              "observe_applied_payload(&writer, &payload)",
+              "self.grants.signed_grant(&binding)?",
+              "claim_final_use(&self.authority, &signed, &binding)",
+              "dispatch_final_use(",
+              "apply_payload(&mut writer, &payload)",
+          )
+          positions = [reconcile.index(item) for item in ordered]
+          if positions != sorted(positions) or len(set(positions)) != len(positions):
+              raise SystemExit(
+                  f"restart reconciliation authority order is invalid: {positions}"
+              )
           PY
           (cd codex-rs && cargo metadata --format-version 1 --no-deps >/dev/null)
 
