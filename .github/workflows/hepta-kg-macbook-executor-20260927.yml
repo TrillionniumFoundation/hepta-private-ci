@@ -1,0 +1,172 @@
+name: Execute knowledge.graph convergence on MacBook build host
+
+on:
+  push:
+    branches: [ops/kg-convergence-execute-20260927]
+    paths:
+      - ".github/workflows/hepta-kg-macbook-executor-20260927.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-macbook-executor-20260927
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  CANDIDATE_BRANCH: ops/kg-convergence-execute-20260927
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  execute:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Materialize and qualify build-only candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/ops/kg-convergence-execute-20260927
+          test "$RUNNER_NAME" = macbook-pro
+          test "$RUNNER_OS" = macOS
+          test "$RUNNER_ARCH" = ARM64
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          EVIDENCE_DIR="$RUNNER_TEMP/kg-macbook-executor"
+          printf 'EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$EVIDENCE_DIR"
+
+          python3 - <<'PY'
+          import fcntl
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "kg-macbook-executor"
+          lock_path = Path(os.environ.get("TMPDIR", "/tmp")) / "hepta-knowledge-graph-macbook-build.lock"
+          with lock_path.open("a+") as lock:
+              try:
+                  fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+              except BlockingIOError:
+                  raise SystemExit("MacBook KG build fence is already held")
+              scripts = [
+                  "scripts/hepta-kg-convergence-apply-phase1.py",
+                  "scripts/hepta-kg-convergence-finalize.py",
+                  "scripts/hepta-kg-durable-writer-finalize.py",
+                  "scripts/hepta-kg-retrieval-finalize.py",
+                  "scripts/hepta-kg-scale-benchmark-finalize.py",
+              ]
+              subprocess.run([sys.executable, "-m", "py_compile", *scripts], check=True)
+              for script in scripts:
+                  with (evidence / (Path(script).stem + ".log")).open("wb") as output:
+                      subprocess.run([sys.executable, script], stdout=output, stderr=subprocess.STDOUT, check=True)
+          PY
+
+          (
+            cd codex-rs
+            cargo check --locked -p codex-hepta-kg -p codex-hepta-memory
+            cargo fmt --package codex-hepta-kg --package codex-hepta-memory
+            cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check
+            cargo test --locked -p codex-hepta-kg -- --nocapture
+            cargo test --locked -p codex-hepta-memory --lib cognitive_kg -- --nocapture
+            cargo test --locked -p codex-hepta-memory --lib cognitive_retrieval -- --nocapture
+            cargo clippy --locked -p codex-hepta-kg -p codex-hepta-memory \
+              --all-targets --no-deps -- -D warnings
+          ) 2>&1 | tee "$EVIDENCE_DIR/strict-qualification.log"
+
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          python3 scripts/hepta-module-docs.py verify
+          git diff --check
+
+          rm -f scripts/hepta-kg-convergence-apply-phase1.py
+          rm -f scripts/hepta-kg-convergence-finalize.py
+          rm -f scripts/hepta-kg-durable-writer-finalize.py
+          rm -f scripts/hepta-kg-retrieval-finalize.py
+          rm -f scripts/hepta-kg-scale-benchmark-finalize.py
+          rm -f .github/workflows/hepta-kg-convergence-apply.yml
+          rm -f .github/workflows/hepta-kg-source-diagnostic.yml
+          rm -f .github/workflows/hepta-kg-executor-20260927.yml
+          rm -f .github/workflows/hepta-kg-selfhosted-executor-20260927.yml
+          rm -f .github/workflows/hepta-kg-pocket4-executor-20260927.yml
+          rm -f .github/workflows/hepta-kg-macbook-executor-20260927.yml
+
+          git config user.name "Hepta KG Convergence Bot"
+          git config user.email "hepta-kg-convergence@users.noreply.github.com"
+          git add -A
+          git commit -s -m "knowledge.graph: bound indexed queries and incremental writer"
+          SOURCE_CANDIDATE_SHA="$(git rev-parse HEAD)"
+          SOURCE_CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
+          printf '%s\n' "$SOURCE_CANDIDATE_SHA" > "$EVIDENCE_DIR/source-sha.txt"
+          printf '%s\n' "$SOURCE_CANDIDATE_TREE" > "$EVIDENCE_DIR/source-tree.txt"
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+          (
+            cd codex-rs
+            cargo test --locked --release -p codex-hepta-kg \
+              canonical_cardinality_high_fanout_benchmark_receipt \
+              -- --ignored --nocapture
+          ) 2>&1 | tee "$EVIDENCE_DIR/kernel-benchmark-raw.log"
+
+          python3 scripts/hepta-knowledge-graph-target-measure.py \
+            --expected-sha "$SOURCE_CANDIDATE_SHA" \
+            --host-profile-id macbook-build-only-nonqualifying \
+            --writes 32 --query-samples 10 --reopen-samples 3 \
+            --contention-readers 2 --contention-rounds 3 \
+            --target-dir "$RUNNER_TEMP/kg-macbook-debug" \
+            --output "$EVIDENCE_DIR/build-benchmark.json" \
+            --raw-output "$EVIDENCE_DIR/build-benchmark-raw.log" \
+            2>&1 | tee "$EVIDENCE_DIR/build-benchmark-driver.log"
+
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$SOURCE_CANDIDATE_SHA" \
+            --expected-tree "$SOURCE_CANDIDATE_TREE"
+          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+          git commit -s -m "docs(knowledge.graph): bind exact measured source identity"
+
+          FINAL_SHA="$(git rev-parse HEAD)"
+          FINAL_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$FINAL_SHA" --expected-tree "$FINAL_TREE"
+          python3 scripts/hepta-technical-closure.py verify
+          python3 scripts/test_hepta_knowledge_graph_target_measure.py
+          python3 scripts/hepta-knowledge-graph-production-gate.py --self-test
+          python3 scripts/hepta-knowledge-graph-production-gate.py verify-state \
+            --policy qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json \
+            --state qualification/knowledge-graph/ACCEPTANCE_STATE.json \
+            --require-inactive
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-kg
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory --lib cognitive_kg
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory --lib cognitive_retrieval
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg -p codex-hepta-memory \
+            --all-targets --no-deps -- -D warnings
+          git diff --check
+          test -z "$(git status --porcelain)"
+          printf '%s\n' "$FINAL_SHA" > "$EVIDENCE_DIR/final-sha.txt"
+          printf '%s\n' "$FINAL_TREE" > "$EVIDENCE_DIR/final-tree.txt"
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+          (cd "$EVIDENCE_DIR" && shasum -a 256 ./* > SHA256SUMS)
+
+      - name: Retain build-only JSON and raw logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-macbook-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kg-macbook-executor/**
+          if-no-files-found: error
+          retention-days: 90
