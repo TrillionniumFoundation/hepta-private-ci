@@ -12,6 +12,8 @@ pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+/// Durable evidence adapter for signed terminal/usage reconciliation.
+pub mod verified_reconciliation;
 
 use std::error::Error as StdError;
 use std::fmt;
