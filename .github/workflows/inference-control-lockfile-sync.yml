@@ -1,0 +1,49 @@
+name: Inference control lockfile sync
+
+on:
+  push:
+    branches:
+      - work/inference-control-full-closure-20260927
+    paths:
+      - .github/workflows/inference-control-lockfile-sync.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-control-lockfile-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synchronize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Resolve only manifest-induced lockfile changes
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --format-version=1 --all-features --filter-platform aarch64-unknown-linux-gnu >/dev/null
+          git diff --check -- Cargo.lock
+          test -s Cargo.lock
+      - name: Commit lockfile and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/inference-control-lockfile-sync.yml
+          git add codex-rs/Cargo.lock .github/workflows/inference-control-lockfile-sync.yml
+          if git diff --cached --quiet -- codex-rs/Cargo.lock; then
+            echo 'Cargo.lock did not change although --locked qualification rejected it' >&2
+            exit 1
+          fi
+          git config user.name 'Hepta inference control CI'
+          git config user.email 'hepta-inference-control-ci@users.noreply.github.com'
+          git commit -m 'build(inference.control): synchronize Cargo lockfile'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
