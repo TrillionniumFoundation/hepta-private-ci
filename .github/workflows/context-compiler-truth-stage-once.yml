@@ -1,0 +1,41 @@
+name: context-compiler-truth-stage-once
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-truth-staging-20260927
+    paths:
+      - .github/workflows/context-compiler-truth-stage-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout truth staging branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/context-compiler-truth-staging-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Generate and verify truth set
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-context-compiler-bot"
+          git config user.email "hepta-context-compiler-bot@users.noreply.github.com"
+          python3 scripts/context_compiler_truth_phase.py
+          python3 -m py_compile \
+            scripts/context_compiler_truth_phase.py \
+            scripts/generate_context_compiler_module_docs.py \
+            scripts/context_compiler_qualification.py
+          python3 scripts/generate_context_compiler_module_docs.py --write
+          python3 scripts/generate_context_compiler_module_docs.py --check
+          git diff --check
+          git add -A
+          git commit -m "docs(context.compiler): generate current product path and source anchor"
+          git push origin HEAD:codex/context-compiler-truth-staging-20260927
