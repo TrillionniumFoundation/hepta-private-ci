@@ -59,6 +59,7 @@ jobs:
           set -euo pipefail
           python3 scripts/apply_runtime_codex_p0.py
           python3 scripts/fix_runtime_codex_p0.py
+          python3 scripts/fix_runtime_codex_p0_round2.py
           git diff --check
 
       - name: Format changed Rust packages
@@ -92,7 +93,7 @@ jobs:
         run: |
           set -o pipefail
           cargo test --locked -p codex-hepta-infer-worker-host -- --test-threads=1 \
-            2>&1 | tee "$RUNNER_TEMP/runtime-codex-worker-host.log"
+            2>&1 | tee "$RUNNER_TEMP/runtime-codex-worker-host.txt"
 
       - name: Retain exact worker-host failure on branch
         if: ${{ steps.worker_host.outcome == 'failure' }}
@@ -100,15 +101,16 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p qualification/runtime-codex-debug
-          cp "$RUNNER_TEMP/runtime-codex-worker-host.log" \
-            qualification/runtime-codex-debug/worker-host.log
+          cp "$RUNNER_TEMP/runtime-codex-worker-host.txt" \
+            qualification/runtime-codex-debug/worker-host.txt
           {
             printf 'head=%s\n' "$GITHUB_SHA"
             printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
             printf 'workflow_run=%s\n' "$GITHUB_RUN_ID"
             printf 'workflow_attempt=%s\n' "$GITHUB_RUN_ATTEMPT"
           } > qualification/runtime-codex-debug/identity.txt
-          git add qualification/runtime-codex-debug
+          git add -f qualification/runtime-codex-debug/worker-host.txt
+          git add qualification/runtime-codex-debug/identity.txt
           git config user.name "OpenAI Codex"
           git config user.email "noreply@openai.com"
           git commit -m "runtime.codex: capture worker-host failure [runtime-codex-debug]" \
@@ -143,6 +145,7 @@ jobs:
         run: |
           set -euo pipefail
           rm scripts/apply_runtime_codex_p0.py scripts/fix_runtime_codex_p0.py
+          rm scripts/fix_runtime_codex_p0_round2.py
           rm .github/workflows/runtime-codex-p0-bootstrap.yml
           rm -rf qualification/runtime-codex-debug
           git add -A
@@ -150,6 +153,6 @@ jobs:
           git config user.name "OpenAI Codex"
           git config user.email "noreply@openai.com"
           git commit -m "runtime.codex: close exact pre-effect abort [runtime-codex-bootstrap-complete]" \
-            -m "Bind Agentd dispatch to the exact runtime.codex request digest, durably stage local abort before owner reconciliation, and recover unknown dispatch acknowledgements without replay or owner-state divergence." \
+            -m "Bind Agentd dispatch to the exact runtime.codex request digest, durably stage local abort before owner reconciliation, preserve the exact dispatch winner, and recover unknown dispatch acknowledgements without replay or owner-state divergence." \
             -m "Signed-off-by: OpenAI <noreply@openai.com>"
           git push origin "HEAD:codex/runtime-codex-full-hardening-20260926"
