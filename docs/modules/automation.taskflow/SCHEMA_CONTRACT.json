@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.automation-taskflow.contract.v1",
+  "storeSchemaVersion": 19,
+  "taskflowSchemaVersion": 1,
+  "neuralCircuitCandidateSchemaVersion": 1,
+  "neuralCircuitRuntimeSchemaVersion": 1,
+  "runtimePolicySchemaVersion": 1,
+  "crossHostRecoverySchemaVersion": 1,
+  "migrationTopology": [
+    {
+      "version": 17,
+      "path": "codex-rs/hepta-automation/migrations/0017_kernel_operation_dedupe.sql",
+      "requiredMarker": "CREATE TABLE destination_operation_dedupe",
+      "purpose": "immutable destination operation dedupe"
+    },
+    {
+      "version": 18,
+      "path": "codex-rs/hepta-automation/migrations/0018_timer_lifecycle.sql",
+      "requiredMarker": "CREATE TABLE automation_timer_lifecycle",
+      "purpose": "timer lifecycle and writer epoch"
+    },
+    {
+      "version": 19,
+      "path": "codex-rs/hepta-automation/migrations/0019_converged_owner_schema.sql",
+      "requiredMarker": "schema_version = 19",
+      "purpose": "reviewed migration-history convergence"
+    }
+  ],
+  "productComposition": {
+    "calendarV2Agentd": true,
+    "externalEffectAgentdHost": true,
+    "boundedAdmissionBatch": true,
+    "separateRecoveryBudget": true,
+    "neuralCircuitVerticalSlice": true,
+    "crossHostRecoveryManifest": true
+  },
+  "externalGates": {
+    "selectedHostQualified": false,
+    "currentAuthenticIanaTzdbQualified": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  }
+}
