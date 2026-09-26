@@ -114,7 +114,7 @@ fn candidate(
     RetrievalChannelCandidateV1 {
         generation_vector_digest: cue().snapshot_key.vector_digest,
         support_digest: digest(&format!("support-{}-{channel:?}", record.record_id)),
-        contradiction_group_digest: None,
+        contradiction_evidence: None,
         normalized_score: FixedQ32::ONE,
         ood: probability(1_u64 << 28),
         record,
@@ -157,11 +157,17 @@ fn channel_completion_order_cannot_change_union_or_recall() {
 fn high_risk_contradiction_forces_abstention() {
     let cue = cue();
     let policy = policy();
-    let group = digest("contradiction-group");
+    let proposition = digest("contradiction-proposition");
     let mut first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
-    first.contradiction_group_digest = Some(group);
+    first.contradiction_evidence = Some(ContradictionEvidenceV1 {
+        proposition_digest: proposition,
+        polarity: ContradictionPolarityV1::Supports,
+    });
     let mut second = candidate(record(2), RetrievalChannelV1::Entity, 1);
-    second.contradiction_group_digest = Some(group);
+    second.contradiction_evidence = Some(ContradictionEvidenceV1 {
+        proposition_digest: proposition,
+        polarity: ContradictionPolarityV1::Opposes,
+    });
     let packet = recall(&cue, &policy, vec![first, second])
         .unwrap_or_else(|error| panic!("valid abstention: {error}"));
     assert_eq!(
@@ -169,6 +175,25 @@ fn high_risk_contradiction_forces_abstention() {
         RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ContradictoryEvidence)
     );
     assert!(packet.selections.is_empty());
+}
+
+#[test]
+fn multiple_same_polarity_contradiction_supports_do_not_abstain() {
+    let cue = cue();
+    let policy = policy();
+    let proposition = digest("same-side-proposition");
+    let evidence = ContradictionEvidenceV1 {
+        proposition_digest: proposition,
+        polarity: ContradictionPolarityV1::Opposes,
+    };
+    let mut first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    first.contradiction_evidence = Some(evidence);
+    let mut second = candidate(record(2), RetrievalChannelV1::Entity, 1);
+    second.contradiction_evidence = Some(evidence);
+    let packet = recall(&cue, &policy, vec![first, second])
+        .unwrap_or_else(|error| panic!("same-side evidence is valid: {error}"));
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(packet.selections.len(), 2);
 }
 
 #[test]
@@ -197,10 +222,16 @@ fn ood_and_insufficient_coverage_abstain_explicitly() {
         RecallDispositionV1::Abstained(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     );
 
-    let first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
-    let mut second = candidate(record(2), RetrievalChannelV1::Entity, 1);
-    second.ood = ProbabilityQ32::ONE;
-    let packet = recall(&cue, &policy, vec![first, second])
+    let mut ood_policy = policy();
+    ood_policy.minimum_distinct_channels = 1;
+    ood_policy.channel_weights = vec![RetrievalChannelWeightV1 {
+        channel: RetrievalChannelV1::Lexical,
+        weight: FixedQ32::ONE,
+        maximum_candidates: 16,
+    }];
+    let mut out_of_distribution = candidate(record(2), RetrievalChannelV1::Lexical, 1);
+    out_of_distribution.ood = ProbabilityQ32::ONE;
+    let packet = recall(&cue, &ood_policy, vec![out_of_distribution])
         .unwrap_or_else(|error| panic!("ood abstention: {error}"));
     assert_eq!(
         packet.disposition,
@@ -275,6 +306,41 @@ fn score_floor_applies_to_every_returned_selection() {
     assert_eq!(packet.selections.len(), 1);
     assert_eq!(packet.selections[0].record_id, id("memory:1"));
     assert_eq!(packet.omitted_count, 1);
+}
+
+#[test]
+fn low_score_or_high_ood_candidate_cannot_poison_admitted_recall() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.minimum_distinct_channels = 1;
+    policy.minimum_total_score = FixedQ32::from_raw(1_i64 << 31);
+    policy.channel_weights = vec![
+        RetrievalChannelWeightV1 {
+            channel: RetrievalChannelV1::Lexical,
+            weight: FixedQ32::ONE,
+            maximum_candidates: 16,
+        },
+        RetrievalChannelWeightV1 {
+            channel: RetrievalChannelV1::ContradictionSupport,
+            weight: FixedQ32::ONE,
+            maximum_candidates: 16,
+        },
+    ];
+    let high = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let baseline = recall(&cue, &policy, vec![high.clone()]).expect("baseline");
+
+    let mut poison = candidate(record(2), RetrievalChannelV1::ContradictionSupport, 1);
+    poison.normalized_score = FixedQ32::from_raw(1);
+    poison.ood = ProbabilityQ32::ONE;
+    poison.contradiction_evidence = Some(ContradictionEvidenceV1 {
+        proposition_digest: digest("unadmitted-poison"),
+        polarity: ContradictionPolarityV1::Opposes,
+    });
+    let with_poison = recall(&cue, &policy, vec![high, poison]).expect("poison excluded");
+    assert_eq!(baseline.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(with_poison.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(baseline.selections[0].record_id, with_poison.selections[0].record_id);
+    assert_eq!(with_poison.omitted_count, 1);
 }
 
 #[test]
@@ -376,6 +442,50 @@ fn property_all_candidate_permutations_have_one_union_and_recall() {
         }
         if !next_permutation(&mut order) {
             break;
+        }
+    }
+}
+
+#[test]
+fn property_legal_policy_matrix_is_order_invariant_and_bounded() {
+    let cue = cue();
+    for maximum_results in 1..=4 {
+        for minimum_score in [0_i64, 1, 1_i64 << 30, 1_i64 << 31] {
+            for maximum_ood in [1_u64 << 28, 1_u64 << 31, ProbabilityQ32::ONE.raw()] {
+                let mut policy = policy();
+                policy.maximum_results = maximum_results;
+                policy.minimum_distinct_channels = 1;
+                policy.minimum_total_score = FixedQ32::from_raw(minimum_score);
+                policy.maximum_ood = probability(maximum_ood);
+                let candidates = [
+                    candidate(record(1), RetrievalChannelV1::Lexical, 1),
+                    candidate(record(2), RetrievalChannelV1::Entity, 1),
+                    candidate(record(3), RetrievalChannelV1::ContradictionSupport, 1),
+                ];
+                let mut order = vec![0_usize, 1, 2];
+                let mut expected = None;
+                loop {
+                    let permutation = order
+                        .iter()
+                        .map(|index| candidates[*index].clone())
+                        .collect::<Vec<_>>();
+                    let packet = recall(&cue, &policy, permutation).expect("legal policy");
+                    assert!(packet.selections.len() <= usize::try_from(maximum_results).unwrap());
+                    assert!(
+                        packet.selections.len()
+                            + usize::try_from(packet.omitted_count).unwrap_or(usize::MAX)
+                            <= candidates.len()
+                    );
+                    if let Some(expected) = &expected {
+                        assert_eq!(expected, &packet);
+                    } else {
+                        expected = Some(packet);
+                    }
+                    if !next_permutation(&mut order) {
+                        break;
+                    }
+                }
+            }
         }
     }
 }

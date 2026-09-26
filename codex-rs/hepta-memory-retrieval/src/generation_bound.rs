@@ -37,8 +37,8 @@ pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
 pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
-const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
-const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v1";
+const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v2";
+const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v2";
 const RETRIEVAL_CHANNEL_COUNT: u32 = 8;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -53,6 +53,27 @@ pub enum RetrievalChannelV1 {
     /// Owner-native associative knowledge-graph expansion. This is not a
     /// claim that the relation is causal or procedural.
     Graph,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum ContradictionPolarityV1 {
+    Supports,
+    Opposes,
+}
+
+/// Proposition-scoped contradiction evidence. Two records conflict only when
+/// they bind the same proposition and carry opposite polarities. Multiple
+/// independent records on the same side are corroboration, not contradiction.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct ContradictionEvidenceV1 {
+    pub proposition_digest: Digest32,
+    pub polarity: ContradictionPolarityV1,
+}
+
+impl ContradictionEvidenceV1 {
+    pub(crate) fn validate(&self) -> Result<(), RecallErrorV1> {
+        ensure_digest("contradiction_proposition", self.proposition_digest)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -177,7 +198,7 @@ pub struct RetrievalChannelCandidateV1 {
     pub normalized_score: FixedQ32,
     pub ood: ProbabilityQ32,
     pub support_digest: Digest32,
-    pub contradiction_group_digest: Option<Digest32>,
+    pub contradiction_evidence: Option<ContradictionEvidenceV1>,
     pub generation_vector_digest: Digest32,
 }
 
@@ -198,8 +219,8 @@ impl RetrievalChannelCandidateV1 {
             return Err(RecallErrorV1::ScoreOutOfRange("candidate_score"));
         }
         ensure_digest("candidate_support", self.support_digest)?;
-        if let Some(group) = self.contradiction_group_digest {
-            ensure_digest("contradiction_group", group)?;
+        if let Some(evidence) = self.contradiction_evidence {
+            evidence.validate()?;
         }
         ensure_digest("candidate_generation_vector", self.generation_vector_digest)?;
         if self.generation_vector_digest != expected_generation_vector_digest {
@@ -218,7 +239,7 @@ pub struct CandidateUnionEntryV1 {
     pub weighted_score: FixedQ32,
     pub maximum_ood: ProbabilityQ32,
     pub support_digests: Vec<Digest32>,
-    pub contradiction_group_digests: Vec<Digest32>,
+    pub contradiction_evidence: Vec<ContradictionEvidenceV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -283,11 +304,11 @@ impl CandidateUnionV1 {
             {
                 return Err(RecallErrorV1::NonCanonicalCollection("union_support"));
             }
-            if !is_strictly_sorted_unique(&entry.contradiction_group_digests)
+            if !is_strictly_sorted_unique(&entry.contradiction_evidence)
                 || entry
-                    .contradiction_group_digests
+                    .contradiction_evidence
                     .iter()
-                    .any(|digest| digest.is_zero())
+                    .any(|evidence| evidence.validate().is_err())
             {
                 return Err(RecallErrorV1::NonCanonicalCollection(
                     "union_contradiction_groups",
@@ -339,9 +360,10 @@ impl CandidateUnionV1 {
             for digest in &entry.support_digests {
                 push_digest(&mut bytes, *digest);
             }
-            push_len(&mut bytes, entry.contradiction_group_digests.len());
-            for digest in &entry.contradiction_group_digests {
-                push_digest(&mut bytes, *digest);
+            push_len(&mut bytes, entry.contradiction_evidence.len());
+            for evidence in &entry.contradiction_evidence {
+                push_digest(&mut bytes, evidence.proposition_digest);
+                bytes.push(contradiction_polarity_code(evidence.polarity));
             }
         }
         Digest32::of_bytes(&bytes)
@@ -372,7 +394,7 @@ pub struct RecallSelectionV1 {
     pub maximum_ood: ProbabilityQ32,
     pub channels: Vec<RetrievalChannelV1>,
     pub support_digests: Vec<Digest32>,
-    pub contradiction_group_digests: Vec<Digest32>,
+    pub contradiction_evidence: Vec<ContradictionEvidenceV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -432,12 +454,15 @@ impl RecallPacketV1 {
         }
         if let Some(engram) = &self.engram
             && self.disposition == RecallDispositionV1::Recalled
-            && usize::try_from(engram.resources.candidate_records).unwrap_or(usize::MAX)
-                != candidate_count
         {
-            return Err(RecallErrorV1::InvalidEngram(
-                "engram candidate count differs from recall packet".to_string(),
-            ));
+            let engram_candidates =
+                usize::try_from(engram.resources.candidate_records).unwrap_or(usize::MAX);
+            if engram_candidates < self.selections.len() || engram_candidates > candidate_count {
+                return Err(RecallErrorV1::InvalidEngram(
+                    "engram candidate count is outside the admitted/full candidate bounds"
+                        .to_string(),
+                ));
+            }
         }
         if self.authority.grants_any() {
             return Err(RecallErrorV1::AuthorityGranted);
@@ -471,11 +496,11 @@ impl RecallPacketV1 {
                     .support_digests
                     .iter()
                     .any(|digest| digest.is_zero())
-                || !is_strictly_sorted_unique(&selection.contradiction_group_digests)
+                || !is_strictly_sorted_unique(&selection.contradiction_evidence)
                 || selection
-                    .contradiction_group_digests
+                    .contradiction_evidence
                     .iter()
-                    .any(|digest| digest.is_zero())
+                    .any(|evidence| evidence.validate().is_err())
             {
                 return Err(RecallErrorV1::NonCanonicalCollection("recall_selection"));
             }
@@ -575,9 +600,10 @@ impl RecallPacketV1 {
             for digest in &selection.support_digests {
                 push_digest(&mut bytes, *digest);
             }
-            push_len(&mut bytes, selection.contradiction_group_digests.len());
-            for digest in &selection.contradiction_group_digests {
-                push_digest(&mut bytes, *digest);
+            push_len(&mut bytes, selection.contradiction_evidence.len());
+            for evidence in &selection.contradiction_evidence {
+                push_digest(&mut bytes, evidence.proposition_digest);
+                bytes.push(contradiction_polarity_code(evidence.polarity));
             }
         }
         Digest32::of_bytes(&bytes)
@@ -802,7 +828,7 @@ pub fn build_candidate_union(
             weighted_score: FixedQ32::ZERO,
             maximum_ood: ProbabilityQ32::ZERO,
             support_digests: BTreeSet::new(),
-            contradiction_group_digests: BTreeSet::new(),
+            contradiction_evidence: BTreeSet::new(),
         });
         if builder.record.record_digest() != candidate.record.record_digest() {
             return Err(RecallErrorV1::ConflictingRecordRevision(
@@ -820,8 +846,8 @@ pub fn build_candidate_union(
             builder.maximum_ood = candidate.ood;
         }
         builder.support_digests.insert(candidate.support_digest);
-        if let Some(group) = candidate.contradiction_group_digest {
-            builder.contradiction_group_digests.insert(group);
+        if let Some(evidence) = candidate.contradiction_evidence {
+            builder.contradiction_evidence.insert(evidence);
         }
     }
 
@@ -851,35 +877,56 @@ pub fn build_candidate_union(
     Ok(result)
 }
 
+pub(crate) fn score_admitted_entries<'a>(
+    entries: &'a [CandidateUnionEntryV1],
+    policy: &RetrievalPolicyV1,
+) -> Vec<&'a CandidateUnionEntryV1> {
+    entries
+        .iter()
+        .filter(|entry| entry.weighted_score >= policy.minimum_total_score)
+        .collect()
+}
+
+pub(crate) fn risk_admitted_entries<'a>(
+    entries: &[&'a CandidateUnionEntryV1],
+    policy: &RetrievalPolicyV1,
+) -> Vec<&'a CandidateUnionEntryV1> {
+    entries
+        .iter()
+        .copied()
+        .filter(|entry| entry.maximum_ood <= policy.maximum_ood)
+        .collect()
+}
+
+pub(crate) fn admitted_distinct_channel_count(entries: &[&CandidateUnionEntryV1]) -> usize {
+    entries
+        .iter()
+        .flat_map(|entry| entry.channels.iter().copied())
+        .collect::<BTreeSet<_>>()
+        .len()
+}
+
 pub fn recall(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
     candidates: Vec<RetrievalChannelCandidateV1>,
 ) -> Result<RecallPacketV1, RecallErrorV1> {
     let union = build_candidate_union(cue, policy, candidates)?;
+    let score_admitted = score_admitted_entries(&union.entries, policy);
+    let admitted = risk_admitted_entries(&score_admitted, policy);
     let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let contradiction_count = contradiction_population_count(&union.entries);
-    let maximum_ood = union
-        .entries
-        .iter()
-        .map(|entry| entry.maximum_ood)
-        .max()
-        .unwrap_or(ProbabilityQ32::ZERO);
+    let admitted_channels = admitted_distinct_channel_count(&admitted);
+    let contradiction_count = contradiction_population_count(&admitted);
     let reason = if union.entries.is_empty() {
         Some(RecallAbstentionReasonV1::NoCandidate)
-    } else if observed_channels < minimum_channels {
+    } else if score_admitted.is_empty() {
+        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
+    } else if admitted.is_empty() {
+        Some(RecallAbstentionReasonV1::OutOfDistribution)
+    } else if admitted_channels < minimum_channels {
         Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     } else if policy.abstain_on_contradiction && contradiction_count > 0 {
         Some(RecallAbstentionReasonV1::ContradictoryEvidence)
-    } else if maximum_ood > policy.maximum_ood {
-        Some(RecallAbstentionReasonV1::OutOfDistribution)
-    } else if !union
-        .entries
-        .iter()
-        .any(|entry| entry.weighted_score >= policy.minimum_total_score)
-    {
-        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
     } else {
         None
     };
@@ -888,10 +935,8 @@ pub fn recall(
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
-            let selections = union
-                .entries
+            let selections = admitted
                 .iter()
-                .filter(|entry| entry.weighted_score >= policy.minimum_total_score)
                 .take(maximum_results)
                 .map(|entry| RecallSelectionV1 {
                     record_id: entry.record.record_id.clone(),
@@ -901,7 +946,7 @@ pub fn recall(
                     maximum_ood: entry.maximum_ood,
                     channels: entry.channels.clone(),
                     support_digests: entry.support_digests.clone(),
-                    contradiction_group_digests: entry.contradiction_group_digests.clone(),
+                    contradiction_evidence: entry.contradiction_evidence.clone(),
                 })
                 .collect::<Vec<_>>();
             let omitted_count = union.entries.len().saturating_sub(selections.len());
@@ -920,7 +965,7 @@ pub fn recall(
         disposition,
         selections,
         omitted_count,
-        distinct_channels: union.distinct_channels,
+        distinct_channels: u32::try_from(admitted_channels).unwrap_or(u32::MAX),
         engram: None,
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
@@ -936,7 +981,7 @@ struct UnionBuilder {
     weighted_score: FixedQ32,
     maximum_ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
-    contradiction_group_digests: BTreeSet<Digest32>,
+    contradiction_evidence: BTreeSet<ContradictionEvidenceV1>,
 }
 
 impl UnionBuilder {
@@ -947,19 +992,25 @@ impl UnionBuilder {
             weighted_score: self.weighted_score,
             maximum_ood: self.maximum_ood,
             support_digests: self.support_digests.into_iter().collect(),
-            contradiction_group_digests: self.contradiction_group_digests.into_iter().collect(),
+            contradiction_evidence: self.contradiction_evidence.into_iter().collect(),
         }
     }
 }
 
-fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
-    let mut populations = BTreeMap::<Digest32, usize>::new();
+pub(crate) fn contradiction_population_count(
+    entries: &[&CandidateUnionEntryV1],
+) -> usize {
+    let mut populations = BTreeMap::<Digest32, u8>::new();
     for entry in entries {
-        for group in &entry.contradiction_group_digests {
-            *populations.entry(*group).or_insert(0) += 1;
+        for evidence in &entry.contradiction_evidence {
+            let flag = match evidence.polarity {
+                ContradictionPolarityV1::Supports => 1,
+                ContradictionPolarityV1::Opposes => 2,
+            };
+            *populations.entry(evidence.proposition_digest).or_insert(0) |= flag;
         }
     }
-    populations.values().filter(|count| **count > 1).count()
+    populations.values().filter(|flags| **flags == 3).count()
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1057,6 +1108,13 @@ const fn channel_code(value: RetrievalChannelV1) -> u8 {
         RetrievalChannelV1::Procedural => 5,
         RetrievalChannelV1::ContradictionSupport => 6,
         RetrievalChannelV1::Graph => 7,
+    }
+}
+
+const fn contradiction_polarity_code(value: ContradictionPolarityV1) -> u8 {
+    match value {
+        ContradictionPolarityV1::Supports => 0,
+        ContradictionPolarityV1::Opposes => 1,
     }
 }
 

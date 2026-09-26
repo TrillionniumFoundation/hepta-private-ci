@@ -9,6 +9,8 @@ use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
+use codex_hepta_memory_retrieval::ContradictionEvidenceV1;
+use codex_hepta_memory_retrieval::ContradictionPolarityV1;
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::GeneratedCandidateInputV1;
@@ -43,7 +45,7 @@ use crate::RetrievalObservation;
 const OWNER_GENERATION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-owner-generation.v1";
 const OWNER_SUPPORT_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-support.v1";
 const OWNER_POLICY_ID: &str = "policy:sqlite-owner-retrieval-v2";
-const OWNER_CONTRADICTION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-contradiction-group.v1";
+const OWNER_CONTRADICTION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-contradiction-proposition.v2";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RetrievalExecutionContextV1 {
@@ -211,9 +213,15 @@ pub(crate) fn generated_input_from_owner_observation(
                     &record,
                     *channel_rank,
                 ),
-                contradiction_group_digest: (semantic_channel
+                contradiction_evidence: (semantic_channel
                     == RetrievalChannelV1::ContradictionSupport)
-                    .then(|| owner_contradiction_group_digest(owner_observation_digest)),
+                    .then(|| ContradictionEvidenceV1 {
+                        proposition_digest: owner_contradiction_proposition_digest(
+                            &observation.batch().query_sha256,
+                            snapshot_key.vector_digest,
+                        ),
+                        polarity: ContradictionPolarityV1::Opposes,
+                    }),
                 generation_vector_digest: snapshot_key.vector_digest,
             });
         }
@@ -421,10 +429,14 @@ const fn owner_channel_code(channel: RetrievalChannel) -> u8 {
     }
 }
 
-fn owner_contradiction_group_digest(observation_digest: Digest32) -> Digest32 {
+fn owner_contradiction_proposition_digest(
+    query_digest: &Sha256Digest,
+    generation_vector_digest: Digest32,
+) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(OWNER_CONTRADICTION_DOMAIN);
-    bytes.extend_from_slice(observation_digest.as_array());
+    bytes.extend_from_slice(query_digest.as_str().as_bytes());
+    bytes.extend_from_slice(generation_vector_digest.as_array());
     Digest32::of_bytes(&bytes)
 }
 

@@ -28,6 +28,10 @@ use crate::RecallSelectionV1;
 use crate::RetrievalChannelCandidateV1;
 use crate::RetrievalPolicyV1;
 use crate::build_candidate_union;
+use crate::generation_bound::admitted_distinct_channel_count;
+use crate::generation_bound::contradiction_population_count;
+use crate::generation_bound::risk_admitted_entries;
+use crate::generation_bound::score_admitted_entries;
 
 pub const MAX_ENGRAM_NODES: usize = 4096;
 pub const MAX_ENGRAM_SYNAPSES: usize = 32_768;
@@ -333,11 +337,15 @@ impl EngramDynamicsPolicyV1 {
         for (name, value) in [
             ("leak", self.leak),
             ("lateral_inhibition", self.lateral_inhibition),
-            ("minimum_activation", self.minimum_activation),
         ] {
             if value < FixedQ32::ZERO || value > FixedQ32::ONE {
                 return Err(EngramErrorV1::ScoreOutOfRange(name));
             }
+        }
+        if self.minimum_activation <= FixedQ32::ZERO
+            || self.minimum_activation > FixedQ32::ONE
+        {
+            return Err(EngramErrorV1::ScoreOutOfRange("minimum_activation"));
         }
         Ok(())
     }
@@ -483,7 +491,7 @@ impl EngramRecallReceiptV1 {
         let mut population_counts = BTreeMap::<EngramPopulationV1, usize>::new();
         let mut previous_active: Option<&ActiveEngramNodeV1> = None;
         for node in &self.active_nodes {
-            if node.activation < FixedQ32::ZERO || node.activation > FixedQ32::ONE {
+            if node.activation <= FixedQ32::ZERO || node.activation > FixedQ32::ONE {
                 return Err(EngramErrorV1::ScoreOutOfRange("active_node_activation"));
             }
             if node.support.is_empty() {
@@ -733,7 +741,9 @@ pub fn settle_engram(
         .collect::<BTreeMap<_, _>>();
     let mut incoming_synapses = BTreeMap::new();
     for synapse in &snapshot.synapses {
-        if expanded.contains(&synapse.source_node_id) && expanded.contains(&synapse.target_node_id)
+        if synapse.weight != FixedQ32::ZERO
+            && expanded.contains(&synapse.source_node_id)
+            && expanded.contains(&synapse.target_node_id)
         {
             incoming_synapses
                 .entry(synapse.target_node_id.clone())
@@ -816,7 +826,8 @@ pub fn settle_engram(
     let mut active_nodes = activation
         .iter()
         .filter_map(|(node_id, activation)| {
-            (*activation >= policy.minimum_activation).then_some((node_id, activation))
+            (*activation > FixedQ32::ZERO && *activation >= policy.minimum_activation)
+                .then_some((node_id, activation))
         })
         .map(|(node_id, activation)| {
             let node = node_map
@@ -870,6 +881,7 @@ pub fn settle_engram(
         .iter()
         .filter(|synapse| {
             synapse.relation == SynapseRelationV1::Contradicts
+                && synapse.weight != FixedQ32::ZERO
                 && active_ids.contains(&synapse.source_node_id)
                 && active_ids.contains(&synapse.target_node_id)
         })
@@ -933,6 +945,31 @@ pub fn settle_engram(
     Ok(receipt)
 }
 
+fn build_admitted_union(
+    full: &CandidateUnionV1,
+    admitted: &[&CandidateUnionEntryV1],
+) -> Result<CandidateUnionV1, RecallErrorV1> {
+    let entries = admitted.iter().map(|entry| (*entry).clone()).collect::<Vec<_>>();
+    let distinct_channels = entries
+        .iter()
+        .flat_map(|entry| entry.channels.iter().copied())
+        .collect::<BTreeSet<_>>()
+        .len();
+    let mut value = CandidateUnionV1 {
+        cue_digest: full.cue_digest,
+        policy_digest: full.policy_digest,
+        generation_vector_digest: full.generation_vector_digest,
+        entries,
+        distinct_channels: u32::try_from(distinct_channels).unwrap_or(u32::MAX),
+        omitted_by_channel_limits: full.omitted_by_channel_limits,
+        union_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    value.union_digest = value.compute_union_digest();
+    value.validate()?;
+    Ok(value)
+}
+
 pub fn recall_with_engram(
     cue: &MemoryCueV1,
     retrieval_policy: &RetrievalPolicyV1,
@@ -944,30 +981,32 @@ pub fn recall_with_engram(
     retrieval_policy.validate().map_err(EngramErrorV1::Recall)?;
     let union =
         build_candidate_union(cue, retrieval_policy, candidates).map_err(EngramErrorV1::Recall)?;
-    let engram = settle_engram(cue, &union, engram_snapshot, dynamics_policy)?;
+    let score_admitted = score_admitted_entries(&union.entries, retrieval_policy);
+    let admitted = risk_admitted_entries(&score_admitted, retrieval_policy);
+    let admitted_union =
+        build_admitted_union(&union, &admitted).map_err(EngramErrorV1::Recall)?;
+    let engram = settle_engram(cue, &admitted_union, engram_snapshot, dynamics_policy)?;
 
     let minimum_channels =
         usize::try_from(retrieval_policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let maximum_ood = union
-        .entries
-        .iter()
-        .map(|entry| entry.maximum_ood)
-        .max()
-        .unwrap_or(ProbabilityQ32::ZERO);
+    let admitted_channels = admitted_distinct_channel_count(&admitted);
     let contradiction =
-        !engram.contradictions.is_empty() || contradiction_population_count(&union.entries) > 0;
-    let reason = if union.entries.is_empty() || engram.selected_support.is_empty() {
+        !engram.contradictions.is_empty() || contradiction_population_count(&admitted) > 0;
+    let reason = if union.entries.is_empty() {
         Some(RecallAbstentionReasonV1::NoCandidate)
-    } else if observed_channels < minimum_channels {
+    } else if score_admitted.is_empty() {
+        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
+    } else if admitted.is_empty() {
+        Some(RecallAbstentionReasonV1::OutOfDistribution)
+    } else if engram.selected_support.is_empty() {
+        Some(RecallAbstentionReasonV1::NoCandidate)
+    } else if admitted_channels < minimum_channels {
         Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     } else if contradiction
         && (retrieval_policy.abstain_on_contradiction
             || dynamics_policy.contradiction_forces_abstention)
     {
         Some(RecallAbstentionReasonV1::ContradictoryEvidence)
-    } else if maximum_ood > retrieval_policy.maximum_ood {
-        Some(RecallAbstentionReasonV1::OutOfDistribution)
     } else {
         None
     };
@@ -977,14 +1016,13 @@ pub fn recall_with_engram(
     let (disposition, selections, omitted_count) = if let Some(reason) = reason {
         (RecallDispositionV1::Abstained(reason), Vec::new(), 0)
     } else {
-        let mut ranked = union
+        let mut ranked = admitted_union
             .entries
             .iter()
             .filter_map(|entry| {
                 let support = support_for_entry(entry);
                 let activation = active_strength.get(&support).copied()?;
-                (entry.weighted_score >= retrieval_policy.minimum_total_score)
-                    .then_some((entry, activation))
+                Some((entry, activation))
             })
             .collect::<Vec<_>>();
         ranked.sort_by(|(left, left_activation), (right, right_activation)| {
@@ -1005,7 +1043,7 @@ pub fn recall_with_engram(
                 maximum_ood: entry.maximum_ood,
                 channels: entry.channels.clone(),
                 support_digests: entry.support_digests.clone(),
-                contradiction_group_digests: entry.contradiction_group_digests.clone(),
+                contradiction_evidence: entry.contradiction_evidence.clone(),
             })
             .collect::<Vec<_>>();
         if selections.is_empty() {
@@ -1029,7 +1067,7 @@ pub fn recall_with_engram(
         disposition,
         selections,
         omitted_count,
-        distinct_channels: union.distinct_channels,
+        distinct_channels: u32::try_from(admitted_channels).unwrap_or(u32::MAX),
         engram: Some(engram),
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
@@ -1087,7 +1125,11 @@ fn expand_nodes(
             break;
         }
         let mut next = BTreeSet::new();
-        for synapse in &snapshot.synapses {
+        for synapse in snapshot
+            .synapses
+            .iter()
+            .filter(|synapse| synapse.weight != FixedQ32::ZERO)
+        {
             let mut consider = Vec::new();
             if frontier.contains(&synapse.source_node_id) {
                 consider.push(synapse.target_node_id.clone());
@@ -1181,13 +1223,27 @@ fn active_confidence(active_nodes: &[ActiveEngramNodeV1]) -> Result<ProbabilityQ
     if active_nodes.is_empty() {
         return Ok(ProbabilityQ32::ZERO);
     }
-    let total = active_nodes.iter().try_fold(0_u128, |sum, node| {
-        sum.checked_add(u128::from(node.confidence.raw()))
-            .ok_or(EngramErrorV1::Arithmetic)
-    })?;
-    let average =
-        total / u128::try_from(active_nodes.len()).map_err(|_| EngramErrorV1::Arithmetic)?;
-    ProbabilityQ32::from_raw(u64::try_from(average).map_err(|_| EngramErrorV1::Arithmetic)?)
+    let mut activation_total = 0_u128;
+    let mut weighted_confidence = 0_u128;
+    for node in active_nodes {
+        let activation = u128::try_from(node.activation.raw())
+            .map_err(|_| EngramErrorV1::Arithmetic)?;
+        activation_total = activation_total
+            .checked_add(activation)
+            .ok_or(EngramErrorV1::Arithmetic)?;
+        weighted_confidence = weighted_confidence
+            .checked_add(
+                activation
+                    .checked_mul(u128::from(node.confidence.raw()))
+                    .ok_or(EngramErrorV1::Arithmetic)?,
+            )
+            .ok_or(EngramErrorV1::Arithmetic)?;
+    }
+    if activation_total == 0 {
+        return Err(EngramErrorV1::Arithmetic);
+    }
+    let raw = weighted_confidence / activation_total;
+    ProbabilityQ32::from_raw(u64::try_from(raw).map_err(|_| EngramErrorV1::Arithmetic)?)
         .map_err(|_| EngramErrorV1::Arithmetic)
 }
 
@@ -1218,7 +1274,7 @@ fn support_for_entry(entry: &CandidateUnionEntryV1) -> EngramSupportV1 {
 fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
     let mut groups = BTreeMap::<Digest32, usize>::new();
     for entry in entries {
-        for group in &entry.contradiction_group_digests {
+        for group in &entry.contradiction_evidence {
             *groups.entry(*group).or_insert(0) += 1;
         }
     }

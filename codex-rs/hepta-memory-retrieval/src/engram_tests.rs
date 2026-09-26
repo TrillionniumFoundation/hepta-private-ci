@@ -79,7 +79,7 @@ fn candidate(number: u64, score_raw: i64) -> RetrievalChannelCandidateV1 {
         normalized_score: FixedQ32::from_raw(score_raw),
         ood: ProbabilityQ32::ZERO,
         support_digest: digest(&format!("support:{number}")),
-        contradiction_group_digest: None,
+        contradiction_evidence: None,
         generation_vector_digest: cue().snapshot_key.vector_digest,
     }
 }
@@ -475,6 +475,181 @@ fn recomputed_structural_receipt_forgery_fails_closed() {
         wrong_coverage.validate(),
         Err(EngramErrorV1::NonCanonical("engram_coverage"))
     );
+}
+
+#[test]
+fn minimum_activation_must_be_strictly_positive() {
+    let mut policy = EngramDynamicsPolicyV1::product_default().expect("policy");
+    policy.minimum_activation = FixedQ32::ZERO;
+    assert_eq!(
+        policy.validate(),
+        Err(EngramErrorV1::ScoreOutOfRange("minimum_activation"))
+    );
+}
+
+#[test]
+fn zero_activation_never_creates_active_support() {
+    let cue = cue();
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("zero-activation"),
+        vec![node(
+            "node:zero",
+            EngramPopulationV1::SemanticConcept,
+            vec![support(1)],
+            FixedQ32::ONE,
+        )],
+        Vec::new(),
+    )
+    .expect("snapshot");
+    let union = build_candidate_union(
+        &cue,
+        &retrieval_policy(1),
+        vec![candidate(1, FixedQ32::ONE.raw())],
+    )
+    .expect("union");
+    let policy = EngramDynamicsPolicyV1::product_default().expect("policy");
+    let receipt = settle_engram(&cue, &union, &snapshot, &policy).expect("settle");
+    assert!(receipt.active_nodes.is_empty());
+    assert!(receipt.selected_support.is_empty());
+    assert_eq!(receipt.confidence, ProbabilityQ32::ZERO);
+}
+
+#[test]
+fn zero_weight_contradiction_edge_is_semantically_inert() {
+    let cue = cue();
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("zero-weight-contradiction"),
+        vec![
+            node(
+                "node:left",
+                EngramPopulationV1::SemanticConcept,
+                vec![support(1)],
+                FixedQ32::ZERO,
+            ),
+            node(
+                "node:right",
+                EngramPopulationV1::SemanticConcept,
+                vec![support(2)],
+                FixedQ32::ZERO,
+            ),
+        ],
+        vec![synapse(
+            "node:left",
+            "node:right",
+            SynapseRelationV1::Contradicts,
+            FixedQ32::ZERO,
+        )],
+    )
+    .expect("snapshot");
+    let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("policy");
+    dynamics.leak = FixedQ32::ZERO;
+    dynamics.lateral_inhibition = FixedQ32::ZERO;
+    let packet = recall_with_engram(
+        &cue,
+        &retrieval_policy(2),
+        vec![
+            candidate(1, FixedQ32::ONE.raw()),
+            candidate(2, FixedQ32::ONE.raw()),
+        ],
+        &snapshot,
+        &dynamics,
+    )
+    .expect("recall");
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    let receipt = packet.engram.expect("engram");
+    assert!(receipt.contradictions.is_empty());
+    assert_eq!(receipt.resources.traversed_synapses, 0);
+}
+
+#[test]
+fn confidence_is_activation_weighted() {
+    let cue = cue();
+    let mut high = node(
+        "node:high",
+        EngramPopulationV1::SemanticConcept,
+        vec![support(1)],
+        FixedQ32::ZERO,
+    );
+    high.confidence = ProbabilityQ32::ONE;
+    let mut low = node(
+        "node:low",
+        EngramPopulationV1::EpisodicBinding,
+        vec![support(2)],
+        FixedQ32::ZERO,
+    );
+    low.confidence = ProbabilityQ32::ZERO;
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("weighted-confidence"),
+        vec![high, low],
+        Vec::new(),
+    )
+    .expect("snapshot");
+    let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("policy");
+    dynamics.leak = FixedQ32::ZERO;
+    dynamics.lateral_inhibition = FixedQ32::ZERO;
+    let union = build_candidate_union(
+        &cue,
+        &retrieval_policy(2),
+        vec![
+            candidate(1, FixedQ32::ONE.raw()),
+            candidate(2, 1_i64 << 30),
+        ],
+    )
+    .expect("union");
+    let receipt = settle_engram(&cue, &union, &snapshot, &dynamics).expect("settle");
+    let numerator = receipt.active_nodes.iter().fold(0_u128, |sum, node| {
+        sum + u128::try_from(node.activation.raw()).unwrap()
+            * u128::from(node.confidence.raw())
+    });
+    let denominator = receipt.active_nodes.iter().fold(0_u128, |sum, node| {
+        sum + u128::try_from(node.activation.raw()).unwrap()
+    });
+    let expected = ProbabilityQ32::from_raw(u64::try_from(numerator / denominator).unwrap())
+        .expect("probability");
+    assert_eq!(receipt.confidence, expected);
+    assert_ne!(receipt.confidence.raw(), ProbabilityQ32::ONE.raw() / 2);
+}
+
+#[test]
+fn hnmf_settles_only_policy_admitted_candidates() {
+    let cue = cue();
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("admitted-only"),
+        vec![
+            node(
+                "node:high",
+                EngramPopulationV1::SemanticConcept,
+                vec![support(1)],
+                FixedQ32::ZERO,
+            ),
+            node(
+                "node:low",
+                EngramPopulationV1::SemanticConcept,
+                vec![support(2)],
+                FixedQ32::ZERO,
+            ),
+        ],
+        Vec::new(),
+    )
+    .expect("snapshot");
+    let mut retrieval = retrieval_policy(1);
+    retrieval.minimum_total_score = FixedQ32::from_raw(1_i64 << 31);
+    let packet = recall_with_engram(
+        &cue,
+        &retrieval,
+        vec![candidate(1, FixedQ32::ONE.raw()), candidate(2, 1)],
+        &snapshot,
+        &EngramDynamicsPolicyV1::product_default().expect("dynamics"),
+    )
+    .expect("recall");
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(packet.selections[0].record_id, id("memory:1"));
+    assert_eq!(packet.omitted_count, 1);
+    assert_eq!(packet.engram.expect("engram").resources.candidate_records, 1);
 }
 
 #[test]

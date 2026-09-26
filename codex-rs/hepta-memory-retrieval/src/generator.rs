@@ -19,6 +19,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::CandidateUnionV1;
+use crate::ContradictionEvidenceV1;
 use crate::EngramDynamicsPolicyV1;
 use crate::EngramSnapshotV1;
 use crate::MAX_GENERATION_BOUND_CANDIDATES;
@@ -203,8 +204,11 @@ impl RetrievalGeneratorBatchV1 {
                 return Err(GeneratorErrorV1::ScoreOutOfRange);
             }
             ensure_digest("generator_candidate_support", candidate.support_digest)?;
-            if let Some(group) = candidate.contradiction_group_digest {
-                ensure_digest("generator_contradiction_group", group)?;
+            if let Some(evidence) = candidate.contradiction_evidence {
+                ensure_digest(
+                    "generator_contradiction_proposition",
+                    evidence.proposition_digest,
+                )?;
             }
             let identity = (
                 candidate.record.record_id.clone(),
@@ -290,7 +294,7 @@ impl GeneratedCandidateInputV1 {
                     ood: candidate.ood,
                     support_digests: BTreeSet::new(),
                     receipt_digests: BTreeSet::new(),
-                    contradiction_group_digest: candidate.contradiction_group_digest,
+                    contradiction_evidence: candidate.contradiction_evidence,
                     generation_vector_digest: candidate.generation_vector_digest,
                 });
                 if value.record.record_digest() != candidate.record.record_digest() {
@@ -302,15 +306,15 @@ impl GeneratedCandidateInputV1 {
                 value.normalized_score = value.normalized_score.max(candidate.normalized_score);
                 value.ood = value.ood.max(candidate.ood);
                 match (
-                    value.contradiction_group_digest,
-                    candidate.contradiction_group_digest,
+                    value.contradiction_evidence,
+                    candidate.contradiction_evidence,
                 ) {
                     (Some(left), Some(right)) if left != right => {
-                        return Err(GeneratorErrorV1::ConflictingContradictionGroup(
+                        return Err(GeneratorErrorV1::ConflictingContradictionEvidence(
                             candidate.record.record_id.to_string(),
                         ));
                     }
-                    (None, Some(group)) => value.contradiction_group_digest = Some(group),
+                    (None, Some(group)) => value.contradiction_evidence = Some(group),
                     _ => {}
                 }
                 value.support_digests.insert(candidate.support_digest);
@@ -628,7 +632,7 @@ struct MergedCandidate {
     ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
     receipt_digests: BTreeSet<Digest32>,
-    contradiction_group_digest: Option<Digest32>,
+    contradiction_evidence: Option<ContradictionEvidenceV1>,
     generation_vector_digest: Digest32,
 }
 
@@ -650,7 +654,7 @@ impl MergedCandidate {
             normalized_score: self.normalized_score,
             ood: self.ood,
             support_digest: Digest32::of_bytes(&bytes),
-            contradiction_group_digest: self.contradiction_group_digest,
+            contradiction_evidence: self.contradiction_evidence,
             generation_vector_digest: self.generation_vector_digest,
         }
     }
@@ -674,7 +678,7 @@ pub enum GeneratorErrorV1 {
     UnavailableWithCandidates,
     DuplicateCandidate(String),
     ConflictingRecordRevision(String),
-    ConflictingContradictionGroup(String),
+    ConflictingContradictionEvidence(String),
     InvalidRecord(String),
     TombstoneCandidate(String),
     ZeroChannelRank,
