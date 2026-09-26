@@ -1,4 +1,4 @@
-name: Codex intelligence-control fresh-authority rewrite macOS
+name: Codex intelligence-control recovery repair macOS
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: codex-intelligence-control-fresh-authority-rewrite-macos
+  group: codex-intelligence-control-recovery-repair-macos
   cancel-in-progress: false
 
 jobs:
@@ -26,12 +26,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Apply restart replay fresh-authority rewrite
+      - name: Repair persisted completeness observation
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          python3 -m py_compile scripts/codex-intelligence-learning-reconcile-rewrite.py
-          python3 scripts/codex-intelligence-learning-reconcile-rewrite.py
+          python3 -m py_compile scripts/codex-intelligence-learning-completeness-rewrite.py
+          python3 scripts/codex-intelligence-learning-completeness-rewrite.py
           (cd codex-rs && cargo fmt --all)
           git diff --check
           python3 - <<'PY'
@@ -39,52 +39,25 @@ jobs:
 
           source = Path("codex-rs/hepta-agentd/src/intelligence_learning.rs").read_text()
           normalized = " ".join(source.split())
-          start = normalized.index("pub async fn reconcile_unsettled")
-          end = normalized.index("pub async fn backlog_metrics", start)
-          reconcile = normalized[start:end]
-
-          required_source = (
-              "fn observe_applied_payload(",
-              "FinalUseError::EpochMismatch",
-              "FinalUseError::Revoked",
-              "ReconciliationOutcome::Applied",
-              "ReconciliationOutcome::NotApplied",
-              "ReconciliationOutcome::Quarantined",
-              "Ok(Some(receipt)) => ApplyObservation::Acknowledged(receipt)",
-          )
-          missing_source = [item for item in required_source if item not in normalized]
-          if missing_source:
-              raise SystemExit(
-                  f"fresh-authority rewrite missing required source anchors: {missing_source}"
-              )
-
-          required_reconcile = (
-              "let binding = record.intent.final_use_binding();",
-              "self.grants.signed_grant(&binding)?",
-              "claim_final_use(&self.authority, &signed, &binding)",
-              "dispatch_final_use(",
-              "&self.authority, token, &binding,",
-              "apply_payload(&mut writer, &payload)",
-              "ApplyObservation::Acknowledged(receipt)",
-          )
-          missing_reconcile = [item for item in required_reconcile if item not in reconcile]
-          if missing_reconcile:
-              raise SystemExit(
-                  f"restart reconciliation missing authority anchors: {missing_reconcile}"
-              )
-
-          ordered = (
+          required = (
+              "use codex_hepta_learning_ledger::validate_candidate_set_completeness;",
+              "validate_candidate_set_completeness(&completeness)",
+              "value.candidate_completeness_digest == completeness_digest",
               "observe_applied_payload(&writer, &payload)",
               "self.grants.signed_grant(&binding)?",
               "claim_final_use(&self.authority, &signed, &binding)",
               "dispatch_final_use(",
-              "apply_payload(&mut writer, &payload)",
           )
-          positions = [reconcile.index(item) for item in ordered]
-          if positions != sorted(positions) or len(set(positions)) != len(positions):
-              raise SystemExit(
-                  f"restart reconciliation authority order is invalid: {positions}"
-              )
+          missing = [item for item in required if item not in normalized]
+          if missing:
+              raise SystemExit(f"recovery repair missing required source anchors: {missing}")
+          forbidden = (
+              "value.completeness == completeness",
+              "classify_apply(apply_payload(&mut writer, &payload))",
+          )
+          present = [item for item in forbidden if item in normalized]
+          if present:
+              raise SystemExit(f"stale recovery forms remain: {present}")
           PY
           (cd codex-rs && cargo metadata --format-version 1 --no-deps >/dev/null)
 
@@ -97,7 +70,7 @@ jobs:
             exit 1
           fi
 
-      - name: Commit fresh-authority replay closure
+      - name: Commit recovery observation repair
         run: |
           set -euo pipefail
           if git diff --quiet; then
@@ -106,5 +79,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add codex-rs/hepta-agentd/src/intelligence_learning.rs
-          git commit -m 'fix(intelligence): revalidate authority before restart replay'
+          git commit -m 'fix(intelligence): match persisted decision completeness digest'
           git push origin HEAD:codex/intelligence-control-product-closure-20260926
