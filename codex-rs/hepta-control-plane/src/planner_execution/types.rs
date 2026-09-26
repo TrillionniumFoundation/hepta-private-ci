@@ -107,15 +107,6 @@ pub enum IndeterminateStageV1 {
     Effect,
 }
 
-impl IndeterminateStageV1 {
-    const fn tag(self) -> u8 {
-        match self {
-            Self::Authority => 0,
-            Self::Effect => 1,
-        }
-    }
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlannerIndeterminateV1 {
     pub stage: IndeterminateStageV1,
