@@ -3,10 +3,10 @@
   "module": "context.compiler",
   "generated": {
     "manifest": "docs/modules/context.compiler/MODULE_MANIFEST.json",
-    "manifestSha256": "e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930",
+    "manifestSha256": "aef55e4f85b005eb7aae052cffecf3f7f6711b85f7801e87eff0b938559178fa",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "branch": "codex/context-compiler-v2-provider-closure-20260927"
+    "branch": "codex/context-compiler-v2-full-closure-20260927"
   },
   "status": {
     "coreImplementation": "complete",
@@ -26,7 +26,15 @@
     "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/ext/hepta-prompt/src/lib.rs",
-    "codex-rs/core/src/model_provider_policy"
+    "codex-rs/core/src/model_provider_policy",
+    "codex-rs/codex-api/src/dispatch_metadata.rs",
+    "codex-rs/codex-api/src/endpoint/responses.rs",
+    "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+    "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs",
+    "codex-rs/hepta-context-compiler/src/provider_bound.rs",
+    "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+    "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+    "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs"
   ],
   "publicSurface": [
     "compile_v2",
@@ -108,9 +116,10 @@
     "commands": [
       "python3 scripts/generate_context_compiler_module_docs.py --check",
       "cargo fmt --all -- --check",
-      "cargo test -p codex-hepta-context-compiler",
-      "cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings",
-      "cargo deny check",
+      "cargo test --locked -p codex-hepta-context-compiler",
+      "cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings",
+      "cargo deny --locked check bans licenses sources",
+      "cargo deny --locked check advisories (recorded non-blocking repository audit)",
       "bazel test //codex-rs/hepta-context-compiler:all",
       "python3 scripts/hepta-readiness.py verify",
       "python3 scripts/hepta-docs.py verify"

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "module": "context.compiler",
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-  "branch": "codex/context-compiler-v2-provider-closure-20260927",
+  "branch": "codex/context-compiler-v2-full-closure-20260927",
   "generatedBy": "scripts/generate_context_compiler_module_docs.py",
   "status": {
     "coreImplementation": "complete",
@@ -27,7 +27,15 @@
     "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/ext/hepta-prompt/src/lib.rs",
-    "codex-rs/core/src/model_provider_policy"
+    "codex-rs/core/src/model_provider_policy",
+    "codex-rs/codex-api/src/dispatch_metadata.rs",
+    "codex-rs/codex-api/src/endpoint/responses.rs",
+    "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+    "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs",
+    "codex-rs/hepta-context-compiler/src/provider_bound.rs",
+    "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+    "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+    "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs"
   ],
   "publicSurface": [
     "compile_v2",
@@ -90,9 +98,10 @@
     "commands": [
       "python3 scripts/generate_context_compiler_module_docs.py --check",
       "cargo fmt --all -- --check",
-      "cargo test -p codex-hepta-context-compiler",
-      "cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings",
-      "cargo deny check",
+      "cargo test --locked -p codex-hepta-context-compiler",
+      "cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings",
+      "cargo deny --locked check bans licenses sources",
+      "cargo deny --locked check advisories (recorded non-blocking repository audit)",
       "bazel test //codex-rs/hepta-context-compiler:all",
       "python3 scripts/hepta-readiness.py verify",
       "python3 scripts/hepta-docs.py verify"

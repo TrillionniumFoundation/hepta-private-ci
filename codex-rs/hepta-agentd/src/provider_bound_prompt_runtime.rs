@@ -134,9 +134,7 @@ impl ProviderBoundPromptStageV2 {
             dispatch_id,
             generation,
             bundle_digest: prepared.bundle_digest(),
-            canonical_serialization_proof_digest: prepared
-                .canonical_serialization()
-                .proof_digest(),
+            canonical_serialization_proof_digest: prepared.canonical_serialization().proof_digest(),
             canonical_payload_digest: prepared
                 .canonical_serialization()
                 .canonical_payload()
@@ -228,10 +226,7 @@ impl ProviderBoundPromptStageV2 {
             ),
             ("wire_semantic", self.wire_semantic_digest),
             ("tokenizer_identity", self.tokenizer_identity_digest),
-            (
-                "tokenizer_attestation",
-                self.tokenizer_attestation_digest,
-            ),
+            ("tokenizer_attestation", self.tokenizer_attestation_digest),
             ("stage", self.stage_digest),
         ] {
             ensure_digest(name, digest)?;
@@ -383,8 +378,7 @@ impl ProviderBoundTerminalRecordV2 {
             claim_digest: claim.claim_digest,
             preparation_digest: receipt.preparation_digest(),
             attachment_digest: receipt.attachment_digest(),
-            canonical_serialization_proof_digest: receipt
-                .canonical_serialization_proof_digest(),
+            canonical_serialization_proof_digest: receipt.canonical_serialization_proof_digest(),
             canonical_payload_digest: receipt.canonical_payload_digest(),
             provider_request_digest: receipt.provider_request_digest(),
             provider_request_coverage_digest: receipt.provider_request_coverage_digest(),
@@ -437,16 +431,12 @@ impl ProviderBoundTerminalRecordV2 {
             | ContextDeliveryDispositionV2::Rejected
             | ContextDeliveryDispositionV2::NotDispatched => {
                 if !self.terminal_observed {
-                    return Err(
-                        AgentdProviderBoundPromptRuntimeErrorV2::TerminalBindingMismatch,
-                    );
+                    return Err(AgentdProviderBoundPromptRuntimeErrorV2::TerminalBindingMismatch);
                 }
             }
             ContextDeliveryDispositionV2::Indeterminate => {
                 if self.terminal_observed {
-                    return Err(
-                        AgentdProviderBoundPromptRuntimeErrorV2::TerminalBindingMismatch,
-                    );
+                    return Err(AgentdProviderBoundPromptRuntimeErrorV2::TerminalBindingMismatch);
                 }
             }
         }
@@ -608,10 +598,7 @@ impl ProviderBoundDispatchLeaseV2 {
                 self.provider_request_coverage_digest,
             ),
             ("wire_semantic", self.wire_semantic_digest),
-            (
-                "tokenizer_attestation",
-                self.tokenizer_attestation_digest,
-            ),
+            ("tokenizer_attestation", self.tokenizer_attestation_digest),
         ] {
             ensure_digest(name, digest)?;
         }
@@ -708,7 +695,11 @@ impl AgentdProviderBoundPromptRuntimeV2 {
             if entry.stage.generation != expected_generation {
                 return Err(AgentdProviderBoundPromptRuntimeErrorV2::StaleGeneration);
             }
-            if entry.terminal.as_ref().is_some_and(|value| value.is_final()) {
+            if entry
+                .terminal
+                .as_ref()
+                .is_some_and(|value| value.is_final())
+            {
                 return Err(AgentdProviderBoundPromptRuntimeErrorV2::TerminalAlreadyRecorded);
             }
             if let Some(existing) = &entry.dispatch {
@@ -721,11 +712,8 @@ impl AgentdProviderBoundPromptRuntimeV2 {
                     ProviderBoundDispatchDispositionV2::ExistingClaim,
                 );
             }
-            let claim = ProviderBoundDispatchClaimV2::new(
-                &entry.stage,
-                attempt_id,
-                claimed_at_unix_ms,
-            )?;
+            let claim =
+                ProviderBoundDispatchClaimV2::new(&entry.stage, attempt_id, claimed_at_unix_ms)?;
             entry.dispatch = Some(claim);
             ProviderBoundDispatchLeaseV2::from_entry(
                 entry,
@@ -757,11 +745,8 @@ impl AgentdProviderBoundPromptRuntimeV2 {
             if &claim.attempt_id != attempt_id {
                 return Err(AgentdProviderBoundPromptRuntimeErrorV2::TerminalBindingMismatch);
             }
-            let terminal = ProviderBoundTerminalRecordV2::from_receipt(
-                &entry.stage,
-                claim,
-                receipt,
-            )?;
+            let terminal =
+                ProviderBoundTerminalRecordV2::from_receipt(&entry.stage, claim, receipt)?;
             record_terminal(entry, terminal)
         })
     }
@@ -769,14 +754,17 @@ impl AgentdProviderBoundPromptRuntimeV2 {
     pub fn snapshot(
         &self,
         dispatch_id: &StableId,
-    ) -> Result<Option<ProviderBoundRuntimeSnapshotV2>, AgentdProviderBoundPromptRuntimeErrorV2> {
+    ) -> Result<Option<ProviderBoundRuntimeSnapshotV2>, AgentdProviderBoundPromptRuntimeErrorV2>
+    {
         self.ensure_available()?;
         let state = self
             .state
             .lock()
             .map_err(|_| AgentdProviderBoundPromptRuntimeErrorV2::StatePoisoned)?;
-        Ok(state.entries.get(dispatch_id.as_str()).map(|entry| {
-            ProviderBoundRuntimeSnapshotV2 {
+        Ok(state
+            .entries
+            .get(dispatch_id.as_str())
+            .map(|entry| ProviderBoundRuntimeSnapshotV2 {
                 dispatch_id: entry.stage.dispatch_id.clone(),
                 generation: entry.stage.generation,
                 stage_digest: entry.stage.stage_digest,
@@ -790,12 +778,8 @@ impl AgentdProviderBoundPromptRuntimeV2 {
                     .terminal
                     .as_ref()
                     .map(|terminal| terminal.delivery_receipt_digest),
-                terminal_disposition: entry
-                    .terminal
-                    .as_ref()
-                    .map(|terminal| terminal.disposition),
-            }
-        }))
+                terminal_disposition: entry.terminal.as_ref().map(|terminal| terminal.disposition),
+            }))
     }
 
     fn stage(
@@ -830,7 +814,10 @@ impl AgentdProviderBoundPromptRuntimeV2 {
                 };
             }
             if existing.dispatch.is_some()
-                && !existing.terminal.as_ref().is_some_and(|value| value.is_final())
+                && !existing
+                    .terminal
+                    .as_ref()
+                    .is_some_and(|value| value.is_final())
             {
                 return Err(AgentdProviderBoundPromptRuntimeErrorV2::IndeterminatePending);
             }
@@ -1067,10 +1054,7 @@ struct ProviderBoundRuntimeStoreV2 {
 impl ProviderBoundRuntimeStoreV2 {
     fn open(
         directory: &Path,
-    ) -> Result<
-        (Self, ProviderBoundRuntimeStateV2),
-        AgentdProviderBoundPromptRuntimeErrorV2,
-    > {
+    ) -> Result<(Self, ProviderBoundRuntimeStateV2), AgentdProviderBoundPromptRuntimeErrorV2> {
         prepare_state_directory(directory)?;
         let lock_path = directory.join(LOCK_FILE);
         let lock = OpenOptions::new()
@@ -1187,9 +1171,7 @@ fn stored_stage(stage: &ProviderBoundPromptStageV2) -> StoredProviderBoundPrompt
     }
 }
 
-fn stored_claim(
-    claim: &ProviderBoundDispatchClaimV2,
-) -> StoredProviderBoundDispatchClaimV2 {
+fn stored_claim(claim: &ProviderBoundDispatchClaimV2) -> StoredProviderBoundDispatchClaimV2 {
     StoredProviderBoundDispatchClaimV2 {
         dispatch_id: claim.dispatch_id.to_string(),
         generation: claim.generation,
@@ -1216,9 +1198,7 @@ fn stored_terminal(
             .into_array(),
         canonical_payload_digest: terminal.canonical_payload_digest.into_array(),
         provider_request_digest: terminal.provider_request_digest.into_array(),
-        provider_request_coverage_digest: terminal
-            .provider_request_coverage_digest
-            .into_array(),
+        provider_request_coverage_digest: terminal.provider_request_coverage_digest.into_array(),
         wire_semantic_digest: terminal.wire_semantic_digest.into_array(),
         tokenizer_identity_digest: terminal.tokenizer_identity_digest.into_array(),
         tokenizer_attestation_digest: terminal.tokenizer_attestation_digest.into_array(),
@@ -1275,9 +1255,7 @@ fn restore_stage(
         ),
         wire_semantic_digest: Digest32::from_array(stored.wire_semantic_digest),
         tokenizer_identity_digest: Digest32::from_array(stored.tokenizer_identity_digest),
-        tokenizer_attestation_digest: Digest32::from_array(
-            stored.tokenizer_attestation_digest,
-        ),
+        tokenizer_attestation_digest: Digest32::from_array(stored.tokenizer_attestation_digest),
         exact_token_count: stored.exact_token_count,
         exact_request_bytes: STANDARD_NO_PAD
             .decode(stored.exact_request_base64)
@@ -1322,9 +1300,7 @@ fn restore_terminal(
         ),
         wire_semantic_digest: Digest32::from_array(stored.wire_semantic_digest),
         tokenizer_identity_digest: Digest32::from_array(stored.tokenizer_identity_digest),
-        tokenizer_attestation_digest: Digest32::from_array(
-            stored.tokenizer_attestation_digest,
-        ),
+        tokenizer_attestation_digest: Digest32::from_array(stored.tokenizer_attestation_digest),
         delivery_receipt_digest: Digest32::from_array(stored.delivery_receipt_digest),
         disposition: decode_disposition(stored.disposition)?,
         terminal_observed: stored.terminal_observed,
@@ -1333,9 +1309,7 @@ fn restore_terminal(
     })
 }
 
-fn parse_id(
-    value: String,
-) -> Result<StableId, AgentdProviderBoundPromptRuntimeErrorV2> {
+fn parse_id(value: String) -> Result<StableId, AgentdProviderBoundPromptRuntimeErrorV2> {
     StableId::new(value).map_err(|_| AgentdProviderBoundPromptRuntimeErrorV2::CorruptState)
 }
 
@@ -1380,9 +1354,7 @@ fn decode_disposition(
     }
 }
 
-fn prepare_state_directory(
-    path: &Path,
-) -> Result<(), AgentdProviderBoundPromptRuntimeErrorV2> {
+fn prepare_state_directory(path: &Path) -> Result<(), AgentdProviderBoundPromptRuntimeErrorV2> {
     if let Err(error) = std::fs::create_dir(path)
         && error.kind() != std::io::ErrorKind::AlreadyExists
     {
@@ -1429,18 +1401,14 @@ fn set_private_file_permissions(
 }
 
 #[cfg(unix)]
-fn sync_state_directory(
-    path: &Path,
-) -> Result<(), AgentdProviderBoundPromptRuntimeErrorV2> {
+fn sync_state_directory(path: &Path) -> Result<(), AgentdProviderBoundPromptRuntimeErrorV2> {
     File::open(path)
         .and_then(|directory| directory.sync_all())
         .map_err(|_| AgentdProviderBoundPromptRuntimeErrorV2::IndeterminateDurability)
 }
 
 #[cfg(not(unix))]
-fn sync_state_directory(
-    _path: &Path,
-) -> Result<(), AgentdProviderBoundPromptRuntimeErrorV2> {
+fn sync_state_directory(_path: &Path) -> Result<(), AgentdProviderBoundPromptRuntimeErrorV2> {
     Ok(())
 }
 

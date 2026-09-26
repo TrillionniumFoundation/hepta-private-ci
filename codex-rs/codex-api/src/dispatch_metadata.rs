@@ -204,7 +204,12 @@ mod tests {
         metadata
             .install_final_request_observer(Arc::new(TestObserver))
             .expect("first observer installation");
-        assert!(clone.final_request_observer().expect("observer state").is_some());
+        assert!(
+            clone
+                .final_request_observer()
+                .expect("observer state")
+                .is_some()
+        );
     }
 
     #[test]

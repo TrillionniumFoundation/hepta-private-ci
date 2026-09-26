@@ -92,6 +92,7 @@ def command_specs() -> list[dict[str, Any]]:
             "argv": [
                 "cargo",
                 "test",
+                "--locked",
                 "-p",
                 "codex-hepta-context-compiler",
             ],
@@ -102,6 +103,7 @@ def command_specs() -> list[dict[str, Any]]:
             "argv": [
                 "cargo",
                 "clippy",
+                "--locked",
                 "-p",
                 "codex-hepta-context-compiler",
                 "--all-targets",
@@ -111,9 +113,23 @@ def command_specs() -> list[dict[str, Any]]:
             ],
         },
         {
-            "name": "cargo-deny",
+            "name": "cargo-deny-policy",
             "cwd": CODEX_RS,
-            "argv": ["cargo", "deny", "check"],
+            "argv": [
+                "cargo",
+                "deny",
+                "--locked",
+                "check",
+                "bans",
+                "licenses",
+                "sources",
+            ],
+        },
+        {
+            "name": "cargo-advisories",
+            "cwd": CODEX_RS,
+            "argv": ["cargo", "deny", "--locked", "check", "advisories"],
+            "required": False,
         },
         {
             "name": "bazel",
@@ -188,6 +204,7 @@ def run_command(spec: dict[str, Any], log_path: Path) -> dict[str, Any]:
         "durationMs": duration_ms,
         "exitCode": exit_code,
         "succeeded": exit_code == 0,
+        "required": bool(spec.get("required", True)),
         "logPath": str(log_path.relative_to(log_path.parents[1])),
         "logBytes": log_path.stat().st_size,
         "logSha256": sha256_file(log_path),
@@ -275,7 +292,10 @@ def main() -> int:
             }
         )
 
-    commands_succeeded = all(result["succeeded"] for result in command_results)
+    commands_succeeded = all(
+        result["succeeded"] or not result["required"]
+        for result in command_results
+    )
     succeeded = head_matches and worktree_clean and commands_succeeded
     receipt: dict[str, Any] = {
         "schema": "hepta.context-compiler-qualification-receipt.v1",

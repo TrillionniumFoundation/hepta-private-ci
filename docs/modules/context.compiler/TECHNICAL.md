@@ -5,9 +5,9 @@
 
 - Module: `context.compiler`
 - Reviewed base SHA: `a126987b84737dbc2ee2592442a314117bddb4a2`
-- Working branch: `codex/context-compiler-v2-provider-closure-20260927`
+- Working branch: `codex/context-compiler-v2-full-closure-20260927`
 - Source manifest: `docs/modules/context.compiler/MODULE_MANIFEST.json`
-- Canonical manifest SHA-256: `e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930`
+- Canonical manifest SHA-256: `aef55e4f85b005eb7aae052cffecf3f7f6711b85f7801e87eff0b938559178fa`
 - Generator: `scripts/generate_context_compiler_module_docs.py`
 
 | Dimension | State | Evidence-based interpretation |
@@ -41,6 +41,14 @@ not accepted as proof of the final provider request token count.
 - `codex-rs/hepta-agentd/src/prompt_runtime.rs`
 - `codex-rs/ext/hepta-prompt/src/lib.rs`
 - `codex-rs/core/src/model_provider_policy`
+- `codex-rs/codex-api/src/dispatch_metadata.rs`
+- `codex-rs/codex-api/src/endpoint/responses.rs`
+- `codex-rs/core/src/model_provider_policy/attempt_owner.rs`
+- `codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs`
+- `codex-rs/hepta-context-compiler/src/provider_bound.rs`
+- `codex-rs/hepta-context-compiler/src/provider_delivery.rs`
+- `codex-rs/hepta-intelligence/src/provider_bound_prompt.rs`
+- `codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs`
 
 Public strict-path surface:
 
@@ -194,12 +202,13 @@ Qualification commands:
 
 1. `python3 scripts/generate_context_compiler_module_docs.py --check`
 2. `cargo fmt --all -- --check`
-3. `cargo test -p codex-hepta-context-compiler`
-4. `cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings`
-5. `cargo deny check`
-6. `bazel test //codex-rs/hepta-context-compiler:all`
-7. `python3 scripts/hepta-readiness.py verify`
-8. `python3 scripts/hepta-docs.py verify`
+3. `cargo test --locked -p codex-hepta-context-compiler`
+4. `cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings`
+5. `cargo deny --locked check bans licenses sources`
+6. `cargo deny --locked check advisories (recorded non-blocking repository audit)`
+7. `bazel test //codex-rs/hepta-context-compiler:all`
+8. `python3 scripts/hepta-readiness.py verify`
+9. `python3 scripts/hepta-docs.py verify`
 
 The workflow writes a JSON receipt that is bound to `GITHUB_SHA`, records every command and exit
 status, hashes the generated truth set, and uploads the receipt even on failure. Documentation must

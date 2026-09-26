@@ -4,8 +4,8 @@
 ## 1. Evidence identity
 
 - Reviewed base: `a126987b84737dbc2ee2592442a314117bddb4a2`
-- Working branch: `codex/context-compiler-v2-provider-closure-20260927`
-- Manifest SHA-256: `e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930`
+- Working branch: `codex/context-compiler-v2-full-closure-20260927`
+- Manifest SHA-256: `aef55e4f85b005eb7aae052cffecf3f7f6711b85f7801e87eff0b938559178fa`
 - Generator: `scripts/generate_context_compiler_module_docs.py`
 - Qualification workflow: `.github/workflows/context-compiler-qualification.yml`
 - Receipt artifact: `context-compiler-qualification-receipt`
