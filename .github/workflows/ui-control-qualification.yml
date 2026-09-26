@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - work/ui-control-full-convergence-20260926
+      - "work/ui-control-*"
     paths:
       - "apps/hepta-control-ui/**"
       - "docs/modules/ui.control/**"
@@ -67,12 +67,12 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install exact browser-test dependencies without lock mutation
+      - name: Install exact locked browser-test dependencies
         working-directory: ${{ env.UI_CONTROL_APP }}
         shell: bash
         run: |
           set -euo pipefail
-          npm install --no-package-lock --ignore-scripts --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
           npm ls --json > ../../ui-control-evidence/npm-resolution.json
 
       - name: Lint and unsafe-sink checks
