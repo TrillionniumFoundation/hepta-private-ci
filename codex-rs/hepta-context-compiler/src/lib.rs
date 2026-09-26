@@ -14,6 +14,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod candidate_bound;
+mod provider_bound;
+mod provider_delivery;
 mod requirements;
 mod v2;
 mod wire;
@@ -21,6 +23,32 @@ mod wire;
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
 pub use candidate_bound::compile_candidate_bound_with_requirements;
+pub use provider_bound::CanonicalContextCoverageV2;
+pub use provider_bound::CanonicalContextPayloadV2;
+pub use provider_bound::CanonicalContextSegmentKindV2;
+pub use provider_bound::CanonicalContextSegmentV2;
+pub use provider_bound::CanonicalContextSerializerV2;
+pub use provider_bound::CanonicalSerializedContextProofV2;
+pub use provider_bound::ExactProviderRequestTokenizerV2;
+pub use provider_bound::FinalProviderRequestTokenizationV2;
+pub use provider_bound::MAX_PROVIDER_REQUEST_BYTES_V2;
+pub use provider_bound::MAX_PROVIDER_REQUEST_SEGMENTS_V2;
+pub use provider_bound::ProviderBoundContextErrorV2;
+pub use provider_bound::ProviderRequestFramingPolicyV2;
+pub use provider_bound::ProviderRequestSegmentKindV2;
+pub use provider_bound::ProviderRequestSegmentV2;
+pub use provider_bound::ProviderTokenizerIdentityV2;
+pub use provider_bound::VerifiedAdmissionSnapshotSuccessorV2;
+pub use provider_bound::VerifiedProviderRequestV2;
+pub use provider_bound::canonical_context_serializer_digest;
+pub use provider_bound::prepare_delivery_from_successor_v2;
+pub use provider_bound::record_canonical_serialization_v2;
+pub use provider_bound::tokenize_verified_provider_request_v2;
+pub use provider_bound::verify_provider_request_coverage_v2;
+pub use provider_bound::verify_typed_admission_snapshot_successor_v2;
+pub use provider_delivery::ProviderBoundDeliveryErrorV2;
+pub use provider_delivery::ProviderBoundDeliveryReceiptV2;
+pub use provider_delivery::observe_provider_bound_delivery_v2;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
@@ -213,7 +241,7 @@ fn compile_internal(
         .iter()
         .filter(|item| mandatory_ids.contains(&item.item_id))
         .map(|item| u128::from(item.token_count))
-        .sum::<u128>(); // At most 4096 u64 costs; the exact sum fits u128.
+        .sum::<u128>();
     if required_tokens > u128::from(request.token_budget) {
         return Err(Error::InsufficientContext {
             required_tokens,

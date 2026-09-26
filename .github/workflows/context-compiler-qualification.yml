@@ -1,0 +1,145 @@
+name: context-compiler-qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/context-compiler-qualification.yml
+      - codex-rs/hepta-context-compiler/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-agentd/src/prompt_runtime.rs
+      - codex-rs/ext/hepta-prompt/**
+      - codex-rs/core/src/model_provider_policy/**
+      - docs/modules/context.compiler/**
+      - qualification/module-execution-dossiers/detail/context.compiler.md
+      - scripts/context_compiler_qualification.py
+      - scripts/generate_context_compiler_module_docs.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: context-compiler-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualification:
+    name: context.compiler exact-head qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_TERM_COLOR: always
+      QUALIFICATION_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      QUALIFICATION_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$QUALIFICATION_HEAD_SHA"
+          git status --porcelain=v1
+
+      - name: Prepare shared CI build roots
+        uses: ./.github/actions/setup-ci-build
+
+      - name: Install native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Prepare Bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: context-compiler-qualification
+
+      - name: Run qualification and write exact-head receipt
+        id: qualification
+        continue-on-error: true
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/context-compiler-qualification
+        run: |
+          set +e
+          python3 scripts/context_compiler_qualification.py \
+            --expected-head "$QUALIFICATION_HEAD_SHA" \
+            --output-dir "$RECEIPT_DIR"
+          exit_code=$?
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          exit "$exit_code"
+
+      - name: Publish receipt summary
+        if: always()
+        shell: bash
+        env:
+          RECEIPT: ${{ runner.temp }}/context-compiler-qualification/context-compiler-qualification-receipt.json
+        run: |
+          if [ ! -f "$RECEIPT" ]; then
+            echo "## context.compiler qualification" >> "$GITHUB_STEP_SUMMARY"
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo "Receipt was not produced." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python3 - "$RECEIPT" "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          receipt = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          summary = pathlib.Path(sys.argv[2])
+          lines = [
+              "## context.compiler qualification",
+              "",
+              f"- status: **{receipt['status']}**",
+              f"- head: `{receipt['headSha']}`",
+              f"- tree: `{receipt['treeSha']}`",
+              f"- receipt SHA-256: `{receipt['receiptSha256']}`",
+              "",
+              "| Check | Exit | Log SHA-256 |",
+              "|---|---:|---|",
+          ]
+          for command in receipt["commands"]:
+              lines.append(
+                  f"| `{command['name']}` | {command['exitCode']} | `{command['logSha256']}` |"
+              )
+          with summary.open("a", encoding="utf-8") as stream:
+              stream.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Upload immutable qualification receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: context-compiler-qualification-receipt-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/context-compiler-qualification
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce qualification result
+        if: always()
+        shell: bash
+        env:
+          EXIT_CODE: ${{ steps.qualification.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          test -n "$EXIT_CODE"
+          test "$EXIT_CODE" = "0"

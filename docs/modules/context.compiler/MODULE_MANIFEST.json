@@ -1,13 +1,9 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 1,
   "module": "context.compiler",
-  "generated": {
-    "manifest": "docs/modules/context.compiler/MODULE_MANIFEST.json",
-    "manifestSha256": "e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930",
-    "generator": "scripts/generate_context_compiler_module_docs.py",
-    "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "branch": "codex/context-compiler-v2-provider-closure-20260927"
-  },
+  "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "branch": "codex/context-compiler-v2-provider-closure-20260927",
+  "generatedBy": "scripts/generate_context_compiler_module_docs.py",
   "status": {
     "coreImplementation": "complete",
     "productComposition": "partial",
@@ -19,6 +15,11 @@
     "productComposition": "Prompt registry, hepta-intelligence, Agentd and the provider-policy extension consume context compiler outputs, but the strict provider-bound V2 preparation is not yet the only serving path.",
     "v2ProviderClosure": "The provider host ABI exposes request digests but no qualified exact tokenizer over the final provider request bytes; strict attestation therefore fails closed until the host capability is supplied.",
     "currentHeadQualification": "No immutable qualification receipt for the exact branch head may be claimed before the qualification workflow completes."
+  },
+  "artifacts": {
+    "technical": "docs/modules/context.compiler/TECHNICAL.md",
+    "implementationMap": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+    "executionDossier": "qualification/module-execution-dossiers/detail/context.compiler.md"
   },
   "sourceRoots": [
     "codex-rs/hepta-context-compiler",
@@ -37,15 +38,6 @@
     "verify_provider_request_coverage_v2",
     "tokenize_verified_provider_request_v2",
     "observe_delivery"
-  ],
-  "proofObjects": [
-    "CanonicalContextCoverageV2",
-    "CanonicalSerializedContextProofV2",
-    "VerifiedAdmissionSnapshotSuccessorV2",
-    "VerifiedProviderRequestV2",
-    "FinalProviderRequestTokenizationV2",
-    "ContextDeliveryPreparationV2",
-    "ContextDeliveryReceiptV2"
   ],
   "byteIdentities": [
     {
@@ -77,7 +69,7 @@
       "securityMeaning": "Binds transport semantics; it is not interchangeable with the final-request byte digest."
     }
   ],
-  "targetSequence": [
+  "sequence": [
     "registry/admission snapshot",
     "compile_v2",
     "canonical context serialization + complete segment coverage",
@@ -92,16 +84,6 @@
     "observe_delivery",
     "durable ContextDeliveryReceiptV2"
   ],
-  "productComposition": {
-    "callers": [
-      "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
-      "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-      "codex-rs/ext/hepta-prompt/src/lib.rs",
-      "codex-rs/core/src/model_provider_policy"
-    ],
-    "current": "partial",
-    "closureCondition": "The host supplies exact final request bytes and a qualified profile-bound tokenizer, dispatch consumes the attested request without reconstruction, and Agentd durably persists ContextDeliveryReceiptV2."
-  },
   "qualification": {
     "workflow": ".github/workflows/context-compiler-qualification.yml",
     "receiptArtifact": "context-compiler-qualification-receipt",
