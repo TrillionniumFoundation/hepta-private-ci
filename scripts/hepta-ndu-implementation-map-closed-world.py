@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Fail closed when the utility.ndu implementation maps drift from source.
+"""Fail closed when utility.ndu source or registry projections drift.
 
 The repository-wide implementation-map verifier owns SHA/tree/blob freshness
 for the primary map. This module validator treats the primary map and its
 explicit extension as one closed world: unique operations, real native/test
-symbols, and explicit coverage for every tracked Rust source below sourceRoot.
+symbols, explicit coverage for every tracked Rust source below sourceRoot, and
+an exact TECHNICAL.md projection of the canonical module registry.
 """
 
 from __future__ import annotations
@@ -18,6 +19,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 PRIMARY = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
 EXTENSION = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
+MODULE_DOCS = ROOT / "docs/modules/MODULE_DOCS.json"
+TECHNICAL = ROOT / "docs/modules/utility.ndu/TECHNICAL.md"
 
 
 class DuplicateKey(ValueError):
@@ -74,6 +77,93 @@ def symbol_exists(path: Path, symbol: str) -> bool:
     if path.suffix == ".py":
         return bool(re.search(rf"\bdef\s+{re.escape(symbol)}\s*\(", path.read_text()))
     return symbol in path.read_text()
+
+
+def registry_module(registry: dict[str, Any]) -> dict[str, Any]:
+    modules = registry.get("modules")
+    if not isinstance(modules, list):
+        raise ValueError("MODULE_DOCS modules must be a list")
+    matches = [
+        module
+        for module in modules
+        if isinstance(module, dict) and module.get("module") == "utility.ndu"
+    ]
+    if len(matches) != 1:
+        raise ValueError("MODULE_DOCS must contain exactly one utility.ndu entry")
+    return matches[0]
+
+
+def markdown_code_list(text: str, start: str, end: str) -> list[str]:
+    start_offset = text.find(start)
+    if start_offset < 0:
+        raise ValueError(f"TECHNICAL.md missing projection heading: {start}")
+    body_start = start_offset + len(start)
+    end_offset = text.find(end, body_start)
+    if end_offset < 0:
+        raise ValueError(f"TECHNICAL.md missing projection terminator: {end}")
+    body = text[body_start:end_offset]
+    entries: list[str] = []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        match = re.fullmatch(r"- `([^`]+)`", stripped)
+        if match is None:
+            raise ValueError(
+                f"TECHNICAL.md projection contains non-generated content between {start!r} and {end!r}: {stripped!r}"
+            )
+        entries.append(match.group(1))
+    if len(entries) != len(set(entries)):
+        raise ValueError(f"TECHNICAL.md projection contains duplicates after {start}")
+    return entries
+
+
+def validate_registry_projection(errors: list[str]) -> dict[str, int]:
+    try:
+        registry = load(MODULE_DOCS)
+        module = registry_module(registry)
+        technical = TECHNICAL.read_text()
+        projections = {
+            "producedContracts": markdown_code_list(
+                technical, "Produced contracts:", "Consumed contracts:"
+            ),
+            "consumedContracts": markdown_code_list(
+                technical, "Consumed contracts:", "Critical protocol schemas:"
+            ),
+            "protocols": markdown_code_list(
+                technical,
+                "Critical protocol schemas:",
+                "Every producer validates output before publication",
+            ),
+            "ownedDomains": markdown_code_list(
+                technical,
+                "Owned authoritative or rebuildable domains:",
+                "Read-only data dependencies:",
+            ),
+            "readDomains": markdown_code_list(
+                technical,
+                "Read-only data dependencies:",
+                "For every owned domain",
+            ),
+        }
+    except (OSError, json.JSONDecodeError, DuplicateKey, ValueError) as error:
+        errors.append(f"technical registry projection: {error}")
+        return {}
+
+    counts: dict[str, int] = {}
+    for field, actual in projections.items():
+        expected = module.get(field)
+        if not isinstance(expected, list) or any(
+            not isinstance(value, str) for value in expected
+        ):
+            errors.append(f"MODULE_DOCS utility.ndu {field} is not a string list")
+            continue
+        counts[field] = len(actual)
+        if actual != expected:
+            errors.append(
+                f"TECHNICAL.md {field} differs from generated MODULE_DOCS projection: expected={expected!r} actual={actual!r}"
+            )
+    return counts
 
 
 def main() -> int:
@@ -172,13 +262,17 @@ def main() -> int:
     for path in sorted(path for path in tracked if path not in strings):
         errors.append(f"tracked Rust source is outside the closed map: {path}")
 
+    registry_projection = validate_registry_projection(errors)
     result = {
-        "schema": "hepta.ndu.closed-world-map-validation.v2",
+        "schema": "hepta.ndu.closed-world-map-validation.v3",
         "module": primary.get("module"),
         "operationCount": len(seen_operations),
         "testIdentityCount": len(seen_tests),
         "trackedRustSourceCount": len(tracked),
+        "registryProjectionCounts": registry_projection,
         "maps": [str(PRIMARY.relative_to(ROOT)), str(EXTENSION.relative_to(ROOT))],
+        "registry": str(MODULE_DOCS.relative_to(ROOT)),
+        "technicalGuide": str(TECHNICAL.relative_to(ROOT)),
         "passed": not errors,
         "errors": errors,
     }
