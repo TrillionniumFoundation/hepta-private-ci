@@ -1,0 +1,93 @@
+name: Knowledge graph transformed source diagnostic
+
+on:
+  push:
+    branches: [work/product-convergence-20260923]
+    paths:
+      - ".github/workflows/hepta-kg-source-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-kg-source-diagnostic
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Materialize candidate transformation
+        id: transform
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/hepta-kg-convergence-apply-phase1.py 2>&1 \
+            | tee "$RUNNER_TEMP/kg-transform.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Capture transformed candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-transformed-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            codex-rs/hepta-kg/
+            docs/modules/knowledge.graph/
+            docs/gates/G14*.md
+            scripts/test_hepta_knowledge_graph_target_measure.py
+            ${{ runner.temp }}/kg-transform.log
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Capture strict lint
+        id: lint
+        if: steps.transform.outputs.status == '0'
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo clippy --locked -p codex-hepta-kg --all-targets --no-deps -- -D warnings 2>&1 \
+            | tee "$RUNNER_TEMP/kg-clippy.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Retain lint diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-transformed-lint-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kg-clippy.log
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Enforce diagnostic completeness
+        shell: bash
+        env:
+          TRANSFORM_STATUS: ${{ steps.transform.outputs.status }}
+        run: |
+          set -euo pipefail
+          test "$TRANSFORM_STATUS" = 0
