@@ -1,0 +1,91 @@
+name: Hepta objective release gate
+
+on:
+  pull_request:
+    paths:
+      - docs/modules/objective.compiler/CURRENT_STATE.json
+      - docs/modules/objective.compiler/RELEASE_POLICY.json
+      - qualification/objective.compiler/receipts/**
+      - scripts/hepta-objective-release-gate.py
+      - scripts/test_hepta_objective_release_gate.py
+      - .github/workflows/hepta-objective-release-gate.yml
+      - .github/workflows/hepta-objective-target-host.yml
+  push:
+    branches: [main]
+    paths:
+      - docs/modules/objective.compiler/CURRENT_STATE.json
+      - docs/modules/objective.compiler/RELEASE_POLICY.json
+      - qualification/objective.compiler/receipts/**
+      - scripts/hepta-objective-release-gate.py
+      - scripts/test_hepta_objective_release_gate.py
+      - .github/workflows/hepta-objective-release-gate.yml
+      - .github/workflows/hepta-objective-target-host.yml
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact candidate SHA whose committed receipts are being evaluated
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-objective-release-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-truth:
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify fail-closed source truth and gate tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/hepta-objective-release-gate.py
+          python3 -m unittest -v scripts.test_hepta_objective_release_gate
+          python3 scripts/hepta-objective-release-gate.py verify-source
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+  protected-release-readiness:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    environment: objective-production-release
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify complete receipt chain
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          test "${#CANDIDATE_SHA}" = 40
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
+          CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-objective-release-gate.py verify-release \
+            --receipts qualification/objective.compiler/receipts \
+            --expected-sha "${CANDIDATE_SHA}" \
+            --expected-tree "${CANDIDATE_TREE}" \
+            --output "${RUNNER_TEMP}/objective-release-readiness.json"
+          test -z "$(git status --porcelain)"
+      - name: Retain release-readiness receipt
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: objective-release-readiness-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-release-readiness.json
+          if-no-files-found: error
+          retention-days: 90
