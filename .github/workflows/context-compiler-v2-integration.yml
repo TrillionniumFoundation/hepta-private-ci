@@ -1,0 +1,70 @@
+name: context.compiler V2 integration
+
+on:
+  push:
+    branches:
+      - revision/context-compiler-v2-provider-closure-2026-09-27
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-v2-integration
+  cancel-in-progress: true
+
+jobs:
+  apply-compile-and-commit:
+    if: ${{ !contains(github.event.head_commit.message || '', '[context-v2-integrated]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: revision/context-compiler-v2-provider-closure-2026-09-27
+          fetch-depth: 0
+
+      - name: Apply remaining V2 closure patches
+        run: |
+          python3 scripts/_context_compiler_delivery_patch.py
+          python3 scripts/_context_compiler_runtime_bridge_patch.py
+          python3 scripts/_context_compiler_terminal_bridge_patch.py
+          python3 scripts/_context_compiler_observation_patch.py
+          python3 scripts/_context_compiler_agentd_patch.py
+
+      - name: Format sources
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Test compiler core
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-context-compiler
+
+      - name: Check composed product path
+        working-directory: codex-rs
+        run: >-
+          cargo check
+          -p codex-api
+          -p codex-core
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-hepta-prompt-extension
+          -p codex-hepta-agentd
+
+      - name: Reject whitespace errors
+        run: git diff --check
+
+      - name: Commit verified integration
+        shell: bash
+        run: |
+          rm scripts/_context_compiler_delivery_patch.py
+          rm scripts/_context_compiler_runtime_bridge_patch.py
+          rm scripts/_context_compiler_terminal_bridge_patch.py
+          rm scripts/_context_compiler_observation_patch.py
+          rm scripts/_context_compiler_agentd_patch.py
+          rm .github/workflows/context-compiler-v2-integration.yml
+          git config user.name "hepta-ci-bot"
+          git config user.email "hepta-ci-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "context.compiler: integrate exact V2 provider closure [context-v2-integrated]"
+          git push origin HEAD:revision/context-compiler-v2-provider-closure-2026-09-27
