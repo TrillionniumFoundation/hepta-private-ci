@@ -34,22 +34,32 @@ jobs:
           (cd codex-rs && cargo fmt --all)
           git diff --check
           python3 - <<'PY'
+          import re
           from pathlib import Path
 
           source = Path("codex-rs/hepta-agentd/src/intelligence_learning.rs").read_text()
-          required = (
-              "fn revalidate_before_replay(",
-              "fn observe_applied_payload(",
-              "self.final_use.signed_grant(binding)?",
-              ".claim_final_use(binding.clone(), &grant)",
-              ".dispatch_final_use(binding)",
-              "ReplayObservationV1::AlreadyApplied",
-              "FinalUseError::StaleAuthorityEpoch",
-              "FinalUseError::RevokedRevision",
+          start = source.index("pub async fn reconcile_unsettled")
+          end = source.index("pub async fn backlog_metrics", start)
+          reconcile = source[start:end]
+          patterns = (
+              r"fn observe_applied_payload\(",
+              r"let binding = record\.intent\.final_use_binding\(\);",
+              r"self\.grants\s*\.signed_grant\(&binding\)\?",
+              r"claim_final_use\(&self\.authority,\s*&signed,\s*&binding\)",
+              r"dispatch_final_use\(\s*&self\.authority,\s*token,\s*&binding,\s*\|\| apply_payload",
+              r"FinalUseError::EpochMismatch",
+              r"FinalUseError::Revoked",
+              r"ReconciliationOutcome::Applied",
+              r"ReconciliationOutcome::NotApplied",
+              r"ReconciliationOutcome::Quarantined",
           )
-          missing = [item for item in required if item not in source]
+          missing = [pattern for pattern in patterns if re.search(pattern, source) is None]
           if missing:
-              raise SystemExit(f"fresh-authority rewrite missing required source anchors: {missing}")
+              raise SystemExit(f"fresh-authority rewrite missing required source patterns: {missing}")
+          if "match observe_applied_payload(&writer, &payload)" not in reconcile:
+              raise SystemExit("restart reconciliation does not observe destination before replay")
+          if "Ok(Some(receipt)) => ApplyObservation::Acknowledged(receipt)" not in reconcile:
+              raise SystemExit("already-applied replay does not settle without consuming authority")
           PY
           (cd codex-rs && cargo metadata --format-version 1 --no-deps >/dev/null)
 
