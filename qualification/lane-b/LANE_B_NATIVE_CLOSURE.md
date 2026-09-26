@@ -175,7 +175,8 @@ Agentd observes the existing App Server persisted-turn terminal state for Codex 
 | `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/schedule_v2.rs` — `pub async fn create_calendar_task_v2(` |
 | `materialize_due` | `owner_native` | `codex-rs/hepta-automation/src/scheduler.rs` — `pub async fn tick(` |
 | `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/lifecycle.rs` — `pub async fn materialize_occurrence(` |
-| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/authorized_effect.rs` — `pub async fn execute_authorized_taskflow_effect` |
+| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/authorized_effect.rs` — `pub async fn execute_authorized_taskflow_effect_async` |
+| `execute_neural_circuit_v1` | `owner_native` | `codex-rs/hepta-automation/src/neural_circuit_runtime.rs` — `pub async fn admit_neural_circuit_activation_v1(` |
 
 External evidence gates:
 
@@ -263,6 +264,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 52 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 53 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
