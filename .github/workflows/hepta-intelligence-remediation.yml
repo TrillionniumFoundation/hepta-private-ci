@@ -7,28 +7,143 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: intelligence-remediation-authoring
+  cancel-in-progress: false
+
 jobs:
   source-workspace:
-    name: Exact intelligence source workspace
+    name: Apply scoped intelligence repair
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 5
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      tested_sha: ${{ steps.apply.outputs.tested_sha }}
+      changed: ${{ steps.apply.outputs.changed }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          persist-credentials: false
-      - name: Export tracked source only
+          fetch-depth: 0
+      - name: Apply only the submitted source patch
+        id: apply
         shell: bash
         run: |
           set -euo pipefail
+          BRANCH=codex/intelligence-control-remediation-20260927
+          PATCH=scripts/hepta-intelligence-remediation.patch.b64
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          if test -f "$PATCH"; then
+            test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$GITHUB_SHA"
+            python3 - <<'PY'
+          import base64, gzip, hashlib, io, pathlib, subprocess
+          p = pathlib.Path('scripts/hepta-intelligence-remediation.patch.b64')
+          checksum, encoded = p.read_text().split('\n', 1)
+          assert len(encoded) < 2_000_000
+          with gzip.GzipFile(fileobj=io.BytesIO(base64.b64decode(encoded, validate=False))) as f:
+              patch = f.read(8_000_001)
+          assert len(patch) <= 8_000_000
+          assert hashlib.sha256(patch).hexdigest() == checksum
+          prefixes = ('codex-rs/hepta-agentd/', 'codex-rs/hepta-intelligence/',
+                      'codex-rs/hepta-learning-ledger/', 'docs/modules/intelligence.control/',
+                      'qualification/module-execution-dossiers/detail/intelligence.control.md',
+                      'scripts/hepta-intelligence-', 'scripts/test_hepta_intelligence_',
+                      '.github/workflows/hepta-intelligence-control.yml')
+          paths = []
+          for line in patch.decode().splitlines():
+              if line.startswith('+++ b/'):
+                  name = line[6:]
+                  assert name.startswith(prefixes), name
+                  assert '..' not in pathlib.PurePosixPath(name).parts
+                  paths.append(name)
+          assert paths
+          subprocess.run(['git', 'apply', '--check'], input=patch, check=True)
+          subprocess.run(['git', 'apply', '--index'], input=patch, check=True)
+          pathlib.Path('/tmp/intelligence-rust-paths').write_text('\n'.join(p for p in paths if p.endswith('.rs')))
+          PY
+            rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+            while IFS= read -r path || test -n "$path"; do
+              test -z "$path" || rustfmt +1.95.0 --edition 2024 --config skip_children=true "$path"
+            done < /tmp/intelligence-rust-paths
+            git add -u
+            git rm "$PATCH"
+            git diff --cached --check
+            git -c user.name='Intelligence remediation' -c user.email='intelligence-remediation@users.noreply.github.com' commit -m 'fix(intelligence): apply reviewed identity and candidate repairs'
+            git push origin "HEAD:refs/heads/$BRANCH"
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          fi
+          echo "tested_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           mkdir -p "$RUNNER_TEMP/intelligence-workspace"
           git archive --format=tar HEAD | gzip > "$RUNNER_TEMP/intelligence-workspace/source.tar.gz"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/intelligence-workspace/identity.txt"
           sha256sum "$RUNNER_TEMP/intelligence-workspace/source.tar.gz" > "$RUNNER_TEMP/intelligence-workspace/SHA256SUMS"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intelligence-source-${{ github.sha }}
+          name: intelligence-source-${{ github.run_id }}
           path: ${{ runner.temp }}/intelligence-workspace/*
           if-no-files-found: error
           retention-days: 3
+  native:
+    name: Intelligence exact source tests
+    needs: source-workspace
+    if: needs.source-workspace.outputs.changed == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      SOURCE_SHA: ${{ needs.source-workspace.outputs.tested_sha }}
+      TESTED_SHA: ${{ needs.source-workspace.outputs.tested_sha }}
+      HEPTA_CI_LANE: source-head
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve pinned V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Test actual product-default packages
+        working-directory: codex-rs
+        run: |
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/intelligence-test.json" -- just test --locked -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-learning-ledger
+      - name: Check all targets independently
+        if: always()
+        working-directory: codex-rs
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/intelligence-check.json" -- cargo check --locked --all-targets -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-learning-ledger
+      - name: Strict lint independently
+        if: always()
+        working-directory: codex-rs
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/intelligence-clippy.json" -- cargo clippy --locked --all-targets -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-learning-ledger -- -D warnings
+      - name: Retain actual command evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-command-records-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-command-records/*
+          if-no-files-found: error
+          retention-days: 14
