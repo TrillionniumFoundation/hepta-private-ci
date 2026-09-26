@@ -1,0 +1,33 @@
+name: Prompt registry exact-source review export
+
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths: [.github/workflows/prompt-registry-review-source.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export tracked source only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/prompt-source"
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/prompt-source/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/prompt-source/identity.txt"
+          sha256sum "$RUNNER_TEMP/prompt-source/source.tar.gz" > "$RUNNER_TEMP/prompt-source/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-exact-source-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-source/
+          if-no-files-found: error
+          retention-days: 7
