@@ -91,7 +91,7 @@
 
 [1m[92m   Compiling[0m codex-hepta-infer-worker-host v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host)
 [1m[33mwarning[0m: `codex-hepta-agentd` (lib) generated 5 warnings
-[1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 2m 09s
+[1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 1m 56s
 [1m[92m     Running[0m unittests src/lib.rs (/home/runner/.cache/codex-ci/cargo-target/debug/deps/codex_hepta_infer_worker_host-6613e96f947e31d7)
 
 running 34 tests
@@ -110,7 +110,7 @@ test native_app_server::control::tests::pre_dispatch_cancellation_and_connection
 test native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider ... ok
 test native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown ... ok
 test native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure ... ok
-test native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start ... FAILED
+test native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start ... ok
 test native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses ... ok
 test native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift ... ok
 test native_app_server::tests::idempotent_dispatch_loser_never_aborts_the_global_owner ... ok
@@ -121,7 +121,12 @@ test native_app_server::tests::only_the_bound_turn_can_complete_the_native_reque
 test native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success ... ok
 test native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed ... ok
 test native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success ... ok
-test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED
+test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... [2m2026-09-26T16:36:32.090506Z[0m [31mERROR[0m [2mcodex_app_server[0m[2m:[0m Project-local config, hooks, and exec policies are disabled in the following folders until the project is trusted, but skills still load.
+    1. /home/runner/work/hepta-private-ci/hepta-private-ci/.codex
+       To load project-local config, hooks, and exec policies, add /home/runner/work/hepta-private-ci/hepta-private-ci as a trusted project in /tmp/hepta-cognitive-worker-e2e-1790440591911680170/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/home/config.toml.
+
+[2m2026-09-26T16:36:32.090636Z[0m [31mERROR[0m [2mcodex_app_server[0m[2m:[0m Codex could not find bubblewrap on PATH. Install bubblewrap with your OS package manager. See the sandbox prerequisites: https://developers.openai.com/codex/concepts/sandboxing#prerequisites. Codex will use the bundled bubblewrap in the meantime.
+FAILED
 test native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner ... ok
 test tests::payload_drift_is_rejected ... ok
 test tests::revoked_lease_is_rejected ... ok
@@ -132,20 +137,13 @@ test tests::unobserved_terminal_state_is_indeterminate ... ok
 
 failures:
 
----- native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start stdout ----
-
-thread 'native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start' (23393) panicked at hepta-infer-worker-host/src/native_app_server_tests.rs:411:10:
-physical turn start
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-
 ---- native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone stdout ----
-Error: "Agentd test App Server exited before readiness: Err(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"run Codex App Server unix socket transport\", path: \"/tmp/hepta-cognitive-worker-e2e-1790438931470432372/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.app\", source: Custom { kind: InvalidInput, error: \"Codex executable path is not configured\" } } })"
+Error: "timed out waiting for Agentd test control readiness"
 
 
 failures:
-    native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start
     native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
 
-test result: FAILED. 32 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+test result: FAILED. 33 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.24s
 
 [1m[91merror[0m: test failed, to rerun pass `-p codex-hepta-infer-worker-host --lib`
