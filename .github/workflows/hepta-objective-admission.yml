@@ -57,7 +57,11 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
-          python3 scripts/hepta-implementation-maps.py verify
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module objective.compiler \
+            --expected-sha "${SOURCE_SHA}" \
+            --expected-tree "${SOURCE_TREE}"
           python3 scripts/hepta-objective-target-measure.py --self-test
           python3 -m unittest scripts.test_hepta_objective_target_measure
 
