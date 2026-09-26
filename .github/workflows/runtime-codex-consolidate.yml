@@ -33,7 +33,7 @@ jobs:
           packed = b''.join(p.read_bytes() for p in pieces)
           if len(packed) != 19104 or hashlib.sha256(packed).hexdigest() != '4535b2670ecc5b06bb28d14d42b1598c35cd17f577209e9f948c8ee7672bf806':
               raise SystemExit('source transport digest mismatch')
-          decoder = lzma.LZMADecompressor(memlimit=64 * 1024 * 1024)
+          decoder = lzma.LZMADecompressor(memlimit=128 * 1024 * 1024)
           raw = decoder.decompress(packed, max_length=2 * 1024 * 1024)
           if not decoder.eof or decoder.unused_data:
               raise SystemExit('invalid or oversized source manifest')
