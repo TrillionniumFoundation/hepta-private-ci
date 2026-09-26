@@ -3,10 +3,13 @@
 #![forbid(unsafe_code)]
 
 mod decision;
+#[path = "engram_v2.rs"]
 mod engram;
+#[path = "generation_bound_v2.rs"]
 mod generation_bound;
 mod generator;
 mod v2;
+mod vector_owner;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -50,6 +53,8 @@ pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
 pub use generation_bound::CanonicalRecallShadowContextV1;
+pub use generation_bound::ContradictionEvidenceV1;
+pub use generation_bound::ContradictionPolarityV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
 pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
 pub use generation_bound::MemoryCueV1;
@@ -80,6 +85,13 @@ pub use generator::recall_generated;
 pub use generator::recall_generated_with_engram;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
+pub use vector_owner::MAX_VECTOR_DIMENSIONS;
+pub use vector_owner::MAX_VECTOR_INDEX_RECORDS;
+pub use vector_owner::VectorIndexRecordV1;
+pub use vector_owner::VectorIndexSnapshotV1;
+pub use vector_owner::VectorOwnerErrorV1;
+pub use vector_owner::VectorQueryV1;
+pub use vector_owner::generate_vector_batch_v1;
 
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
@@ -172,9 +184,6 @@ fn retrieve_request(request: &RetrievalRequest) -> Result<RetrievalReceipt, Erro
             .record
             .validate()
             .map_err(|error| Error::InvalidRecord(error.to_string()))?;
-        // Retrieval candidates must already be current, live records. Reject
-        // the entire request rather than silently changing its candidate set
-        // or counting deleted records as ordinary top-k omissions.
         if candidate.record.state == RecordState::Tombstone {
             return Err(Error::TombstoneRecord(
                 candidate.record.record_id.to_string(),
@@ -242,3 +251,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "generator_property_tests.rs"]
+mod generator_property_tests;
