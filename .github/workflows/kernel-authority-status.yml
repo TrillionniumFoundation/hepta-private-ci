@@ -1,0 +1,77 @@
+name: Kernel authority status projections
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'codex-rs/hepta-contracts/src/authority_trust_tests.rs'
+      - 'codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs'
+      - 'codex-rs/hepta-fleet/src/authority_port.rs'
+      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-agentd/src/browser_servo.rs'
+      - 'qualification/kernel-authority/**'
+      - 'qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json'
+      - 'qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json'
+      - 'qa/b4-no-bypass/test_kernel_authority_closed_world.py'
+      - 'qa/b4-no-bypass/test_kernel_authority_extension_api.py'
+      - 'docs/modules/kernel.authority/**'
+      - 'qualification/module-execution-dossiers/detail/kernel.authority.status.json'
+      - '.github/workflows/kernel-authority-status.yml'
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'codex-rs/hepta-contracts/src/authority_trust_tests.rs'
+      - 'codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs'
+      - 'codex-rs/hepta-fleet/src/authority_port.rs'
+      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-agentd/src/browser_servo.rs'
+      - 'qualification/kernel-authority/**'
+      - 'qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json'
+      - 'qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json'
+      - 'qa/b4-no-bypass/test_kernel_authority_closed_world.py'
+      - 'qa/b4-no-bypass/test_kernel_authority_extension_api.py'
+      - 'docs/modules/kernel.authority/**'
+      - 'qualification/module-execution-dossiers/detail/kernel.authority.status.json'
+      - '.github/workflows/kernel-authority-status.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-status-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Generated truth and closed API
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify generated status projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/kernel-authority/generate_status.py --check
+      - name: Verify closed extension API inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qa/b4-no-bypass/test_kernel_authority_extension_api.py
+          python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
+      - name: Verify clean source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain)"
