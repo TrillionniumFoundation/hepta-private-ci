@@ -309,8 +309,12 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "in-memory reference models",
+            "do not provide durable storage",
+            "standalone durable qualification owner",
+            "Agentd product owner and must never dual-write",
+            "must never dual-write one logical operation",
+            "The Agentd product owner is CognitiveStore",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",

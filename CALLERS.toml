@@ -422,7 +422,7 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
-required = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
+required = ["operations.attach", "attach_production_operations", "run_production_operation_reconciler"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
 
 [[protected_file]]
@@ -489,8 +489,8 @@ id = "final_use_async_dispatch_fence"
 symbol = "FinalUseAuthority::with_verified_use_async"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub async fn with_verified_use_async", "DispatchInProgress", "active_dispatches"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs"]
+caller_markers = ["with_verified_use_async", "target.dispatch", "ProductionFinalUseOutboxDispatcher"]
 
 
 [[boundary]]
@@ -507,5 +507,5 @@ id = "final_use_guarded_effect"
 symbol = "FinalUseAuthority::with_verified_effect"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-operations/src/durable_store.rs"]
 caller_markers = ["with_verified_effect"]

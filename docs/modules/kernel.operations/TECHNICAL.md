@@ -37,7 +37,7 @@ Durable implementation/evidence roots used by the current candidate:
 - `codex-rs/hepta-agentd`
 - `codex-rs/hepta-automation` (current-main consumer evidence)
 
-The exclusive root owns the canonical `OperationIntentV1` semantics and deterministic reference oracles. The durable production-shaped implementation deliberately reuses the existing CognitiveStore SQLite owner instead of creating a second operation database.
+The exclusive root owns canonical `OperationIntentV1`, deterministic in-memory reference oracles and a standalone `DurableOperationStore` used only for durability/fault-matrix qualification. The named Agentd product path deliberately reuses the existing CognitiveStore SQLite owner through `ProductionDurableWriter`. These two persistence surfaces never co-own or dual-write one logical operation: standalone-store records have an explicit qualification/migration role, while product callers must enter the CognitiveStore-backed owner.
 
 ### Current claim levels
 
@@ -45,8 +45,9 @@ The exclusive root owns the canonical `OperationIntentV1` semantics and determin
 | --- | --- |
 | target architecture | specified |
 | reference oracle | implemented |
-| durable source implementation | implemented |
-| final-use CognitiveStore destination | implemented |
+| standalone durable qualification store | implemented; not an Agentd product owner |
+| CognitiveStore product source implementation | implemented candidate |
+| final-use CognitiveStore destination and immutable terminal proof | implemented candidate |
 | second current-main OperationIntentV1 consumer | implemented in automation.taskflow |
 | Agentd final-use host primitive | source-composed |
 | Agentd daemon lifecycle composition | source-composed through explicit host injection |
@@ -73,7 +74,7 @@ Explicitly denied capabilities:
 
 - `domain_schema_ownership`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation. One logical operation selects exactly one source persistence owner; no compatibility adapter may mirror it into both `DurableOperationStore` and CognitiveStore.
 
 Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
 
@@ -143,13 +144,13 @@ Owned authoritative/rebuildable domains:
 - `cross_owner_outbox`
 - `operation_ledger`
 
-The durable operation surface is stored inside the existing CognitiveStore SQLite owner. Migration `0011_kernel_operations.sql` installs the immutable operation semantic binding; migration `0012_kernel_operation_dispatch_claims.sql` installs per-operation durable dispatch-claim lineage.
+The Agentd product operation surface is stored inside the existing CognitiveStore SQLite owner. Migration `0011_kernel_operations.sql` installs the immutable operation semantic binding; migration `0012_kernel_operation_dispatch_claims.sql` installs per-operation durable dispatch-claim lineage; migration `0016_kernel_operation_destination_terminal.sql` installs immutable destination-owned terminal proofs. The separate `hepta-operations` SQLite schema is retained only for standalone durability qualification and migration compatibility and opens through the repository SQLite shim.
 
 `ProductionDurableWriter::prepare_operation` binds the complete `OperationIntentV1` to one event/outbox identity and commits the source-owned rows atomically. Exact semantic replay is idempotent; changed subject, destination, payload, scope, policy generation or predecessor conflicts.
 
 Dispatch claims carry bounded attempt, generation/fence, lease expiry and next-eligible state. The destination remains the only writer of its domain fact. The source cannot infer destination success from transport acknowledgement.
 
-The first concrete destination, `CognitiveSourceOutboxTarget`, reconstructs the full intent and verifies predecessor/CAS inside destination-owned `BEGIN IMMEDIATE`. A mismatch is deterministic `NotApplied`.
+The first concrete destination, `CognitiveSourceOutboxTarget`, reconstructs the full intent and verifies predecessor/CAS inside destination-owned `BEGIN IMMEDIATE`. A deterministic mismatch commits an immutable `NotApplied` proof in the same target transaction; successful application commits an immutable `Applied` proof with the domain write. Mere absence of a domain row or proof remains `Indeterminate` and can never terminalize a still-running dispatch.
 
 Migrations are checksum/lineage verified on open. SQLite must be WAL with `synchronous=FULL`. Deterministic storage exhaustion and transaction fault tests prove source operation/event/outbox rollback to the last committed cut. Physical power-loss claims require target-host evidence.
 
@@ -159,7 +160,7 @@ Append-only local history is not deleted in place. Long-lived retention requires
 
 The source prepare transaction linearizes operation/event/outbox identity. A bounded dispatch lease may be renewed/taken over only while the effect boundary has not been crossed. Before target entry the writer persists a one-shot ambiguous-effect fence; after that point restart/reopen must reconcile rather than resend.
 
-`ProductionDispatchRequest` carries subject, destination, payload digest, scope digest, policy generation, full `OperationIntentV1` semantic digest and optional expected predecessor. `ProductionFinalUseOutboxDispatcher` consumes final-use authority immediately before target entry.
+`ProductionDispatchRequest` carries subject, destination, payload digest, scope digest, policy generation, full `OperationIntentV1` semantic digest and optional expected predecessor. `ProductionFinalUseOutboxDispatcher` consumes final-use authority with `with_verified_use_async`, so the active-effect fence spans the target future through completion or cancellation. Revocation that linearizes before entry yields zero target entries; revocation racing an entered effect reports `DispatchInProgress` until that effect leaves the boundary.
 
 `AgentdProductionWriterHost` is final-use-only and supports stable destination registration plus bounded observer-only reconciliation. It requires externally supplied authority/grants; default daemon startup does not synthesize them.
 
@@ -169,9 +170,9 @@ Ordinary mutation uses targeted current-row checks. Full append-only chain verif
 
 ## 8. Failure semantics, recovery and rollback
 
-Crash before source commit leaves no dispatch identity. Crash after source commit reopens the exact queued identity. Once target entry may have occurred, the durable state remains indeterminate until an independent destination observer proves `Applied`, `NotApplied`, `Quarantined` or an unavailable/indeterminate continuation.
+Crash before source commit leaves no dispatch identity. Crash after source commit reopens the exact queued identity. Once target entry may have occurred, the durable state remains indeterminate until an independent destination observer reads an immutable operation-bound proof of `Applied`, `NotApplied` or `Quarantined`; missing proof is an indeterminate continuation, never negative evidence.
 
-Stale claimants, stale generations, changed semantic digests and changed predecessor expectations fail closed. Owner handoff preserves immutable operation/outbox identity and requires a strictly newer fence.
+Stale claimants, stale generations, changed semantic digests and changed predecessor expectations fail closed. In the standalone qualification store, owner handoff and synchronous effect entry linearize under one `BEGIN IMMEDIATE` transaction: a newer generation that wins first keeps the old callback count at zero; an effect that wins first is classified before handoff proceeds. The product async path uses the final-use active-effect fence and destination proof protocol instead of treating future construction as effect entry.
 
 Source qualification includes transaction fault cuts, deterministic `SQLITE_FULL`, corruption/tamper checks, reopen, claim takeover and lost-ack reconciliation. These are not physical power-loss certification; target-host filesystem/storage/controller evidence remains external.
 
@@ -211,6 +212,7 @@ Current operating/state-format references include:
 - `codex-rs/hepta-operations/src/model.rs`
 - `codex-rs/hepta-memory/migrations/0011_kernel_operations.sql`
 - `codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql`
+- `codex-rs/hepta-memory/migrations/0016_kernel_operation_destination_terminal.sql`
 - `codex-rs/hepta-memory/src/operation_claims.rs`
 - `codex-rs/hepta-memory/src/production_writer.rs`
 - `codex-rs/hepta-memory/src/production_cognitive_source_target.rs`
@@ -227,9 +229,12 @@ Focused source tests cover:
 - deterministic `SQLITE_FULL` rollback and clean reopen;
 - durable claim attempt/expiry/renewal/takeover semantics;
 - complete destination semantic reconstruction;
-- predecessor mismatch -> deterministic `NotApplied`;
-- final-use mismatch/revocation before target entry;
-- target commit + lost acknowledgement -> indeterminate -> observer-only reconcile.
+- predecessor mismatch -> transactionally persisted deterministic `NotApplied` proof;
+- missing destination proof remains indeterminate and cannot race a late commit into false rejection;
+- final-use mismatch/revocation before target entry yields zero target entries;
+- revocation during an entered asynchronous effect returns `DispatchInProgress` until completion/cancellation;
+- target commit + lost acknowledgement -> indeterminate -> observer-only reconcile;
+- standalone generation handoff before entry yields zero callback executions.
 
 Run the applicable Rust package tests, strict lint, exact-head qualification and deterministic synthetic-merge qualification. Test names in source are not pass receipts. Any PR-head movement invalidates prior exact-candidate evidence.
 
@@ -250,7 +255,7 @@ Source implementation completes only when the declared target root exists, publi
 
 Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Compatibility adapters are temporary. `DurableOperationIntentV1` is the standalone-store record shape and has no implicit product conversion. Migration into the product owner must replay one canonical `OperationIntentV1` through `ProductionDurableWriter` under a new, explicit migration operation; direct row copying or dual writing is forbidden. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
@@ -361,10 +366,11 @@ This receipt is source-navigation evidence for the current durable candidate; ru
 | Operation | Native symbol | Source path | Evidence |
 |---|---|---|---|
 | canonical intent | `OperationIntentV1` | `codex-rs/hepta-operations/src/model.rs` | semantic-field binding tests |
+| standalone qualification owner | `DurableOperationStore` | `codex-rs/hepta-operations/src/durable_store.rs` | generation/effect-entry, crash and SQLite fault tests; not a product caller |
 | durable prepare | `ProductionDurableWriter::prepare_operation` | `codex-rs/hepta-memory/src/production_writer.rs` | atomic prepare/fault tests |
 | durable claim | `operation_claims::claim/renew` | `codex-rs/hepta-memory/src/operation_claims.rs` | attempt/lease/backoff tests |
 | final-use dispatch | `ProductionFinalUseOutboxDispatcher::dispatch` | `codex-rs/hepta-memory/src/production_writer.rs` | final-use tests |
-| destination CAS/observer | `CognitiveSourceOutboxTarget` | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | predecessor/lost-ack tests |
+| destination CAS/proof/observer | `CognitiveSourceOutboxTarget` | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | predecessor, absence/late-commit and lost-ack tests |
 | Agentd host primitive | `AgentdProductionWriterHost` | `codex-rs/hepta-agentd/src/production_writer_host.rs` | explicit final-use/grant composition |
 | Agentd runtime composition | `AgentdConfig::with_production_operations` + `runtime::run` | `codex-rs/hepta-agentd/src/config.rs`, `runtime.rs` | lifecycle task cleanup/fail-closed default |
 | second current-main consumer | `AutomationStore::dispatch_authorized_effect` | `codex-rs/hepta-automation/src/authorized_effect.rs` | automation authorized-effect tests |
