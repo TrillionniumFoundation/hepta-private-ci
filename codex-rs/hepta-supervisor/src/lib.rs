@@ -190,6 +190,8 @@ mod release_controller;
 #[cfg(feature = "production-authority")]
 mod release_controller_store;
 #[cfg(feature = "production-authority")]
+pub use release_controller::MAX_PRODUCTION_RECOVERY_DECISION_BYTES;
+#[cfg(feature = "production-authority")]
 pub use release_controller::MAX_PRODUCTION_RELEASE_JOURNAL_BYTES;
 #[cfg(feature = "production-authority")]
 pub use release_controller::MAX_PRODUCTION_RELEASE_REQUEST_BYTES;
@@ -207,6 +209,8 @@ pub use release_controller::ProductionReleaseControllerError;
 pub use release_controller::ProductionReleaseJournalV1;
 #[cfg(feature = "production-authority")]
 pub use release_controller::ProductionReleaseRequestV1;
+#[cfg(feature = "production-authority")]
+pub use release_controller::read_production_recovery_decision;
 #[cfg(feature = "production-authority")]
 pub use release_controller::read_production_release_request;
 
