@@ -10,6 +10,11 @@ test("package metadata declares Node and browser-safe public boundaries", async 
   assert.equal(packageJson.main, "./src/index.js");
   assert.equal(packageJson.types, "./src/index.d.ts");
   assert.equal(packageJson.exports["."].import, "./src/index.js");
+  assert.equal(
+    packageJson.exports["./control-client-core"].import,
+    "./src/core.js",
+  );
+  assert.equal(packageJson.exports["./core"].import, "./src/core.js");
   assert.equal(packageJson.exports["./browser"].import, "./src/browser-app.js");
   assert.equal(packageJson.engines.node, ">=22.0.0");
   await access(new URL("../src/index.d.ts", import.meta.url));
