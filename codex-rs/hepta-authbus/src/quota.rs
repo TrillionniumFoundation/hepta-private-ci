@@ -68,3 +68,13 @@ pub struct QuotaReservation {
     pub observed_cost: Option<u64>,
     pub settlement_digest: Option<Digest32>,
 }
+
+/// One bounded maintenance pass. `remaining` is a scheduling signal, not an
+/// invitation to run an unbounded transaction.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ExpiredReservationSweep {
+    pub scanned: u32,
+    pub expired: u32,
+    pub indeterminate: u32,
+    pub remaining: bool,
+}
