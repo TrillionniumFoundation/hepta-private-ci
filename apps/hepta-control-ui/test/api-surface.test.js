@@ -11,13 +11,19 @@ test("public API surface is explicit and review-gated", async () => {
   assert.deepEqual(Object.keys(api).sort(), expected);
 });
 
-test("core export excludes browser and transport composition", async () => {
-  const core = await import("@hepta/control-ui/core");
+test("named control-client-core export excludes browser and transport composition", async () => {
+  const core = await import("@hepta/control-ui/control-client-core");
   assert.equal("RuntimeClient" in core, true);
   assert.equal("projectRuntime" in core, true);
   assert.equal("createControlConsole" in core, false);
   assert.equal("SameOriginHttpTransport" in core, false);
   assert.equal("SessionProvider" in core, false);
+});
+
+test("legacy core alias remains compatible", async () => {
+  const namedCore = await import("@hepta/control-ui/control-client-core");
+  const coreAlias = await import("@hepta/control-ui/core");
+  assert.deepEqual(Object.keys(coreAlias).sort(), Object.keys(namedCore).sort());
 });
 
 test("browser export is explicit", async () => {
