@@ -37,7 +37,7 @@ jobs:
             echo "present=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          cat "${PARTS[@]}" | base64 --decode > "$RUNNER_TEMP/control-runtime.patch"
+          cat "${PARTS[@]}" | base64 --decode | gzip --decompress --stdout > "$RUNNER_TEMP/control-runtime.patch"
           git apply --check "$RUNNER_TEMP/control-runtime.patch"
           echo "present=true" >> "$GITHUB_OUTPUT"
 
@@ -96,7 +96,7 @@ jobs:
           set -euo pipefail
           rm -rf .github/codex-patches/control-runtime-request-integrity
           git diff --check
-          git add codex-rs .github/codex-patches
+          git add -A codex-rs .github/codex-patches
           git config user.name hepta-control-runtime-qualification
           git config user.email qualification@invalid
           git commit -m "control.runtime: bind authenticated requests through final use"
