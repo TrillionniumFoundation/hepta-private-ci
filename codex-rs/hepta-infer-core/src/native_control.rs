@@ -173,6 +173,14 @@ pub struct NativePreEffectAbortToken {
     dispatch_revision: u64,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeOwnerDispatchBinding {
+    pub run_id: String,
+    pub pre_dispatch_revision: u64,
+    pub dispatch_digest: String,
+}
+
 impl std::fmt::Debug for NativePreEffectAbortToken {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter.write_str("NativePreEffectAbortToken([LOCAL ONLY])")
@@ -205,11 +213,17 @@ pub struct NativeRunRecord {
     pub revision: u64,
     pub state: NativeReservationState,
     pub dispatch: Option<NativeDispatch>,
+    #[serde(default)]
+    pub owner_dispatch: Option<NativeOwnerDispatchBinding>,
     pub turn_id: Option<String>,
     pub cancel_requested: bool,
     /// A locally proven pre-dispatch stop releases a slot without pretending
     /// to have observed a provider terminal event or zero token consumption.
     pub pre_dispatch_stop: Option<String>,
+    #[serde(default)]
+    pub pre_effect_abort_pending: bool,
+    #[serde(default)]
+    pub pre_effect_abort_local_only: bool,
     #[serde(default)]
     pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
@@ -231,6 +245,8 @@ enum Event {
     Dispatch {
         request_id: String,
         dispatch: NativeDispatch,
+        #[serde(default)]
+        owner_dispatch: Option<NativeOwnerDispatchBinding>,
     },
     Started {
         request_id: String,
@@ -247,6 +263,17 @@ enum Event {
         request_id: String,
         reason: String,
     },
+    PrepareAbortBeforeEffect {
+        request_id: String,
+        reason: String,
+        #[serde(default)]
+        local_only: bool,
+    },
+    CompleteAbortBeforeEffect {
+        request_id: String,
+    },
+    /// Legacy one-event spelling retained for journal replay.
+    #[allow(dead_code)]
     AbortBeforeEffect {
         request_id: String,
         reason: String,
@@ -316,8 +343,35 @@ impl DurableInferenceControl {
             Event::Dispatch {
                 request_id: request_id.to_string(),
                 dispatch,
+                owner_dispatch: None,
             },
         )
+    }
+
+    /// Commit the write-ahead dispatch and the exact external owner binding
+    /// before any owner RPC or App Server effect entry.
+    pub fn dispatch_native_with_pre_effect_abort_bound(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+        owner_dispatch: NativeOwnerDispatchBinding,
+    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        self.ensure_native_dispatch_space()?;
+        let record = self.commit_native(
+            request_id,
+            Event::Dispatch {
+                request_id: request_id.to_string(),
+                dispatch,
+                owner_dispatch: Some(owner_dispatch),
+            },
+        )?;
+        Ok((
+            record.clone(),
+            NativePreEffectAbortToken {
+                request_id: request_id.to_string(),
+                dispatch_revision: record.revision,
+            },
+        ))
     }
 
     /// Commit the write-ahead dispatch while issuing a one-shot local proof
@@ -337,13 +391,22 @@ impl DurableInferenceControl {
         ))
     }
 
-    /// Release a prepared dispatch only while the same live process still owns
-    /// the exact one-shot pre-effect proof. If the process died, this proof is
-    /// gone and recovery must reconcile instead of declaring the effect unsent.
-    pub fn abort_native_before_effect(
+    /// Consume the live pre-effect proof and durably enter an abort-pending
+    /// state before contacting Agentd. Recovery may finish this one-way abort,
+    /// but no path may enter the external effect after this event.
+    pub fn prepare_native_abort_before_effect(
         &mut self,
         token: NativePreEffectAbortToken,
         reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        self.prepare_native_abort_inner(token, reason, false)
+    }
+
+    fn prepare_native_abort_inner(
+        &mut self,
+        token: NativePreEffectAbortToken,
+        reason: String,
+        local_only: bool,
     ) -> Result<NativeRunRecord, Error> {
         let record = self
             .native
@@ -356,16 +419,54 @@ impl DurableInferenceControl {
             || record.observation.is_some()
             || record.dispatch_rejection.is_some()
             || record.cancel_requested
+            || record.pre_effect_abort_pending
         {
             return Err(Error::InvalidTransition);
         }
         self.commit_native(
             &token.request_id,
-            Event::AbortBeforeEffect {
+            Event::PrepareAbortBeforeEffect {
                 request_id: token.request_id.clone(),
                 reason,
+                local_only,
             },
         )
+    }
+
+    /// Release local capacity only after the external owner has acknowledged the
+    /// exact abort. The pending record is replayable and idempotently finishable.
+    pub fn complete_native_abort_before_effect(
+        &mut self,
+        request_id: &str,
+    ) -> Result<NativeRunRecord, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state == NativeReservationState::Released && record.pre_dispatch_stop.is_some() {
+            return Ok(record.clone());
+        }
+        self.commit_native(
+            request_id,
+            Event::CompleteAbortBeforeEffect {
+                request_id: request_id.to_string(),
+            },
+        )
+    }
+
+    /// Compatibility helper for callers without an external owner transition.
+    pub fn abort_native_before_effect(
+        &mut self,
+        token: NativePreEffectAbortToken,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let request_id = token.request_id.clone();
+        self.prepare_native_abort_inner(token, reason, true)?;
+        self.complete_native_abort_before_effect(&request_id)
     }
 
     pub fn native_started(
@@ -546,9 +647,12 @@ impl NativeJournal {
                     revision: 1,
                     state: NativeReservationState::Reserved,
                     dispatch: None,
+                    owner_dispatch: None,
                     turn_id: None,
                     cancel_requested: false,
                     pre_dispatch_stop: None,
+                    pre_effect_abort_pending: false,
+                    pre_effect_abort_local_only: false,
                     dispatch_rejection: None,
                     observation: None,
                 },
@@ -562,13 +666,19 @@ impl NativeJournal {
             | Event::RejectBeforeStart { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::PrepareAbortBeforeEffect { request_id, .. }
+            | Event::CompleteAbortBeforeEffect { request_id }
             | Event::AbortBeforeEffect { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
-            Event::Dispatch { dispatch, .. } => {
+            Event::Dispatch {
+                dispatch,
+                owner_dispatch,
+                ..
+            } => {
                 if record.state != NativeReservationState::Reserved {
                     return Err(Error::InvalidTransition);
                 }
@@ -661,11 +771,20 @@ impl NativeJournal {
                 if let Some(digest) = &dispatch.codex_authority_witness_sha256 {
                     validate_digest(digest, "native codex authority witness")?;
                 }
+                if let Some(binding) = &owner_dispatch {
+                    validate_identity(&binding.run_id, "native owner run")?;
+                    if binding.pre_dispatch_revision == 0 {
+                        return Err(Error::InvalidIdentity("native owner dispatch revision"));
+                    }
+                    validate_digest(&binding.dispatch_digest, "native owner dispatch")?;
+                }
                 record.dispatch = Some(dispatch);
+                record.owner_dispatch = owner_dispatch;
                 record.state = NativeReservationState::Dispatching;
             }
             Event::Started { turn_id, .. } => {
                 if record.state != NativeReservationState::Dispatching
+                    || record.pre_effect_abort_pending
                     || record.dispatch_rejection.is_some()
                 {
                     return Err(Error::InvalidTransition);
@@ -676,6 +795,7 @@ impl NativeJournal {
             }
             Event::RejectBeforeStart { rejection, .. } => {
                 if record.state != NativeReservationState::Dispatching
+                    || record.pre_effect_abort_pending
                     || record.turn_id.is_some()
                     || record.observation.is_some()
                     || rejection.reason.is_empty()
@@ -702,7 +822,8 @@ impl NativeJournal {
                 };
             }
             Event::Cancel { .. } => {
-                if record.state == NativeReservationState::Released
+                if record.pre_effect_abort_pending
+                    || record.state == NativeReservationState::Released
                     || record.state == NativeReservationState::Reserved
                 {
                     return Err(Error::InvalidTransition);
@@ -721,6 +842,37 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
+            Event::PrepareAbortBeforeEffect {
+                reason, local_only, ..
+            } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.pre_effect_abort_pending
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.dispatch_rejection.is_some()
+                    || record.cancel_requested
+                    || reason.is_empty()
+                    || reason.len() > 4096
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.pre_dispatch_stop = Some(reason);
+                record.pre_effect_abort_pending = true;
+                record.pre_effect_abort_local_only = local_only;
+            }
+            Event::CompleteAbortBeforeEffect { .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || !record.pre_effect_abort_pending
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.dispatch_rejection.is_some()
+                    || record.cancel_requested
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.pre_effect_abort_pending = false;
+                record.state = NativeReservationState::Released;
+            }
             Event::AbortBeforeEffect { reason, .. } => {
                 if record.state != NativeReservationState::Dispatching
                     || record.turn_id.is_some()
@@ -733,6 +885,7 @@ impl NativeJournal {
                     return Err(Error::InvalidTransition);
                 }
                 record.pre_dispatch_stop = Some(reason);
+                record.pre_effect_abort_pending = false;
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {
@@ -754,6 +907,9 @@ fn apply_observation(
     record: &mut NativeRunRecord,
     mut output: NativeRunOutput,
 ) -> Result<(), Error> {
+    if record.pre_effect_abort_pending {
+        return Err(Error::InvalidTransition);
+    }
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
     if output.thread_id != dispatch.thread_id
         || output.model_provider != dispatch.model_provider

@@ -83,6 +83,7 @@ pub struct RunRecovery {
     pub context_digest: String,
     pub compilation_receipt_digest: String,
     pub cancel_reason: Option<String>,
+    pub dispatch_digest: Option<String>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -98,6 +99,7 @@ pub struct RunReceipt {
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
     pub compilation_receipt_digest: Option<String>,
+    pub dispatch_digest: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -137,6 +139,8 @@ struct RunRecord {
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    dispatch_digest: Option<String>,
+    abort_origin_revision: Option<u64>,
     cancel_reason: Option<String>,
     cancel_ack_deadline_ms: Option<u64>,
 }
@@ -211,6 +215,8 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            dispatch_digest: None,
+            abort_origin_revision: None,
             cancel_reason: None,
             cancel_ack_deadline_ms: None,
         };
@@ -310,13 +316,37 @@ impl AgentRunCoordinator {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
+        self.mark_dispatched_inner(now_ms, run_id, expected_revision, None)
+    }
+
+    pub fn mark_dispatched_exact(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_digest: &str,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_digest(dispatch_digest, "dispatch")?;
+        self.mark_dispatched_inner(now_ms, run_id, expected_revision, Some(dispatch_digest))
+    }
+
+    fn mark_dispatched_inner(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_digest: Option<&str>,
+    ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == RunPhase::Dispatched {
-            return Ok(receipt(record, /*idempotent*/ true));
+            if record.dispatch_digest.as_deref() == dispatch_digest {
+                return Ok(receipt(record, /*idempotent*/ true));
+            }
+            return Err(AgentRunError::Conflict);
         }
         require_revision(record, expected_revision)?;
         require_live_deadline(record, now_ms)?;
@@ -326,8 +356,62 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
+        record.dispatch_digest = dispatch_digest.map(str::to_string);
         record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
+        Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    pub fn abort_before_effect(
+        &mut self,
+        run_id: &str,
+        pre_dispatch_revision: u64,
+        dispatch_digest: &str,
+        reason: &str,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_identity(run_id, "run")?;
+        validate_digest(dispatch_digest, "dispatch")?;
+        validate_cancel_reason(reason)?;
+        let record = self
+            .runs
+            .get_mut(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
+        if record.phase == RunPhase::Cancelled
+            && record.abort_origin_revision == Some(pre_dispatch_revision)
+            && record.dispatch_digest.as_deref() == Some(dispatch_digest)
+            && record.cancel_reason.as_deref() == Some(reason)
+        {
+            return Ok(receipt(record, /*idempotent*/ true));
+        }
+        match record.phase {
+            RunPhase::ContextAttached => {
+                require_revision(record, pre_dispatch_revision)?;
+                if record.dispatch_digest.is_some() {
+                    return Err(AgentRunError::Conflict);
+                }
+                record.dispatch_digest = Some(dispatch_digest.to_string());
+            }
+            RunPhase::Dispatched => {
+                let dispatched_revision = pre_dispatch_revision
+                    .checked_add(1)
+                    .ok_or(AgentRunError::ArithmeticOverflow)?;
+                require_revision(record, dispatched_revision)?;
+                if record.dispatch_digest.as_deref() != Some(dispatch_digest) {
+                    return Err(AgentRunError::Conflict);
+                }
+            }
+            _ => return Err(AgentRunError::InvalidTransition),
+        }
+        // Precompute before changing state; overflow must leave the owner unchanged.
+        let revision = record
+            .revision
+            .checked_add(1)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
+        record.phase = RunPhase::Cancelled;
+        record.abort_origin_revision = Some(pre_dispatch_revision);
+        record.cancel_reason = Some(reason.to_string());
+        record.cancel_ack_deadline_ms = None;
+        record.revision = revision;
         Ok(receipt(record, /*idempotent*/ false))
     }
 
@@ -440,6 +524,7 @@ impl AgentRunCoordinator {
                 && current.context_digest.as_deref() == Some(recovery.context_digest.as_str())
                 && current.compilation_receipt_digest.as_deref()
                     == Some(recovery.compilation_receipt_digest.as_str())
+                && current.dispatch_digest == recovery.dispatch_digest
                 && current.cancel_reason == recovery.cancel_reason;
             if same {
                 return Ok(receipt(current, /*idempotent*/ true));
@@ -455,6 +540,8 @@ impl AgentRunCoordinator {
             phase: RunPhase::Indeterminate,
             context_digest: Some(recovery.context_digest),
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
+            dispatch_digest: recovery.dispatch_digest,
+            abort_origin_revision: None,
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
         };
@@ -617,6 +704,9 @@ fn validate_recovery(value: &RunRecovery) -> Result<(), AgentRunError> {
     }
     validate_digest(&value.context_digest, "context")?;
     validate_digest(&value.compilation_receipt_digest, "compilation receipt")?;
+    if let Some(dispatch_digest) = value.dispatch_digest.as_deref() {
+        validate_digest(dispatch_digest, "dispatch")?;
+    }
     if let Some(reason) = value.cancel_reason.as_deref() {
         validate_cancel_reason(reason)?;
     }
@@ -735,6 +825,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         cancel_reason: record.cancel_reason.clone(),
         cancel_ack_deadline_ms: record.cancel_ack_deadline_ms,
         compilation_receipt_digest: record.compilation_receipt_digest.clone(),
+        dispatch_digest: record.dispatch_digest.clone(),
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
     }

@@ -601,3 +601,97 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn two_phase_pre_effect_abort_survives_reopen() {
+    let journal = path("abort-pending");
+    let mut control = DurableInferenceControl::open(&journal, 32).unwrap();
+    control.reserve_native(request("r-pending"), 4).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort_bound(
+            "r-pending",
+            dispatch(),
+            NativeOwnerDispatchBinding {
+                run_id: "run.pending".to_string(),
+                pre_dispatch_revision: 2,
+                dispatch_digest: "d".repeat(64),
+            },
+        )
+        .unwrap();
+    let pending = control
+        .prepare_native_abort_before_effect(token, "owner fence drift".to_string())
+        .unwrap();
+    assert!(pending.pre_effect_abort_pending);
+    assert_eq!(pending.state, NativeReservationState::Dispatching);
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&journal, 32).unwrap();
+    let replayed = reopened.native_record("r-pending").unwrap();
+    assert!(replayed.pre_effect_abort_pending);
+    assert_eq!(
+        replayed.owner_dispatch.as_ref().unwrap().run_id,
+        "run.pending"
+    );
+    let released = reopened
+        .complete_native_abort_before_effect("r-pending")
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert!(!released.pre_effect_abort_pending);
+    drop(reopened);
+    std::fs::remove_file(journal).unwrap();
+}
+
+#[test]
+fn pending_abort_forbids_start_cancel_and_observation() {
+    let journal = path("abort-fence");
+    let mut control = DurableInferenceControl::open(&journal, 32).unwrap();
+    control.reserve_native(request("r-fenced"), 4).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r-fenced", dispatch())
+        .unwrap();
+    control
+        .prepare_native_abort_before_effect(token, "final-use denied".to_string())
+        .unwrap();
+    assert_eq!(
+        control.native_started("r-fenced", "turn-fenced".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        control.cancel_native("r-fenced"),
+        Err(Error::InvalidTransition)
+    );
+    drop(control);
+    std::fs::remove_file(journal).unwrap();
+}
+
+#[test]
+fn completing_a_pre_effect_abort_is_idempotent_after_reopen() {
+    let journal = path("abort-complete-retry");
+    let mut control = DurableInferenceControl::open(&journal, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let released = control
+        .abort_native_before_effect(token, "no physical send".to_string())
+        .unwrap();
+    assert!(released.pre_effect_abort_local_only);
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&journal, 8).unwrap();
+    assert_eq!(
+        reopened.complete_native_abort_before_effect("r1").unwrap(),
+        released
+    );
+    assert!(
+        reopened
+            .dispatch_native_with_pre_effect_abort("r1", dispatch())
+            .is_err()
+    );
+    assert!(reopened.native_started("r1", "turn-1".to_string()).is_err());
+    drop(reopened);
+    std::fs::remove_file(journal).unwrap();
+}
+
+#[cfg(unix)]
+#[path = "native_crash_tests.rs"]
+mod crash;

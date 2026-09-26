@@ -60,7 +60,7 @@ impl fmt::Display for AttemptError {
 
 impl StdError for AttemptError {}
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct Attempt<State> {
     identity: AttemptIdentity,
     authority_binding_digest: Option<Digest32>,

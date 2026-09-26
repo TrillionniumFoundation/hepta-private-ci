@@ -107,6 +107,15 @@ impl AppServerModelDriver {
             )?,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        if record.pre_effect_abort_pending {
+            self.reconcile_pending_pre_effect_abort(control, &record)
+                .await?;
+            let reason = record
+                .pre_dispatch_stop
+                .as_deref()
+                .unwrap_or("pre-effect abort pending");
+            return Err(format!("request stopped before effect entry: {reason}").into());
+        }
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
