@@ -236,31 +236,9 @@ jobs:
           set -euo pipefail
           # Independent owner lanes remain in force; do not repeat their gates.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/derived.json" -- python3 scripts/hepta-module-docs.py refresh-derived --check
-      - name: Observe candidate Git write denial without mutating repository state
-        # Native diagnostics must run even when external credential observation fails.
-        # The same required lane STILL fails on an allowed or unknown transport.
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.scope.outcome == 'success' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          PYTHONPATH: scripts
-        shell: bash
-        run: |
-          set -euo pipefail
-          # GET of receive-pack advertisement performs no ref, PR or settings
-          # write. Do not test a credential by attempting same-value PATCHes:
-          # concurrent owner changes can make a supposed no-op destructive.
-          # This bounded observation is NOT proof of admin/PR-write denial or
-          # independent credential custody. The strict activation observer
-          # remains a separate gate; no missing protection is waived here.
-          python3 - <<'PYCODE' | tee "$RUNNER_TEMP/hepta-command-records/candidate-transport.json"
-          import json
-          import os
-          from hepta_repository_controls import observe_write_transport_denial
-          observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
-          observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
-          print(json.dumps(observation, sort_keys=True))
-          PYCODE
+      # Live credential and branch-protection observations belong to the
+      # separate manual self-iteration activation gate. They are not a
+      # property of this immutable source candidate.
       - name: Verify unchanged reviewed source
         run: |
           set -euo pipefail
