@@ -1,5 +1,6 @@
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 
 use crate::PolicyEffect;
 use crate::PolicySpec;
@@ -22,8 +23,7 @@ fn time(revision: u64, wall_time_ms: u64) -> TrustedTimeSample {
     .expect("valid trusted time")
 }
 
-#[tokio::test]
-async fn operation_lookup_finds_hot_reservation_and_reports_missing() {
+async fn fixture() -> (tempfile::TempDir, AuthBusAuthorityStore, QuotaReservation) {
     let root = tempfile::tempdir().expect("temporary authority root");
     let store = AuthBusAuthorityStore::open(&root.path().join("authority.sqlite"))
         .await
@@ -68,13 +68,12 @@ async fn operation_lookup_finds_hot_reservation_and_reports_missing() {
         )
         .await
         .expect("create quota");
-    let operation_id = id("operation:lookup");
     let reservation = store
         .reserve(
             &decision,
             ReservationRequest {
                 quota_key: quota.quota_key,
-                operation_id: operation_id.clone(),
+                operation_id: id("operation:lookup"),
                 amount: 1,
                 effect_digest: Digest32::of_bytes(b"operation-lookup-effect"),
                 expected_quota_revision: quota.revision,
@@ -84,9 +83,15 @@ async fn operation_lookup_finds_hot_reservation_and_reports_missing() {
         )
         .await
         .expect("reserve");
+    (root, store, reservation)
+}
+
+#[tokio::test]
+async fn operation_lookup_finds_hot_reservation_and_reports_missing() {
+    let (_root, store, reservation) = fixture().await;
     assert_eq!(
         store
-            .reservation_by_operation(&operation_id)
+            .reservation_by_operation(&reservation.operation_id)
             .await
             .expect("lookup hot reservation"),
         Some(reservation)
@@ -98,4 +103,44 @@ async fn operation_lookup_finds_hot_reservation_and_reports_missing() {
             .expect("lookup missing reservation"),
         None
     );
+}
+
+#[tokio::test]
+async fn operation_lookup_retains_original_terminal_row_after_archival_and_reopen() {
+    let (root, store, reservation) = fixture().await;
+    let terminal = store
+        .cancel_reservation(&reservation.reservation_id, reservation.revision, time(5, 1_500))
+        .await
+        .expect("cancel before dispatch");
+    assert_eq!(
+        store.compact_terminal_reservations(1_600, 10).await.expect("archive terminal"),
+        1
+    );
+    assert_eq!(
+        store.reservation_by_operation(&terminal.operation_id).await.expect("archive lookup"),
+        Some(terminal.clone())
+    );
+    drop(store);
+    let reopened = AuthBusAuthorityStore::open(&root.path().join("authority.sqlite"))
+        .await
+        .expect("reopen authority");
+    assert_eq!(
+        reopened.reservation_by_operation(&terminal.operation_id).await.expect("restart lookup"),
+        Some(terminal)
+    );
+}
+
+#[tokio::test]
+async fn operation_lookup_does_not_lose_identity_during_concurrent_compaction() {
+    let (_root, store, reservation) = fixture().await;
+    let terminal = store
+        .cancel_reservation(&reservation.reservation_id, reservation.revision, time(5, 1_500))
+        .await
+        .expect("cancel before dispatch");
+    let (archived, observed) = tokio::join!(
+        store.compact_terminal_reservations(1_600, 10),
+        store.reservation_by_operation(&terminal.operation_id),
+    );
+    assert_eq!(archived.expect("archive"), 1);
+    assert_eq!(observed.expect("single-snapshot lookup"), Some(terminal));
 }
