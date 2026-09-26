@@ -1,0 +1,94 @@
+name: cognitive-types-qualification
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-cognitive-types/**'
+      - 'codex-rs/hepta-cognitive-store/**'
+      - 'codex-rs/hepta-cognitive-read/**'
+      - 'codex-rs/hepta-operations/**'
+      - 'codex-rs/state/**'
+      - 'qualification/cognitive-types-v1/**'
+      - '.github/workflows/cognitive-types-qualification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-types-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    name: Exact-head contract closure
+    runs-on: macos-15
+    timeout-minutes: 75
+    steps:
+      - name: Check out tested head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git rev-parse HEAD
+          git rev-parse HEAD^{tree}
+
+      - name: Verify registries and cross-language vectors
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+          python3 qualification/cognitive-types-v1/verify_vectors.py
+          python3 qualification/cognitive-types-v1/verify_bound_vector.py
+          node qualification/cognitive-types-v1/verify_bound_vector.mjs
+
+      - name: Check formatting
+        shell: bash
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+
+      - name: Check canonical producer and consumers
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-operations \
+            -p codex-state
+
+      - name: Test canonical producer and consumers
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-operations \
+            -p codex-state
+
+      - name: Strict clippy
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-operations \
+            -p codex-state -- -D warnings
