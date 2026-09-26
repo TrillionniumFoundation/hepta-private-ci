@@ -42,6 +42,8 @@ mod prompt_runtime;
 mod qualification_writer;
 mod runtime;
 mod runtime_tasks;
+mod self_iteration_coordinator;
+mod self_iteration_service;
 mod shared_terminal_cell;
 mod state;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
