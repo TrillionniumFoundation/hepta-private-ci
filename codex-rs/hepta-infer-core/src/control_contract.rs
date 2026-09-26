@@ -251,9 +251,114 @@ impl AdmissionBundleV1 {
         Ok(())
     }
 
+    pub fn signing_bytes(&self, now_unix_ms: u64) -> Result<Vec<u8>, ControlContractError> {
+        self.validate(now_unix_ms)?;
+        let mut bytes = b"hepta.inference.control.admission-bundle.v1\0".to_vec();
+        bytes.extend(serde_json::to_vec(self).map_err(|_| ControlContractError::Encoding)?);
+        Ok(bytes)
+    }
+
     pub fn digest(&self, now_unix_ms: u64) -> Result<Digest32, ControlContractError> {
         self.validate(now_unix_ms)?;
         domain_digest(b"hepta.inference.control.admission-bundle.v1\0", self)
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SignedAdmissionBundleV1 {
+    pub signer_key_id: String,
+    pub admission: AdmissionBundleV1,
+    pub signature: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerifiedAdmissionBundleV1 {
+    admission: AdmissionBundleV1,
+    admission_sha256: Digest32,
+    trust_key_id: String,
+    disposition: VerificationDispositionV1,
+}
+
+impl VerifiedAdmissionBundleV1 {
+    pub fn admission(&self) -> &AdmissionBundleV1 {
+        &self.admission
+    }
+
+    pub const fn admission_sha256(&self) -> Digest32 {
+        self.admission_sha256
+    }
+
+    pub fn trust_key_id(&self) -> &str {
+        &self.trust_key_id
+    }
+
+    pub const fn disposition(&self) -> VerificationDispositionV1 {
+        self.disposition
+    }
+}
+
+pub struct AdmissionVerifierV1 {
+    keys: Vec<PinnedTrustKey>,
+    digest_by_request: BTreeMap<String, Digest32>,
+}
+
+impl fmt::Debug for AdmissionVerifierV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("AdmissionVerifierV1([PINNED TRUST])")
+    }
+}
+
+impl AdmissionVerifierV1 {
+    pub fn new(keys: Vec<RotatingTrustKeyV1>) -> Result<Self, ControlContractError> {
+        Ok(Self {
+            keys: pin_keys(keys)?,
+            digest_by_request: BTreeMap::new(),
+        })
+    }
+
+    pub fn verify(
+        &mut self,
+        signed: &SignedAdmissionBundleV1,
+        expected_request_id: &str,
+        expected_payload_sha256: Digest32,
+        now_unix_ms: u64,
+    ) -> Result<VerifiedAdmissionBundleV1, ControlContractError> {
+        let admission = &signed.admission;
+        admission.validate(now_unix_ms)?;
+        if admission.request_id != expected_request_id {
+            return Err(ControlContractError::BindingMismatch("request"));
+        }
+        if admission.payload_sha256 != expected_payload_sha256 {
+            return Err(ControlContractError::BindingMismatch("payload"));
+        }
+        let signature = Signature::from_slice(&signed.signature)
+            .map_err(|_| ControlContractError::InvalidSignature)?;
+        let input = admission.signing_bytes(now_unix_ms)?;
+        let trust_key_id = verify_key(
+            &self.keys,
+            &signed.signer_key_id,
+            admission.quota_lease.authority_epoch,
+            &input,
+            &signature,
+        )?
+        .to_string();
+        let admission_sha256 = admission.digest(now_unix_ms)?;
+        let disposition = match self.digest_by_request.get(&admission.request_id) {
+            Some(previous) if *previous == admission_sha256 => VerificationDispositionV1::Idempotent,
+            Some(_) => return Err(ControlContractError::Equivocation),
+            None => {
+                self.digest_by_request
+                    .insert(admission.request_id.clone(), admission_sha256);
+                VerificationDispositionV1::Advanced
+            }
+        };
+        Ok(VerifiedAdmissionBundleV1 {
+            admission: admission.clone(),
+            admission_sha256,
+            trust_key_id,
+            disposition,
+        })
     }
 }
 
@@ -990,6 +1095,100 @@ mod tests {
             receipt,
             signature: signature.to_bytes().to_vec(),
         }
+    }
+
+    fn admission() -> AdmissionBundleV1 {
+        AdmissionBundleV1 {
+            schema_version: 1,
+            request_id: "request-1".into(),
+            principal_id: "principal-1".into(),
+            payload_sha256: digest(9),
+            prompt_sha256: digest(8),
+            execution_manifest: ExecutionManifestV1 {
+                schema_version: 1,
+                provider_id: "provider-1".into(),
+                model_id: "model-1".into(),
+                model_revision: "revision-1".into(),
+                model_sha256: digest(1),
+                tokenizer_id: "tokenizer-1".into(),
+                tokenizer_revision: "revision-1".into(),
+                tokenizer_sha256: digest(2),
+                vocabulary_sha256: digest(3),
+                normalization_policy_sha256: digest(4),
+                template_id: "template-1".into(),
+                template_revision: "revision-1".into(),
+                template_sha256: digest(5),
+                runtime_abi: "runtime-v1".into(),
+                runtime_sha256: digest(6),
+                adapter_abi: "adapter-v1".into(),
+                adapter_sha256: digest(7),
+                execution_policy_sha256: digest(10),
+            },
+            quota_lease: QuotaLeaseV1 {
+                schema_version: 1,
+                lease_id: "quota-1".into(),
+                subject_id: "principal-1".into(),
+                authority_epoch: 3,
+                policy_sha256: digest(11),
+                reserved_requests: 1,
+                reserved_input_tokens: 100,
+                reserved_output_tokens: 100,
+                reserved_cost_micros: 1000,
+                maximum_concurrency: 1,
+                not_before_unix_ms: NOW - 1,
+                expires_at_unix_ms: NOW + 60_000,
+            },
+            resource_lease: ResourceLeaseV1 {
+                schema_version: 1,
+                lease_id: "resource-1".into(),
+                resource_owner_id: "resource-owner-1".into(),
+                worker_id: "worker-1".into(),
+                worker_generation: 7,
+                provider_id: "provider-1".into(),
+                model_sha256: digest(1),
+                device_class: "hosted".into(),
+                device_instance_sha256: digest(12),
+                reserved_memory_bytes: 1024,
+                reserved_compute_millis: 1000,
+                authority_epoch: 3,
+                not_before_unix_ms: NOW - 1,
+                expires_at_unix_ms: NOW + 60_000,
+            },
+            final_use_witness_sha256: digest(13),
+            deadline_unix_ms: NOW + 30_000,
+        }
+    }
+
+    #[test]
+    fn admission_verifier_binds_exact_payload_and_rotating_epoch_key() {
+        let key = signing_key(6);
+        let admission = admission();
+        let signed = SignedAdmissionBundleV1 {
+            signer_key_id: "admission-a".into(),
+            signature: key
+                .sign(&admission.signing_bytes(NOW).expect("admission bytes"))
+                .to_bytes()
+                .to_vec(),
+            admission,
+        };
+        let mut verifier = AdmissionVerifierV1::new(vec![trust("admission-a", &key)])
+            .expect("trust");
+        let verified = verifier
+            .verify(&signed, "request-1", digest(9), NOW)
+            .expect("verified admission");
+        assert_eq!(verified.admission().execution_manifest.model_id, "model-1");
+        assert_eq!(verified.disposition(), VerificationDispositionV1::Advanced);
+        assert_eq!(
+            verifier
+                .verify(&signed, "request-1", digest(9), NOW)
+                .expect("idempotent")
+                .disposition(),
+            VerificationDispositionV1::Idempotent
+        );
+        assert_eq!(
+            verifier.verify(&signed, "request-1", digest(4), NOW),
+            Err(ControlContractError::BindingMismatch("payload"))
+        );
     }
 
     #[test]

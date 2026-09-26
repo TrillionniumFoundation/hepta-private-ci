@@ -61,6 +61,38 @@ pub fn native_output_from_verified_settlement(
     })
 }
 
+/// Commit verified settlement only after its exact signed bytes are durable.
+pub fn settle_durable_from_verified(
+    control: &mut DurableInferenceControl,
+    verified: &VerifiedSettlementReceiptV1,
+    persisted: &PersistedSettlementEvidence,
+    owner_authority: NativeOwnerAuthority,
+) -> Result<NativeRunRecord, ReconciliationEvidenceError> {
+    if verified.receipt_sha256() != persisted.receipt_sha256() {
+        return Err(ReconciliationEvidenceError::ReceiptMismatch);
+    }
+    Ok(control.settle_native_verified(
+        verified,
+        persisted.receipt_sha256(),
+        owner_authority,
+    )?)
+}
+
+/// Retire an indeterminate run only after its quorum audit record is durable.
+pub fn retire_durable_indeterminate(
+    control: &mut DurableInferenceControl,
+    verified: &VerifiedRetirementReceiptV1,
+    persisted: &PersistedRetirementEvidence,
+) -> Result<NativeRunRecord, ReconciliationEvidenceError> {
+    if verified.receipt_sha256() != persisted.receipt_sha256() {
+        return Err(ReconciliationEvidenceError::ReceiptMismatch);
+    }
+    Ok(control.retire_native_indeterminate(
+        verified,
+        persisted.receipt_sha256(),
+    )?)
+}
+
 fn persist_exact(
     directory: &Path,
     path: &Path,

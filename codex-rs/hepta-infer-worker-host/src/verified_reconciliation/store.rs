@@ -17,6 +17,9 @@ use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
+use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::Error as DurableControlError;
 use serde::Serialize;
 
 const MAX_EVIDENCE_BYTES: u64 = 2 * 1024 * 1024;
@@ -28,6 +31,7 @@ pub enum ReconciliationEvidenceError {
     EvidenceConflict,
     EvidenceTooLarge,
     Encoding,
+    Control(String),
     Io(String),
 }
 
@@ -42,6 +46,12 @@ impl StdError for ReconciliationEvidenceError {}
 impl From<std::io::Error> for ReconciliationEvidenceError {
     fn from(value: std::io::Error) -> Self {
         Self::Io(value.to_string())
+    }
+}
+
+impl From<DurableControlError> for ReconciliationEvidenceError {
+    fn from(value: DurableControlError) -> Self {
+        Self::Control(value.to_string())
     }
 }
 

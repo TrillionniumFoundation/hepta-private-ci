@@ -6,6 +6,14 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
+
+use crate::control_contract::AdmissionBundleV1;
+use crate::control_contract::SettlementTerminalV1;
+use crate::control_contract::VerifiedAdmissionBundleV1;
+use crate::control_contract::VerifiedRetirementReceiptV1;
+use crate::control_contract::VerifiedSettlementReceiptV1;
 
 use super::DurableInferenceControl;
 use super::Error;
@@ -200,6 +208,27 @@ pub struct NativeDispatchRejection {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct NativeControlBinding {
+    pub admission_sha256: String,
+    pub manifest_sha256: String,
+    pub quota_lease_id: String,
+    pub resource_lease_id: String,
+    pub resource_worker_id: String,
+    pub provider_id: String,
+    pub authority_epoch: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeRetirementAudit {
+    pub retirement_receipt_sha256: String,
+    pub proposal_sha256: String,
+    pub reason_code: String,
+    pub approval_key_ids: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct NativeRunRecord {
     pub request: NativeRequest,
     pub revision: u64,
@@ -213,11 +242,17 @@ pub struct NativeRunRecord {
     #[serde(default)]
     pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
+    #[serde(default)]
+    pub control_binding: Option<NativeControlBinding>,
+    #[serde(default)]
+    pub verified_settlement_receipt_sha256: Option<String>,
+    #[serde(default)]
+    pub retirement: Option<NativeRetirementAudit>,
 }
 
 #[derive(Clone, Debug, Default)]
 pub(super) struct NativeJournal {
-    maximum_in_flight: Option<usize>,
+    pub(super) maximum_in_flight: Option<usize>,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
 }
 
@@ -227,6 +262,10 @@ enum Event {
     Reserve {
         request: NativeRequest,
         maximum_in_flight: usize,
+    },
+    BindControl {
+        request_id: String,
+        binding: NativeControlBinding,
     },
     Dispatch {
         request_id: String,
@@ -255,6 +294,15 @@ enum Event {
         request_id: String,
         output: NativeRunOutput,
     },
+    ObserveVerified {
+        request_id: String,
+        output: NativeRunOutput,
+        receipt_sha256: String,
+    },
+    RetireIndeterminate {
+        request_id: String,
+        retirement: NativeRetirementAudit,
+    },
 }
 
 impl DurableInferenceControl {
@@ -280,6 +328,9 @@ impl DurableInferenceControl {
             .maximum_in_flight
             .is_some_and(|limit| limit != maximum_in_flight)
             || self.records.contains_key(&request.request_id)
+            || self
+                .archived_request_filter
+                .might_contain(&request.request_id)
         {
             return Err(Error::Conflict);
         }
@@ -290,9 +341,7 @@ impl DurableInferenceControl {
                 Err(Error::Conflict)
             };
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
-            return Err(Error::CapacityExceeded);
-        }
+        self.ensure_record_capacity()?;
         self.ensure_native_dispatch_space()?;
         let id = request.request_id.clone();
         self.commit_native(
@@ -442,6 +491,203 @@ impl DurableInferenceControl {
         self.abort_native_before_effect(token, reason)
     }
 
+    /// Bind a cryptographically verified admission bundle to a reserved run.
+    /// The binding is durable and idempotent; a different bundle for the same
+    /// request is an equivocation and cannot replace it after dispatch.
+    pub fn bind_native_control_admission(
+        &mut self,
+        verified: &VerifiedAdmissionBundleV1,
+    ) -> Result<NativeRunRecord, Error> {
+        let admission = verified.admission();
+        let record = self
+            .native
+            .records
+            .get(&admission.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let binding = control_binding_from_admission(admission, verified.admission_sha256())?;
+        validate_admission_against_record(admission, record)?;
+        if let Some(previous) = &record.control_binding {
+            return if previous == &binding {
+                Ok(record.clone())
+            } else {
+                Err(Error::Conflict)
+            };
+        }
+        if record.state != NativeReservationState::Reserved {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit_native(
+            &admission.request_id,
+            Event::BindControl {
+                request_id: admission.request_id.clone(),
+                binding,
+            },
+        )
+    }
+
+    /// Settle from an opaque, signature-verified receipt whose exact bytes have
+    /// already been durably persisted by the host evidence store. Plaintext
+    /// output is never copied into the control journal on this path.
+    pub fn settle_native_verified(
+        &mut self,
+        verified: &VerifiedSettlementReceiptV1,
+        persisted_receipt_sha256: [u8; 32],
+        owner_authority: NativeOwnerAuthority,
+    ) -> Result<NativeRunRecord, Error> {
+        if verified.receipt_sha256() != persisted_receipt_sha256 {
+            return Err(Error::Conflict);
+        }
+        let receipt = verified.receipt();
+        let record = self
+            .native
+            .records
+            .get(&receipt.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let binding = record
+            .control_binding
+            .as_ref()
+            .ok_or(Error::ReservationMismatch)?;
+        let dispatch = record
+            .dispatch
+            .as_ref()
+            .ok_or(Error::AssignmentMismatch)?;
+        if binding.admission_sha256 != hex_digest(receipt.admission_sha256)
+            || binding.manifest_sha256 != hex_digest(receipt.manifest_sha256)
+            || native_dispatch_sha256(dispatch)? != receipt.dispatch_sha256
+            || receipt.request_id != record.request.request_id
+            || receipt.model_id != record.request.model
+            || receipt.provider_id != dispatch.model_provider
+            || receipt.thread_id != dispatch.thread_id
+            || record
+                .turn_id
+                .as_ref()
+                .is_some_and(|turn_id| turn_id != &receipt.turn_id)
+        {
+            return Err(Error::AssignmentMismatch);
+        }
+        let receipt_digest = hex_digest(verified.receipt_sha256());
+        if record.verified_settlement_receipt_sha256.as_ref() == Some(&receipt_digest) {
+            return Ok(record.clone());
+        }
+        let (status, boundary_status, terminal_observed, stop_reason) = match receipt.terminal {
+            SettlementTerminalV1::Succeeded => (
+                NativeRunStatus::Completed,
+                NativeBoundaryStatus::Succeeded,
+                true,
+                None,
+            ),
+            SettlementTerminalV1::Failed => (
+                NativeRunStatus::Failed,
+                NativeBoundaryStatus::Failed,
+                true,
+                Some("verified provider failure".to_string()),
+            ),
+            SettlementTerminalV1::Interrupted => (
+                NativeRunStatus::Interrupted,
+                NativeBoundaryStatus::Interrupted,
+                true,
+                Some("verified provider interruption".to_string()),
+            ),
+            SettlementTerminalV1::Cancelled => (
+                NativeRunStatus::Interrupted,
+                NativeBoundaryStatus::Cancelled,
+                true,
+                Some("verified provider cancellation".to_string()),
+            ),
+            SettlementTerminalV1::TimedOut => (
+                NativeRunStatus::Failed,
+                NativeBoundaryStatus::TimedOut,
+                true,
+                Some("verified provider timeout".to_string()),
+            ),
+            SettlementTerminalV1::Indeterminate => (
+                NativeRunStatus::Indeterminate,
+                NativeBoundaryStatus::Indeterminate,
+                false,
+                Some("signed observation remains indeterminate".to_string()),
+            ),
+        };
+        let output = NativeRunOutput {
+            thread_id: receipt.thread_id.clone(),
+            turn_id: receipt.turn_id.clone(),
+            model: receipt.model_id.clone(),
+            model_provider: receipt.provider_id.clone(),
+            status,
+            boundary_status,
+            output: String::new(),
+            observed_output_tokens: receipt.observed_output_tokens,
+            terminal_observed,
+            stop_reason,
+            owner_authority,
+            codex_terminal_correlation_digest: Some(receipt_digest.clone()),
+        };
+        self.commit_native(
+            &receipt.request_id,
+            Event::ObserveVerified {
+                request_id: receipt.request_id.clone(),
+                output,
+                receipt_sha256: receipt_digest,
+            },
+        )
+    }
+
+    /// Release an indeterminate slot only from an opaque quorum-verified
+    /// retirement receipt whose audit record was persisted first. This does not
+    /// claim provider terminality and cannot convert the run to success.
+    pub fn retire_native_indeterminate(
+        &mut self,
+        verified: &VerifiedRetirementReceiptV1,
+        persisted_receipt_sha256: [u8; 32],
+    ) -> Result<NativeRunRecord, Error> {
+        if verified.receipt_sha256() != persisted_receipt_sha256 {
+            return Err(Error::Conflict);
+        }
+        let proposal = verified.proposal();
+        let record = self
+            .native
+            .records
+            .get(&proposal.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let receipt_sha256 = hex_digest(verified.receipt_sha256());
+        if record
+            .retirement
+            .as_ref()
+            .is_some_and(|audit| audit.retirement_receipt_sha256 == receipt_sha256)
+        {
+            return Ok(record.clone());
+        }
+        if record.state != NativeReservationState::Indeterminate {
+            return Err(Error::InvalidTransition);
+        }
+        let binding = record
+            .control_binding
+            .as_ref()
+            .ok_or(Error::ReservationMismatch)?;
+        let dispatch = record
+            .dispatch
+            .as_ref()
+            .ok_or(Error::AssignmentMismatch)?;
+        if binding.admission_sha256 != hex_digest(proposal.admission_sha256)
+            || binding.manifest_sha256 != hex_digest(proposal.manifest_sha256)
+            || native_dispatch_sha256(dispatch)? != proposal.dispatch_sha256
+        {
+            return Err(Error::AssignmentMismatch);
+        }
+        let retirement = NativeRetirementAudit {
+            retirement_receipt_sha256: receipt_sha256,
+            proposal_sha256: hex_digest(verified.proposal_sha256()),
+            reason_code: proposal.reason_code.clone(),
+            approval_key_ids: verified.approval_key_ids().to_vec(),
+        };
+        self.commit_native(
+            &proposal.request_id,
+            Event::RetireIndeterminate {
+                request_id: proposal.request_id.clone(),
+                retirement,
+            },
+        )
+    }
+
     /// Trusted host port: validates exact assignment and monotonic observations.
     /// Only matching terminal observations release local execution capacity.
     /// Missing usage never becomes zero and unknown execution may later settle.
@@ -471,15 +717,11 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
-    fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
-        // This exclusive owner serializes active calls. Leave room for bounded
-        // dispatch/cancel metadata and the next maximal observed output before
-        // admitting a new external execution. This is not an archival policy.
-        if self.journal_bytes > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
-        {
-            return Err(Error::CapacityExceeded);
-        }
-        Ok(())
+    fn ensure_native_dispatch_space(&mut self) -> Result<(), Error> {
+        // Preserve one maximal observation line of headroom. The shared owner
+        // now compacts through the crash-safe generation store instead of
+        // treating historical bytes as a permanent lifetime limit.
+        self.ensure_append_space(super::MAX_JOURNAL_LINE_BYTES)
     }
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
@@ -487,7 +729,9 @@ impl DurableInferenceControl {
         next.apply(event.clone())?;
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
-        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
+        let encoded = format!("{JOURNAL_PREFIX}{json}\n");
+        self.ensure_append_space(encoded.len())?;
+        self.append(&encoded)?;
         self.native = next;
         self.native
             .records
@@ -551,23 +795,38 @@ impl NativeJournal {
                     pre_dispatch_stop: None,
                     dispatch_rejection: None,
                     observation: None,
+                    control_binding: None,
+                    verified_settlement_receipt_sha256: None,
+                    retirement: None,
                 },
             );
             return Ok(());
         }
         let id = match &event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
-            Event::Dispatch { request_id, .. }
+            Event::BindControl { request_id, .. }
+            | Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
             | Event::RejectBeforeStart { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::AbortBeforeEffect { request_id, .. }
-            | Event::Observe { request_id, .. } => request_id,
+            | Event::Observe { request_id, .. }
+            | Event::ObserveVerified { request_id, .. }
+            | Event::RetireIndeterminate { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::BindControl { binding, .. } => {
+                if record.state != NativeReservationState::Reserved
+                    || record.control_binding.is_some()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_control_binding(&binding)?;
+                record.control_binding = Some(binding);
+            }
             Event::Dispatch { dispatch, .. } => {
                 if record.state != NativeReservationState::Reserved {
                     return Err(Error::InvalidTransition);
@@ -736,10 +995,40 @@ impl NativeJournal {
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {
-                if record.dispatch_rejection.is_some() {
+                if record.dispatch_rejection.is_some() || record.retirement.is_some() {
                     return Err(Error::InvalidTransition);
                 }
                 apply_observation(record, output)?;
+            }
+            Event::ObserveVerified {
+                output,
+                receipt_sha256,
+                ..
+            } => {
+                if record.dispatch_rejection.is_some() || record.retirement.is_some() {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_digest(&receipt_sha256, "verified settlement receipt")?;
+                if record
+                    .verified_settlement_receipt_sha256
+                    .as_ref()
+                    .is_some_and(|previous| previous != &receipt_sha256)
+                {
+                    return Err(Error::Conflict);
+                }
+                apply_observation(record, output)?;
+                record.verified_settlement_receipt_sha256 = Some(receipt_sha256);
+            }
+            Event::RetireIndeterminate { retirement, .. } => {
+                if record.state != NativeReservationState::Indeterminate
+                    || record.retirement.is_some()
+                    || record.control_binding.is_none()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_retirement_audit(&retirement)?;
+                record.retirement = Some(retirement);
+                record.state = NativeReservationState::Released;
             }
         }
         record.revision = record
@@ -748,6 +1037,251 @@ impl NativeJournal {
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(())
     }
+}
+
+fn control_binding_from_admission(
+    admission: &AdmissionBundleV1,
+    admission_sha256: [u8; 32],
+) -> Result<NativeControlBinding, Error> {
+    Ok(NativeControlBinding {
+        admission_sha256: hex_digest(admission_sha256),
+        manifest_sha256: hex_digest(admission.execution_manifest.digest()?),
+        quota_lease_id: admission.quota_lease.lease_id.clone(),
+        resource_lease_id: admission.resource_lease.lease_id.clone(),
+        resource_worker_id: admission.resource_lease.worker_id.clone(),
+        provider_id: admission.execution_manifest.provider_id.clone(),
+        authority_epoch: admission.quota_lease.authority_epoch,
+    })
+}
+
+fn validate_admission_against_record(
+    admission: &AdmissionBundleV1,
+    record: &NativeRunRecord,
+) -> Result<(), Error> {
+    if admission.request_id != record.request.request_id
+        || admission.principal_id != record.request.principal_id
+        || admission.execution_manifest.model_id != record.request.model
+        || admission.resource_lease.worker_generation != record.request.worker_generation
+        || hex_digest(admission.payload_sha256) != record.request.payload_digest
+    {
+        return Err(Error::ReservationMismatch);
+    }
+    Ok(())
+}
+
+fn validate_control_binding(binding: &NativeControlBinding) -> Result<(), Error> {
+    validate_digest(&binding.admission_sha256, "native admission")?;
+    validate_digest(&binding.manifest_sha256, "native execution manifest")?;
+    validate_identity(&binding.quota_lease_id, "native quota lease")?;
+    validate_identity(&binding.resource_lease_id, "native resource lease")?;
+    validate_identity(&binding.resource_worker_id, "native resource worker")?;
+    validate_identity(&binding.provider_id, "native provider")?;
+    if binding.authority_epoch == 0 {
+        return Err(Error::InvalidIdentity("native authority epoch"));
+    }
+    Ok(())
+}
+
+fn validate_retirement_audit(retirement: &NativeRetirementAudit) -> Result<(), Error> {
+    validate_digest(
+        &retirement.retirement_receipt_sha256,
+        "native retirement receipt",
+    )?;
+    validate_digest(&retirement.proposal_sha256, "native retirement proposal")?;
+    validate_identity(&retirement.reason_code, "native retirement reason")?;
+    if retirement.approval_key_ids.len() < 2 || retirement.approval_key_ids.len() > 16 {
+        return Err(Error::InvalidTransition);
+    }
+    let mut unique = std::collections::BTreeSet::new();
+    for key_id in &retirement.approval_key_ids {
+        validate_identity(key_id, "native retirement approval key")?;
+        if !unique.insert(key_id) {
+            return Err(Error::Conflict);
+        }
+    }
+    Ok(())
+}
+
+pub fn native_dispatch_sha256(dispatch: &NativeDispatch) -> Result<[u8; 32], Error> {
+    let payload = serde_json::to_vec(dispatch)
+        .map_err(|_| Error::CorruptJournal("native dispatch digest"))?;
+    let mut hasher = Sha256::new();
+    hasher.update(b"hepta.inference.control.native-dispatch.v1\0");
+    hasher.update((payload.len() as u64).to_be_bytes());
+    hasher.update(payload);
+    Ok(hasher.finalize().into())
+}
+
+fn hex_digest(digest: [u8; 32]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut value = String::with_capacity(64);
+    for byte in digest {
+        value.push(HEX[(byte >> 4) as usize] as char);
+        value.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    value
+}
+
+pub(super) fn validate_checkpoint_record(
+    record: &NativeRunRecord,
+    maximum_in_flight: Option<usize>,
+) -> Result<(), Error> {
+    let maximum_in_flight = maximum_in_flight.ok_or(Error::CorruptJournal(
+        "native checkpoint maximum in flight",
+    ))?;
+    if record.revision == 0 {
+        return Err(Error::CorruptJournal("native checkpoint revision"));
+    }
+    let mut replay = NativeJournal::default();
+    replay.apply(Event::Reserve {
+        request: record.request.clone(),
+        maximum_in_flight,
+    })?;
+    if let Some(binding) = &record.control_binding {
+        replay.apply(Event::BindControl {
+            request_id: record.request.request_id.clone(),
+            binding: binding.clone(),
+        })?;
+    }
+    if let Some(dispatch) = &record.dispatch {
+        replay.apply(Event::Dispatch {
+            request_id: record.request.request_id.clone(),
+            dispatch: dispatch.clone(),
+        })?;
+    }
+    if let Some(retirement) = &record.retirement {
+        replay_indeterminate_basis(&mut replay, record)?;
+        replay.apply(Event::RetireIndeterminate {
+            request_id: record.request.request_id.clone(),
+            retirement: retirement.clone(),
+        })?;
+    } else {
+        match record.state {
+            NativeReservationState::Reserved => {}
+            NativeReservationState::Dispatching => {}
+            NativeReservationState::Running => {
+                replay.apply(Event::Started {
+                    request_id: record.request.request_id.clone(),
+                    turn_id: record
+                        .turn_id
+                        .clone()
+                        .ok_or(Error::CorruptJournal("native checkpoint turn"))?,
+                })?;
+            }
+            NativeReservationState::Cancelling => {
+                if let Some(turn_id) = &record.turn_id {
+                    replay.apply(Event::Started {
+                        request_id: record.request.request_id.clone(),
+                        turn_id: turn_id.clone(),
+                    })?;
+                }
+                replay.apply(Event::Cancel {
+                    request_id: record.request.request_id.clone(),
+                })?;
+            }
+            NativeReservationState::Indeterminate | NativeReservationState::Released => {
+                replay_terminal_basis(&mut replay, record)?;
+            }
+        }
+    }
+    let mut canonical = replay
+        .records
+        .remove(&record.request.request_id)
+        .ok_or(Error::CorruptJournal("native checkpoint record"))?;
+    canonical.revision = record.revision;
+    if canonical != *record {
+        return Err(Error::CorruptJournal("native checkpoint state"));
+    }
+    Ok(())
+}
+
+fn replay_indeterminate_basis(
+    replay: &mut NativeJournal,
+    record: &NativeRunRecord,
+) -> Result<(), Error> {
+    if let Some(rejection) = &record.dispatch_rejection {
+        if rejection.retry_safe_before_admission {
+            return Err(Error::CorruptJournal("retired safe rejection"));
+        }
+        replay.apply(Event::RejectBeforeStart {
+            request_id: record.request.request_id.clone(),
+            rejection: rejection.clone(),
+        })?;
+        return Ok(());
+    }
+    if record
+        .observation
+        .as_ref()
+        .is_some_and(|output| !output.terminal_observed)
+    {
+        replay_observation_event(replay, record)?;
+        return Ok(());
+    }
+    Err(Error::CorruptJournal("retirement without indeterminate basis"))
+}
+
+fn replay_terminal_basis(
+    replay: &mut NativeJournal,
+    record: &NativeRunRecord,
+) -> Result<(), Error> {
+    if let Some(rejection) = &record.dispatch_rejection {
+        replay.apply(Event::RejectBeforeStart {
+            request_id: record.request.request_id.clone(),
+            rejection: rejection.clone(),
+        })?;
+    } else if let Some(reason) = &record.pre_dispatch_stop {
+        let event = if record.dispatch.is_some() {
+            Event::AbortBeforeEffect {
+                request_id: record.request.request_id.clone(),
+                reason: reason.clone(),
+            }
+        } else {
+            Event::Stop {
+                request_id: record.request.request_id.clone(),
+                reason: reason.clone(),
+            }
+        };
+        replay.apply(event)?;
+    } else if record.observation.is_some() {
+        replay_observation_event(replay, record)?;
+    } else {
+        return Err(Error::CorruptJournal("native checkpoint terminal shape"));
+    }
+    Ok(())
+}
+
+fn replay_observation_event(
+    replay: &mut NativeJournal,
+    record: &NativeRunRecord,
+) -> Result<(), Error> {
+    if let Some(turn_id) = &record.turn_id {
+        replay.apply(Event::Started {
+            request_id: record.request.request_id.clone(),
+            turn_id: turn_id.clone(),
+        })?;
+    }
+    if record.cancel_requested {
+        replay.apply(Event::Cancel {
+            request_id: record.request.request_id.clone(),
+        })?;
+    }
+    let output = record
+        .observation
+        .clone()
+        .ok_or(Error::CorruptJournal("native checkpoint observation"))?;
+    if let Some(receipt_sha256) = &record.verified_settlement_receipt_sha256 {
+        replay.apply(Event::ObserveVerified {
+            request_id: record.request.request_id.clone(),
+            output,
+            receipt_sha256: receipt_sha256.clone(),
+        })?;
+    } else {
+        replay.apply(Event::Observe {
+            request_id: record.request.request_id.clone(),
+            output,
+        })?;
+    }
+    Ok(())
 }
 
 fn apply_observation(

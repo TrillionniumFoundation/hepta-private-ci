@@ -1,5 +1,6 @@
 //! Local durable admission around the actual App Server driver.
 
+use codex_hepta_infer_core::control_contract::VerifiedAdmissionBundleV1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -48,6 +49,7 @@ impl AppServerModelDriver {
             prompt,
             context_query,
             /*intelligence*/ None,
+            /*control_admission*/ None,
             cancellation,
         )
         .await
@@ -70,6 +72,54 @@ impl AppServerModelDriver {
             prompt,
             context_query,
             Some(&intelligence),
+            /*control_admission*/ None,
+            cancellation,
+        )
+        .await
+    }
+
+    /// Production-control profile: the caller must present an opaque admission
+    /// bundle that has already passed signature, lease and exact payload checks.
+    pub async fn run_controlled(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        verified_admission: &VerifiedAdmissionBundleV1,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            context_query,
+            /*intelligence*/ None,
+            Some(verified_admission),
+            cancellation,
+        )
+        .await
+    }
+
+    /// Controlled intelligence profile combining the exact Agentd handoff with
+    /// the verified quota/resource/execution admission contract.
+    pub async fn run_intelligence_controlled(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        verified_admission: &VerifiedAdmissionBundleV1,
+        prompt: String,
+        context_query: Option<String>,
+        intelligence: NativeIntelligenceRunBinding,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            context_query,
+            Some(&intelligence),
+            Some(verified_admission),
             cancellation,
         )
         .await
@@ -82,6 +132,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         intelligence: Option<&NativeIntelligenceRunBinding>,
+        control_admission: Option<&VerifiedAdmissionBundleV1>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
@@ -106,7 +157,10 @@ impl AppServerModelDriver {
                 intelligence,
             )?,
         };
-        let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        let mut record = control.reserve_native(request, admission.maximum_in_flight)?;
+        if let Some(verified) = control_admission {
+            record = control.bind_native_control_admission(verified)?;
+        }
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }

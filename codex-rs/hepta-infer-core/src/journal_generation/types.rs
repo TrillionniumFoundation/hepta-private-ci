@@ -31,6 +31,11 @@ pub enum JournalFailpoint {
     BeforePointerRename,
     AfterPointerRename,
     AfterDirectoryFsync,
+    BeforeActiveWrite,
+    AfterActiveFsync,
+    BeforeActiveRename,
+    AfterActiveRename,
+    AfterActiveDirectoryFsync,
 }
 
 pub trait JournalFailpointController {

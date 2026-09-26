@@ -10,18 +10,33 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
+use std::io::Cursor;
 use std::path::Path;
 use std::path::PathBuf;
 
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::journal_generation::JournalDigest32;
+use crate::journal_generation::JournalFailpointController;
+use crate::journal_generation::JournalGenerationError;
+use crate::journal_generation::JournalGenerationStore;
+use crate::journal_generation::NoJournalFailpoints;
+use crate::control_contract::ControlContractError;
+
 #[path = "native_control.rs"]
 pub mod native;
+#[path = "durable_checkpoint.rs"]
+mod checkpoint;
 
 const MAX_RECORDS: usize = 16_384;
-const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
-const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
+pub(super) const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
+pub(super) const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
+const JOURNAL_COMPACTION_TRIGGER_BYTES: u64 = 48 * 1024 * 1024;
 const MAX_TOKENS: u32 = 1_000_000;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RequestState {
     Pending,
     Reserved,
@@ -69,7 +84,8 @@ impl RequestState {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct InferenceRequest {
     pub request_id: String,
     pub principal_id: String,
@@ -80,7 +96,8 @@ pub struct InferenceRequest {
     pub semantic_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Reservation {
     pub reservation_id: String,
     pub quota_units: u64,
@@ -89,14 +106,16 @@ pub struct Reservation {
     pub valid_until_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Assignment {
     pub worker_id: String,
     pub worker_generation: u64,
     pub assignment_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct TerminalObservation {
     pub request_id: String,
     pub reservation_id: String,
@@ -111,7 +130,8 @@ pub struct TerminalObservation {
     pub usage_units: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RequestRecord {
     pub request: InferenceRequest,
     pub revision: u64,
@@ -151,6 +171,8 @@ pub enum Error {
     Io(String),
     ArithmeticOverflow,
     WriterUnavailable,
+    Generation(String),
+    ControlContract(String),
 }
 
 impl fmt::Display for Error {
@@ -167,6 +189,46 @@ impl From<std::io::Error> for Error {
     }
 }
 
+impl From<JournalGenerationError> for Error {
+    fn from(value: JournalGenerationError) -> Self {
+        Self::Generation(value.to_string())
+    }
+}
+
+impl From<ControlContractError> for Error {
+    fn from(value: ControlContractError) -> Self {
+        Self::ControlContract(value.to_string())
+    }
+}
+
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompactionReceipt {
+    pub generation: u64,
+    pub manifest_sha256: JournalDigest32,
+    pub predecessor_bytes: u64,
+    pub snapshot_bytes: u64,
+    pub pruned_legacy_records: usize,
+    pub pruned_native_records: usize,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct InferenceControlMetrics {
+    pub journal_bytes: u64,
+    pub journal_generation: u64,
+    pub capacity: usize,
+    pub legacy_active_records: usize,
+    pub native_active_records: usize,
+    pub native_reserved: usize,
+    pub native_dispatching: usize,
+    pub native_running: usize,
+    pub native_cancelling: usize,
+    pub native_indeterminate: usize,
+    pub native_released: usize,
+    pub archived_request_insertions: u64,
+    pub writer_poisoned: bool,
+}
+
 #[derive(Debug)]
 pub struct DurableInferenceControl {
     path: PathBuf,
@@ -176,6 +238,10 @@ pub struct DurableInferenceControl {
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
+    generation_store: JournalGenerationStore,
+    generation: u64,
+    generation_manifest_sha256: Option<JournalDigest32>,
+    archived_request_filter: checkpoint::ArchivedRequestFilter,
 }
 
 impl DurableInferenceControl {
@@ -187,6 +253,7 @@ impl DurableInferenceControl {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
+        let generation_store = checkpoint::generation_store_for(&path)?;
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -197,9 +264,14 @@ impl DurableInferenceControl {
         let file = options.open(&path)?;
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        let recovered = checkpoint::recover_active_journal(&path, file, &generation_store)?;
+        let file = recovered.file;
+        let active_bytes = recovered.active_bytes;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
-        let mut reader = BufReader::new(file.try_clone()?);
+        let mut archived_request_filter = checkpoint::ArchivedRequestFilter::default();
+        let mut checkpoint_replay = checkpoint::CheckpointReplay::default();
+        let mut reader = BufReader::new(Cursor::new(&active_bytes));
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
         loop {
@@ -226,10 +298,20 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
-                native.replay(json)?;
+            if checkpoint::is_checkpoint_line(line) {
+                checkpoint_replay.apply(
+                    line,
+                    &mut records,
+                    &mut native,
+                    &mut archived_request_filter,
+                )?;
             } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+                checkpoint_replay.close();
+                if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                    native.replay(json)?;
+                } else {
+                    apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+                }
             }
             if records.len() + native.records.len() > capacity
                 || records.keys().any(|id| native.records.contains_key(id))
@@ -237,6 +319,7 @@ impl DurableInferenceControl {
                 return Err(Error::CapacityExceeded);
             }
         }
+        checkpoint_replay.finish()?;
         #[cfg(unix)]
         {
             let parent = path
@@ -253,6 +336,10 @@ impl DurableInferenceControl {
             capacity,
             journal_bytes,
             poisoned: false,
+            generation_store,
+            generation: recovered.generation,
+            generation_manifest_sha256: recovered.manifest_sha256,
+            archived_request_filter,
         })
     }
 
@@ -268,12 +355,12 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.native.records.contains_key(&request.request_id) {
+        if self.native.records.contains_key(&request.request_id)
+            || self.archived_request_filter.might_contain(&request.request_id)
+        {
             return Err(Error::Conflict);
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
-            return Err(Error::CapacityExceeded);
-        }
+        self.ensure_record_capacity()?;
         let event = Event::Submit(request);
         self.commit(event)
     }
@@ -429,6 +516,41 @@ impl DurableInferenceControl {
         &self.path
     }
 
+    /// Compact the active journal into a validated state checkpoint, archive the
+    /// complete predecessor bytes, and prune only terminal records whose request
+    /// identities have first been inserted into the monotonic deny filter.
+    pub fn compact(&mut self, now_unix_ms: u64) -> Result<CompactionReceipt, Error> {
+        self.compact_with_failpoints(now_unix_ms, true, &mut NoJournalFailpoints)
+    }
+
+    /// Deterministic crash-injection entry point used by qualification. Any
+    /// injected error fences this live owner; recovery must reopen the journal.
+    pub fn compact_with_failpoints(
+        &mut self,
+        now_unix_ms: u64,
+        prune_terminal: bool,
+        failpoints: &mut dyn JournalFailpointController,
+    ) -> Result<CompactionReceipt, Error> {
+        checkpoint::compact_owner(self, now_unix_ms, prune_terminal, failpoints)
+    }
+
+    #[must_use]
+    pub fn metrics(&self) -> InferenceControlMetrics {
+        checkpoint::metrics(self)
+    }
+
+    fn ensure_record_capacity(&mut self) -> Result<(), Error> {
+        if self.records.len() + self.native.records.len() < self.capacity {
+            return Ok(());
+        }
+        let now = checkpoint::unix_time_ms()?;
+        self.compact_with_failpoints(now, true, &mut NoJournalFailpoints)?;
+        if self.records.len() + self.native.records.len() >= self.capacity {
+            return Err(Error::CapacityExceeded);
+        }
+        Ok(())
+    }
+
     fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
@@ -438,6 +560,7 @@ impl DurableInferenceControl {
         let mut next = self.records.clone();
         apply_event(&mut next, &event, /*replay*/ false)?;
         let encoded = format!("{}\n", encode_event(&event));
+        self.ensure_append_space(encoded.len())?;
         self.append(&encoded)?;
         let request_id = event.request_id().to_string();
         self.records = next;
@@ -446,6 +569,25 @@ impl DurableInferenceControl {
             .get(&request_id)
             .ok_or(Error::RequestNotFound)?;
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    pub(super) fn ensure_append_space(&mut self, encoded_bytes: usize) -> Result<(), Error> {
+        let next = self
+            .journal_bytes
+            .checked_add(encoded_bytes as u64)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if next > JOURNAL_COMPACTION_TRIGGER_BYTES || next > MAX_JOURNAL_BYTES {
+            let now = checkpoint::unix_time_ms()?;
+            self.compact_with_failpoints(now, false, &mut NoJournalFailpoints)?;
+        }
+        let next = self
+            .journal_bytes
+            .checked_add(encoded_bytes as u64)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if encoded_bytes > MAX_JOURNAL_LINE_BYTES || next > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        Ok(())
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
