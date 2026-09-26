@@ -20,7 +20,8 @@ def git(*args: str) -> str:
 
 
 def candidate_plan(
-    *, source: str, tested: str, lane: str, base: str | None = None
+    *, source: str, tested: str, lane: str, base: str | None = None,
+    require_native: bool = False,
 ) -> dict:
     merge_lane = lane in {"base-merge", "synthetic-merge"}
     if lane != "source-head" and not merge_lane:
@@ -50,8 +51,8 @@ def candidate_plan(
         "base_sha": base,
         "source_tree": source_tree,
         "tested_tree": tested_tree,
-        "native_execution_required": lane == "source-head" or not identical,
-        "requires_source_head_success": merge_lane and identical,
+        "native_execution_required": require_native or lane == "source-head" or not identical,
+        "requires_source_head_success": merge_lane and identical and not require_native,
     }
 
 
@@ -62,9 +63,14 @@ def main() -> None:
     parser.add_argument("--base")
     parser.add_argument("--lane", required=True)
     parser.add_argument("--github-output", type=Path)
+    parser.add_argument(
+        "--require-native", action="store_true",
+        help="execute this exact lane even when source and merge trees are identical",
+    )
     args = parser.parse_args()
     plan = candidate_plan(
-        source=args.source, tested=args.tested, lane=args.lane, base=args.base
+        source=args.source, tested=args.tested, lane=args.lane, base=args.base,
+        require_native=args.require_native,
     )
     print(json.dumps(plan, sort_keys=True))
     if args.github_output:

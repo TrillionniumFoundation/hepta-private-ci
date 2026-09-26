@@ -7,44 +7,14 @@ on:
   pull_request:
     paths:
       - CALLERS.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/Cargo.toml
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-cognitive-read/**
-      - codex-rs/hepta-infer-core/**
-      - codex-rs/hepta-infer-worker-host/**
-      - codex-rs/hepta-fleet/**
-      - codex-rs/hepta-control-plane/**
-      - codex-rs/hepta-automation/**
-      - codex-rs/hepta-supervisor/**
-      - codex-rs/hepta-memory/**
-      - codex-rs/hepta-plasticity/**
-      - codex-rs/hepta-intelligence/**
-      - codex-rs/hepta-learning-artifacts/**
-      - codex-rs/hepta-learning-ledger/**
-      - codex-rs/hepta-ndu/**
-      - codex-rs/hepta-neuron/**
-      - codex-rs/hepta-runtime/**
-      - codex-rs/app-server/**
-      - codex-rs/app-server-client/**
-      - codex-rs/app-server-transport/**
-      - codex-rs/uds/**
+      - codex-rs/**
+      - scripts/**
+      - .github/scripts/**
+      - .github/workflows/**
+      - docs/modules/runtime.agentd/**
       - docs/modules/runtime.supervisor/**
-      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
-      - .github/scripts/check_ci_results.py
-      - .github/scripts/verify_cargo_workspace_manifests.py
-      - scripts/hepta-implementation-maps.py
-      - scripts/hepta-module-docs.py
-      - scripts/hepta-supervisor-validation.py
-      - scripts/hepta_module_registry.py
-      - scripts/test_hepta_agentd_ci.py
-      - scripts/hepta_ci_candidate.py
-      - scripts/hepta_ci_v8.py
-      - scripts/hepta_workspace.py
-      - scripts/test_hepta_workspace.py
-      - .github/workflows/hepta-gap-agentd-process.yml
-      - .github/workflows/runtime-supervisor-qualification.yml
+      - qualification/**
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -52,6 +22,9 @@ permissions:
 concurrency:
   group: hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   derived-projections:
@@ -70,7 +43,7 @@ jobs:
           python3 scripts/hepta_module_registry.py --strict
           python3 scripts/hepta-implementation-maps.py verify
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_agentd_ci.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_agentd_*.py'
 
   owner-formatting:
     runs-on: ubuntu-24.04
@@ -108,7 +81,7 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --retries 0 --manifest-path Cargo.toml --lib \
+          just test --locked --retries 0 --no-fail-fast --manifest-path Cargo.toml --lib \
             -p codex-hepta-fleet -p codex-hepta-control-plane \
             -p codex-hepta-agent-protocol --test-threads=2
 
@@ -124,6 +97,7 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
       RUST_BACKTRACE: "1"
       CARGO_BUILD_JOBS: "2"
       TMPDIR: /tmp
@@ -133,7 +107,7 @@ jobs:
           ref: ${{ env.EXPECTED_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind exact candidate and select tree-equivalent native execution
+      - name: Bind exact candidate and require native execution on every lane
         id: execution
         env:
           LANE: ${{ matrix.lane }}
@@ -149,7 +123,7 @@ jobs:
           else
             args+=(--lane source-head)
           fi
-          python3 scripts/hepta_ci_candidate.py "${args[@]}" --github-output "$GITHUB_OUTPUT"
+          python3 scripts/hepta_ci_candidate.py "${args[@]}" --require-native --github-output "$GITHUB_OUTPUT"
       - name: Check manifest graph before native setup
         if: steps.execution.outputs.run_native == 'true'
         run: python3 scripts/hepta_workspace.py
@@ -177,56 +151,95 @@ jobs:
           target="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["target_directory"])' "$RUNNER_TEMP/hepta-nextest-metadata.json")"
           test -x "$target/debug/codex-app-server"
           printf 'HEPTA_TEST_CODEX_EXE=%s/debug/codex-app-server\n' "$target" >> "$GITHUB_ENV"
+      - name: Capture exact native fixture digest before execution
+        id: fixture_identity
+        if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}
+        run: python3 scripts/hepta_agentd_receipt.py capture --directory "$RUNNER_TEMP/agentd-receipts" --binary "$HEPTA_TEST_CODEX_EXE"
       - name: Exercise owner and lifecycle libraries
-        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
+        id: owner_libraries
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
-      - name: Exercise actual optional retirement and durable destination recovery
-        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
+      - name: Exercise actual optional retirement
+        id: optional_retirement
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
         working-directory: codex-rs
         run: |
-          set -euo pipefail
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --test optional_module_restart \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast -p codex-hepta-agentd --test optional_module_restart \
             --test runtime_shutdown_outcomes --test-threads=1
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-automation --test retirement_recovery \
+      - name: Exercise automation retirement and timer fencing
+        id: automation_retirement
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast -p codex-hepta-automation --test retirement_recovery \
             --test operation_timer_fence --test-threads=1
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
-      - name: Exercise named plasticity and live cutover paths
-        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
+      - name: Exercise durable memory destination recovery
+        id: memory_recovery
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
+      - name: Exercise named plasticity owner
+        id: plasticity
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
         working-directory: codex-rs
         run: |
-          set -euo pipefail
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --lib \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast -p codex-hepta-agentd --lib \
             agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently --test-threads=1
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-runtime \
-            authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics --test-threads=1
-      - name: Exercise writer admission and real daemon process suites
-        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
+      - name: Exercise authenticated live runtime cutover
+        id: runtime_cutover
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
         working-directory: codex-rs
         run: |
-          set -euo pipefail
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast -p codex-hepta-runtime \
+            authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics --test-threads=1
+      - name: Exercise writer admission
+        id: writer_admission
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast -p codex-hepta-agentd --features qualification-cognitive-write \
             --lib runtime::tests::qualification_ --test-threads=1
-          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
+      - name: Exercise real daemon process suites
+        id: daemon_e2e
+        if: ${{ !cancelled() && steps.fixture_identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --no-fail-fast -p codex-hepta-agentd --features qualification-cognitive-write \
             --test cognitive_product_e2e --test plasticity_process_e2e \
             --test runtime_codex_product_e2e --test supervised_two_agents \
             --test supervisord_product_e2e --test queue_capacity_product --test-threads=1
-      - name: Strict owner lint
-        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
+      - name: Strict owner lint independently of fixture success
+        id: strict_lint
+        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' }}
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D warnings
       - name: Check unchanged candidate after execution
+        id: unchanged
         if: always()
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Reject missing skipped failed or changed qualification evidence
+        if: always()
+        env:
+          AGENTD_STEPS: ${{ toJSON(steps) }}
+        run: python3 scripts/hepta_agentd_receipt.py finish --directory "$RUNNER_TEMP/agentd-receipts" --binary "${HEPTA_TEST_CODEX_EXE:-/nonexistent}"
+      - name: Retain exact identity and qualification outcomes on failure too
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: agentd-${{ matrix.os }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agentd-receipts/
+          if-no-files-found: error
+          retention-days: 14
 
   qualification-result:
     if: ${{ always() }}
