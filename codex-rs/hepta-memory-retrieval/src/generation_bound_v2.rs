@@ -130,11 +130,23 @@ pub(crate) fn policy_admitted_union(
 ) -> Result<CandidateUnionV1, RecallErrorV1> {
     union.validate()?;
     policy.validate()?;
+    let positive_channels = policy
+        .channel_weights
+        .iter()
+        .filter(|row| row.weight > FixedQ32::ZERO)
+        .map(|row| row.channel)
+        .collect::<BTreeSet<_>>();
     let entries = union
         .entries
         .iter()
         .filter(|entry| entry.weighted_score >= policy.minimum_total_score)
-        .cloned()
+        .filter_map(|entry| {
+            let mut entry = entry.clone();
+            entry
+                .channels
+                .retain(|channel| positive_channels.contains(channel));
+            (!entry.channels.is_empty()).then_some(entry)
+        })
         .collect::<Vec<_>>();
     let channels = entries
         .iter()
