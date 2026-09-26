@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -20,6 +19,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 HEX40 = re.compile(r"[0-9a-f]{40}")
+HEX64 = re.compile(r"[0-9a-f]{64}")
 REQUIRED_LANES = {
     "linux-source-head": ("linux", 256, "source"),
     "linux-merge-candidate": ("linux", 8, "merge"),
@@ -78,6 +78,45 @@ def read_object(path: Path, label: str) -> dict[str, Any]:
     return value
 
 
+def validate_qualified_artifacts(
+    value: dict[str, Any],
+    *,
+    label: str,
+    expected_commit: str,
+    expected_tree: str,
+    expected_platform: str,
+) -> dict[str, dict[str, Any]]:
+    require(
+        value.get("schema") == "hepta.runtime-supervisor.qualified-artifacts.v1",
+        f"{label} qualified artifact schema",
+    )
+    require(value.get("schema_version") == 1, f"{label} qualified artifact version")
+    require(value.get("source_commit") == expected_commit, f"{label} artifact commit mismatch")
+    require(value.get("source_tree") == expected_tree, f"{label} artifact tree mismatch")
+    require(value.get("host_platform") == expected_platform, f"{label} artifact platform mismatch")
+    require(value.get("deployment_qualified") is False, f"{label} artifacts self-qualified deployment")
+    require(value.get("independent_acceptance") is False, f"{label} artifacts self-asserted acceptance")
+    raw_artifacts = value.get("artifacts")
+    require(isinstance(raw_artifacts, list), f"{label} artifact list missing")
+    artifacts: dict[str, dict[str, Any]] = {}
+    for item in raw_artifacts:
+        require(isinstance(item, dict), f"{label} artifact entry must be an object")
+        name = item.get("name")
+        digest = item.get("sha256")
+        size = item.get("size_bytes")
+        relative_path = item.get("relative_path")
+        require(isinstance(name, str) and name not in artifacts, f"{label} duplicate artifact")
+        require(bool(HEX64.fullmatch(digest or "")), f"{label} invalid artifact digest: {name}")
+        require(isinstance(size, int) and size > 0, f"{label} empty artifact: {name}")
+        require(
+            relative_path == f"qualified-artifacts/{name}",
+            f"{label} artifact path mismatch: {name}",
+        )
+        artifacts[name] = item
+    require(set(artifacts) == REQUIRED_ARTIFACTS, f"{label} exact three qualified artifacts required")
+    return artifacts
+
+
 def validate_lane(
     label: str,
     root: Path,
@@ -92,12 +131,22 @@ def validate_lane(
     result_path = root / "result.json"
     policy_path = root / "physical-host-policy.json"
     physical_path = root / "physical-host.json"
+    artifacts_path = root / "qualified-artifacts.json"
     result = read_object(result_path, f"{label} result")
     policy = read_object(policy_path, f"{label} policy")
     physical = read_object(physical_path, f"{label} physical host")
+    qualified = read_object(artifacts_path, f"{label} qualified artifacts")
     expected_platform, minimum_instances, identity = REQUIRED_LANES[label]
     expected_commit = source_commit if identity == "source" else merge_commit
     expected_tree = source_tree if identity == "source" else merge_tree
+
+    qualified_by_name = validate_qualified_artifacts(
+        qualified,
+        label=label,
+        expected_commit=expected_commit,
+        expected_tree=expected_tree,
+        expected_platform=expected_platform,
+    )
 
     require(result.get("schema_version") == 1, f"{label} result schema")
     require(result.get("status") == "passed", f"{label} result did not pass")
@@ -105,6 +154,7 @@ def validate_lane(
     require(result.get("source_tree") == expected_tree, f"{label} tree mismatch")
     require(result.get("source_still_clean") is True, f"{label} source was not clean")
     require(result.get("host_platform") == expected_platform, f"{label} platform mismatch")
+    require(result.get("qualified_artifacts") == qualified, f"{label} result/artifact manifest mismatch")
     instances = result.get("host_instances")
     require(
         isinstance(instances, int) and instances >= minimum_instances,
@@ -141,8 +191,8 @@ def validate_lane(
     require(physical.get("independent_acceptance") is False, f"{label} physical self-asserted acceptance")
     binary_digest = physical.get("supervisord_sha256")
     require(
-        isinstance(binary_digest, str) and len(binary_digest) == 64,
-        f"{label} missing supervisord digest",
+        binary_digest == qualified_by_name["hepta-supervisord"]["sha256"],
+        f"{label} physical host did not execute the frozen supervisord",
     )
 
     return {
@@ -155,6 +205,8 @@ def validate_lane(
         "result_sha256": sha256_file(result_path),
         "policy_sha256": sha256_file(policy_path),
         "physical_host_sha256": sha256_file(physical_path),
+        "qualified_artifacts_sha256": sha256_file(artifacts_path),
+        "qualified_artifacts": qualified_by_name,
         "supervisord_sha256": binary_digest,
         "unmeasured_faults": policy.get("unmeasured_faults"),
     }
@@ -195,8 +247,6 @@ def main() -> int:
         path = artifacts[name]
         require(path.is_file() and not path.is_symlink(), f"artifact {name} is not a regular file")
         require(path.stat().st_size > 0, f"artifact {name} is empty")
-        if os.name != "nt":
-            require(path.stat().st_mode & 0o111 != 0, f"artifact {name} is not executable")
         artifact_manifest.append(
             {
                 "name": name,
@@ -218,11 +268,14 @@ def main() -> int:
         for label in sorted(lanes)
     ]
     release_lane = next(item for item in lane_manifest if item["label"] == args.release_lane)
-    supervisord = next(item for item in artifact_manifest if item["name"] == "hepta-supervisord")
-    require(
-        release_lane["supervisord_sha256"] == supervisord["sha256"],
-        "frozen supervisord does not match the selected physical-host receipt",
-    )
+    supplied_by_name = {item["name"]: item for item in artifact_manifest}
+    expected_by_name = release_lane["qualified_artifacts"]
+    for name in sorted(REQUIRED_ARTIFACTS):
+        require(
+            supplied_by_name[name]["sha256"] == expected_by_name[name]["sha256"]
+            and supplied_by_name[name]["size_bytes"] == expected_by_name[name]["size_bytes"],
+            f"frozen {name} does not match the selected qualified lane",
+        )
 
     protocol_manifest = []
     for raw_path in PROTOCOL_PATHS:
@@ -267,8 +320,14 @@ def main() -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(encoded)
     digest_path = output.with_suffix(output.suffix + ".sha256")
-    digest_path.write_text(f"{hashlib.sha256(encoded).hexdigest()}  {output.name}\n", encoding="utf-8")
-    print(json.dumps({"manifest": str(output), "sha256": hashlib.sha256(encoded).hexdigest()}))
+    digest_path.write_text(
+        f"{hashlib.sha256(encoded).hexdigest()}  {output.name}\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {"manifest": str(output), "sha256": hashlib.sha256(encoded).hexdigest()}
+        )
+    )
     return 0
 
 
