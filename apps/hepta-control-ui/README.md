@@ -20,6 +20,7 @@ Supported subpaths are `@hepta/control-ui/core`, `@hepta/control-ui/browser`, an
 ## Repository checks
 
 ```bash
+npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
 npm run lint --prefix apps/hepta-control-ui
 npm test --prefix apps/hepta-control-ui
 npm run test:contract --prefix apps/hepta-control-ui
@@ -27,7 +28,7 @@ npm run build --prefix apps/hepta-control-ui
 npm run test:e2e --prefix apps/hepta-control-ui
 ```
 
-The browser E2E suite runs Chromium, Firefox, WebKit, keyboard/focus scenarios, duplicate activation, stale revision, accepted-response-loss recovery, and axe-core.
+The browser E2E suite runs Chromium, Firefox, and WebKit. It covers keyboard/focus behavior, duplicate activation, stale revision typing, accepted-response-loss recovery, terminal backend observations, unavailable local recovery storage, and axe-core. Unit tests additionally qualify concurrent reservation, session identity and permission-revision fencing, fail-closed revoke/close, and full-response-body timeout behavior.
 
 ## Security and operations
 
