@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches: [main, work/memory-retrieval-semantic-product-convergence-20260926]
-    paths: ['codex-rs/**', 'scripts/**', '.github/workflows/**', 'docs/**', 'qualification/**']
+    paths: ['codex-rs/**', 'scripts/**', '.github/workflows/**', 'docs/**', 'qualification/**', 'justfile', 'rust-toolchain*', '.cargo/**']
   workflow_dispatch:
 
 permissions:
@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: retrieval-native-hardening-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   resolve-source:
@@ -27,13 +27,14 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Freeze immutable source and current main identities, without writes
+      - name: Freeze source and observed main without writing a repository ref
         id: resolve
         env:
           SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE"
+          test -z "$(git status --porcelain)"
           BASE=$(git rev-parse refs/remotes/origin/main)
           git cat-file -e "$BASE^{commit}"
           echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
@@ -51,94 +52,69 @@ jobs:
       CARGO_BUILD_JOBS: '2'
       CARGO_TERM_COLOR: never
       RUST_BACKTRACE: '1'
+      RUSTUP_TOOLCHAIN: 1.95.0
       SOURCE: ${{ needs.resolve-source.outputs.source }}
       BASE: ${{ needs.resolve-source.outputs.base }}
+      MODE: ${{ matrix.mode }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.resolve-source.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Record exact checkout and deterministic ordered-parent merge
         id: source
-        env:
-          MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/retrieval-native/$MODE" "$RUNNER_TEMP/retrieval-native-tools"
           cp scripts/*memory_retrieval*.py "$RUNNER_TEMP/retrieval-native-tools/"
-          if [ "$MODE" = exact-main ]; then
+          if test "$MODE" = exact-main; then
             git checkout --detach "$BASE"
-          elif [ "$MODE" = synthetic-merge ]; then
-            if [ "$BASE" = "$SOURCE" ]; then
-              # A main push has no distinct merge candidate. Record the identity
-              # case explicitly; this is not a two-parent qualification claim.
+          elif test "$MODE" = synthetic-merge; then
+            if test "$BASE" = "$SOURCE"; then
               printf 'mode=identity-no-distinct-parent\nsource=%s\n' "$SOURCE" > "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt"
             else
-              python "$RUNNER_TEMP/retrieval-native-tools/memory_retrieval_synthetic_merge.py" --base "$BASE" --source "$SOURCE" > "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt"
+              python3 "$RUNNER_TEMP/retrieval-native-tools/memory_retrieval_synthetic_merge.py" --base "$BASE" --source "$SOURCE" > "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt"
               CANDIDATE=$(sed -n 's/^candidate=//p' "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt")
               git checkout --detach "$CANDIDATE"
+              test "$(git show -s --format=%P HEAD)" = "$BASE $SOURCE"
             fi
           fi
           SHA=$(git rev-parse HEAD)
           TREE=$(git rev-parse HEAD^{tree})
-          python "$RUNNER_TEMP/retrieval-native-tools/capture_memory_retrieval_source.py" --root "$PWD" --source-sha "$SHA" --source-tree "$TREE" --output "$RUNNER_TEMP/retrieval-native/$MODE/source.json"
+          python3 "$RUNNER_TEMP/retrieval-native-tools/capture_memory_retrieval_source.py" --root "$PWD" --source-sha "$SHA" --source-tree "$TREE" --output "$RUNNER_TEMP/retrieval-native/$MODE/source.json"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "tree=$TREE" >> "$GITHUB_OUTPUT"
-      - name: Run all 44 strict qualification-validator regressions
+      - name: Strict qualification verifier regressions
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
-        env:
-          MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
-          (cd "$RUNNER_TEMP/retrieval-native-tools" && python -m unittest -v test_verify_memory_retrieval_slo test_verify_memory_retrieval_promotion test_memory_retrieval_source) 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/python-tests.log"
-      - name: Install exact repository compiler
+          (cd "$RUNNER_TEMP/retrieval-native-tools" && python3 -m unittest -v test_verify_memory_retrieval_slo test_verify_memory_retrieval_promotion test_memory_retrieval_source) 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/python-tests.log"
+      - name: Install exact compiler
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
-      - name: Retrieval package tests
+      - name: Real retrieval owner Agentd and assignment regressions
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
-        working-directory: codex-rs
-        env:
-          MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
-          cargo +1.95.0 test --locked -p codex-hepta-memory-retrieval --all-targets 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/retrieval-tests.log"
-      - name: Strict all-target retrieval lint and formatting
+          just test --locked -p codex-hepta-memory-retrieval -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger --lib -E 'package(codex-hepta-memory-retrieval) | (package(codex-hepta-memory) & test(cognitive_retrieval)) | (package(codex-hepta-agentd) & (test(cognitive_context) | test(cognitive_retrieval) | test(retrieval_mode))) | (package(codex-hepta-learning-ledger) & test(retrieval_assignment))' 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/native-tests.log"
+      - name: Strict all-target lint and formatting
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
-        working-directory: codex-rs
-        env:
-          MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
-          cargo +1.95.0 clippy --locked -p codex-hepta-memory-retrieval --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/retrieval-clippy.log"
-          cargo +1.95.0 fmt -p codex-hepta-memory-retrieval -- --check 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/retrieval-fmt.log"
-      - name: Agentd actual context and product lifecycle tests
-        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
-        working-directory: codex-rs
-        env:
-          MODE: ${{ matrix.mode }}
-        run: |
-          set -euo pipefail
-          cargo +1.95.0 test --locked -p codex-hepta-agentd cognitive_context 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/agentd-context-tests.log"
-          cargo +1.95.0 test --locked -p codex-hepta-agentd cognitive_retrieval_context 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/provider-tests.log"
-      - name: Owner and durable learning regressions
-        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
-        working-directory: codex-rs
-        env:
-          MODE: ${{ matrix.mode }}
-        run: |
-          set -euo pipefail
-          cargo +1.95.0 test --locked -p codex-hepta-memory cognitive_retrieval 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/owner-tests.log"
-          cargo +1.95.0 test --locked -p codex-hepta-learning-ledger retrieval_assignment 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/ledger-tests.log"
-      - name: Verify source stayed exact and clean
+          (cd codex-rs && cargo clippy --locked -p codex-hepta-memory-retrieval -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger --all-targets -- -D warnings) 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/clippy.log"
+          (cd codex-rs && cargo fmt -p codex-hepta-memory-retrieval -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger -- --check) 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/fmt.log"
+      - name: Verify exact clean source after all execution
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         env:
-          MODE: ${{ matrix.mode }}
           SHA: ${{ steps.source.outputs.sha }}
           TREE: ${{ steps.source.outputs.tree }}
         run: |
           set -euo pipefail
-          python "$RUNNER_TEMP/retrieval-native-tools/capture_memory_retrieval_source.py" --root "$PWD" --source-sha "$SHA" --source-tree "$TREE" --verify "$RUNNER_TEMP/retrieval-native/$MODE/source.json"
+          python3 "$RUNNER_TEMP/retrieval-native-tools/capture_memory_retrieval_source.py" --root "$PWD" --source-sha "$SHA" --source-tree "$TREE" --verify "$RUNNER_TEMP/retrieval-native/$MODE/source.json"
           git diff --check
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -154,7 +130,7 @@ jobs:
     needs: [resolve-source, native]
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: Failed, cancelled or skipped qualification cannot pass
+      - name: Failed cancelled or skipped qualification cannot pass
         env:
           RESOLVE: ${{ needs.resolve-source.result }}
           NATIVE: ${{ needs.native.result }}
