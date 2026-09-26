@@ -17,8 +17,8 @@ concurrency:
 
 jobs:
   continue-closure:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 120
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 150
     steps:
       - name: Check out exact work branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -40,6 +40,11 @@ jobs:
           git config user.name "Hepta Automation CI"
           git config user.email "hepta-automation-ci@users.noreply.github.com"
           mkdir -p "$RUNNER_TEMP/automation-taskflow-continuation"
+          python3 - <<'PY'
+          import sys
+          if sys.version_info < (3, 11):
+              raise SystemExit("automation continuation requires Python >= 3.11 for tomllib")
+          PY
           python3 -m py_compile \
             scripts/apply_automation_taskflow_runtime.py \
             scripts/apply_automation_taskflow_neural_runtime.py \
