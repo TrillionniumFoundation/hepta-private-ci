@@ -52,7 +52,7 @@ test("default fetch is invoked with the global receiver", async t => {
   assert.equal(observedUrl, "https://control.example/api/ui-control/v1/session/connect");
 });
 
-test("mutations require CSRF and are never automatically retried", async () => {
+test("mutations require bounded CSRF and are never automatically retried", async () => {
   let calls = 0;
   const transport = new SameOriginHttpTransport({
     origin: "https://control.example",
@@ -70,24 +70,47 @@ test("mutations require CSRF and are never automatically retried", async () => {
     error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
   );
   assert.equal(calls, 0);
-});
 
-test("backend conflicts are typed definite rejections", async () => {
-  const transport = new SameOriginHttpTransport({
+  const malformed = new SameOriginHttpTransport({
     origin: "https://control.example",
-    csrfTokenProvider: () => "csrf-token",
-    fetchImpl: async () => response(
-      { errorCode: "OPERATION_ID_CONFLICT", message: "operation id already exists" },
-      { status: 409 },
-    ),
+    csrfTokenProvider: () => "csrf\nheader",
+    fetchImpl: async () => {
+      calls += 1;
+      return response({});
+    },
   });
   await assert.rejects(
-    transport.request("runtime/stop", {
-      operationId: "operation-1",
-      semanticDigest: "a".repeat(64),
+    malformed.request("runtime/stop", {
+      operationId: "operation-2",
+      semanticDigest: "b".repeat(64),
     }),
-    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.BACKEND_REJECTED,
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT,
   );
+  assert.equal(calls, 0);
+});
+
+test("backend conflicts and stale revisions preserve typed definite rejection", async () => {
+  for (const [status, expectedCode] of [
+    [409, UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT],
+    [412, UI_CONTROL_ERROR_CODES.STALE_REVISION],
+    [403, UI_CONTROL_ERROR_CODES.PERMISSION_DENIED],
+  ]) {
+    const transport = new SameOriginHttpTransport({
+      origin: "https://control.example",
+      csrfTokenProvider: () => "csrf-token",
+      fetchImpl: async () => response(
+        { errorCode: `STATUS_${status}`, message: `backend returned ${status}` },
+        { status },
+      ),
+    });
+    await assert.rejects(
+      transport.request("runtime/stop", {
+        operationId: `operation-${status}`,
+        semanticDigest: "a".repeat(64),
+      }),
+      error => error instanceof UiControlError && error.code === expectedCode,
+    );
+  }
 });
 
 test("network loss after mutation dispatch is ambiguous", async () => {
@@ -105,9 +128,58 @@ test("network loss after mutation dispatch is ambiguous", async () => {
     }),
     error =>
       error instanceof UiControlError &&
-      [
-        UI_CONTROL_ERROR_CODES.TRANSPORT,
-        UI_CONTROL_ERROR_CODES.AMBIGUOUS_SUBMISSION,
-      ].includes(error.code),
+      error.code === UI_CONTROL_ERROR_CODES.AMBIGUOUS_SUBMISSION,
+  );
+});
+
+test("timeout remains active while the response body is being read", async () => {
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    timeoutMs: 100,
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      text: async () => new Promise(() => {}),
+    }),
+  });
+  await assert.rejects(
+    transport.connect({ client: "test" }),
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.ABORTED,
+  );
+});
+
+test("operation lookup validates every identity binding before dispatch", async () => {
+  let calls = 0;
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    fetchImpl: async () => {
+      calls += 1;
+      return response({ found: false });
+    },
+  });
+  await assert.rejects(
+    transport.lookup({
+      operationId: "operation-1",
+      sessionId: "session-1",
+      connectionGeneration: 0,
+      semanticDigest: "a".repeat(64),
+    }),
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT,
+  );
+  assert.equal(calls, 0);
+});
+
+test("successful responses require an explicit JSON media type", async () => {
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    fetchImpl: async () => new Response("{}", {
+      status: 200,
+      headers: { "content-type": "text/plain" },
+    }),
+  });
+  await assert.rejects(
+    transport.connect({ client: "test" }),
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.TRANSPORT,
   );
 });
