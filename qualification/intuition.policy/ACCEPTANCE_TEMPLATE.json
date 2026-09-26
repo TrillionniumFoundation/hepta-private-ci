@@ -3,14 +3,15 @@
   "module": "intuition.policy",
   "candidate": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
-    "pullRequest": 1013,
-    "branch": "codex/intuition-policy-production-hardening-20260926",
+    "pullRequest": 1036,
+    "branch": "codex/intuition-policy-production-closure-20260927",
     "sourceSha": null,
     "treeSha": null,
     "exactHeadWorkflowRun": null,
     "syntheticMergeSha": null,
     "commandRecordArtifact": null,
-    "performanceArtifact": null
+    "performanceArtifact": null,
+    "ledgerQualificationArtifact": null
   },
   "repositoryQualification": {
     "status": "pending_exact_head",
@@ -53,5 +54,6 @@
     "authorizedAt": null,
     "signature": null
   },
+  "evidencePolicy": "Populate repositoryQualification only from retained artifacts produced by workflows bound to candidate.sourceSha. A later source change invalidates those fields until the new exact head is requalified.",
   "claimBoundary": "This repository candidate may populate only repositoryQualification from exact CI artifacts. It may not self-populate independentEvaluator, operatorAcceptance, promotion, or release."
 }
