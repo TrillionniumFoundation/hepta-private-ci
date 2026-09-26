@@ -1,0 +1,62 @@
+name: Prompt registry native test tools
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths: [.github/workflows/prompt-registry-native-tools.yml]
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0, cargo-nextest@0.9.103, cargo-shear@1.11.2
+      - name: Package repository test entry points
+        run: |
+          set -eu
+          mkdir -p "$RUNNER_TEMP/prompt-tools/bin"
+          cp "$(command -v just)" "$(command -v cargo-nextest)" "$(command -v cargo-shear)" "$RUNNER_TEMP/prompt-tools/bin/"
+          cd "$RUNNER_TEMP/prompt-tools"
+          tar -czf tools.tar.gz bin
+          sha256sum tools.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-native-tools
+          path: |
+            ${{ runner.temp }}/prompt-tools/tools.tar.gz
+            ${{ runner.temp }}/prompt-tools/SHA256SUMS
+          retention-days: 3
+      - name: Resolve and package checksum-verified V8 archive and binding
+        env:
+          PYTHONPATH: scripts
+        run: |
+          set -eu
+          mkdir -p "$RUNNER_TEMP/prompt-v8"
+          python3 - <<'PY'
+          import hashlib, os, shutil
+          from pathlib import Path
+          from codex_package.targets import TARGET_SPECS
+          from codex_package.v8 import resolve_codex_v8_cargo_env
+          root = Path(os.environ['RUNNER_TEMP']) / 'prompt-v8'
+          values = resolve_codex_v8_cargo_env(TARGET_SPECS['x86_64-unknown-linux-gnu'])
+          if set(values) != {'RUSTY_V8_ARCHIVE', 'RUSTY_V8_SRC_BINDING_PATH'}:
+              raise RuntimeError('verified archive and binding are both required')
+          for key, source in values.items():
+              target = root / Path(source).name
+              shutil.copyfile(source, target)
+              with (root / 'SHA256SUMS').open('a') as output:
+                  output.write(hashlib.sha256(target.read_bytes()).hexdigest() + '  ' + target.name + '\n')
+              with (root / 'identity.txt').open('a') as output:
+                  output.write(key + '=' + target.name + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-verified-v8
+          path: ${{ runner.temp }}/prompt-v8/
+          compression-level: 0
+          retention-days: 3
