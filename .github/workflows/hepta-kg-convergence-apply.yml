@@ -35,13 +35,39 @@ jobs:
           test -z "$(git status --porcelain)"
 
       - name: Apply exact phase-one transformations
+        id: transform
+        continue-on-error: true
         shell: bash
         run: |
+          set +e
+          {
+            python3 -m py_compile scripts/hepta-kg-convergence-apply-phase1.py
+            python3 scripts/hepta-kg-convergence-apply-phase1.py
+          } 2>&1 | tee "$RUNNER_TEMP/phase1-transform.log"
+          status=${PIPESTATUS[0]}
+          if [ "$status" = 0 ]; then
+            rm scripts/hepta-kg-convergence-apply-phase1.py
+            rm .github/workflows/hepta-kg-convergence-apply.yml
+          fi
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Retain transformation diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-phase1-transform-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/phase1-transform.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce transformation
+        shell: bash
+        env:
+          TRANSFORM_STATUS: ${{ steps.transform.outputs.status }}
+        run: |
           set -euo pipefail
-          python3 -m py_compile scripts/hepta-kg-convergence-apply-phase1.py
-          python3 scripts/hepta-kg-convergence-apply-phase1.py
-          rm scripts/hepta-kg-convergence-apply-phase1.py
-          rm .github/workflows/hepta-kg-convergence-apply.yml
+          test "$TRANSFORM_STATUS" = 0
 
       - name: Capture cargo check and lock refresh
         id: cargo_check
@@ -62,7 +88,7 @@ jobs:
           name: knowledge-graph-phase1-cargo-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/phase1-cargo-check.log
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 30
 
       - name: Enforce cargo check
         shell: bash
@@ -81,16 +107,51 @@ jobs:
           cargo fmt --package codex-hepta-kg -- --check
 
       - name: Test canonical kernel
-        working-directory: codex-rs
-        shell: bash
-        run: cargo test --locked -p codex-hepta-kg -- --nocapture
-
-      - name: Strict kernel lint
+        id: kernel_tests
+        continue-on-error: true
         working-directory: codex-rs
         shell: bash
         run: |
+          set +e
+          cargo test --locked -p codex-hepta-kg -- --nocapture 2>&1 \
+            | tee "$RUNNER_TEMP/phase1-kernel-tests.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Strict kernel lint
+        id: kernel_lint
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo clippy --locked -p codex-hepta-kg --all-targets --no-deps -- -D warnings 2>&1 \
+            | tee "$RUNNER_TEMP/phase1-kernel-clippy.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Retain kernel test and lint diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b5e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-phase1-kernel-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/phase1-kernel-tests.log
+            ${{ runner.temp }}/phase1-kernel-clippy.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce kernel tests and lint
+        shell: bash
+        env:
+          TEST_STATUS: ${{ steps.kernel_tests.outputs.status }}
+          LINT_STATUS: ${{ steps.kernel_lint.outputs.status }}
+        run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-kg --all-targets --no-deps -- -D warnings
+          test "$TEST_STATUS" = 0
+          test "$LINT_STATUS" = 0
 
       - name: Refresh governed document indexes
         shell: bash
