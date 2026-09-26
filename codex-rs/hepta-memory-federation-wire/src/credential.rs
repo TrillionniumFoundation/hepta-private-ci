@@ -4,6 +4,7 @@ use std::error::Error;
 use std::fmt;
 
 use codex_hepta_types::StableId;
+use zeroize::Zeroize;
 
 pub const FEDERATION_MAC_KEY_BYTES: usize = 32;
 
@@ -103,7 +104,7 @@ impl fmt::Debug for PeerCredentialV1 {
 
 impl Drop for PeerCredentialV1 {
     fn drop(&mut self) {
-        self.secret.fill(0);
+        self.secret.zeroize();
     }
 }
 
