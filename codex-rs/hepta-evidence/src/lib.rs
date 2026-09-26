@@ -22,7 +22,10 @@ mod qualification;
 mod qualification_paging;
 mod recovery_frontier;
 mod schema_validation;
-mod store;
+mod store {
+    include!("store.rs");
+    mod runtime;
+}
 mod summary;
 
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;

@@ -64,9 +64,10 @@ impl EvidenceHost {
             // Production never bootstraps or migrates an unknown database. A
             // read-only open first proves that the complete current migration
             // ledger, schema manifest, row invariants and foreign keys already
-            // exist. The writable open below can therefore only be a no-op at
-            // the migration layer; the exact snapshot comparison detects any
-            // path swap or intervening mutation before the host is published.
+            // exist. The restricted writable open below cannot create or migrate
+            // the lineage, and its authorizer rejects DDL and migration-ledger
+            // mutation. The exact snapshot comparison detects any path swap or
+            // intervening mutation before the host is published.
             let preflight = HeptaEvidenceStore::open_existing_read_only(&sqlite)
                 .await
                 .map_err(evidence_error)?;
@@ -76,15 +77,21 @@ impl EvidenceHost {
         } else {
             None
         };
-        let store = HeptaEvidenceStore::open(&sqlite)
-            .await
-            .map_err(evidence_error)?;
+        let store = if production_profile {
+            HeptaEvidenceStore::open_existing_runtime(&sqlite)
+                .await
+                .map_err(evidence_error)?
+        } else {
+            HeptaEvidenceStore::open(&sqlite)
+                .await
+                .map_err(evidence_error)?
+        };
         if let Some(expected) = preflight_snapshot {
             let actual = store.recovery_snapshot().await.map_err(evidence_error)?;
             if actual != expected {
                 store.close().await;
                 return Err(invalid(
-                    "production evidence database changed between read-only migration preflight and runtime open",
+                    "production evidence database changed between read-only migration preflight and restricted runtime open",
                 ));
             }
         }
