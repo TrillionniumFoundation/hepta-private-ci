@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta name="csrf-token" content="">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <title>Hepta Runtime Control</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header>
+      <h1>Hepta Runtime Control</h1>
+      <p>Authority-free request console. Runtime authority remains server-side.</p>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+      <section aria-labelledby="connection-heading">
+        <h2 id="connection-heading">Connection</h2>
+        <dl class="summary-grid">
+          <div><dt>Status</dt><dd id="connection-state">Disconnected</dd></div>
+          <div><dt>Session</dt><dd id="identity-state">—</dd></div>
+          <div><dt>Generation</dt><dd id="generation-state">—</dd></div>
+          <div><dt>Revision</dt><dd id="revision-state">—</dd></div>
+        </dl>
+        <p id="stale-banner" class="warning" role="alert" hidden></p>
+        <p id="error-status" class="error" role="alert" hidden></p>
+        <p id="live-status" class="visually-hidden" role="status" aria-live="polite"></p>
+        <button id="refresh-view" type="button">Refresh runtime view</button>
+      </section>
+
+      <section aria-labelledby="runtime-heading">
+        <h2 id="runtime-heading">Runtime modules</h2>
+        <div class="table-scroll" tabindex="0" aria-label="Scrollable runtime module table">
+          <table>
+            <thead>
+              <tr><th scope="col">Module</th><th scope="col">Status</th><th scope="col">Revision</th><th scope="col">Semantic digest</th></tr>
+            </thead>
+            <tbody id="modules-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="operation-heading">
+        <h2 id="operation-heading">Control request</h2>
+        <p>Every request is bound to the displayed generation, revision, semantic digest, operation ID, and audit trace.</p>
+        <div class="field">
+          <label for="target-id">Target module</label>
+          <select id="target-id"></select>
+        </div>
+        <div class="field">
+          <label for="operation-reason">Reason</label>
+          <textarea id="operation-reason" maxlength="1024" required></textarea>
+        </div>
+        <div class="button-row">
+          <button id="request-start" type="button" disabled>Request start</button>
+          <button id="request-reconcile" type="button" disabled>Request reconcile</button>
+          <button id="request-stop" class="danger" type="button" disabled>Request stop</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="pending-heading">
+        <h2 id="pending-heading">Pending and indeterminate operations</h2>
+        <ul id="pending-list"></ul>
+      </section>
+    </main>
+
+    <dialog id="confirm-operation" aria-labelledby="confirm-title" aria-describedby="confirm-summary">
+      <form method="dialog">
+        <h2 id="confirm-title">Confirm control request</h2>
+        <p id="confirm-summary"></p>
+        <div class="button-row">
+          <button id="confirm-cancel" type="button">Cancel</button>
+          <button id="confirm-submit" class="danger" type="button">Submit request</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
