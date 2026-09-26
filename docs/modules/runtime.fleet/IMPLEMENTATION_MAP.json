@@ -2,32 +2,47 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "branch": "main"
   },
-  "implementationSourceCommit": "fa64eb9620d8a94e24ee68fb645b995a338b885a",
+  "implementationSourceCommit": "c9f92b734aa8ccf2859eeef84fc2b7951892f02a",
+  "implementationBranch": "codex/runtime-fleet-durable-owner-v1-2026-09-27",
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
-  "sourceMaturity": "durable_owner_source_with_supervisor_maintenance_composition",
+  "sourceMaturity": "durable_owner_with_final_effect_admission",
   "declaredRoots": [
-    "codex-rs/hepta-fleet"
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-supervisor/src/fleet_runtime_product.rs",
+    "codex-rs/hepta-supervisor/src/fleet_start_admission.rs",
+    "codex-rs/hepta-supervisor/src/daemon.rs",
+    "codex-rs/hepta-supervisor/src/unix.rs"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-fleet"
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-supervisor/src/fleet_runtime_product.rs",
+    "codex-rs/hepta-supervisor/src/fleet_start_admission.rs",
+    "codex-rs/hepta-supervisor/src/daemon.rs",
+    "codex-rs/hepta-supervisor/src/unix.rs"
   ],
-  "stateOwnerDisposition": "The existing hepta-supervisord fleet root owns the durable registry and immutable allocation generations. No second fleet writer is introduced.",
-  "terminalObserverDisposition": "Capacity is observed from selected-host operating-system sources; final physical use still requires a concrete Agent or worker caller that consumes a current allocation and revocation-bound witness.",
+  "stateOwnerDisposition": "The existing hepta-supervisord fleet root owns the durable registry, immutable allocation generations and monotonic latest frontier. No second Fleet writer is introduced.",
+  "terminalObserverDisposition": "Selected-host capacity comes from operating-system observation. Agent and Matrix process spawn/adopt verify the current allocation and independently trusted revocation cut at the final process-effect boundary.",
   "maintenanceCallerState": "source_composed_in_hepta_supervisord",
-  "effectCallerState": "not_composed",
+  "effectCallerState": "source_composed_in_unix_process_driver",
+  "productCallerState": "source_composed",
+  "productionWriterState": "single_supervisor_owner_source_composed",
   "durableDatasets": [
     "fleet_hosts",
     "fleet_capacity_observations",
-    "fleet_grants",
+    "fleet_grants.active",
+    "fleet_grants.history",
+    "fleet_grants.expiry_index",
+    "fleet_grants.compaction_digest",
     "fleet_resource_totals",
     "fleet_revocation_frontier",
     "fleet_revocation_acks",
     "workspace_reservations",
-    "fleet_operation_receipts"
+    "fleet_operation_receipts",
+    "latest_generation_frontier"
   ],
   "operations": [
     {
@@ -36,8 +51,8 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-fleet/src/registry.rs",
-        "symbol": "pub fn register(",
-        "buildTarget": "codex-hepta-fleet::registry"
+        "symbol": "FleetRegistry::register",
+        "buildTarget": "codex-hepta-fleet"
       },
       "delegatedCallees": [
         {
@@ -53,23 +68,57 @@
         {
           "path": "codex-rs/hepta-fleet/src/registry_coordination_tests.rs",
           "kind": "concurrency_and_crash_boundary",
-          "command": "cargo test -p codex-hepta-fleet --lib registry::coordination_tests"
+          "command": "cargo test -p codex-hepta-fleet --lib registry"
         }
       ],
-      "sourceSemantics": "Serializes workspace validation and publication across processes, persists a canonical reservation index, and reports post-rename ambiguity as an indeterminate commit.",
-      "operation": "register_agent",
-      "nativeSymbol": "pub fn register(",
-      "sourcePath": "codex-rs/hepta-fleet/src/registry.rs",
-      "sourcePathExists": true
+      "sourceSemantics": "Serializes cross-process workspace validation, reservation and publication; post-publication sync ambiguity is indeterminate rather than failed."
+    },
+    {
+      "designOperation": "calculate_local_allocation",
+      "mappingClass": "deterministic_authority_free_calculation",
+      "ownerEntrypoint": {
+        "role": "calculation_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/allocation.rs",
+        "symbol": "calculate_local_allocation_v1",
+        "buildTarget": "codex-hepta-fleet"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/allocation_tests.rs",
+          "kind": "weighted_fairness_capacity_and_permutation",
+          "command": "cargo test -p codex-hepta-fleet --lib allocation_tests"
+        }
+      ],
+      "sourceSemantics": "Produces a bounded deny-all local calculation over caller-supplied inputs; never publishes a grant or effect authority."
+    },
+    {
+      "designOperation": "map_resources",
+      "mappingClass": "versioned_policy_mapping",
+      "ownerEntrypoint": {
+        "role": "mapping_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/resource_mapping.rs",
+        "symbol": "map_logical_to_physical_v1",
+        "buildTarget": "codex-hepta-fleet"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/resource_mapping.rs",
+          "kind": "digest_binding_overflow_and_units",
+          "command": "cargo test -p codex-hepta-fleet --lib resource_mapping"
+        }
+      ],
+      "sourceSemantics": "Converts canonical logical vectors under an explicit policy and returns policy, logical and physical digests."
     },
     {
       "designOperation": "observe_capacity",
-      "mappingClass": "owner_native_with_host_observer",
+      "mappingClass": "owner_native_with_selected_host_observer",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
-        "symbol": "pub fn refresh_capacity",
-        "buildTarget": "codex-hepta-fleet::durable_owner"
+        "symbol": "DurableFleetOwner::refresh_capacity",
+        "buildTarget": "codex-hepta-fleet"
       },
       "delegatedCallees": [
         {
@@ -84,29 +133,20 @@
       "tests": [
         {
           "path": "codex-rs/hepta-fleet/src/capacity_observer_tests.rs",
-          "kind": "procfs_capacity_and_pressure",
+          "kind": "procfs_capacity_pressure_and_bounds",
           "command": "cargo test -p codex-hepta-fleet --lib capacity_observer"
-        },
-        {
-          "path": "codex-rs/hepta-fleet/src/durable_command_port.rs",
-          "kind": "durable_id_first_retry",
-          "command": "cargo test -p codex-hepta-fleet --lib durable_command_port"
         }
       ],
-      "sourceSemantics": "Persists a bounded trusted host observation and exact resource totals in one new durable generation. A retry resolves the stable operation ID before observing time or the host again.",
-      "operation": "observe_capacity",
-      "nativeSymbol": "pub fn refresh_capacity",
-      "sourcePath": "codex-rs/hepta-fleet/src/durable_owner.rs",
-      "sourcePathExists": true
+      "sourceSemantics": "Resolves retained operation identity before observing time/host, then persists a bounded trusted observation and exact totals in one generation."
     },
     {
-      "designOperation": "allocate",
+      "designOperation": "issue_allocation",
       "mappingClass": "authority_bound_durable_owner",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
-        "symbol": "pub fn issue_with_authority",
-        "buildTarget": "codex-hepta-fleet::durable_owner"
+        "symbol": "DurableFleetOwner::issue_with_authority",
+        "buildTarget": "codex-hepta-fleet"
       },
       "delegatedCallees": [
         {
@@ -121,20 +161,16 @@
       "tests": [
         {
           "path": "codex-rs/hepta-fleet/src/durable_owner_tests.rs",
-          "kind": "authority_witness_atomicity_and_restart",
+          "kind": "authority_witness_atomicity_restart_and_indeterminate_commit",
           "command": "cargo test -p codex-hepta-fleet --lib durable_owner"
         },
         {
           "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "capacity_churn_fencing_and_compaction",
+          "kind": "active_limit_churn_expiry_generation_and_compaction",
           "command": "cargo test -p codex-hepta-fleet --lib lease_ledger"
         }
       ],
-      "sourceSemantics": "Revalidates the exact live authority lease and host observation, checks canonical resources and capacity, then publishes grant, totals, authority witness and operation receipt in one immutable generation.",
-      "operation": "allocate",
-      "nativeSymbol": "pub fn issue_with_authority",
-      "sourcePath": "codex-rs/hepta-fleet/src/durable_owner.rs",
-      "sourcePathExists": true
+      "sourceSemantics": "Revalidates live authority and host observation, locks capacity, writes grant/totals/receipt/witness atomically, publishes an immutable generation and advances the non-rollback frontier."
     },
     {
       "designOperation": "renew_or_revoke",
@@ -142,8 +178,8 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
-        "symbol": "pub fn renew_or_revoke",
-        "buildTarget": "codex-hepta-fleet::durable_owner"
+        "symbol": "DurableFleetOwner::renew_or_revoke",
+        "buildTarget": "codex-hepta-fleet"
       },
       "delegatedCallees": [
         {
@@ -154,24 +190,20 @@
       "tests": [
         {
           "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "lease_generation_and_capacity_release",
+          "kind": "lease_generation_and_exact_capacity_release",
           "command": "cargo test -p codex-hepta-fleet --lib lease_ledger"
         }
       ],
-      "sourceSemantics": "Renews or revokes a current lease under exact lease generation, authority epoch and semantic digest, releasing capacity exactly once on terminal transition.",
-      "operation": "renew_or_revoke",
-      "nativeSymbol": "pub fn renew_or_revoke",
-      "sourcePath": "codex-rs/hepta-fleet/src/durable_owner.rs",
-      "sourcePathExists": true
+      "sourceSemantics": "Requires current lease generation, epoch and semantic digest; terminal transition releases capacity exactly once."
     },
     {
       "designOperation": "reconcile_expired",
-      "mappingClass": "durable_owner",
+      "mappingClass": "durable_owner_time_dependent_idempotent",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-fleet/src/durable_command_port.rs",
         "symbol": "reconcile_expired_idempotent",
-        "buildTarget": "codex-hepta-fleet::durable_command_port"
+        "buildTarget": "codex-hepta-fleet"
       },
       "delegatedCallees": [
         {
@@ -182,38 +214,59 @@
       "tests": [
         {
           "path": "codex-rs/hepta-fleet/src/durable_owner_tests.rs",
-          "kind": "expiry_recovery_and_capacity_release",
+          "kind": "expiry_recovery_and_operation_id_first_retry",
           "command": "cargo test -p codex-hepta-fleet --lib durable_owner"
         }
       ],
-      "sourceSemantics": "Resolves the durable operation ID before reading owner time, retires expired grants and publishes released resource totals atomically.",
-      "operation": "reconcile_expired",
-      "nativeSymbol": "reconcile_expired_idempotent",
-      "sourcePath": "codex-rs/hepta-fleet/src/durable_command_port.rs",
-      "sourcePathExists": true
+      "sourceSemantics": "Resolves an existing operation before reading owner time, retires expired grants and publishes released totals atomically."
     },
     {
-      "designOperation": "map_resources",
-      "mappingClass": "deterministic_policy_mapping",
+      "designOperation": "persist_revocation_snapshot",
+      "mappingClass": "durable_signed_evidence",
       "ownerEntrypoint": {
-        "role": "mapping_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/resource_mapping.rs",
-        "symbol": "map_logical_to_physical_v1",
-        "buildTarget": "codex-hepta-fleet::resource_mapping"
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+        "symbol": "DurableFleetOwner::persist_revocation_snapshot",
+        "buildTarget": "codex-hepta-fleet"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-fleet/src/resource_mapping.rs",
-          "kind": "digest_binding_and_overflow",
-          "command": "cargo test -p codex-hepta-fleet --lib resource_mapping"
+          "path": "codex-rs/hepta-fleet/src/revocation_snapshot.rs",
+          "symbol": "FleetRevocationSnapshotV1::validate_shape"
         }
       ],
-      "sourceSemantics": "Converts canonical logical counts through a reviewed versioned policy using checked exact arithmetic and returns policy, logical and physical digests.",
-      "operation": "map_resources",
-      "nativeSymbol": "map_logical_to_physical_v1",
-      "sourcePath": "codex-rs/hepta-fleet/src/resource_mapping.rs",
-      "sourcePathExists": true
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/revocation_snapshot.rs",
+          "kind": "restore_and_shape",
+          "command": "cargo test -p codex-hepta-fleet --lib revocation_snapshot"
+        }
+      ],
+      "sourceSemantics": "Persists signed update and exact signed acknowledgements; trust roots remain outside Fleet state."
+    },
+    {
+      "designOperation": "pin_latest_generation",
+      "mappingClass": "non_rollback_durable_frontier",
+      "ownerEntrypoint": {
+        "role": "owner_recovery_boundary",
+        "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+        "symbol": "DurableFleetOwner::reconcile_latest_frontier",
+        "buildTarget": "codex-hepta-fleet"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_owner_core.rs",
+          "symbol": "immutable generation publication"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+          "kind": "descendant_recovery_tail_deletion_and_missing_frontier",
+          "command": "cargo test -p codex-hepta-fleet --lib durable_owner::tests"
+        }
+      ],
+      "sourceSemantics": "Pins the highest committed generation independently and permits only verifiable descendant advancement; rollback and tail deletion fail closed."
     },
     {
       "designOperation": "verify_final_use",
@@ -222,7 +275,7 @@
         "role": "final_use_entrypoint",
         "path": "codex-rs/hepta-fleet/src/final_use.rs",
         "symbol": "verify_final_use_with_revocation",
-        "buildTarget": "codex-hepta-fleet::final_use"
+        "buildTarget": "codex-hepta-fleet"
       },
       "delegatedCallees": [
         {
@@ -237,20 +290,11 @@
       "tests": [
         {
           "path": "codex-rs/hepta-fleet/src/final_use.rs",
-          "kind": "missing_snapshot_fail_closed",
+          "kind": "missing_stale_quarantined_and_digest_drift_fail_closed",
           "command": "cargo test -p codex-hepta-fleet --lib final_use"
-        },
-        {
-          "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
-          "kind": "catch_up_quarantine_and_stale_feed",
-          "command": "cargo test -p codex-hepta-fleet --lib revocation_control"
         }
       ],
-      "sourceSemantics": "Requires a fresh converged signed revocation snapshot, Ready node state, current lease and host fences, and an unchanged snapshot digest across grant verification.",
-      "operation": "verify_final_use",
-      "nativeSymbol": "verify_final_use_with_revocation",
-      "sourcePath": "codex-rs/hepta-fleet/src/final_use.rs",
-      "sourcePathExists": true
+      "sourceSemantics": "Requires a fresh converged signed revocation cut, Ready local node, current allocation/lease/host fences and unchanged snapshot digest."
     },
     {
       "designOperation": "supervisor_maintenance",
@@ -278,36 +322,67 @@
           "command": "cargo check -p codex-hepta-supervisor --bin hepta-supervisord"
         }
       ],
-      "sourceSemantics": "The existing supervisor opens the durable owner, observes Linux capacity and pressure, reconciles expiry and treats maintenance failure as a product error. It does not yet bind Agent or worker physical use to an allocation witness.",
-      "operation": "supervisor_maintenance",
-      "nativeSymbol": "run_supervisord_product",
-      "sourcePath": "codex-rs/hepta-supervisor/src/fleet_runtime_product.rs",
-      "sourcePathExists": true
+      "sourceSemantics": "The existing supervisor opens the durable owner, refreshes Linux capacity/pressure, reconciles expiry and treats maintenance errors as product failures."
+    },
+    {
+      "designOperation": "process_effect_admission",
+      "mappingClass": "named_product_final_effect_boundary",
+      "ownerEntrypoint": {
+        "role": "product_effect_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/unix.rs",
+        "symbol": "UnixProcessDriver::verify_process_effect",
+        "buildTarget": "codex-hepta-supervisor::hepta-supervisord"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/fleet_start_admission.rs",
+          "symbol": "FleetStartAdmission::verify_agent_start"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/final_use.rs",
+          "symbol": "verify_final_use_with_revocation"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/fleet_start_admission.rs",
+          "kind": "closed_trust_profile_validation",
+          "command": "cargo test -p codex-hepta-supervisor --lib fleet_start_admission"
+        },
+        {
+          "path": ".github/workflows/runtime-fleet-focused.yml",
+          "kind": "all_supervisor_library_and_binary_checks",
+          "command": "cargo test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Scopes one immutable trust profile over the daemon driver and verifies grant/revocation immediately before Agent and Matrix spawn/adopt, including recovery paths."
     }
   ],
   "repositoryControlledGaps": [
-    "Bind a concrete Agent or worker start/use boundary to the real allocation ID and RevocationBoundGrantUseWitnessV1 immediately before physical use.",
-    "Compose independently pinned authority and revocation trust roots at that concrete product boundary without storing them in fleet state.",
-    "Attach accepted exact-candidate selected-host and multi-node partition/revocation evidence.",
-    "Define external audit retention beyond the bounded in-process grant-history and operation-receipt windows."
+    "obtain current exact-source and synthetic-merge green receipts for the final candidate SHA",
+    "attach protected selected-host evidence bound to the final candidate SHA and approved host profile",
+    "qualify authenticated multi-node revocation fanout and partition recovery",
+    "define and operate external searchable audit retention beyond bounded in-process history and receipts"
   ],
   "externalEvidenceGates": [
-    "selected Linux host capacity and pressure observation bound to the exact candidate",
-    "authenticated multi-node revocation fanout and partition qualification",
-    "concrete non-test Agent or worker final-use enforcement",
-    "independent operator acceptance"
+    "selected Linux host capacity, pressure, filesystem durability and restart qualification",
+    "authenticated multi-node revocation and partition qualification",
+    "independent operator acceptance",
+    "deployment activation, promotion and release authority"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "durableOwnerSourceImplemented": true,
+    "nonRollbackFrontierImplemented": true,
     "supervisorMaintenanceCallerSourceComposed": true,
     "authorityIssueSourceImplemented": true,
     "revocationBoundFinalUseSourceImplemented": true,
-    "concreteEffectCallerSourceComposed": false,
+    "concreteEffectCallerSourceComposed": true,
     "selectedHostQualificationComplete": false,
+    "multiNodeQualificationComplete": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -321,14 +396,11 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
   "owner": "fleet-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
+  "currentStateManifest": "docs/modules/runtime.fleet/CURRENT_STATE.json",
   "currentImplementationGuide": "docs/modules/runtime.fleet/DURABLE_OWNER.md",
   "operationsRunbook": "docs/modules/runtime.fleet/OPERATIONS.md",
-  "sourceRoot": [
-    "codex-rs/hepta-fleet"
-  ]
+  "executionDossier": "qualification/module-execution-dossiers/detail/runtime.fleet.md"
 }

@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.runtime-fleet-current-state.v1",
+  "schemaVersion": 1,
+  "module": "runtime.fleet",
+  "candidateBranch": "codex/runtime-fleet-durable-owner-v1-2026-09-27",
+  "sourceImplementationCommit": "c9f92b734aa8ccf2859eeef84fc2b7951892f02a",
+  "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "owner": "fleet-runtime",
+  "deputy": "runtime-control",
+  "namedProductOwner": "hepta-supervisord",
+  "singleWriter": true,
+  "standaloneFleetWriterEnabled": false,
+  "sourceState": {
+    "registryCoordination": "implemented",
+    "workspaceReservationIndex": "implemented",
+    "ownerClock": "implemented",
+    "canonicalResourceVectorV1": "implemented",
+    "logicalPhysicalMapping": "implemented",
+    "activeHistoryExpiryGcCompaction": "implemented",
+    "durableAllocationOwner": "implemented",
+    "atomicAuthorityBoundIssue": "implemented",
+    "durableRevocationSnapshot": "implemented",
+    "latestGenerationNonRollbackFrontier": "implemented",
+    "linuxCapacityPressureObserver": "implemented",
+    "supervisorMaintenanceCaller": "source_composed",
+    "processSpawnAdoptFinalUseAdmission": "source_composed",
+    "operatorStatusAndAlerts": "implemented",
+    "focusedExactAndSyntheticMergeWorkflow": "implemented",
+    "selectedHostWorkflow": "implemented_not_accepted"
+  },
+  "durableDatasets": [
+    "fleet_hosts",
+    "fleet_capacity_observations",
+    "fleet_grants.active",
+    "fleet_grants.history",
+    "fleet_grants.expiry_index",
+    "fleet_resource_totals",
+    "fleet_revocation_frontier",
+    "fleet_revocation_acks",
+    "workspace_reservations",
+    "fleet_operation_receipts",
+    "latest_generation_frontier"
+  ],
+  "productAdmission": {
+    "trustProfileRequired": true,
+    "trustRootsPersistedInsideFleetState": false,
+    "agentSpawn": "verified_immediately_before_effect",
+    "agentAdopt": "verified_immediately_before_effect",
+    "matrixSpawn": "verified_immediately_before_effect",
+    "matrixAdopt": "verified_immediately_before_effect",
+    "automaticRestartBypass": false,
+    "grantSelection": "exactly_one_active_grant_for_agent_principal",
+    "revocationStatesDenied": [
+      "catching_up",
+      "quarantined",
+      "feed_stale"
+    ]
+  },
+  "boundedRetention": {
+    "activeGrantCeiling": 16384,
+    "terminalHistoryCeiling": 32768,
+    "operationReceiptCeiling": 16384,
+    "retainedStateGenerations": 8,
+    "externalLongTermAuditRequired": true
+  },
+  "qualification": {
+    "focusedExactSource": "pending_current_head",
+    "focusedSyntheticMerge": "pending_current_head",
+    "repositoryRequiredChecks": "pending_current_head",
+    "selectedHost": false,
+    "multiNodePartitionRevocation": false,
+    "independentOperatorAcceptance": false,
+    "deploymentQualification": false,
+    "release": false
+  },
+  "remainingGates": [
+    "obtain green exact-source and synthetic-merge receipts for the final candidate SHA",
+    "run protected selected-host qualification against the final candidate SHA",
+    "qualify authenticated multi-node revocation fanout and partition behavior",
+    "define and operate external audit retention beyond bounded in-process windows",
+    "obtain independent operator acceptance, promotion and release authority"
+  ],
+  "claimBoundary": {
+    "repositoryControlledSourceBoundaryClosed": true,
+    "namedProductSourceCompositionClosed": true,
+    "productExecutionProved": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "activation": false,
+    "release": false
+  }
+}

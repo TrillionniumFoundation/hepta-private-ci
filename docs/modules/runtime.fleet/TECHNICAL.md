@@ -1,281 +1,295 @@
 # runtime.fleet technical development guide
 
-Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
+**Module:** `runtime.fleet`  
+**Lane:** `LANE-B-RUNTIME`  
+**Owner / deputy:** `fleet-runtime` / `runtime-control`  
+**Named product owner:** `hepta-supervisord`  
+**Canonical current state:** [`CURRENT_STATE.json`](CURRENT_STATE.json)  
+**Detailed implementation:** [`DURABLE_OWNER.md`](DURABLE_OWNER.md)  
+**Operations and recovery:** [`OPERATIONS.md`](OPERATIONS.md)
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
+This document describes the current source implementation and its claim boundary. Source composition is not deployment qualification, independent operator acceptance, promotion or release. The standalone `hepta-fleet-leased` entry point remains intentionally inert; no second Fleet writer is authorized.
 
-**Module:** `runtime.fleet`
+## 1. Mission, authority and non-goals
 
-**Owner:** `fleet-runtime`
+`runtime.fleet` allocates bounded resources through explicit, versioned, authority-bound leases and preserves one supervisor-owned source of truth. It may not:
 
-**Deputy:** `runtime-control`
+- write Agent-owned stores;
+- treat caller-supplied capacity as physical observation;
+- infer authority from model output, queue acceptance or process existence;
+- start a parallel Fleet service or writer;
+- self-approve deployment, promotion or release;
+- turn a local allocation calculation into a grant without authority, host freshness and a durable owner transaction.
 
-**Lifecycle:** `existing`
+The module owns the `fleet_allocation_grant` domain. `kernel.authority`, the Fleet registry, signed revocation evidence and selected-host operating-system observations remain independently governed inputs.
 
-**Source status:** `existing_bound`
+## 2. Source layout and product composition
 
-**Bootstrap work package:** `FLEET-1-ALLOCATION-CONTRACT`
-
-This stable document is the implementation guide for `runtime.fleet`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
-
-## 1. Identity, mission and ownership
-
-Allocate bounded fleet resources from explicit grants without writing agent-owned state.
-
-The primary owner `fleet-runtime` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `runtime-control` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `control`, kind `domain`, state model `stateful` and architecture role `execution_plant` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
-
-## 2. Source binding and implementation status
-
-Declared exclusive target roots:
+Primary source roots:
 
 - `codex-rs/hepta-fleet`
+- `codex-rs/hepta-supervisor/src/fleet_runtime_product.rs`
+- `codex-rs/hepta-supervisor/src/fleet_start_admission.rs`
+- `codex-rs/hepta-supervisor/src/daemon.rs`
+- `codex-rs/hepta-supervisor/src/unix.rs`
 
-Existing declared roots at this exact source snapshot:
+Key components:
 
-- `codex-rs/hepta-fleet`
+| Concern | Owner entry point |
+|---|---|
+| Agent registry and lifecycle | `FleetRegistry` in `registry.rs` |
+| Cross-process registry serialization | `RegistryMutationGuard` in `registry_coordination.rs` |
+| Canonical resources | `ResourceVectorV1` in `resource.rs` |
+| Logical-to-physical mapping | `map_logical_to_physical_v1` in `resource_mapping.rs` |
+| Active lease state machine | `LeaseLedger` in `lease_ledger_v3.rs` / `lease_ledger_v2.rs` |
+| Generic authority consumption | `FleetAuthorityPort` in `authority_port.rs` |
+| Durable owner | `DurableFleetOwner` in `durable_owner.rs` |
+| Snapshot implementation | `durable_owner_core.rs` |
+| Capacity/pressure observation | `LinuxProcfsCapacityObserverV1` in `capacity_observer.rs` |
+| Durable revocation evidence | `FleetRevocationSnapshotV1` in `revocation_snapshot.rs` |
+| Final-use verification | `verify_final_use_with_revocation` in `final_use.rs` |
+| Named maintenance caller | `run_supervisord_product` |
+| Physical process admission | `FleetStartAdmission` plus the Unix `ProcessDriver` wrapper |
 
-Non-authoritative implementation evidence roots:
+`hepta-supervisord` is the only named product process. It owns registry lifecycle, durable Fleet maintenance and the final process-effect boundary. Agent and Matrix spawn/adopt paths verify current Fleet admission immediately before the operating-system process effect, including automatic recovery paths.
 
-- `codex-rs/hepta-fleet`
+## 3. Canonical resource contract
 
-Declared roots not yet present:
+`ResourceVectorV1` is the registered in-process canonical model for six axes:
 
-None.
+| Axis | Unit | Rounding |
+|---|---|---|
+| `cpu_millis` | milli-CPU | exact integer |
+| `memory_bytes` | bytes | exact integer |
+| `accelerator_millis` | milli-accelerator | exact integer |
+| `concurrent_turns` | count | exact integer |
+| `tool_processes` | count | exact integer |
+| `turn_queue_slots` | count | exact integer |
 
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
+Every vector binds schema version, supported-axis mask, axis IDs, units and amounts into its semantic digest. Addition, subtraction, MiB conversion and policy mapping use checked arithmetic. A requirement fits only when every required axis is supported and within capacity.
 
-### Native source and scope
+Legacy `ResourceBudget`, `LocalResourceVectorV1` and allocation shares are compatibility inputs. They are converted immediately to canonical vectors. A reviewed `ResourceMappingPolicyV1` maps logical counts to physical CPU, memory and accelerator amounts and emits a receipt binding the policy digest, logical digest and physical digest.
 
-The registered primary source is [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); the concrete generic-authority consumer is [authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs), and fleet revocation admission/convergence is [revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs). Observed identifiers include `FleetRegistry`, `FleetAuthorityPort`, `FleetRevocationCoordinator`, `FleetSnapshot`, `AgentRecord`, `initialize`, `open_existing`, `register`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) for the implemented subset and remaining product work.
+## 4. Deterministic local allocation
 
-## 3. Boundary, responsibilities and non-goals
+`calculate_local_allocation_v1` remains an authority-free calculation over caller-supplied candidates and capacities. It:
 
-Direct dependencies:
+1. validates bounds, identifiers and duplicate identities;
+2. reserves caller-supplied minimums;
+3. distributes remaining capacity by deterministic discrete weighted max-min fairness;
+4. uses stable request identity for ties;
+5. returns a deny-all claim boundary.
 
-- `kernel.authority`
-- `runtime.supervisor`
+Its result is not a Fleet view, scheduling decision, grant, start authority or effect receipt. Publication as a real allocation requires canonical resource mapping, a fresh trusted capacity observation, a live authority lease and a durable owner commit.
 
-Authoritative write domains:
+## 5. Registry, workspace isolation and lifecycle publication
 
-- `fleet_allocation_grant`
+The existing Fleet registry persists manifests, lifecycle generations and release state. Registration and lifecycle publication share a Fleet-wide mutation lock. Registration performs workspace-overlap validation, durable workspace reservation and final rename while holding that lock; concurrent parent/child registrations therefore cannot both commit.
 
-Explicitly denied capabilities:
+Post-rename or post-hard-link synchronization failure is `IndeterminateCommit`, not a normal rejection. The caller must reopen and reconcile by Agent/generation identity. Startup cleans only physical `.staging-*` directories while holding the mutation lock. Symlinks, malformed histories, non-contiguous generations and workspace overlap fail closed.
 
-- `direct_agent_store_write`
+## 6. Lease state, active/history separation and compaction
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The lease ledger separates:
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+- `active_grants`: live, capacity-consuming leases;
+- `history`: revoked, expired or generation-replaced terminal records;
+- `expiry_index`: expiry-to-allocation lookup;
+- `committed_by_host`: exact active resource totals.
 
-## 4. Internal architecture and component decomposition
+`MAX_ACTIVE_GRANTS = 16,384` is a simultaneous-live ceiling, not a lifetime ceiling. Revocation, expiry and host-generation replacement remove active state, release capacity exactly once and append a terminal record. Terminal history is retained up to its bounded window and then folded into a chained compaction digest. More than 16,384 sequential issue/terminal cycles are covered by regression tests.
 
-The bounded components are:
+An identity still present in active state or retained history cannot be reused with different semantics. Operation receipts add a second, bounded idempotency key. Business requirements for indefinite replay detection require an external audit archive; bounded in-process digests do not provide searchable indefinite identity retention.
 
-- `typed ingress`
-- `deterministic core`
-- `bounded state boundary`
-- `receipt and test adapter`
+## 7. Owner time and host observations
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+All time-sensitive mutations use an injected `FleetClock`; callers do not provide “current time.” Host freshness, expiry, renewal and final-use checks read the owner clock.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+On Linux the selected-host observer derives evidence from:
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+- `std::thread::available_parallelism()`;
+- `/proc/meminfo` `MemAvailable`;
+- `/proc/pressure/memory` `some avg10`.
 
-### Shared-experience and isolated-Agent integration target
+The normal product profile refreshes every 20 seconds with a 60-second TTL. Above the configured pressure ceiling, no synthetic zero capacity is published: the previous observation expires naturally and new issue/renew operations fail closed. A same-generation shrink below live commitments is rejected atomically. A host-generation change fences and retires predecessor grants.
 
-Distinguish durable Memory shard owner identity from ephemeral Agent generation or host. Handoff keeps current-cut/writer fences and source routing; retiring an Agent does not delete shared lineage. Network federation enrollment remains explicitly authenticated and separately qualified.
+## 8. Durable owner and atomic mutation boundary
 
-The target [HNMF contract](../../hnmf/TECHNICAL.md) and
-[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
-retain current source, wire and capability states.
+Authoritative Fleet state is under:
 
-## 5. Contracts, ports and compatibility
+```text
+FLEET_ROOT/state/fleet-allocation-v1/
+```
 
-Produced contracts:
+Each immutable generation contains:
 
-- `DomainRead::fleet_allocation_grantV1`
-- `ModulePort::runtime.fleet::control.runtime`
+- `fleet_hosts`;
+- `fleet_capacity_observations`;
+- active grants, terminal history, expiry index and compaction digest;
+- `fleet_resource_totals`;
+- signed revocation update and acknowledgements;
+- the workspace-reservation index digest;
+- bounded operation receipts;
+- issue-time authority witnesses;
+- predecessor and content digests.
 
-Consumed contracts:
+Every mutation holds `owner.lock`, reloads and validates the latest generation, applies one typed operation to an in-memory candidate, checks cross-dataset invariants, writes and `fsync`s a private temporary file, publishes the immutable generation, and `fsync`s the directory.
 
-- `DomainRead::agent_lifecycleV1`
-- `DomainRead::authority_leaseV1`
-- `DomainRead::capability_revocationV1`
-- `DomainRead::fleet_registryV1`
-- `DomainRead::release_selectionV1`
-- `DomainRead::runtime_instance_projectionV1`
-- `ModulePort::kernel.authority::runtime.fleet`
-- `ModulePort::runtime.supervisor::runtime.fleet`
+`issue_with_authority` performs, in one owner transaction:
 
-Critical protocol schemas:
+1. retained operation-ID deduplication/conflict detection;
+2. exact live generic-authority verification;
+3. host identity, generation and freshness verification;
+4. canonical resource validation and capacity locking;
+5. grant insertion and exact resource-total update;
+6. persistence of the non-authorizing authority witness and lease receipt;
+7. immutable generation publication.
 
-None.
+A queue result or authority check alone is not allocation success.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+## 9. Non-rollback latest frontier
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Immutable generations are supplemented by `latest-frontier-v1.json`, an independently checksummed and directory-synced non-rollback frontier. Opening the owner verifies that the latest retained state is the pinned generation or a verifiable descendant.
 
-## 6. Data authority, persistence and migrations
+Automatic repair is limited to the crash window where a complete descendant generation is visible but the frontier update was not yet durable. The following fail closed:
 
-Owned authoritative or rebuildable domains:
+- latest generation deletion;
+- a nonzero state with a missing frontier;
+- same-generation digest drift;
+- a frontier ahead of retained state;
+- a chain that cannot prove descent from the pinned frontier.
 
-- `fleet_allocation_grant`
+This prevents silent acceptance of an older valid snapshot after tail deletion. It does not replace host-level backup integrity, filesystem protection or independent audit retention.
 
-Read-only data dependencies:
+## 10. Failure and recovery semantics
 
-- `agent_lifecycle`
-- `authority_lease`
-- `capability_revocation`
-- `fleet_registry`
-- `release_selection`
-- `runtime_instance_projection`
+Failures before publication are ordinary rejections. If a generation link or frontier rename may already be visible but directory synchronization fails, the result is `IndeterminateCommit { operation_id, generation, detail }`.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+Recovery procedure:
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+1. stop blind retry;
+2. reopen the same Fleet state root;
+3. validate the non-rollback frontier and retained chain;
+4. query the exact operation ID;
+5. accept only a receipt with the intended operation digest;
+6. retry with the same operation ID and unchanged payload only when absent;
+7. quarantine any same-ID/different-digest conflict.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Time-dependent command adapters resolve a retained operation ID before observing a new clock or capacity sample, preventing retry drift.
 
-## 7. Runtime, concurrency and transaction model
+## 11. Revocation persistence and final-use admission
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md).
+Fleet state persists signed revocation updates and exact signed node acknowledgements; trust roots are never stored in Fleet state. At startup the product requires an immutable bounded `FleetStartTrustProfileV1` containing the local node, distributor keys and closed node key sets.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+Final-use verification requires:
 
-## 8. Failure semantics, recovery and rollback
+- a durable revocation snapshot;
+- a fresh authenticated current update;
+- the local node to be enrolled and exactly acknowledged;
+- `Ready` node state;
+- one current active grant for the Agent principal;
+- current allocation, lease and host-generation fences;
+- current semantic digest;
+- an unchanged revocation-snapshot digest across grant verification.
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+`CatchingUp`, `Quarantined` and `FeedStale` deny use. The Unix process driver invokes this verification immediately before Agent spawn, Agent adoption, Matrix spawn and Matrix adoption. Automatic restart, upgrade, rollback and recovery traverse the same driver boundary and cannot bypass admission.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+The trust profile is source configuration, not a secret grant. It must be a regular non-symlink JSON file and is immutable for one daemon generation.
 
-## 9. Security, privacy and threat controls
+## 12. Product startup and CLI contract
 
-Owned threat entries:
+The named product requires:
 
-None.
+```sh
+hepta-supervisord \
+  --fleet-root /absolute/fleet-root \
+  --fleet-start-trust-profile /absolute/fleet-start-trust-v1.json
+```
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+Optional production-grant and H7 verifier key/id/epoch triplets remain all-or-nothing. The Fleet start trust profile is mandatory because starting a process without current revocation and allocation verification would be an authority bypass.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Host identity may be derived from `/etc/machine-id` and boot generation from `/proc/sys/kernel/random/boot_id`, or supplied only as a complete immutable triple:
 
-## 10. Performance, capacity and hot-path policy
+```text
+HEPTA_FLEET_HOST_ID
+HEPTA_FLEET_FAILURE_DOMAIN_ID
+HEPTA_FLEET_HOST_GENERATION
+```
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs) and the linked implementation components.
+## 13. Observability and operator interface
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+`hepta-fleet-status` is read-only and requires existing state. It exposes:
 
-## 11. Observability and operations
+- active, expired-uncollected and revoked-uncompacted grant counts;
+- reserved and observed capacity by host/axis;
+- stale hosts;
+- issue/renew/revoke result counters;
+- revocation lag;
+- registry conflicts;
+- indeterminate commits;
+- staging debris;
+- compaction backlog.
 
-FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. `FleetAuthorityPort::issue` is the concrete `ModulePort::kernel.authority::runtime.fleet` source boundary for the current allocation issue mutation: it computes the exact binding from `AllocationGrant`, verifies/revalidates the live generic authority lease, then invokes `LeaseLedger::issue`. `FleetRevocationCoordinator` separately enforces current signed-head catch-up, quarantine and stale-feed admission semantics. The lease ledger remains an in-memory component; durable resource grants, deployed revocation wire fanout and real capacity observations remain implementation/deployment work. Do not launch a second fleet writer.
+Thresholds, operator actions, recovery commands and forbidden operations are normative in `OPERATIONS.md`. Process-local counters are diagnostic; durable receipts and state generations are authoritative.
 
-Current operating and state-format references:
+## 14. Verification and qualification
 
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
-- [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs).
-- [codex-rs/hepta-fleet/src/authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs).
-- [codex-rs/hepta-fleet/src/revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs).
+Repository-controlled qualification includes:
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+- `cargo fmt --all -- --check`;
+- all `codex-hepta-fleet` targets;
+- supervisor library tests;
+- `hepta-supervisord` binary compilation;
+- strict clippy for Fleet and supervisor;
+- exact-source and deterministic synthetic-merge receipts;
+- worktree cleanliness and command records.
 
-## 12. Verification and qualification
+Regression coverage includes grant churn beyond 16,384 lifetime operations, simultaneous active-limit rejection, exact expiry, capacity release, generation fencing, concurrent overlapping registration, post-publication crash boundaries, durable reopen, revocation restore, final-use fences and non-rollback frontier recovery/tamper cases.
 
-Current focused test sources (source references, not pass receipts):
+A protected self-hosted workflow targets `[self-hosted, linux, x64, hepta-fleet-target]`. It must be bound to the final candidate SHA and an approved host profile. GitHub-hosted source tests cannot establish physical host behavior.
 
-- [codex-rs/hepta-fleet/src/allocation_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_tests.rs); named case: `weighted_allocation_reserves_minimums_and_conserves_capacity`.
-- [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); named case: `conserves_capacity_and_reuses_identical_grant`.
-- [codex-rs/hepta-fleet/src/authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs); named case: `allocation_issue_consumes_exact_live_kernel_authority_lease`.
-- [codex-rs/hepta-fleet/src/revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs); named cases cover catch-up, quarantine, stale feeds and exact acknowledgements.
+## 15. Capacity and performance bounds
 
-In `codex-rs`, run `just test -p codex-hepta-fleet`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) separately labels target acceptance designs.
+Current source ceilings include:
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+- up to 256 enrolled hosts/revocation nodes where specified;
+- up to 4,096 local allocation candidates;
+- up to 16,384 simultaneous active grants;
+- up to 32,768 retained terminal grant records;
+- up to 16,384 retained operation receipts;
+- eight retained immutable state generations plus the non-rollback frontier.
 
-## 13. Implementation sequence and work packages
+These are enforced source bounds, not selected-host performance claims. Sustained latency, filesystem durability, pressure behavior and multi-node partition recovery require target qualification.
 
-Applicable work packages:
+## 16. Compatibility, migration and retirement
 
-- `FLEET-1-ALLOCATION-CONTRACT`
+The public `DurableFleetOwner` wraps the established snapshot implementation and adds the non-rollback frontier without introducing another writer. The frontier is created with generation zero. A missing frontier beside a nonzero generation is rejected; operators must not manually synthesize it.
 
-The bootstrap package is `FLEET-1-ALLOCATION-CONTRACT`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+Compatibility adapters are temporary and may not widen authority. Retirement requires all named callers migrated, no old-path use, equivalent failure semantics, a rehearsed rollback and independent acceptance. Historical evidence remains interpretable after retirement.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+## 17. Completion and claim boundary
 
-## 14. Activation, compatibility and retirement
+Repository-controlled source boundary closure requires:
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+- durable grants and resource totals;
+- active/history/expiry/compaction;
+- serialized registry mutations;
+- owner clock;
+- canonical resources and mapping receipts;
+- authority-bound atomic issue;
+- durable revocation evidence;
+- non-rollback frontier;
+- named supervisor maintenance;
+- final process-effect admission;
+- tests, workflows and current documentation.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Those source elements are present on the candidate branch. The following remain separate gates and are **not** claimed complete:
 
-## 15. Definition of module completion
+- final exact-head and synthetic-merge green receipts;
+- protected selected-host qualification;
+- authenticated multi-node partition/revocation qualification;
+- external long-term audit retention beyond bounded in-process windows;
+- independent operator acceptance;
+- deployment activation, promotion and release.
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `runtime.fleet`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `FLEET-1-ALLOCATION-CONTRACT`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `fleet-runtime` / `runtime-control`.
-- Allowed write paths:
-- `codex-rs/hepta-fleet/**`
-- Development predecessors:
-- `P0.7B-B0-VERIFIED-USE`
-- Activation predecessors:
-- `P0.7B-B0-VERIFIED-USE`
-- Required deliverables:
-- `exact_source_identity`
-- `static_verification`
-- `focused_tests`
-- `clean_worktree`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-## 16. V8.2 pre-coding implementation-readiness overlay
-
-The canonical readiness overlay binds `runtime.fleet` to primary lane `LANE-B-RUNTIME`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-ASM`](../../readiness/EXTERNAL_SYSTEM_ASSIMILATION.md)
-- [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-### Readiness implementation work packages
-
-The following additional work packages are source-planning envelopes introduced by the readiness overlay; they do not imply implementation or activation:
-
-- `ASM-4-FEDERATED-ORGAN-ENROLLMENT`
-
-## 17. Source implementation receipt
-
-This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
-
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
-| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| kernel-authorized `allocate` | `FleetAuthorityPort::issue` | `codex-rs/hepta-fleet/src/authority_port.rs` | inline exact-binding/revocation tests |
-| revocation fleet admission | `FleetRevocationCoordinator` | `codex-rs/hepta-fleet/src/revocation_control.rs` | inline catch-up/quarantine/stale-feed tests |
-
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+No document or source receipt grants deployment or release authority.

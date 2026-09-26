@@ -1,26 +1,26 @@
-# runtime.fleet durable owner and current product composition
+# runtime.fleet durable owner and product composition
 
-This document records the current source implementation of `runtime.fleet` on the `runtime-fleet/durable-owner-v1` candidate. It supplements `TECHNICAL.md` and is intentionally narrower than a deployment or release claim.
+This document is the implementation-level companion to [`TECHNICAL.md`](TECHNICAL.md). Its machine-readable status is [`CURRENT_STATE.json`](CURRENT_STATE.json). The existing `hepta-supervisord` process remains the sole Fleet owner; `hepta-fleet-leased` remains inert.
 
-The existing `hepta-supervisord` process remains the sole fleet owner. The standalone `hepta-fleet-leased` binary remains inert and must not be converted into a second writer.
+## 1. Current source state
 
-## 1. Current implementation state
-
-| Layer | Current state | Evidence boundary |
+| Layer | State | Boundary |
 |---|---|---|
-| Agent registry and lifecycle | durable source implementation | `FleetRegistry`, fleet-wide mutation lock, workspace reservation index and generation-fenced lifecycle files |
-| Canonical resources | source implemented | `ResourceVectorV1`, explicit axes/units/mask/max/exact rounding and semantic digest |
-| Logical-to-physical mapping | source implemented | reviewed `ResourceMappingPolicyV1` and a receipt binding policy, logical vector and physical vector digests |
-| Allocation ledger | durable source implementation | active/history split, expiry index, per-host totals, generation fencing and bounded compaction |
-| Authority issue boundary | source implemented | `FleetAuthorityPort::issue_with_witness` performs final live authority verification before the owner mutation |
-| Durable allocation owner | source implemented | checksummed immutable generations under the existing supervisor state root |
-| Capacity observer | Linux source implemented | `available_parallelism`, `/proc/meminfo` and `/proc/pressure/memory` |
-| Supervisor maintenance caller | source composed | `hepta-supervisord` opens the owner, refreshes observations and reconciles expiry |
-| Revocation persistence | source implemented | signed update and acknowledgement snapshot; trust roots are supplied independently at restore/final use |
-| Final-use verification API | source implemented | current grant, lease, host generation and unchanged revocation snapshot are required |
-| Concrete Agent/worker effect caller | not composed | no physical start/use boundary currently consumes an allocation ID and revocation-bound witness |
-| Selected-host qualification | not established | a manual self-hosted workflow exists, but no accepted exact-candidate receipt is claimed here |
-| Independent acceptance/release | false | externally governed |
+| Agent registry/lifecycle | implemented | durable manifests, lifecycle generations, release state |
+| Registry serialization | implemented | Fleet-wide lock, workspace-reservation index, indeterminate publication |
+| Canonical resources | implemented | versioned `ResourceVectorV1`, units, axes, exact checked arithmetic |
+| Resource mapping | implemented | reviewed policy plus logical/policy/physical digest receipt |
+| Allocation ledger | implemented | active/history split, expiry index, exact per-host totals, bounded compaction |
+| Durable allocation owner | implemented | immutable checksummed generations under supervisor state root |
+| Non-rollback frontier | implemented | independently checksummed latest generation, descendant-only recovery |
+| Authority issue | implemented | final live authority revalidation and witness persisted atomically |
+| Capacity observer | Linux source implemented | CPU, available memory and PSI pressure |
+| Revocation persistence | implemented | signed update and exact signed acknowledgements; trust roots external |
+| Supervisor maintenance | source composed | capacity refresh and expiry reconciliation |
+| Physical process admission | source composed | Agent/Matrix spawn and adopt verify grant plus revocation immediately before effect |
+| Operator status/runbook | implemented | read-only status, alert thresholds and recovery commands |
+| Selected-host/multi-node acceptance | not established | protected external evidence gates |
+| Independent release authority | false | externally governed |
 
 ## 2. Single-writer topology
 
@@ -32,223 +32,183 @@ hepta-supervisord
   │    ├─ release state
   │    └─ workspace-reservations-v1.json
   │
-  └─ DurableFleetOwner
-       ├─ trusted host/capacity observations
-       ├─ active grants and terminal history
-       ├─ per-host resource totals
-       ├─ authority witnesses and operation receipts
-       ├─ revocation snapshot
-       └─ immutable checksummed generations
+  ├─ DurableFleetOwner
+  │    ├─ immutable generation-N snapshots
+  │    ├─ latest-frontier-v1.json
+  │    ├─ trusted capacity observations
+  │    ├─ active grants / terminal history / expiry index
+  │    ├─ exact per-host resource totals
+  │    ├─ operation receipts and issue authority witnesses
+  │    └─ signed revocation snapshot
+  │
+  └─ Unix ProcessDriver effect boundary
+       ├─ Agent spawn/adopt admission
+       └─ Matrix spawn/adopt admission
 ```
 
-All state resides below the canonical fleet root. The durable allocation owner uses:
-
-```text
-FLEET_ROOT/state/fleet-allocation-v1/
-```
-
-It holds one exclusive owner lock while loading the latest committed generation, validating a candidate mutation and publishing the next generation. It does not write Agent-owned state.
+No component in this design writes Agent-owned state or launches another Fleet owner.
 
 ## 3. Durable datasets
 
-One `DurableFleetStateV1` generation contains the following logical datasets:
+One `DurableFleetStateV1` generation binds:
 
-| Required dataset | Current representation |
+| Dataset | Representation |
 |---|---|
-| `fleet_hosts` | canonical host identity, failure domain and generation |
-| `fleet_capacity_observations` | trusted bounded observation including freshness and pressure |
-| `fleet_grants` | `LeaseLedgerSnapshot`: hosts, active grants, bounded terminal history and compacted-history digest |
-| `fleet_resource_totals` | exact per-host canonical `ResourceVectorV1` totals rebuilt from active grants |
-| `fleet_revocation_frontier` | optional signed update plus exact signed node acknowledgements |
-| `fleet_revocation_acks` | acknowledgements inside the revocation snapshot, bounded by the enrolled-node ceiling |
-| `workspace_reservations` | canonical registry index stored separately; every fleet generation binds the file digest |
-| `fleet_operation_receipts` | bounded durable idempotency and audit receipts, including authority witness on issue |
+| `fleet_hosts` | host, failure domain and generation |
+| `fleet_capacity_observations` | capacity, pressure and freshness evidence |
+| `fleet_grants.active` | live capacity-consuming grants |
+| `fleet_grants.history` | retained terminal records |
+| `fleet_grants.expiry_index` | deadline-to-allocation index |
+| `fleet_grants.compaction` | count plus chained digest for compacted history |
+| `fleet_resource_totals` | exact canonical reserved totals per host |
+| `fleet_revocation_frontier` | signed update plus exact signed acknowledgements |
+| `workspace_reservations` | separately stored index bound by digest |
+| `fleet_operation_receipts` | bounded idempotency/audit window |
+| authority witness | persisted in the same generation as successful issue |
 
-The state also binds schema version, generation, predecessor state digest, compacted receipt-chain count/digest and its own content digest.
+Each state binds schema version, generation, predecessor digest and content digest. `latest-frontier-v1.json` independently binds the highest committed generation, its state digest and predecessor digest.
 
-## 4. Generation publication and recovery
+## 4. Publication protocol
 
-A mutation proceeds as follows:
+A normal mutation:
 
-1. Acquire the existing owner lock.
-2. Load the latest complete generation.
-3. Verify filename/generation identity, content digest and retained hash-chain continuity.
-4. Rebuild the ledger indexes and resource totals from the snapshot.
-5. Validate the typed command and any retained operation ID.
-6. Apply the mutation to an in-memory candidate.
-7. Validate all cross-dataset invariants.
-8. Serialize and `fsync` a private temporary file.
-9. Publish the immutable generation with a hard link.
-10. `fsync` the owner directory before returning success.
+1. acquires `owner.lock`;
+2. loads all retained generation files in order;
+3. verifies file type, filename/generation identity, content digest and chain continuity;
+4. verifies the non-rollback frontier;
+5. reconstructs indexes and totals;
+6. resolves the stable operation ID;
+7. applies one typed command;
+8. validates cross-dataset invariants;
+9. serializes and `fsync`s a private temporary generation;
+10. publishes by immutable hard link;
+11. `fsync`s the owner directory;
+12. advances the checksummed latest frontier with a temporary file, atomic rename and directory `fsync`;
+13. returns a receipt only after both state and frontier are durable.
 
-Failure before publication is a normal rejection. Failure after the final generation link exists is `IndeterminateCommit`; the caller must reopen and query the exact operation ID before retrying.
+Failure before publication is a normal rejection. A possible state or frontier publication followed by synchronization failure is `IndeterminateCommit`.
 
-Startup rejects partial, malformed, symlinked or digest-inconsistent state. It does not truncate unknown bytes or fabricate an empty successful history.
+## 5. Non-rollback recovery
 
-## 5. Grant lifecycle and the former 16,384 lifetime ceiling
+The owner accepts exactly three states:
 
-The ledger now separates:
+- the retained latest generation equals the pinned frontier;
+- a complete one-or-more-generation retained chain proves descent from the pinned frontier and advances it;
+- generation zero initializes the first frontier.
 
-- `active_grants`: only live, capacity-consuming grants;
-- `history`: revoked, expired or generation-replaced terminal records;
-- `expiry_index`: deadline to allocation-ID index;
-- `committed_by_host`: exact active resource totals.
+It rejects:
 
-`MAX_ACTIVE_GRANTS = 16,384` now limits simultaneous live grants, not lifetime allocation IDs. Revocation, expiry and host-generation replacement remove the grant from the active map, release capacity exactly once and append a bounded terminal record. Terminal history is compacted into a chained digest after its retention ceiling.
+- latest generation lower than the frontier;
+- same generation with a different digest;
+- missing frontier beside nonzero state;
+- an unverifiable retained gap;
+- malformed, symlinked or non-regular state/frontier files.
 
-An allocation ID retained in active or terminal state cannot be reused with different semantics. Idempotency for a committed external command is additionally bound by a stable operation ID and operation digest.
+This permits recovery after a crash between state publication and frontier durability without permitting silent tail deletion rollback.
 
-## 6. Owner clock and time-dependent retries
+## 6. Grant lifecycle
 
-`FleetClock` is injected by the owner. Public ledger mutations no longer accept caller-supplied “current time.” Host freshness, lease expiry, renewal and final-use checks use the owner clock.
+`MAX_ACTIVE_GRANTS = 16,384` limits simultaneous live grants. It no longer limits lifetime allocation IDs. A terminal transition removes the active grant, releases exact capacity once, records the terminal reason and updates the expiry index.
 
-Capacity observation and expiry reconciliation are time-dependent. Their product-facing command functions first reload the durable owner and look up the operation ID. Only an absent ID may observe the current clock or host again. This avoids changing the command digest merely because an indeterminate retry occurs later.
+Retained history is bounded. Older terminal records are folded into a chained digest. This preserves tamper-evident aggregate lineage but not searchable indefinite replay identity. Long-term searchable audit retention is an external operational obligation.
 
-## 7. Registry serialization and workspace reservations
+## 7. Atomic authority-bound issue
 
-Registration and lifecycle publication share one fleet-wide file lock owned by the existing registry state root.
+`issue_with_authority` runs under the owner lock and performs:
 
-Registration performs workspace-overlap validation and publication within that lock. The canonical workspace reservation index is atomically replaced, directory-synced, read back and revalidated before success. Concurrent parent/child workspace registration therefore has a single winner.
+1. stable operation-ID deduplication/conflict detection;
+2. exact allocation binding calculation;
+3. live generic authority verification at the final owner boundary;
+4. host generation and observation freshness verification;
+5. canonical resource compatibility and capacity check;
+6. active grant insertion;
+7. per-host total update;
+8. operation receipt and authority witness persistence;
+9. immutable generation and frontier publication.
 
-A registration rename or lifecycle hard link followed by synchronization failure returns a recovery key in `FleetRegistryError::IndeterminateCommit`. Physical `.staging-*` directories left by a crashed registration are removed only while holding the registry mutation lock.
+The issue result is successful only when the durable generation and frontier are established. The witness is audit evidence, not reusable authority.
 
-## 8. Canonical resource model
+## 8. Owner clock and idempotent time-dependent commands
 
-`ResourceVectorV1` has six explicit axes:
+`FleetClock` is injected. Public mutation APIs do not accept a caller-controlled current time. Capacity refresh and expiry reconciliation use adapters that first resolve an existing operation ID. Only an absent ID reads a new clock or host sample.
 
-| Axis ID | Unit | Rounding |
-|---|---|---|
-| `cpu_millis` | milli-CPU | exact integer |
-| `memory_bytes` | bytes | exact integer |
-| `accelerator_millis` | milli-accelerator | exact integer |
-| `concurrent_turns` | count | exact integer |
-| `tool_processes` | count | exact integer |
-| `turn_queue_slots` | count | exact integer |
+This ensures that an indeterminate retry with the same operation ID cannot silently acquire a different time-dependent semantic digest.
 
-Every vector carries schema version and a supported-axis mask. A requirement fits only when the capacity supports every required axis and every amount is within the corresponding bound. Addition, subtraction and MiB-to-byte conversion are checked; overflow and underflow fail closed.
+## 9. Workspace reservations and registry commit ambiguity
 
-The semantic digest binds schema, axis mask, axis IDs, units and values.
+Registration and lifecycle transitions share a Fleet-wide file lock. Workspace overlap is checked and the canonical reservation index is persisted within that serialized boundary. Parent/child or identical workspace registration races therefore have one winner.
 
-### 8.1 Legacy logical compatibility
+If rename or lifecycle hard-link publication may have happened before directory synchronization fails, the registry returns an indeterminate error with a recovery identity. Blind retries and manual file deletion are forbidden.
 
-`ResourceBudget` and `LocalAllocationShareV1` remain compatibility input shapes. They are converted immediately to canonical logical vectors.
+## 10. Canonical resource model
 
-A `ResourceMappingPolicyV1` explicitly maps each logical count to physical CPU, memory and accelerator coefficients. `map_logical_to_physical_v1` uses checked integer arithmetic and returns a receipt binding:
+`ResourceVectorV1` supports CPU milli-units, bytes, accelerator milli-units, concurrent turns, tool processes and queue slots. It binds schema, unit, supported-axis mask and amount into its digest.
 
-- policy ID and digest;
+`ResourceMappingPolicyV1` converts logical resources to physical resources with checked exact integer coefficients. The mapping receipt binds:
+
+- policy identity and digest;
 - logical vector digest;
 - physical vector and digest.
 
-The local weighted allocation calculator remains authority-free. Its output is not a grant until a reviewed mapping policy, current host observation, authority lease and durable owner transaction all succeed.
+The local weighted allocator remains an authority-free calculation and cannot directly publish a grant.
 
-## 9. Atomic authority-bound issue
+## 11. Capacity and pressure
 
-`DurableFleetOwner::issue_with_authority` executes under the owner lock:
+The Linux observer reads actual host surfaces rather than allocation request values. Capacity observations are bounded and expire. High pressure suppresses refresh so stale state expires naturally; it never fabricates a successful zero-capacity observation.
 
-1. Reload and validate the latest generation.
-2. Deduplicate or conflict-check the stable operation ID.
-3. Reconstruct active grants, expiry index and resource totals.
-4. Compute the exact authority binding from allocation semantics and canonical resource digest.
-5. Revalidate the live generic authority lease at the final owner boundary.
-6. Revalidate host identity, generation and observation freshness.
-7. Check canonical resource compatibility and capacity.
-8. Insert the grant and update resource totals in the candidate generation.
-9. Persist the non-authorizing authority witness and lease receipt with the same generation.
-10. Publish only after all invariants pass.
+Same-generation capacity shrink is admitted only when all live commitments still fit. Host-generation change fences predecessor grants and releases their capacity through a terminal transition.
 
-A queue, handler return or authority check alone is not a successful allocation receipt.
+## 12. Durable revocation and physical final use
 
-## 10. Capacity and pressure observation
+The snapshot stores signed updates and acknowledgements, not trust roots. `hepta-supervisord` requires a regular non-symlink `FleetStartTrustProfileV1` at startup. The profile pins:
 
-The Linux observer derives capacity from operating-system sources rather than allocation-request fields:
+- local node identity;
+- revocation distributor identity and epoch-bounded keys;
+- closed enrolled node identities and epoch-bounded keys.
 
-- CPU availability: `std::thread::available_parallelism()`;
-- memory: `/proc/meminfo` `MemAvailable`;
-- pressure: `/proc/pressure/memory`, `some avg10`.
+At Agent or Matrix spawn/adopt, the driver:
 
-The normal supervisor profile refreshes every 20 seconds with a 60-second TTL. Above the configured memory-pressure ceiling it declines to refresh; the prior observation expires naturally and subsequent issue/renew paths fail closed.
+1. opens and verifies the durable owner and latest frontier;
+2. finds exactly one active grant for the Agent principal;
+3. restores the signed revocation snapshot with the independently pinned trust profile;
+4. requires the local node to be current and `Ready`;
+5. verifies allocation ID, lease generation, host ID/generation and semantic digest;
+6. rechecks the snapshot digest across grant verification;
+7. performs the operating-system process effect only after successful admission.
 
-A same-generation refresh preserves active grants only when they fit the new observation. A capacity shrink below live commitments is rejected without mutating state. A host-generation change is an explicit fence and retires predecessor grants.
+Missing, ambiguous, stale, catching-up, quarantined or feed-stale evidence denies the effect. Automatic restart and adoption use the same driver and cannot bypass the check.
 
-The selected-host probe and workflow do not themselves establish deployment acceptance. They provide the mechanism for binding physical evidence to an exact commit and reviewed host profile.
+## 13. Product startup
 
-## 11. Revocation persistence and final use
+Minimum invocation:
 
-The durable snapshot stores signed revocation update/acknowledgement evidence but never stores trust roots. Restore and final use require independently pinned feed and node verifiers.
+```sh
+hepta-supervisord \
+  --fleet-root /absolute/fleet-root \
+  --fleet-start-trust-profile /absolute/fleet-start-trust-v1.json
+```
 
-`verify_final_use_with_revocation` requires:
+The profile is immutable for one daemon generation. Production grant and H7 verifier triplets remain optional but all-or-nothing. Host identity can be automatically boot-fenced on Linux or supplied only as a complete three-variable override.
 
-- a durable revocation snapshot;
-- authenticated, fresh and converged current update;
-- the exact node to be enrolled and `Ready`;
-- current allocation ID, lease generation, host ID and host generation;
-- current semantic digest;
-- an unchanged revocation snapshot digest before and after grant verification.
+## 14. Operational metrics
 
-`CatchingUp`, `Quarantined` and `FeedStale` all deny final use.
+The read-only status command exposes active/expired/revoked counts, capacity and reservations by host/axis, stale hosts, mutation outcomes, revocation lag, registry conflicts, indeterminate commits, staging debris and compaction backlog.
 
-This API is source complete, but the repository still needs a concrete Agent/worker effect boundary that supplies the real allocation identity and consumes the witness immediately before physical resource use.
+Durable generations and receipts are authoritative. Per-process counters reset on restart and are diagnostic only.
 
-## 12. Supervisor product caller
+## 15. Qualification
 
-`hepta-supervisord` is the named source-composed maintenance caller. It:
+The focused workflow runs exact-source and synthetic-merge jobs with formatting, all-target Fleet tests, supervisor tests, product binary compilation and strict clippy. A separate protected self-hosted workflow binds selected-host evidence to an explicit candidate SHA and host profile.
 
-- opens `FleetRegistry` and the durable owner under the same fleet root;
-- derives a Linux host identity from `/etc/machine-id` and a boot-fenced generation from `/proc/sys/kernel/random/boot_id`, or accepts a complete immutable three-variable override;
-- performs capacity refresh through the durable-ID-first command port;
-- reconciles expired grants when the durable metrics show work;
-- treats maintenance errors as product errors rather than silently discarding them;
-- preserves the existing signed production-grant startup path.
+Source tests are not proof of physical deployment. Selected-host, multi-node partition/revocation, long-term audit retention and independent acceptance remain external gates.
 
-This composition establishes the owner’s maintenance path. It does not yet prove that each spawned Agent or worker performs allocation admission/final-use verification.
+## 16. Claim boundary
 
-## 13. Operator interface and observability
+The candidate closes repository-controlled source implementation and named product source composition. It does not claim:
 
-`hepta-fleet-status` is strictly read-only: it first requires an existing physical owner directory and at least one regular immutable generation. It refuses to create missing state.
-
-It emits the requested operational surfaces:
-
-- `fleet_active_grants`;
-- `fleet_expired_uncollected_grants`;
-- `fleet_revoked_uncompacted_grants`;
-- `fleet_reserved_resource{host,axis}`;
-- `fleet_observed_capacity{host,axis}`;
-- `fleet_stale_hosts`;
-- `fleet_grant_issue_total{result}`;
-- `fleet_grant_renew_total{result}`;
-- `fleet_grant_revoke_total{result}`;
-- `fleet_revocation_lag_ms`;
-- `fleet_registry_conflict_total`;
-- `fleet_indeterminate_commit_total`;
-- `fleet_staging_debris`;
-- `fleet_compaction_backlog`.
-
-The complete alert thresholds, recovery commands and forbidden operations are in `OPERATIONS.md`.
-
-## 14. Repository-controlled qualification
-
-The focused workflow checks the exact source and deterministic synthetic merge with:
-
-- formatting;
-- all `codex-hepta-fleet` targets;
-- supervisor library tests;
-- `hepta-supervisord` binary compilation;
-- strict clippy for fleet and supervisor;
-- tracked-worktree cleanliness;
-- retained source, logs and command record.
-
-The test sources cover sequential grant churn beyond the former lifetime ceiling, capacity conservation, expiry, generation fencing, final-use checks, snapshot restore, concurrent overlapping registration, post-publication crash boundaries, procfs parsing, same-generation capacity refresh, logical-to-physical mapping and operation-ID-first retry.
-
-A separate manual workflow targets `[self-hosted, linux, x64, hepta-fleet-target]` and binds its evidence to an explicit candidate SHA and host profile. Until that workflow runs successfully on a selected host and its evidence is independently accepted, deployment qualification remains false.
-
-## 15. Remaining work and claim boundary
-
-Repository-controlled source work that remains before full product closure:
-
-1. Bind a concrete Agent/worker start or use boundary to a durable allocation ID and `RevocationBoundGrantUseWitnessV1` immediately before physical use.
-2. Provide the product authority-registry/trust-root composition for that boundary without embedding secrets or trust roots in fleet state.
-3. Qualify authenticated revocation fanout and partition behavior on a selected multi-node environment.
-4. Obtain an exact-candidate selected-host receipt and independent acceptance.
-5. Decide the long-term externally retained audit policy beyond the bounded in-process receipt/history windows.
-
-This document claims source implementation and partial product composition only. It grants no deployment, external-effect, independent acceptance, promotion or release authority.
+- a green receipt until the final candidate SHA finishes CI;
+- selected-host acceptance;
+- authenticated multi-node qualification;
+- deployment activation;
+- independent operator acceptance;
+- promotion or release.
