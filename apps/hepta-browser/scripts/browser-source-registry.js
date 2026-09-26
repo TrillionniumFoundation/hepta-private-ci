@@ -50,6 +50,7 @@ const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/src/worker-protocol.js",
   "apps/hepta-browser/scripts/browser-source-registry.js",
   "apps/hepta-browser/scripts/service-closure-manifest.js",
+  "apps/hepta-browser/test/agentd-service.test.js",
   "apps/hepta-browser/test/journal-durability.test.js",
   "apps/hepta-browser/test/journal-monotonicity.test.js",
   "apps/hepta-browser/servo-worker/Cargo.toml",
@@ -103,6 +104,8 @@ function gitBlob(path) {
 
 function derive() {
   const service = read("apps/hepta-browser/src/agentd-service.js");
+  const serviceMain = read("apps/hepta-browser/src/agentd-service-main.js");
+  const serviceTests = read("apps/hepta-browser/test/agentd-service.test.js");
   const runtime = read("apps/hepta-browser/src/runtime.js");
   const actions = read("apps/hepta-browser/src/action.js");
   const worker = read("apps/hepta-browser/servo-worker/src/main.rs");
@@ -184,6 +187,21 @@ function derive() {
     workerAdmissionBoundary:
       worker.includes("dispatch_boundary") &&
       driver.includes("dispatch_boundary"),
+    structuredEffectAdmission:
+      service.includes("BrowserEffectAdmissionV1") &&
+      service.includes("validateBrowserEffectAdmission") &&
+      serviceTests.includes("malformed admission prevents"),
+    containmentProofBeforeFenceRelease:
+      service.includes("captureLinuxProcessTree") &&
+      service.includes("waitForLinuxProcessTreeExit") &&
+      service.includes("error.workerContained = true") &&
+      serviceTests.includes("proven containment releases the fence"),
+    containmentStateMonotonic:
+      service.includes("effect admission profile is contained") &&
+      serviceTests.includes("makes containment monotonic"),
+    admissionDriverComposed:
+      serviceMain.includes("EffectAdmissionBrowserDriver") &&
+      serviceMain.includes("containmentTimeoutMs"),
     semanticObservation: worker.includes(
       "hepta.browser.semantic-observation.v1",
     ),
