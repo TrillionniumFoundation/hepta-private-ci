@@ -1,0 +1,91 @@
+name: learning.plasticity patch bootstrap
+
+on:
+  push:
+    branches:
+      - feat/learning-plasticity-product-closure-2026-09-27
+    paths:
+      - .github/workflows/learning-plasticity-patch-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-plasticity-patch-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Verify bootstrap parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "feat/learning-plasticity-product-closure-2026-09-27"
+          test "$(git rev-parse HEAD^)" = "ea0bcf2c6e2684de084da9c8c8f66d13b31a206f"
+
+      - name: Reconstruct and apply reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/patches/learning-plasticity-closure.patch.gz.b64.* \
+            | base64 --decode \
+            | gzip --decompress > /tmp/learning-plasticity-closure.patch
+          echo "ce4d47ee0be503281ebe17a3a412fb6140f6770f42b3db90ae14c0178f4632e1  /tmp/learning-plasticity-closure.patch" | sha256sum --check
+          git apply --check /tmp/learning-plasticity-closure.patch
+          git apply /tmp/learning-plasticity-closure.patch
+          rm .github/patches/learning-plasticity-closure.patch.gz.b64.*
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Format and verify lock stability
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          cargo generate-lockfile
+          git diff --exit-code -- Cargo.lock
+
+      - name: Verify Python control contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts python3 -m unittest -v \
+            scripts.test_hepta_control_hardening \
+            scripts.test_hepta_candidate_transport_workflow
+          python3 -m unittest -v tools/hepta-engineering-control/test_plasticity_bridge.py
+
+      - name: Compile and test focused Rust closure
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-plasticity -p codex-hepta-agentd
+          cargo test --locked -p codex-hepta-plasticity --tests
+          cargo test --locked -p codex-hepta-agentd --lib self_iteration
+          cargo test --locked -p codex-hepta-agentd --lib plasticity_runtime
+          cargo clippy --locked -p codex-hepta-plasticity -p codex-hepta-agentd --all-targets -- -D warnings
+
+      - name: Commit verified closure patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          test -n "$(git status --porcelain)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "feat(learning.plasticity): close coordinated product runtime gaps"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
