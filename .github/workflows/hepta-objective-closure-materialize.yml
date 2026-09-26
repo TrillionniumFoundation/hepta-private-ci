@@ -13,12 +13,12 @@ permissions:
 
 concurrency:
   group: hepta-objective-closure-materialize
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       TARGET_BRANCH: work/objective-compiler-convergence-20260925
       TRIGGER_SHA: ${{ github.sha }}
@@ -54,17 +54,24 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           fi
 
-      - name: Apply durable proof and explicit-preflight migration
+      - name: Apply durable proof, golden vector, and fault-evidence migration
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-objective-materialize-closure.py
+          python3 scripts/hepta-objective-evidence-materialize.py
           python3 scripts/hepta-objective-current-state.py sync
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             --package codex-hepta-objective \
             --package codex-hepta-learning-ledger \
             --package codex-hepta-intelligence \
             --package codex-hepta-agentd
+          HEPTA_OBJECTIVE_GOLDEN_OUTPUT="codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt" \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-intelligence \
+              update_objective_end_to_end_golden_vector_v1 -- \
+              --ignored --nocapture
+          test -s codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt
           git diff --check
 
       - name: Validate source migration before commit
@@ -73,11 +80,15 @@ jobs:
           set -euo pipefail
           python3 -m py_compile \
             scripts/hepta-objective-current-state.py \
-            scripts/hepta-objective-materialize-closure.py
+            scripts/hepta-objective-materialize-closure.py \
+            scripts/hepta-objective-evidence-materialize.py \
+            scripts/hepta-objective-release-gate.py
           python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-release-gate.py verify-source
           python3 -m unittest -v \
             scripts.test_hepta_objective_contracts \
-            scripts.test_hepta_objective_target_measure
+            scripts.test_hepta_objective_target_measure \
+            scripts.test_hepta_objective_release_gate
           (
             cd codex-rs
             cargo test --locked -p codex-hepta-objective -- --nocapture
@@ -88,7 +99,7 @@ jobs:
             cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
           )
 
-      - name: Commit source closure and remove one-shot materializer
+      - name: Commit source closure and remove one-shot materializers
         shell: bash
         run: |
           set -euo pipefail
@@ -96,10 +107,11 @@ jobs:
           git config user.email qualification@invalid
           git rm \
             .github/workflows/hepta-objective-closure-materialize.yml \
-            scripts/hepta-objective-materialize-closure.py
+            scripts/hepta-objective-materialize-closure.py \
+            scripts/hepta-objective-evidence-materialize.py
           git add -A
           git diff --cached --check
-          git commit -m "objective.compiler: persist proof-bound admission and explicit preflight"
+          git commit -m "objective.compiler: persist proof-bound admission and end-to-end evidence"
 
       - name: Rebind exact-head provenance and generated status
         shell: bash
@@ -127,6 +139,8 @@ jobs:
             --expected-sha "${QUALIFIED_SHA}" \
             --expected-tree "${QUALIFIED_TREE}"
           python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-release-gate.py verify-source
+          python3 -m unittest -v scripts.test_hepta_objective_release_gate
           python3 scripts/hepta-objective-target-measure.py --self-test
           python3 scripts/hepta-lane-d-semantic-conformance.py self-test
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
