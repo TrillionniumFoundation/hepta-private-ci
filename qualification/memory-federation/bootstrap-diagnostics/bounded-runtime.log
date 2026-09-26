@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/_memory_federation_closure_2.py", line 940, in <module>
-    runtime = insert_struct_field_literals(
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/_memory_federation_closure_2.py", line 64, in insert_struct_field_literals
-    raise RuntimeError(f"no {struct_name} literals updated")
-RuntimeError: no RemoteFederatedResponseV2 literals updated
