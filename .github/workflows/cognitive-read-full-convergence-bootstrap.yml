@@ -42,6 +42,7 @@ jobs:
             PYTHON=python
           fi
           "${PYTHON}" scripts/cognitive-read-agentd-hardening.py
+          "${PYTHON}" scripts/cognitive-read-agentd-finalize.py
           "${PYTHON}" tests/test_cognitive_read_agentd_hardening.py
           "${PYTHON}" scripts/verify-cognitive-read-constants.py
           "${PYTHON}" .github/scripts/verify_cargo_workspace_manifests.py
