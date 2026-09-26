@@ -10,6 +10,7 @@
 
 #![forbid(unsafe_code)]
 
+mod candidate_quarantine;
 mod coefficient_profile;
 mod conditional_moments;
 mod covariance;
@@ -31,6 +32,10 @@ mod scoring;
 mod validated_scalarization;
 mod z_conversion;
 
+pub use candidate_quarantine::CandidateQuarantineReasonV1;
+pub use candidate_quarantine::NduEvaluationReceiptV3;
+pub use candidate_quarantine::QuarantinedCandidateV1;
+pub use candidate_quarantine::evaluate_candidates_with_quarantine;
 pub use coefficient_profile::AdmittedNduCoefficientProfileV1;
 pub use coefficient_profile::NduCoefficientProfileError;
 pub use coefficient_profile::NduCoefficientProfileV1;
