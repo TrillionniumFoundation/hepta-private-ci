@@ -66,6 +66,34 @@
       ]
     },
     {
+      "operation": "NduOperationalMetricsV1",
+      "nativeSymbol": "codex_hepta_ndu::NduOperationalMetricsV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_bounded_operational_observations",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+          "symbol": "operational_metrics_cover_required_signals"
+        }
+      ]
+    },
+    {
+      "operation": "validate_restore_drill_receipt_v1",
+      "nativeSymbol": "codex_hepta_ndu::validate_restore_drill_receipt_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_retention_off_host_binding_and_restore_drill_validation",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+          "symbol": "backup_policy_and_restore_drill_are_bounded_and_fail_closed"
+        }
+      ]
+    },
+    {
       "operation": "admit_with_artifact_lifecycle_v2",
       "nativeSymbol": "codex_hepta_intelligence::NduStochasticAdmissionRequestV1::admit_with_artifact_lifecycle_v2",
       "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
