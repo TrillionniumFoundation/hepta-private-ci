@@ -25,7 +25,6 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
         with:
-          toolchain: 1.95.0
           components: rustfmt,clippy
 
       - name: Apply V3 source and Core migrations
@@ -36,6 +35,10 @@ jobs:
       - name: Format the Rust workspace
         working-directory: codex-rs
         run: cargo fmt --all
+
+      - name: Refresh the lockfile for the newly composed workspace
+        working-directory: codex-rs
+        run: cargo update --workspace
 
       - name: Run focused source tests
         working-directory: codex-rs
