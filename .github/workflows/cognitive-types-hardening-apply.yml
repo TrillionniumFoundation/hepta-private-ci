@@ -64,50 +64,99 @@ jobs:
           rm -f scripts/.apply-cognitive-types-hardening.py .cognitive-types-hardening-applied
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
           git diff --check
+          git status --short > /tmp/cognitive-types-status.txt
+          git diff --binary > /tmp/cognitive-types-semantic.patch
 
       - name: Verify registries and cross-language vectors
+        id: registry
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
-          python3 scripts/hepta-hnmf.py self-test
-          python3 scripts/hepta-hnmf.py verify
-          python3 qualification/cognitive-types-v1/verify_vectors.py
-          python3 qualification/cognitive-types-v1/verify_bound_vector.py
-          node qualification/cognitive-types-v1/verify_bound_vector.mjs
+          set -o pipefail
+          {
+            set -euxo pipefail
+            python3 scripts/hepta-hnmf.py self-test
+            python3 scripts/hepta-hnmf.py verify
+            python3 qualification/cognitive-types-v1/verify_vectors.py
+            python3 qualification/cognitive-types-v1/verify_bound_vector.py
+            node qualification/cognitive-types-v1/verify_bound_vector.mjs
+          } 2>&1 | tee /tmp/cognitive-types-registry.log
 
       - name: Check targeted production closure
+        id: closure
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
-          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets \
-            -p codex-hepta-cognitive-types \
-            -p codex-hepta-cognitive-store \
-            -p codex-hepta-cognitive-read \
-            -p codex-hepta-operations \
-            -p codex-state
+          set -o pipefail
+          {
+            set -euxo pipefail
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+            cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets \
+              -p codex-hepta-cognitive-types \
+              -p codex-hepta-cognitive-store \
+              -p codex-hepta-cognitive-read \
+              -p codex-hepta-operations \
+              -p codex-state
+          } 2>&1 | tee /tmp/cognitive-types-check.log
 
       - name: Run targeted tests
+        id: tests
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-cognitive-types \
-            -p codex-hepta-cognitive-store \
-            -p codex-hepta-cognitive-read \
-            -p codex-hepta-operations \
-            -p codex-state
+          set -o pipefail
+          {
+            set -euxo pipefail
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-cognitive-types \
+              -p codex-hepta-cognitive-store \
+              -p codex-hepta-cognitive-read \
+              -p codex-hepta-operations \
+              -p codex-state
+          } 2>&1 | tee /tmp/cognitive-types-test.log
 
       - name: Run strict targeted clippy
+        id: clippy
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets \
-            -p codex-hepta-cognitive-types \
-            -p codex-hepta-cognitive-store \
-            -p codex-hepta-cognitive-read \
-            -p codex-hepta-operations \
-            -p codex-state -- -D warnings
+          set -o pipefail
+          {
+            set -euxo pipefail
+            cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets \
+              -p codex-hepta-cognitive-types \
+              -p codex-hepta-cognitive-store \
+              -p codex-hepta-cognitive-read \
+              -p codex-hepta-operations \
+              -p codex-state -- -D warnings
+          } 2>&1 | tee /tmp/cognitive-types-clippy.log
+
+      - name: Upload exact validation diagnostics
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: cognitive-types-hardening-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            /tmp/cognitive-types-status.txt
+            /tmp/cognitive-types-semantic.patch
+            /tmp/cognitive-types-registry.log
+            /tmp/cognitive-types-check.log
+            /tmp/cognitive-types-test.log
+            /tmp/cognitive-types-clippy.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Enforce validation gate
+        if: >-
+          always() &&
+          (steps.registry.outcome != 'success' ||
+           steps.closure.outcome != 'success' ||
+           steps.tests.outcome != 'success' ||
+           steps.clippy.outcome != 'success')
+        shell: bash
+        run: |
+          echo 'cognitive.types validation failed; inspect the uploaded immutable diagnostics artifact' >&2
+          exit 1
 
       - name: Commit exact tested implementation
         id: implementation
@@ -226,4 +275,8 @@ jobs:
             echo "- implementation tree: ${{ steps.implementation.outputs.tree }}"
             echo "- synthetic base: ${{ steps.synthetic.outputs.main_sha }}"
             echo "- synthetic tree: ${{ steps.synthetic.outputs.tree }}"
+            echo "- registry outcome: ${{ steps.registry.outcome }}"
+            echo "- closure outcome: ${{ steps.closure.outcome }}"
+            echo "- tests outcome: ${{ steps.tests.outcome }}"
+            echo "- clippy outcome: ${{ steps.clippy.outcome }}"
           } >> "$GITHUB_STEP_SUMMARY"
