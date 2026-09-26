@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.control-runtime-acceptance-matrix.v1",
+  "module": "control.runtime",
+  "candidateBranch": "control-runtime-acceptance-v1",
+  "targetBranch": "control-runtime-production-closure-v1",
+  "claimBoundary": "source and qualification candidate; no production activation claim",
+  "activation": false,
+  "release": false,
+  "independentSemanticReview": {
+    "required": true,
+    "state": "requested_not_accepted",
+    "selfApprovalPermitted": false
+  },
+  "scenarios": {
+    "targetHostPerformance": {
+      "state": "executable_receipt_candidate",
+      "source": "codex-rs/hepta-control-plane/src/bin/control-runtime-named-host-qualification.rs",
+      "receiptSchema": "hepta.control-runtime.named-host.v1",
+      "minimumAppendOpsPerSecond": 25
+    },
+    "overloadBackpressure": {
+      "state": "source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/tests/control_runtime_acceptance.rs",
+      "test": "bounded_store_rejects_overload_without_advancing_the_log"
+    },
+    "processCrashRestart": {
+      "state": "p0_source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "test": "process_crash_releases_single_writer_lock_for_restart"
+    },
+    "diskFull": {
+      "state": "p0_source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "test": "disk_full_is_fail_closed_without_advancing_the_log"
+    },
+    "partialWrite": {
+      "state": "source_test_candidate",
+      "sources": [
+        "codex-rs/hepta-control-plane/src/planner_store.rs",
+        "codex-rs/hepta-control-plane/src/bin/control-runtime-named-host-qualification.rs"
+      ]
+    },
+    "clockAnomaly": {
+      "state": "p0_source_test_candidate",
+      "source": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "boundary": "process-local monotonic lease rejects regression and expiry"
+    },
+    "fanOutPartialFailure": {
+      "state": "source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/tests/control_runtime_acceptance.rs",
+      "test": "fanout_partial_failure_is_isolated_and_success_reaches_terminal_receipt"
+    },
+    "backupRollback": {
+      "state": "source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/tests/control_runtime_acceptance.rs",
+      "test": "backup_rollback_rehearsal_restores_last_anchored_generation"
+    },
+    "revocationAfterDecision": {
+      "state": "source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/tests/control_runtime_acceptance.rs",
+      "expected": "RevocationDrift before dispatch"
+    },
+    "finalPayloadDrift": {
+      "state": "existing_source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+      "expected": "FinalPayloadDrift before authorization"
+    },
+    "canary": {
+      "state": "deny_all_rehearsal_candidate",
+      "source": "codex-rs/hepta-control-plane/tests/control_runtime_acceptance.rs",
+      "test": "canary_rehearsal_cannot_dispatch_without_independent_authorization",
+      "productionCanaryCompleted": false
+    },
+    "rollbackRehearsal": {
+      "state": "source_test_candidate",
+      "source": "codex-rs/hepta-control-plane/tests/control_runtime_acceptance.rs",
+      "productionRollbackCompleted": false
+    }
+  },
+  "qualification": {
+    "workflow": ".github/workflows/control-runtime-acceptance.yml",
+    "lanes": [
+      "source-head",
+      "synthetic-merge"
+    ],
+    "requiredBeforeAcceptance": [
+      "formatting",
+      "locked all-target compilation",
+      "package tests",
+      "control NDU caller regressions",
+      "strict Clippy",
+      "named-host JSON receipt",
+      "independent semantic review"
+    ],
+    "currentExactHeadEvidence": "not_yet_established"
+  }
+}
