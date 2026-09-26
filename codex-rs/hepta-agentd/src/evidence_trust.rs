@@ -8,6 +8,7 @@ use std::io::Read;
 use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
 use codex_hepta_evidence::EvidenceIssuerTrustBindingV1;
 use codex_hepta_types::Generation;
@@ -43,19 +44,32 @@ pub(crate) struct EvidenceTrust {
 
 impl EvidenceTrust {
     pub(crate) fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
+        Self::load_with_digest(path, identity).map(|(trust, _)| trust)
+    }
+
+    pub(crate) fn load_with_digest(
+        path: &Path,
+        identity: &AgentdIdentity,
+    ) -> Result<(Self, Sha256Digest), AgentdError> {
         let bytes = read_owner_file(path, identity)?;
+        let digest = Sha256Digest::for_bytes(&bytes);
         let trust: Self = serde_json::from_slice(&bytes)?;
-        if trust.schema_version != 1
-            || trust.agent_id != identity.agent_id.as_str()
-            || trust.issuers.is_empty()
-            || trust.issuers.len() > MAX_EVIDENCE_ISSUERS
+        trust.validate(identity)?;
+        Ok((trust, digest))
+    }
+
+    fn validate(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
+        if self.schema_version != 1
+            || self.agent_id != identity.agent_id.as_str()
+            || self.issuers.is_empty()
+            || self.issuers.len() > MAX_EVIDENCE_ISSUERS
         {
             return Err(invalid(
                 "evidence trust registry owner, schema or issuer bound is invalid",
             ));
         }
         let mut identities = BTreeSet::new();
-        for issuer in &trust.issuers {
+        for issuer in &self.issuers {
             if !identities.insert((issuer.issuer_id.clone(), issuer.key_epoch))
                 || issuer.roles.is_empty()
                 || issuer.roles.len() > MAX_EVIDENCE_ROLES_PER_ISSUER
@@ -75,7 +89,7 @@ impl EvidenceTrust {
                 }
             }
         }
-        Ok(trust)
+        Ok(())
     }
 
     pub(crate) fn verification_bindings(
@@ -130,7 +144,10 @@ impl EvidenceTrust {
 }
 
 #[cfg(unix)]
-fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, AgentdError> {
+pub(crate) fn read_owner_file(
+    path: &Path,
+    identity: &AgentdIdentity,
+) -> Result<Vec<u8>, AgentdError> {
     use std::os::unix::fs::MetadataExt;
 
     if !path.is_absolute()
@@ -138,7 +155,7 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         || identity.home_root.canonicalize()? != identity.home_root
     {
         return Err(invalid(
-            "evidence trust file must be a direct child of the canonical Agent home",
+            "evidence owner file must be a direct child of the canonical Agent home",
         ));
     }
     let home = std::fs::metadata(&identity.home_root)?;
@@ -149,10 +166,11 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         || before.nlink() != 1
         || before.uid() != home.uid()
         || before.mode() & 0o077 != 0
+        || before.len() == 0
         || before.len() > MAX_EVIDENCE_TRUST_FILE_BYTES
     {
         return Err(invalid(
-            "evidence trust file must be a private owner-controlled regular file",
+            "evidence owner file must be a non-empty private owner-controlled regular file",
         ));
     }
     let mut file = File::open(path)?;
@@ -169,7 +187,7 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         )
     };
     if identity_tuple(&opened) != identity_tuple(&before) {
-        return Err(invalid("evidence trust file changed while opening"));
+        return Err(invalid("evidence owner file changed while opening"));
     }
     let mut bytes = Vec::new();
     file.by_ref()
@@ -181,15 +199,18 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         || identity_tuple(&after) != identity_tuple(&before)
         || identity_tuple(&file.metadata()?) != identity_tuple(&before)
     {
-        return Err(invalid("evidence trust file changed while reading"));
+        return Err(invalid("evidence owner file changed while reading"));
     }
     Ok(bytes)
 }
 
 #[cfg(not(unix))]
-fn read_owner_file(_path: &Path, _identity: &AgentdIdentity) -> Result<Vec<u8>, AgentdError> {
+pub(crate) fn read_owner_file(
+    _path: &Path,
+    _identity: &AgentdIdentity,
+) -> Result<Vec<u8>, AgentdError> {
     Err(invalid(
-        "the kernel evidence trust-file profile currently requires Unix ownership checks",
+        "the kernel evidence owner-file profile currently requires Unix ownership checks",
     ))
 }
 

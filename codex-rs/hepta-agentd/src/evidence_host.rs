@@ -54,14 +54,28 @@ impl EvidenceHost {
         let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(evidence_error)?;
-        if let Some((frontier_file, signer_trust_file)) = recovery_frontier {
-            crate::evidence_frontier::verify_evidence_recovery_frontier(
+        if let Some((frontier_or_config, signer_trust_file)) = recovery_frontier {
+            if crate::evidence_production::is_production_evidence_profile(
                 identity,
-                &store,
-                &frontier_file,
-                &signer_trust_file,
-            )
-            .await?;
+                &frontier_or_config,
+            ) {
+                crate::evidence_production::verify_production_evidence_frontier(
+                    identity,
+                    &store,
+                    &trust_file,
+                    &frontier_or_config,
+                    &signer_trust_file,
+                )
+                .await?;
+            } else {
+                crate::evidence_frontier::verify_evidence_recovery_frontier(
+                    identity,
+                    &store,
+                    &frontier_or_config,
+                    &signer_trust_file,
+                )
+                .await?;
+            }
         }
         Ok(Self { store, trust_file })
     }

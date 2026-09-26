@@ -1,4 +1,6 @@
+use std::ffi::OsString;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
@@ -6,8 +8,12 @@ use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use std::ffi::OsString;
-use std::sync::Arc;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum EvidenceModeArg {
+    Development,
+    Production,
+}
 
 fn main() -> anyhow::Result<()> {
     let mut config = AgentdConfig::from_process_environment()?;
@@ -25,13 +31,24 @@ fn main() -> anyhow::Result<()> {
         let mut objective_profile = None;
         let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
+        let mut evidence_mode = None;
+        let mut evidence_production_config = None;
+        let mut evidence_frontier_signer_trust = None;
         let mut automation_effect_host = None;
         let mut evidence_recovery_frontier = None;
         let mut evidence_recovery_frontier_trust = None;
         while let Some(flag) = args.next() {
+            if let Some(value) = flag
+                .to_str()
+                .and_then(|value| value.strip_prefix("--evidence-mode="))
+            {
+                anyhow::ensure!(evidence_mode.is_none(), "duplicate --evidence-mode");
+                evidence_mode = Some(parse_evidence_mode(value)?);
+                continue;
+            }
             let path = args
                 .next()
-                .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
+                .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a value"))?;
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
@@ -95,6 +112,24 @@ fn main() -> anyhow::Result<()> {
             } else if flag == "--evidence-trust-file" {
                 anyhow::ensure!(evidence_trust.is_none(), "duplicate --evidence-trust-file");
                 evidence_trust = Some(path);
+            } else if flag == "--evidence-mode" {
+                anyhow::ensure!(evidence_mode.is_none(), "duplicate --evidence-mode");
+                let value = path
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("--evidence-mode must be UTF-8"))?;
+                evidence_mode = Some(parse_evidence_mode(&value)?);
+            } else if flag == "--evidence-production-config-file" {
+                anyhow::ensure!(
+                    evidence_production_config.is_none(),
+                    "duplicate --evidence-production-config-file"
+                );
+                evidence_production_config = Some(path);
+            } else if flag == "--evidence-frontier-signer-trust-file" {
+                anyhow::ensure!(
+                    evidence_frontier_signer_trust.is_none(),
+                    "duplicate --evidence-frontier-signer-trust-file"
+                );
+                evidence_frontier_signer_trust = Some(path);
             } else if flag == "--evidence-recovery-frontier-file" {
                 anyhow::ensure!(
                     evidence_recovery_frontier.is_none(),
@@ -148,18 +183,54 @@ fn main() -> anyhow::Result<()> {
         if let Some(path) = objective_profile {
             config = config.with_objective_profile_file(path.into());
         }
+
+        let evidence_trust_configured = evidence_trust.is_some();
         if let Some(path) = evidence_trust {
             config = config.with_evidence_trust_file(path.into());
         }
-        match (evidence_recovery_frontier, evidence_recovery_frontier_trust) {
-            (Some(frontier), Some(trust)) => {
-                config =
-                    config.with_evidence_recovery_frontier_files(frontier.into(), trust.into());
+        match evidence_mode.unwrap_or(EvidenceModeArg::Development) {
+            EvidenceModeArg::Development => {
+                anyhow::ensure!(
+                    evidence_production_config.is_none()
+                        && evidence_frontier_signer_trust.is_none(),
+                    "production evidence files require --evidence-mode=production"
+                );
+                match (evidence_recovery_frontier, evidence_recovery_frontier_trust) {
+                    (Some(frontier), Some(trust)) => {
+                        config = config
+                            .with_evidence_recovery_frontier_files(frontier.into(), trust.into());
+                    }
+                    (None, None) => {}
+                    _ => anyhow::bail!(
+                        "--evidence-recovery-frontier-file and --evidence-recovery-frontier-trust-file must be supplied together"
+                    ),
+                }
             }
-            (None, None) => {}
-            _ => anyhow::bail!(
-                "--evidence-recovery-frontier-file and --evidence-recovery-frontier-trust-file must be supplied together"
-            ),
+            EvidenceModeArg::Production => {
+                anyhow::ensure!(
+                    evidence_trust_configured,
+                    "production evidence mode requires --evidence-trust-file"
+                );
+                anyhow::ensure!(
+                    evidence_recovery_frontier.is_none()
+                        && evidence_recovery_frontier_trust.is_none(),
+                    "legacy recovery-frontier flags are forbidden in production evidence mode"
+                );
+                match (
+                    evidence_production_config,
+                    evidence_frontier_signer_trust,
+                ) {
+                    (Some(descriptor), Some(signer_trust)) => {
+                        config = config.with_evidence_recovery_frontier_files(
+                            descriptor.into(),
+                            signer_trust.into(),
+                        );
+                    }
+                    _ => anyhow::bail!(
+                        "production evidence mode requires --evidence-production-config-file and --evidence-frontier-signer-trust-file"
+                    ),
+                }
+            }
         }
 
         match (
@@ -183,6 +254,14 @@ fn main() -> anyhow::Result<()> {
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
     })
+}
+
+fn parse_evidence_mode(value: &str) -> anyhow::Result<EvidenceModeArg> {
+    match value {
+        "development" => Ok(EvidenceModeArg::Development),
+        "production" => Ok(EvidenceModeArg::Production),
+        _ => anyhow::bail!("--evidence-mode must be development or production"),
+    }
 }
 
 fn parse_verifying_key_hex(value: OsString) -> anyhow::Result<[u8; 32]> {
