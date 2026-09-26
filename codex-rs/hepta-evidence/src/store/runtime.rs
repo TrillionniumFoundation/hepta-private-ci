@@ -104,4 +104,60 @@ mod tests {
         );
         runtime.close().await;
     }
+
+    #[tokio::test]
+    async fn disk_full_fault_is_atomic_and_database_remains_integrity_checkable() {
+        let temp = TempDir::new().expect("temp dir");
+        let sqlite = sqlite_config(&temp);
+        let store = HeptaEvidenceStore::open(&sqlite)
+            .await
+            .expect("bootstrap evidence store");
+        sqlx::query(
+            "CREATE TABLE kernel_evidence_disk_full_probe (
+                id INTEGER PRIMARY KEY,
+                payload BLOB NOT NULL
+             )",
+        )
+        .execute(&store.pool)
+        .await
+        .expect("create isolated fault-injection table");
+
+        let page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
+            .fetch_one(&store.pool)
+            .await
+            .expect("read current page count");
+        let requested_limit = page_count.checked_add(1).expect("page-count headroom");
+        let configured_limit: i64 = sqlx::query_scalar(&format!(
+            "PRAGMA max_page_count = {requested_limit}"
+        ))
+        .fetch_one(&store.pool)
+        .await
+        .expect("install disk-full injection ceiling");
+        assert_eq!(configured_limit, requested_limit);
+
+        let mut transaction = store.pool.begin().await.expect("begin injected write");
+        let result = sqlx::query(
+            "INSERT INTO kernel_evidence_disk_full_probe (payload) VALUES (zeroblob(?))",
+        )
+        .bind(8_i64 * 1024 * 1024)
+        .execute(&mut *transaction)
+        .await;
+        assert!(result.is_err(), "disk-full injection unexpectedly committed");
+        transaction
+            .rollback()
+            .await
+            .expect("rollback failed disk-full transaction");
+
+        let rows: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM kernel_evidence_disk_full_probe",
+        )
+        .fetch_one(&store.pool)
+        .await
+        .expect("count probe rows after rollback");
+        assert_eq!(rows, 0, "disk-full failure left a partial authoritative row");
+        verify_quick_check(&store.pool)
+            .await
+            .expect("database remains integrity-checkable after disk-full rollback");
+        store.close().await;
+    }
 }
