@@ -107,7 +107,7 @@ export class EffectScopedNetworkDriver {
       await this.#driver.start(input, options),
       "effect network start observation",
     );
-    let session = null;
+    let gate = null;
     try {
       const profileDir = await this.#findProfileDirectory(profileId, generation);
       const publicSocketPath = join(profileDir, ".hepta-egress.sock");
@@ -123,7 +123,7 @@ export class EffectScopedNetworkDriver {
       }
       await removeSocket(policySocketPath);
       await rename(publicSocketPath, policySocketPath);
-      const gate = new EffectScopedEgressBroker({
+      gate = new EffectScopedEgressBroker({
         socketPath: publicSocketPath,
         upstreamSocketPath: policySocketPath,
         grantDigest: input.grantDigest,
@@ -132,7 +132,7 @@ export class EffectScopedNetworkDriver {
         maxResponseBytes: this.#maxResponseBytes,
       });
       await gate.start();
-      session = {
+      this.#sessions.set(profileId, {
         profileId,
         generation,
         processId: observed.processId,
@@ -141,11 +141,10 @@ export class EffectScopedNetworkDriver {
         policySocketPath,
         gate,
         closed: false,
-      };
-      this.#sessions.set(profileId, session);
+      });
       return observed;
     } catch (error) {
-      await session?.gate.close().catch(() => {});
+      await gate?.close({ status: "composition_failed" }).catch(() => {});
       await this.#driver
         .contain({
           profileId,
@@ -207,7 +206,10 @@ export class EffectScopedNetworkDriver {
   }
 
   async contain(input) {
-    const session = this.#session(input, { allowMissing: true });
+    const session = this.#session(input, {
+      allowMissing: true,
+      allowClosed: true,
+    });
     if (session === null) return this.#driver.contain(input);
     await this.#closeGate(session, "contained");
     try {
@@ -218,7 +220,10 @@ export class EffectScopedNetworkDriver {
   }
 
   async stop(input, options = {}) {
-    const session = this.#session(input, { allowMissing: true });
+    const session = this.#session(input, {
+      allowMissing: true,
+      allowClosed: true,
+    });
     if (session === null) return this.#driver.stop(input, options);
     await this.#closeGate(session, "profile_stopped");
     try {
@@ -244,14 +249,13 @@ export class EffectScopedNetworkDriver {
   async #closeGate(session, status) {
     if (session.closed) return;
     session.closed = true;
-    const activeReceipt = session.gate.receipts.at(-1);
-    if (activeReceipt?.status !== status) {
-      // close() emits a profile_closed receipt for any still-active operation.
-      await session.gate.close();
-    }
+    await session.gate.close({ status });
   }
 
-  #session(input, { allowMissing = false } = {}) {
+  #session(
+    input,
+    { allowMissing = false, allowClosed = false } = {},
+  ) {
     requireRecord(input, "effect network request");
     const profileId = stableId(input.profileId, "profileId");
     const session = this.#sessions.get(profileId) ?? null;
@@ -269,7 +273,7 @@ export class EffectScopedNetworkDriver {
     if (input.processId !== undefined && input.processId !== session.processId) {
       throw new TypeError("effect network process identity mismatch");
     }
-    if (session.closed) {
+    if (session.closed && !allowClosed) {
       throw new TypeError("effect network profile is closed");
     }
     return session;
