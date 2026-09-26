@@ -4,6 +4,8 @@ import {
   buildAgentdBrowserFrame,
 } from "./agentd-protocol.js";
 
+const MAX_QUEUED_AGENTD_FRAMES = 64;
+
 const SERVICE_METHODS = new Set([
   "open_profile",
   "admit_effect_grant",
@@ -108,8 +110,17 @@ export class AgentdBrowserChannel {
         return;
       }
       const waiter = this.#waiters.shift();
-      if (waiter) waiter.resolve(frame);
-      else this.#queue.push(frame);
+      if (waiter) {
+        waiter.resolve(frame);
+      } else {
+        if (this.#queue.length >= MAX_QUEUED_AGENTD_FRAMES) {
+          this.#fail(
+            new Error("Agentd browser input queue capacity is exhausted"),
+          );
+          return;
+        }
+        this.#queue.push(frame);
+      }
     }
   }
 
@@ -128,6 +139,7 @@ export class AgentdBrowserChannel {
   #fail(error) {
     if (this.#failed) return;
     this.#failed = error instanceof Error ? error : new Error(String(error));
+    this.#queue.length = 0;
     for (const waiter of this.#waiters.splice(0)) waiter.reject(this.#failed);
   }
 }
@@ -163,8 +175,10 @@ export class ParentFinalUseAuthority {
     const requestId = this.#activeRequestId;
     const requestDigest = digest(request.requestDigest, "requestDigest");
     const authorityEpoch = positiveInteger(request.authorityEpoch, "authorityEpoch");
+    // Final-use authority consumes immutable identity, not the live action
+    // body. Avoid duplicating typed action data (notably type.text) into the
+    // authority control plane.
     await this.#channel.send("authority_challenge", requestId, {
-      request,
       requestDigest,
       authorityEpoch,
     });
@@ -185,7 +199,19 @@ export class ParentFinalUseAuthority {
     if (witness.requestDigest !== requestDigest || witness.authorityEpoch !== authorityEpoch) {
       throw new TypeError("Agentd final-use witness does not bind the Browser request");
     }
-    const result = await consumer(witness);
+    let result;
+    try {
+      result = await consumer(witness);
+    } catch (error) {
+      if (error?.code === "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
+        await this.#channel.send("dispatch_rejected", requestId, {
+          requestDigest,
+          witnessDigest: witness.witnessDigest,
+          localDispatchCrossed: false,
+        });
+      }
+      throw error;
+    }
     await this.#channel.send("dispatch_boundary", requestId, {
       requestDigest,
       witnessDigest: witness.witnessDigest,

@@ -11,6 +11,7 @@ const KINDS = new Set([
   "authority_challenge",
   "authority_enter",
   "dispatch_boundary",
+  "dispatch_rejected",
 ]);
 
 function requireRecord(value, name) {

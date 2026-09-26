@@ -1,9 +1,16 @@
 import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants } from "node:fs";
-import { mkdir, open, rm } from "node:fs/promises";
-import { isAbsolute, join } from "node:path";
+import {
+  lstat,
+  mkdir,
+  open,
+  realpath,
+  rm,
+} from "node:fs/promises";
+import { isAbsolute, join, resolve } from "node:path";
 
+import { GrantScopedEgressBroker } from "./egress-broker.js";
 import {
   WorkerFrameDecoder,
   buildWorkerFrame,
@@ -11,8 +18,17 @@ import {
 } from "./worker-protocol.js";
 
 const DIGEST = /^[0-9a-f]{64}$/;
+const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
+const MAX_BWRAP_ARTIFACT_BYTES = 64 * 1024 * 1024;
+const MAX_PRLIMIT_ARTIFACT_BYTES = 16 * 1024 * 1024;
 const MAX_ABANDONED_RESPONSES = 1024;
+const DEFAULT_MAX_ADDRESS_SPACE_BYTES = 8 * 1024 * 1024 * 1024;
+const DEFAULT_MAX_CPU_SECONDS = 300;
+const DEFAULT_MAX_OPEN_FILES = 4096;
+const DEFAULT_MAX_PROCESSES = 256;
+const DEFAULT_MAX_POOL_PROFILES = 16;
+const MAX_POOL_PROFILES = 64;
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -26,15 +42,47 @@ function sha256(bytes) {
 }
 
 function expectedDigest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value)) {
-    throw new TypeError(`${name} must be a lowercase SHA-256 digest`);
+  if (typeof value !== "string" || !DIGEST.test(value) || /^0+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
+  }
+  return value;
+}
+
+function stableId(value, name) {
+  if (typeof value !== "string" || !STABLE_ID.test(value)) {
+    throw new TypeError(`${name} must be a bounded stable identifier`);
+  }
+  return value;
+}
+
+function positiveInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new TypeError(`${name} must be a positive safe integer`);
   }
   return value;
 }
 
 function requestId(kind, semanticId) {
-  const digest = createHash("sha256").update(`${kind}\u0000${semanticId}`).digest("hex");
+  const digest = createHash("sha256")
+    .update(`${kind}\u0000${semanticId}`)
+    .digest("hex");
   return `browser.${kind}.${digest.slice(0, 32)}`;
+}
+
+async function ensurePrivateProfileRoot(path) {
+  await mkdir(path, { recursive: true, mode: 0o700 });
+  const metadata = await lstat(path);
+  if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
+    throw new TypeError(
+      "browser profile root must be a regular non-symlink directory",
+    );
+  }
+  if (process.platform !== "win32" && (metadata.mode & 0o077) !== 0) {
+    throw new TypeError("browser profile root permissions are too broad");
+  }
+  if ((await realpath(path)) !== resolve(path)) {
+    throw new TypeError("browser profile root path contains a symlink");
+  }
 }
 
 function abortError(message = "browser worker request aborted") {
@@ -43,21 +91,83 @@ function abortError(message = "browser worker request aborted") {
   return error;
 }
 
+async function verifyExactHostExecutable(path, expected, maximum, label) {
+  if ((await realpath(path)) !== path) {
+    throw new TypeError(`${label} path contains a symlink`);
+  }
+  const noFollow = constants.O_NOFOLLOW ?? 0;
+  const handle = await open(path, constants.O_RDONLY | noFollow);
+  try {
+    const info = await handle.stat();
+    if (!info.isFile() || info.size < 1 || info.size > maximum) {
+      throw new TypeError(`${label} must be a bounded regular file`);
+    }
+    const bytes = await handle.readFile();
+    if (sha256(bytes) !== expected) {
+      throw new TypeError(`${label} digest mismatch`);
+    }
+  } finally {
+    await handle.close();
+  }
+}
+
 export class LinuxBubblewrapLauncher {
-  constructor({ bwrapPath = "/usr/bin/bwrap" } = {}) {
+  constructor({
+    bwrapPath = "/usr/bin/bwrap",
+    bwrapDigest,
+    prlimitPath = "/usr/bin/prlimit",
+    prlimitDigest,
+    maxAddressSpaceBytes = DEFAULT_MAX_ADDRESS_SPACE_BYTES,
+    maxCpuSeconds = DEFAULT_MAX_CPU_SECONDS,
+    maxOpenFiles = DEFAULT_MAX_OPEN_FILES,
+    maxProcesses = DEFAULT_MAX_PROCESSES,
+  } = {}) {
     if (process.platform !== "linux") {
       throw new TypeError("LinuxBubblewrapLauncher requires Linux");
     }
     if (!isAbsolute(bwrapPath)) throw new TypeError("bwrapPath must be absolute");
-    this.bwrapPath = bwrapPath;
+    if (!isAbsolute(prlimitPath)) throw new TypeError("prlimitPath must be absolute");
+    for (const [value, name] of [
+      [maxAddressSpaceBytes, "maxAddressSpaceBytes"],
+      [maxCpuSeconds, "maxCpuSeconds"],
+      [maxOpenFiles, "maxOpenFiles"],
+      [maxProcesses, "maxProcesses"],
+    ]) positiveInteger(value, name);
+    this.bwrapPath = resolve(bwrapPath);
+    this.bwrapDigest = expectedDigest(bwrapDigest, "bwrapDigest");
+    this.prlimitPath = resolve(prlimitPath);
+    this.prlimitDigest = expectedDigest(prlimitDigest, "prlimitDigest");
+    this.resourceLimits = Object.freeze({
+      maxAddressSpaceBytes,
+      maxCpuSeconds,
+      maxOpenFiles,
+      maxProcesses,
+    });
     this.posture = Object.freeze({
+      sourceContractOnly: true,
       inheritedPrivateChannel: true,
       externalNetworkDenied: true,
       ambientEnvironmentDenied: true,
       userHomeHidden: true,
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
+      resourceLimitsConfigured: true,
     });
+  }
+
+  async verify() {
+    await verifyExactHostExecutable(
+      this.bwrapPath,
+      this.bwrapDigest,
+      MAX_BWRAP_ARTIFACT_BYTES,
+      "Bubblewrap launcher",
+    );
+    await verifyExactHostExecutable(
+      this.prlimitPath,
+      this.prlimitDigest,
+      MAX_PRLIMIT_ARTIFACT_BYTES,
+      "prlimit launcher",
+    );
   }
 
   argv({ workerPath, profileDir }) {
@@ -69,43 +179,109 @@ export class LinuxBubblewrapLauncher {
       "--new-session",
       "--die-with-parent",
       "--clearenv",
-      // Start from an empty root and expose only the immutable runtime closure
-      // needed by a dynamically linked worker. General host executables,
-      // /usr/local, service data and credential roots are deliberately absent.
-      "--tmpfs", "/",
-      "--dir", "/usr",
-      "--ro-bind-try", "/usr/lib", "/usr/lib",
-      "--ro-bind-try", "/usr/lib64", "/usr/lib64",
-      "--dir", "/usr/share",
-      "--ro-bind-try", "/usr/share/fonts", "/usr/share/fonts",
-      "--ro-bind-try", "/usr/share/fontconfig", "/usr/share/fontconfig",
-      "--symlink", "usr/lib", "/lib",
-      "--symlink", "usr/lib64", "/lib64",
-      "--dir", "/etc",
-      "--ro-bind-try", "/etc/ld.so.cache", "/etc/ld.so.cache",
-      "--ro-bind-try", "/etc/fonts", "/etc/fonts",
-      "--ro-bind-try", "/etc/ssl", "/etc/ssl",
-      "--dir", "/var",
-      "--dir", "/var/cache",
-      "--ro-bind-try", "/var/cache/fontconfig", "/var/cache/fontconfig",
-      "--tmpfs", "/home",
-      "--tmpfs", "/root",
-      "--tmpfs", "/run",
-      "--tmpfs", "/tmp",
-      "--proc", "/proc",
-      "--dev", "/dev",
-      "--bind", profileDir, "/hepta-profile",
-      "--ro-bind", workerPath, "/hepta-worker",
-      "--chdir", "/hepta-profile",
-      "--setenv", "HOME", "/hepta-profile",
-      "--setenv", "TMPDIR", "/tmp",
-      "--setenv", "HEPTA_BROWSER_WORKER_PROTOCOL", "1",
+      "--tmpfs",
+      "/",
+      "--dir",
+      "/usr",
+      "--ro-bind-try",
+      "/usr/lib",
+      "/usr/lib",
+      "--ro-bind-try",
+      "/usr/lib64",
+      "/usr/lib64",
+      "--dir",
+      "/usr/share",
+      "--ro-bind-try",
+      "/usr/share/fonts",
+      "/usr/share/fonts",
+      "--ro-bind-try",
+      "/usr/share/fontconfig",
+      "/usr/share/fontconfig",
+      "--symlink",
+      "usr/lib",
+      "/lib",
+      "--symlink",
+      "usr/lib64",
+      "/lib64",
+      "--dir",
+      "/etc",
+      "--ro-bind-try",
+      "/etc/ld.so.cache",
+      "/etc/ld.so.cache",
+      "--ro-bind-try",
+      "/etc/fonts",
+      "/etc/fonts",
+      "--ro-bind-try",
+      "/etc/ssl/certs",
+      "/etc/ssl/certs",
+      "--ro-bind-try",
+      "/etc/ssl/openssl.cnf",
+      "/etc/ssl/openssl.cnf",
+      "--ro-bind-try",
+      "/etc/ca-certificates.conf",
+      "/etc/ca-certificates.conf",
+      "--ro-bind-try",
+      "/usr/share/ca-certificates",
+      "/usr/share/ca-certificates",
+      "--dir",
+      "/var",
+      "--dir",
+      "/var/cache",
+      "--ro-bind-try",
+      "/var/cache/fontconfig",
+      "/var/cache/fontconfig",
+      "--tmpfs",
+      "/home",
+      "--tmpfs",
+      "/root",
+      "--tmpfs",
+      "/run",
+      "--tmpfs",
+      "/tmp",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--bind",
+      profileDir,
+      "/hepta-profile",
+      "--ro-bind",
+      workerPath,
+      "/hepta-worker",
+      "--chdir",
+      "/hepta-profile",
+      "--setenv",
+      "HOME",
+      "/hepta-profile",
+      "--setenv",
+      "TMPDIR",
+      "/tmp",
+      "--setenv",
+      "HEPTA_BROWSER_WORKER_PROTOCOL",
+      "1",
       "/hepta-worker",
     ];
   }
 
+  spawnSpec({ workerPath, profileDir }) {
+    const limits = this.resourceLimits;
+    return Object.freeze({
+      command: this.prlimitPath,
+      args: Object.freeze([
+        `--as=${limits.maxAddressSpaceBytes}:${limits.maxAddressSpaceBytes}`,
+        `--cpu=${limits.maxCpuSeconds}:${limits.maxCpuSeconds}`,
+        `--nofile=${limits.maxOpenFiles}:${limits.maxOpenFiles}`,
+        `--nproc=${limits.maxProcesses}:${limits.maxProcesses}`,
+        "--",
+        this.bwrapPath,
+        ...this.argv({ workerPath, profileDir }),
+      ]),
+    });
+  }
+
   spawn({ workerPath, profileDir }) {
-    return spawn(this.bwrapPath, this.argv({ workerPath, profileDir }), {
+    const spec = this.spawnSpec({ workerPath, profileDir });
+    return spawn(spec.command, [...spec.args], {
       stdio: ["pipe", "pipe", "pipe"],
       env: {},
       shell: false,
@@ -137,20 +313,29 @@ class PrivateWorkerClient {
         this.#failAll(error);
       }
     });
+    child.stderr?.resume?.();
     child.on("error", (error) => this.#failAll(error));
     child.on("exit", (code, signal) => {
       this.#closed = true;
-      this.#failAll(new Error(`browser worker exited before response: code=${code} signal=${signal}`));
+      this.#failAll(
+        new Error(
+          `browser worker exited before response: code=${code} signal=${signal}`,
+        ),
+      );
     });
   }
 
-  request(kind, semanticId, payload, { signal, onDispatched } = {}) {
-    if (this.#closed) return Promise.reject(new Error("browser worker channel is closed"));
+  request(kind, semanticId, payload, { signal, onDispatchBoundary } = {}) {
+    if (this.#closed) {
+      return Promise.reject(new Error("browser worker channel is closed"));
+    }
     if (signal?.aborted) return Promise.reject(abortError());
     const sequence = this.#nextOutgoingSequence++;
     const id = requestId(kind, semanticId);
     if (this.#pending.has(id) || this.#abandoned.has(id)) {
-      return Promise.reject(new TypeError("browser worker request identity is already live"));
+      return Promise.reject(
+        new TypeError("browser worker request identity is already live"),
+      );
     }
     const frame = buildWorkerFrame({
       sessionId: this.#sessionId,
@@ -163,13 +348,24 @@ class PrivateWorkerClient {
     const encoded = encodeWorkerFrame(frame);
     return new Promise((resolve, reject) => {
       let writeStarted = false;
-      const entry = { resolve, reject, cleanup: null };
+      const entry = {
+        resolve,
+        reject,
+        cleanup: null,
+        requestKind: kind,
+        requestPayloadDigest: frame.payloadDigest,
+        requestSequence: sequence,
+        onDispatchBoundary,
+        dispatchBoundaryObserved: false,
+      };
       const abort = () => {
         if (!this.#pending.delete(id)) return;
         entry.cleanup?.();
         if (writeStarted) {
           if (this.#abandoned.size >= MAX_ABANDONED_RESPONSES) {
-            this.#failAll(new Error("browser worker abandoned-response capacity exhausted"));
+            this.#failAll(
+              new Error("browser worker abandoned-response capacity exhausted"),
+            );
             this.#child.kill("SIGKILL");
           } else {
             this.#abandoned.add(id);
@@ -188,20 +384,9 @@ class PrivateWorkerClient {
       }
       writeStarted = true;
       this.#child.stdin.write(encoded, (error) => {
-        if (error) {
-          if (this.#pending.delete(id)) {
-            entry.cleanup?.();
-            reject(error);
-          }
-          return;
-        }
-        try {
-          onDispatched?.();
-        } catch (callbackError) {
-          if (this.#pending.delete(id)) {
-            entry.cleanup?.();
-            reject(callbackError);
-          }
+        if (error && this.#pending.delete(id)) {
+          entry.cleanup?.();
+          reject(error);
         }
       });
     });
@@ -224,34 +409,163 @@ class PrivateWorkerClient {
       return;
     }
     for (const frame of frames) {
-      if (frame.sessionId !== this.#sessionId || frame.generation !== this.#generation) {
-        this.#failAll(new TypeError("browser worker response crossed session or generation"));
+      if (
+        frame.sessionId !== this.#sessionId ||
+        frame.generation !== this.#generation
+      ) {
+        this.#failAll(
+          new TypeError("browser worker response crossed session or generation"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
       if (frame.sequence !== this.#lastIncomingSequence + 1) {
-        this.#failAll(new TypeError("browser worker response sequence is not monotonic"));
+        this.#failAll(
+          new TypeError("browser worker response sequence is not monotonic"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
       this.#lastIncomingSequence = frame.sequence;
-      if (frame.kind !== "response") {
-        this.#failAll(new TypeError("browser worker emitted an unexpected non-response frame"));
+      const pending = this.#pending.get(frame.requestId);
+      if (!pending) {
+        if (
+          frame.kind === "dispatch_boundary" &&
+          this.#abandoned.has(frame.requestId)
+        ) {
+          continue;
+        }
+        if (
+          frame.kind === "response" &&
+          this.#abandoned.delete(frame.requestId)
+        ) {
+          continue;
+        }
+        this.#failAll(
+          new TypeError("browser worker frame has no pending request"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
-      const pending = this.#pending.get(frame.requestId);
-      if (!pending) {
-        if (this.#abandoned.delete(frame.requestId)) continue;
-        this.#failAll(new TypeError("browser worker response has no pending request"));
+      const payload = requireRecord(frame.payload, "worker response payload");
+      if (
+        payload.requestKind !== pending.requestKind ||
+        payload.requestPayloadDigest !== pending.requestPayloadDigest ||
+        payload.requestSequence !== pending.requestSequence
+      ) {
+        this.#failAll(
+          new TypeError("browser worker response did not bind the exact request"),
+        );
+        this.#child.kill("SIGKILL");
+        return;
+      }
+      if (frame.kind === "dispatch_boundary") {
+        const keys = Object.keys(payload).sort();
+        const expected = [
+          "localDispatchCrossed",
+          "requestKind",
+          "requestPayloadDigest",
+          "requestSequence",
+        ].sort();
+        if (
+          pending.requestKind !== "dispatch" ||
+          pending.dispatchBoundaryObserved === true ||
+          payload.localDispatchCrossed !== true ||
+          keys.length !== expected.length ||
+          keys.some((key, index) => key !== expected[index])
+        ) {
+          this.#failAll(
+            new TypeError("browser worker dispatch boundary is invalid"),
+          );
+          this.#child.kill("SIGKILL");
+          return;
+        }
+        pending.dispatchBoundaryObserved = true;
+        try {
+          pending.onDispatchBoundary?.();
+        } catch (error) {
+          this.#failAll(error);
+          this.#child.kill("SIGKILL");
+          return;
+        }
+        continue;
+      }
+      if (frame.kind !== "response") {
+        this.#failAll(
+          new TypeError("browser worker emitted an unexpected frame kind"),
+        );
+        this.#child.kill("SIGKILL");
+        return;
+      }
+
+      const responseKeys = Object.keys(payload).sort();
+      const expectedResponseKeys =
+        payload.ok === true
+          ? [
+              "observation",
+              "ok",
+              "requestKind",
+              "requestPayloadDigest",
+              "requestSequence",
+            ].sort()
+          : payload.ok === false
+            ? [
+                "error",
+                "ok",
+                "requestKind",
+                "requestPayloadDigest",
+                "requestSequence",
+              ].sort()
+            : null;
+      if (
+        expectedResponseKeys === null ||
+        responseKeys.length !== expectedResponseKeys.length ||
+        responseKeys.some((key, index) => key !== expectedResponseKeys[index])
+      ) {
+        this.#failAll(
+          new TypeError(
+            "browser worker response payload contains missing or unknown fields",
+          ),
+        );
+        this.#child.kill("SIGKILL");
+        return;
+      }
+
+      if (
+        pending.requestKind === "dispatch" &&
+        pending.dispatchBoundaryObserved !== true
+      ) {
+        if (payload.ok === false && typeof payload.error === "string") {
+          this.#pending.delete(frame.requestId);
+          pending.cleanup?.();
+          const error = new Error(
+            `browser worker rejected dispatch before admission: ${payload.error}`,
+          );
+          error.name = "BrowserWorkerPreDispatchError";
+          error.code = "BROWSER_WORKER_PRE_DISPATCH_REJECTED";
+          error.outcomeDigest = sha256(
+            Buffer.from(
+              `worker-pre-dispatch\0${pending.requestPayloadDigest}\0${payload.error}`,
+              "utf8",
+            ),
+          );
+          pending.reject(error);
+          continue;
+        }
+        this.#failAll(
+          new TypeError(
+            "browser worker returned dispatch result before admission boundary",
+          ),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
       this.#pending.delete(frame.requestId);
       pending.cleanup?.();
-      const payload = requireRecord(frame.payload, "worker response payload");
       if (payload.ok === true) {
-        pending.resolve(requireRecord(payload.observation, "worker observation"));
+        pending.resolve(
+          requireRecord(payload.observation, "worker observation"),
+        );
       } else if (payload.ok === false && typeof payload.error === "string") {
         pending.reject(new Error(`browser worker rejected request: ${payload.error}`));
       } else {
@@ -270,6 +584,10 @@ class PrivateWorkerClient {
 }
 
 export class SubprocessBrowserDriver {
+  supportsAbort = true;
+  maxActiveProfiles = 1;
+  maxOutstandingOperations = 1;
+
   #workerPath;
   #workerDigest;
   #profileRoot;
@@ -277,16 +595,32 @@ export class SubprocessBrowserDriver {
   #child = null;
   #client = null;
   #profileDir = null;
+  #profileOwnerPath = null;
   #verifiedWorkerPath = null;
   #sessionId = null;
   #generation = null;
   #processId = null;
+  #persistedReconciler = null;
+  #egressBroker = null;
+  #allowPrivateNetworkForTests = false;
+  #expiryTimer = null;
+  #expiresAtMs = null;
 
-  constructor({ workerPath, workerDigest, profileRoot, launcher }) {
+  constructor({
+    workerPath,
+    workerDigest,
+    profileRoot,
+    launcher,
+    persistedReconciler = null,
+    allowPrivateNetworkForTests = false,
+  }) {
     if (!isAbsolute(workerPath)) throw new TypeError("workerPath must be absolute");
     if (!isAbsolute(profileRoot)) throw new TypeError("profileRoot must be absolute");
     requireRecord(launcher, "launcher");
     const posture = requireRecord(launcher.posture, "launcher.posture");
+    if (posture.sourceContractOnly !== true) {
+      throw new TypeError("launcher posture must be explicitly source-contract-only");
+    }
     for (const key of [
       "inheritedPrivateChannel",
       "externalNetworkDenied",
@@ -294,75 +628,167 @@ export class SubprocessBrowserDriver {
       "userHomeHidden",
       "hostFilesystemRestricted",
       "parentDeathCleanup",
+      "resourceLimitsConfigured",
     ]) {
-      if (posture[key] !== true) throw new TypeError(`launcher posture does not enforce ${key}`);
+      if (posture[key] !== true) {
+        throw new TypeError(`launcher source contract does not declare ${key}`);
+      }
     }
-    if (typeof launcher.spawn !== "function") throw new TypeError("launcher.spawn must be a function");
+    if (typeof launcher.verify !== "function") {
+      throw new TypeError("launcher.verify must be a function");
+    }
+    if (typeof launcher.spawn !== "function") {
+      throw new TypeError("launcher.spawn must be a function");
+    }
+    if (typeof allowPrivateNetworkForTests !== "boolean") {
+      throw new TypeError("allowPrivateNetworkForTests must be boolean");
+    }
+    if (
+      persistedReconciler !== null &&
+      typeof persistedReconciler !== "function"
+    ) {
+      throw new TypeError("persistedReconciler must be a function or null");
+    }
     this.#workerPath = workerPath;
     this.#workerDigest = expectedDigest(workerDigest, "workerDigest");
     this.#profileRoot = profileRoot;
     this.#launcher = launcher;
+    this.#persistedReconciler = persistedReconciler;
+    this.#allowPrivateNetworkForTests = allowPrivateNetworkForTests;
   }
 
   async start(input, { signal } = {}) {
     if (this.#child) throw new TypeError("browser worker is already started");
+    requireRecord(input, "browser worker start input");
+    const profileId = stableId(input.profileId, "profileId");
+    const principalId = stableId(input.principalId, "principalId");
+    const generation = positiveInteger(input.generation, "generation");
+    const manifestDigest = expectedDigest(input.manifestDigest, "manifestDigest");
+    const grantDigest = expectedDigest(input.grantDigest, "grantDigest");
+    const expiresAtMs = positiveInteger(input.expiresAtMs, "expiresAtMs");
+    if (expiresAtMs <= Date.now()) {
+      throw new TypeError("browser profile process/network lease has expired");
+    }
+    await this.#launcher.verify();
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
-    await mkdir(this.#profileRoot, { recursive: true, mode: 0o700 });
-    this.#profileDir = join(this.#profileRoot, `${input.profileId}.${input.generation}.${randomUUID()}`);
-    await mkdir(this.#profileDir, { mode: 0o700 });
-    this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
-    await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
-    this.#sessionId = input.profileId;
-    this.#generation = input.generation;
+    await ensurePrivateProfileRoot(this.#profileRoot);
     try {
+      this.#profileDir = join(
+        this.#profileRoot,
+        `${profileId}.${generation}.${randomUUID()}`,
+      );
+      await mkdir(this.#profileDir, { mode: 0o700 });
+      this.#egressBroker = new GrantScopedEgressBroker({
+        socketPath: join(this.#profileDir, ".hepta-egress.sock"),
+        grantDigest,
+        allowedOrigins: input.allowedOrigins,
+        allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
+      });
+      await this.#egressBroker.start();
+      // Ownership metadata must not be writable through the sandbox's profile
+      // bind. Keep it in the host-private profile root and expose only its
+      // digest to the worker/session boundary.
+      this.#profileOwnerPath = join(
+        this.#profileRoot,
+        `.hepta-profile-owner.${profileId}.${generation}.${randomUUID()}.json`,
+      );
+      const ownerIdentity = {
+      schema: "hepta.browser.profile-owner.v1",
+      profileId,
+      principalId,
+      generation,
+      manifestDigest,
+      grantDigest,
+      };
+      await this.#writeProfileOwnerManifest(ownerIdentity);
+      // Keep the verified executable outside the profile directory that is
+    // mounted read/write into the sandbox. Otherwise the worker could mutate
+    // the same inode through /hepta-profile even though /hepta-worker is a
+    // read-only bind.
+      this.#verifiedWorkerPath = join(
+        this.#profileRoot,
+        `.hepta-verified-worker.${profileId}.${generation}.${randomUUID()}`,
+      );
+      await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
+      this.#sessionId = profileId;
+      this.#generation = generation;
       this.#child = this.#launcher.spawn({
         workerPath: this.#verifiedWorkerPath,
         profileDir: this.#profileDir,
       });
-      if (!this.#child?.stdin || !this.#child?.stdout || typeof this.#child.on !== "function") {
-        throw new TypeError("launcher did not return a pipe-connected child process");
+      if (
+        !this.#child?.stdin ||
+        !this.#child?.stdout ||
+        typeof this.#child.on !== "function"
+      ) {
+        throw new TypeError(
+          "launcher did not return a pipe-connected child process",
+        );
       }
-      this.#processId = `servo.pid.${this.#child.pid}`;
+      this.#processId = `servo.pid.${this.#child.pid}.${randomUUID()}`;
       this.#client = new PrivateWorkerClient({
         child: this.#child,
         sessionId: this.#sessionId,
         generation: this.#generation,
       });
+      const workerInput = { ...input };
+      delete workerInput.expiresAtMs;
       const observed = await this.#client.request(
         "start",
-        `${input.profileId}.${input.generation}`,
-        input,
+        `${profileId}.${generation}`,
+        workerInput,
         { signal },
       );
-      if (observed.started !== true) throw new TypeError("worker did not acknowledge start");
-      return { started: true, processId: this.#processId };
+      if (observed.started !== true) {
+        throw new TypeError("worker did not acknowledge start");
+      }
+      this.#armExpiry(expiresAtMs);
+      return {
+        started: true,
+        processId: this.#processId,
+        profileOwnerDigest: sha256(Buffer.from(JSON.stringify(ownerIdentity), "utf8")),
+      };
     } catch (error) {
       this.#child?.kill?.("SIGKILL");
       await this.#cleanupProfile();
       this.#child = null;
       this.#client = null;
+      this.#sessionId = null;
+      this.#generation = null;
+      this.#processId = null;
+      this.#clearExpiryTimer();
       throw error;
     }
   }
 
   async observe(input, { signal } = {}) {
     this.#requireSession(input);
-    return this.#client.request("observe", `page.${input.profileId}`, input, { signal });
+    return this.#client.request("observe", `page.${input.profileId}`, input, {
+      signal,
+    });
   }
 
   async dispatch(input, { signal } = {}) {
     this.#requireSession(input);
     let crossed = false;
     let resolveBoundary;
-    const boundary = new Promise((resolve) => { resolveBoundary = resolve; });
-    const response = this.#client.request("dispatch", input.operationId, input, {
-      signal,
-      onDispatched: () => {
-        if (crossed) return;
-        crossed = true;
-        resolveBoundary();
-      },
+    const boundary = new Promise((resolve) => {
+      resolveBoundary = resolve;
     });
+
+    const response = this.#client.request(
+      "dispatch",
+      input.operationId,
+      input,
+      {
+        signal,
+        onDispatchBoundary: () => {
+          if (crossed) return;
+          crossed = true;
+          resolveBoundary();
+        },
+      },
+    );
     let earlyError = null;
     const settled = response.then(
       () => "resolved",
@@ -375,27 +801,86 @@ export class SubprocessBrowserDriver {
       boundary.then(() => "boundary"),
       settled,
     ]);
-    if (first === "rejected" && !crossed) throw earlyError;
-    // A complete response necessarily proves the request bytes crossed the
-    // local worker channel even if a stream implementation delivered the
-    // response before invoking the write callback.
-    if (first === "resolved" && !crossed) {
-      crossed = true;
-      resolveBoundary();
+    if (first === "rejected" && !crossed) {
+      if (earlyError?.code !== "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
+        await this.#containBeforeDispatchBoundary();
+      }
+      throw earlyError;
     }
-    // Keep the private response handler alive so a late worker reply cannot
-    // become an unhandled rejection or poison the framed channel. External
-    // terminality is intentionally obtained through reconcile().
-    response.catch(() => {});
-    return { terminalObserved: false };
+    if (first === "resolved" && !crossed) {
+      await this.#containBeforeDispatchBoundary();
+      throw new TypeError(
+        "browser worker settled dispatch before admission boundary",
+      );
+    }
+    // Final-use authority is released at the worker admission boundary, but
+    // retain the bound worker response so the Browser owner can durably record
+    // a terminal local observation without holding the authority fence.
+    return {
+      terminalObserved: false,
+      settlement: response,
+    };
   }
-
   async reconcile(input, { signal } = {}) {
     this.#requireSession(input);
     return this.#client.request("reconcile", input.operationId, input, { signal });
   }
 
+  async reconcilePersisted(input, { signal } = {}) {
+    requireRecord(input, "persisted browser reconciliation input");
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error ? signal.reason : abortError();
+    }
+    if (this.#persistedReconciler === null) {
+      return Object.freeze({
+        terminalObserved: false,
+        observationReason: "persisted_reconciler_unavailable",
+      });
+    }
+    const observed = requireRecord(
+      await this.#persistedReconciler(input, { signal }),
+      "persisted browser reconciliation observation",
+    );
+    if (
+      observed.operationId !== input.operationId ||
+      expectedDigest(observed.requestDigest, "persisted observation requestDigest") !==
+        expectedDigest(input.requestDigest, "persisted input requestDigest") ||
+      expectedDigest(observed.semanticDigest, "persisted observation semanticDigest") !==
+        expectedDigest(input.semanticDigest, "persisted input semanticDigest")
+    ) {
+      throw new TypeError(
+        "persisted reconciler observation did not bind the exact durable operation",
+      );
+    }
+    return observed;
+  }
+
+  async contain(input) {
+    this.#requireSession(input);
+    this.#clearExpiryTimer();
+    const broker = this.#egressBroker;
+    this.#egressBroker = null;
+    this.#client?.close();
+    this.#child?.kill?.("SIGKILL");
+    this.#client = null;
+    this.#child = null;
+    await broker?.close();
+    return { contained: true };
+  }
+
   async stop(input, { signal } = {}) {
+    this.#clearExpiryTimer();
+    const generation = input.generation ?? input.profileGeneration;
+    if (
+      input.profileId !== this.#sessionId ||
+      generation !== this.#generation
+    ) {
+      throw new TypeError("browser worker session or generation mismatch");
+    }
+    if (!this.#child || !this.#client) {
+      await this.#cleanupProfile();
+      return { stopped: true };
+    }
     this.#requireSession(input);
     try {
       const observed = await this.#client.request(
@@ -404,7 +889,9 @@ export class SubprocessBrowserDriver {
         input,
         { signal },
       );
-      if (observed.stopped !== true) throw new TypeError("worker did not acknowledge stop");
+      if (observed.stopped !== true) {
+        throw new TypeError("worker did not acknowledge stop");
+      }
       return { stopped: true };
     } finally {
       this.#client?.close();
@@ -415,12 +902,54 @@ export class SubprocessBrowserDriver {
     }
   }
 
+  #armExpiry(expiresAtMs) {
+    this.#clearExpiryTimer();
+    this.#expiresAtMs = expiresAtMs;
+    const arm = () => {
+      if (!this.#child || this.#expiresAtMs === null) return;
+      const remaining = this.#expiresAtMs - Date.now();
+      if (remaining <= 0) {
+        void this.#containExpiredLease();
+        return;
+      }
+      this.#expiryTimer = setTimeout(arm, Math.min(remaining, 2_147_000_000));
+      this.#expiryTimer.unref?.();
+    };
+    arm();
+  }
+
+  #clearExpiryTimer() {
+    if (this.#expiryTimer !== null) clearTimeout(this.#expiryTimer);
+    this.#expiryTimer = null;
+    this.#expiresAtMs = null;
+  }
+
+  async #containExpiredLease() {
+    this.#clearExpiryTimer();
+    const broker = this.#egressBroker;
+    this.#egressBroker = null;
+    this.#client?.close();
+    this.#child?.kill?.("SIGKILL");
+    this.#client = null;
+    this.#child = null;
+    try {
+      await broker?.close();
+    } catch {
+      // Expiry is fail-closed: the process is already killed and the private
+      // broker reference is detached even if socket cleanup itself fails.
+    }
+  }
+
   async #readVerifiedWorkerArtifact() {
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const handle = await open(this.#workerPath, constants.O_RDONLY | noFollow);
     try {
       const info = await handle.stat();
-      if (!info.isFile() || info.size < 1 || info.size > MAX_WORKER_ARTIFACT_BYTES) {
+      if (
+        !info.isFile() ||
+        info.size < 1 ||
+        info.size > MAX_WORKER_ARTIFACT_BYTES
+      ) {
         throw new TypeError("browser worker artifact must be a bounded regular file");
       }
       const bytes = await handle.readFile();
@@ -433,16 +962,39 @@ export class SubprocessBrowserDriver {
     }
   }
 
+  async #writeProfileOwnerManifest(identity) {
+    const body = Buffer.from(`${JSON.stringify(identity)}\n`, "utf8");
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    const flags =
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
+    const handle = await open(this.#profileOwnerPath, flags, 0o600);
+    try {
+      await handle.writeFile(body);
+      await handle.sync();
+      const info = await handle.stat();
+      if (!info.isFile() || info.size !== body.length) {
+        throw new TypeError(
+          "profile owner manifest is not a regular exact-length file",
+        );
+      }
+    } finally {
+      await handle.close();
+    }
+  }
+
   async #writePrivateVerifiedWorker(bytes) {
     const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
+    const flags =
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
     const handle = await open(this.#verifiedWorkerPath, flags, 0o500);
     try {
       await handle.writeFile(bytes);
       await handle.sync();
       const info = await handle.stat();
       if (!info.isFile() || info.size !== bytes.length) {
-        throw new TypeError("verified browser worker copy is not a regular exact-length file");
+        throw new TypeError(
+          "verified browser worker copy is not a regular exact-length file",
+        );
       }
     } finally {
       await handle.close();
@@ -450,7 +1002,9 @@ export class SubprocessBrowserDriver {
   }
 
   #requireSession(input) {
-    if (!this.#child || !this.#client) throw new TypeError("browser worker is not started");
+    if (!this.#child || !this.#client) {
+      throw new TypeError("browser worker is not started");
+    }
     const generation = input.generation ?? input.profileGeneration;
     if (input.profileId !== this.#sessionId || generation !== this.#generation) {
       throw new TypeError("browser worker session or generation mismatch");
@@ -460,11 +1014,164 @@ export class SubprocessBrowserDriver {
     }
   }
 
+  async #containBeforeDispatchBoundary() {
+    this.#clearExpiryTimer();
+    const broker = this.#egressBroker;
+    this.#egressBroker = null;
+    const client = this.#client;
+    const child = this.#child;
+    this.#client = null;
+    this.#child = null;
+    client?.close();
+    child?.kill?.("SIGKILL");
+    try {
+      await broker?.close();
+    } catch {
+      // The worker is already killed and the server close precedes socket
+      // unlink. Preserve the original dispatch uncertainty; final profile
+      // cleanup will retry filesystem removal through stop/close.
+    }
+  }
+
   async #cleanupProfile() {
-    if (!this.#profileDir) return;
+    await this.#egressBroker?.close();
+    this.#egressBroker = null;
     const profileDir = this.#profileDir;
+    const profileOwnerPath = this.#profileOwnerPath;
+    const verifiedWorkerPath = this.#verifiedWorkerPath;
     this.#profileDir = null;
+    this.#profileOwnerPath = null;
     this.#verifiedWorkerPath = null;
-    await rm(profileDir, { recursive: true, force: true });
+    if (profileOwnerPath) {
+      await rm(profileOwnerPath, { force: true });
+    }
+    if (verifiedWorkerPath) {
+      await rm(verifiedWorkerPath, { force: true });
+    }
+    if (profileDir) {
+      await rm(profileDir, { recursive: true, force: true });
+    }
+  }
+}
+
+
+export class PooledSubprocessBrowserDriver {
+  supportsAbort = true;
+  maxOutstandingOperations = 1;
+  maxActiveProfiles;
+
+  #config;
+  #sessions = new Map();
+  #starting = new Set();
+  #recoveryDriver;
+
+  constructor({
+    workerPath,
+    workerDigest,
+    profileRoot,
+    launcher,
+    persistedReconciler = null,
+    allowPrivateNetworkForTests = false,
+    maxProfiles = DEFAULT_MAX_POOL_PROFILES,
+  }) {
+    positiveInteger(maxProfiles, "maxProfiles");
+    if (maxProfiles > MAX_POOL_PROFILES) {
+      throw new TypeError("maxProfiles exceeds the Browser worker-pool ceiling");
+    }
+    this.maxActiveProfiles = maxProfiles;
+    this.#config = {
+      workerPath,
+      workerDigest,
+      profileRoot,
+      launcher,
+      persistedReconciler,
+      allowPrivateNetworkForTests,
+    };
+    this.#recoveryDriver = new SubprocessBrowserDriver(this.#config);
+  }
+
+  async start(input, options = {}) {
+    requireRecord(input, "browser worker start input");
+    const profileId = stableId(input.profileId, "profileId");
+    const generation = positiveInteger(input.generation, "generation");
+    if (this.#sessions.has(profileId) || this.#starting.has(profileId)) {
+      throw new TypeError("browser worker profile is already started or starting");
+    }
+    if (this.#sessions.size + this.#starting.size >= this.maxActiveProfiles) {
+      const error = new Error("browser worker pool capacity is exhausted");
+      error.name = "BrowserBackpressureError";
+      error.code = "BROWSER_PROFILE_CAPACITY";
+      throw error;
+    }
+    this.#starting.add(profileId);
+    const driver = new SubprocessBrowserDriver(this.#config);
+    try {
+      const observed = await driver.start(input, options);
+      this.#sessions.set(profileId, {
+        driver,
+        generation,
+        processId: observed.processId,
+      });
+      return observed;
+    } finally {
+      this.#starting.delete(profileId);
+    }
+  }
+
+  observe(input, options = {}) {
+    return this.#session(input).driver.observe(input, options);
+  }
+
+  dispatch(input, options = {}) {
+    return this.#session(input).driver.dispatch(input, options);
+  }
+
+  reconcile(input, options = {}) {
+    return this.#session(input).driver.reconcile(input, options);
+  }
+
+  reconcilePersisted(input, options = {}) {
+    return this.#recoveryDriver.reconcilePersisted(input, options);
+  }
+
+  async contain(input) {
+    requireRecord(input, "browser worker containment input");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) return { contained: true };
+    this.#validateSessionIdentity(input, session);
+    return session.driver.contain(input);
+  }
+
+  async stop(input, options = {}) {
+    requireRecord(input, "browser worker stop input");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) return { stopped: true };
+    this.#validateSessionIdentity(input, session);
+    try {
+      return await session.driver.stop(input, options);
+    } finally {
+      this.#sessions.delete(profileId);
+    }
+  }
+
+  #session(input) {
+    requireRecord(input, "browser worker request");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) throw new TypeError("browser worker profile is not started");
+    this.#validateSessionIdentity(input, session);
+    return session;
+  }
+
+  #validateSessionIdentity(input, session) {
+    const generation = input.generation ?? input.profileGeneration;
+    if (generation !== session.generation) {
+      throw new TypeError("browser worker profile generation mismatch");
+    }
+    if (input.processId !== undefined && input.processId !== session.processId) {
+      throw new TypeError("browser worker process identity mismatch");
+    }
   }
 }
