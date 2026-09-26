@@ -1,0 +1,72 @@
+name: runtime.codex source export
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-production-closure-v1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-codex-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    name: Export runtime.codex source subset
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Record exact candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf 'HEAD=%s\n' "$(git rev-parse HEAD)"
+            printf 'TREE=%s\n' "$(git rev-parse HEAD^{tree})"
+          } > runtime-codex-export-identity.txt
+
+      - name: Package bounded source subset
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf runtime-codex-source.tar.gz \
+            runtime-codex-export-identity.txt \
+            Cargo.toml \
+            Cargo.lock \
+            rust-toolchain.toml \
+            justfile \
+            .cargo \
+            .github/actions \
+            .github/scripts \
+            .github/workflows \
+            scripts \
+            docs/modules/runtime.codex \
+            docs/readiness \
+            qualification/module-execution-dossiers \
+            codex-rs/hepta-agent-protocol \
+            codex-rs/hepta-agentd \
+            codex-rs/hepta-contracts \
+            codex-rs/hepta-types \
+            codex-rs/hepta-infer-core \
+            codex-rs/hepta-infer-worker-host \
+            codex-rs/hepta-codex-adapter \
+            codex-rs/app-server-client \
+            codex-rs/app-server-protocol \
+            codex-rs/app-server \
+            codex-rs/core
+
+      - name: Upload bounded source archive
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: runtime-codex-source-${{ github.sha }}
+          path: runtime-codex-source.tar.gz
+          if-no-files-found: error
+          retention-days: 1
