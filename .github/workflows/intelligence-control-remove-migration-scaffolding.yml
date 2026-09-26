@@ -1,0 +1,57 @@
+name: intelligence.control remove migration scaffolding
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-product-closure-20260926
+    paths:
+      - .github/workflows/intelligence-control-remove-migration-scaffolding.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intelligence-control-remove-migration-scaffolding
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact feature head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/intelligence-control-product-closure-20260926
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Remove one-shot migration machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rm -f --ignore-unmatch \
+            .github/intelligence-control-rewrite-macos-trigger \
+            .github/intelligence-control-rewrite-trigger \
+            .github/workflows/codex-intelligence-control-rewrite-macos.yml \
+            .github/workflows/codex-intelligence-control-rewrite.yml \
+            .github/workflows/intelligence-control-exact-learning-repair.yml \
+            .github/workflows/intelligence-control-remove-migration-scaffolding.yml \
+            scripts/codex-intelligence-control-rewrite.py \
+            scripts/codex-intelligence-learning-completeness-rewrite.py \
+            scripts/codex-intelligence-learning-reconcile-rewrite.py \
+            scripts/codex-intelligence-observability-rewrite.py \
+            scripts/codex-intelligence-status-rewrite.py
+          git diff --check
+          test -n "$(git status --porcelain)"
+
+      - name: Commit clean product candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(intelligence): remove migration scaffolding"
+          git push origin HEAD:codex/intelligence-control-product-closure-20260926
