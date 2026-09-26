@@ -33,6 +33,7 @@ mod semantic_v2;
 mod sparse;
 mod store_manifest;
 mod witness;
+mod witness_v2;
 
 pub use artifact_binding::NEURON_CALIBRATION_SUMMARY_SCHEMA_V1;
 pub use artifact_binding::NEURON_OOD_SUMMARY_SCHEMA_V1;
@@ -152,6 +153,8 @@ pub use store_manifest::NeuronStoreSegmentV1;
 pub use store_manifest::read_neuron_store_manifest_v1;
 pub use store_manifest::write_neuron_store_manifest_v1;
 pub use witness::FileAnchorWitnessStore;
+pub use witness_v2::FileNeuronWitnessStoreV2;
+pub use witness_v2::NeuronWitnessContextV2;
 
 const MAX_FEATURES: usize = 4_096;
 
@@ -316,3 +319,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "generation_store_v2_process_tests.rs"]
+mod generation_store_v2_process_tests;
