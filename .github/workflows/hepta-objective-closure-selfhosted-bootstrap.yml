@@ -1,4 +1,4 @@
-# bootstrap-trigger: isolated-arm-r1-20260927
+# bootstrap-trigger: isolated-general-r2-20260927
 name: Hepta objective closure isolated bootstrap
 
 on:
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   bootstrap:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       TARGET_BRANCH: work/objective-compiler-final-closure-20260927
