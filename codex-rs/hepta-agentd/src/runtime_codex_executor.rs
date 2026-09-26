@@ -6,11 +6,11 @@
 //! Server caller and therefore retains final-use authorization, dispatch
 //! fencing, terminal observation, and its native no-replay journal.
 //!
-//! A normal invocation is permitted only when the operation directory is first
-//! created. Every duplicate, crash recovery, or unknown acknowledgement is
-//! routed through `--resume`; this module never recreates a physical
-//! `turn/start` for an operation whose first process might already have crossed
-//! the effect boundary.
+//! A normal invocation is permitted only while its durable operation is still
+//! unfenced. Every dispatch-fenced duplicate, crash recovery, or unknown
+//! acknowledgement is routed through `--resume`; this module never recreates a
+//! physical `turn/start` after the point at which an earlier process might have
+//! crossed the effect boundary.
 
 use std::fmt;
 use std::future::Future;
@@ -25,6 +25,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
+use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -307,6 +308,10 @@ pub struct ProcessRuntimeCodexExecutorV1 {
     journal_root: PathBuf,
     maximum_in_flight: usize,
     interrupt_grace: Duration,
+    // One Agentd owner is the only process permitted to construct this adapter.
+    // The async mutex serializes exact-run duplicate calls and startup recovery
+    // so no same-process task can race a fresh dispatch against reconciliation.
+    operation_lock: Mutex<()>,
 }
 
 impl fmt::Debug for ProcessRuntimeCodexExecutorV1 {
@@ -323,7 +328,7 @@ impl fmt::Debug for ProcessRuntimeCodexExecutorV1 {
             .field("journal_root", &self.journal_root)
             .field("maximum_in_flight", &self.maximum_in_flight)
             .field("interrupt_grace", &self.interrupt_grace)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -366,6 +371,7 @@ impl ProcessRuntimeCodexExecutorV1 {
             journal_root,
             maximum_in_flight,
             interrupt_grace,
+            operation_lock: Mutex::new(()),
         })
     }
 
@@ -383,6 +389,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         input: RuntimeCodexExecutionInputV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
+        let _operation_guard = self.operation_lock.lock().await;
         persistence::validate_owner(self, &owner)?;
         persistence::revalidate_external_files(self)?;
         let input_digest = input.digest()?;
@@ -395,7 +402,14 @@ impl ProcessRuntimeCodexExecutorV1 {
                 ..receipt
             });
         }
-        let fresh_input = if prepared.existing { None } else { Some(&input) };
+        let fresh_input = if persistence::dispatch_is_fenced(
+            &prepared.paths,
+            &prepared.manifest,
+        )? {
+            None
+        } else {
+            Some(&input)
+        };
         let receipt = process::spawn_worker(
             self,
             &owner,
@@ -405,7 +419,11 @@ impl ProcessRuntimeCodexExecutorV1 {
             cancellation,
         )
         .await?;
-        persistence::write_receipt(&prepared.paths.receipt, &receipt)?;
+        persistence::write_receipt(
+            &prepared.paths.receipt,
+            &prepared.manifest,
+            &receipt,
+        )?;
         Ok(receipt)
     }
 
@@ -414,6 +432,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         owner: RuntimeCodexOwnerV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexReconcileReportV1, AgentdError> {
+        let _operation_guard = self.operation_lock.lock().await;
         persistence::validate_owner(self, &owner)?;
         persistence::revalidate_external_files(self)?;
         let directories = persistence::list_operation_directories(&self.journal_root)?;
@@ -442,6 +461,16 @@ impl ProcessRuntimeCodexExecutorV1 {
                     })?;
                 continue;
             }
+            if !persistence::dispatch_is_fenced(&paths, &manifest)? {
+                // A manifest written before the dispatch fence is not evidence
+                // that physical execution was attempted. Startup lacks the
+                // prompt by design, so it must not invent or launch work. A
+                // matching authenticated caller can later finish first dispatch.
+                report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
+                    AgentdError::Protocol("recovery counter overflow".to_string())
+                })?;
+                continue;
+            }
             match process::spawn_worker(
                 self,
                 &owner,
@@ -453,7 +482,7 @@ impl ProcessRuntimeCodexExecutorV1 {
             .await
             {
                 Ok(receipt) => {
-                    persistence::write_receipt(&paths.receipt, &receipt)?;
+                    persistence::write_receipt(&paths.receipt, &manifest, &receipt)?;
                     report.reconciled_terminal = report
                         .reconciled_terminal
                         .checked_add(1)
