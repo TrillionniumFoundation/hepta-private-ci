@@ -1,0 +1,118 @@
+name: Hepta objective closure self-hosted bootstrap
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-convergence-20260925
+    paths:
+      - .github/workflows/hepta-objective-closure-selfhosted-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-objective-closure-selfhosted-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  bootstrap:
+    runs-on:
+      group: trillionnium-private-web
+      labels: rog
+    timeout-minutes: 15
+    env:
+      TARGET_BRANCH: work/objective-compiler-convergence-20260925
+      TRIGGER_SHA: ${{ github.sha }}
+    steps:
+      - name: Verify bound trusted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${RUNNER_NAME}" = rog
+          test "${RUNNER_OS}" = Linux
+          test "${RUNNER_ARCH}" = X64
+          test "${GITHUB_REPOSITORY}" = TrillionniumFoundation/hepta-private-ci
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebind closure materializer to trusted ROG runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TRIGGER_SHA}"
+          git fetch origin "${TARGET_BRANCH}"
+          test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path(".github/workflows/hepta-objective-closure-materialize.yml")
+          text = path.read_text(encoding="utf-8")
+
+          replacements = [
+              (
+                  "# closure-trigger: durable-proof-and-evidence-arm-20260927\n",
+                  "# closure-trigger: durable-proof-and-evidence-trusted-rog-20260927\n",
+              ),
+              (
+                  "    runs-on: ubuntu-24.04-arm\n",
+                  "    runs-on:\n      group: trillionnium-private-web\n      labels: rog\n",
+              ),
+              (
+                  '          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"\n',
+                  '          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"\n'
+                  '          test "${RUNNER_NAME}" = rog\n'
+                  '          test "${RUNNER_OS}" = Linux\n'
+                  '          test "${RUNNER_ARCH}" = X64\n',
+              ),
+              (
+                  "          sudo apt-get update\n"
+                  "          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config\n"
+                  "          sudo sysctl -w kernel.unprivileged_userns_clone=1 || true\n"
+                  "          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then\n"
+                  "            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true\n"
+                  "          fi\n",
+                  "          for bin in python3 git cargo rustc; do\n"
+                  "            command -v \"${bin}\" >/dev/null 2>&1 || { echo \"missing required tool: ${bin}\" >&2; exit 1; }\n"
+                  "          done\n"
+                  "          packages=()\n"
+                  "          command -v cc >/dev/null 2>&1 || packages+=(build-essential)\n"
+                  "          command -v bwrap >/dev/null 2>&1 || packages+=(bubblewrap)\n"
+                  "          command -v pkg-config >/dev/null 2>&1 || packages+=(pkg-config)\n"
+                  "          dpkg-query -W -f='${Status}' libcap-dev 2>/dev/null | grep -q 'ok installed' || packages+=(libcap-dev)\n"
+                  "          if ((${#packages[@]})); then\n"
+                  "            command -v sudo >/dev/null 2>&1\n"
+                  "            sudo -n true\n"
+                  "            sudo -n apt-get update\n"
+                  "            sudo -n apt-get install -y \"${packages[@]}\"\n"
+                  "          fi\n"
+                  "          sudo -n sysctl -w kernel.unprivileged_userns_clone=1 || true\n"
+                  "          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then\n"
+                  "            sudo -n sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true\n"
+                  "          fi\n",
+              ),
+          ]
+
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"expected one materializer replacement, observed {count}: {old!r}")
+              text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+          git config user.name hepta-qualification
+          git config user.email qualification@invalid
+          git rm .github/workflows/hepta-objective-closure-selfhosted-bootstrap.yml
+          git add .github/workflows/hepta-objective-closure-materialize.yml
+          git diff --cached --check
+          git commit -m "ci(objective): bind closure materializer to trusted ROG runner"
+          git fetch origin "${TARGET_BRANCH}"
+          test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
+          git push origin "HEAD:${TARGET_BRANCH}"
