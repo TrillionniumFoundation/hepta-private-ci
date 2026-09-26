@@ -11,12 +11,11 @@ use crate::AuthBusAuthorityStore;
 use crate::IssuerLifecycleState;
 use crate::IssuerPurpose;
 use crate::IssuerRecord;
-use crate::IssuerRegistration;
 use crate::IssuerRetirement;
 use crate::IssuerSpec;
-use crate::SettlementIssuerRegistration;
 use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
+use crate::VerifiedIssuerHandle;
 use crate::authority_store::advance_time;
 use crate::authority_store::begin;
 use crate::authority_store::blob_array;
@@ -29,7 +28,7 @@ use crate::authority_store::u64_bytes;
 const MAX_ISSUER_EPOCHS: i64 = 4096;
 
 impl AuthBusAuthorityStore {
-    pub async fn enroll_issuer(
+    pub(crate) async fn enroll_issuer(
         &self,
         purpose: IssuerPurpose,
         spec: IssuerSpec,
@@ -62,7 +61,7 @@ impl AuthBusAuthorityStore {
         Ok(record)
     }
 
-    pub async fn rotate_issuer(
+    pub(crate) async fn rotate_issuer(
         &self,
         purpose: IssuerPurpose,
         spec: IssuerSpec,
@@ -104,7 +103,7 @@ impl AuthBusAuthorityStore {
         Ok(record)
     }
 
-    pub async fn revoke_issuer(
+    pub(crate) async fn revoke_issuer(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -129,7 +128,7 @@ impl AuthBusAuthorityStore {
         Ok(record)
     }
 
-    pub async fn retire_issuer_epoch(
+    pub(crate) async fn retire_issuer_epoch(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -155,7 +154,7 @@ impl AuthBusAuthorityStore {
         Ok(retirement)
     }
 
-    pub async fn issuer_record(
+    pub(crate) async fn issuer_record(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -167,39 +166,35 @@ impl AuthBusAuthorityStore {
         Ok(record)
     }
 
-    pub async fn message_issuer(
+    pub(crate) async fn verified_issuer(
+        &self,
+        purpose: IssuerPurpose,
+        issuer_id: &StableId,
+        key_epoch: Generation,
+    ) -> Result<VerifiedIssuerHandle, AuthBusAuthorityError> {
+        let record = self.issuer_record(purpose, issuer_id, key_epoch).await?;
+        VerifiedIssuerHandle::from_record(&record)
+    }
+
+    pub(crate) async fn message_issuer(
         &self,
         issuer_id: &StableId,
         key_epoch: Generation,
-    ) -> Result<IssuerRegistration, AuthBusAuthorityError> {
-        let record = self
-            .issuer_record(IssuerPurpose::Message, issuer_id, key_epoch)
-            .await?;
-        Ok(IssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
+    ) -> Result<VerifiedIssuerHandle, AuthBusAuthorityError> {
+        self.verified_issuer(IssuerPurpose::Message, issuer_id, key_epoch)
+            .await
     }
 
-    pub async fn settlement_issuer(
+    pub(crate) async fn settlement_issuer(
         &self,
         issuer_id: &StableId,
         key_epoch: Generation,
-    ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
-        let record = self
-            .issuer_record(IssuerPurpose::Settlement, issuer_id, key_epoch)
-            .await?;
-        Ok(SettlementIssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
+    ) -> Result<VerifiedIssuerHandle, AuthBusAuthorityError> {
+        self.verified_issuer(IssuerPurpose::Settlement, issuer_id, key_epoch)
+            .await
     }
 
-    pub async fn observe_trusted_time_attestation(
+    pub(crate) async fn observe_trusted_time_attestation(
         &self,
         attestation: &SignedTrustedTimeAttestation,
     ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
@@ -216,6 +211,16 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)?;
         Ok(sample)
     }
+}
+
+pub(crate) async fn resolve_verified_issuer(
+    tx: &mut Transaction<'_, Sqlite>,
+    purpose: IssuerPurpose,
+    issuer_id: &StableId,
+    key_epoch: Generation,
+) -> Result<VerifiedIssuerHandle, AuthBusAuthorityError> {
+    let record = load_issuer(tx, purpose, issuer_id, key_epoch).await?;
+    VerifiedIssuerHandle::from_record(&record)
 }
 
 async fn insert_issuer(
@@ -266,7 +271,7 @@ async fn load_active_issuer(
     issuer_from_row(&row)
 }
 
-async fn load_issuer(
+pub(crate) async fn load_issuer(
     tx: &mut Transaction<'_, Sqlite>,
     purpose: IssuerPurpose,
     issuer_id: &StableId,

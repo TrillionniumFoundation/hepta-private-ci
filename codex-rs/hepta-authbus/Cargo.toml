@@ -3,7 +3,6 @@ edition.workspace = true
 license.workspace = true
 name = "codex-hepta-authbus"
 version.workspace = true
-publish = false
 
 [lib]
 name = "codex_hepta_authbus"
@@ -14,12 +13,16 @@ doctest = false
 workspace = true
 
 [dependencies]
-codex-hepta-types = { path = "../hepta-types" }
+codex-hepta-types = { workspace = true }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sqlx = { workspace = true }
 thiserror = { workspace = true }
+tokio = { workspace = true, features = ["sync"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

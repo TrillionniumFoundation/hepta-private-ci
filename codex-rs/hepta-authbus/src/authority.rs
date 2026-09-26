@@ -147,6 +147,8 @@ impl PolicyDecision {
 
 #[derive(Debug, thiserror::Error)]
 pub enum AuthBusAuthorityError {
+    #[error(transparent)]
+    SignedAdmission(#[from] crate::Error),
     #[error("invalid AuthBus authority input: {0}")]
     InvalidInput(&'static str),
     #[error("corrupt AuthBus authority state: {0}")]
@@ -181,6 +183,8 @@ pub enum AuthBusAuthorityError {
     ObservedCostExceedsReservation,
     #[error("AuthBus issuer registration is missing")]
     IssuerMissing,
+    #[error("AuthBus issuer registry is unsafe, malformed or not owner-controlled")]
+    InvalidIssuerRegistry,
     #[error("AuthBus issuer key epoch did not advance monotonically")]
     KeyEpochRegression,
     #[error("trusted-time attestation does not name an active time issuer")]
@@ -207,6 +211,10 @@ pub enum AuthBusAuthorityError {
     RecoveryRequired,
     #[error("AuthBus authority checkpoint file is unsafe or unavailable")]
     UnsafeCheckpoint,
+    #[error("AuthBus authority owner lock file is unsafe or unavailable")]
+    UnsafeOwnerLock,
+    #[error("another AuthBus authority owner is already active")]
+    OwnerAlreadyActive,
     #[error("AuthBus policy cannot be retired while reservations still reference it")]
     PolicyInUse,
 }

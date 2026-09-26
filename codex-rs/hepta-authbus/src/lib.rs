@@ -1,39 +1,53 @@
 //! Signed admission, replay fencing and durable authorization policy state.
 //!
-//! The signed admission API verifies issuer-bound Ed25519 messages. The durable
-//! authority store evaluates revision-bound policy against a persisted trusted-
-//! time floor. Policy decisions and replay receipts do not reserve quota,
-//! dispatch an effect or mint final-use authority. Successful receipts retain
-//! `AuthorityPosture::DENY_ALL`.
+//! All production mutations flow through [`AuthBusAuthorityHost`]. Trusted
+//! issuer material is resolved from durable SQLite state or owner-controlled
+//! private registry files and represented by an opaque
+//! [`VerifiedIssuerHandle`]; callers cannot construct authority from naked key
+//! material, revocation bits, epochs or purposes.
 
 #![forbid(unsafe_code)]
 
 mod authority;
 mod authority_schema;
 mod authority_store;
+mod hardened_host;
 mod host;
+mod operations;
+mod operations_store;
+mod owner;
 mod quota;
 mod quota_store;
 mod recovery;
+mod reservation_maintenance;
+mod registry;
 mod settlement;
 mod settlement_store;
 mod signed;
 mod trust;
 mod trust_store;
+
 pub use authority::AuthBusAuthorityError;
 pub use authority::AuthPolicy;
 pub use authority::PolicyDecision;
 pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
-pub use authority_store::AuthBusAuthorityStore;
-pub use host::AuthBusAuthorityHost;
+pub(crate) use authority_store::AuthBusAuthorityStore;
+pub use hardened_host::AuthBusAuthorityHost;
+pub use operations::AuthBusAlertKind;
+pub use operations::AuthBusHealthSnapshot;
+pub use operations::AuthBusMaintenanceReport;
+pub use operations::AuthBusSloThresholds;
+pub use operations::ExpiredReservationSweep;
 pub use quota::QuotaReservation;
 pub use quota::QuotaSnapshot;
 pub use quota::QuotaSpec;
 pub use quota::ReservationRequest;
 pub use quota::ReservationState;
 pub use recovery::AuthorityCheckpoint;
+pub use registry::MessageIssuerRegistrySnapshot;
+pub use registry::RoleIssuerRegistrySnapshot;
 pub use settlement::Settlement;
 pub use settlement::SettlementEvidenceClaims;
 pub use settlement::SettlementIssuerRegistration;
@@ -44,12 +58,15 @@ pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
 pub use signed::SignedMessageClaims;
 pub use trust::IssuerLifecycleState;
+#[doc(hidden)]
+pub use trust::IssuerRegistrationView;
 pub use trust::IssuerPurpose;
 pub use trust::IssuerRecord;
 pub use trust::IssuerRetirement;
 pub use trust::IssuerSpec;
 pub use trust::SignedTrustedTimeAttestation;
 pub use trust::TrustedTimeAttestationClaims;
+pub use trust::VerifiedIssuerHandle;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -81,7 +98,8 @@ pub struct PreverifiedAuthEnvelope {
 ///
 /// `issuer_id`, `key_epoch`, current time and revocation state must come from
 /// the authenticated host boundary. Constructing this value does not itself
-/// perform authentication.
+/// perform authentication. This legacy replay-only surface remains deny-all and
+/// is not a production issuer-registration API.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedReplayContext {
     pub issuer_id: StableId,

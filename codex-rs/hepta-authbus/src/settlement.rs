@@ -3,9 +3,10 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::AuthBusAuthorityError;
+use crate::IssuerPurpose;
+use crate::VerifiedIssuerHandle;
 use crate::push_id;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -14,12 +15,9 @@ pub enum SettlementStatus {
     Rejected,
 }
 
-pub struct SettlementIssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
-}
+/// Compatibility name for the sealed settlement issuer handle. Constructing
+/// raw settlement registration data is intentionally impossible.
+pub type SettlementIssuerRegistration = VerifiedIssuerHandle;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SettlementEvidenceClaims {
@@ -73,12 +71,15 @@ impl SignedSettlementEvidence {
 
     pub(crate) fn authenticate(
         &self,
-        issuer: &SettlementIssuerRegistration,
+        issuer: &VerifiedIssuerHandle,
         reservation_id: &StableId,
         operation_id: &StableId,
         now_ms: u64,
     ) -> Result<AuthenticatedSettlementEvidence, AuthBusAuthorityError> {
-        if self.claims.issuer_id != issuer.issuer_id || self.claims.key_epoch != issuer.key_epoch {
+        if issuer.purpose() != IssuerPurpose::Settlement
+            || self.claims.issuer_id != *issuer.issuer_id()
+            || self.claims.key_epoch != issuer.key_epoch()
+        {
             return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
         }
         if &self.claims.reservation_id != reservation_id
@@ -86,7 +87,7 @@ impl SignedSettlementEvidence {
         {
             return Err(AuthBusAuthorityError::SettlementEvidenceMismatch);
         }
-        if issuer.revoked {
+        if !issuer.is_active() {
             return Err(AuthBusAuthorityError::SettlementIssuerRevoked);
         }
         if self.claims.terminal_evidence_digest.is_zero()
@@ -98,7 +99,7 @@ impl SignedSettlementEvidence {
             return Err(AuthBusAuthorityError::InvalidSettlementEvidence);
         }
         issuer
-            .verifying_key
+            .verifying_key()
             .verify_strict(
                 &self.claims.signing_bytes(),
                 &Signature::from_bytes(&self.signature),

@@ -2,23 +2,20 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::Error;
+use crate::IssuerPurpose;
 use crate::PreverifiedAuthEnvelope;
 use crate::ReplayWindow;
 use crate::TrustedReplayContext;
 use crate::VerificationReceipt;
+use crate::VerifiedIssuerHandle;
 use crate::push_id;
 
-/// Registration obtained from the host's trusted identity/policy store, never
-/// from the message being admitted. Revocation must be refreshed for each call.
-pub struct IssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
-}
+/// Compatibility name for the sealed registry result. Unlike the historical
+/// structure, this alias has no public fields and cannot be built from naked
+/// key material.
+pub type IssuerRegistration = VerifiedIssuerHandle;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedMessageClaims {
@@ -63,18 +60,24 @@ pub struct AuthenticatedMessage {
 }
 
 impl SignedMessage {
+    /// Authenticate only against a sealed, freshly resolved message issuer.
+    /// A caller cannot substitute a key, purpose, epoch or revocation bit by
+    /// constructing an alternate registration object.
     pub fn authenticate(
         &self,
-        issuer: &IssuerRegistration,
+        issuer: &VerifiedIssuerHandle,
         expected_scope: Digest32,
         expected_payload: Digest32,
         now_ms: u64,
     ) -> Result<AuthenticatedMessage, Error> {
-        if self.claims.issuer_id != issuer.issuer_id || self.claims.key_epoch != issuer.key_epoch {
+        if issuer.purpose() != IssuerPurpose::Message
+            || self.claims.issuer_id != *issuer.issuer_id()
+            || self.claims.key_epoch != issuer.key_epoch()
+        {
             return Err(Error::IssuerMismatch);
         }
         issuer
-            .verifying_key
+            .verifying_key()
             .verify_strict(
                 &self.claims.signing_bytes(),
                 &Signature::from_bytes(&self.signature),
@@ -84,10 +87,10 @@ impl SignedMessage {
         // temporary single-message model as durable replay protection.
         let receipt = ReplayWindow::new(/*maximum_replay_keys*/ 1).verify(
             TrustedReplayContext {
-                issuer_id: issuer.issuer_id.clone(),
-                key_epoch: issuer.key_epoch,
+                issuer_id: issuer.issuer_id().clone(),
+                key_epoch: issuer.key_epoch(),
                 now_ms,
-                revoked: issuer.revoked,
+                revoked: !issuer.is_active(),
             },
             PreverifiedAuthEnvelope {
                 message_id: self.claims.message_id.clone(),
