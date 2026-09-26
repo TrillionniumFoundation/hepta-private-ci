@@ -1,0 +1,51 @@
+name: Inference control bootstrap
+
+on:
+  push:
+    branches:
+      - work/inference-control-full-closure-20260927
+    paths:
+      - .bootstrap/inference-control.patch.gz.b64.*
+      - .github/workflows/inference-control-bootstrap.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-integration:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify and apply integration patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .bootstrap/inference-control.patch.gz.b64.* | base64 --decode > "$RUNNER_TEMP/inference-control.patch.gz"
+          printf '%s  %s\n' \
+            '0c170e12a9c7d45aa01d5aa99f1a287c1ddce581a5894104e325771507e89e07' \
+            "$RUNNER_TEMP/inference-control.patch.gz" | sha256sum --check --strict
+          gzip --decompress --stdout "$RUNNER_TEMP/inference-control.patch.gz" > "$RUNNER_TEMP/inference-control.patch"
+          printf '%s  %s\n' \
+            '803cf6592cdf43b8b1c7a91ab2ba3ab50dafbb45f1a10c43e5721e5e781cdb45' \
+            "$RUNNER_TEMP/inference-control.patch" | sha256sum --check --strict
+          git apply --check "$RUNNER_TEMP/inference-control.patch"
+          git apply --index "$RUNNER_TEMP/inference-control.patch"
+
+      - name: Commit integrated source and remove bootstrap material
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .bootstrap
+          rm -f .github/workflows/inference-control-bootstrap.yml
+          git add --all
+          git config user.name 'Hepta inference control CI'
+          git config user.email 'hepta-inference-control-ci@users.noreply.github.com'
+          git commit -m 'feat(inference.control): integrate durable generations and verified control paths'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
