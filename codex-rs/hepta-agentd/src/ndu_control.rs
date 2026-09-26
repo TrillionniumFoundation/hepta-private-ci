@@ -1,5 +1,9 @@
 //! NDU dispatch through the existing private Agentd control socket.
 use super::*;
+use std::collections::BTreeSet;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
 use codex_hepta_agent_protocol::NduCommittedEntryV1;
 use codex_hepta_agent_protocol::NduControlRequestV1;
 use codex_hepta_agent_protocol::NduControlResultV1;
@@ -13,12 +17,84 @@ impl AgentdNduOwnerHostV1 {
         request: NduControlRequestV1,
         mut live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
     ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
+        let encoded_len = serde_json::to_vec(&request)
+            .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))?
+            .len();
+        let now = now_unix_ms()?;
+        if matches!(&request, NduControlRequestV1::ExternalAdmissionV2 { .. }) {
+            request
+                .validate_external_admission_v2(encoded_len, now, &BTreeSet::new())
+                .map_err(AgentdNduOwnerErrorV1::Admission)?;
+        }
+
         let mut owner = self.lock_owner()?;
         live_guard()?;
         if let Some(feed) = &self.feed {
             feed.refresh(&self.authority)?;
         }
         owner.refresh_revocation_frontier(current_frontier(&self.authority)?)?;
+
+        let request = match request {
+            NduControlRequestV1::ExternalAdmissionV2 {
+                request_id,
+                idempotency_key,
+                caller_id,
+                issued_at_unix_ms,
+                deadline_unix_ms,
+                host_generation,
+                fence_digest,
+                revocation_head_digest,
+                payload_digest,
+                request,
+                extensions,
+                ..
+            } => {
+                if host_generation != self.spawn_generation
+                    || fence_digest != *owner.context().fence_digest.as_array()
+                    || revocation_head_digest
+                        != *owner.context().revocation_frontier_digest.as_array()
+                {
+                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-005"));
+                }
+                let binding_bytes = serde_json::to_vec(&(
+                    &request_id,
+                    payload_digest,
+                    issued_at_unix_ms,
+                    deadline_unix_ms,
+                    host_generation,
+                    fence_digest,
+                    revocation_head_digest,
+                    &extensions,
+                ))
+                .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))?;
+                let binding = NduExternalReplayBindingV2 {
+                    binding_digest: Digest32::of_parts(&[
+                        b"hepta.agentd.ndu-external-replay.v2\0",
+                        &binding_bytes,
+                    ]),
+                    deadline_unix_ms,
+                };
+                let key = (caller_id, idempotency_key);
+                let mut replay = self.lock_admission_replay()?;
+                replay
+                    .entries
+                    .retain(|_, existing| existing.deadline_unix_ms >= now);
+                if let Some(existing) = replay.entries.get(&key) {
+                    if existing.binding_digest != binding.binding_digest {
+                        return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-008"));
+                    }
+                } else {
+                    if replay.entries.len() >= MAX_NDU_EXTERNAL_REPLAY_ENTRIES_V2 {
+                        return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-009"));
+                    }
+                    replay.entries.insert(key, binding);
+                }
+                drop(replay);
+                *request
+            }
+            ordinary => ordinary,
+        };
+
         let head = owner.journal_head_digest()?;
         match request {
             NduControlRequestV1::Context => Ok(NduControlResultV1::Context {
@@ -87,6 +163,9 @@ impl AgentdNduOwnerHostV1 {
                     .mutation_result(Digest32::from_array(identity))?
                     .map(wire_entry),
             }),
+            NduControlRequestV1::ExternalAdmissionV2 { .. } => {
+                Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))
+            }
         }
     }
 }
@@ -145,4 +224,13 @@ fn wire_entry(entry: NduProjectionEntryV1) -> NduCommittedEntryV1 {
         predecessor_entry: *entry.predecessor_entry_digest.as_array(),
         entry_digest: *entry.entry_digest.as_array(),
     }
+}
+
+fn now_unix_ms() -> Result<u64, AgentdNduOwnerErrorV1> {
+    let milliseconds = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))?
+        .as_millis();
+    u64::try_from(milliseconds)
+        .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))
 }

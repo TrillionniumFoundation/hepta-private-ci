@@ -1,6 +1,7 @@
 #[path = "ndu_control.rs"]
 mod control;
 
+use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
@@ -24,6 +25,19 @@ use codex_hepta_ndu::NduProjectionEntryV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+const MAX_NDU_EXTERNAL_REPLAY_ENTRIES_V2: usize = 4096;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct NduExternalReplayBindingV2 {
+    binding_digest: Digest32,
+    deadline_unix_ms: u64,
+}
+
+#[derive(Debug, Default)]
+struct NduExternalReplayStateV2 {
+    entries: BTreeMap<(String, String), NduExternalReplayBindingV2>,
+}
+
 pub struct AgentdNduOwnerBootstrapV1 {
     pub store_root: PathBuf,
     pub authority: FinalUseAuthority,
@@ -38,6 +52,7 @@ pub enum AgentdNduOwnerErrorV1 {
     RevocationAdvanced,
     Poisoned,
     Bootstrap(String),
+    Admission(&'static str),
     NotReady,
     Authority(FinalUseError),
     Owner(NduOwnerError),
@@ -66,12 +81,15 @@ impl From<NduOwnerError> for AgentdNduOwnerErrorV1 {
 /// Sole authenticated utility.ndu writer for one Agentd generation.
 ///
 /// Identity, fence, revocation head and production policy are host-owned.
-/// Request/wire callers can neither manufacture nor replace them.
+/// Request/wire callers can neither manufacture nor replace them. External V2
+/// ingress also passes a process-authoritative bounded replay window before the
+/// already-existing final-use and durable mutation fences.
 pub struct AgentdNduOwnerHostV1 {
     agent_id: AgentId,
     spawn_generation: u64,
     authority: FinalUseAuthority,
     owner: Mutex<NduAuthenticatedOwnerV1>,
+    admission_replay: Mutex<NduExternalReplayStateV2>,
     feed: Option<crate::ndu_process_bootstrap::NduRevocationSourceV1>,
 }
 
@@ -130,6 +148,7 @@ impl AgentdNduOwnerHostV1 {
             spawn_generation,
             authority: bootstrap.authority,
             owner: Mutex::new(owner),
+            admission_replay: Mutex::new(NduExternalReplayStateV2::default()),
             feed,
         }))
     }
@@ -208,6 +227,14 @@ impl AgentdNduOwnerHostV1 {
 
     fn lock_owner(&self) -> Result<MutexGuard<'_, NduAuthenticatedOwnerV1>, AgentdNduOwnerErrorV1> {
         self.owner
+            .lock()
+            .map_err(|_| AgentdNduOwnerErrorV1::Poisoned)
+    }
+
+    fn lock_admission_replay(
+        &self,
+    ) -> Result<MutexGuard<'_, NduExternalReplayStateV2>, AgentdNduOwnerErrorV1> {
+        self.admission_replay
             .lock()
             .map_err(|_| AgentdNduOwnerErrorV1::Poisoned)
     }
