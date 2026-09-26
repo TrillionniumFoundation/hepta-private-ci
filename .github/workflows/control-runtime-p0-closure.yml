@@ -6,6 +6,7 @@ on:
       - control-runtime-production-closure-v1
     paths:
       - "scripts/control_runtime_p0_fixups.py"
+      - "scripts/run_control_runtime_p0_fixups.py"
       - ".github/workflows/control-runtime-p0-closure.yml"
   workflow_dispatch:
 
@@ -14,7 +15,7 @@ permissions:
 
 concurrency:
   group: control-runtime-p0-source-closure-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-and-prove:
@@ -34,8 +35,8 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Apply P0 source closure
-        run: python3 scripts/control_runtime_p0_fixups.py
+      - name: Apply literal-safe P0 source closure
+        run: python3 scripts/run_control_runtime_p0_fixups.py
 
       - name: Format touched Rust sources
         working-directory: codex-rs
@@ -89,6 +90,7 @@ jobs:
           git config user.name hepta-control-runtime-bot
           git config user.email control-runtime-bot@invalid
           git add \
+            scripts/control_runtime_p0_fixups.py \
             codex-rs/hepta-control-plane/src/planner_store.rs \
             codex-rs/hepta-agent-protocol/src/lib.rs \
             codex-rs/hepta-agentd/src/cognitive_context.rs \
