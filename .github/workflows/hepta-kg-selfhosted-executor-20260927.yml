@@ -1,0 +1,230 @@
+name: Execute knowledge.graph convergence on fenced build host
+
+on:
+  push:
+    branches: [ops/kg-convergence-execute-20260927]
+    paths:
+      - ".github/workflows/hepta-kg-selfhosted-executor-20260927.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-selfhosted-executor-20260927
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  CANDIDATE_BRANCH: ops/kg-convergence-execute-20260927
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+
+jobs:
+  execute:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Materialize and qualify exact candidate under host fence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/ops/kg-convergence-execute-20260927
+          test "$RUNNER_NAME" = rog
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ARCH" = X64
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain)"
+
+          EVIDENCE_DIR="$RUNNER_TEMP/kg-selfhosted-executor"
+          printf 'EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$EVIDENCE_DIR"
+          LOCK_PATH=/tmp/hepta-knowledge-graph-build-executor.lock
+          flock -n "$LOCK_PATH" bash -seuo pipefail <<'LOCKED'
+          scripts=(
+            scripts/hepta-kg-convergence-apply-phase1.py
+            scripts/hepta-kg-convergence-finalize.py
+            scripts/hepta-kg-durable-writer-finalize.py
+            scripts/hepta-kg-retrieval-finalize.py
+            scripts/hepta-kg-scale-benchmark-finalize.py
+          )
+          python3 -m py_compile "${scripts[@]}" \
+            2>&1 | tee "$EVIDENCE_DIR/transform-compile.log"
+          index=0
+          names=(phase1 finalize durable retrieval scale)
+          for script in "${scripts[@]}"; do
+            python3 "$script" 2>&1 | tee "$EVIDENCE_DIR/transform-${names[$index]}.log"
+            index=$((index + 1))
+          done
+
+          (
+            cd codex-rs
+            cargo check --locked -p codex-hepta-kg -p codex-hepta-memory
+          ) 2>&1 | tee "$EVIDENCE_DIR/cargo-check.log"
+          (
+            cd codex-rs
+            cargo fmt --package codex-hepta-kg --package codex-hepta-memory
+            cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check
+          ) 2>&1 | tee "$EVIDENCE_DIR/format.log"
+          (
+            cd codex-rs
+            cargo test --locked -p codex-hepta-kg -- --nocapture
+            cargo test --locked -p codex-hepta-memory --lib cognitive_kg -- --nocapture
+            cargo test --locked -p codex-hepta-memory --lib cognitive_retrieval -- --nocapture
+          ) 2>&1 | tee "$EVIDENCE_DIR/owner-tests.log"
+          (
+            cd codex-rs
+            cargo clippy --locked \
+              -p codex-hepta-kg -p codex-hepta-memory \
+              --all-targets --no-deps -- -D warnings
+          ) 2>&1 | tee "$EVIDENCE_DIR/owner-clippy.log"
+
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          python3 scripts/hepta-module-docs.py verify
+          rm -f scripts/hepta-kg-convergence-apply-phase1.py
+          rm -f scripts/hepta-kg-convergence-finalize.py
+          rm -f scripts/hepta-kg-durable-writer-finalize.py
+          rm -f scripts/hepta-kg-retrieval-finalize.py
+          rm -f scripts/hepta-kg-scale-benchmark-finalize.py
+          rm -f .github/workflows/hepta-kg-convergence-apply.yml
+          rm -f .github/workflows/hepta-kg-source-diagnostic.yml
+          rm -f .github/workflows/hepta-kg-executor-20260927.yml
+          rm -f .github/workflows/hepta-kg-selfhosted-executor-20260927.yml
+          git diff --check
+
+          git config user.name "Hepta KG Convergence Bot"
+          git config user.email "hepta-kg-convergence@users.noreply.github.com"
+          git add -A
+          git commit -s -m "knowledge.graph: bound indexed queries and incremental writer"
+          test -z "$(git status --porcelain)"
+          SOURCE_CANDIDATE_SHA="$(git rev-parse HEAD)"
+          SOURCE_CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
+          export SOURCE_CANDIDATE_SHA SOURCE_CANDIDATE_TREE
+          printf '%s\n' "$SOURCE_CANDIDATE_SHA" > "$EVIDENCE_DIR/source-sha.txt"
+          printf '%s\n' "$SOURCE_CANDIDATE_TREE" > "$EVIDENCE_DIR/source-tree.txt"
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+          (
+            cd codex-rs
+            timeout --signal=TERM 15m \
+              cargo test --locked --release -p codex-hepta-kg \
+                canonical_cardinality_high_fanout_benchmark_receipt \
+                -- --ignored --nocapture
+          ) 2>&1 | tee "$EVIDENCE_DIR/kernel-benchmark-raw.log"
+
+          python3 - "$EVIDENCE_DIR/kernel-benchmark-raw.log" \
+            "$EVIDENCE_DIR/kernel-benchmark.json" <<'PY'
+          import json
+          import os
+          import pathlib
+          import sys
+
+          prefix = "HEPTA_KNOWLEDGE_GRAPH_KERNEL_BENCHMARK="
+          raw = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+          payloads = [line.split(prefix, 1)[1].strip() for line in raw.splitlines() if prefix in line]
+          if len(payloads) != 1:
+              raise SystemExit(f"expected one kernel benchmark receipt, observed {len(payloads)}")
+          receipt = json.loads(payloads[0])
+          expected = {
+              "schema": "hepta.knowledge-graph.kernel-benchmark.v1",
+              "hostClass": "shared-runner-nonqualifying",
+              "nodes": 4096,
+              "edges": 32768,
+              "totalSupports": 36864,
+              "seedCount": 1,
+              "returnedEdges": 128,
+              "omittedEdges": 32640,
+              "relationEdgesScanned": 32768,
+              "selectedEdgesCloned": 128,
+              "selectedSupportsCloned": 128,
+          }
+          for key, value in expected.items():
+              if receipt.get(key) != value:
+                  raise SystemExit(f"invalid benchmark {key}: {receipt.get(key)!r}")
+          for key in ("buildNs", "validationNs", "queryNs"):
+              value = receipt.get(key)
+              if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                  raise SystemExit(f"invalid benchmark {key}: {value!r}")
+          receipt["sourceSha"] = os.environ["SOURCE_CANDIDATE_SHA"]
+          receipt["sourceTree"] = os.environ["SOURCE_CANDIDATE_TREE"]
+          receipt["executorHost"] = "rog-build-only-nonqualifying"
+          pathlib.Path(sys.argv[2]).write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          timeout --signal=TERM 25m \
+            python3 scripts/hepta-knowledge-graph-target-measure.py \
+              --expected-sha "$SOURCE_CANDIDATE_SHA" \
+              --host-profile-id rog-build-only-nonqualifying \
+              --writes 32 \
+              --query-samples 10 \
+              --reopen-samples 3 \
+              --contention-readers 2 \
+              --contention-rounds 3 \
+              --target-dir "$RUNNER_TEMP/kg-build-debug" \
+              --output "$EVIDENCE_DIR/build-benchmark.json" \
+              --raw-output "$EVIDENCE_DIR/build-benchmark-raw.log" \
+            2>&1 | tee "$EVIDENCE_DIR/build-benchmark-driver.log"
+
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$SOURCE_CANDIDATE_SHA" \
+            --expected-tree "$SOURCE_CANDIDATE_TREE"
+          git diff --check
+          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+          git commit -s -m "docs(knowledge.graph): bind exact measured source identity"
+          test -z "$(git status --porcelain)"
+
+          FINAL_SHA="$(git rev-parse HEAD)"
+          FINAL_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$FINAL_SHA" --expected-tree "$FINAL_TREE"
+          python3 scripts/hepta-technical-closure.py verify
+          python3 scripts/test_hepta_knowledge_graph_target_measure.py
+          python3 scripts/hepta-knowledge-graph-production-gate.py --self-test
+          python3 scripts/hepta-knowledge-graph-production-gate.py verify-state \
+            --policy qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json \
+            --state qualification/knowledge-graph/ACCEPTANCE_STATE.json \
+            --require-inactive
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-kg
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory --lib cognitive_kg
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory --lib cognitive_retrieval
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg -p codex-hepta-memory \
+            --all-targets --no-deps -- -D warnings
+          git diff --check
+          test -z "$(git status --porcelain)"
+          printf '%s\n' "$FINAL_SHA" > "$EVIDENCE_DIR/final-sha.txt"
+          printf '%s\n' "$FINAL_TREE" > "$EVIDENCE_DIR/final-tree.txt"
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+          (
+            cd "$EVIDENCE_DIR"
+            find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 \
+              | sort -z \
+              | xargs -0 sha256sum > SHA256SUMS
+          )
+          LOCKED
+
+      - name: Retain nonqualifying build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-fenced-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kg-selfhosted-executor/**
+          if-no-files-found: error
+          retention-days: 90
