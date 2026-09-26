@@ -88,11 +88,7 @@ impl AgentdState {
                 let host = self.ndu_owner.get().ok_or_else(|| {
                     AgentdError::Invalid("utility.ndu owner is not configured".to_string())
                 })?;
-                let mutation = matches!(
-                    &request,
-                    codex_hepta_agent_protocol::NduControlRequestV1::Prepare { .. }
-                        | codex_hepta_agent_protocol::NduControlRequestV1::Apply { .. }
-                );
+                let mutation = request.requires_mutation_admission();
                 let result = host
                     .control(request, || {
                         self.refresh_generation()

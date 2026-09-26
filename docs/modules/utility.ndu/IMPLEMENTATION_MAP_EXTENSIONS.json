@@ -66,6 +66,38 @@
       ]
     },
     {
+      "operation": "requires_mutation_admission",
+      "nativeSymbol": "codex_hepta_agent_protocol::NduControlRequestV1::requires_mutation_admission",
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "product_implemented_recursive_outer_inner_mutation_classification",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+          "symbol": "external_admission_preserves_inner_mutation_classification"
+        }
+      ]
+    },
+    {
+      "operation": "NduExternalReplayStoreV2",
+      "nativeSymbol": "codex_hepta_agentd::ndu_owner::replay::NduExternalReplayStoreV2",
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "product_implemented_bounded_checksummed_durable_external_replay_v2",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+          "symbol": "completed_and_pending_admissions_survive_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+          "symbol": "corrupt_image_and_symlink_fail_closed"
+        }
+      ]
+    },
+    {
       "operation": "NduOperationalMetricsV1",
       "nativeSymbol": "codex_hepta_ndu::NduOperationalMetricsV1",
       "sourcePath": "codex-rs/hepta-ndu/src/operational_metrics.rs",

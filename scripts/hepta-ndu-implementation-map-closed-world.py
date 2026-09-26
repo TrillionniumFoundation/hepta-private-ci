@@ -4,12 +4,14 @@
 This module validator treats the primary implementation map and its explicit
 extension as one closed world. It binds execution to the exact candidate
 SHA/tree, verifies unique operations, real native/test symbols, explicit source
-coverage and an exact TECHNICAL.md projection of the canonical module registry.
+coverage and exact manual/generated TECHNICAL.md projections of the canonical
+module registry.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -21,6 +23,17 @@ PRIMARY = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
 EXTENSION = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
 MODULE_DOCS = ROOT / "docs/modules/MODULE_DOCS.json"
 TECHNICAL = ROOT / "docs/modules/utility.ndu/TECHNICAL.md"
+GENERATED_BEGIN = "<!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->"
+GENERATED_END = "<!-- END GENERATED EXACT REGISTRY PROJECTION -->"
+GENERATED_FIELDS = (
+    ("Produced contracts", "producedContracts"),
+    ("Consumed contracts", "consumedContracts"),
+    ("Typed protocols", "protocols"),
+    ("Owned data domains", "ownedDomains"),
+    ("Read data domains", "readDomains"),
+    ("Work packages", "workPackages"),
+    ("Owned threats", "threats"),
+)
 
 
 class DuplicateKey(ValueError):
@@ -37,7 +50,9 @@ def object_no_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def load(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(), object_pairs_hook=object_no_duplicates)
+    return json.loads(
+        path.read_text(encoding="utf-8"), object_pairs_hook=object_no_duplicates
+    )
 
 
 def git(*args: str) -> str:
@@ -69,7 +84,7 @@ def tracked_files(root: str) -> set[str]:
 def rust_symbol_exists(path: Path, symbol: str) -> bool:
     terminal = symbol.rsplit("::", 1)[-1]
     escaped = re.escape(terminal)
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     patterns = [
         rf"\bfn\s+{escaped}\s*(?:<[^>]*>)?\s*\(",
         rf"\b(?:struct|enum|union|trait|type|const|static|mod)\s+{escaped}\b",
@@ -81,8 +96,13 @@ def symbol_exists(path: Path, symbol: str) -> bool:
     if path.suffix == ".rs":
         return rust_symbol_exists(path, symbol)
     if path.suffix == ".py":
-        return bool(re.search(rf"\bdef\s+{re.escape(symbol)}\s*\(", path.read_text()))
-    return symbol in path.read_text()
+        return bool(
+            re.search(
+                rf"\bdef\s+{re.escape(symbol)}\s*\(",
+                path.read_text(encoding="utf-8"),
+            )
+        )
+    return symbol in path.read_text(encoding="utf-8")
 
 
 def registry_module(registry: dict[str, Any]) -> dict[str, Any]:
@@ -97,6 +117,17 @@ def registry_module(registry: dict[str, Any]) -> dict[str, Any]:
     if len(matches) != 1:
         raise ValueError("MODULE_DOCS must contain exactly one utility.ndu entry")
     return matches[0]
+
+
+def registry_string_list(module: dict[str, Any], field: str) -> list[str]:
+    values = module.get(field)
+    if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+        raise ValueError(f"MODULE_DOCS utility.ndu {field} is not a string list")
+    if values != sorted(set(values)):
+        raise ValueError(
+            f"MODULE_DOCS utility.ndu {field} must be sorted and duplicate-free"
+        )
+    return values
 
 
 def markdown_code_list(text: str, start: str, end: str) -> list[str]:
@@ -124,11 +155,43 @@ def markdown_code_list(text: str, start: str, end: str) -> list[str]:
     return entries
 
 
-def validate_registry_projection(errors: list[str]) -> dict[str, int]:
+def render_generated_projection(module: dict[str, Any]) -> str:
+    lines = [
+        GENERATED_BEGIN,
+        "### Exact closed-world registry projection",
+        "",
+        "This projection is generated from the canonical registries and is intentionally identical to Sections 5 and 6.",
+        "",
+    ]
+    for title, field in GENERATED_FIELDS:
+        lines.append(f"**{title}:**")
+        lines.extend(f"- `{value}`" for value in registry_string_list(module, field))
+        lines.append("")
+    lines.append(GENERATED_END)
+    return "\n".join(lines)
+
+
+def exact_generated_projection(text: str) -> str:
+    if text.count(GENERATED_BEGIN) != 1 or text.count(GENERATED_END) != 1:
+        raise ValueError(
+            "TECHNICAL.md must contain exactly one generated registry projection block"
+        )
+    start = text.index(GENERATED_BEGIN)
+    end = text.index(GENERATED_END, start) + len(GENERATED_END)
+    return text[start:end]
+
+
+def sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def validate_registry_projection(
+    errors: list[str],
+) -> tuple[dict[str, int], str | None]:
     try:
         registry = load(MODULE_DOCS)
         module = registry_module(registry)
-        technical = TECHNICAL.read_text()
+        technical = TECHNICAL.read_text(encoding="utf-8")
         projections = {
             "producedContracts": markdown_code_list(
                 technical, "Produced contracts:", "Consumed contracts:"
@@ -152,24 +215,39 @@ def validate_registry_projection(errors: list[str]) -> dict[str, int]:
                 "For every owned domain",
             ),
         }
+        expected_generated = render_generated_projection(module)
+        actual_generated = exact_generated_projection(technical)
     except (OSError, json.JSONDecodeError, DuplicateKey, ValueError) as error:
         errors.append(f"technical registry projection: {error}")
-        return {}
+        return {}, None
 
     counts: dict[str, int] = {}
+    try:
+        for _title, field in GENERATED_FIELDS:
+            counts[field] = len(registry_string_list(module, field))
+    except ValueError as error:
+        errors.append(f"technical registry projection: {error}")
+        return counts, None
+
     for field, actual in projections.items():
-        expected = module.get(field)
-        if not isinstance(expected, list) or any(
-            not isinstance(value, str) for value in expected
-        ):
-            errors.append(f"MODULE_DOCS utility.ndu {field} is not a string list")
+        try:
+            expected = registry_string_list(module, field)
+        except ValueError as error:
+            errors.append(str(error))
             continue
-        counts[field] = len(actual)
         if actual != expected:
             errors.append(
                 f"TECHNICAL.md {field} differs from generated MODULE_DOCS projection: expected={expected!r} actual={actual!r}"
             )
-    return counts
+
+    expected_sha = sha256_text(expected_generated)
+    actual_sha = sha256_text(actual_generated)
+    if actual_generated != expected_generated:
+        errors.append(
+            "TECHNICAL.md generated registry projection differs from canonical renderer: "
+            f"expected_sha256={expected_sha} actual_sha256={actual_sha}"
+        )
+    return counts, actual_sha
 
 
 def main() -> int:
@@ -295,7 +373,7 @@ def main() -> int:
     for path in sorted(path for path in tracked if path not in strings):
         errors.append(f"tracked Rust source is outside the closed map: {path}")
 
-    registry_projection = validate_registry_projection(errors)
+    registry_projection, generated_projection_sha = validate_registry_projection(errors)
     try:
         if git("rev-parse", "HEAD") != candidate_sha or git(
             "rev-parse", "HEAD^{tree}"
@@ -307,7 +385,7 @@ def main() -> int:
         errors.append(f"final candidate identity check failed: {error}")
 
     result = {
-        "schema": "hepta.ndu.closed-world-map-validation.v4",
+        "schema": "hepta.ndu.closed-world-map-validation.v5",
         "module": primary.get("module"),
         "sourceSha": candidate_sha,
         "sourceTree": candidate_tree,
@@ -315,6 +393,7 @@ def main() -> int:
         "testIdentityCount": len(seen_tests),
         "trackedRustSourceCount": len(tracked),
         "registryProjectionCounts": registry_projection,
+        "generatedRegistryProjectionSha256": generated_projection_sha,
         "maps": [str(PRIMARY.relative_to(ROOT)), str(EXTENSION.relative_to(ROOT))],
         "registry": str(MODULE_DOCS.relative_to(ROOT)),
         "technicalGuide": str(TECHNICAL.relative_to(ROOT)),

@@ -91,6 +91,21 @@ impl NduControlRequestV1 {
     pub const MAX_EXTERNAL_ADMISSION_BYTES_V2: usize = MAX_NDU_EXTERNAL_ADMISSION_BYTES;
     pub const MAX_EXTERNAL_ADMISSION_EXTENSIONS_V2: usize = MAX_NDU_CRITICAL_EXTENSIONS;
 
+    /// Whether this request, including an admission wrapper's exact inner
+    /// request, can prepare or apply a durable mutation. Product lifecycle
+    /// gates must use this recursive classification rather than inspect only
+    /// the outer enum discriminant.
+    #[must_use]
+    pub fn requires_mutation_admission(&self) -> bool {
+        match self {
+            Self::Prepare { .. } | Self::Apply { .. } => true,
+            Self::ExternalAdmissionV2 { request, .. } => {
+                request.requires_mutation_admission()
+            }
+            Self::Context | Self::Selection { .. } | Self::Outcome { .. } => false,
+        }
+    }
+
     /// SHA-256 of the exact canonical V2 payload. This is defined only for an
     /// inner control request; nested admission wrappers are rejected.
     pub fn canonical_payload_digest_v2(&self) -> Result<[u8; 32], &'static str> {
@@ -480,5 +495,39 @@ mod tests {
     fn nested_admission_is_not_a_legal_payload() {
         let nested = admission();
         assert_eq!(nested.canonical_payload_digest_v2(), Err("NDU-ADMIT-006"));
+    }
+
+    #[test]
+    fn external_admission_preserves_inner_mutation_classification() {
+        let mutation = NduMutationV1 {
+            operation: NduMutationOperationV1::AppendPreference,
+            identity: nonzero(10),
+            objective: nonzero(11),
+            subject: nonzero(12),
+            projection: nonzero(13),
+            expected_predecessor: None,
+        };
+        let request = NduControlRequestV1::Prepare {
+            mutation,
+            expected_head: nonzero(14),
+        };
+        assert!(request.requires_mutation_admission());
+        let payload_digest = must_digest(&request);
+        let wrapped = NduControlRequestV1::ExternalAdmissionV2 {
+            schema_version: NduControlRequestV1::EXTERNAL_ADMISSION_SCHEMA_VERSION_V2,
+            request_id: "request-mutation".to_string(),
+            idempotency_key: "idem-mutation".to_string(),
+            caller_id: "control-plane".to_string(),
+            issued_at_unix_ms: 1_000,
+            deadline_unix_ms: 2_000,
+            host_generation: 7,
+            fence_digest: nonzero(1),
+            revocation_head_digest: nonzero(2),
+            payload_digest,
+            request: Box::new(request),
+            extensions: Vec::new(),
+        };
+        assert!(wrapped.requires_mutation_admission());
+        assert!(!admission().requires_mutation_admission());
     }
 }

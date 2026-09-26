@@ -11,6 +11,9 @@ use codex_hepta_agent_protocol::NduMutationOperationV1;
 use codex_hepta_agent_protocol::NduMutationV1;
 use codex_hepta_ndu::NduProjectionKindV1;
 
+use super::replay::NduExternalReplayBeginV2;
+use super::replay::NduExternalReplayStoreErrorV2;
+
 impl AgentdNduOwnerHostV1 {
     pub(crate) fn control(
         &self,
@@ -73,35 +76,15 @@ impl AgentdNduOwnerHostV1 {
                 ]);
                 let key = (caller_id, idempotency_key);
                 let mut replay = self.lock_admission_replay()?;
-                replay
-                    .entries
-                    .retain(|_, existing| existing.deadline_unix_ms >= now);
-                if let Some(existing) = replay.entries.get(&key) {
-                    if existing.binding_digest != binding_digest {
-                        return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-008"));
-                    }
-                    if let Some(result) = &existing.result {
-                        return Ok(result.clone());
-                    }
-                    // A prior attempt crossed admission but did not produce a
-                    // cacheable success. The caller must reconcile by mutation
-                    // identity/outcome instead of replaying a possibly committed
-                    // effect or reusing the key for another payload.
-                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"));
+                match replay
+                    .begin(key.clone(), binding_digest, deadline_unix_ms, now)
+                    .map_err(replay_store_error)?
+                {
+                    NduExternalReplayBeginV2::Cached(result) => return Ok(result),
+                    NduExternalReplayBeginV2::Fresh => {}
                 }
-                if replay.entries.len() >= MAX_NDU_EXTERNAL_REPLAY_ENTRIES_V2 {
-                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-009"));
-                }
-                replay.entries.insert(
-                    key.clone(),
-                    NduExternalReplayBindingV2 {
-                        binding_digest,
-                        deadline_unix_ms,
-                        result: None,
-                    },
-                );
                 drop(replay);
-                (*request, Some(key))
+                (*request, Some((key, binding_digest)))
             }
             ordinary => (ordinary, None),
         };
@@ -180,16 +163,31 @@ impl AgentdNduOwnerHostV1 {
             }
         };
 
-        if let (Some(key), Ok(value)) = (replay_key, &result) {
+        if let (Some((key, binding_digest)), Ok(value)) = (replay_key, &result) {
             let mut replay = self.lock_admission_replay()?;
-            let entry = replay
-                .entries
-                .get_mut(&key)
-                .ok_or(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"))?;
-            entry.result = Some(value.clone());
+            replay
+                .complete(&key, binding_digest, value.clone())
+                .map_err(replay_store_error)?;
         }
         result
     }
+}
+
+fn replay_store_error(error: NduExternalReplayStoreErrorV2) -> AgentdNduOwnerErrorV1 {
+    let code = match error {
+        NduExternalReplayStoreErrorV2::Conflict => "NDU-ADMIT-008",
+        NduExternalReplayStoreErrorV2::Capacity => "NDU-ADMIT-009",
+        NduExternalReplayStoreErrorV2::Pending => "NDU-ADMIT-010",
+        NduExternalReplayStoreErrorV2::UnsupportedPlatform
+        | NduExternalReplayStoreErrorV2::Symlink
+        | NduExternalReplayStoreErrorV2::NotRegular
+        | NduExternalReplayStoreErrorV2::TooLarge
+        | NduExternalReplayStoreErrorV2::Corrupt
+        | NduExternalReplayStoreErrorV2::MissingEntry
+        | NduExternalReplayStoreErrorV2::Indeterminate
+        | NduExternalReplayStoreErrorV2::Io(_) => "NDU-ADMIT-011",
+    };
+    AgentdNduOwnerErrorV1::Admission(code)
 }
 
 fn native_mutation(wire: NduMutationV1) -> Result<NduOwnerMutationV1, AgentdNduOwnerErrorV1> {
