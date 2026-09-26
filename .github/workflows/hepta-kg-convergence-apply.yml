@@ -9,24 +9,34 @@ on:
       - 'scripts/hepta-kg-*-finalize.py'
       - 'scripts/hepta-kg-convergence-apply-phase1.py'
       - 'scripts/test_hepta_kg_convergence_finalize.py'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/hepta-kg-convergence-apply.yml'
+      - 'scripts/hepta-kg-*-finalize.py'
+      - 'scripts/hepta-kg-convergence-apply-phase1.py'
+      - 'scripts/test_hepta_kg_convergence_finalize.py'
 
 permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-convergence-apply-${{ github.ref }}
+  group: hepta-kg-convergence-apply-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.sha }}
-  CANDIDATE_BRANCH: work/product-convergence-20260923
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CANDIDATE_BRANCH: ${{ github.event.pull_request.head.ref || 'work/product-convergence-20260923' }}
 
 jobs:
   apply:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.ref == 'refs/heads/work/product-convergence-20260923' &&
-      github.actor != 'github-actions[bot]'
+      github.actor != 'github-actions[bot]' &&
+      (
+        (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
+        (github.event_name != 'pull_request' && github.ref == 'refs/heads/work/product-convergence-20260923')
+      )
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -34,6 +44,7 @@ jobs:
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Bind exact source and preserve assembly inputs
         shell: bash
@@ -86,11 +97,11 @@ jobs:
               lock['package'] = [package for package in packages if package['name'] != 'codex-hepta-kg']
               return kg[0]
           old, new = remove_kg(before), remove_kg(after)
-          if before != after:
-              raise SystemExit('refusing an unrelated Cargo.lock update')
           old_dependencies = set(old.pop('dependencies', []))
           new_dependencies = set(new.pop('dependencies', []))
           added = new_dependencies - old_dependencies
+          if before != after:
+              raise SystemExit('refusing an unrelated Cargo.lock update')
           if old != new or old_dependencies - new_dependencies or any(dep.split()[0] != 'sha2' for dep in added):
               raise SystemExit('unexpected KG dependency drift')
           PYLOCK
@@ -126,7 +137,6 @@ jobs:
           git diff --check
           git config user.name 'Hepta KG Convergence Bot'
           git config user.email 'hepta-kg-convergence@users.noreply.github.com'
-          # Only the named materializers and their test are retired. No wildcard deletion.
           git rm scripts/hepta-kg-convergence-apply-phase1.py \
             scripts/hepta-kg-convergence-finalize.py \
             scripts/hepta-kg-durable-writer-finalize.py \
@@ -148,7 +158,10 @@ jobs:
           test -z "$(git status --porcelain)"
           SHA="$(git rev-parse HEAD)"
           TREE="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta-implementation-maps.py verify --expected-sha "$SHA" --expected-tree "$TREE"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module knowledge.graph \
+            --expected-sha "$SHA" \
+            --expected-tree "$TREE"
           printf 'sha=%s\ntree=%s\n' "$SHA" "$TREE" >> "$GITHUB_OUTPUT"
           printf '%s\n' "$SHA" > "$EVIDENCE_DIR/candidate-sha.txt"
           git bundle create "$EVIDENCE_DIR/candidate.bundle" HEAD
@@ -218,5 +231,4 @@ jobs:
           test -z "$(git status --porcelain)"
           git fetch origin "$CANDIDATE_BRANCH"
           test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
-          # No post-test rebase, force push, main mutation or activation.
           git push origin "HEAD:$CANDIDATE_BRANCH"
