@@ -1,0 +1,204 @@
+name: AuthBus production closure apply and qualify
+
+on:
+  push:
+    branches:
+      - codex/authbus-production-closure-20260926
+    paths:
+      - ".github/authbus-production-closure/**"
+      - ".github/workflows/authbus-production-closure.yml"
+      - "AUTHBUS_PRODUCTION_CLOSURE_TRIGGER"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authbus-production-closure-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  APPLY_SHA256: "5cbb479a1799bcc174eed43df46d337e0355e3c641b28001cf206a914634d2db"
+
+jobs:
+  apply-and-qualify:
+    name: Apply source closure and preserve diagnostics
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and authenticate closure generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/authbus-production-closure/part-* \
+            | base64 --decode \
+            | gzip --decompress \
+            > /tmp/authbus-production-closure.py
+          test "$(sha256sum /tmp/authbus-production-closure.py | cut -d' ' -f1)" = "$APPLY_SHA256"
+          python3 -m py_compile /tmp/authbus-production-closure.py
+
+      - name: Apply trust, owner, lifecycle, test and inventory changes
+        id: apply
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 /tmp/authbus-production-closure.py 2>&1 | tee /tmp/authbus-apply.log
+
+      - name: Format generated Rust
+        id: fmt
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo fmt --all 2>&1 | tee /tmp/authbus-fmt.log
+
+      - name: Test AuthBus owner and authority targets
+        id: authbus_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test -p codex-hepta-authbus --all-targets 2>&1 | tee /tmp/authbus-tests.log
+
+      - name: Test durable evidence AuthBus paths
+        id: evidence_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test -p codex-hepta-evidence --lib authbus 2>&1 | tee /tmp/authbus-evidence.log
+
+      - name: Test Bao registered product caller
+        id: bao_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test -p codex-hepta-bao-adapter --lib authbus 2>&1 | tee /tmp/authbus-bao.log
+
+      - name: Check Agentd production composition
+        id: agentd_check
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo check -p codex-hepta-agentd 2>&1 | tee /tmp/authbus-agentd.log
+
+      - name: Enforce closed-world public API inventory
+        id: api_inventory
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 scripts/check-authbus-api-inventory.py 2>&1 | tee /tmp/authbus-api-inventory.log
+
+      - name: Strict clippy for AuthBus owner
+        id: clippy
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo clippy -p codex-hepta-authbus --all-targets -- -D warnings 2>&1 | tee /tmp/authbus-clippy.log
+
+      - name: Preserve qualification diagnostics
+        if: always()
+        shell: bash
+        env:
+          APPLY_OUTCOME: ${{ steps.apply.outcome }}
+          FMT_OUTCOME: ${{ steps.fmt.outcome }}
+          AUTHBUS_TESTS_OUTCOME: ${{ steps.authbus_tests.outcome }}
+          EVIDENCE_TESTS_OUTCOME: ${{ steps.evidence_tests.outcome }}
+          BAO_TESTS_OUTCOME: ${{ steps.bao_tests.outcome }}
+          AGENTD_CHECK_OUTCOME: ${{ steps.agentd_check.outcome }}
+          API_INVENTORY_OUTCOME: ${{ steps.api_inventory.outcome }}
+          CLIPPY_OUTCOME: ${{ steps.clippy.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p qualification/authbus-production-closure
+          {
+            echo "# AuthBus production-closure diagnostics"
+            echo
+            echo "- workflow run: $GITHUB_RUN_ID"
+            echo "- workflow attempt: $GITHUB_RUN_ATTEMPT"
+            echo "- trigger SHA: $GITHUB_SHA"
+            echo "- generator SHA-256: $APPLY_SHA256"
+            echo "- runner: $RUNNER_OS / $RUNNER_ARCH"
+            echo
+            echo "## Gate outcomes"
+            echo
+            echo "| Gate | Outcome |"
+            echo "|---|---|"
+            echo "| generator | $APPLY_OUTCOME |"
+            echo "| cargo fmt | $FMT_OUTCOME |"
+            echo "| AuthBus all-targets | $AUTHBUS_TESTS_OUTCOME |"
+            echo "| evidence AuthBus tests | $EVIDENCE_TESTS_OUTCOME |"
+            echo "| Bao product caller | $BAO_TESTS_OUTCOME |"
+            echo "| Agentd composition | $AGENTD_CHECK_OUTCOME |"
+            echo "| public API inventory | $API_INVENTORY_OUTCOME |"
+            echo "| strict clippy | $CLIPPY_OUTCOME |"
+            echo
+            echo "## Changed paths"
+            echo
+            echo '```text'
+            git status --short
+            echo '```'
+            for item in \
+              authbus-apply authbus-fmt authbus-tests authbus-evidence \
+              authbus-bao authbus-agentd authbus-api-inventory authbus-clippy; do
+              file="/tmp/${item}.log"
+              echo
+              echo "## ${item} tail"
+              echo
+              echo '```text'
+              if test -f "$file"; then
+                tail -n 160 "$file"
+              else
+                echo "log unavailable"
+              fi
+              echo '```'
+            done
+          } > qualification/authbus-production-closure/DIAGNOSTICS.md
+
+      - name: Commit generated closure and diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-authbus-closure-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(authbus): close trust and owner boundaries"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Enforce focused gate result
+        if: always()
+        shell: bash
+        env:
+          APPLY_OUTCOME: ${{ steps.apply.outcome }}
+          FMT_OUTCOME: ${{ steps.fmt.outcome }}
+          AUTHBUS_TESTS_OUTCOME: ${{ steps.authbus_tests.outcome }}
+          EVIDENCE_TESTS_OUTCOME: ${{ steps.evidence_tests.outcome }}
+          BAO_TESTS_OUTCOME: ${{ steps.bao_tests.outcome }}
+          AGENTD_CHECK_OUTCOME: ${{ steps.agentd_check.outcome }}
+          API_INVENTORY_OUTCOME: ${{ steps.api_inventory.outcome }}
+          CLIPPY_OUTCOME: ${{ steps.clippy.outcome }}
+        run: |
+          set -euo pipefail
+          for outcome in \
+            "$APPLY_OUTCOME" "$FMT_OUTCOME" "$AUTHBUS_TESTS_OUTCOME" \
+            "$EVIDENCE_TESTS_OUTCOME" "$BAO_TESTS_OUTCOME" \
+            "$AGENTD_CHECK_OUTCOME" "$API_INVENTORY_OUTCOME" "$CLIPPY_OUTCOME"; do
+            test "$outcome" = success
+          done
