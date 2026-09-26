@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/learning-eval-target-host-profile-v1.json",
+  "title": "learning.eval target-host acceptance profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "host",
+    "source",
+    "authority",
+    "namespaces",
+    "storageQualification",
+    "publicationQualification",
+    "liveEvidence",
+    "independentGates",
+    "createdAtUnixMicros",
+    "expiresAtUnixMicros",
+    "profileDigest"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hepta.learning-eval.target-host-profile.v1"
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostId",
+        "environment",
+        "deploymentGeneration",
+        "binaryDigest",
+        "clockProfileDigest"
+      ],
+      "properties": {
+        "hostId": { "$ref": "#/$defs/stableId" },
+        "environment": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "deploymentGeneration": { "type": "integer", "minimum": 1 },
+        "binaryDigest": { "$ref": "#/$defs/digest" },
+        "clockProfileDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tree", "buildProvenanceDigest"],
+      "properties": {
+        "commit": { "$ref": "#/$defs/sha1" },
+        "tree": { "$ref": "#/$defs/sha1" },
+        "buildProvenanceDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trustDigest",
+        "authorityEpoch",
+        "revocationFrontierDigest",
+        "generatorPrincipal",
+        "evaluatorPrincipal",
+        "observerPrincipal",
+        "evidenceOwnerPrincipal",
+        "selectorPrincipal",
+        "operatorPrincipal",
+        "releasePrincipal",
+        "roleSeparationReceiptDigest"
+      ],
+      "properties": {
+        "trustDigest": { "$ref": "#/$defs/digest" },
+        "authorityEpoch": { "type": "integer", "minimum": 1 },
+        "revocationFrontierDigest": { "$ref": "#/$defs/digest" },
+        "generatorPrincipal": { "$ref": "#/$defs/stableId" },
+        "evaluatorPrincipal": { "$ref": "#/$defs/stableId" },
+        "observerPrincipal": { "$ref": "#/$defs/stableId" },
+        "evidenceOwnerPrincipal": { "$ref": "#/$defs/stableId" },
+        "selectorPrincipal": { "$ref": "#/$defs/stableId" },
+        "operatorPrincipal": { "$ref": "#/$defs/stableId" },
+        "releasePrincipal": { "$ref": "#/$defs/stableId" },
+        "roleSeparationReceiptDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "namespaces": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "namespaceDigest",
+          "ownerPrincipal",
+          "storageProfileDigest",
+          "retentionProfileDigest",
+          "backupProfileDigest"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "frozen-plans",
+              "final-holdout",
+              "attempt-journal",
+              "qualification-evidence",
+              "outcome-snapshots",
+              "retention-privacy-unlearning",
+              "operator-release"
+            ]
+          },
+          "namespaceDigest": { "$ref": "#/$defs/digest" },
+          "ownerPrincipal": { "$ref": "#/$defs/stableId" },
+          "storageProfileDigest": { "$ref": "#/$defs/digest" },
+          "retentionProfileDigest": { "$ref": "#/$defs/digest" },
+          "backupProfileDigest": { "$ref": "#/$defs/digest" }
+        }
+      }
+    },
+    "storageQualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "linearizableCas",
+        "monotonicFencing",
+        "acceptedOrUnknownMapping",
+        "crashMatrixReceiptDigest",
+        "anchorRollbackReceiptDigest",
+        "compactionReceiptDigest",
+        "capacityReceiptDigest",
+        "crossHostQualified"
+      ],
+      "properties": {
+        "linearizableCas": { "const": true },
+        "monotonicFencing": { "const": true },
+        "acceptedOrUnknownMapping": { "const": true },
+        "crashMatrixReceiptDigest": { "$ref": "#/$defs/digest" },
+        "anchorRollbackReceiptDigest": { "$ref": "#/$defs/digest" },
+        "compactionReceiptDigest": { "$ref": "#/$defs/digest" },
+        "capacityReceiptDigest": { "$ref": "#/$defs/digest" },
+        "crossHostQualified": { "type": "boolean" }
+      }
+    },
+    "publicationQualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "idempotent",
+        "conflictDetecting",
+        "indeterminateReconciliation",
+        "receiptDigest"
+      ],
+      "properties": {
+        "idempotent": { "const": true },
+        "conflictDetecting": { "const": true },
+        "indeterminateReconciliation": { "const": true },
+        "receiptDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "liveEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authenticatedOutcomes",
+        "realFutureCalendarWindows",
+        "retentionChangePointPrivacyPower",
+        "unlearningNonResurrection",
+        "evidenceBundleDigest"
+      ],
+      "properties": {
+        "authenticatedOutcomes": { "type": "boolean" },
+        "realFutureCalendarWindows": { "type": "boolean" },
+        "retentionChangePointPrivacyPower": { "type": "boolean" },
+        "unlearningNonResurrection": { "type": "boolean" },
+        "evidenceBundleDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "independentGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semanticAcceptance",
+        "operatorAcceptance",
+        "selection",
+        "canary",
+        "promotion",
+        "activation",
+        "release"
+      ],
+      "properties": {
+        "semanticAcceptance": { "$ref": "#/$defs/optionalDigest" },
+        "operatorAcceptance": { "$ref": "#/$defs/optionalDigest" },
+        "selection": { "$ref": "#/$defs/optionalDigest" },
+        "canary": { "$ref": "#/$defs/optionalDigest" },
+        "promotion": { "$ref": "#/$defs/optionalDigest" },
+        "activation": { "$ref": "#/$defs/optionalDigest" },
+        "release": { "$ref": "#/$defs/optionalDigest" }
+      }
+    },
+    "createdAtUnixMicros": { "type": "integer", "minimum": 1 },
+    "expiresAtUnixMicros": { "type": "integer", "minimum": 1 },
+    "profileDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "not": { "const": "0000000000000000000000000000000000000000000000000000000000000000" }
+    },
+    "optionalDigest": {
+      "oneOf": [
+        { "$ref": "#/$defs/digest" },
+        { "type": "null" }
+      ]
+    }
+  }
+}
