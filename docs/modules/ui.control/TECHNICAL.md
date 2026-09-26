@@ -12,6 +12,10 @@ The active convergence branch is `work/ui-control-production-convergence-2026092
 |---|---|
 | `clientCore` | `substantially_implemented` |
 | `browserComposition` | `repository_shell_implemented` |
+| `dependencyLock` | `exact_npm_lock_committed_qualification_pending` |
+| `sessionLifecycle` | `identity_permission_revision_and_shutdown_fenced` |
+| `terminalEvidence` | `authenticated_backend_observation_projection_implemented` |
+| `localRecovery` | `bounded_best_effort_storage_without_authority_claim` |
 | `authentication` | `same_origin_session_adapter_implemented_deployment_unbound` |
 | `transport` | `same_origin_http_adapter_implemented_deployment_unbound` |
 | `serverIdempotency` | `contract_defined_backend_enforcement_unobserved` |
@@ -59,6 +63,9 @@ The transition validator enforces:
 1. Accepted-but-timeout is indeterminate and must be recovered by operation id before retry.
 1. The backend operation-id unique constraint is the final idempotency authority.
 1. Same generation and revision with a different semantic digest is snapshot drift and is rejected.
+1. Session identity cannot change during refresh; permission revision cannot regress or conceal permission drift.
+1. Revoke, close, and stopped refresh paths remove local control authority even when transport cleanup fails.
+1. Local recovery storage failure is visible but cannot wedge or authorize a control request.
 1. Control actions are disabled while the displayed view is stale or the session lacks the required permission.
 
 The browser persists only bounded recovery metadata. It never persists credentials, CSRF tokens, backend responses containing secrets, or a claim that a mutation succeeded.
@@ -137,6 +144,7 @@ Callers branch on `code` and `retryable`; parsing message text is unsupported.
 
 Repository checks:
 
+- `npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund`
 - `npm run lint --prefix apps/hepta-control-ui`
 - `npm test --prefix apps/hepta-control-ui`
 - `npm run test:contract --prefix apps/hepta-control-ui`
