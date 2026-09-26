@@ -1,0 +1,47 @@
+name: control.engineering source snapshot
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-final-convergence-20260926
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and package review surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "codex/control-engineering-final-convergence-20260926"
+          printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/source-sha.txt"
+          tar -czf "$RUNNER_TEMP/control-engineering-source.tgz" \
+            tools/hepta-engineering-control \
+            docs/modules/control.engineering \
+            docs/modules/MODULES.json \
+            docs/modules/SOURCE_BINDINGS.json \
+            docs/modules/MODULE_DOCS.json \
+            docs/delivery/WORK_PACKAGES.json \
+            qualification/module-execution-dossiers \
+            scripts/hepta-implementation-maps.py \
+            scripts/test_hepta_implementation_maps.py \
+            scripts/hepta-gap-closure.py \
+            .github/workflows/hepta-consolidated-source.yml
+      - name: Retain exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/control-engineering-source.tgz
+            ${{ runner.temp }}/source-sha.txt
+          if-no-files-found: error
+          retention-days: 3
