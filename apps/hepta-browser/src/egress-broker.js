@@ -150,23 +150,31 @@ function parseClientHelloServerName(body) {
   if (body.length < 35) throw new Error("TLS ClientHello is truncated");
   offset += 2 + 32;
   const sessionIdBytes = body[offset++];
-  if (offset + sessionIdBytes > body.length) throw new Error("TLS ClientHello session id is truncated");
+  if (offset + sessionIdBytes > body.length) {
+    throw new Error("TLS ClientHello session id is truncated");
+  }
   offset += sessionIdBytes;
-  if (offset + 2 > body.length) throw new Error("TLS ClientHello cipher suites are truncated");
+  if (offset + 2 > body.length) {
+    throw new Error("TLS ClientHello cipher suites are truncated");
+  }
   const cipherBytes = body.readUInt16BE(offset);
   offset += 2;
   if (cipherBytes < 2 || cipherBytes % 2 !== 0 || offset + cipherBytes > body.length) {
     throw new Error("TLS ClientHello cipher suite vector is invalid");
   }
   offset += cipherBytes;
-  if (offset >= body.length) throw new Error("TLS ClientHello compression vector is missing");
+  if (offset >= body.length) {
+    throw new Error("TLS ClientHello compression vector is missing");
+  }
   const compressionBytes = body[offset++];
   if (compressionBytes < 1 || offset + compressionBytes > body.length) {
     throw new Error("TLS ClientHello compression vector is invalid");
   }
   offset += compressionBytes;
   if (offset === body.length) return null;
-  if (offset + 2 > body.length) throw new Error("TLS ClientHello extensions are truncated");
+  if (offset + 2 > body.length) {
+    throw new Error("TLS ClientHello extensions are truncated");
+  }
   const extensionsBytes = body.readUInt16BE(offset);
   offset += 2;
   if (offset + extensionsBytes !== body.length) {
@@ -175,11 +183,15 @@ function parseClientHelloServerName(body) {
   const extensionsEnd = offset + extensionsBytes;
   let serverName = null;
   while (offset < extensionsEnd) {
-    if (offset + 4 > extensionsEnd) throw new Error("TLS extension header is truncated");
+    if (offset + 4 > extensionsEnd) {
+      throw new Error("TLS extension header is truncated");
+    }
     const type = body.readUInt16BE(offset);
     const length = body.readUInt16BE(offset + 2);
     offset += 4;
-    if (offset + length > extensionsEnd) throw new Error("TLS extension body is truncated");
+    if (offset + length > extensionsEnd) {
+      throw new Error("TLS extension body is truncated");
+    }
     if (type === 0) {
       if (length < 5) throw new Error("TLS server_name extension is invalid");
       const extensionEnd = offset + length;
@@ -189,7 +201,9 @@ function parseClientHelloServerName(body) {
         throw new Error("TLS server_name list length is invalid");
       }
       while (offset < extensionEnd) {
-        if (offset + 3 > extensionEnd) throw new Error("TLS server_name entry is truncated");
+        if (offset + 3 > extensionEnd) {
+          throw new Error("TLS server_name entry is truncated");
+        }
         const nameType = body[offset++];
         const nameBytes = body.readUInt16BE(offset);
         offset += 2;
@@ -199,7 +213,9 @@ function parseClientHelloServerName(body) {
         const value = body.subarray(offset, offset + nameBytes);
         offset += nameBytes;
         if (nameType === 0) {
-          if (serverName !== null) throw new Error("TLS ClientHello contains duplicate host_name entries");
+          if (serverName !== null) {
+            throw new Error("TLS ClientHello contains duplicate host_name entries");
+          }
           if ([...value].some((byte) => byte < 0x21 || byte > 0x7e)) {
             throw new Error("TLS host_name must be visible ASCII");
           }
@@ -235,7 +251,9 @@ function parseTlsClientHelloServerName(bytes) {
     }
     recordOffset += 5 + recordBytes;
     if (handshake.length < 4) continue;
-    if (handshake[0] !== 1) throw new Error("HTTPS CONNECT must begin with TLS ClientHello");
+    if (handshake[0] !== 1) {
+      throw new Error("HTTPS CONNECT must begin with TLS ClientHello");
+    }
     const helloBytes = readUInt24(handshake, 1);
     if (helloBytes < 35 || helloBytes + 4 > MAX_TLS_CLIENT_HELLO_BYTES) {
       throw new Error("TLS ClientHello length is outside the egress bound");
@@ -261,9 +279,10 @@ function canonicalTlsServerName(value) {
 }
 
 function requireTlsDestinationBinding(hostname, serverName) {
-  const target = hostname.startsWith("[") && hostname.endsWith("]")
-    ? hostname.slice(1, -1)
-    : hostname;
+  const target =
+    hostname.startsWith("[") && hostname.endsWith("]")
+      ? hostname.slice(1, -1)
+      : hostname;
   const targetIp = net.isIP(target);
   if (targetIp !== 0) {
     if (serverName === null) return;
@@ -328,7 +347,8 @@ function readBoundTlsClientHello(client, head, hostname) {
       if (!inspect()) client.resume();
     };
     const onError = (error) => fail(error);
-    const onClose = () => fail(new Error("HTTPS CONNECT closed before a bounded TLS ClientHello"));
+    const onClose = () =>
+      fail(new Error("HTTPS CONNECT closed before a bounded TLS ClientHello"));
     client.pause();
     client.on("data", onData);
     client.once("error", onError);
@@ -362,7 +382,11 @@ export class GrantScopedEgressBroker {
     if (typeof socketPath !== "string" || socketPath.length === 0) {
       throw new TypeError("egress socketPath must be a non-empty string");
     }
-    if (typeof grantDigest !== "string" || !DIGEST.test(grantDigest) || /^0+$/.test(grantDigest)) {
+    if (
+      typeof grantDigest !== "string" ||
+      !DIGEST.test(grantDigest) ||
+      /^0+$/.test(grantDigest)
+    ) {
       throw new TypeError("egress grantDigest must be a non-zero lowercase SHA-256 digest");
     }
     if (!Array.isArray(allowedOrigins) || allowedOrigins.length > 128) {
@@ -388,6 +412,12 @@ export class GrantScopedEgressBroker {
     return this.#observations.map((value) => Object.freeze({ ...value }));
   }
 
+  #trackConnection(socket) {
+    this.#connections.add(socket);
+    socket.once("close", () => this.#connections.delete(socket));
+    return socket;
+  }
+
   async start() {
     if (this.#server) throw new TypeError("egress broker is already started");
     await unlink(this.#socketPath).catch((error) => {
@@ -403,13 +433,16 @@ export class GrantScopedEgressBroker {
         allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
         resolver: this.#resolver,
       });
-      bindings.set(origin, Object.freeze({
+      bindings.set(
         origin,
-        hostname: target.hostname,
-        port: Number(target.port || (target.protocol === "https:" ? 443 : 80)),
-        answers: Object.freeze(answers.map((answer) => Object.freeze({ ...answer }))),
-        bindingDigest: bindingDigest(this.#grantDigest, origin, answers),
-      }));
+        Object.freeze({
+          origin,
+          hostname: target.hostname,
+          port: Number(target.port || (target.protocol === "https:" ? 443 : 80)),
+          answers: Object.freeze(answers.map((answer) => Object.freeze({ ...answer }))),
+          bindingDigest: bindingDigest(this.#grantDigest, origin, answers),
+        }),
+      );
     }
     this.#bindings = bindings;
 
@@ -420,10 +453,7 @@ export class GrantScopedEgressBroker {
       });
     });
     server.maxConnections = MAX_PROXY_CONNECTIONS;
-    server.on("connection", (socket) => {
-      this.#connections.add(socket);
-      socket.once("close", () => this.#connections.delete(socket));
-    });
+    server.on("connection", (socket) => this.#trackConnection(socket));
     server.on("connect", (request, client, head) => {
       this.#handleConnect(request, client, head).catch(() => {
         if (!client.destroyed) {
@@ -486,21 +516,25 @@ export class GrantScopedEgressBroker {
     if (port !== binding.port || target.hostname !== binding.hostname) {
       throw new Error("HTTP destination drifted from the frozen profile network grant");
     }
-    const { socket, address } = await connectPinned(binding.answers, port);
-    this.#record(binding, target.hostname, port, address, "http");
+    const connected = await connectPinned(binding.answers, port);
+    const socket = this.#trackConnection(connected.socket);
+    this.#record(binding, target.hostname, port, connected.address, "http");
     const headers = stripHopByHop(request.headers);
     headers.host = target.host;
     const upstream = http.request({
       method: request.method,
-      host: address,
-      family: net.isIP(address),
+      host: connected.address,
+      family: net.isIP(connected.address),
       port,
       path: `${target.pathname}${target.search}`,
       headers,
       createConnection: () => socket,
     });
     upstream.on("response", (upstreamResponse) => {
-      response.writeHead(upstreamResponse.statusCode ?? 502, stripHopByHop(upstreamResponse.headers));
+      response.writeHead(
+        upstreamResponse.statusCode ?? 502,
+        stripHopByHop(upstreamResponse.headers),
+      );
       upstreamResponse.pipe(response);
     });
     upstream.on("error", () => {
@@ -526,13 +560,21 @@ export class GrantScopedEgressBroker {
     }
     client.write("HTTP/1.1 200 Connection Established\r\nProxy-Agent: hepta-egress\r\n\r\n");
 
+    let upstream = null;
     try {
       // CONNECT authority alone does not bind a TLS virtual host. Require the
       // bounded ClientHello to name the granted destination before any upstream
       // TCP connection can exist.
       const hello = await readBoundTlsClientHello(client, head, target.hostname);
-      const { socket: upstream, address } = await connectPinned(binding.answers, port);
-      this.#record(binding, target.hostname, port, address, "connect");
+      const connected = await connectPinned(binding.answers, port);
+      upstream = this.#trackConnection(connected.socket);
+      this.#record(binding, target.hostname, port, connected.address, "connect");
+      client.once("close", () => {
+        if (!upstream.destroyed) upstream.destroy();
+      });
+      upstream.once("close", () => {
+        if (!client.destroyed) client.destroy();
+      });
       upstream.write(hello);
       client.pipe(upstream);
       upstream.pipe(client);
@@ -540,21 +582,24 @@ export class GrantScopedEgressBroker {
       client.on("error", () => upstream.destroy());
       client.resume();
     } catch (error) {
+      if (upstream && !upstream.destroyed) upstream.destroy();
       client.destroy();
       throw error;
     }
   }
 
   #record(binding, hostname, port, address, kind) {
-    this.#observations.push(Object.freeze({
-      grantDigest: this.#grantDigest,
-      networkBindingDigest: binding.bindingDigest,
-      origin: binding.origin,
-      hostname,
-      port,
-      address,
-      kind,
-    }));
+    this.#observations.push(
+      Object.freeze({
+        grantDigest: this.#grantDigest,
+        networkBindingDigest: binding.bindingDigest,
+        origin: binding.origin,
+        hostname,
+        port,
+        address,
+        kind,
+      }),
+    );
     if (this.#observations.length > 256) this.#observations.shift();
   }
 }
