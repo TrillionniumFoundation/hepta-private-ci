@@ -2,12 +2,12 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "fdcc0a457fdf608ef186e7ff4e7608a9720521ff",
+    "tree": "532b9453e1953ebfcf350bcb9a2420534cefd91f"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
-  "sourceMaturity": "native_durable_taskflow_execution_boundary",
+  "sourceMaturity": "native_durable_taskflow_v19_product_effect_source_composed",
   "declaredRoots": [
     "codex-rs/hepta-automation"
   ],
@@ -137,7 +137,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "symbol": "pub async fn execute_authorized_taskflow_effect",
+        "symbol": "pub async fn execute_authorized_taskflow_effect_async",
         "buildTarget": "codex-hepta-automation"
       },
       "delegatedCallees": [
@@ -176,15 +176,39 @@
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "kind": "agentd_product_exact_wire_async_bridge_and_reconciliation",
+          "command": "cargo test -p codex-hepta-agentd --lib automation_effect_host"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
+      "sourceSemantics": "Persists the exact TaskFlow effect attempt before provider contact, consumes an independently signed final-use grant around the async ProviderEffectTaskFlowDriver, hashes unchanged wire bytes, derives a stable destination + run + step provider key, and performs lookup-only terminal/proven-absent reconciliation without blind redispatch.",
       "operation": "execute_step",
-      "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
+      "nativeSymbol": "pub async fn execute_authorized_taskflow_effect_async",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
-      "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
+      "productCallers": [
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AgentdMethod::AutomationExecuteEffect",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_provider_host",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "AgentdAutomationEffectHost::execute",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_terminal_reconciler",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "AgentdAutomationEffectHost::reconcile",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "productCompositionState": "agentd_attested_provider_async_bridge_source_composed_external_qualification_pending",
       "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
     }
   ],
@@ -209,9 +233,9 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "repositoryControlledProductCompositionGapsClosed": false,
+    "repositoryControlledProductCompositionGapsClosed": true,
     "calendarV2ProductControlComplete": true,
-    "externalEffectProductCompositionComplete": false,
+    "externalEffectProductCompositionComplete": true,
     "agedTurnRecoveryLivenessGapClosed": true,
     "terminalObserverPerPassBounded": true,
     "terminalObserverDurableContinuation": true,
@@ -222,7 +246,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+  "productCallerState": "agentd_calendar_v2_and_final_use_provider_effect_product_callers_source_composed_external_qualification_pending",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -231,8 +255,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "fdcc0a457fdf608ef186e7ff4e7608a9720521ff",
+    "tree": "532b9453e1953ebfcf350bcb9a2420534cefd91f"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -257,6 +281,7 @@
     ]
   },
   "observedSourcePaths": [
+    ".github/workflows/automation-taskflow-focused.yml",
     "CALLERS.toml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
@@ -264,6 +289,7 @@
     "codex-rs/app-server/src/request_processors/thread_processor.rs",
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
@@ -274,11 +300,16 @@
     "codex-rs/hepta-automation",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "docs/modules/automation.taskflow/MIGRATION_AND_RECOVERY_RUNBOOK.md",
+    "docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md",
+    "docs/modules/automation.taskflow/TECHNICAL.md",
+    "docs/readiness/LANE_B_NATIVE_HOST.md",
+    "qualification/module-execution-dossiers/detail/automation.taskflow.md",
+    "scripts/check_automation_taskflow_schema.py",
+    "scripts/test_automation_taskflow_schema.py"
   ],
-  "repositoryControlledProductCompositionGaps": [
-    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
-  ],
+  "repositoryControlledProductCompositionGaps": [],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",
     "rustWorkspaceBuildInputs": [
@@ -299,12 +330,39 @@
       "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
       "nativeSymbol": "run_automation_scheduler",
       "state": "existing_app_server_queue_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "AgentdMethod::AutomationExecuteEffect",
+      "state": "generation_fenced_product_control_dispatch"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "AgentdAutomationEffectHost::execute",
+      "state": "attested_provider_and_final_use_async_product_host"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "AgentdAutomationEffectHost::reconcile",
+      "state": "lookup_only_product_terminal_reconciler"
     }
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "object": "2b5ae96b5173781e81a3020e55e5a0cd5dff6299"
+    },
+    {
+      "path": "CALLERS.toml",
+      "object": "c1a213ee4898804c86b98fd8883c68c28a71a1fe"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
       "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "411078b873bc7af14020f2591a52360c3c2709db"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
@@ -359,8 +417,41 @@
       "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
     },
     {
+      "path": "docs/modules/automation.taskflow/MIGRATION_AND_RECOVERY_RUNBOOK.md",
+      "object": "8905573c453a54fcca06f3f2119aee186a62f435"
+    },
+    {
+      "path": "docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md",
+      "object": "6fa6d244ec5d44ec7bbd8a840078da34781b29ac"
+    },
+    {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+      "object": "4f8bf294608ed475a19e8638380c8588882eba4c"
+    },
+    {
+      "path": "docs/readiness/LANE_B_NATIVE_HOST.md",
+      "object": "b53800d2a6c01234e5e9f53c4f2171f9c2c0ffc4"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/automation.taskflow.md",
+      "object": "63383044fa6759ad14e7ad957855962416ad12e2"
+    },
+    {
+      "path": "scripts/check_automation_taskflow_schema.py",
+      "object": "a9051052a414df74f59ed2e8a768ec951a758ea1"
+    },
+    {
+      "path": "scripts/test_automation_taskflow_schema.py",
+      "object": "8cebed8acb474c3e25889271a438407f81503861"
     }
-  ]
+  ],
+  "storeSchemaVersion": 19,
+  "migrationHead": "0019_converged_owner_schema.sql",
+  "migrationTopology": {
+    "v17": "destination_operation_dedupe",
+    "v18": "automation_timer_lifecycle_writer_epoch",
+    "v19": "known_displaced_history_convergence",
+    "runbook": "docs/modules/automation.taskflow/MIGRATION_AND_RECOVERY_RUNBOOK.md"
+  },
+  "releaseScope": "repository source composition only; selected-host deployment, authentic tzdb, independent acceptance, activation, promotion and release remain false"
 }
