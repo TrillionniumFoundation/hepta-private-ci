@@ -35,6 +35,7 @@ mod ope;
 mod product_runner;
 mod self_evolution_selection;
 mod sequential;
+mod signed_admission;
 mod signed_evaluation;
 mod temporal_evaluation;
 mod temporal_fold;
@@ -175,12 +176,15 @@ pub use sequential::TrajectoryClaimScope;
 pub use sequential::TrajectoryEstimate;
 pub use sequential::TrajectoryStep;
 pub use sequential::estimate_sequential;
+pub use signed_admission::SignedEligibilityAdmissionError;
+pub use signed_admission::SignedEligibilityAdmissionReceiptV1;
+pub use signed_admission::admit_signed_eligibility_v2;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
