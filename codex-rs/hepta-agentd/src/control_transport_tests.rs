@@ -11,7 +11,7 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 
-fn fixture() -> (tempfile::TempDir, Arc<AgentdState>) {
+pub(super) fn fixture() -> (tempfile::TempDir, Arc<AgentdState>) {
     let temp = tempfile::tempdir().expect("temp");
     let root = temp.path().canonicalize().expect("root");
     let fleet_path = root.join("fleet");

@@ -11,6 +11,7 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::sync::Semaphore;
+use tokio::task::JoinError;
 use tokio::task::JoinSet;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
@@ -23,11 +24,11 @@ use crate::AgentdRequest;
 use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
+use crate::control_budget::FRAME_IO_TIMEOUT;
+use crate::control_budget::operation_timeout;
 use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
-use crate::control_budget::FRAME_IO_TIMEOUT;
-use crate::control_budget::operation_timeout;
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
@@ -60,14 +61,22 @@ impl AgentdControlServer {
 
     pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
         let mut connections = JoinSet::new();
-        loop {
+        let result = loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => {
-                    connections.shutdown().await;
-                    return Ok(());
+                biased;
+                _ = self.cancellation.cancelled() => break Ok(()),
+                joined = connections.join_next(), if !connections.is_empty() => {
+                    if let Some(joined) = joined
+                        && let Err(error) = observe_connection(joined)
+                    {
+                        break Err(error);
+                    }
+                    continue;
                 },
-                _ = connections.join_next(), if !connections.is_empty() => continue,
-                accepted = self.listener.accept() => accepted?,
+                accepted = self.listener.accept() => match accepted {
+                    Ok(stream) => stream,
+                    Err(error) => break Err(error.into()),
+                },
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
@@ -81,8 +90,57 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             connections.spawn(async move {
                 let _permit = permit;
-                let _ = serve_connection(stream, state).await;
+                serve_connection(stream, state).await
             });
+        };
+        self.connections.close();
+        // Stop admission first. A forced abort is not a successful drain and
+        // says nothing about whether a handler's external effect was applied.
+        let drained = drain_connections(&mut connections, FRAME_IO_TIMEOUT).await;
+        result.and(drained)
+    }
+}
+
+fn observe_connection(
+    result: Result<Result<(), AgentdError>, JoinError>,
+) -> Result<(), AgentdError> {
+    match result {
+        Ok(Ok(())) => Ok(()),
+        Ok(Err(_)) => {
+            // Do not put request-derived payloads or authority material in logs.
+            eprintln!("agentd control connection ended without acknowledgement");
+            Ok(())
+        }
+        Err(_) => Err(AgentdError::Protocol(
+            "agentd control connection task failed; reconcile outstanding operations".to_string(),
+        )),
+    }
+}
+
+async fn drain_connections(
+    connections: &mut JoinSet<Result<(), AgentdError>>,
+    grace: Duration,
+) -> Result<(), AgentdError> {
+    let drained = timeout(grace, async {
+        while let Some(joined) = connections.join_next().await {
+            observe_connection(joined)?;
+        }
+        Ok(())
+    })
+    .await;
+    match drained {
+        Ok(Ok(())) => Ok(()),
+        failure => {
+            connections.abort_all();
+            // Reap every task, including its permit, before releasing the server.
+            while connections.join_next().await.is_some() {}
+            match failure {
+                Ok(result) => result,
+                Err(_) => Err(AgentdError::Protocol(
+                    "agentd control drain timed out; outstanding outcomes are indeterminate"
+                        .to_string(),
+                )),
+            }
         }
     }
 }
@@ -132,12 +190,11 @@ where
     }
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
     let request_id = request.request_id;
-    let spawn_generation = request.spawn_generation;
     let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
         error_response(
             &state,
             request_id,
-            spawn_generation,
+            state.current_generation()?,
             "unsupported_schema",
             "unsupported agentd control schema",
         )
@@ -147,14 +204,14 @@ where
             Ok(Err(error)) => error_response(
                 &state,
                 request_id,
-                spawn_generation,
+                state.current_generation()?,
                 "request_rejected",
                 &error.to_string(),
             ),
             Err(_) => error_response(
                 &state,
                 request_id,
-                spawn_generation,
+                state.current_generation()?,
                 "operation_timed_out",
                 "operation acknowledgement timed out; reconcile the original identity before retrying",
             ),
@@ -179,7 +236,7 @@ where
 fn error_response(
     state: &AgentdState,
     request_id: u64,
-    spawn_generation: u64,
+    current_generation: u64,
     code: &str,
     message: &str,
 ) -> AgentdResponse {
@@ -188,7 +245,7 @@ fn error_response(
         request_id,
         agent_id: state.identity().agent_id.clone(),
         spawn_generation: state.identity().spawn_generation,
-        current_generation: spawn_generation,
+        current_generation,
         payload: AgentdPayload::Error {
             code: code.to_string(),
             message: bounded_message(message),
@@ -271,3 +328,7 @@ async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
 #[cfg(test)]
 #[path = "control_transport_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "control_shutdown_tests.rs"]
+mod shutdown_tests;
