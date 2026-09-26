@@ -13,10 +13,10 @@ use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
 use tokio_util::sync::CancellationToken;
 
-use crate::PlasticityRuntimeBudgetV1;
 use crate::PlasticityRuntimeCallErrorV1;
 use crate::PlasticityRuntimeHandleV1;
-use crate::PlasticityRuntimeMetricsSnapshotV1;
+use crate::plasticity_runtime::PlasticityRuntimeBudgetV1;
+use crate::plasticity_runtime::PlasticityRuntimeMetricsSnapshotV1;
 
 /// Product-side learning producer bound to one Agentd generation.
 ///
