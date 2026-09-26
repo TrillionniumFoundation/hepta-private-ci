@@ -3,7 +3,7 @@ name: cognitive-types-source-export
 on:
   push:
     branches:
-      - 'codex/cognitive-types-production-hardening-20260926'
+      - 'tmp/cognitive-types-source-export-20260927'
     paths:
       - '.github/workflows/cognitive-types-source-export.yml'
   workflow_dispatch:
