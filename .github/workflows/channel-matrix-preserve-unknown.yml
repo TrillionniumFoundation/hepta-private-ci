@@ -1,0 +1,160 @@
+name: channel.matrix exact candidate
+
+on:
+  push:
+    branches: [codex/channel-matrix-convergence-20260925]
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-matrix-*/**'
+      - 'codex-rs/hepta-matrixd/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'docs/modules/channel.matrix/**'
+      - 'scripts/*channel_matrix*'
+      - 'scripts/tests/test_channel_matrix*'
+      - '.github/workflows/channel-matrix-preserve-unknown.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-matrix-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  candidate:
+    name: Matrix ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Freeze source and deterministic merge candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/matrix-evidence"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$(git rev-parse origin/main)"
+          fi
+          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then
+            TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME='Matrix candidate builder'
+            export GIT_AUTHOR_EMAIL='matrix-candidate@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            TESTED_SHA="$(printf '%s\n' 'Deterministic Matrix qualification candidate' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$TESTED_SHA"
+          else
+            TESTED_SHA="$SOURCE_SHA"
+          fi
+          echo "TESTED_SHA=$TESTED_SHA" >> "$GITHUB_ENV"
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "$TESTED_SHA" \
+            --output "$RUNNER_TEMP/matrix-evidence/candidate.json"
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" \
+            --expected-sha "$TESTED_SHA" --lane "$HEPTA_CI_LANE" \
+            --output "$RUNNER_TEMP/matrix-evidence/source.json"
+      - name: Evidence verifier regression tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_evidence.py' -v
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve existing V8 prerequisites
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Locked Matrix tests, including store and protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            2>&1 | tee "$RUNNER_TEMP/matrix-evidence/focused-tests.log"
+      - name: Strict owner lint and formatting checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-matrix-protocol -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk -p codex-hepta-matrixd \
+            --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/matrix-evidence/clippy.log"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-matrix-protocol --package codex-hepta-matrix-store \
+            --package codex-hepta-matrix-sdk --package codex-hepta-matrixd -- --check
+      - name: Verify source was never patched by qualification
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" \
+            --expected-sha "$TESTED_SHA" --lane "$HEPTA_CI_LANE" \
+            --output "$RUNNER_TEMP/matrix-evidence/source-after.json"
+          cmp "$RUNNER_TEMP/matrix-evidence/source.json" "$RUNNER_TEMP/matrix-evidence/source-after.json"
+      - name: Record command outcome and artifact digests
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: >-
+          python3 scripts/channel_matrix_evidence.py manifest
+          --directory "$RUNNER_TEMP/matrix-evidence"
+          --job-status "$JOB_STATUS"
+      - name: Retain exact-candidate evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+  required:
+    name: Matrix candidate required
+    needs: candidate
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require both non-skipped candidates
+        env:
+          RESULT: ${{ needs.candidate.result }}
+        run: test "$RESULT" = success

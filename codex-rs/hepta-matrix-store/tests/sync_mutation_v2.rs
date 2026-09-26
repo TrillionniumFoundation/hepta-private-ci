@@ -3,6 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
 use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
@@ -15,6 +16,8 @@ use codex_hepta_matrix_store::ChangeKind;
 use codex_hepta_matrix_store::InboxDraft;
 use codex_hepta_matrix_store::InboxQueuedDraft;
 use codex_hepta_matrix_store::InboxState;
+use codex_hepta_matrix_store::MatrixDispatchAuthorityClaim;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
@@ -24,6 +27,7 @@ use codex_hepta_matrix_store::MatrixUserId;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
+use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -103,6 +107,7 @@ fn mutation(
         source_event_id,
         room_id,
         sender: user("@owner:example.test")?,
+        transaction_id: None,
         binding_revision: 1,
         generation: 1,
         origin_server_ts_ms: at_ms,
@@ -1021,6 +1026,577 @@ async fn caller_persisted_outbox_attempt_survives_a_later_room_leave() -> TestRe
             .await,
         Err(MatrixDurableError::Conflict)
     );
+    Ok(())
+}
+
+#[tokio::test]
+async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evidence() -> TestResult
+{
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!dispatch-ledger:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let logical_outbox_id = "dispatch-ledger-final";
+    let txn_id = transaction_id(logical_outbox_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_outbox_id.to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"durable outbound".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+    let claimed = store.claim_outbox(11, 100, 1).await?;
+    let claimed = claimed.first().ok_or("missing claimed dispatch")?;
+    store.prepare_outbox_dispatch(claimed, 11).await?;
+
+    let sent_event_id = event("$durable-outbound")?;
+    store
+        .record_outbox_transport_accepted(&txn_id, claimed.attempts, &sent_event_id, 12)
+        .await?;
+    store
+        .mark_outbox_retry(&txn_id, claimed.attempts, 12, 20)
+        .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("missing accepted dispatch")?
+            .state,
+        MatrixDispatchState::Accepted
+    );
+    store.close().await;
+
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("accepted dispatch did not survive reopen")?
+            .state,
+        MatrixDispatchState::Accepted
+    );
+
+    let outbound_observation = MatrixSyncMutationV2 {
+        source_event_id: sent_event_id.clone(),
+        room_id: room_id.clone(),
+        sender: user(AGENT_USER_ID)?,
+        transaction_id: Some(txn_id.clone()),
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 13,
+        received_at_ms: 14,
+        body: MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"homeserver observed outbound".to_vec(),
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(None, "dispatch-s1", 14, vec![outbound_observation]))
+        .await?;
+    let succeeded = store
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .ok_or("missing succeeded dispatch")?;
+    assert_eq!(
+        succeeded.state,
+        MatrixDispatchState::ObservedUnqualified,
+        "a homeserver echo without a durable final-use claim must never become qualified success",
+    );
+    let send_digest = succeeded
+        .send_observation_digest
+        .clone()
+        .ok_or("missing send observation digest")?;
+    assert!(succeeded.redaction_observation_digest.is_none());
+    assert_eq!(
+        store
+            .outbox_for_txn(&txn_id)
+            .await?
+            .ok_or("missing settled outbox")?
+            .state,
+        OutboxState::Sent
+    );
+
+    let redaction = MatrixSyncMutationV2 {
+        source_event_id: event("$redaction-of-outbound")?,
+        room_id,
+        sender: user("@moderator:example.test")?,
+        transaction_id: None,
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 20,
+        received_at_ms: 21,
+        body: MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: sent_event_id,
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(
+            Some("dispatch-s1"),
+            "dispatch-s2",
+            21,
+            vec![redaction],
+        ))
+        .await?;
+    let redacted = store
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .ok_or("missing redacted dispatch")?;
+    assert_eq!(
+        redacted.state,
+        MatrixDispatchState::ObservedUnqualified,
+        "redaction must not upgrade a legacy/unclaimed send into qualified evidence",
+    );
+    assert_eq!(
+        redacted.send_observation_digest.as_deref(),
+        Some(send_digest.as_str())
+    );
+    let redaction_digest = redacted
+        .redaction_observation_digest
+        .as_deref()
+        .ok_or("missing redaction evidence")?;
+    assert_ne!(redaction_digest, send_digest);
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    let durable = reopened
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .ok_or("redacted dispatch did not survive reopen")?;
+    assert_eq!(durable.state, MatrixDispatchState::ObservedUnqualified);
+    assert_eq!(
+        durable.send_observation_digest.as_deref(),
+        Some(send_digest.as_str())
+    );
+    assert_eq!(
+        durable.redaction_observation_digest.as_deref(),
+        Some(redaction_digest)
+    );
+    reopened.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn homeserver_observation_without_dispatch_row_is_legacy_unqualified() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!legacy-observed:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let logical_outbox_id = "legacy-unqualified";
+    let txn_id = transaction_id(logical_outbox_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_outbox_id.to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"legacy outbound".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+
+    let observed = MatrixSyncMutationV2 {
+        source_event_id: event("$legacy-observed")?,
+        room_id,
+        sender: user(AGENT_USER_ID)?,
+        transaction_id: Some(txn_id.clone()),
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 11,
+        received_at_ms: 12,
+        body: MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"legacy observed".to_vec(),
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(None, "legacy-s1", 12, vec![observed]))
+        .await?;
+
+    let dispatch = store
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .ok_or("legacy observation did not create an explicit dispatch receipt")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::ObservedUnqualified);
+    assert_eq!(
+        store
+            .outbox_for_txn(&txn_id)
+            .await?
+            .ok_or("legacy outbox disappeared")?
+            .state,
+        OutboxState::Sent,
+        "the observed remote effect must not be blindly replayed",
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn qualified_success_requires_matching_durable_final_use_claim() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!qualified-dispatch:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let logical_outbox_id = "qualified-final";
+    let payload = b"qualified outbound".to_vec();
+    let payload_digest = Sha256Digest::for_bytes(&payload).as_str().to_string();
+    let txn_id = transaction_id(logical_outbox_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_outbox_id.to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload,
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+    let claimed = store.claim_outbox(11, 100, 1).await?;
+    let claimed = claimed.first().ok_or("missing claimed qualified dispatch")?;
+    let prepared = store.prepare_outbox_dispatch(claimed, 11).await?;
+    store
+        .record_dispatch_authority_claim(
+            &txn_id,
+            &MatrixDispatchAuthorityClaim {
+                operation_id: prepared.operation_id.clone(),
+                subject_id: agent_id.as_str().to_string(),
+                destination_id: "matrix:qualified".to_string(),
+                homeserver_id: "https://example.test".to_string(),
+                matrix_user_id: AGENT_USER_ID.to_string(),
+                device_id: "DEVICE".to_string(),
+                session_generation: 1,
+                authority_epoch: 7,
+                revocation_revision: 3,
+                grant_id: "qualified-grant-1".to_string(),
+                request_digest: "1".repeat(64),
+                scope_digest: "2".repeat(64),
+                payload_digest,
+                attempt: claimed.attempts,
+                expires_at_ms: 10_000,
+                claimed_at_ms: 12,
+            },
+        )
+        .await?;
+
+    let sent_event_id = event("$qualified-outbound")?;
+    let observed = MatrixSyncMutationV2 {
+        source_event_id: sent_event_id.clone(),
+        room_id: room_id.clone(),
+        sender: user(AGENT_USER_ID)?,
+        transaction_id: Some(txn_id.clone()),
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 13,
+        received_at_ms: 14,
+        body: MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"qualified observed".to_vec(),
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(None, "qualified-s1", 14, vec![observed]))
+        .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("qualified dispatch disappeared")?
+            .state,
+        MatrixDispatchState::Succeeded,
+    );
+
+    let redaction = MatrixSyncMutationV2 {
+        source_event_id: event("$qualified-redaction")?,
+        room_id,
+        sender: user("@moderator:example.test")?,
+        transaction_id: None,
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 15,
+        received_at_ms: 16,
+        body: MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: sent_event_id,
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(
+            Some("qualified-s1"),
+            "qualified-s2",
+            16,
+            vec![redaction],
+        ))
+        .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("qualified redacted dispatch disappeared")?
+            .state,
+        MatrixDispatchState::Redacted,
+        "redaction may be qualified only when the original send has durable final-use proof",
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn prior_attempt_authority_claim_cannot_qualify_unclaimed_retry() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!stale-attempt-claim:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let logical_outbox_id = "stale-attempt-claim";
+    let payload = b"stale attempt must not qualify retry".to_vec();
+    let payload_digest = Sha256Digest::for_bytes(&payload).as_str().to_string();
+    let txn_id = transaction_id(logical_outbox_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_outbox_id.to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload,
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+
+    let first = store.claim_outbox(11, 100, 1).await?;
+    let first = first.first().ok_or("missing first dispatch attempt")?;
+    let prepared = store.prepare_outbox_dispatch(first, 11).await?;
+    store
+        .record_dispatch_authority_claim(
+            &txn_id,
+            &MatrixDispatchAuthorityClaim {
+                operation_id: prepared.operation_id.clone(),
+                subject_id: agent_id.as_str().to_string(),
+                destination_id: "matrix:stale-attempt".to_string(),
+                homeserver_id: "https://example.test".to_string(),
+                matrix_user_id: AGENT_USER_ID.to_string(),
+                device_id: "DEVICE".to_string(),
+                session_generation: 1,
+                authority_epoch: 7,
+                revocation_revision: 3,
+                grant_id: "stale-attempt-grant-1".to_string(),
+                request_digest: "3".repeat(64),
+                scope_digest: "4".repeat(64),
+                payload_digest,
+                attempt: first.attempts,
+                expires_at_ms: 10_000,
+                claimed_at_ms: 12,
+            },
+        )
+        .await?;
+    store
+        .mark_outbox_retry(&txn_id, first.attempts, 13, 20)
+        .await?;
+
+    let second = store.claim_outbox(20, 100, 1).await?;
+    let second = second.first().ok_or("missing second dispatch attempt")?;
+    assert_eq!(second.attempts, first.attempts + 1);
+    store.prepare_outbox_dispatch(second, 20).await?;
+    assert!(
+        store
+            .dispatch_authority_claim(&txn_id, second.attempts)
+            .await?
+            .is_none(),
+        "the retry must remain unqualified until its own final-use claim is durable",
+    );
+
+    let observed = MatrixSyncMutationV2 {
+        source_event_id: event("$stale-attempt-observed")?,
+        room_id,
+        sender: user(AGENT_USER_ID)?,
+        transaction_id: Some(txn_id.clone()),
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 21,
+        received_at_ms: 22,
+        body: MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"stale attempt observed".to_vec(),
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(None, "stale-attempt-s1", 22, vec![observed]))
+        .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("stale-attempt dispatch disappeared")?
+            .state,
+        MatrixDispatchState::ObservedUnqualified,
+        "a prior attempt's claim must not qualify a later unclaimed retry",
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn outbound_terminal_observation_rolls_back_with_failed_sync_batch() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!terminal-rollback:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let txn_id = transaction_id("terminal-rollback", 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: "terminal-rollback".to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"rollback outbound".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+    let claimed = store.claim_outbox(11, 100, 1).await?;
+    let claimed = claimed.first().ok_or("missing rollback dispatch")?;
+    store.prepare_outbox_dispatch(claimed, 11).await?;
+    store
+        .record_outbox_transport_accepted(&txn_id, claimed.attempts, &event("$rollback-outbound")?, 12)
+        .await?;
+    store
+        .mark_outbox_retry(&txn_id, claimed.attempts, 12, 20)
+        .await?;
+
+    let outbound = MatrixSyncMutationV2 {
+        source_event_id: event("$rollback-outbound")?,
+        room_id: room_id.clone(),
+        sender: user(AGENT_USER_ID)?,
+        transaction_id: Some(txn_id.clone()),
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 13,
+        received_at_ms: 14,
+        body: MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"rollback observed".to_vec(),
+        },
+    };
+    let invalid_leave = MatrixSyncMutationV2 {
+        source_event_id: event("$rollback-invalid-leave")?,
+        room_id,
+        sender: user("@moderator:example.test")?,
+        transaction_id: None,
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 15,
+        received_at_ms: 16,
+        body: MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user("@different-user:example.test")?,
+        },
+    };
+
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit(
+                None,
+                "rollback-s1",
+                16,
+                vec![outbound, invalid_leave],
+            ))
+            .await,
+        Err(MatrixDurableError::AccessDenied),
+    );
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("rollback dispatch disappeared")?
+            .state,
+        MatrixDispatchState::Accepted,
+        "terminal observation must roll back with the cursor transaction",
+    );
+    assert!(
+        store.sync_checkpoint(1, 1).await?.is_none(),
+        "failed sync batch advanced the cursor",
+    );
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    assert_eq!(
+        reopened
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("rollback dispatch disappeared after reopen")?
+            .state,
+        MatrixDispatchState::Accepted,
+        "a rolled-back homeserver terminal observation must not resurrect after reopen",
+    );
+    assert!(
+        reopened.sync_checkpoint(1, 1).await?.is_none(),
+        "a rolled-back sync cursor must not resurrect after reopen",
+    );
+    reopened.close().await;
     Ok(())
 }
 
@@ -1955,6 +2531,28 @@ async fn startup_rejects_same_name_counterfeit_v2_schema_objects() -> TestResult
     .await?;
     transaction.commit().await?;
     pool.close().await;
+    assert!(matches!(
+        MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,
+        Err(MatrixDurableError::Corrupt)
+    ));
+    Ok(())
+}
+
+#[tokio::test]
+async fn startup_requires_final_use_claim_schema_guards() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store.close().await;
+
+    let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
+    let pool = open_hostile_fixture_pool(&database_path).await?;
+    sqlx::query("DROP TRIGGER matrix_dispatch_succeeded_requires_authority_claim")
+        .execute(&pool)
+        .await?;
+    pool.close().await;
+
     assert!(matches!(
         MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,
         Err(MatrixDurableError::Corrupt)

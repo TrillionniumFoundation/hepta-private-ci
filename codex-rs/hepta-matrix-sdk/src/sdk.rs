@@ -1,3 +1,4 @@
+use std::error::Error as StdError;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::sync::atomic::AtomicBool;
@@ -20,12 +21,15 @@ use matrix_sdk::ruma::OwnedTransactionId;
 use matrix_sdk::ruma::UInt;
 use matrix_sdk::ruma::api::client::filter::FilterDefinition;
 use matrix_sdk::ruma::api::client::sync::sync_events::v3::Filter;
+use matrix_sdk::ruma::api::error::ErrorKind;
+use matrix_sdk::ruma::api::error::RetryAfter;
 use matrix_sdk::store::StateStoreDataKey;
 use serde_json::Value;
 use tokio_util::sync::CancellationToken;
 use url::Url;
 
 use crate::MatrixIngress;
+use crate::MatrixOutboundIdentity;
 use crate::MatrixOutboundTransport;
 use crate::MatrixSdkPaths;
 use crate::MatrixSendFuture;
@@ -347,6 +351,17 @@ fn hepta_sync_token(checkpoint: Option<&MatrixSyncCheckpoint>) -> SyncToken {
 }
 
 impl MatrixOutboundTransport for MatrixSdkClient {
+    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError> {
+        self.verify_authenticated_identity()
+            .map_err(|_| MatrixTransportError::Permanent)?;
+        Ok(MatrixOutboundIdentity {
+            homeserver_id: self.config.binding.homeserver.as_str().to_string(),
+            matrix_user_id: self.config.binding.expected_mxid.as_str().to_string(),
+            device_id: self.config.binding.expected_device_id.as_str().to_string(),
+            session_generation: self.config.matrix_generation,
+        })
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             if !self.config.binding.allowed_rooms.contains(&record.room_id)
@@ -370,20 +385,23 @@ impl MatrixOutboundTransport for MatrixSdkClient {
                 .with_transaction_id(&txn_id)
                 .await
                 .map_err(|error| classify_sdk_send_error(&error))?;
+            // A server response means the request may already have crossed
+            // the effect boundary. If its event id is unusable, preserve the
+            // stable transaction as indeterminate and reconcile/retry it.
             let event_id = MatrixEventId::parse(response.response.event_id.as_str())
-                .map_err(|_| MatrixTransportError::Permanent)?;
+                .map_err(|_| MatrixTransportError::ResponseLost)?;
             #[cfg(feature = "qualification-failpoints")]
             if crate::qualification::consume_post_send_pre_mark_ack_drop(
                 self.paths.root(),
                 record,
                 &event_id,
             )
-            .map_err(|_| MatrixTransportError::Retryable)?
+            .map_err(|_| MatrixTransportError::ResponseLost)?
             {
                 // Synapse has accepted the PUT and returned `event_id`, but
                 // deliberately hide that acknowledgement from the durable
                 // dispatcher. The next claim must reuse `stable_txn_id`.
-                return Err(MatrixTransportError::Retryable);
+                return Err(MatrixTransportError::ResponseLost);
             }
             Ok(event_id)
         })
@@ -415,32 +433,119 @@ fn outbound_message_content(body: &str, replaces_event_id: Option<&MatrixEventId
 fn classify_sdk_send_error(error: &MatrixSdkTransportError) -> MatrixTransportError {
     match error {
         MatrixSdkTransportError::Http(error) => classify_http_error(error),
-        MatrixSdkTransportError::Timeout | MatrixSdkTransportError::ConcurrentRequestFailed => {
-            MatrixTransportError::Retryable
-        }
-        _ => MatrixTransportError::Permanent,
+        MatrixSdkTransportError::Timeout => MatrixTransportError::ReadTimeout,
+        MatrixSdkTransportError::ConcurrentRequestFailed => MatrixTransportError::Retryable,
+        // At this point `send_raw(...).await` was entered. Any SDK error not
+        // proven to be a local pre-dispatch rejection is an unknown external
+        // effect and must retain the stable Matrix transaction for recovery.
+        _ => MatrixTransportError::ResponseLost,
     }
 }
 
 fn classify_http_error(error: &HttpError) -> MatrixTransportError {
     match error {
-        HttpError::Reqwest(_) => MatrixTransportError::Retryable,
-        HttpError::Api(_) => error
-            .as_client_api_error()
-            .map(|error| classify_http_status(error.status_code.as_u16()))
-            .unwrap_or(MatrixTransportError::Permanent),
+        HttpError::Reqwest(error) => {
+            if error.is_connect() {
+                classify_connect_error(error, error.is_timeout())
+            } else if error.is_timeout() {
+                MatrixTransportError::ReadTimeout
+            } else {
+                // A request/body/decode error can occur after bytes reached the
+                // homeserver. Preserve the effect as unknown.
+                MatrixTransportError::ResponseLost
+            }
+        }
+        HttpError::Api(_) => {
+            let Some(client_error) = error.as_client_api_error() else {
+                return MatrixTransportError::ResponseLost;
+            };
+            if let Some(ErrorKind::LimitExceeded(limit_exceeded)) = client_error.error_kind() {
+                return MatrixTransportError::RateLimited {
+                    retry_after_ms: retry_after_ms(limit_exceeded.retry_after.as_ref()),
+                };
+            }
+            classify_http_status(client_error.status_code.as_u16())
+        }
         HttpError::Cached(error) => classify_http_error(error),
+        // Serialization and refresh-token failures occur before the Matrix PUT
+        // can enter the physical adapter.
         HttpError::IntoHttp(_) | HttpError::RefreshToken(_) => MatrixTransportError::Permanent,
         #[cfg(target_os = "android")]
-        HttpError::VerifierBuilder(_) => MatrixTransportError::Permanent,
+        HttpError::VerifierBuilder(_) => MatrixTransportError::Tls,
     }
 }
 
-fn classify_http_status(status: u16) -> MatrixTransportError {
-    if status == 429 || (500..=599).contains(&status) {
-        MatrixTransportError::Retryable
+fn classify_connect_error(
+    error: &(dyn StdError + 'static),
+    timed_out: bool,
+) -> MatrixTransportError {
+    if error_chain_contains(
+        error,
+        &[
+            "dns",
+            "failed to lookup address",
+            "name or service not known",
+            "temporary failure in name resolution",
+            "nodename nor servname",
+            "no such host",
+        ],
+    ) {
+        MatrixTransportError::Dns
+    } else if error_chain_contains(
+        error,
+        &[
+            "tls",
+            "rustls",
+            "certificate",
+            "invalid peer certificate",
+            "handshake",
+        ],
+    ) {
+        MatrixTransportError::Tls
+    } else if timed_out {
+        MatrixTransportError::ConnectTimeout
     } else {
-        MatrixTransportError::Permanent
+        MatrixTransportError::ConnectFailure
+    }
+}
+
+fn error_chain_contains(
+    error: &(dyn StdError + 'static),
+    needles: &[&str],
+) -> bool {
+    let mut current = Some(error);
+    while let Some(error) = current {
+        let message = error.to_string().to_ascii_lowercase();
+        if needles.iter().any(|needle| message.contains(needle)) {
+            return true;
+        }
+        current = error.source();
+    }
+    false
+}
+
+fn retry_after_ms(value: Option<&RetryAfter>) -> u64 {
+    retry_after_ms_at(value, SystemTime::now())
+}
+
+fn retry_after_ms_at(value: Option<&RetryAfter>, now: SystemTime) -> u64 {
+    value
+        .and_then(|value| match value {
+            RetryAfter::Delay(duration) => u64::try_from(duration.as_millis()).ok(),
+            RetryAfter::DateTime(deadline) => deadline
+                .duration_since(now)
+                .ok()
+                .and_then(|duration| u64::try_from(duration.as_millis()).ok()),
+        })
+        .unwrap_or(0)
+}
+
+fn classify_http_status(status: u16) -> MatrixTransportError {
+    match status {
+        408 => MatrixTransportError::ReadTimeout,
+        429 => MatrixTransportError::RateLimited { retry_after_ms: 0 },
+        500..=599 => MatrixTransportError::ServerUnavailable,
+        _ => MatrixTransportError::Permanent,
     }
 }
 
@@ -639,16 +744,90 @@ fn system_time_ms() -> Result<u64, MatrixSdkError> {
 mod tests {
     use super::*;
 
+    #[derive(Debug)]
+    struct TestConnectError(&'static str);
+
+    impl std::fmt::Display for TestConnectError {
+        fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            formatter.write_str(self.0)
+        }
+    }
+
+    impl StdError for TestConnectError {}
+
     #[test]
-    fn send_status_classification_bounds_permanent_and_transient_errors() {
+    fn send_status_classification_preserves_retry_semantics() {
         fn assert_send_sync<T: Send + Sync>() {}
 
         assert_send_sync::<MatrixSdkClient>();
         assert_eq!(classify_http_status(403), MatrixTransportError::Permanent);
         assert_eq!(classify_http_status(404), MatrixTransportError::Permanent);
-        assert_eq!(classify_http_status(429), MatrixTransportError::Retryable);
-        assert_eq!(classify_http_status(500), MatrixTransportError::Retryable);
-        assert_eq!(classify_http_status(503), MatrixTransportError::Retryable);
+        assert_eq!(
+            classify_http_status(408),
+            MatrixTransportError::ReadTimeout
+        );
+        assert_eq!(
+            classify_http_status(429),
+            MatrixTransportError::RateLimited { retry_after_ms: 0 }
+        );
+        assert_eq!(
+            classify_http_status(500),
+            MatrixTransportError::ServerUnavailable
+        );
+        assert_eq!(
+            classify_http_status(503),
+            MatrixTransportError::ServerUnavailable
+        );
+    }
+
+    #[test]
+    fn retry_after_delay_and_date_are_normalized_to_milliseconds() {
+        let now = UNIX_EPOCH + std::time::Duration::from_secs(100);
+        assert_eq!(
+            retry_after_ms_at(
+                Some(&RetryAfter::Delay(std::time::Duration::from_millis(1_250))),
+                now,
+            ),
+            1_250
+        );
+        assert_eq!(
+            retry_after_ms_at(
+                Some(&RetryAfter::DateTime(
+                    now + std::time::Duration::from_millis(2_500),
+                )),
+                now,
+            ),
+            2_500
+        );
+        assert_eq!(
+            retry_after_ms_at(
+                Some(&RetryAfter::DateTime(
+                    now - std::time::Duration::from_millis(1),
+                )),
+                now,
+            ),
+            0
+        );
+    }
+
+    #[test]
+    fn connect_error_chain_separates_dns_tls_and_timeout() {
+        assert_eq!(
+            classify_connect_error(&TestConnectError("dns error: no such host"), false),
+            MatrixTransportError::Dns
+        );
+        assert_eq!(
+            classify_connect_error(&TestConnectError("rustls certificate failure"), false),
+            MatrixTransportError::Tls
+        );
+        assert_eq!(
+            classify_connect_error(&TestConnectError("connection timed out"), true),
+            MatrixTransportError::ConnectTimeout
+        );
+        assert_eq!(
+            classify_connect_error(&TestConnectError("connection refused"), false),
+            MatrixTransportError::ConnectFailure
+        );
     }
 
     #[test]

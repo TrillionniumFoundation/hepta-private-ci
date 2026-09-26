@@ -102,6 +102,7 @@ impl Fixture {
                     source_event_id: MatrixEventId::parse("$initial")?,
                     room_id: self.room.clone(),
                     sender: MatrixUserId::parse("@owner:example.test")?,
+                    transaction_id: None,
                     binding_revision: 1,
                     generation: 1,
                     origin_server_ts_ms: 10,
