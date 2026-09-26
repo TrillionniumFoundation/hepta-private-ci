@@ -1,0 +1,222 @@
+name: intelligence.control required
+
+on:
+  push:
+    branches:
+      - main
+      - codex/intelligence-control-product-closure
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "docs/modules/intelligence.control/**"
+      - "qualification/module-execution-dossiers/detail/intelligence.control.md"
+      - "scripts/hepta-intelligence-control-docs.py"
+      - ".github/workflows/hepta-intelligence-control.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_v8.py"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "rust-toolchain.toml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "docs/modules/intelligence.control/**"
+      - "qualification/module-execution-dossiers/detail/intelligence.control.md"
+      - "scripts/hepta-intelligence-control-docs.py"
+      - ".github/workflows/hepta-intelligence-control.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_v8.py"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "rust-toolchain.toml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  qualify:
+    name: intelligence.control (${{ matrix.lane }})
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          echo "sha=$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Intelligence CI
+          author-email: hepta-intelligence-ci@users.noreply.github.com
+          message: intelligence.control synthetic merge
+
+      - name: Bind exact candidate identity
+        shell: bash
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          MERGE_SHA: ${{ steps.synthetic.outputs.sha }}
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          if [ "$LANE" = base-merge ]; then
+            test -n "$MERGE_SHA"
+            test "$TESTED_SHA" = "$MERGE_SHA"
+          else
+            test -z "$MERGE_SHA"
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          echo "TESTED_SHA=$TESTED_SHA" >> "$GITHUB_ENV"
+          echo "HEPTA_CI_LANE=$LANE" >> "$GITHUB_ENV"
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+
+      - name: Install exact test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Verify generated documentation truth and exact identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records" "$RUNNER_TEMP/intelligence-control"
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/docs-${HEPTA_CI_LANE}.json" -- \
+            python3 scripts/hepta-intelligence-control-docs.py verify \
+              --source-sha "$TESTED_SHA" \
+              --receipt "$RUNNER_TEMP/intelligence-control/document-receipt.json"
+
+      - name: Test canonical, daemon, ledger and physical handoff owners
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-control-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/tests-${HEPTA_CI_LANE}.json" -- \
+            cargo nextest run --locked \
+              -p codex-hepta-intelligence \
+              -p codex-hepta-agentd \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-worker-host
+
+      - name: Compile every intelligence target and feature profile
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-control-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/check-${HEPTA_CI_LANE}.json" -- \
+            cargo check --locked --all-targets \
+              -p codex-hepta-intelligence \
+              -p codex-hepta-agentd \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-worker-host
+
+      - name: Strict lint
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-control-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/clippy-${HEPTA_CI_LANE}.json" -- \
+            cargo clippy --locked --all-targets \
+              -p codex-hepta-intelligence \
+              -p codex-hepta-agentd \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-infer-worker-host -- -D warnings
+
+      - name: Verify formatting and clean tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all -- --check
+          cd ..
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Emit exact execution receipt
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-intelligence-control-docs.py receipt \
+            --source-sha "$TESTED_SHA" \
+            --lane "$HEPTA_CI_LANE" \
+            --output "$RUNNER_TEMP/intelligence-control/execution-receipt.json"
+
+      - name: Retain exact receipts and commands
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: |
+            ${{ runner.temp }}/hepta-command-records/*
+            ${{ runner.temp }}/intelligence-control/*
+          if-no-files-found: error
+          retention-days: 30
