@@ -1,11 +1,9 @@
 //! Bounded, deterministic Bellman/operator candidates for qualification space.
 //!
-//! The legacy target builder remains available as `train`, while
-//! `build_targets` makes its actual scope explicit. Applicability admission,
-//! sensor geometry, tabular Bellman reference, simplest-sufficient tabular
-//! learning, regularity/error-budget checks and an action-conditioned tabular
-//! world model are separate bounded surfaces. None can mutate an online policy,
-//! activate an artifact, select itself, or write production state.
+//! `train` is a compatibility target builder, not a production trainer. The
+//! owner-bound V3 trainers require opaque inputs issued from an authenticated
+//! ledger owner. Structural V1/V2 algorithms remain qualification utilities.
+//! No API here activates an artifact, selects itself, or grants authority.
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeSet;
@@ -28,9 +26,15 @@ pub use owner_terminal::freeze_terminal_cell_from_owner_v1;
 mod learned;
 mod loaded;
 pub use loaded::LoadedTabularOperatorV1;
+pub use loaded::LoadedTabularOperatorV2;
+pub use loaded::TABULAR_ARTIFACT_SCHEMA_V1;
+pub use loaded::TABULAR_PAYLOAD_SCHEMA_V1;
 pub use loaded::TabularPayloadError;
 pub use loaded::TabularPayloadPinV1;
+pub use loaded::TabularPayloadPinV2;
+pub use loaded::ValidatedTabularOperatorV1;
 pub use loaded::encode_tabular_payload_v1;
+pub use loaded::validate_tabular_artifact_v1;
 mod learned_strict;
 mod reference;
 mod world_model;
@@ -41,6 +45,7 @@ pub use authenticated::AuthenticatedOperatorRegularityAdmissionV2;
 pub use authenticated::SignedOperatorEvidenceV2;
 pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
 pub use authenticated::validate_applicability_with_signed_evidence_v2;
+pub use dataset_bound::MAX_SIGNED_OPERATOR_ROWS;
 pub use dataset_bound::OperatorDatasetBindingError;
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
 pub use dataset_bound::VerifiedTabularOperatorPlanV3;
@@ -50,10 +55,12 @@ pub use dataset_bound::fit_tabular_operator_verified_v2;
 pub use dataset_bound::fit_tabular_operator_verified_v3;
 pub use dataset_bound::fit_transition_model_verified_v2;
 pub use dataset_bound::fit_transition_model_verified_v3;
+pub use dataset_bound::tabular_training_signing_payload_v2;
 pub use dataset_bound::verify_tabular_operator_plan_v2;
 pub use dataset_bound::verify_tabular_operator_plan_v3;
 pub use dataset_bound::verify_world_model_dataset_v2;
 pub use dataset_bound::verify_world_model_dataset_v3;
+pub use dataset_bound::world_model_training_signing_payload_v2;
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;
@@ -129,9 +136,8 @@ pub struct BellmanTarget {
     pub target: FixedQ32,
 }
 
-/// Legacy target-builder diagnostics. This is deliberately not the complete
-/// operator regularity certificate; use `OperatorRegularityAssessmentV1` for
-/// rank, reconstruction, shape, OOD and total-error admission.
+/// Legacy target-builder diagnostics. For operator regularity admission use
+/// `OperatorRegularityAssessmentV1` instead of treating these as a certificate.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RegularityProfile {
     pub sample_count: u32,
@@ -199,7 +205,6 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
             return Err(Error::EmptyDigest("sample support"));
         }
     }
-
     let mut targets = Vec::with_capacity(request.dataset.transitions.len());
     let mut maximum = 0_i64;
     let mut terminal_count = 0_u64;
@@ -217,7 +222,6 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
             target,
         });
     }
-
     let count = i128::try_from(targets.len()).map_err(|_| Error::Arithmetic)?;
     let terminal_raw = (i128::from(terminal_count) * SCALE) / count;
     let regularity = RegularityProfile {
@@ -241,8 +245,7 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
     })
 }
 
-/// Compatibility alias for the original API. The implementation remains a
-/// deterministic target builder and does not imply a learned operator.
+/// Compatibility alias for the original deterministic target builder.
 pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
     build_targets(request)
 }
