@@ -30,6 +30,7 @@ const MAX_RECONCILIATION_ATTEMPTS: u32 = 1_000_000;
 #[serde(deny_unknown_fields)]
 pub struct QuarantinedEffectV1 {
     pub schema_version: u32,
+    pub quarantine_revision: u64,
     pub operation_id: String,
     pub source_admission_sha256: [u8; 32],
     pub request_sha256: [u8; 32],
@@ -76,14 +77,10 @@ impl QuarantinedEffectV1 {
             self.model_id.as_str(),
             self.provider_id.as_str(),
         ] {
-            if !identifier(value) {
-                return Err(QuarantineProtocolError::InvalidIdentifier);
-            }
+            require_identifier(value)?;
         }
-        if let Some(turn_id) = self.turn_id.as_deref()
-            && !identifier(turn_id)
-        {
-            return Err(QuarantineProtocolError::InvalidIdentifier);
+        if let Some(turn_id) = self.turn_id.as_deref() {
+            require_identifier(turn_id)?;
         }
         if self.app_server_version.is_empty()
             || self.app_server_version.len() > 256
@@ -110,7 +107,8 @@ impl QuarantinedEffectV1 {
         if self.local_dispatch_sha256 != self.agent_dispatch_sha256 {
             return Err(QuarantineProtocolError::DispatchBindingMismatch);
         }
-        if self.local_dispatch_revision == 0
+        if self.quarantine_revision == 0
+            || self.local_dispatch_revision == 0
             || self.agent_revision == 0
             || self.authority_epoch == 0
             || self.agent_generation == 0
@@ -130,8 +128,8 @@ impl QuarantinedEffectV1 {
         for digest in &self.evidence_sha256 {
             require_digest(*digest)?;
         }
-        if !reason_code(&self.reason_code)
-            || self.redacted_diagnostic.len() > MAX_DIAGNOSTIC_BYTES
+        require_reason_code(&self.reason_code)?;
+        if self.redacted_diagnostic.len() > MAX_DIAGNOSTIC_BYTES
             || self.redacted_diagnostic.as_bytes().contains(&0)
         {
             return Err(QuarantineProtocolError::InvalidDiagnostic);
@@ -237,9 +235,7 @@ impl QuarantineResolutionV1 {
             self.resolution_id.as_str(),
             self.operation_id.as_str(),
         ] {
-            if !identifier(value) {
-                return Err(QuarantineProtocolError::InvalidIdentifier);
-            }
+            require_identifier(value)?;
         }
         for digest in [
             self.quarantine_record_sha256,
@@ -257,10 +253,10 @@ impl QuarantineResolutionV1 {
             || self.expires_at_unix_ms <= self.not_before_unix_ms
             || self.expires_at_unix_ms - self.not_before_unix_ms
                 > MAX_RESOLUTION_LIFETIME_MS
-            || !reason_code(&self.reason_code)
         {
             return Err(QuarantineProtocolError::InvalidResolution);
         }
+        require_reason_code(&self.reason_code)?;
         match self.disposition {
             QuarantineResolutionDispositionV1::TerminalObserved => {
                 let terminal = self
@@ -286,8 +282,8 @@ impl QuarantineResolutionV1 {
                     .new_operation_constraints
                     .as_ref()
                     .ok_or(QuarantineProtocolError::DispositionMismatch)?;
-                if !identifier(&constraints.operation_id)
-                    || constraints.operation_id == self.operation_id
+                require_identifier(&constraints.operation_id)?;
+                if constraints.operation_id == self.operation_id
                     || constraints.maximum_attempts != 1
                     || constraints.not_before_unix_ms < self.not_before_unix_ms
                 {
@@ -350,7 +346,7 @@ impl QuarantineResolutionVerifier {
     ) -> Result<Self, QuarantineProtocolError> {
         let verifying_key = VerifyingKey::from_bytes(&verifying_key)
             .map_err(|_| QuarantineProtocolError::InvalidTrust)?;
-        if !identifier(&signer_id)
+        if !valid_identifier(&signer_id)
             || verifying_key.is_weak()
             || authority_epoch == 0
             || used_nonces.len() > MAX_USED_NONCES
@@ -395,20 +391,20 @@ impl QuarantineResolutionVerifier {
         {
             return Err(QuarantineProtocolError::ResolutionExpired);
         }
+        let quarantine_record_sha256 = quarantine.record_sha256()?;
         if resolution.operation_id != quarantine.operation_id
-            || resolution.quarantine_revision != quarantine.local_dispatch_revision
-            || resolution.quarantine_record_sha256 != quarantine.record_sha256()?
+            || resolution.quarantine_revision != quarantine.quarantine_revision
+            || resolution.quarantine_record_sha256 != quarantine_record_sha256
             || resolution.request_sha256 != quarantine.request_sha256
             || resolution.dispatch_sha256 != quarantine.local_dispatch_sha256
             || resolution.evidence_set_sha256 != quarantine.evidence_set_sha256()?
         {
             return Err(QuarantineProtocolError::QuarantineBindingMismatch);
         }
-        let signing_bytes = resolution.signing_bytes()?;
         let signature = Signature::from_slice(&signed.signature)
             .map_err(|_| QuarantineProtocolError::InvalidSignature)?;
         self.verifying_key
-            .verify_strict(&signing_bytes, &signature)
+            .verify_strict(&resolution.signing_bytes()?, &signature)
             .map_err(|_| QuarantineProtocolError::InvalidSignature)?;
         if self.used_nonces.len() >= MAX_USED_NONCES {
             return Err(QuarantineProtocolError::CapacityExceeded);
@@ -417,14 +413,18 @@ impl QuarantineResolutionVerifier {
         self.resolution_sequence = resolution.resolution_sequence;
         Ok(VerifiedQuarantineResolutionV1 {
             resolution: resolution.clone(),
-            quarantine_record_sha256: quarantine.record_sha256()?,
+            quarantine_record_sha256,
         })
     }
 
     pub fn frontier(&self) -> QuarantineResolutionFrontierV1 {
         let mut digest = Sha256::new();
         digest.update(b"hepta.runtime.codex.quarantine-resolution-frontier.v1\0");
-        digest.update(self.signer_id.len().to_le_bytes());
+        digest.update(
+            u64::try_from(self.signer_id.len())
+                .unwrap_or(u64::MAX)
+                .to_le_bytes(),
+        );
         digest.update(self.signer_id.as_bytes());
         digest.update(self.verifying_key.to_bytes());
         digest.update(self.authority_epoch.to_le_bytes());
@@ -511,7 +511,7 @@ fn require_digest(value: [u8; 32]) -> Result<(), QuarantineProtocolError> {
     }
 }
 
-fn identifier(value: &str) -> bool {
+fn valid_identifier(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
         && value
@@ -519,12 +519,25 @@ fn identifier(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
 }
 
-fn reason_code(value: &str) -> bool {
-    !value.is_empty()
+fn require_identifier(value: &str) -> Result<(), QuarantineProtocolError> {
+    if valid_identifier(value) {
+        Ok(())
+    } else {
+        Err(QuarantineProtocolError::InvalidIdentifier)
+    }
+}
+
+fn require_reason_code(value: &str) -> Result<(), QuarantineProtocolError> {
+    if !value.is_empty()
         && value.len() <= MAX_REASON_CODE_BYTES
         && value.bytes().all(|byte| {
             byte.is_ascii_uppercase() || byte.is_ascii_digit() || matches!(byte, b'_' | b'-')
         })
+    {
+        Ok(())
+    } else {
+        Err(QuarantineProtocolError::InvalidDiagnostic)
+    }
 }
 
 #[cfg(test)]
@@ -540,6 +553,7 @@ mod tests {
     fn quarantine() -> QuarantinedEffectV1 {
         QuarantinedEffectV1 {
             schema_version: 1,
+            quarantine_revision: 11,
             operation_id: "operation:original".to_string(),
             source_admission_sha256: digest(1),
             request_sha256: digest(2),
@@ -604,7 +618,7 @@ mod tests {
             signer_id: "independent-quarantine-authority".to_string(),
             resolution_id: "resolution:one".to_string(),
             operation_id: quarantine.operation_id.clone(),
-            quarantine_revision: quarantine.local_dispatch_revision,
+            quarantine_revision: quarantine.quarantine_revision,
             quarantine_record_sha256: quarantine.record_sha256().unwrap(),
             request_sha256: quarantine.request_sha256,
             dispatch_sha256: quarantine.local_dispatch_sha256,
@@ -661,10 +675,10 @@ mod tests {
             QuarantineResolutionDispositionV1::TerminalObserved
         );
         assert_eq!(verifier.frontier().resolution_sequence, 1042);
-        assert_eq!(
+        assert!(matches!(
             verifier.verify(&signed, &quarantine, 2_000),
             Err(QuarantineProtocolError::ResolutionRollback)
-        );
+        ));
     }
 
     #[test]
@@ -677,10 +691,10 @@ mod tests {
         );
         proposal.quarantine_revision += 1;
         let signed = signed(&key, proposal);
-        assert_eq!(
+        assert!(matches!(
             verifier(&key).verify(&signed, &quarantine, 2_000),
             Err(QuarantineProtocolError::QuarantineBindingMismatch)
-        );
+        ));
 
         let other = SigningKey::from_bytes(&[73; 32]);
         let forged = signed(
@@ -690,10 +704,36 @@ mod tests {
                 QuarantineResolutionDispositionV1::AbandonWithoutReplay,
             ),
         );
-        assert_eq!(
+        assert!(matches!(
             verifier(&key).verify(&forged, &quarantine, 2_000),
             Err(QuarantineProtocolError::InvalidSignature)
+        ));
+    }
+
+    #[test]
+    fn nonce_reuse_is_rejected_at_a_later_sequence() {
+        let quarantine = quarantine();
+        let key = SigningKey::from_bytes(&[74; 32]);
+        let first = signed(
+            &key,
+            resolution(
+                &quarantine,
+                QuarantineResolutionDispositionV1::AbandonWithoutReplay,
+            ),
         );
+        let mut verifier = verifier(&key);
+        verifier.verify(&first, &quarantine, 2_000).unwrap();
+        let mut second = resolution(
+            &quarantine,
+            QuarantineResolutionDispositionV1::AbandonWithoutReplay,
+        );
+        second.resolution_id = "resolution:two".to_string();
+        second.resolution_sequence = 1043;
+        let second = signed(&key, second);
+        assert!(matches!(
+            verifier.verify(&second, &quarantine, 2_000),
+            Err(QuarantineProtocolError::NonceReplay)
+        ));
     }
 
     #[test]
@@ -705,16 +745,16 @@ mod tests {
         );
         let constraints = proposal.new_operation_constraints.as_mut().unwrap();
         constraints.operation_id = quarantine.operation_id.clone();
-        assert_eq!(
+        assert!(matches!(
             proposal.signing_bytes(),
             Err(QuarantineProtocolError::UnsafeNewOperation)
-        );
+        ));
         constraints.operation_id = "operation:new".to_string();
         constraints.maximum_attempts = 2;
-        assert_eq!(
+        assert!(matches!(
             proposal.signing_bytes(),
             Err(QuarantineProtocolError::UnsafeNewOperation)
-        );
+        ));
     }
 
     #[test]
