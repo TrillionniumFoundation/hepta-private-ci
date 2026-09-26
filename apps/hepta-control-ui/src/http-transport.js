@@ -94,7 +94,11 @@ export class SameOriginHttpTransport {
     }
     this.#origin = canonicalOrigin;
     this.#baseUrl = resolved;
-    this.#fetch = fetchImpl;
+    // Browser Web APIs such as window.fetch require the global object as their
+    // receiver in some engines. Keep the public fetch injection point while
+    // normalising invocation semantics for both the native function and test
+    // doubles.
+    this.#fetch = fetchImpl.bind(globalThis);
     this.#csrfTokenProvider = csrfTokenProvider;
     this.#timeoutMs = timeoutMs;
   }
