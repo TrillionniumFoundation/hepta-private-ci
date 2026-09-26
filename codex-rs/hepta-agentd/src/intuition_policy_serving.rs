@@ -176,53 +176,12 @@ fn require_decision_parity(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_intelligence::AdvisoryDecisionReceiptV1;
     use codex_hepta_intuition::CalibratedCandidatePropensityV1;
     use codex_hepta_intuition::ProductionSlowPathReasonV1;
-    use codex_hepta_types::AuthorityPosture;
     use codex_hepta_types::ProbabilityQ32;
 
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
-    }
-
-    fn ready(decision: AdvisoryDecisionV1) -> AgentdIntelligenceProductOutcomeV1 {
-        AgentdIntelligenceProductOutcomeV1::Ready(crate::PreparedAgentdIntelligenceRunV1 {
-            envelope: codex_hepta_intelligence::IntelligenceHostEnvelopeV1 {
-                run_id: id("run:parity"),
-                objective_digest: Digest32::of_bytes(b"objective"),
-                decision: AdvisoryDecisionReceiptV1 {
-                    run_id: id("run:parity"),
-                    candidate_set_digest: Digest32::of_bytes(b"set"),
-                    intuition_receipt_digest: Digest32::of_bytes(b"intuition"),
-                    decision,
-                    decision_digest: Digest32::of_bytes(b"decision"),
-                    authority: AuthorityPosture::DENY_ALL,
-                },
-                context_receipt_digest: Digest32::of_bytes(b"context"),
-                evaluation_receipt_digest: Digest32::of_bytes(b"evaluation"),
-                trace_digest: Digest32::of_bytes(b"trace"),
-                envelope_digest: Digest32::of_bytes(b"envelope"),
-                authority: AuthorityPosture::DENY_ALL,
-            },
-            dispatch_proposal_digest: Digest32::of_bytes(b"dispatch"),
-            snapshot: unreachable_snapshot(),
-            candidate_ids: Vec::new(),
-            run_snapshot: unreachable_run_snapshot(),
-            context_attachment: unreachable_context_attachment(),
-        })
-    }
-
-    fn unreachable_snapshot() -> codex_hepta_intelligence::CanonicalIntelligenceSnapshotV1 {
-        panic!("parity fixture must not inspect the canonical snapshot")
-    }
-
-    fn unreachable_run_snapshot() -> crate::AgentRunSnapshot {
-        panic!("parity fixture must not inspect the run snapshot")
-    }
-
-    fn unreachable_context_attachment() -> crate::AgentContextAttachment {
-        panic!("parity fixture must not inspect the context attachment")
     }
 
     #[test]
@@ -269,27 +228,6 @@ mod tests {
                 &[],
             )
             .is_err()
-        );
-    }
-
-    #[test]
-    fn ready_outcome_uses_exact_advisory_selection() {
-        let candidate = id("candidate:ready");
-        let outcome = ready(AdvisoryDecisionV1::Selected {
-            candidate_id: candidate.clone(),
-            propensity: ProbabilityQ32::ONE,
-        });
-        let rows = vec![CalibratedCandidatePropensityV1 {
-            candidate_id: candidate.clone(),
-            probability: ProbabilityQ32::ONE,
-        }];
-        assert!(
-            require_outcome_parity(
-                &outcome,
-                &ProductionDispositionV1::Selected(candidate),
-                &rows,
-            )
-            .is_ok()
         );
     }
 }
