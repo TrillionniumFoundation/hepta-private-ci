@@ -19,8 +19,11 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: macos-15
+    runs-on: windows-2022
     timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Check out hardening branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -29,8 +32,8 @@ jobs:
           fetch-depth: 0
       - name: Apply deterministic product composition
         run: |
-          python3 scripts/intuition_finalize_branch.py
-          python3 scripts/intuition_legacy_imports.py
+          python scripts/intuition_finalize_branch.py
+          python scripts/intuition_legacy_imports.py
       - name: Commit composed source
         run: |
           git config user.name "Hepta Intuition Integrator"
@@ -41,12 +44,12 @@ jobs:
           fi
       - name: Rebind implementation-map provenance
         run: |
-          python3 scripts/hepta-implementation-maps.py migrate --module intuition.policy
+          python scripts/hepta-implementation-maps.py migrate --module intuition.policy
           git add docs/modules/intuition.policy/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
             git commit -m "docs(intuition): bind composed source objects"
           fi
       - name: Verify exact committed map and push
         run: |
-          python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
+          python scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
           git push origin HEAD:codex/intuition-policy-production-hardening-20260926
