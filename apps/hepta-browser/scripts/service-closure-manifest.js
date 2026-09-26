@@ -19,6 +19,7 @@ const ROLE_PATHS = Object.freeze({
   effect_network_driver: "src/effect-network-driver.js",
   egress_broker: "src/egress-broker.js",
   journal: "src/journal.js",
+  observation_redactor: "src/observation-redactor.js",
   persisted_reconciler: "src/persisted-reconciler.js",
   runtime: "src/runtime.js",
   runtime_host: "src/runtime-host.js",
