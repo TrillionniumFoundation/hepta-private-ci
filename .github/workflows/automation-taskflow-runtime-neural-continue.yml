@@ -135,11 +135,66 @@ jobs:
               --source-sha "$FINAL_SOURCE_SHA"
             python3 - <<'PY'
           import json
+          import os
+          import subprocess
           from pathlib import Path
 
+          source_sha = os.environ["FINAL_SOURCE_SHA"]
           path = Path("docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json")
           data = json.loads(path.read_text(encoding="utf-8"))
           data["mappingSourceIdentityMode"] = "exact_blob"
+
+          order = []
+          by_id = {}
+          for operation in data.get("operations", []):
+              operation_id = operation.get("designOperation") or operation.get("operation")
+              if not isinstance(operation_id, str) or not operation_id:
+                  raise SystemExit("automation TaskFlow map has an invalid operation identity")
+              if operation_id not in by_id:
+                  order.append(operation_id)
+              by_id[operation_id] = operation
+          expected = [
+              "register_schedule",
+              "materialize_due",
+              "claim_occurrence",
+              "execute_step",
+              "execute_neural_circuit_v1",
+          ]
+          if order != expected:
+              raise SystemExit(f"unexpected automation TaskFlow operation order: {order!r}")
+          data["operations"] = [by_id[operation_id] for operation_id in order]
+
+          mapped_paths = []
+          for operation in data["operations"]:
+              source_path = operation.get("sourcePath")
+              if not isinstance(source_path, str) or not source_path:
+                  raise SystemExit(f"operation {operation!r} has no source path")
+              operation["sourceBlob"] = subprocess.check_output(
+                  ["git", "rev-parse", f"{source_sha}:{source_path}"],
+                  text=True,
+              ).strip()
+              mapped_paths.append(source_path)
+
+          evidence = data.get("exactSourceEvidence")
+          if not isinstance(evidence, dict) or evidence.get("kind") != "path_blob_manifest_v1":
+              raise SystemExit("automation TaskFlow exact source evidence is missing")
+          existing = {
+              entry.get("path"): entry
+              for entry in evidence.get("entries", [])
+              if isinstance(entry, dict) and isinstance(entry.get("path"), str)
+          }
+          evidence["entries"] = [
+              {
+                  **existing.get(source_path, {}),
+                  "path": source_path,
+                  "blobSha": subprocess.check_output(
+                      ["git", "rev-parse", f"{source_sha}:{source_path}"],
+                      text=True,
+                  ).strip(),
+              }
+              for source_path in sorted(set(mapped_paths))
+          ]
+          data["claimBoundary"]["implementedOperationMappingComplete"] = True
           path.write_text(
               json.dumps(data, indent=2, ensure_ascii=False) + "\n",
               encoding="utf-8",
@@ -149,7 +204,7 @@ jobs:
           git diff --check
           git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
-            git commit -m "docs(automation): bind Neural Circuit and exact-blob source truth [automation-neural-generated]"
+            git commit -m "docs(automation): normalize Neural Circuit exact-blob truth [automation-neural-generated]"
           fi
 
       - name: Rebind other affected Lane B observations
