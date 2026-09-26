@@ -1,0 +1,82 @@
+name: Hepta objective source materialize race
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-final-closure-20260927
+    paths:
+      - .github/workflows/hepta-objective-source-materialize-race.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-objective-source-materialize-race
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: rog
+            labels: '["self-hosted","linux","x64","rog"]'
+          - runner: pocket4
+            labels: '["self-hosted","linux","x64","pocket4"]'
+          - runner: macbook-pro
+            labels: '["self-hosted","macOS","ARM64","macbook"]'
+    runs-on: ${{ fromJSON(matrix.labels) }}
+    timeout-minutes: 45
+    env:
+      TARGET_BRANCH: work/objective-compiler-final-closure-20260927
+      TRIGGER_SHA: ${{ github.sha }}
+      EXPECTED_RUNNER: ${{ matrix.runner }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply deterministic source migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${RUNNER_NAME}" = "${EXPECTED_RUNNER}"
+          test "${GITHUB_REPOSITORY}" = TrillionniumFoundation/hepta-private-ci
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD)" = "${TRIGGER_SHA}"
+          command -v python3 >/dev/null
+          command -v cargo >/dev/null
+          python3 scripts/hepta-objective-materialize-closure.py
+          python3 scripts/hepta-objective-current-state.py sync
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-objective \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          python3 -m py_compile \
+            scripts/hepta-objective-current-state.py \
+            scripts/hepta-objective-materialize-closure.py \
+            scripts/hepta-objective-release-gate.py
+          git diff --check
+
+      - name: Commit with compare-and-swap
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-qualification
+          git config user.email qualification@invalid
+          git rm .github/workflows/hepta-objective-source-materialize-race.yml
+          git add -A
+          git diff --cached --check
+          git commit -m "objective.compiler: persist proof-bound admission source closure"
+          git fetch origin "${TARGET_BRANCH}"
+          remote="$(git rev-parse "origin/${TARGET_BRANCH}")"
+          if test "${remote}" != "${TRIGGER_SHA}"; then
+            echo "another trusted runner won the source materialization race: ${remote}"
+            exit 0
+          fi
+          git push origin "HEAD:${TARGET_BRANCH}"
