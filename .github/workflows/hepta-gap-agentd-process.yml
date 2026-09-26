@@ -189,7 +189,7 @@ jobs:
         run: |
           set -euo pipefail
           just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --lib \
-            plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently --test-threads=1
+            agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently --test-threads=1
           just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-runtime \
             authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics --test-threads=1
       - name: Exercise writer admission and real daemon process suites

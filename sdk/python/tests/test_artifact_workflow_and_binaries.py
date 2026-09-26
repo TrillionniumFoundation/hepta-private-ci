@@ -99,8 +99,8 @@ def test_root_fmt_recipes_use_shared_formatter_driver() -> None:
     """The root formatting recipes should use the shared cross-platform driver."""
     justfile = ROOT.parents[1] / "justfile"
     lines = justfile.read_text().splitlines()
-    fmt_index = lines.index("fmt:")
-    fmt_check_index = lines.index("fmt-check:")
+    fmt_index = lines.index("fmt *args:")
+    fmt_check_index = lines.index("fmt-check *args:")
     next_recipe_index = next(
         index
         for index in range(fmt_check_index + 1, len(lines))
@@ -126,9 +126,9 @@ def test_root_fmt_recipes_use_shared_formatter_driver() -> None:
         "fmt_comment": (
             "# Format the justfile, Rust, Bazel/Starlark, Python SDK code, and Python scripts."
         ),
-        "fmt_commands": ["@{{ python }} ../scripts/format.py"],
+        "fmt_commands": ["@{{ python }} ../scripts/format.py {args}"],
         "fmt_check_comment": "# Check formatting without modifying files.",
-        "fmt_check_commands": ["@{{ python }} ../scripts/format.py --check"],
+        "fmt_check_commands": ["@{{ python }} ../scripts/format.py --check {args}"],
     }
 
     assert actual == expected, (
@@ -288,7 +288,7 @@ def test_root_format_driver_is_silent_when_all_formatters_succeed(
 ) -> None:
     script = _load_root_format_script_module()
     groups = (script.FormatterGroup("Quiet", ()),)
-    monkeypatch.setattr(script, "formatter_groups", lambda *, check: groups)
+    monkeypatch.setattr(script, "formatter_groups", lambda *, check, only=None: groups)
     monkeypatch.setattr(
         script,
         "run_formatter_group",
@@ -310,7 +310,7 @@ def test_root_format_driver_reports_only_failed_formatters(
         script.FormatterGroup("Quiet", ()),
         script.FormatterGroup("Broken", ()),
     )
-    monkeypatch.setattr(script, "formatter_groups", lambda *, check: groups)
+    monkeypatch.setattr(script, "formatter_groups", lambda *, check, only=None: groups)
 
     def fake_run(group):
         if group.name == "Broken":
