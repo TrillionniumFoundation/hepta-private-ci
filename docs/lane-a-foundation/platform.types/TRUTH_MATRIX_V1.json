@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.platform-types.truth-matrix.v1",
+  "schemaVersion": 1,
+  "module": "platform.types",
+  "publicApiInventory": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+  "publicApiExportCount": 78,
+  "publicApiOperationCount": 17,
+  "formalTechnicalSupplement": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
+  "currentSpecification": "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+  "implementationMap": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+  "executionDossier": "qualification/module-execution-dossiers/detail/platform.types.md",
+  "states": {
+    "source": "implemented",
+    "implementation": "native_contracts_strict_manifest_codecs_generated_foundational_bindings",
+    "durability": "none",
+    "qualification": "exact_candidate_pending",
+    "activation": "library_only",
+    "acceptance": "not_granted"
+  },
+  "qualificationState": "exact_candidate_pending",
+  "digestContracts": {
+    "runtimeTopologyCandidateV1": "HPTC V1 binds every semantic candidate and delta field; candidate_digest is derived",
+    "manifestProtocols": "strict JSON is transport only; validated native values project to HPTC V1 semantic commitments",
+    "registeredNumericConversion": "receipt binds immutable registry generation, registry digest, profile definitions, normalizer and arithmetic receipt"
+  },
+  "orderingContracts": {
+    "RuntimeTopologyCandidateV1.deltas": "set semantics represented as a strictly increasing StableId sequence; non-canonical order rejects",
+    "RuntimeTopologyDeltaV1.related_module_ids": "set semantics represented as a strictly increasing StableId sequence; duplicate, self or non-canonical order rejects"
+  },
+  "evidenceAnchors": [
+    "codex-rs/hepta-types/src/lib.rs",
+    "codex-rs/hepta-types/src/topology.rs",
+    "codex-rs/hepta-types/src/manifests.rs",
+    "codex-rs/hepta-types/src/numeric_conversion.rs",
+    "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json",
+    "codex-rs/hepta-types/schemas/random-stream-manifest-v1.schema.json",
+    "codex-rs/hepta-types/schemas/external-system-manifest-v1.schema.json",
+    "codex-rs/hepta-types/schemas/sensor-calibration-manifest-v1.schema.json",
+    "codex-rs/hepta-types/conformance/verify_manifest_vectors.py",
+    "codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs",
+    "codex-rs/hepta-types/tests/manifest_protocol_consumer.rs",
+    "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
+    "scripts/platform_types_public_api.py",
+    "scripts/run_platform_types_consumer_qualification.sh"
+  ],
+  "nonClaims": [
+    "No manifest contract executes randomness, inventories a host, drives a sensor or grants authority.",
+    "No JSON serialization byte sequence is used as a semantic digest.",
+    "No source-tree receipt may qualify a synthetic merge, and no synthetic-merge receipt may qualify a source tree.",
+    "Production activation, deployment qualification, operator acceptance and release are not claimed."
+  ]
+}

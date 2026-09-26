@@ -3,151 +3,169 @@
 ## Current executable contract
 
 `codex-rs/hepta-types` is the authority-free Rust contract library for shared
-Hepta values. The current source implements:
+Hepta values. The current source implements bounded values and identities,
+HPTC V1, checked Q32 arithmetic, immutable contract registries, numeric-profile
+admission, pure and registry-bound numeric conversion receipts,
+`PromptDeliveryObservationV1`, `RuntimeTopologyCandidateV1`, and the three
+owned manifest contracts.
 
-- bounded text/bytes, profiled identifiers, monotonic identities and raw
-  `Digest32` values;
-- frozen HPTC V1 canonical encoding, digesting and raw-byte validation;
-- deny-only authority posture and exact one-byte untrusted authority ingress;
-- checked Q32 primitives, immutable schema/normalization/numeric-profile
-  registries and bounded signal conversion;
-- a distinct `RegisteredNumericConversionReceiptV1` that binds the immutable
-  registry digest and normalization admission instead of reusing a pure
-  arithmetic receipt as admission evidence;
-- `PromptDeliveryObservationV1` and `RuntimeTopologyCandidateV1` shared
-  contracts;
-- native `RandomStreamManifestV1`, `ExternalSystemManifestV1` and
-  `SensorCalibrationManifestV1` contracts with bounded constructors,
-  fail-closed validation and stable semantic digests;
-- deterministically generated Python and JavaScript runtime bindings plus
-  TypeScript declarations for the intentionally smaller foundational binding
-  specification.
+The exact public Rust surface is machine-enumerated in
+`docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json`. The module-scoped
+truth state is recorded in
+`docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json`. Both are verified
+from `codex-rs/hepta-types/src/lib.rs`; a new, removed, duplicated or moved
+`pub use` without an explicit operation owner fails Lane A truth verification.
 
-The crate forbids unsafe code and owns no clock, filesystem path, network,
-credential, durable writer, mutable global registry, model call or external
-effect. Manifest construction validates supplied observations; it does not
-collect randomness, inspect a host or operate a sensor.
+`RuntimeTopologyCandidateV1::content_digest()` is an HPTC V1 commitment over
+all semantic candidate fields and every semantic delta field. The stored
+`candidate_digest` is the derived result and is deliberately not an input to
+itself. `deltas` and `related_module_ids` have set semantics represented in
+strictly increasing `StableId` order. Duplicate, self-referential or
+non-canonical order rejects instead of being silently sorted.
+
+The three manifest wire schemas use strict JSON transport: unknown fields,
+unknown enum values, non-canonical integers and invalid bounds reject. JSON
+member order and JSON bytes are not evidence. Validated values are projected
+into the native contract field map and the HPTC semantic commitment is the
+cross-language identity. Unsigned 64-bit and signed 64-bit values use canonical
+base-10 strings in JSON so JavaScript cannot silently lose integer precision.
 
 ## Public symbols and source bindings
 
-Core source bindings:
+The generated inventory currently covers 78 exports from 11 private source
+modules and assigns each export to one of 17 operation owners. It is generated
+with:
 
-- `BoundedBytes`, `BoundedText`: `src/bounded.rs`;
-- `StableId`, `IdProfileV1`, `Generation`, `Revision`, `LogicalSequence`,
-  `AuthorityPosture`, `NonAuthorizingPosture`: `src/identity.rs`;
-- `Digest32`: `src/digest.rs`;
-- `canonical_encode_v1`, `canonical_digest_v1`, `canonical_validate_v1`:
+```text
+python3 scripts/platform_types_public_api.py --write
+```
+
+The inventory is closed-world, not an advisory list. `scripts/platform_types_public_api.py`
+rejects unsupported re-export syntax, duplicate symbols, unregistered symbols,
+or movement between source modules without an ownership update. The
+implementation map must contain every operation owner and must explicitly bind
+the inventory path and counts.
+
+Key source bindings are:
+
+- bounded values: `src/bounded.rs`;
+- identities and deny-only authority posture: `src/identity.rs`;
+- digest and HPTC primitives: `src/digest.rs` and
   `src/canonical_digest.rs`;
-- `ContractRegistryV1`, `RegistryDefinitionV1`,
-  `NumericProfileDefinitionV1`: `src/registry.rs` and
+- Q32 values: `src/fixed.rs`;
+- immutable registry and numeric profiles: `src/registry.rs` and
   `src/numeric_profile.rs`;
-- `NumericSignalV1`, `NumericConversionReceiptV1`,
-  `RegisteredNumericConversionReceiptV1`, `rescale_signal` and
-  `rescale_signal_registered`: `src/numeric_conversion.rs`;
-- `PromptDeliveryObservationV1`, `PromptDeliveryRejectReasonV1`:
-  `src/prompt_delivery.rs`;
-- `RuntimeTopologyCandidateV1`, `RuntimeTopologyDeltaV1`,
-  `RuntimeTopologyOperationV1`: `src/topology.rs`;
-- `RandomStreamManifestV1`, `ExternalSystemManifestV1`,
-  `SensorCalibrationManifestV1` and their closed enum/range/timestamp helpers:
-  `src/manifests.rs`;
-- generated binding source and generator:
-  `bindings/PLATFORM_TYPES_BINDINGS_V1.json` and
-  `bindings/generate_bindings.py`.
+- pure and registered conversion receipts: `src/numeric_conversion.rs`;
+- prompt delivery: `src/prompt_delivery.rs`;
+- topology candidates: `src/topology.rs`;
+- random-stream, external-system and sensor-calibration manifests:
+  `src/manifests.rs`.
 
-Current source consumers are capability-specific rather than one ambient
-`platform.types` product caller:
-
-- `PromptDeliveryObservationV1` is produced by the Codex adapter/Agentd prompt
-  path and consumed by `learning.ledger`;
-- `RuntimeTopologyCandidateV1` is validated and consumed by
-  `runtime.supervisor` before topology admission;
-- `rescale_signal_registered` is consumed through
-  `utility.ndu::NduNumericRegistryV1`; `NduAuthenticatedOwnerV1` freezes the
-  registry digest into its production-policy identity before admitting utility
-  signals.
-
-These source callsites prove composition of the named contracts. They do not by
-themselves prove target-host qualification, operator acceptance or release.
+Current named consumers are the Codex adapter and learning ledger for prompt
+delivery, the runtime supervisor for topology admission, and the authenticated
+NDU owner for registry-admitted numeric utility signals. These source
+callsites prove composition of the named contracts, not product activation.
 
 ## Durability and activation
 
-`platform.types` is stateless. It has no journal, migration, recovery worker or
-production writer. `ContractRegistryV1` and `NduNumericRegistryV1` are immutable
-caller-owned generations. Authentication, selection and distribution of a
-registry generation belong to the product owner.
+`platform.types` is stateless. It owns no clock, filesystem path, network,
+credential, mutable global registry, journal, recovery worker, durable writer,
+model call or external effect. Registry generations are immutable caller-owned
+inputs.
 
-The NDU consumer deliberately returns `NduRegisteredUtilitySignalV1`, which
-contains the distinct registered receipt. A caller holding only
-`NumericConversionReceiptV1` has evidence of deterministic arithmetic, not
-registry admission.
+A plain `NumericConversionReceiptV1` proves deterministic arithmetic.
+`RegisteredNumericConversionReceiptV1` additionally binds the immutable
+registry generation and digest, source and target profile definitions,
+normalization definition and the base arithmetic receipt. The two evidence
+classes are intentionally non-interchangeable.
 
-Source consumers exist, but production implementation and activation remain
-false until the exact candidate completes Lane A and the applicable consumer
-qualification matrix. No contract in this module grants runtime, write,
-selection, promotion or release authority.
+Production implementation, deployment qualification, activation and release
+remain false until the exact source candidate and the deterministic synthetic
+merge each complete their own Lane A qualification. A source-tree receipt
+cannot qualify a synthetic merge and a synthetic-merge receipt cannot qualify
+a source tree.
 
 ## Target-only design
 
-The following remain outside the current source claim:
+The following remain outside this module's present source claim:
 
-- an authenticated product service that publishes or rotates registry
+- authenticated product publication, rotation and distribution of registry
   generations;
-- external canonical-JSON/wire codecs for arbitrary Rust domain structs beyond
-  the frozen generated foundational binding surface;
-- host inventory collection, random-stream execution and physical sensor
+- random-stream execution, host inventory collection and physical sensor
   calibration drivers;
-- target-host performance qualification, canary, operator acceptance,
-  promotion and release.
+- product-specific authorization, selection, promotion or release;
+- target-host performance, MSRV and Miri qualification until their exact
+  workflow receipts exist;
+- independent semantic acceptance and operator canary approval.
 
-Those capabilities require their existing owners and must not be absorbed into
-this pure contract library.
+The manifest JSON codecs are conformance codecs for the three owned contracts.
+They do not turn arbitrary Rust domain structs into a general-purpose wire
+platform and do not execute the systems described by a manifest.
 
 ## Known limits and non-claims
 
 - `StableId` is bounded to 128 encoded bytes.
 - HPTC V1 is bounded to 256 KiB, 4096 collection items and depth 16.
-- A registry admits at most 256 ordinary/profile definitions; ordinary
-  definitions are limited to 4096 UTF-8 bytes and 256 KiB aggregate data.
-- Numeric signals admit at most 4096 elements and reject overflow rather than
-  saturating.
-- Manifest enum/version/timestamp fields are explicitly bounded. UTC manifest
-  timestamps accept only canonical `Z` form with at most six fractional digits;
-  validity windows must be increasing.
-- Generated bindings cover only the checked binding spec. They do not expose
-  every Rust contract as Python/JavaScript/TypeScript.
-- `productExecutionProved`, independent acceptance, activation and release are
-  not claimed by this document.
+- Registries admit at most 256 entries and 256 KiB aggregate ordinary
+  definition data.
+- Numeric signals admit at most 4096 values and reject overflow.
+- Manifest text, timestamps, ranges and confidence are explicitly bounded.
+- UTC timestamps accept canonical `Z` form with at most six fractional digits.
+- Manifest JSON rejects unknown fields and uses decimal strings for i64/u64.
+- Topology delta and related-module sets must arrive in canonical order.
+- Generated foundational bindings do not expose every Rust contract.
+- No type in this crate grants runtime, write, selection, promotion or release
+  authority.
+
+Committed prose does not pretend to contain its own current commit SHA. The
+implementation map observes the immediately preceding content commit, while
+the Lane A job injects the exact checked-out SHA and tree into candidate
+provenance, diagnostics and qualification receipts.
 
 ## Verification
 
-Focused source evidence includes:
+The selected consumer qualification executes all checks independently and
+retains each log. Its matrix includes Rust compilation and tests, strict Clippy,
+canonical HPTC vectors, generated-binding drift checks, the prompt producer,
+ledger consumer, topology consumer, and three independent manifest consumers:
+Rust public API, Python and Node.
 
-- Rust tests for bounds, identifiers, authority rejection, HPTC framing,
-  registry invariants, numeric conversion and all three manifests;
-- prompt-delivery and topology positive/negative contract tests;
-- NDU registered-consumer tests showing registry-generation changes alter the
-  admission digest while preserving the same pure arithmetic result;
-- five accepted and seven rejected HPTC cross-language vectors;
-- generated-binding drift checks and Python/JavaScript negative tests for
-  unknown and inherited property names such as `constructor`, `toString` and
-  `__proto__`;
-- strict `codex-hepta-types` Clippy/fmt and the selected consumer compile/test
-  matrix.
+`codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json` contains shared accepted and
+rejected vectors. The strict schemas are under
+`codex-rs/hepta-types/schemas/`. Python and Node independently validate and
+project JSON to HPTC; the Rust external-crate test constructs the native public
+types and must produce the same digests.
 
-Lane A reports current-truth and native-test outcomes independently, then fails
-the final job unless every required step and receipt succeeds. Exact-head and
-deterministic synthetic-merge workflow artifacts, not prose, are candidate
-qualification evidence.
+Topology tests use mutation-completeness: changing each semantic candidate or
+delta field changes the digest, while changing only the derived
+`candidate_digest` does not change the recomputed content digest and causes
+validation to reject.
+
+Repository truth is checked by:
+
+```text
+python3 scripts/verify_lane_a_foundation.py verify
+python3 scripts/platform_types_public_api.py
+bash scripts/run_platform_types_consumer_qualification.sh
+```
+
+Exact-head success is established only by retained workflow receipts and
+artifacts. Until those artifacts exist for the current head, qualification is
+`exact_candidate_pending`.
 
 ## Integration prerequisites
 
-A consuming owner must pin the exact contract/profile IDs and, for registered
-numeric conversion, supply one immutable registry generation whose digest is
-bound into the consuming owner identity. Consumers must validate at their final
-use boundary and must never reinterpret a pure conversion receipt as admission.
+A consuming owner must pin exact contract/profile IDs and, for registered
+conversion, one immutable registry generation whose digest is bound into the
+owner identity. Consumers must validate at their final use boundary and must
+not reinterpret a pure conversion receipt as registry admission.
 
-Protocol producers must construct the native manifest/observation type before
-publication and preserve its semantic digest through any owner-specific wire or
-durable representation. Any future wire codec must deny unknown critical fields
-and demonstrate parity with the native validation rules.
+Manifest producers must first construct and validate the native manifest
+contract, then preserve its HPTC semantic commitment through transport or
+storage. JSON transport must remain strict, deny unknown critical fields and
+retain parity with native validation.
+
+Topology producers must emit deltas and related module IDs in strictly
+increasing `StableId` order, preserve every committed digest and generation,
+and allow the final supervisor boundary to recompute and compare the candidate
+digest.
