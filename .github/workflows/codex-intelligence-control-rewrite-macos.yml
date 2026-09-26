@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: codex-intelligence-control-recovery-repair-macos
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   rewrite:
@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Repair exact persisted Decision and Outcome observation
+      - name: Bind exact persisted Decision and Outcome identity
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
@@ -40,22 +40,21 @@ jobs:
           source = Path("codex-rs/hepta-agentd/src/intelligence_learning.rs").read_text()
           normalized = " ".join(source.split())
           required = (
-              "use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;",
-              "use codex_hepta_learning_ledger::validate_candidate_set_completeness;",
-              "validate_candidate_set_completeness(&completeness)",
-              "value.candidate_completeness_digest == completeness_digest",
-              "value.authentication_digest == authentication_digest",
-              "value.observer_credential_chain_digest == expected.observer.credential_chain_digest",
-              "value.terminality == terminality",
+              "const LEARNING_PAYLOAD_SCHEMA_VERSION: u32 = 2;",
+              "struct VerifiedEvidenceBindingPayloadV1",
+              "fn expected_persisted_event(",
+              "record.event == expected",
+              "generator_controller_id: payload.evidence_binding.controller_id()?",
+              "observer_controller_id: payload.evidence_binding.controller_id()?",
+              "current_binding != payload.evidence_binding",
               "fn learning_evidence_digest_v1(",
-              "observe_applied_payload(&writer, &payload)",
-              "self.grants.signed_grant(&binding)?",
-              "claim_final_use(&self.authority, &signed, &binding)",
+              "decision_signing_payload_v2(request)?",
+              "outcome_signing_payload_v2(outcome)",
               "dispatch_final_use(",
           )
           missing = [item for item in required if item not in normalized]
           if missing:
-              raise SystemExit(f"recovery repair missing required source anchors: {missing}")
+              raise SystemExit(f"exact recovery repair missing required source anchors: {missing}")
           forbidden = (
               "value.completeness == completeness",
               "LedgerEvent::AuthenticatedOutcomeV2(value) if value == &expected",
@@ -76,7 +75,7 @@ jobs:
             exit 1
           fi
 
-      - name: Commit recovery observation repair
+      - name: Commit exact authenticated recovery repair
         run: |
           set -euo pipefail
           if git diff --quiet; then
@@ -85,5 +84,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add codex-rs/hepta-agentd/src/intelligence_learning.rs
-          git commit -m 'fix(intelligence): match exact persisted learning events'
+          git commit -m 'fix(intelligence): bind exact authenticated learning rows'
           git push origin HEAD:codex/intelligence-control-product-closure-20260926
