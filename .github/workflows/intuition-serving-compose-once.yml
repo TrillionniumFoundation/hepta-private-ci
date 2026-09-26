@@ -71,3 +71,5 @@ jobs:
           fi
           python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
           git push origin HEAD:codex/intuition-policy-production-closure-20260927
+
+# Deliberate no-op trigger: the workflow first appeared on the preceding commit.
