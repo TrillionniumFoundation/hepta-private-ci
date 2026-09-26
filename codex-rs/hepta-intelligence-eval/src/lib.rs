@@ -33,6 +33,7 @@ pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
 mod ope;
 mod product_runner;
+mod repository_admission;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
@@ -149,6 +150,9 @@ pub use product_runner::ProductTemporalEvaluationReceiptV1;
 pub use product_runner::ProductTimingEvidenceV1;
 pub use product_runner::TemporalComparisonInputsV1;
 pub use product_runner::freeze_product_evaluation_plan_v1;
+pub use repository_admission::RepositoryEvaluationAdmissionV1;
+pub use repository_admission::RepositoryEvaluationConsumerV1;
+pub use repository_admission::admit_repository_evaluation_v1;
 pub use self_evolution_selection::PreparedSelfEvolutionSelectionV1;
 pub use self_evolution_selection::SelfEvolutionSelectionError;
 pub use self_evolution_selection::SelfEvolutionSelectionPolicyV1;
@@ -180,7 +184,7 @@ pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
