@@ -2,16 +2,38 @@ name: Kernel authority convergence
 
 on:
   push:
-    branches: [work/kernel-authority-convergence-20260925]
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'docs/modules/kernel.authority/**'
+      - 'docs/lane-a-foundation/kernel.authority/**'
+      - 'qualification/kernel-authority/**'
+      - 'qualification/module-execution-dossiers/detail/kernel.authority.md'
+      - 'qa/b4-no-bypass/**'
+      - 'CALLERS.toml'
+      - 'scripts/hepta-implementation-maps.py'
+      - 'scripts/verify_hepta_callers.py'
+      - '.github/workflows/kernel-authority-convergence.yml'
   pull_request:
     paths:
       - 'codex-rs/hepta-contracts/**'
-      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
-      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'docs/modules/kernel.authority/**'
+      - 'docs/lane-a-foundation/kernel.authority/**'
       - 'qualification/kernel-authority/**'
+      - 'qualification/module-execution-dossiers/detail/kernel.authority.md'
       - 'qa/b4-no-bypass/**'
       - 'CALLERS.toml'
+      - 'scripts/hepta-implementation-maps.py'
+      - 'scripts/verify_hepta_callers.py'
       - '.github/workflows/kernel-authority-convergence.yml'
   workflow_dispatch:
 
@@ -19,83 +41,54 @@ permissions:
   contents: read
 
 concurrency:
-  group: kernel-authority-convergence-${{ github.ref }}
+  group: kernel-authority-convergence-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # BEGIN ONE-SHOT KERNEL AUTHORITY REMEDIATION
-  bootstrap-remediation:
-    name: One-shot kernel.authority remediation
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'work/kernel-authority-convergence-20260925')
-    permissions:
-      contents: write
-    runs-on: macos-15
-    timeout-minutes: 180
-    steps:
-      - name: Checkout writable PR branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: work/kernel-authority-convergence-20260925
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Retire bootstrap from the local candidate
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('.github/workflows/kernel-authority-convergence.yml')
-          content = path.read_text(encoding='utf-8')
-          begin = '  # BEGIN ONE-SHOT KERNEL AUTHORITY REMEDIATION\n'
-          end = '  # END ONE-SHOT KERNEL AUTHORITY REMEDIATION\n'
-          if content.count(begin) != 1 or content.count(end) != 1:
-              raise SystemExit('bootstrap markers are not exact')
-          start = content.index(begin)
-          stop = content.index(end, start) + len(end)
-          path.write_text(content[:start] + content[stop:], encoding='utf-8')
-          PY
-          git config user.name kernel-authority-remediator
-          git config user.email kernel-authority-remediator@users.noreply.github.com
-          git add .github/workflows/kernel-authority-convergence.yml
-          git commit -m 'ci(kernel-authority): retire one-shot bootstrap'
-
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-        with:
-          toolchain: 1.95.0
-          components: rustfmt,clippy
-
-      - name: Rebase guarded remediator
-        shell: bash
-        run: |
-          python3 .github/scripts/kernel_authority_bootstrap_patch.py
-          git add -A
-          git commit -m 'ci(kernel-authority): rebase guarded remediator'
-
-      - name: Apply, validate, commit, rebind and push
-        env:
-          CARGO_TERM_COLOR: always
-        run: python3 .github/scripts/kernel_authority_remediate.py
-  # END ONE-SHOT KERNEL AUTHORITY REMEDIATION
-
   identity:
+    name: Pin immutable source and base
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     outputs:
       source: ${{ steps.pin.outputs.source }}
+      source_tree: ${{ steps.pin.outputs.source_tree }}
       base: ${{ steps.pin.outputs.base }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact event source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+
       - id: pin
+        name: Verify immutable identities
+        shell: bash
+        env:
+          EVENT_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_BASE: ${{ github.event.pull_request.base.sha || '' }}
         run: |
-          git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
-          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "base=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          source="$(git rev-parse HEAD)"
+          test "$source" = "$EVENT_SOURCE"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          if [ -n "$EVENT_BASE" ]; then
+            git fetch --no-tags origin "$EVENT_BASE"
+            base="$(git rev-parse "$EVENT_BASE^{commit}")"
+          else
+            git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+            base="$(git rev-parse refs/remotes/origin/main)"
+          fi
+          test -n "$source_tree"
+          test -n "$base"
+          printf 'source=%s\n' "$source" >> "$GITHUB_OUTPUT"
+          printf 'source_tree=%s\n' "$source_tree" >> "$GITHUB_OUTPUT"
+          printf 'base=%s\n' "$base" >> "$GITHUB_OUTPUT"
+          git status --short
+          test -z "$(git status --porcelain)"
 
   qualify:
+    name: Qualification (${{ matrix.mode }}, ${{ matrix.lane }})
     needs: identity
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -111,26 +104,101 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: 0
       CARGO_INCREMENTAL: 0
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout pinned source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ needs.identity.outputs.source }}
           persist-credentials: false
-      - name: Prepare immutable candidate
+
+      - name: Verify checkout before candidate preparation
+        shell: bash
+        env:
+          EXPECTED_SOURCE: ${{ needs.identity.outputs.source }}
+          EXPECTED_TREE: ${{ needs.identity.outputs.source_tree }}
         run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain)"
+
+      - name: Prepare immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 qualification/kernel-authority/prepare_candidate.py \
-            --mode '${{ matrix.mode }}' --base-sha '${{ needs.identity.outputs.base }}' \
+            --mode '${{ matrix.mode }}' \
+            --base-sha '${{ needs.identity.outputs.base }}' \
             --output "$RUNNER_TEMP/authority-evidence/identity.json"
-      - uses: dtolnay/rust-toolchain@master
+
+      - name: Reject stale or cross-candidate identity
+        shell: bash
+        env:
+          MODE: ${{ matrix.mode }}
+          SOURCE: ${{ needs.identity.outputs.source }}
+          BASE: ${{ needs.identity.outputs.base }}
+          IDENTITY_PATH: ${{ runner.temp }}/authority-evidence/identity.json
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          path = pathlib.Path(os.environ["IDENTITY_PATH"])
+          identity = json.loads(path.read_text(encoding="utf-8"))
+          expected = {
+              "schema",
+              "mode",
+              "sourceCommit",
+              "baseCommit",
+              "candidateCommit",
+              "candidateTree",
+              "activationGranted",
+              "releaseGranted",
+          }
+          if set(identity) != expected:
+              raise SystemExit(f"candidate identity fields drifted: {sorted(identity)}")
+          if identity["schema"] != "hepta.kernel-authority-candidate.v1":
+              raise SystemExit("candidate identity schema mismatch")
+          if identity["mode"] != os.environ["MODE"]:
+              raise SystemExit("candidate mode mismatch")
+          if identity["sourceCommit"] != os.environ["SOURCE"]:
+              raise SystemExit("candidate source mismatch")
+          if identity["baseCommit"] != os.environ["BASE"]:
+              raise SystemExit("candidate base mismatch")
+          observed_commit = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          observed_tree = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True
+          ).strip()
+          if identity["candidateCommit"] != observed_commit:
+              raise SystemExit("candidate commit mismatch")
+          if identity["candidateTree"] != observed_tree:
+              raise SystemExit("candidate tree mismatch")
+          if identity["activationGranted"] is not False:
+              raise SystemExit("qualification cannot grant activation")
+          if identity["releaseGranted"] is not False:
+              raise SystemExit("qualification cannot grant release")
+          PY
+
+      - name: Install pinned Rust toolchain
         if: matrix.lane != 'governance'
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
-      - uses: taiki-e/install-action@just
+
+      - name: Install pinned repository test tools
         if: matrix.lane != 'governance'
-      - uses: taiki-e/install-action@cargo-nextest
-        if: matrix.lane != 'governance'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Execute every applicable check without retries
+        shell: bash
         env:
           LANE: ${{ matrix.lane }}
         run: |
@@ -141,16 +209,18 @@ jobs:
             name="$1"; shift
             "$@" 2>&1 | tee "$out/$name.log"
             rc=${PIPESTATUS[0]}
-            echo "$rc" > "$out/$name.exit"
+            printf '%s\n' "$rc" > "$out/$name.exit"
             if [ "$rc" -ne 0 ]; then status=1; fi
           }
           case "$LANE" in
             governance)
               run evidence python3 qualification/kernel-authority/verify.py self-test
-              run candidate-parser python3 -m unittest discover -s qualification/kernel-authority -p "test_*.py" -v
+              run candidate-parser python3 -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
               run b4 python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
               run callers python3 scripts/verify_hepta_callers.py
-              run maps python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse 'HEAD^{tree}')"
+              run maps python3 scripts/hepta-implementation-maps.py verify \
+                --expected-sha "$(git rev-parse HEAD)" \
+                --expected-tree "$(git rev-parse 'HEAD^{tree}')"
               run whitespace git diff --check
               ;;
             contracts)
@@ -171,13 +241,46 @@ jobs:
               run tests just test --locked -p codex-hepta-agentd --retries 0
               run clippy cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
               ;;
+            *)
+              echo "unknown qualification lane: $LANE" >&2
+              status=1
+              ;;
           esac
           exit "$status"
+
       - name: Retain candidate-bound logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: kernel-authority-${{ matrix.mode }}-${{ matrix.lane }}
+          name: kernel-authority-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-${{ matrix.mode }}-${{ matrix.lane }}
           path: ${{ runner.temp }}/authority-evidence
           if-no-files-found: error
           retention-days: 7
+
+  merge-gate:
+    name: Merge gate
+    if: always()
+    needs: [identity, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require immutable identity and every exact/merge lane
+        shell: bash
+        env:
+          IDENTITY_RESULT: ${{ needs.identity.result }}
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          SOURCE: ${{ needs.identity.outputs.source }}
+          SOURCE_TREE: ${{ needs.identity.outputs.source_tree }}
+          BASE: ${{ needs.identity.outputs.base }}
+        run: |
+          set -euo pipefail
+          test "$IDENTITY_RESULT" = success
+          test "$QUALIFY_RESULT" = success
+          case "$SOURCE" in
+            [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*) ;;
+            *) echo 'missing immutable source identity' >&2; exit 1 ;;
+          esac
+          test "${#SOURCE}" -eq 40
+          test "${#SOURCE_TREE}" -eq 40
+          test "${#BASE}" -eq 40
+          printf 'qualified source=%s tree=%s base=%s\n' "$SOURCE" "$SOURCE_TREE" "$BASE"
