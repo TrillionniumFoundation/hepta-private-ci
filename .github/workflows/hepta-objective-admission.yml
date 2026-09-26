@@ -73,17 +73,32 @@ jobs:
           cargo test --locked -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
           cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
 
+      - name: Compile all objective product test targets
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --no-run \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
+
       - name: Strict objective and product-composition lint
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          # This is a module qualification lane. Keep warnings fatal for every
+          # selected package and all of their targets, but do not let unrelated
+          # workspace path dependencies turn this evidence into a global lint
+          # proxy. Those dependencies remain covered by their own required lanes.
           cargo clippy --locked \
             -p codex-hepta-objective \
             -p codex-hepta-learning-ledger \
             -p codex-hepta-intelligence \
             -p codex-hepta-agentd \
-            --all-targets -- -D warnings
+            --all-targets --no-deps -- -D warnings
 
       - name: Formatting and clean source
         if: always()
