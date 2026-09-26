@@ -67,7 +67,7 @@ impl AuthBusAuthorityStore {
         if let Err(error) = result {
             if error
                 .as_database_error()
-                .is_some_and(|database| database.is_unique_violation())
+                .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
             {
                 return Err(AuthBusAuthorityError::AlreadyExists);
             }
@@ -245,8 +245,8 @@ impl AuthBusAuthorityStore {
             "INSERT INTO authbus_quota_reservation
              (reservation_id, operation_id, quota_key, period_id, principal, amount,
               effect_digest, policy_id, policy_revision, policy_decision_digest, state, revision,
-              expires_at_ms, created_at_ms, updated_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'held', ?, ?, ?, ?)",
+              expires_at_ms, created_at_ms, updated_at_ms, dispatched_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'held', ?, ?, ?, ?, NULL)",
         )
         .bind(reservation_id.as_str())
         .bind(request.operation_id.as_str())
@@ -320,12 +320,13 @@ impl AuthBusAuthorityStore {
                 "INSERT INTO authbus_quota_reservation_archive
                  (reservation_id, operation_id, quota_key, period_id, principal, amount,
                   effect_digest, policy_id, policy_revision, policy_decision_digest, state,
-                  revision, expires_at_ms, created_at_ms, updated_at_ms, dispatch_digest,
-                  terminal_evidence, observed_cost, settlement_digest, archived_at_ms)
+                  revision, expires_at_ms, created_at_ms, updated_at_ms, dispatched_at_ms,
+                  dispatch_digest, terminal_evidence, observed_cost, settlement_digest,
+                  archived_at_ms)
                  SELECT reservation_id, operation_id, quota_key, period_id, principal, amount,
                         effect_digest, policy_id, policy_revision, policy_decision_digest, state,
-                        revision, expires_at_ms, created_at_ms, updated_at_ms, dispatch_digest,
-                        terminal_evidence, observed_cost, settlement_digest, ?
+                        revision, expires_at_ms, created_at_ms, updated_at_ms, dispatched_at_ms,
+                        dispatch_digest, terminal_evidence, observed_cost, settlement_digest, ?
                  FROM authbus_quota_reservation WHERE reservation_id = ?",
             )
             .bind(u64_bytes(older_than_ms).as_slice())
@@ -455,14 +456,35 @@ fn reservation_from_row(row: &SqliteRow) -> Result<QuotaReservation, AuthBusAuth
         expires_at_ms: nonzero_u64(row, "expires_at_ms")?,
         created_at_ms: nonzero_u64(row, "created_at_ms")?,
         updated_at_ms: nonzero_u64(row, "updated_at_ms")?,
+        dispatched_at_ms: optional_u64(row, "dispatched_at_ms")?,
         dispatch_digest: optional_digest(row, "dispatch_digest")?,
         terminal_evidence: optional_digest(row, "terminal_evidence")?,
         observed_cost: optional_u64(row, "observed_cost")?,
         settlement_digest: optional_digest(row, "settlement_digest")?,
     };
+    let invalid_dispatch_boundary = reservation
+        .dispatched_at_ms
+        .is_some_and(|dispatched_at_ms| {
+            dispatched_at_ms < reservation.created_at_ms
+                || dispatched_at_ms > reservation.updated_at_ms
+        })
+        || match reservation.state {
+            ReservationState::Held | ReservationState::Cancelled | ReservationState::Expired => {
+                reservation.dispatched_at_ms.is_some()
+            }
+            ReservationState::DispatchAttempted => reservation.dispatched_at_ms.is_none(),
+            // Pre-0005 indeterminate and terminal records did not persist the
+            // physical dispatch boundary. Keep them readable for recovery,
+            // compaction and exact terminal retry. A non-terminal legacy row
+            // still cannot settle because `settle` requires a known boundary.
+            ReservationState::Indeterminate
+            | ReservationState::Settled
+            | ReservationState::Released => false,
+        };
     if reservation.policy_decision_digest.is_zero()
         || reservation.effect_digest.is_zero()
         || reservation.updated_at_ms < reservation.created_at_ms
+        || invalid_dispatch_boundary
     {
         return Err(AuthBusAuthorityError::CorruptState(
             "invalid quota reservation record",

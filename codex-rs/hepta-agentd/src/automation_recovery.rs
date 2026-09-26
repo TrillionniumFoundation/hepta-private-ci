@@ -49,14 +49,31 @@ pub(crate) async fn reconcile_one(
     identity: &AgentdIdentity,
     now_ms: u64,
 ) -> Result<bool, AgentdError> {
-    if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
-        return Ok(true);
+    // Service both recovery domains in each quantum. Unknown queue admissions
+    // must not starve already-admitted turns, and neither domain redispatches.
+    let mut visited = false;
+    if let Some(work) = store.next_pending_occurrence_work().await? {
+        observe_recovery_result(reconcile_work(store, state, identity, work, now_ms).await)?;
+        visited = true;
     }
-    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
-        return Ok(false);
-    };
-    reconcile_work(store, state, identity, work, now_ms).await?;
-    Ok(true)
+    match reconcile_one_unknown_dispatch(store, state, identity, now_ms).await {
+        Ok(observed) => visited |= observed,
+        Err(error) => {
+            observe_recovery_result(Err(error))?;
+            visited = true;
+        }
+    }
+    Ok(visited)
+}
+
+fn observe_recovery_result(result: Result<(), AgentdError>) -> Result<(), AgentdError> {
+    match result {
+        Err(AgentdError::AutomationObservationUnavailable(_error)) => {
+            eprintln!("automation observation deferred; durable identity retained");
+            Ok(())
+        }
+        other => other,
+    }
 }
 
 async fn reconcile_one_unknown_dispatch(
@@ -65,7 +82,7 @@ async fn reconcile_one_unknown_dispatch(
     identity: &AgentdIdentity,
     now_ms: u64,
 ) -> Result<bool, AgentdError> {
-    let Some(uncertain) = store.uncertain_dispatches(1).await?.into_iter().next() else {
+    let Some(uncertain) = store.next_uncertain_dispatch().await? else {
         return Ok(false);
     };
     let task = store
@@ -392,14 +409,10 @@ async fn pending_exact(
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
-        .pending_occurrence_work(1024)
+        .pending_occurrence_work_exact(task_id, occurrence)
         .await?
-        .into_iter()
-        .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
         .ok_or_else(|| {
-            AgentdError::Protocol(
-                "automation occurrence is not in the recovery frontier".to_string(),
-            )
+            AgentdError::Protocol("automation occurrence is not pending recovery".to_string())
         })
 }
 
@@ -407,7 +420,7 @@ async fn connect(
     state: &AgentdState,
     identity: &AgentdIdentity,
 ) -> Result<RemoteAppServerClient, AgentdError> {
-    if !state.automation_admission_ready()? {
+    if !state.automation_recovery_ready()? {
         return Err(AgentdError::Protocol(
             "automation recovery requires a ready owning Agent generation".to_string(),
         ));
@@ -416,21 +429,27 @@ async fn connect(
         AbsolutePathBuf::from_absolute_path(&identity.app_server_socket).map_err(|error| {
             AgentdError::Protocol(format!("automation socket path invalid: {error}"))
         })?;
-    let client = RemoteAppServerClient::connect_with_bounded_events(
-        RemoteAppServerConnectArgs {
-            endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
-            client_name: "hepta-agentd-automation-recovery".to_string(),
-            client_version: env!("CARGO_PKG_VERSION").to_string(),
-            experimental_api: true,
-            mcp_server_openai_form_elicitation: false,
-            opt_out_notification_methods: Vec::new(),
-            channel_capacity: 8,
-        },
-        16,
+    let client = tokio::time::timeout(
+        std::time::Duration::from_secs(2),
+        RemoteAppServerClient::connect_with_bounded_events(
+            RemoteAppServerConnectArgs {
+                endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                client_name: "hepta-agentd-automation-recovery".to_string(),
+                client_version: env!("CARGO_PKG_VERSION").to_string(),
+                experimental_api: true,
+                mcp_server_openai_form_elicitation: false,
+                opt_out_notification_methods: Vec::new(),
+                channel_capacity: 8,
+            },
+            16,
+        ),
     )
     .await
+    .map_err(|_| {
+        AgentdError::AutomationObservationUnavailable("recovery connect timeout".to_string())
+    })?
     .map_err(|error| {
-        AgentdError::Protocol(format!("automation recovery connect failed: {error}"))
+        AgentdError::AutomationObservationUnavailable(format!("recovery connect failed: {error}"))
     })?;
     let expected_home = identity.home_root.to_string_lossy();
     if client.codex_home() != Some(expected_home.as_ref()) {
@@ -449,22 +468,28 @@ async fn reconcile_queue(
     client_user_message_id: &str,
     expected_payload_sha256: &str,
 ) -> Result<ThreadQueueReconcileResponse, AgentdError> {
-    client
-        .request_handle()
-        .request_typed(ClientRequest::ThreadQueueReconcile {
-            request_id: RequestId::Integer(1),
-            params: ThreadQueueReconcileParams {
-                thread_id: thread_id.to_string(),
-                input,
-                client_user_message_id: client_user_message_id.to_string(),
-                expected_payload_sha256: expected_payload_sha256.to_string(),
-                mode: ThreadQueueReconcileMode::ReconcileOnly,
-            },
-        })
-        .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!("automation queue reconcile failed: {error}"))
-        })
+    tokio::time::timeout(
+        std::time::Duration::from_secs(2),
+        client
+            .request_handle()
+            .request_typed(ClientRequest::ThreadQueueReconcile {
+                request_id: RequestId::Integer(1),
+                params: ThreadQueueReconcileParams {
+                    thread_id: thread_id.to_string(),
+                    input,
+                    client_user_message_id: client_user_message_id.to_string(),
+                    expected_payload_sha256: expected_payload_sha256.to_string(),
+                    mode: ThreadQueueReconcileMode::ReconcileOnly,
+                },
+            }),
+    )
+    .await
+    .map_err(|_| {
+        AgentdError::AutomationObservationUnavailable("queue reconcile timeout".to_string())
+    })?
+    .map_err(|error| {
+        AgentdError::AutomationObservationUnavailable(format!("queue reconcile failed: {error}"))
+    })
 }
 
 async fn find_turn(
@@ -475,22 +500,32 @@ async fn find_turn(
 ) -> Result<TurnLookup, AgentdError> {
     let mut cursor = start_cursor.map(str::to_owned);
     for page_index in 0..MAX_TURN_PAGES {
-        let response: ThreadTurnsListResponse = client
-            .request_handle()
-            .request_typed(ClientRequest::ThreadTurnsList {
-                request_id: RequestId::Integer(i64::try_from(page_index + 2).unwrap_or(i64::MAX)),
-                params: ThreadTurnsListParams {
-                    thread_id: thread_id.to_string(),
-                    cursor: cursor.clone(),
-                    limit: Some(TURN_PAGE_SIZE),
-                    sort_direction: Some(SortDirection::Desc),
-                    items_view: Some(TurnItemsView::NotLoaded),
-                },
-            })
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!("automation turn observation failed: {error}"))
-            })?;
+        let response: ThreadTurnsListResponse = tokio::time::timeout(
+            std::time::Duration::from_secs(2),
+            client
+                .request_handle()
+                .request_typed(ClientRequest::ThreadTurnsList {
+                    request_id: RequestId::Integer(
+                        i64::try_from(page_index + 2).unwrap_or(i64::MAX),
+                    ),
+                    params: ThreadTurnsListParams {
+                        thread_id: thread_id.to_string(),
+                        cursor: cursor.clone(),
+                        limit: Some(TURN_PAGE_SIZE),
+                        sort_direction: Some(SortDirection::Desc),
+                        items_view: Some(TurnItemsView::NotLoaded),
+                    },
+                }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::AutomationObservationUnavailable("turn observation timeout".to_string())
+        })?
+        .map_err(|error| {
+            AgentdError::AutomationObservationUnavailable(format!(
+                "turn observation failed: {error}"
+            ))
+        })?;
         if let Some(turn) = response.data.into_iter().find(|turn| turn.id == turn_id) {
             return Ok(TurnLookup::Found(turn));
         }
@@ -551,3 +586,7 @@ fn observation_digest(value: &impl serde::Serialize) -> Result<Sha256Digest, Age
 fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
     AgentdError::Protocol(format!("automation TaskFlow recovery failed: {error}"))
 }
+
+#[cfg(test)]
+#[path = "automation_recovery_policy_tests.rs"]
+mod policy_tests;

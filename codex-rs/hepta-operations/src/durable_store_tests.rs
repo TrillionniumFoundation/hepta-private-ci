@@ -675,3 +675,6 @@ async fn retirement_cutoff_range_never_retires_pending_work_or_relaxes_batch_lim
     ));
     store.close().await;
 }
+
+#[path = "durable_clock_tests.rs"]
+mod clock_tests;

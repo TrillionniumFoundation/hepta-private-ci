@@ -24,7 +24,9 @@ use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
 use crate::AgentdPlasticityAnchorStoreV1;
+use crate::AgentdPlasticityCommitContextV1;
 use crate::AgentdPlasticityHostErrorV1;
+use crate::AgentdPlasticityOwnerContextV1;
 use crate::AgentdState;
 use crate::AgentdTopologyAnchorStoreV1;
 use crate::AgentdTopologyHostErrorV1;
@@ -296,18 +298,19 @@ impl PlasticityRuntimeOwnerV1 {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
-                    let result = propose_agentd_plasticity_v1(
-                        *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
-                        &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
-                        now,
-                    )
-                    .map_err(PlasticityRuntimeCallErrorV1::Parameter);
+                    let owners = AgentdPlasticityOwnerContextV1 {
+                        artifacts: &self.artifacts,
+                        ledger: &self.ledger,
+                        evidence_resolver: self.owner_evidence_resolver.as_ref(),
+                        evidence_policy: &self.owner_evidence_policy,
+                        verifier: &self.verifier,
+                    };
+                    let commit = AgentdPlasticityCommitContextV1 {
+                        writer: &mut self.parameter_writer,
+                        anchor_store: &mut self.parameter_anchor_store,
+                    };
+                    let result = propose_agentd_plasticity_v1(*request, owners, commit, now)
+                        .map_err(PlasticityRuntimeCallErrorV1::Parameter);
                     let _ = response.send(result);
                 }
                 PlasticityRuntimeCommandV1::Topology {

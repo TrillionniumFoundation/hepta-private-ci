@@ -138,3 +138,6 @@ fn cognitive_retrieval_process_profile_is_explicit_and_fail_closed() {
             if message.contains("compatibility or hnmf-required")
     ));
 }
+
+#[path = "config_intelligence_tests.rs"]
+mod intelligence;

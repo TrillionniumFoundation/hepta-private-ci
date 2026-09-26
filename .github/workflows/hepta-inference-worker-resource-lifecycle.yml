@@ -1,0 +1,169 @@
+name: Inference worker resource lifecycle qualification
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - scripts/hepta_ci_exec.py
+      - scripts/test_hepta_ci_exec*.py
+      - scripts/hepta_ci_v8.py
+      - .github/actions/hepta-synthetic-merge/**
+      - .github/workflows/hepta-inference-worker-resource-lifecycle.yml
+  push:
+    branches:
+      - main
+      - work/product-convergence-20260923
+    paths:
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - scripts/hepta_ci_exec.py
+      - scripts/test_hepta_ci_exec*.py
+      - scripts/hepta_ci_v8.py
+      - .github/actions/hepta-synthetic-merge/**
+      - .github/workflows/hepta-inference-worker-resource-lifecycle.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-worker-lifecycle-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  qualify:
+    name: Worker lifecycle (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct the existing deterministic integration candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+
+      - name: Bind the unmodified tested source
+        id: identity
+        env:
+          CANDIDATE: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
+          printf 'TESTED_TREE=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+
+      - name: Exercise command-record failure and identity semantics
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/hepta-worker-records/recorder-tests.json"
+          --minimum-tests 1 --
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
+
+      - name: Prepare native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev libssl-dev
+
+      - name: Install the existing test entry point
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Resolve verified V8 build inputs
+        id: native
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Check formatting without rewriting the candidate
+        id: format
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/hepta-worker-records/format.json" --
+          cargo fmt -p codex-hepta-infer-worker-host -- --check
+
+      - name: Publish format failure diagnostics before native execution
+        if: ${{ always() && steps.format.outcome == 'failure' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-worker-format-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-worker-records/format.json*
+          if-no-files-found: error
+
+      - name: Run original and resource-lifecycle behavior regressions
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.native.outcome == 'success' }}
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/hepta-worker-records/behavior.json"
+          --minimum-tests 1 --timeout-seconds 3600 --
+          just test --locked -p codex-hepta-infer-worker-host --lib
+          -E 'test(model_worker::)' --retries 0 --test-threads 2
+
+      - name: Run strict lint independently of test or format failure
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.native.outcome == 'success' }}
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/hepta-worker-records/clippy.json"
+          --timeout-seconds 3600 --
+          cargo clippy --locked -p codex-hepta-infer-worker-host
+          --lib --tests -- -D warnings
+
+      - name: Verify the tested source remained unchanged
+        if: ${{ always() && steps.identity.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$TESTED_TREE"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain actual results including failed or rejected commands
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-worker-lifecycle-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-worker-records/*
+          if-no-files-found: warn

@@ -1,14 +1,10 @@
+use codex_state::open_in_memory_sqlite_pool;
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
-        .await
-        .expect("SQLite owner");
+    let pool = open_in_memory_sqlite_pool(1).await.expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
@@ -127,7 +123,11 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
 
 async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
-    let root = temp.path().join("owner");
+    let root = temp
+        .path()
+        .canonicalize()
+        .expect("canonical owner root")
+        .join("owner");
     std::fs::create_dir(&root).expect("owner directory");
     let pool = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =

@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 //! Exercise the real task host's shutdown/retirement races through its public API.
 //! These tests grant no selection, writer or deployment authority.
 

@@ -1,0 +1,123 @@
+name: Recover Desktop Commander
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/workflows/remote-desktop-recover.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: remote-desktop-recover
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    name: Recover qian-qi command relay
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 10
+    steps:
+      - name: Inspect and restart Desktop Commander relay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(hostname)" = "qian-qi"
+          echo "host=$(hostname) user=$(id -un) home=$HOME"
+          echo "== matching processes before =="
+          ps -eo pid,ppid,etime,args | grep -Ei 'desktop.?commander|remote.?desktop|wonderwhy|mcp.*desktop' | grep -v grep || true
+          echo "== matching user services =="
+          systemctl --user daemon-reload 2>/dev/null || true
+          mapfile -t units < <(
+            systemctl --user list-unit-files --no-legend 2>/dev/null \
+              | awk '{print $1}' \
+              | grep -Ei 'desktop.*commander|commander.*desktop|remote.*commander|commander.*remote' \
+              || true
+          )
+          for unit in "${units[@]}"; do
+            echo "restarting user unit $unit"
+            systemctl --user restart "$unit"
+          done
+
+          # The relay is also commonly started outside systemd by the authorized
+          # desktop application. Recreate only an already-running matching process
+          # with its exact argv, environment and cwd; never invent credentials or a
+          # new launch profile. RUNNER_TRACKING_ID is removed so Actions does not
+          # terminate the replacement when this job exits.
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import signal
+          import subprocess
+          import time
+
+          me = os.getpid()
+          matches = []
+          for proc in pathlib.Path('/proc').iterdir():
+              if not proc.name.isdigit() or int(proc.name) in {me, os.getppid()}:
+                  continue
+              try:
+                  raw = (proc / 'cmdline').read_bytes()
+                  argv = [part.decode(errors='surrogateescape') for part in raw.split(b'\0') if part]
+                  joined = ' '.join(argv).lower()
+                  if not argv or 'github-runner' in joined or 'actions/runner' in joined:
+                      continue
+                  if any(token in joined for token in (
+                      'desktop-commander', 'desktop_commander',
+                      'remote-desktop', 'remote_desktop',
+                      '@wonderwhy-er/desktop-commander',
+                  )):
+                      env = {}
+                      for item in (proc / 'environ').read_bytes().split(b'\0'):
+                          if b'=' not in item:
+                              continue
+                          key, value = item.split(b'=', 1)
+                          env[key.decode(errors='surrogateescape')] = value.decode(errors='surrogateescape')
+                      cwd = os.readlink(proc / 'cwd')
+                      matches.append((int(proc.name), argv, env, cwd))
+              except (FileNotFoundError, PermissionError, ProcessLookupError, OSError):
+                  continue
+
+          if not matches:
+              print('no existing non-systemd relay process found; relying on registered user services')
+          else:
+              for pid, argv, env, cwd in matches:
+                  print(f'restarting pid={pid} cwd={cwd} argv0={argv[0]}')
+                  try:
+                      os.kill(pid, signal.SIGTERM)
+                  except ProcessLookupError:
+                      continue
+                  for _ in range(30):
+                      if not pathlib.Path(f'/proc/{pid}').exists():
+                          break
+                      time.sleep(0.1)
+                  if pathlib.Path(f'/proc/{pid}').exists():
+                      os.kill(pid, signal.SIGKILL)
+                  env.pop('RUNNER_TRACKING_ID', None)
+                  env.pop('RUNNER_TEMP', None)
+                  log = open('/tmp/desktop-commander-restart.log', 'ab', buffering=0)
+                  subprocess.Popen(
+                      argv,
+                      cwd=cwd,
+                      env=env,
+                      stdin=subprocess.DEVNULL,
+                      stdout=log,
+                      stderr=subprocess.STDOUT,
+                      start_new_session=True,
+                      close_fds=True,
+                  )
+          PY
+
+          sleep 5
+          echo "== matching processes after =="
+          ps -eo pid,ppid,etime,args | grep -Ei 'desktop.?commander|remote.?desktop|wonderwhy|mcp.*desktop' | grep -v grep || true
+          echo "== likely launch metadata =="
+          find "$HOME/.config/systemd/user" "$HOME/.local/share/systemd/user" "$HOME/.config/autostart" \
+            -maxdepth 2 -type f 2>/dev/null | grep -Ei 'desktop|commander|remote|mcp' || true
+          echo "== relay restart log tail =="
+          tail -80 /tmp/desktop-commander-restart.log 2>/dev/null || true

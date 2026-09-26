@@ -380,6 +380,19 @@ impl AgentdProductionWriterHost {
             .await?)
     }
 
+    /// Observe an already-admitted semantic operation without repeating it.
+    /// This returns immutable result metadata, never a new execution grant.
+    pub async fn cognitive_mutation_result(
+        &self,
+        operation_digest: &codex_hepta_contracts::Sha256Digest,
+    ) -> Result<Option<codex_hepta_cognitive_store::ProductionCognitiveMutationResultV1>, AgentdError>
+    {
+        Ok(self
+            .writer
+            .cognitive_mutation_result(operation_digest)
+            .await?)
+    }
+
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
     }

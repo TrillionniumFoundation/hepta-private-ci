@@ -407,7 +407,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
@@ -415,6 +415,12 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    // Keep this a structural companion to the real Agentd race test below,
+    // not a substitute for executing the physical typed send with a grant.
+    let send = &source[source
+        .find("async fn send_authorized_turn_start(")
+        .expect("authorized send helper")..];
+    assert!(send.contains(".request_typed_observed(ClientRequest::TurnStart"));
 }
 
 #[cfg(unix)]
@@ -442,6 +448,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
@@ -450,8 +458,17 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let codex_executable = std::env::var_os("HEPTA_TEST_CODEX_EXE")
+        .map(PathBuf::from)
+        .ok_or("build the exact candidate codex-app-server binary and set HEPTA_TEST_CODEX_EXE")?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_executable,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -499,6 +516,28 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     assert!(accepted_record.turn_id.is_some());
     assert_eq!(accepted_record.observation.as_ref(), Some(&accepted));
     assert_eq!(accepted_record.pre_dispatch_stop, None);
+
+    // Reopen the actual product owner through the new checkpoint format.
+    // An exact retry must return the observed result without another provider
+    // attempt or consuming another independent final-use grant.
+    durable.compact_journal()?;
+    drop(durable);
+    let mut durable = DurableInferenceControl::open(&journal, 8)?;
+    let before_retry = durable.journal_capacity_status();
+    let recovered = driver
+        .run(
+            &mut durable,
+            NativeAdmission {
+                request_id: ACCEPT_REQUEST_ID.to_string(),
+                maximum_in_flight: 1,
+            },
+            "answer from the verified memory".to_string(),
+            Some("lemon".to_string()),
+            &CancellationToken::new(),
+        )
+        .await?;
+    assert_eq!(recovered, accepted);
+    assert_eq!(durable.journal_capacity_status(), before_retry);
 
     assert_eq!(
         response_mock.requests().len(),

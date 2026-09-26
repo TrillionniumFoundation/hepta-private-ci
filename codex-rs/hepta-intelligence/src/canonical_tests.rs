@@ -134,6 +134,8 @@ struct Ports {
     calls: Vec<CanonicalStageV1>,
     abstain: bool,
     wrong_owner: Option<CanonicalStageV1>,
+    selected_candidate: StableId,
+    selected_propensity: ProbabilityQ32,
 }
 
 impl Ports {
@@ -142,6 +144,8 @@ impl Ports {
             calls: Vec::new(),
             abstain: false,
             wrong_owner: None,
+            selected_candidate: id("action:one"),
+            selected_propensity: ProbabilityQ32::ONE,
         }
     }
 
@@ -210,8 +214,8 @@ impl CanonicalOwnerPortsV1 for Ports {
             CanonicalPortDecisionV1::Abstained
         } else {
             CanonicalPortDecisionV1::Selected {
-                candidate_id: id("action:one"),
-                propensity: ProbabilityQ32::ONE,
+                candidate_id: self.selected_candidate.clone(),
+                propensity: self.selected_propensity,
             }
         };
         self.receipt(input, "intuition.policy", decision)
@@ -333,5 +337,43 @@ fn legal_candidate_set_rejects_replay_identity_with_duplicate_semantics() {
     assert_eq!(
         build_legal_candidates(value).expect_err("duplicate must reject"),
         CanonicalIntelligenceError::DuplicateCandidate(id("action:one"))
+    );
+}
+
+#[test]
+fn selected_candidate_must_belong_to_the_frozen_legal_set() {
+    let request = request();
+    let mut oracle = Oracle::new(&request.snapshot);
+    let mut ports = Ports::new();
+    ports.selected_candidate = id("action:outside-legal-set");
+
+    assert_eq!(
+        prepare_intelligence_run(request, &mut ports, &mut oracle)
+            .expect_err("out-of-set selection must fail closed"),
+        CanonicalIntelligenceError::InvalidCandidateSet("selected candidate")
+    );
+    assert_eq!(
+        ports.calls,
+        vec![
+            CanonicalStageV1::ObjectiveValidated,
+            CanonicalStageV1::UtilityEvaluated,
+            CanonicalStageV1::NeuralSignalCollected,
+            CanonicalStageV1::PromptPortfolioBuilt,
+            CanonicalStageV1::IntuitionDecided,
+        ]
+    );
+}
+
+#[test]
+fn selected_candidate_requires_positive_propensity() {
+    let request = request();
+    let mut oracle = Oracle::new(&request.snapshot);
+    let mut ports = Ports::new();
+    ports.selected_propensity = ProbabilityQ32::ZERO;
+
+    assert_eq!(
+        prepare_intelligence_run(request, &mut ports, &mut oracle)
+            .expect_err("zero propensity must fail closed"),
+        CanonicalIntelligenceError::InvalidCandidateSet("selected propensity")
     );
 }

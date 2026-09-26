@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
     paths:
+      - CALLERS.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-cognitive-read/**
@@ -27,12 +30,21 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
+      - docs/modules/runtime.supervisor/**
+      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
       - .github/scripts/check_ci_results.py
+      - .github/scripts/verify_cargo_workspace_manifests.py
+      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-module-docs.py
+      - scripts/hepta-supervisor-validation.py
+      - scripts/hepta_module_registry.py
       - scripts/test_hepta_agentd_ci.py
       - scripts/hepta_ci_candidate.py
+      - scripts/hepta_ci_v8.py
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
       - .github/workflows/hepta-gap-agentd-process.yml
+      - .github/workflows/runtime-supervisor-qualification.yml
 
 permissions:
   contents: read
@@ -96,7 +108,7 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --manifest-path Cargo.toml --lib \
+          just test --locked --retries 0 --manifest-path Cargo.toml --lib \
             -p codex-hepta-fleet -p codex-hepta-control-plane \
             -p codex-hepta-agent-protocol --test-threads=2
 
@@ -114,7 +126,6 @@ jobs:
       EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
       RUST_BACKTRACE: "1"
       CARGO_BUILD_JOBS: "2"
-      # Preserve the short private Unix-socket test root on Darwin.
       TMPDIR: /tmp
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -152,46 +163,60 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Exercise owner and lifecycle libraries
+      - name: Build exact App Server for native owner qualification
+        id: native_build
         if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-app-server --bin codex-app-server
+          host="$(rustc -vV | sed -n 's/^host: //p')"
+          test -n "$host"
+          cargo metadata --locked --all-features --filter-platform "$host" --format-version=1 > "$RUNNER_TEMP/hepta-nextest-metadata.json"
+          target="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["target_directory"])' "$RUNNER_TEMP/hepta-nextest-metadata.json")"
+          test -x "$target/debug/codex-app-server"
+          printf 'HEPTA_TEST_CODEX_EXE=%s/debug/codex-app-server\n' "$target" >> "$GITHUB_ENV"
+      - name: Exercise owner and lifecycle libraries
+        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
       - name: Exercise actual optional retirement and durable destination recovery
-        if: steps.execution.outputs.run_native == 'true'
+        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-agentd --test optional_module_restart \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --test optional_module_restart \
             --test runtime_shutdown_outcomes --test-threads=1
-          just test --locked -p codex-hepta-automation --test retirement_recovery \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-automation --test retirement_recovery \
             --test operation_timer_fence --test-threads=1
-          just test --locked -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
       - name: Exercise named plasticity and live cutover paths
-        if: steps.execution.outputs.run_native == 'true'
+        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-agentd --lib \
-            plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently --test-threads=1
-          just test --locked -p codex-hepta-runtime \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --lib \
+            agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently --test-threads=1
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-runtime \
             authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics --test-threads=1
       - name: Exercise writer admission and real daemon process suites
-        if: steps.execution.outputs.run_native == 'true'
+        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
             --lib runtime::tests::qualification_ --test-threads=1
-          just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \
+          just test --cargo-metadata "$RUNNER_TEMP/hepta-nextest-metadata.json" --locked --retries 0 -p codex-hepta-agentd --features qualification-cognitive-write \
             --test cognitive_product_e2e --test plasticity_process_e2e \
             --test runtime_codex_product_e2e --test supervised_two_agents \
             --test supervisord_product_e2e --test queue_capacity_product --test-threads=1
       - name: Strict owner lint
-        if: steps.execution.outputs.run_native == 'true'
+        if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D warnings
       - name: Check unchanged candidate after execution

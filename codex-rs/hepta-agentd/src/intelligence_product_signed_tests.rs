@@ -2,7 +2,7 @@ use super::*;
 use crate::intelligence_product::evaluation_tests::evidence_fixture;
 use codex_hepta_intelligence::build_legal_candidates;
 
-fn signed_fixture() -> (
+pub(super) fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
@@ -49,8 +49,7 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
         &value.owners,
         value.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
-        .expect("runner")
+    let runner = product_runner(path, &value)
         .with_evaluation_trust(trust)
         .expect("host-root trust");
     let mut coordinator = product_test_coordinator();
@@ -81,8 +80,7 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
         &value.owners,
         value.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(path.clone(), authority_verifier()).expect("runner");
+    let runner = product_runner(path.clone(), &value);
     assert!(matches!(
         runner
             .prepare(&product_test_coordinator(), value.request, value.inputs)
@@ -92,8 +90,7 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
 
     let (mut value, trust) = signed_fixture();
     value.inputs.context_request.items[0].content_digest = digest("substituted-context");
-    let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
-        .expect("runner")
+    let runner = product_runner(path, &value)
         .with_evaluation_trust(trust)
         .expect("trust");
     assert!(matches!(
@@ -108,3 +105,6 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
         ))
     ));
 }
+
+#[path = "intelligence_run_start_tests.rs"]
+mod run_start;

@@ -27,6 +27,7 @@ use sqlx::ValueRef;
 
 use super::CognitiveStore;
 use super::CognitiveStoreError;
+use super::CognitiveStoreGenerationGuard;
 use super::CognitiveStoreOpenGuard;
 use super::REQUIRED_SCHEMA_OBJECTS;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
@@ -50,6 +51,34 @@ const MAX_ROWS: i64 = 262_144;
 const MAX_BYTES: i64 = 128 * 1024 * 1024;
 const MAX_ROW_BYTES: i64 = 2 * 1024 * 1024;
 const MAX_SCHEMA_BYTES: i64 = 1024 * 1024;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum CognitiveRecoveryPhase {
+    BeforeAuthorityUse,
+    PrivateCopyMaterialized,
+    BeforeCheckpoint,
+    AfterCheckpoint,
+    BeforePublication,
+    AfterPublication,
+}
+
+pub(crate) trait CognitiveRecoveryObserver: Send + Sync {
+    fn observe(&self, phase: CognitiveRecoveryPhase);
+}
+
+impl CognitiveRecoveryObserver for () {
+    fn observe(&self, _phase: CognitiveRecoveryPhase) {}
+}
+
+#[cfg(test)]
+impl<F> CognitiveRecoveryObserver for F
+where
+    F: Fn(CognitiveRecoveryPhase) + Send + Sync,
+{
+    fn observe(&self, phase: CognitiveRecoveryPhase) {
+        self(phase);
+    }
+}
 
 /// An exact logical state cut, including all registered owner tables and their
 /// current tombstones/revocations. The host must independently persist and
@@ -127,6 +156,35 @@ impl CognitiveStore {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
+        Self::open_with_recovery_inner(layout, requirement, authority, verifier, &()).await
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn open_with_recovery_observed<V, O>(
+        layout: &HeptaAgentLayout,
+        requirement: CognitiveRecoveryRequirement<'_>,
+        authority: &ProductionAuthorityLease,
+        verifier: &V,
+        observer: &O,
+    ) -> Result<Self, CognitiveRecoveryError>
+    where
+        V: ProductionAuthorityVerifier + ?Sized,
+        O: CognitiveRecoveryObserver + ?Sized,
+    {
+        Self::open_with_recovery_inner(layout, requirement, authority, verifier, observer).await
+    }
+
+    async fn open_with_recovery_inner<V, O>(
+        layout: &HeptaAgentLayout,
+        requirement: CognitiveRecoveryRequirement<'_>,
+        authority: &ProductionAuthorityLease,
+        verifier: &V,
+        observer: &O,
+    ) -> Result<Self, CognitiveRecoveryError>
+    where
+        V: ProductionAuthorityVerifier + ?Sized,
+        O: CognitiveRecoveryObserver + ?Sized,
+    {
         let expected = validate_requirement(layout, requirement)?;
         verifier
             .verify(authority, layout.agent_id())
@@ -153,6 +211,20 @@ impl CognitiveStore {
         }
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+        observer.observe(CognitiveRecoveryPhase::BeforeAuthorityUse);
+        // The point-in-time preflight above is not enough: authority may be
+        // revoked after it and before the exclusive owner fence is obtained. Enter a
+        // verifier-owned use guard only after that wait and retain it through
+        // private-copy verification, checkpoint, and active-pointer publish.
+        authority
+            .validate_for_agent(layout.agent_id())
+            .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
+        let _authority_use = verifier
+            .enter_use(authority, layout.agent_id())
+            .map_err(CognitiveRecoveryError::AccessDenied)?;
+        let _generation_guard =
+            CognitiveStoreGenerationGuard::acquire_exclusive_or_create(&canonical_root)
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())
@@ -166,6 +238,7 @@ impl CognitiveStore {
         config
             .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
             .map_err(recovery_error)?;
+        observer.observe(CognitiveRecoveryPhase::PrivateCopyMaterialized);
 
         let result = async {
             let pool = config
@@ -212,10 +285,12 @@ impl CognitiveStore {
             }
             pool.close().await;
 
+            observer.observe(CognitiveRecoveryPhase::BeforeCheckpoint);
             config
                 .checkpoint_private_recovery_database(&candidate)
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            observer.observe(CognitiveRecoveryPhase::AfterCheckpoint);
 
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
@@ -259,8 +334,15 @@ impl CognitiveStore {
                 return Err(error);
             }
 
+            observer.observe(CognitiveRecoveryPhase::BeforePublication);
+            // The owned use guard fences revocation, but cannot extend the
+            // signed lease's deadline during a long copy/checkpoint.
+            authority
+                .validate_for_agent(layout.agent_id())
+                .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
             publish_active_database(&canonical_root, &candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            observer.observe(CognitiveRecoveryPhase::AfterPublication);
             // Keep the recovery fence exclusive for this recovered writer
             // generation. Callers that need additional handles clone this
             // store; reopening by path would otherwise create a second writer

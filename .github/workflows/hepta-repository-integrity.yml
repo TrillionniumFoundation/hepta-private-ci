@@ -89,7 +89,7 @@ jobs:
         run: |
           set -uo pipefail
           status=0
-          for suite in test_hepta_workspace.py test_hepta_implementation_identity.py test_hepta_ci_dependency_scaling.py test_hepta_ci_nested_inputs.py test_hepta_ci_opaque_inputs.py; do
+          for suite in test_hepta_integrity_checkout.py test_hepta_workspace.py test_hepta_implementation_identity.py test_hepta_ci_dependency_scaling.py test_hepta_ci_nested_inputs.py test_hepta_ci_opaque_inputs.py; do
             if python3 -m unittest discover -v -s scripts -p "$suite"; then
               :
             else
@@ -99,10 +99,12 @@ jobs:
           exit "$status"
 
       - name: Exercise source identity migration and freshness regressions
+        if: ${{ !cancelled() }}
         shell: bash
         run: python3 -m unittest discover -v -s scripts -p 'test_hepta_implementation_source_identity.py'
 
       - name: Verify repository integrity policy
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -115,6 +117,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Retain integrity receipt
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-repository-integrity-${{ steps.identity.outputs.head }}

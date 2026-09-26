@@ -391,3 +391,52 @@ fn payload_ceiling_rejects_atomically() {
     );
     assert_eq!(registry, before);
 }
+
+#[test]
+fn compatible_set_rejects_rehashed_invalid_binding_and_missing_required_factor() {
+    let mut registry = admitted_registry();
+    registry
+        .register_realization_v2(binding())
+        .must("realization");
+    let tuple = model_tuple();
+    let vector = digest("generation-vector");
+    let snapshot = registry.snapshot_v2(vector, &tuple).must("snapshot");
+    let valid = registry
+        .read_compatible_v2(&snapshot, vector, &tuple, 10, vec![id("factor:1")], 8)
+        .must("compatible set");
+    let mut invalid_binding = valid.clone();
+    invalid_binding.bindings[0].token_cost = 0;
+    invalid_binding.set_digest = invalid_binding.compute_set_digest();
+    assert_eq!(
+        invalid_binding.validate(),
+        Err(PromptRegistryV2Error::ZeroTokenCost)
+    );
+    let mut missing_required = valid;
+    missing_required.required_factor_ids = vec![id("factor:missing")];
+    missing_required.set_digest = missing_required.compute_set_digest();
+    assert_eq!(
+        missing_required.validate(),
+        Err(PromptRegistryV2Error::RequiredFactorUnavailable)
+    );
+}
+
+#[test]
+fn compatible_set_rejects_reused_realization_identity_across_factors() {
+    let mut set = CompatibleRealizationSetV2 {
+        snapshot_digest: digest("snapshot"),
+        model_tuple_digest: model_tuple().digest(),
+        required_factor_ids: Vec::new(),
+        bindings: vec![binding()],
+        omitted_count: 0,
+        set_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    let mut duplicate = binding();
+    duplicate.factor_id = id("factor:2");
+    set.bindings.push(duplicate);
+    set.set_digest = set.compute_set_digest();
+    assert_eq!(
+        set.validate(),
+        Err(PromptRegistryV2Error::NonCanonicalBindings)
+    );
+}

@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+use std::fmt::Debug;
 use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -31,8 +32,22 @@ use crate::RequiredOrganSet;
 use crate::UtilityContribution;
 use crate::UtilityProfile;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
+fn must_some<T>(value: Option<T>, context: &str) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("missing expected value: {context}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid stable id")
+    must(StableId::new(value))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -88,7 +103,7 @@ fn policy() -> NduProductionPolicyV1 {
 
 fn contributions() -> ContributionSet {
     let objective = digest("objective");
-    let generation = Generation::new(1).expect("generation");
+    let generation = must(Generation::new(1));
     ContributionSet {
         objective_digest: objective,
         generation,
@@ -155,12 +170,16 @@ struct Fixture {
 }
 
 fn fixture() -> Fixture {
-    let store_dir = tempfile::tempdir().expect("store tempdir");
-    let authority_dir = tempfile::tempdir().expect("authority tempdir");
-    std::fs::set_permissions(store_dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private store permissions");
-    std::fs::set_permissions(authority_dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private authority permissions");
+    let store_dir = must(tempfile::tempdir());
+    let authority_dir = must(tempfile::tempdir());
+    must(std::fs::set_permissions(
+        store_dir.path(),
+        std::fs::Permissions::from_mode(0o700),
+    ));
+    must(std::fs::set_permissions(
+        authority_dir.path(),
+        std::fs::Permissions::from_mode(0o700),
+    ));
 
     let signing = SigningKey::from_bytes(&[91; 32]);
     let head = FinalUseRevocations {
@@ -168,15 +187,14 @@ fn fixture() -> Fixture {
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
-    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(
+    let authority = must(codex_hepta_contracts::FinalUseAuthority::open_state_dir(
         authority_dir.path(),
         "ndu-issuer".to_string(),
         signing.verifying_key().to_bytes(),
         head,
-    )
-    .expect("authority");
+    ));
 
-    let owner = NduAuthenticatedOwnerV1::open(
+    let owner = must(NduAuthenticatedOwnerV1::open(
         store_dir.path(),
         authority.clone(),
         NduOwnerContextV1 {
@@ -188,8 +206,7 @@ fn fixture() -> Fixture {
             revocation_frontier_digest: digest("revocation-frontier"),
         },
         policy(),
-    )
-    .expect("authenticated owner");
+    ));
 
     Fixture {
         owner,
@@ -203,14 +220,11 @@ fn fixture() -> Fixture {
 
 impl Fixture {
     fn sign(&mut self, mutation: &NduOwnerMutationV1, grant_id: &str) -> SignedFinalUseGrant {
-        let binding = self.owner.final_use_binding(mutation).expect("binding");
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_millis() as u64;
+        let binding = must(self.owner.final_use_binding(mutation));
+        let now = must(SystemTime::now().duration_since(UNIX_EPOCH)).as_millis() as u64;
         let mut nonce = [0_u8; 32];
         nonce[0] = self.next_nonce;
-        self.next_nonce = self.next_nonce.checked_add(1).expect("nonce bound");
+        self.next_nonce = must_some(self.next_nonce.checked_add(1), "nonce increment");
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "ndu-issuer".to_string(),
@@ -221,9 +235,7 @@ impl Fixture {
             not_before_unix_ms: now.saturating_sub(1_000),
             expires_at_unix_ms: now.saturating_add(60_000),
         };
-        let signature = self
-            .signing
-            .sign(&grant.signing_bytes().expect("signing bytes"));
+        let signature = self.signing.sign(&must(grant.signing_bytes()));
         SignedFinalUseGrant {
             grant,
             signature: signature.to_bytes().to_vec(),
@@ -244,7 +256,7 @@ fn append_mutation(label: &str) -> NduOwnerMutationV1 {
 #[test]
 fn owner_freezes_policy_and_evaluates_without_caller_supplied_relaxations() {
     let fixture = fixture();
-    let receipt = fixture.owner.evaluate(contributions()).expect("evaluation");
+    let receipt = must(fixture.owner.evaluate(contributions()));
     assert!(!fixture.owner.production_policy_digest().is_zero());
     assert_eq!(receipt.base.advisory_recommendation, Some(id("work")));
 }
@@ -264,10 +276,7 @@ fn exact_signed_binding_is_required_for_durable_mutation() {
     ));
 
     let signed = fixture.sign(&first, "grant-first-correct");
-    fixture
-        .owner
-        .apply_mutation(&signed, first)
-        .expect("authorized append");
+    must(fixture.owner.apply_mutation(&signed, first));
 }
 
 #[test]
@@ -278,14 +287,11 @@ fn live_revocation_frontier_blocks_previously_signed_write() {
 
     let mut revoked = BTreeSet::new();
     revoked.insert("grant-revoked".to_string());
-    fixture
-        .authority
-        .update_revocations(FinalUseRevocations {
-            authority_epoch: 1,
-            revision: 2,
-            revoked_grant_ids: revoked,
-        })
-        .expect("advance revocations");
+    must(fixture.authority.update_revocations(FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 2,
+        revoked_grant_ids: revoked,
+    }));
 
     assert!(matches!(
         fixture.owner.apply_mutation(&signed, mutation),

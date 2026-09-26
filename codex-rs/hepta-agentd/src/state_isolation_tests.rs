@@ -102,6 +102,20 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
     );
 }
 
+struct RejectingIntelligenceInvocationProvider;
+
+impl crate::AgentdIntelligenceInvocationProviderV1 for RejectingIntelligenceInvocationProvider {
+    fn build(
+        &self,
+        _identity: &crate::AgentdIdentity,
+        _record: &RunStartRecordV1,
+    ) -> Result<crate::AgentdIntelligenceInvocationV1, AgentdError> {
+        Err(AgentdError::Protocol(
+            "test provider is not invoked by capability discovery".to_string(),
+        ))
+    }
+}
+
 #[tokio::test]
 async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress() {
     let (temp, _registry, state) = fixture().expect("runtime fixture");
@@ -140,6 +154,39 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
         capabilities, before,
         "runner presence must not advertise an unconnected capability"
     );
+}
+
+#[tokio::test]
+async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider() {
+    let (temp, _registry, state) = fixture().expect("runtime fixture");
+    let signer = ed25519_dalek::SigningKey::from_bytes(&[42; 32]);
+    let runner = crate::AgentdIntelligenceProductRunnerV1::new(
+        temp.path().join("intelligence-authority.json"),
+        crate::IntelligenceAuthorityVerifierV1 {
+            signer_id: "authority.owner".to_string(),
+            verifying_key: signer.verifying_key().to_bytes(),
+        },
+    )
+    .expect("valid runner");
+    assert!(state.intelligence_product.set(Arc::new(runner)).is_ok());
+    assert!(
+        state
+            .intelligence_invocation
+            .set(Arc::new(RejectingIntelligenceInvocationProvider))
+            .is_ok()
+    );
+    let response = state
+        .response(3, 1, crate::AgentdMethod::Capabilities)
+        .await
+        .expect("capabilities response");
+    let AgentdPayload::Capabilities(capabilities) = response.payload else {
+        panic!("capabilities payload");
+    };
+    assert!(capabilities.capabilities.iter().any(|capability| {
+        capability.id == crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1
+            && capability.major == 1
+            && capability.minor == 0
+    }));
 }
 
 #[test]
@@ -504,8 +551,23 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         .expect("attach trust");
 
     let now_ms = crate::authbus_ingress::now_ms().expect("clock");
-    let scope = objective_run_scope(state.identity());
-    let signed_body_digest = Digest32::of_bytes(b"signed objective body");
+    let mut scope_bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
+    scope_bytes.extend_from_slice(state.identity.agent_id.as_str().as_bytes());
+    let scope = Digest32::of_bytes(&scope_bytes);
+    let signed_body = crate::AuthBusObjectiveBody {
+        spawn_generation: state.identity.spawn_generation,
+        run_id: "run.durable.current".to_string(),
+        objective_revision: 1,
+        source_envelope_json: "{}".to_string(),
+        runtime_body_digest: Digest32::of_bytes(b"body").to_string(),
+        preference_state_digest: Digest32::of_bytes(b"preference").to_string(),
+        model_tuple_digest: Digest32::of_bytes(b"model").to_string(),
+        prompt_registry_digest: Digest32::of_bytes(b"prompt").to_string(),
+        artifact_set_digest: Digest32::of_bytes(b"artifacts").to_string(),
+        authority_epoch: 7,
+    };
+    let signed_body_bytes = serde_json::to_vec(&signed_body).unwrap();
+    let signed_body_digest = Digest32::of_bytes(&signed_body_bytes);
     let claims = SignedMessageClaims {
         issuer_id: StableId::new("issuer:run-start").expect("issuer"),
         key_epoch: Generation::new(1).expect("key epoch"),
@@ -521,6 +583,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     let run_id = StableId::new("run.durable.current").expect("run id");
     let record = RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
+            signed_body_bytes,
             issuer_id: claims.issuer_id.clone(),
             key_epoch: claims.key_epoch.get(),
             message_id: claims.message_id.clone(),
@@ -591,6 +654,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     second.snapshot.run_id = second_id.clone();
     second.authentication.message_id = StableId::new("message:run-start:2").expect("message");
     second.authentication.sequence = 2;
+    let mut second_body = signed_body;
+    second_body.run_id = second_id.to_string();
+    second.authentication.signed_body_bytes = serde_json::to_vec(&second_body).unwrap();
+    second.authentication.signed_body_digest =
+        Digest32::of_bytes(&second.authentication.signed_body_bytes);
     let second_claims = SignedMessageClaims {
         issuer_id: second.authentication.issuer_id.clone(),
         key_epoch: Generation::new(second.authentication.key_epoch).expect("key epoch"),

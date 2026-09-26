@@ -1,4 +1,7 @@
-use codex_hepta_authbus::AuthBusAuthorityStore;
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+
+use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::Error;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerRegistration;
@@ -111,6 +114,53 @@ async fn every_replay_mutation_requires_exact_external_checkpoint_ack() {
 }
 
 #[tokio::test]
+async fn externally_published_pending_checkpoint_promotes_after_reopen() {
+    let temp = TempDir::new().unwrap();
+    let sqlite = config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let first = initialize(&store, 1).await;
+    let (_, issuer, message) = fixture(1);
+    admit(&store, &issuer, &message).await.unwrap();
+    let published = store
+        .pending_authbus_restore_checkpoint()
+        .await
+        .unwrap()
+        .expect("replay mutation must stage a checkpoint");
+    assert_eq!(published.generation, first.generation + 1);
+    store.pool.close().await;
+
+    // Simulate a crash after the host durably published `published` to its
+    // independent witness but before the local pending row was promoted.
+    let reopened = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    assert_eq!(
+        reopened.authbus_restore_checkpoint().await.unwrap(),
+        Some(first)
+    );
+    assert_eq!(
+        reopened.pending_authbus_restore_checkpoint().await.unwrap(),
+        Some(published)
+    );
+    assert_eq!(
+        reopened
+            .reconcile_authbus_restore_checkpoint(published)
+            .await
+            .unwrap(),
+        None
+    );
+    assert_eq!(
+        reopened.authbus_restore_checkpoint().await.unwrap(),
+        Some(published)
+    );
+    assert_eq!(
+        reopened.pending_authbus_restore_checkpoint().await.unwrap(),
+        None
+    );
+
+    let (_, _, next) = fixture(2);
+    admit(&reopened, &issuer, &next).await.unwrap();
+}
+
+#[tokio::test]
 async fn external_checkpoint_detects_real_old_database_restore() {
     let temp = TempDir::new().unwrap();
     let sqlite = config(&temp);
@@ -157,6 +207,7 @@ async fn external_checkpoint_detects_real_old_database_restore() {
     ));
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection() {
     let temp = TempDir::new().unwrap();
@@ -175,9 +226,27 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         .unwrap();
     external = pending;
 
-    let authority = AuthBusAuthorityStore::open(&temp.path().join("authbus-authority.sqlite"))
-        .await
-        .unwrap();
+    let authority_database_root = temp.path().join("authbus-authority-database");
+    let authority_checkpoint_root = temp.path().join("authbus-authority-checkpoint");
+    std::fs::create_dir(&authority_database_root).unwrap();
+    std::fs::create_dir(&authority_checkpoint_root).unwrap();
+    std::fs::set_permissions(
+        &authority_database_root,
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    std::fs::set_permissions(
+        &authority_checkpoint_root,
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    let authority = AuthBusAuthorityHost::bootstrap(
+        &authority_database_root.join("authbus-authority.sqlite"),
+        authority_checkpoint_root.join("authority.checkpoint.json"),
+        "evidence-retirement-test-owner",
+    )
+    .await
+    .unwrap();
     authority
         .enroll_issuer(
             IssuerPurpose::Message,
@@ -265,4 +334,70 @@ async fn altered_replay_checkpoint_schema_is_rejected_before_recovery() {
             "{table}"
         );
     }
+}
+
+#[tokio::test]
+async fn recovery_rejects_a_corrupt_pending_frontier_before_external_publication() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let first = initialize(&store, 1).await;
+    let (_, issuer, message) = fixture(1);
+    admit(&store, &issuer, &message).await.unwrap();
+    sqlx::query(
+        "UPDATE authbus_restore_checkpoint_pending SET checkpoint_digest = ? WHERE singleton = 1",
+    )
+    .bind(Digest32::of_bytes(b"wrong-frontier").as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+    assert!(matches!(
+        store.reconcile_authbus_restore_checkpoint(first).await,
+        Err(AuthBusRecoveryError::RollbackDetected)
+    ));
+    assert_eq!(
+        store.authbus_restore_checkpoint().await.unwrap(),
+        Some(first)
+    );
+}
+
+#[tokio::test]
+async fn recovery_returns_unpublished_successor_and_is_idempotent_after_promotion() {
+    let temp = TempDir::new().unwrap();
+    let settings = config(&temp);
+    let store = HeptaEvidenceStore::open(&settings).await.unwrap();
+    let first = initialize(&store, 1).await;
+    let (_, issuer, message) = fixture(1);
+    admit(&store, &issuer, &message).await.unwrap();
+    let pending = store
+        .pending_authbus_restore_checkpoint()
+        .await
+        .unwrap()
+        .unwrap();
+    store.pool.close().await;
+    let reopened = HeptaEvidenceStore::open(&settings).await.unwrap();
+    assert_eq!(
+        reopened
+            .reconcile_authbus_restore_checkpoint(first)
+            .await
+            .unwrap(),
+        Some(pending)
+    );
+    assert_eq!(
+        reopened
+            .reconcile_authbus_restore_checkpoint(pending)
+            .await
+            .unwrap(),
+        None
+    );
+    assert_eq!(
+        reopened
+            .reconcile_authbus_restore_checkpoint(pending)
+            .await
+            .unwrap(),
+        None
+    );
+    assert_eq!(
+        reopened.authbus_restore_checkpoint().await.unwrap(),
+        Some(pending)
+    );
 }

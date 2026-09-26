@@ -82,6 +82,12 @@ impl LoadedTabularOperatorV1 {
     }
 
     /// The immutable training identity, for binding an existing registry manifest.
+    /// Producer identity decoded from the immutable model bytes.
+    #[must_use]
+    pub fn producer_id(&self) -> &StableId {
+        &self.artifact.producer_id
+    }
+
     #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.artifact.artifact_id

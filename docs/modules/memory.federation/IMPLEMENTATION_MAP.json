@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "28d96586fa68e8db7ec0fe7fe53ce68b638d471b",
+    "tree": "9bfb2f00aba387426508b1c505c7c1cc300717f8"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -56,8 +56,10 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
-    "Product turn cancellation is currently enforced by host future-drop propagation; add explicit product cancellation attribution/receipt wiring if canonical cancellation observability is required."
+    "Complete current exact-head and current-main deterministic merge qualification, including actual recovery, retained-reader, discovery, cancellation and HTTP final-use regressions.",
+    "Complete local long-history, resource and overload qualification; the explicit 1/4/16-peer debug fixture is not a production SLO.",
+    "Implement and register an authenticated cross-host wire profile and portable current-cut/peer identity binding before cross-host product claims.",
+    "Wire canonical cancellation receipt attribution from the existing host; connection-close cleanup is not that receipt."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
@@ -79,11 +81,11 @@
     "codex-rs/hepta-memory-federation"
   ],
   "headAttestation": {
-    "candidateBranch": "fix/memory-federation-v2-closure-20260920",
-    "baseCommit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
-    "candidateHead": "395244ed716934c0e63a4a01dbe708a8c989276e",
-    "candidateTree": "64951a030a3642179408aa1b821fe60a07002ebe",
-    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport concurrent_product_fanout typed_failure_coverage peer_omission_visibility batch_final_use post_batch_expiry_recheck physical_http_final_use_guard current_verifier_and_generated_indexes",
+    "candidateBranch": "work/product-convergence-20260923",
+    "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "candidateHead": "268a117f5c370646aebb4eff2c5b1143cf32fe80",
+    "candidateTree": "d4c35b9e1f365fddcc67e379247d4e71f37f7cbe",
+    "headMeaning": "current_owner_generation_operation_scoped_SQLite_cleanup_and_isolated_discovery_candidate_pending_full_qualification",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -126,23 +128,33 @@
     ],
     "evidencePaths": [
       ".github/workflows/memory-federation-v2-final-verify.yml",
+      "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
       "codex-rs/hepta-memory-federation/src/v2.rs",
       "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation_capacity_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation_discovery_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation_read_session.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation_read_session_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_generation.rs",
+      "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "codex-rs/state/src/sqlite.rs",
+      "docs/modules/MODULE_DOCS.json",
+      "docs/modules/memory.federation/CROSS_HOST_PROFILE.md",
       "docs/modules/memory.federation/TECHNICAL.md",
       "docs/modules/memory.federation/V2_HARDENING.md",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md",
-      "qualification/module-execution-dossiers/detail/memory.federation.md",
-      "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-      "codex-rs/hepta-memory/src/cognitive_federation.rs",
-      "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
-      "docs/modules/MODULE_DOCS.json",
       "qualification/module-execution-dossiers/DETAILS.json",
       "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
-      "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs"
+      "qualification/module-execution-dossiers/detail/memory.federation.md"
     ],
-    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, concurrent bounded product peer fan-out under one global horizon, deterministic aggregation, explicit peer truncation and owner-candidate omission, typed discovery/deadline-authority/integrity/transport failure coverage bound into result/attachment evidence, V2-only product attachment, batch final-use revalidation, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider transport entry, and dispatch-contract-aligned revocation semantics. Product cancellation safety currently relies on the host dropping the contributor future through its turn cancellation token; explicit canonical cancellation receipt attribution remains a repository-controlled observability gap. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
+    "note": "Current source candidate. Source navigation is not production execution evidence. Recovery/read and attachment identities bind the active owner generation. Healthy discovery results survive a slow owner within the existing total deadline. Full current-head/merge execution, target-host qualification and authenticated cross-host implementation remain required.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
@@ -150,8 +162,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "28d96586fa68e8db7ec0fe7fe53ce68b638d471b",
+    "tree": "9bfb2f00aba387426508b1c505c7c1cc300717f8"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -173,11 +185,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "object": "61b143142015b17924d9f2804714fb9968b2e9a6"
+      "object": "7d08e54909000b303f0a6b0ec79519085f497aba"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+      "object": "8e08868c9219c5032a04c45a6e84434e6a657413"
     },
     {
       "path": "codex-rs/hepta-memory-federation",
@@ -193,15 +205,15 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
-      "object": "7ad7a60f7832b037819ae1966b25054d048c641f"
+      "object": "134d01193cdf79034f8cb8aadade3ec55bd6a985"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
-      "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+      "object": "b21e12a3670692a0112f523bcdf81aa3cb03424c"
     },
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
-      "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
+      "object": "ccd4a2b2d1bf9019766641e7690229384f77f557"
     }
   ]
 }

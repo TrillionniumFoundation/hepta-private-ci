@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::time::Duration;
 
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -23,6 +24,22 @@ use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::memory_revision;
 use crate::cognitive_test_support::source;
 use crate::cognitive_test_support::workspace;
+
+fn discover_with_one_stalled_owner<'a>(
+    owner_layout: &'a codex_hepta_paths::HeptaAgentLayout,
+    consumer_agent_id: &'a codex_hepta_contracts::AgentId,
+    now_unix_seconds: i64,
+) -> super::cognitive_runtime::ProductDiscoveryFuture<'a> {
+    if owner_layout.agent_id() == &agent_id(181) {
+        Box::pin(std::future::pending())
+    } else {
+        Box::pin(FederatedMemoryReader::discover(
+            owner_layout,
+            consumer_agent_id,
+            now_unix_seconds,
+        ))
+    }
+}
 
 #[test]
 fn unavailable_runtime_exposes_only_a_stable_sanitized_code() {
@@ -324,12 +341,14 @@ async fn product_v2_unobservable_owner_is_explicit_failed_discovery_coverage() {
     let consumer_id = agent_id(85);
     let owner_layout = layout(&temp, &owner_id);
     let consumer_layout = layout(&temp, &consumer_id);
-    std::fs::create_dir_all(owner_layout.cognitive_root()).expect("owner cognitive root");
-    std::fs::write(
-        owner_layout.cognitive_root().join("cognitive_1.sqlite3"),
-        b"not-a-sqlite-database",
-    )
-    .expect("corrupt owner database fixture");
+    let bad_owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store before corruption");
+    let bad_database = bad_owner.path().to_path_buf();
+    bad_owner.pool.close().await;
+    drop(bad_owner);
+    std::fs::write(&bad_database, b"not-a-sqlite-database")
+        .expect("corrupt current owner database fixture");
     let consumer = CognitiveStore::open(&consumer_layout)
         .await
         .expect("consumer store");
@@ -468,3 +487,168 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     assert_eq!(coverage.truncated_peers, 1);
     assert_eq!(coverage.omitted_peer_candidates, 0);
 }
+
+#[tokio::test]
+async fn product_v2_stalled_owner_preserves_healthy_peer_and_typed_coverage() {
+    let temp = TempDir::new().expect("temp dir");
+    let healthy_id = agent_id(180);
+    let stalled_id = agent_id(181);
+    let consumer_id = agent_id(182);
+    let healthy_layout = layout(&temp, &healthy_id);
+    let stalled_layout = layout(&temp, &stalled_id);
+    let healthy = CognitiveStore::open(&healthy_layout)
+        .await
+        .expect("healthy owner store");
+    let healthy_access = CognitiveAccess::agent_private(healthy_id.clone());
+    let citation = healthy
+        .append_source(
+            &healthy_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "healthy-discovery-source",
+                "Healthy federation evidence survives a stalled owner.",
+            ),
+        )
+        .await
+        .expect("healthy source");
+    healthy
+        .remember_memory(
+            &healthy_access,
+            &MemoryDraft {
+                stable_key: "healthy-discovery-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Healthy federation evidence survives a stalled owner.",
+                    citation,
+                ),
+            },
+        )
+        .await
+        .expect("healthy memory");
+    let consumer_workspace = workspace("stalled-owner-isolation");
+    healthy
+        .grant_federated_recall(
+            &healthy_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("healthy grant");
+
+    let access = FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace);
+    let owner_layouts = vec![healthy_layout, stalled_layout];
+    let (batch, coverage) = super::cognitive_runtime::retrieve_federated_product_with_discoverer(
+        &consumer_id,
+        &owner_layouts,
+        0,
+        &access,
+        &RetrievalRequest::new("Healthy federation evidence", 150),
+        Duration::from_secs(1),
+        discover_with_one_stalled_owner,
+    )
+    .await
+    .expect("healthy result survives stalled owner");
+
+    assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.candidates[0].source_agent_id, healthy_id);
+    assert_eq!(coverage.requested_peers, 2);
+    assert_eq!(coverage.completed_peers, 1);
+    assert_eq!(coverage.failed_peers, 1);
+    assert_eq!(coverage.failures.discovery_unavailable, 0);
+    assert_eq!(coverage.failures.deadline_or_cancelled, 1);
+    assert_eq!(coverage.failures.authority_rejected, 0);
+    assert_eq!(coverage.failures.integrity_rejected, 0);
+    assert_eq!(coverage.failures.transport_unavailable, 0);
+}
+
+#[tokio::test]
+async fn product_v2_bad_owner_preserves_healthy_peer_and_typed_coverage() {
+    let temp = TempDir::new().expect("temp dir");
+    let healthy_id = agent_id(183);
+    let bad_id = agent_id(184);
+    let consumer_id = agent_id(185);
+    let healthy_layout = layout(&temp, &healthy_id);
+    let bad_layout = layout(&temp, &bad_id);
+    let consumer_layout = layout(&temp, &consumer_id);
+    let healthy = CognitiveStore::open(&healthy_layout)
+        .await
+        .expect("healthy owner store");
+    let bad = CognitiveStore::open(&bad_layout)
+        .await
+        .expect("bad owner store before corruption");
+    let bad_database = bad.path().to_path_buf();
+    bad.pool.close().await;
+    drop(bad);
+    std::fs::write(&bad_database, b"not-a-sqlite-database")
+        .expect("corrupt current bad-owner database");
+    let consumer = CognitiveStore::open(&consumer_layout)
+        .await
+        .expect("consumer store");
+    let healthy_access = CognitiveAccess::agent_private(healthy_id.clone());
+    let citation = healthy
+        .append_source(
+            &healthy_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "bad-owner-isolation-source",
+                "Healthy evidence survives an unavailable owner.",
+            ),
+        )
+        .await
+        .expect("healthy source");
+    healthy
+        .remember_memory(
+            &healthy_access,
+            &MemoryDraft {
+                stable_key: "bad-owner-isolation-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Healthy evidence survives an unavailable owner.",
+                    citation,
+                ),
+            },
+        )
+        .await
+        .expect("healthy memory");
+    let consumer_workspace = workspace("bad-owner-isolation");
+    healthy
+        .grant_federated_recall(
+            &healthy_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("healthy grant");
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+        .with_federation_sources(consumer_id.clone(), vec![healthy_layout, bad_layout]);
+    let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+    let (batch, coverage) = runtime
+        .retrieve_product_federated(&access, &RetrievalRequest::new("Healthy evidence", 150))
+        .await
+        .expect("healthy result survives bad owner");
+
+    assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.candidates[0].source_agent_id, healthy_id);
+    assert_eq!(coverage.requested_peers, 2);
+    assert_eq!(coverage.completed_peers, 1);
+    assert_eq!(coverage.failed_peers, 1);
+    assert_eq!(coverage.failures.discovery_unavailable, 1);
+    assert_eq!(coverage.failures.deadline_or_cancelled, 0);
+}
+
+#[path = "cognitive_federation_capacity_tests.rs"]
+mod capacity;

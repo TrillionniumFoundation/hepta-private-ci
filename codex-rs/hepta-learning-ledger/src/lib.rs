@@ -9,6 +9,7 @@
 
 mod causal_v2;
 mod checkpoint;
+mod dataset_index;
 mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
@@ -84,6 +85,7 @@ pub use model::RetrievalAssignmentFact;
 pub use model::Revocation;
 pub use model::UnlearningLineageEventV1;
 pub use production::DatasetFreezePlanV2;
+pub use production::LearningAppendIdentityV1;
 pub use production::LedgerWriter;
 pub use production::ProductionDecisionV2;
 pub use production::ProductionLedgerError;
@@ -141,6 +143,7 @@ pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
 pub use segments::SegmentedLedger;
 pub use segments::inspect_ledger_segments;
+pub use segments::inspect_ledger_segments_with_opener;
 pub use shadow::ShadowAppendReceipt;
 pub use shadow::ShadowDecisionArtifact;
 pub use shadow::ShadowDecisionError;

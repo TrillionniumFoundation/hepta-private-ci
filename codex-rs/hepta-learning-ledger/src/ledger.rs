@@ -72,6 +72,7 @@ pub struct LearningLedger {
     records: Vec<LedgerRecord>,
     record_digests: BTreeMap<StableId, (Digest32, usize)>,
     digest_positions: BTreeMap<Digest32, usize>,
+    dataset_index: crate::dataset_index::DatasetRecordIndex,
     record_kinds: BTreeMap<StableId, u8>,
     decisions: BTreeMap<StableId, DecisionIndex>,
     outcomes: BTreeMap<StableId, OutcomeIndex>,
@@ -292,10 +293,43 @@ impl LearningLedger {
     /// revocations and explicit unlearning lineage have been applied.
     #[must_use]
     pub fn active_records(&self) -> Vec<&LedgerRecord> {
+        self.active_records_iter().collect()
+    }
+
+    /// Borrow the same activity predicate without allocating a global pointer
+    /// list when an owner operation only needs a sequential projection pass.
+    pub(crate) fn active_records_iter(&self) -> impl Iterator<Item = &LedgerRecord> {
         self.records
             .iter()
             .filter(|record| self.record_is_active(record))
-            .collect()
+    }
+
+    /// Dataset-only authenticated history for one objective, in append order.
+    /// These private offsets are populated only together with the records; no
+    /// caller or persisted checkpoint may supply an index or suppress an event.
+    pub(crate) fn records_for_objective(
+        &self,
+        objective: &Digest32,
+    ) -> impl Iterator<Item = &LedgerRecord> {
+        self.dataset_index
+            .objective(objective)
+            .iter()
+            .map(|position| &self.records[*position])
+    }
+
+    pub(crate) fn active_records_for_objective(
+        &self,
+        objective: &Digest32,
+    ) -> impl Iterator<Item = &LedgerRecord> {
+        self.records_for_objective(objective)
+            .filter(|record| self.record_is_active(record))
+    }
+
+    pub(crate) fn dataset_revocations(&self) -> impl Iterator<Item = &LedgerRecord> {
+        self.dataset_index
+            .revocations()
+            .iter()
+            .map(|position| &self.records[*position])
     }
 
     #[must_use]
@@ -781,6 +815,7 @@ impl LearningLedger {
     }
 
     fn index_record(&mut self, record: &LedgerRecord) {
+        self.dataset_index.append(&record.event, self.records.len());
         self.digest_positions
             .insert(record.event_digest, self.records.len());
         let record_id = record.event.record_id().clone();

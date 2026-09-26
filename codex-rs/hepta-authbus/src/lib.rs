@@ -12,6 +12,11 @@ mod authority;
 mod authority_schema;
 mod authority_store;
 mod host;
+mod host_checkpoint;
+mod host_lock;
+#[cfg(test)]
+#[path = "migration_tests.rs"]
+mod migration_tests;
 mod quota;
 mod quota_store;
 mod recovery;
@@ -26,7 +31,7 @@ pub use authority::PolicyDecision;
 pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
-pub use authority_store::AuthBusAuthorityStore;
+pub(crate) use authority_store::AuthBusAuthorityStore;
 pub use host::AuthBusAuthorityHost;
 pub use quota::QuotaReservation;
 pub use quota::QuotaSnapshot;
@@ -36,7 +41,6 @@ pub use quota::ReservationState;
 pub use recovery::AuthorityCheckpoint;
 pub use settlement::Settlement;
 pub use settlement::SettlementEvidenceClaims;
-pub use settlement::SettlementIssuerRegistration;
 pub use settlement::SettlementStatus;
 pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;

@@ -6,11 +6,8 @@ use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use codex_hepta_bellman_operator::TabularOperatorPlanV1;
-use codex_hepta_bellman_operator::TabularOperatorSampleV1;
 use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_bellman_operator::encode_tabular_payload_v1;
-use codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
 use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
@@ -23,8 +20,6 @@ use codex_hepta_learning_artifacts::write_candidate_payload;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use super::super::MAX_CONTEXT_JSON_BYTES;
@@ -73,34 +68,12 @@ fn fitted_ranker(owner: AgentId, items: &[CognitiveContextItem], scores: &[i64])
         .map(cognitive_action_id)
         .collect::<Result<_, _>>()
         .unwrap();
-    let model = fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
-        artifact_id: id("budget-ranker"),
-        producer_id: id("fixture-trainer"),
-        generation: Generation::new(/*value*/ 1).unwrap(),
-        objective_digest: hash("budgeted-context"),
-        dataset_digest: hash("synthetic-budget-samples"),
-        sensor_core_digest: hash("exact-query-revision-v1"),
-        training_profile_digest: hash("strict-table-v1"),
-        minimum_samples_per_cell: 2,
-        sensor_ids: vec![sensor.clone()],
-        action_ids: actions.clone(),
-        samples: actions
-            .iter()
-            .zip(scores)
-            .enumerate()
-            .flat_map(|(index, (action, score))| {
-                let sensor = sensor.clone();
-                [0, 1].map(move |replicate| TabularOperatorSampleV1 {
-                    sample_id: id(&format!("sample-{index}-{replicate}")),
-                    sensor_id: sensor.clone(),
-                    action_id: action.clone(),
-                    target: FixedQ32::from_raw(*score),
-                    evidence_digest: hash(&format!("fixture-{index}-{replicate}")),
-                })
-            })
-            .collect(),
-    })
-    .unwrap();
+    let model = crate::cognitive_operator_test_support::fit_owner_ranker(
+        "budget-ranker",
+        sensor,
+        &actions,
+        scores,
+    );
     let bytes = encode_tabular_payload_v1(&model).unwrap();
     let model_pin = TabularPayloadPinV1 {
         payload_digest: Digest32::of_bytes(&bytes),

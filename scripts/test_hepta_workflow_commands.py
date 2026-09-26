@@ -40,7 +40,12 @@ steps:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workflow = root / "owner.yml"
-            registry = [{"validator": "python3 scripts/owner.py verify", "workflow": "owner.yml"}]
+            registry = [
+                {
+                    "validator": "python3 scripts/owner.py verify",
+                    "workflow": "owner.yml",
+                }
+            ]
             workflow.write_text("steps:\n  - run: python3 scripts/owner.py self-test\n")
             verify_owner_self_tests(registry, root)
             for line in (
@@ -48,14 +53,19 @@ steps:
                 "echo python3 scripts/owner.py self-test",
                 "python3 scripts/owner.py verify",
             ):
-                with self.subTest(line=line), self.assertRaisesRegex(ValueError, "must invoke"):
+                with (
+                    self.subTest(line=line),
+                    self.assertRaisesRegex(ValueError, "must invoke"),
+                ):
                     workflow.write_text(f"steps:\n  - run: |\n      {line}\n")
                     verify_owner_self_tests(registry, root)
 
     def test_real_subordinate_workflows_own_their_self_tests(self):
         import json
 
-        registry = json.loads((ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text())
+        registry = json.loads(
+            (ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text()
+        )
         verify_owner_self_tests(registry["subordinateRegistries"], ROOT)
 
     def test_real_workflow_resolves_composite_action(self):

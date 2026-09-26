@@ -5,6 +5,7 @@ Known Hepta packages stay on the module-local path. Shared repository build
 inputs and unknown non-Hepta code retain the full-repository fallback. Derived
 views never acquire native scope merely because they are checked in.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -43,16 +44,20 @@ PACKAGE_GROUPS = {
     "hepta-prompt-registry": {"objective", "learning"},
 }
 
-DERIVED_ONLY_DOCS = frozenset({
-    "docs/STATUS.md",
-    "docs/learning/ALGORITHM_STATUS.md",
-    "docs/readiness/STATUS.md",
-    "docs/cns/STATUS.md",
-    "docs/modules/SOURCE_BINDINGS.json",
-    "docs/modules/MODULE_DOCS.json",
-})
+DERIVED_ONLY_DOCS = frozenset(
+    {
+        "docs/STATUS.md",
+        "docs/learning/ALGORITHM_STATUS.md",
+        "docs/readiness/STATUS.md",
+        "docs/cns/STATUS.md",
+        "docs/modules/SOURCE_BINDINGS.json",
+        "docs/modules/MODULE_DOCS.json",
+    }
+)
 
 FILE_GROUPS = {
+    "scripts/hepta_inference_owner_checks.py": {"inference"},
+    "scripts/test_hepta_inference_owner_checks.py": {"inference"},
     # Stable typed contracts with a single architecture concern should not
     # expand to every Hepta lane merely because they live in a shared crate.
     "codex-rs/hepta-types/src/topology.rs": {"lifecycle"},
@@ -62,7 +67,10 @@ FILE_GROUPS = {
     "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs": {"lifecycle"},
     "codex-rs/hepta-fleet/src/module_catalog.rs": {"lifecycle"},
     "codex-rs/hepta-plasticity/src/topology_v3.rs": {"learning", "lifecycle"},
-    "codex-rs/hepta-plasticity/src/durable_topology_registry.rs": {"learning", "lifecycle"},
+    "codex-rs/hepta-plasticity/src/durable_topology_registry.rs": {
+        "learning",
+        "lifecycle",
+    },
 }
 
 CANONICAL_DOC_GROUPS = {
@@ -80,7 +88,13 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
 
     for path in paths:
         parts = PurePosixPath(path).parts
-        if not path or path.startswith("/") or ".." in parts or "\\" in path or "\x00" in path:
+        if (
+            not path
+            or path.startswith("/")
+            or ".." in parts
+            or "\\" in path
+            or "\x00" in path
+        ):
             raise ValueError(f"invalid repository path: {path!r}")
 
         if path in DERIVED_ONLY_DOCS or path.startswith(
@@ -143,7 +157,9 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             selected.update(GROUPS)
             continue
 
-        if path.startswith("scripts/hepta_ci_") or path.startswith(".github/workflows/"):
+        if path.startswith("scripts/hepta_ci_") or path.startswith(
+            ".github/workflows/"
+        ):
             full_repo = True
             selected.update(GROUPS)
             derived = True
@@ -168,7 +184,9 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
 
 def changed_paths(base: str, head: str) -> list[str]:
     if not all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (base, head)):
-        raise ValueError("base and head must be exact 40-character Git commit identities")
+        raise ValueError(
+            "base and head must be exact 40-character Git commit identities"
+        )
     result = subprocess.run(
         [
             "git",
@@ -187,11 +205,16 @@ def changed_paths(base: str, head: str) -> list[str]:
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-    return [value.decode("utf-8", "strict") for value in result.stdout.split(b"\0") if value]
+    return [
+        value.decode("utf-8", "strict") for value in result.stdout.split(b"\0") if value
+    ]
 
 
 def include_input_scope(
-    scope: dict[str, bool], paths: list[str], base: str, head: str,
+    scope: dict[str, bool],
+    paths: list[str],
+    base: str,
+    head: str,
 ) -> dict[str, bool]:
     """Join embedded-input impact using exact Cargo OWNERS, never name guesses.
 
@@ -212,7 +235,12 @@ def include_input_scope(
     after = graph(Path.cwd(), head)
     try:
         before = graph(Path.cwd(), base)
-    except (subprocess.CalledProcessError, ValueError, KeyError, tomllib.TOMLDecodeError):
+    except (
+        subprocess.CalledProcessError,
+        ValueError,
+        KeyError,
+        tomllib.TOMLDecodeError,
+    ):
         return select([], force_full=True)
     embedded = {path for path, _ in before.external_inputs | after.external_inputs}
     affected = [path for path in static_paths if path in embedded]
@@ -221,7 +249,9 @@ def include_input_scope(
     # old/new owner paths and retain the dependency planner's reverse/dev edges.
     affected.extend(
         f"{root}/Cargo.toml"
-        for root, package in sorted(set(before.owners.items()) | set(after.owners.items()))
+        for root, package in sorted(
+            set(before.owners.items()) | set(after.owners.items())
+        )
         if package in opaque
     )
     if not affected:
@@ -230,8 +260,11 @@ def include_input_scope(
     if impact["full_workspace"]:
         return select([], force_full=True)
     packages = set(impact["packages"])
-    roots = [f"{root}/Cargo.toml" for root, package in after.owners.items()
-             if package in packages]
+    roots = [
+        f"{root}/Cargo.toml"
+        for root, package in after.owners.items()
+        if package in packages
+    ]
     extra = select(roots)
     return {key: value or extra[key] for key, value in scope.items()}
 
@@ -251,7 +284,17 @@ def main() -> None:
     scope = select(paths, force_full=args.full)
     if not args.full:
         scope = include_input_scope(scope, paths, args.base, args.head)
-    print(json.dumps({"source_head": args.head, "base": args.base, "paths": paths, "scope": scope}, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "source_head": args.head,
+                "base": args.base,
+                "paths": paths,
+                "scope": scope,
+            },
+            sort_keys=True,
+        )
+    )
     if args.github_output:
         with open(args.github_output, "a", encoding="utf-8") as stream:
             for name, enabled in scope.items():

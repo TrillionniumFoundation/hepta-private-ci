@@ -21,24 +21,23 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn new() -> Self {
-        let directory = tempfile::tempdir().expect("directory");
-        let root = directory.path().canonicalize().expect("root");
-        let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
-        let registry = FleetRegistry::initialize(fleet.clone()).expect("registry");
+    fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        let directory = tempfile::tempdir()?;
+        let root = directory.path().canonicalize()?;
+        let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
+        let registry = FleetRegistry::initialize(fleet.clone())?;
         let workspace = root.join("workspace");
-        std::fs::create_dir(&workspace).expect("workspace");
+        std::fs::create_dir(&workspace)?;
         let manifest = AgentManifest::new(
-            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent"),
-            WorkspaceBinding::new(workspace, &fleet).expect("workspace binding"),
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
+            WorkspaceBinding::new(workspace, &fleet)?,
             ResourceBudget::local_default(),
-        )
-        .expect("manifest");
-        let layout = registry.register(manifest).expect("register").layout;
-        Self {
+        )?;
+        let layout = registry.register(manifest)?.layout;
+        Ok(Self {
             _directory: directory,
             layout,
-        }
+        })
     }
 }
 
@@ -54,7 +53,7 @@ fn draft() -> AutomationTaskDraft {
 
 #[tokio::test]
 async fn kernel_destination_rejects_new_schedule_while_timer_is_draining() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("valid owner fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let draft = draft();
     let intent = automation_task_operation_intent(
@@ -88,7 +87,7 @@ async fn kernel_destination_rejects_new_schedule_while_timer_is_draining() {
 
 #[tokio::test]
 async fn predecessor_kernel_destination_cannot_write_after_timer_handoff() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("valid owner fixture");
     let old = AutomationStore::open(&fixture.layout).await.expect("store");
     let draft = draft();
     let intent = automation_task_operation_intent(
@@ -122,7 +121,7 @@ async fn predecessor_kernel_destination_cannot_write_after_timer_handoff() {
 
 #[tokio::test]
 async fn retirement_blocks_new_effects_after_restart_but_preserves_old_receipts() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("valid owner fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let original = draft();
     let intent = automation_task_operation_intent(

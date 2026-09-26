@@ -214,6 +214,26 @@ Current focused test sources (source references, not pass receipts):
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
 
+### Independent exact-candidate command records
+
+The dedicated `hepta-intuition-qualification.yml` workflow retains one execution
+record and raw log for format, all-target compilation, strict Clippy, tests, host
+profile and both fast gates on **each** source-head/synthetic-merge lane. It uses
+the existing `scripts/hepta_ci_exec.py`: source-head must match the clean source
+commit, and a merge must match the ordered base/source parents and the independently
+recomputed merge tree. Test execution requires observed passing tests and disables
+retries. A successful command with zero executed tests is not qualification.
+
+After identity admission, lint failure does not suppress the independent test and
+measurement steps, but still fails its job. Upload runs even after failed commands;
+missing/failed/running records are never passing evidence. JSON receipts, raw logs
+and CSV files live under the runner temporary directory, outside the source tree,
+so retaining evidence cannot itself dirty the tested checkout. Both lanes retain
+their own records; source evidence does not certify a different merged tree.
+`test_hepta_intuition_workflow.py` tests the declared shell/recorder/Git integration
+with deliberately failing stub commands; these harness tests are not Rust policy
+or performance qualification. Read the real workflow records for those results.
+
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
 ## 13. Implementation sequence and work packages
@@ -407,3 +427,109 @@ The bootstrap source-location obligation for `intuition.policy` is implemented b
 - `codex-rs/hepta-intuition`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Current authenticated product path and compatibility
+
+The pure `decide_calibrated_v3` kernel remains in `hepta-intuition`. Current
+product admission is `decide_authenticated_intuition_v3` in `hepta-intelligence`;
+it consumes `ScoringCommitmentV2` and the existing three-role evidence shape.
+`AgentdOwnerPortsV1::decide_intuition` invokes the installed
+`AgentdIntuitionPolicyHostV2`, not the unauthenticated calibrated V2 function.
+The host-owned invocation provider returns `AgentdAuthenticatedIntuitionInputV1`.
+A missing host is `IntuitionPolicyUnavailable`, never an implicit legacy fallback.
+
+### 18.1 Authentication and semantic ownership
+
+Before allocating canonical request payloads, admission checks the 1..=128
+candidate bound and exact request objective against the host verifier objective.
+Generator completeness, Evaluator profile qualification and Observer runtime
+commitment signatures are validated independently. Pairwise separation includes
+principal, credential chain, signing key and controller identity; different keys
+under the same controller are not independent reviewers.
+
+Scorer V2 commits candidate identities and scorer outputs without assignment
+probabilities. The complete request/runtime commitment still binds legal masks,
+support, risk, distribution, stream owner, counter and draw. A changed assignment
+must leave scorer-only bytes unchanged while invalidating the exact runtime
+signature. Existing scorer V1 includes assignment indirectly and is preserved
+byte-for-byte for historical evidence; do not silently redefine it as scorer V2.
+Legacy calibrated and authenticated V1/V2 surfaces are compatibility APIs, not
+alternative production admission paths. The policy grants `DENY_ALL` authority.
+
+### 18.2 Current profile, owner and trust lifecycle
+
+The host separately pins selected profile digest, policy generation, owner
+implementation digest, model artifact, scorer contract, optional RNG owner and
+activated trust distribution and revocation frontier. Profile identity is not the implementation/code
+identity. The signed current-owner oracle supplies the owner generation, root
+key identity, key epoch and revocation frontier. A request with a newer frontier
+cannot reuse an older installed trust distribution, even if its root key is
+unchanged; install a freshly selected host instead. The adapter re-reads it before
+and after policy computation, and canonical preparation retains its final-use
+snapshot check. A detected current-owner change retires that host instance;
+restoring an old signed file cannot revive the retired in-process host.
+
+Trust activation uses `learning.ledger`'s existing root-signed distribution and
+retains its expiry and scheduled root revocation. The policy introduces no
+parallel trust store or durable writer. The host rejects profile drift, changed
+owner implementation/generation, root/key epoch mismatch and expired evidence.
+Reopening under a new Agentd generation requires a descriptor bound to that
+identity/generation. Restoring the entire authoritative configuration and its
+old signed current-owner file requires an independent durable recovery frontier;
+this source path alone does not establish that deployment-level guarantee.
+
+### 18.3 Ordinary binary bootstrap
+
+Supply `--intuition-policy-file /absolute/path/descriptor.json` and
+`--intuition-policy-digest <sha256>` together with the existing three intelligence
+authority options. The expected descriptor hash must be installed by trusted
+deployment configuration, not derived from untrusted request bytes at runtime.
+The descriptor binds schemaVersion=1, agentId, spawnGeneration,
+ownerImplementationDigest, revocationFrontierDigest, selectedProfileDigest, policyGeneration,
+modelArtifactDigest, scorerContractDigest, optional rngOwnerDigest and the root
+and signed signer distribution. Public verification material is allowed; private
+signing keys, model bytes, raw features and RNG state do not belong in this file.
+
+The loader checks a nonempty regular file capped at 1 MiB, forbids a final symlink
+and group/world write on Unix, bounds reads through the opened file handle,
+compares its exact hash before parsing, denies unknown fields, checks deployment
+identity and generation, then verifies the root-signed distribution. Changing a
+profile or root requires a new deployment pin. A self-signed replacement root
+cannot choose the expected descriptor digest.
+
+This configures the policy host on the existing runner; it does not invent the
+other owners' production readers. Concrete owner-backed model/features/evidence
+providers must be installed through the existing authoritative invocation seam.
+
+### 18.4 Executable qualification and remaining evidence
+
+From `codex-rs`, run:
+
+```sh
+just test --locked -p codex-hepta-intuition -p codex-hepta-intelligence --retries 0
+just test --locked -p codex-hepta-agentd --lib -E 'test(intelligence_product) | test(intelligence_run_start) | test(intuition_policy) | test(intelligence_invocation)' --retries 0
+cargo check --locked -p codex-hepta-agentd --all-targets
+cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
+```
+
+`intuition_admission_boundaries.rs` retains legacy V2 signature regressions;
+`intuition_admission_v3_boundaries.rs` applies them to current V3.
+`intelligence_product_intuition_tests.rs` covers missing-host refusal, actual
+adapter signature rejection, profile/generation/trust fences and a signed owner
+change between preparation and policy use. Bootstrap tests cover exact pin,
+identity, generation, expiry, unknown fields and invalid distribution signatures.
+The existing signed-evaluation/RunStart product tests exercise the composed stage.
+
+The intuition workflow includes Agentd source changes and executes both exact
+source and synthetic merge lanes. Command receipts retain failure, skip and
+actual test counts independently; a failed lint must not hide test results.
+Kernel and authenticated benchmarks remain distinct. The latter measures the
+current V3 admission, not model inference, evidence production, durable append or
+physical task execution. A source-host profile is not a selected deployment.
+
+The small frozen linear-model corpus is an executable mechanism fixture, not
+independent production efficacy evidence. Acceptance still needs representative
+held-out task/risk/subgroup data, equal-resource deterministic/no-NDU/no-neural
+baselines, selected model/RNG owner identities, registered target host, observed
+physical terminal outcomes and durable learning reconciliation. These cannot be
+self-issued by a policy fixture or inferred from green unit tests.

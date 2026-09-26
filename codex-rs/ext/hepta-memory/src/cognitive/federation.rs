@@ -14,7 +14,6 @@ use codex_extension_api::ExtensionMetrics;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
 use codex_extension_api::ModelProviderRequestKind;
-use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::TurnInputContext;
 use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
@@ -759,6 +758,7 @@ fn compile_explanations(
         .map(|explanation| {
             let binding = FederatedMemoryRevalidationBinding {
                 source_agent_id: explanation.source_agent_id.clone(),
+                owner_generation_sha256: explanation.owner_generation_sha256.clone(),
                 capability: explanation.capability.clone(),
                 memory: codex_hepta_memory::MemoryRevalidationBinding {
                     memory: explanation.explanation.memory.id.clone(),
@@ -848,7 +848,7 @@ fn federation_source_binding(
     let serialized = serde_json::to_vec(bindings).ok()?;
     let serialized_coverage = serde_json::to_vec(coverage).ok()?;
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v3",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),
@@ -859,12 +859,6 @@ fn federation_source_binding(
             content_sha256.as_str().as_bytes(),
         ],
     ))
-}
-
-fn api_digest(
-    digest: &Sha256Digest,
-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
-    ModelProviderSha256Digest::parse(digest.as_str())
 }
 
 fn final_use_capability_window_current(

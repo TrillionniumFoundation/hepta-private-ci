@@ -78,3 +78,12 @@ pub(super) fn test_thread_metadata(
         git_origin_url: None,
     }
 }
+
+/// Construct a private temporary home before installing a historical schema.
+pub(crate) async fn create_private_test_home(path: &std::path::Path) -> std::io::Result<()> {
+    let mut builder = tokio::fs::DirBuilder::new();
+    builder.recursive(true);
+    #[cfg(unix)]
+    builder.mode(0o700);
+    builder.create(path).await
+}

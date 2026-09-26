@@ -1,5 +1,4 @@
 use std::path::Path;
-use std::time::Duration;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -7,10 +6,6 @@ use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::AuthBusAuthorityError;
 use crate::AuthPolicy;
@@ -23,22 +18,13 @@ const MAX_POLICIES: i64 = 4096;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone)]
-pub struct AuthBusAuthorityStore {
+pub(crate) struct AuthBusAuthorityStore {
     pub(crate) pool: SqlitePool,
 }
 
 impl AuthBusAuthorityStore {
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
+        let pool = codex_state::open_durable_sqlite_pool(path, /*max_connections*/ 5)
             .await
             .map_err(storage)?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
@@ -81,6 +67,7 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)
     }
 
+    #[cfg(test)]
     pub async fn last_trusted_time(
         &self,
     ) -> Result<Option<TrustedTimeSample>, AuthBusAuthorityError> {
@@ -521,7 +508,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
 fn is_unique_violation(error: &sqlx::Error) -> bool {
     error
         .as_database_error()
-        .is_some_and(|database| database.is_unique_violation())
+        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
 }
 
 pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {

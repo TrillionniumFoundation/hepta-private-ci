@@ -3,6 +3,13 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/runtime.supervisor/**"
+      - "scripts/hepta-supervisor-validation.py"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"
@@ -21,6 +28,13 @@ on:
     branches:
       - main
     paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/runtime.supervisor/**"
+      - "scripts/hepta-supervisor-validation.py"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"
@@ -36,13 +50,26 @@ on:
       - ".github/workflows/automation-taskflow-focused.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit for Supervisor qualification (empty uses this workflow commit)
+        required: false
+        type: string
+      base_sha:
+        description: Exact base commit; supplying it also executes deterministic Supervisor merge qualification
+        required: false
+        type: string
+      pull_request_number:
+        description: Pull request associated with an explicitly pinned merge qualification
+        required: false
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
   group: hepta-lane-b-source-closure-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   source-head:
@@ -86,7 +113,7 @@ jobs:
           python3 scripts/hepta-lane-b-path-guard.py self-test
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py self-test
-          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py scripts/test_hepta_lane_b_path_guard.py
           python3 scripts/hepta-lane-b-truth.py verify
           git diff --check
 
@@ -194,3 +221,79 @@ jobs:
             //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+
+  supervisor-behavior:
+    name: Runtime supervisor (${{ matrix.candidate }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON((github.event_name == 'pull_request' || inputs.base_sha) && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Check out exact Supervisor candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Validate pinned Supervisor source
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Resolve current base
+        id: base
+        if: github.event_name == 'pull_request' || inputs.base_sha
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+          REQUESTED_BASE_SHA: ${{ inputs.base_sha }}
+        run: |
+          set -euo pipefail
+          BASE="${REQUESTED_BASE_SHA:-$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")}"
+          [[ "$BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$BASE^{commit}"
+          printf 'sha=%s\n' "$BASE" >> "$GITHUB_OUTPUT"
+      - name: Construct Supervisor merge candidate
+        if: matrix.candidate == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.base.outputs.sha }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ inputs.pull_request_number || github.event.pull_request.number }}
+          author-name: Hepta Supervisor CI
+          author-email: hepta-supervisor-ci@users.noreply.github.com
+          message: Synthetic Supervisor qualification
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Install pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute independent Supervisor behavior checks
+        env:
+          EVIDENCE_ROOT: ${{ runner.temp }}/supervisor-${{ matrix.candidate }}
+        run: |
+          set -euo pipefail
+          SHA=$(git rev-parse HEAD)
+          python3 scripts/hepta-supervisor-validation.py \
+            --expected-sha "$SHA" --out "$EVIDENCE_ROOT" --host-instances 256
+      - name: Retain actual Supervisor results, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: supervisor-${{ matrix.candidate }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/supervisor-${{ matrix.candidate }}/*.json
+            ${{ runner.temp }}/supervisor-${{ matrix.candidate }}/*.log
+          if-no-files-found: warn

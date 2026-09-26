@@ -14,7 +14,9 @@ pub use authbus::AuthBusTextStatus;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EFFECT_PREPARATION;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_THRESHOLD_CIRCUIT;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
@@ -38,6 +40,9 @@ use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
+use codex_hepta_automation::ProductEffectPreparationV1;
+use codex_hepta_automation::ThresholdCircuitDecisionV1;
+use codex_hepta_automation::ThresholdCircuitInvocationV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -323,6 +328,40 @@ impl AgentdRequest {
         }
     }
 
+    pub fn automation_run_threshold_circuit(
+        request_id: u64,
+        spawn_generation: u64,
+        invocation: ThresholdCircuitInvocationV1,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationRunThresholdCircuit { invocation },
+        }
+    }
+
+    pub fn automation_prepare_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        operation_id: String,
+        wire_payload_hex: String,
+        expected_predecessor_digest: Option<Sha256Digest>,
+        compensation_for: Option<String>,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationPrepareEffect {
+                operation_id,
+                wire_payload_hex,
+                expected_predecessor_digest,
+                compensation_for,
+            },
+        }
+    }
+
     pub fn automation_execute_effect(
         request_id: u64,
         spawn_generation: u64,
@@ -338,7 +377,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -648,10 +687,19 @@ pub enum AgentdMethod {
         missed_run: AutomationMissedRunPolicy,
         overlap: AutomationOverlapPolicy,
     },
+    AutomationRunThresholdCircuit {
+        invocation: ThresholdCircuitInvocationV1,
+    },
+    AutomationPrepareEffect {
+        operation_id: String,
+        wire_payload_hex: String,
+        expected_predecessor_digest: Option<Sha256Digest>,
+        compensation_for: Option<String>,
+    },
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -756,6 +804,8 @@ pub enum AgentdPayload {
         run: Option<AgentRunReceipt>,
     },
     AutomationTask(AutomationTask),
+    AutomationThresholdCircuit(ThresholdCircuitDecisionV1),
+    AutomationEffectPreparation(Box<ProductEffectPreparationV1>),
     AutomationEffect(AutomationEffectSnapshot),
     AutomationEffectReconcile(AutomationEffectReconcileSnapshot),
     AutomationTasks {
@@ -1072,7 +1122,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1368,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

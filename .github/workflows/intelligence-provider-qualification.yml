@@ -1,0 +1,136 @@
+name: intelligence-control authoritative provider qualification
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-agentd/src/intelligence_ingress.rs
+      - codex-rs/hepta-agentd/src/intelligence_ingress_tests.rs
+      - codex-rs/hepta-agentd/src/intelligence_invocation_owner_tests.rs
+      - codex-rs/hepta-agentd/src/intelligence_run_start_tests.rs
+      - codex-rs/hepta-agentd/src/objective_runtime.rs
+      - scripts/test_hepta_provider_workflow.py
+      - .github/workflows/intelligence-provider-qualification.yml
+
+# Qualification observes immutable source. It must never repair or push the
+# candidate it is supposed to test, including after formatting fails.
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-provider-qualification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    name: Provider seam (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact provider head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Construct canonical prospective merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+
+      - name: Bind tested source and tree
+        id: identity
+        env:
+          TESTED: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/provider-evidence"
+          test "$(git rev-parse HEAD)" = "$TESTED"
+          printf 'TESTED_SHA=%s\n' "$TESTED" >> "$GITHUB_ENV"
+          git diff --check
+          {
+            printf 'source=%s\nbase=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" "$LANE"
+            git rev-parse HEAD HEAD^{tree}
+            git rev-list --parents -n 1 HEAD
+          } > "$RUNNER_TEMP/provider-evidence/source.txt"
+
+      - name: Install pinned Rust toolchain
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Install repository test runner
+        id: runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Verify provider qualification wiring
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: python3 scripts/test_hepta_provider_workflow.py
+      - name: Format check without mutation
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.rust.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/provider-evidence/fmt.json" -- cargo fmt -p codex-hepta-agentd -- --check
+
+      - name: Provider seam regressions, not default daemon qualification
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.rust.outcome == 'success' && steps.runner.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/provider-evidence/tests.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(intelligence_ingress)' --retries 0 --test-threads 2
+
+      - name: Strict provider lint, independent of tests
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.rust.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/provider-evidence/clippy.json" -- cargo clippy --locked --no-deps -p codex-hepta-agentd --lib --tests -- -D warnings
+
+      - name: Reject candidate mutation
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+
+      - name: Retain exact-source diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: provider-seam-${{ github.event.pull_request.head.sha }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/provider-evidence/
+          retention-days: 7
+          if-no-files-found: warn

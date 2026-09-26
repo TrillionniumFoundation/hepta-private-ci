@@ -21,7 +21,7 @@ use crate::StableMemoryId;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
-const MAX_POLICY_IDENTITIES: i64 = 4096;
+const MAX_ACTIVE_POLICY_IDENTITIES: i64 = 4096;
 const MAX_POLICY_REVISIONS: i64 = 1024;
 const MAX_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
 
@@ -158,14 +158,6 @@ impl CognitiveStore {
         request: &SharedExperienceGrantV1,
         expected_revision: u64,
     ) -> Result<SharedExperienceUseV1, CognitiveStoreError> {
-        let time = now()?;
-        if request.expires_at_unix_seconds <= time
-            || request.expires_at_unix_seconds.saturating_sub(time) > MAX_LIFETIME_SECONDS
-        {
-            return Err(CognitiveStoreError::Invalid(
-                "shared use expiry outside bounded lifetime".into(),
-            ));
-        }
         let key = policy_id(self.owner_agent_id(), request)?;
         let (purpose, scope, recipient) = request.purpose.parts()?;
         let mut tx = self
@@ -176,6 +168,16 @@ impl CognitiveStore {
         let memory = self
             .latest_memory_tx(&mut tx, owner, &request.memory_id)
             .await?;
+        // The writer may have queued behind another transaction. Admission time
+        // must be sampled after that wait, not before acquiring the owner cut.
+        let time = now()?;
+        if request.expires_at_unix_seconds <= time
+            || request.expires_at_unix_seconds.saturating_sub(time) > MAX_LIFETIME_SECONDS
+        {
+            return Err(CognitiveStoreError::Invalid(
+                "shared use expiry outside bounded lifetime".into(),
+            ));
+        }
         if memory.id.revision != request.memory_revision || !valid_memory(&memory, time) {
             return Err(CognitiveStoreError::Conflict(
                 "shared source is not current verified evidence".into(),
@@ -212,14 +214,21 @@ impl CognitiveStore {
                 "shared use policy predecessor".into(),
             ));
         }
-        if previous == 0 {
+        let already_active: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM shared_experience_use_heads WHERE policy_id=? AND revoked=0 AND expires_at>?)",
+        )
+        .bind(key.as_str()).bind(time).fetch_one(&mut *tx).await.map_err(unavailable)?;
+        if !already_active {
+            // Revoked/expired predecessors remain durable, but consume no live
+            // slot. Re-activation must pass the same admission as a new identity.
+            // The partial expiry index and LIMIT bound work by the active quota,
+            // not by all identities or revisions ever recorded.
             let count: i64 = sqlx::query_scalar(
-                "SELECT COUNT(DISTINCT policy_id) FROM shared_experience_use_events",
+                "SELECT COUNT(*) FROM (SELECT 1 FROM shared_experience_use_heads WHERE revoked=0 AND expires_at>? LIMIT ?)",
             )
-            .fetch_one(&mut *tx)
-            .await
-            .map_err(unavailable)?;
-            if count >= MAX_POLICY_IDENTITIES {
+            .bind(time).bind(MAX_ACTIVE_POLICY_IDENTITIES)
+            .fetch_one(&mut *tx).await.map_err(unavailable)?;
+            if count >= MAX_ACTIVE_POLICY_IDENTITIES {
                 return Err(CognitiveStoreError::Invalid("shared use capacity".into()));
             }
         }
@@ -395,6 +404,38 @@ impl CognitiveStore {
     }
 }
 
+/// Check the quota projection against immutable history at startup/recovery.
+/// Admission uses the bounded index; a missing or stale head is never rebuilt
+/// silently from an untrusted database while the owner is already serving.
+pub(crate) async fn verify_current_use_heads(
+    pool: &sqlx::SqlitePool,
+) -> Result<(), CognitiveStoreError> {
+    let mismatch: bool = sqlx::query_scalar(
+        "WITH current AS (
+            SELECT e.policy_id,e.revision,e.revoked,e.expires_at
+            FROM shared_experience_use_events e
+            JOIN (SELECT policy_id,MAX(revision) AS revision
+                  FROM shared_experience_use_events GROUP BY policy_id) h
+            USING(policy_id,revision)
+         )
+         SELECT EXISTS(SELECT * FROM current EXCEPT SELECT * FROM shared_experience_use_heads)
+             OR EXISTS(SELECT * FROM shared_experience_use_heads EXCEPT SELECT * FROM current)",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if mismatch {
+        return Err(CognitiveStoreError::Corrupt(
+            "shared use current projection differs from immutable history".into(),
+        ));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 #[path = "shared_experience_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "shared_experience_capacity_tests.rs"]
+mod capacity_tests;

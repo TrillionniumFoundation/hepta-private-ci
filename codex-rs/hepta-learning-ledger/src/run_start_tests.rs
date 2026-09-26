@@ -33,6 +33,7 @@ fn binding() -> Digest32 {
 fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
     RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
+            signed_body_bytes: Vec::new(),
             issuer_id: id("issuer.objective"),
             key_epoch: 3,
             message_id: id(&format!("message.{run_id}")),
@@ -76,6 +77,7 @@ fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
 fn conflict_record(run_id: &str, receipt: &[u8]) -> RunStartConflictRecordV1 {
     RunStartConflictRecordV1 {
         authentication: RunStartAuthenticationV1 {
+            signed_body_bytes: Vec::new(),
             issuer_id: id("issuer.objective"),
             key_epoch: 3,
             message_id: id(&format!("message.{run_id}")),
@@ -416,4 +418,166 @@ fn semantic_or_protocol_drift_after_reopen_conflicts() {
         reopened.append(first.chain_digest, changed),
         Err(RunStartStoreError::Conflict)
     );
+}
+
+#[test]
+fn mixed_legacy_and_signed_input_history_reopens_without_rewriting() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let legacy = record("legacy", b"old objective");
+    let first = must(journal.append(Digest32::ZERO, legacy.clone()));
+    let prefix = must(fs::read(fixture.path()));
+    let mut current = record("signed-input", b"new objective");
+    current.authentication.signed_body_bytes = br#"{"source":"exact input"}"#.to_vec();
+    current.authentication.signed_body_digest =
+        Digest32::of_bytes(&current.authentication.signed_body_bytes);
+    let receipt = must(journal.append(first.chain_digest, current.clone()));
+    let mut conflict = conflict_record("signed-conflict", b"conflict");
+    conflict.authentication = current.authentication.clone();
+    let last = must(journal.append_conflict(receipt.chain_digest, conflict.clone()));
+    let bytes = must(fs::read(fixture.path()));
+    assert_eq!(&bytes[..prefix.len()], prefix.as_slice());
+    drop(journal);
+    let mut reopened = must(
+        fixture.recover(RunStartRecovery::Acknowledged(RunStartAnchor {
+            sequence: last.sequence,
+            chain_digest: last.chain_digest,
+        })),
+    );
+    assert_eq!(must(reopened.get(&id("legacy"))), Some(&legacy));
+    assert_eq!(must(reopened.get(&id("signed-input"))), Some(&current));
+    assert_eq!(
+        must(reopened.get_conflict(&id("signed-conflict"))),
+        Some(&conflict)
+    );
+    assert_eq!(
+        must(reopened.append(Digest32::ZERO, current)).disposition,
+        RunStartAppendDisposition::IdempotentReplay
+    );
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+}
+
+#[test]
+fn signed_input_substitution_and_oversize_reject_before_write() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let bytes = must(fs::read(fixture.path()));
+    let mut changed = record("signed-input", b"objective");
+    changed.authentication.signed_body_bytes = b"substituted input".to_vec();
+    assert!(journal.append(Digest32::ZERO, changed.clone()).is_err());
+    changed.authentication.signed_body_bytes = vec![1; MAX_SIGNED_BODY_BYTES + 1];
+    changed.authentication.signed_body_digest =
+        Digest32::of_bytes(&changed.authentication.signed_body_bytes);
+    assert!(journal.append(Digest32::ZERO, changed).is_err());
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+    assert_eq!(journal.head_digest(), Digest32::ZERO);
+}
+
+#[test]
+fn signed_input_codec_rejects_truncation_and_payload_tampering() {
+    let mut value = record("signed-input", b"objective");
+    value.authentication.signed_body_bytes = b"original signed source bytes".to_vec();
+    value.authentication.signed_body_digest =
+        Digest32::of_bytes(&value.authentication.signed_body_bytes);
+    let bytes = encode_record(&value);
+    assert_eq!(must(decode_record(&bytes)), value);
+    for end in 0..bytes.len() {
+        assert!(decode_record(&bytes[..end]).is_err());
+    }
+    let offset = bytes
+        .windows(value.authentication.signed_body_bytes.len())
+        .position(|window| window == value.authentication.signed_body_bytes)
+        .unwrap();
+    let mut tampered = bytes;
+    tampered[offset] ^= 1;
+    assert!(decode_record(&tampered).is_err());
+}
+
+#[test]
+fn complete_recovery_requires_sync_before_exposing_idempotent_receipt() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let value = record("run.sync", b"original objective");
+    let appended = must(journal.append(Digest32::ZERO, value.clone()));
+    drop(journal);
+    let bytes = must(fs::read(fixture.path()));
+    let synchronized = std::cell::Cell::new(false);
+    let mut recovered = must(DurableRunStartJournal::recover_synced(
+        fixture.file(),
+        binding(),
+        16,
+        RunStartRecovery::Unacknowledged,
+        |file| {
+            assert_eq!(must(file.metadata()).len(), bytes.len() as u64);
+            file.sync_all()?;
+            synchronized.set(true);
+            Ok(())
+        },
+    ));
+    assert!(synchronized.get());
+    assert_eq!(
+        must(recovered.append(Digest32::ZERO, value)),
+        RunStartAppendReceipt {
+            disposition: RunStartAppendDisposition::IdempotentReplay,
+            ..appended
+        }
+    );
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+}
+
+#[test]
+fn complete_recovery_sync_failure_returns_no_writer_and_releases_lock() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let value = record("run.sync-failure", b"original objective");
+    let appended = must(journal.append(Digest32::ZERO, value.clone()));
+    drop(journal);
+    let bytes = must(fs::read(fixture.path()));
+    let result = DurableRunStartJournal::recover_synced(
+        fixture.file(),
+        binding(),
+        16,
+        RunStartRecovery::Unacknowledged,
+        |_| Err(io::Error::other("injected recovery fsync failure")),
+    );
+    assert!(matches!(result, Err(RunStartStoreError::Indeterminate)));
+    assert_eq!(must(fs::read(fixture.path())), bytes);
+    let mut recovered = must(fixture.recover(RunStartRecovery::Unacknowledged));
+    assert_eq!(
+        must(recovered.append(Digest32::ZERO, value)),
+        RunStartAppendReceipt {
+            disposition: RunStartAppendDisposition::IdempotentReplay,
+            ..appended
+        }
+    );
+}
+
+#[test]
+fn invalid_anchor_is_rejected_before_recovery_sync_or_tail_repair() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let appended = must(journal.append(Digest32::ZERO, record("run.anchor", b"objective")));
+    drop(journal);
+    let mut file = fixture.file();
+    must(file.seek(SeekFrom::End(0)));
+    must(file.write_all(b"partial"));
+    drop(file);
+    let bytes = must(fs::read(fixture.path()));
+    let synchronized = std::cell::Cell::new(false);
+    let result = DurableRunStartJournal::recover_synced(
+        fixture.file(),
+        binding(),
+        16,
+        RunStartRecovery::Acknowledged(RunStartAnchor {
+            sequence: appended.sequence,
+            chain_digest: digest("wrong anchor"),
+        }),
+        |_| {
+            synchronized.set(true);
+            Ok(())
+        },
+    );
+    assert!(matches!(result, Err(RunStartStoreError::AnchorMismatch)));
+    assert!(!synchronized.get());
+    assert_eq!(must(fs::read(fixture.path())), bytes);
 }

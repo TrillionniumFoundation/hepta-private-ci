@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.operator-local-engineering-observation.v1",
+  "host": "qian-qi",
+  "source_parent": "1b6748258df4d8c2b30aa312f99c0149b146dfbf",
+  "worktree_was_modified": true,
+  "exact_head_qualification_receipt": false,
+  "workload": "Synthetic authenticated owner observations, actual filesystem durability, separate held-out owner. Concurrent host load was not controlled.",
+  "command": "cd codex-rs && just test --locked -p codex-hepta-bellman-operator --lib --run-ignored only -E 'test(owner_terminal_quality_and_history_profile)' --success-output immediate",
+  "overall_result": "timeout",
+  "watchdog_seconds": 600,
+  "completed_scale_measurements": [
+    {
+      "pairs": 32,
+      "records": 128,
+      "append_pair_p50_us": 4017840,
+      "append_pair_p95_us": 8269231,
+      "append_pair_p99_us": 9330408,
+      "freeze_us": 35678,
+      "fit_us": 5492,
+      "recovery_us": 1164705,
+      "prediction_p95_ns": 2963,
+      "prediction_p99_ns": 4741,
+      "filesystem_bytes": 81516,
+      "process_peak_rss_kib": 5788,
+      "heldout_samples": 32,
+      "candidate_mse_ppm": 0,
+      "zero_baseline_mse_ppm": 156250
+    }
+  ],
+  "uncompleted_record_scales": [
+    512,
+    2048
+  ],
+  "field_efficacy_proved": false
+}

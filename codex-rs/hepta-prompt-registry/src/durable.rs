@@ -51,8 +51,13 @@ use crate::protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE;
 use crate::protocol::LEGACY_UNRESOLVED_MODEL_ID;
 use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
+#[path = "durable_capacity.rs"]
+mod capacity;
+
 #[path = "durable_payloads.rs"]
 mod payloads;
+#[path = "durable_recovery.rs"]
+mod recovery;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -62,6 +67,7 @@ const MIGRATION_REASON_DOMAIN: &[u8] = b"hepta.prompt-registry.migration.v1-v2";
 pub struct DurablePromptRegistry {
     registry: PromptRegistry,
     store: Store,
+    recovery_checkpoint: Option<recovery::RecoveryCheckpointFile>,
     poisoned: bool,
 }
 
@@ -76,24 +82,91 @@ impl fmt::Debug for DurablePromptRegistry {
 }
 
 impl DurablePromptRegistry {
+    /// Open an uncheckpointed registry for isolated tests, migrations and
+    /// compatibility callers. A state that has ever been production-bound to an
+    /// external recovery checkpoint cannot be reopened through this API.
     pub fn open_state_dir(
         directory: &Path,
         maximum_records: usize,
     ) -> Result<Self, DurableRegistryError> {
+        Self::open_state_dir_internal(directory, maximum_records, None)
+    }
+
+    /// Open the authoritative registry with a checkpoint stored outside its
+    /// state directory. The checkpoint is a required independent witness after
+    /// the first successful guarded open and prevents restoring an older,
+    /// internally valid registry backup as current state.
+    pub fn open_state_dir_with_recovery_checkpoint(
+        directory: &Path,
+        recovery_checkpoint_path: &Path,
+        recovery_owner_id: &str,
+        maximum_records: usize,
+    ) -> Result<Self, DurableRegistryError> {
+        Self::open_state_dir_internal(
+            directory,
+            maximum_records,
+            Some((recovery_checkpoint_path, recovery_owner_id)),
+        )
+    }
+
+    fn open_state_dir_internal(
+        directory: &Path,
+        maximum_records: usize,
+        recovery: Option<(&Path, &str)>,
+    ) -> Result<Self, DurableRegistryError> {
+        // Validate caller policy before touching the state directory. A rejected
+        // first open must not leave a lock sentinel that makes a corrected retry
+        // look like a previously initialized store whose manifest disappeared.
+        if maximum_records == 0 {
+            return Err(DurableRegistryError::Core(Error::ZeroCapacity));
+        }
+        if let Some((checkpoint_path, owner_id)) = recovery {
+            recovery::RecoveryCheckpointFile::validate_open_configuration(
+                checkpoint_path,
+                directory,
+                owner_id,
+            )?;
+        }
         let (mut store, stored) = Store::open(directory)?;
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
             Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
             None => PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
         };
-        if store.payloads.is_initialized() {
-            store.payloads.discard_unselected_tail(&store.root)?;
-        } else {
+        // Validate the independently retained witness BEFORE trimming payload
+        // tails or publishing a migration. An old but self-consistent manifest
+        // must not be allowed to delete newer committed extents on a rejected
+        // rollback attempt.
+        let needs_checkpoint_binding = recovery.is_some() && !store.recovery_checkpoint_required;
+        let recovery_checkpoint = match recovery {
+            Some((path, owner_id)) => {
+                let checkpoint = recovery::RecoveryCheckpointFile::open_or_initialize(
+                    path,
+                    directory,
+                    owner_id,
+                    store.recovery_checkpoint_required,
+                    &registry,
+                )?;
+                Some(checkpoint)
+            }
+            None if store.recovery_checkpoint_required => {
+                return Err(DurableRegistryError::RecoveryCheckpointRequired);
+            }
+            None => None,
+        };
+        if needs_checkpoint_binding {
+            // The witness is durable before a manifest requiring it is selected.
+            store.recovery_checkpoint_required = true;
+        }
+        if !store.payloads.is_initialized() || needs_checkpoint_binding {
             store.persist(&registry)?;
+        } else {
+            store.payloads.discard_unselected_tail(&store.root)?;
         }
         Ok(Self {
             registry,
             store,
+            recovery_checkpoint,
             poisoned: false,
         })
     }
@@ -410,13 +483,51 @@ impl DurablePromptRegistry {
         let mut next = self.registry.clone();
         let receipt = mutation(&mut next).map_err(DurableRegistryError::Core)?;
         if receipt.disposition != crate::MutationDisposition::Unchanged {
+            let pending = match self
+                .recovery_checkpoint
+                .as_ref()
+                .map(|checkpoint| checkpoint.prepare(&self.registry, &next))
+                .transpose()
+            {
+                Ok(pending) => pending,
+                Err(error) => {
+                    // The independent witness may have been replaced before a
+                    // sync/readback error. Do not expose an authoritative image
+                    // or accept further writes until exact reopen reconciliation.
+                    self.poisoned = true;
+                    return Err(error);
+                }
+            };
             match self.store.persist(&next) {
-                Ok(()) => self.registry = next,
+                Ok(()) => {
+                    if let (Some(checkpoint), Some(pending)) =
+                        (&self.recovery_checkpoint, pending.as_ref())
+                        && checkpoint.promote(pending).is_err()
+                    {
+                        // Disk may already contain the successor while the
+                        // independent witness is still pending. Reopen performs
+                        // the only safe reconciliation.
+                        self.poisoned = true;
+                        return Err(DurableRegistryError::IndeterminateDurability);
+                    }
+                    self.registry = next;
+                }
                 Err(DurableRegistryError::IndeterminateDurability) => {
+                    // Keep the exact pending witness. Reopen distinguishes a
+                    // committed successor from an intact predecessor.
                     self.poisoned = true;
                     return Err(DurableRegistryError::IndeterminateDurability);
                 }
-                Err(error) => return Err(error),
+                Err(error) => {
+                    if let (Some(checkpoint), Some(pending)) =
+                        (&self.recovery_checkpoint, pending.as_ref())
+                        && checkpoint.abort(pending, &self.registry).is_err()
+                    {
+                        self.poisoned = true;
+                        return Err(DurableRegistryError::IndeterminateDurability);
+                    }
+                    return Err(error);
+                }
             }
         }
         Ok(receipt)
@@ -1010,16 +1121,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         if realization.active
             && (factor.source != FactorSource::GovernedInternal
                 || factor.lifecycle != Lifecycle::Admitted
-                || !active_profiles.insert((
-                    binding.factor_id.clone(),
-                    binding.model_digest,
-                    binding.tokenizer_digest,
-                    binding.template_digest,
-                    binding.tool_schema_digest,
-                    binding.context_profile_digest,
-                    binding.locale_id.clone(),
-                    binding.role,
-                )))
+                || !active_profiles.insert(binding.profile_key()))
         {
             return Err(DurableRegistryError::Corrupt);
         }
@@ -1233,6 +1335,9 @@ struct Store {
     root: File,
     _lock: File,
     payloads: payloads::PayloadState,
+    recovery_checkpoint_required: bool,
+    #[cfg(test)]
+    metadata_limit: Cell<u64>,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: Cell<bool>,
     #[cfg(test)]
@@ -1250,6 +1355,9 @@ impl Store {
             root,
             _lock: lock,
             payloads: payloads::PayloadState::default(),
+            recovery_checkpoint_required: false,
+            #[cfg(test)]
+            metadata_limit: Cell::new(MAX_STATE_BYTES),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
             #[cfg(test)]
@@ -1286,8 +1394,10 @@ impl Store {
             3 => {
                 let manifest =
                     serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
-                let (payloads, state) = payloads::PayloadState::hydrate(&store.root, manifest)?;
+                let (payloads, state, recovery_checkpoint_required) =
+                    payloads::PayloadState::hydrate(&store.root, manifest)?;
                 store.payloads = payloads;
+                store.recovery_checkpoint_required = recovery_checkpoint_required;
                 StoredAny::V2(state)
             }
             _ => return Err(DurableRegistryError::Corrupt),
@@ -1301,11 +1411,14 @@ impl Store {
             schema: 3,
             state: stored_metadata(registry),
             payload_references: successor.references(),
+            recovery_checkpoint_required: self.recovery_checkpoint_required,
         })
         .map_err(|_| DurableRegistryError::Unavailable)?;
-        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
-            return Err(DurableRegistryError::CapacityExceeded);
-        }
+        #[cfg(test)]
+        let limit = self.metadata_limit.get();
+        #[cfg(not(test))]
+        let limit = MAX_STATE_BYTES;
+        capacity::admit(registry, bytes.len(), limit)?;
         #[cfg(test)]
         if self.fail_storage_full_before_rename_once.replace(false) {
             return Err(DurableRegistryError::StorageFull);
@@ -1459,6 +1572,13 @@ pub enum DurableRegistryError {
     Corrupt,
     CapacityExceeded,
     ConfigurationMismatch,
+    /// The manifest is bound to an external witness and cannot be reopened
+    /// through the compatibility API or without the retained checkpoint file.
+    RecoveryCheckpointRequired,
+    /// The independently retained checkpoint does not name the local committed
+    /// predecessor or its exact pending successor.
+    RollbackDetected,
+    UnsafeRecoveryCheckpoint,
     StorageFull,
     Unavailable,
     UnsafeStateDirectory,

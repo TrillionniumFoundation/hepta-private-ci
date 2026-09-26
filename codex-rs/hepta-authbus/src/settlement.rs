@@ -3,22 +3,17 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::AuthBusAuthorityError;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
 use crate::push_id;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SettlementStatus {
     Completed,
     Rejected,
-}
-
-pub struct SettlementIssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -73,7 +68,7 @@ impl SignedSettlementEvidence {
 
     pub(crate) fn authenticate(
         &self,
-        issuer: &SettlementIssuerRegistration,
+        issuer: &IssuerRecord,
         reservation_id: &StableId,
         operation_id: &StableId,
         now_ms: u64,
@@ -86,7 +81,10 @@ impl SignedSettlementEvidence {
         {
             return Err(AuthBusAuthorityError::SettlementEvidenceMismatch);
         }
-        if issuer.revoked {
+        if issuer.purpose != IssuerPurpose::Settlement {
+            return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
+        }
+        if issuer.state != IssuerLifecycleState::Active {
             return Err(AuthBusAuthorityError::SettlementIssuerRevoked);
         }
         if self.claims.terminal_evidence_digest.is_zero()

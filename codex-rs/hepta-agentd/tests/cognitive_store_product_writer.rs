@@ -1,11 +1,12 @@
+#![allow(clippy::expect_used)]
 #![cfg(unix)]
 
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
+use std::sync::Condvar;
+use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -24,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryRevisionDraft;
 use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
+use codex_hepta_cognitive_store::ProductionAuthorityUseGuard;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
@@ -50,6 +52,120 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
+
+#[derive(Default)]
+struct ProductAuthorityState {
+    revoked: bool,
+    active_uses: usize,
+}
+
+#[derive(Clone)]
+struct ProductAuthorityVerifier {
+    state: Arc<(Mutex<ProductAuthorityState>, Condvar)>,
+    grant_digest: Sha256Digest,
+}
+
+struct ProductAuthorityUse {
+    state: Arc<(Mutex<ProductAuthorityState>, Condvar)>,
+}
+
+impl Drop for ProductAuthorityUse {
+    fn drop(&mut self) {
+        let (lock, changed) = &*self.state;
+        let mut state = lock.lock().expect("product authority state");
+        state.active_uses = state
+            .active_uses
+            .checked_sub(1)
+            .expect("product authority use count is positive");
+        changed.notify_all();
+    }
+}
+
+impl ProductAuthorityVerifier {
+    fn new(grant_digest: Sha256Digest) -> Self {
+        Self {
+            state: Arc::new((Mutex::new(ProductAuthorityState::default()), Condvar::new())),
+            grant_digest,
+        }
+    }
+
+    fn revoke_and_wait(&self) {
+        let (lock, changed) = &*self.state;
+        let mut state = lock.lock().expect("product authority state");
+        state.revoked = true;
+        while state.active_uses != 0 {
+            state = changed
+                .wait(state)
+                .expect("product authority state after wait");
+        }
+    }
+
+    fn reactivate_for_terminal_release(&self) {
+        let mut state = self.state.0.lock().expect("product authority state");
+        assert_eq!(state.active_uses, 0);
+        state.revoked = false;
+    }
+
+    fn check(
+        &self,
+        lease: &ProductionAuthorityLease,
+        expected_owner: &AgentId,
+    ) -> Result<(), String> {
+        let state = self
+            .state
+            .0
+            .lock()
+            .map_err(|_| "product authority state poisoned".to_string())?;
+        if state.revoked {
+            return Err("production authority revoked".to_string());
+        }
+        if lease.agent_id != *expected_owner {
+            return Err("authority owner mismatch".to_string());
+        }
+        if lease.grant_digest != self.grant_digest {
+            return Err("unexpected recovery grant digest".to_string());
+        }
+        Ok(())
+    }
+}
+
+impl ProductionAuthorityVerifier for ProductAuthorityVerifier {
+    fn verify(
+        &self,
+        lease: &ProductionAuthorityLease,
+        expected_owner: &AgentId,
+    ) -> Result<(), String> {
+        self.check(lease, expected_owner)
+    }
+
+    fn enter_use(
+        &self,
+        lease: &ProductionAuthorityLease,
+        expected_owner: &AgentId,
+    ) -> Result<ProductionAuthorityUseGuard, String> {
+        let mut state = self
+            .state
+            .0
+            .lock()
+            .map_err(|_| "product authority state poisoned".to_string())?;
+        if state.revoked {
+            return Err("production authority revoked".to_string());
+        }
+        if lease.agent_id != *expected_owner {
+            return Err("authority owner mismatch".to_string());
+        }
+        if lease.grant_digest != self.grant_digest {
+            return Err("unexpected recovery grant digest".to_string());
+        }
+        state.active_uses = state.active_uses.saturating_add(1);
+        drop(state);
+        Ok(ProductionAuthorityUseGuard::from_verified_use(
+            ProductAuthorityUse {
+                state: Arc::clone(&self.state),
+            },
+        ))
+    }
+}
 
 #[tokio::test]
 #[cfg(feature = "qualification-cognitive-write")]
@@ -155,23 +271,10 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             b"agentd-product-recovery-test-fence".to_vec(),
         )?,
     )?;
-    let authority_live = Arc::new(AtomicBool::new(true));
-    let authority_live_for_verifier = Arc::clone(&authority_live);
-    let verifier: Arc<dyn ProductionAuthorityVerifier> = Arc::new(
-        move |lease: &ProductionAuthorityLease, expected_owner: &AgentId| -> Result<(), String> {
-            if !authority_live_for_verifier.load(Ordering::SeqCst) {
-                return Err("production authority revoked".to_string());
-            }
-            if lease.agent_id != *expected_owner {
-                return Err("authority owner mismatch".to_string());
-            }
-            if lease.grant_digest != Sha256Digest::for_bytes(b"agentd-product-recovery-test-grant")
-            {
-                return Err("unexpected recovery grant digest".to_string());
-            }
-            Ok(())
-        },
-    );
+    let verifier_impl = Arc::new(ProductAuthorityVerifier::new(Sha256Digest::for_bytes(
+        b"agentd-product-recovery-test-grant",
+    )));
+    let verifier: Arc<dyn ProductionAuthorityVerifier> = verifier_impl.clone();
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
@@ -383,7 +486,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     ));
 
     let cut_before_revoked_write = host.writer().recovery_anchor().await?;
-    authority_live.store(false, Ordering::SeqCst);
+    verifier_impl.revoke_and_wait();
     let revoked_content = "This write must be rejected after live revocation.";
     let revoked_source = SourceDraft {
         scope: scope.clone(),
@@ -419,7 +522,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         cut_before_revoked_write,
         "revoked authority must not advance the cognitive owner cut"
     );
-    authority_live.store(true, Ordering::SeqCst);
+    verifier_impl.reactivate_for_terminal_release();
     host.writer().release().await?;
     drop(host);
 

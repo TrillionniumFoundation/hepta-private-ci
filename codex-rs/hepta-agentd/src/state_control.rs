@@ -4,7 +4,9 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
@@ -30,6 +32,7 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
+const AUTOMATION_THRESHOLD_CIRCUIT_LEASE_MS: u64 = 60_000;
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -93,7 +96,23 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
+                capabilities.push(
+                    crate::AgentdCapability::new(
+                        crate::AGENTD_CAPABILITY_AUTOMATION_THRESHOLD_CIRCUIT,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Protocol)?,
+                );
                 if self.automation_effect_host().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            crate::AGENTD_CAPABILITY_AUTOMATION_EFFECT_PREPARATION,
+                            1,
+                            0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
@@ -276,9 +295,11 @@ impl AgentdState {
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::RetrievalLearningInputs {
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
@@ -352,11 +373,13 @@ impl AgentdState {
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
-                    &snapshot_digest,
-                    &read_digest,
-                    omitted_records,
-                    &items,
-                    plan.as_ref(),
+                    crate::cognitive_context::CognitiveContextRevalidationInput {
+                        snapshot_digest: &snapshot_digest,
+                        read_digest: &read_digest,
+                        omitted_records,
+                        items: &items,
+                        plan: plan.as_ref(),
+                    },
                     self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
                     self.cognitive_retrieval_context.get(),
@@ -443,7 +466,7 @@ impl AgentdState {
                     .runs
                     .lock()
                     .map_err(poisoned_state)?
-                    .start_run(now_ms()?, internal_run_snapshot(snapshot))
+                    .start_run(now_ms()?, snapshot.into())
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
@@ -462,11 +485,7 @@ impl AgentdState {
                     .runs
                     .lock()
                     .map_err(poisoned_state)?
-                    .attach_context(
-                        now_ms()?,
-                        expected_revision,
-                        internal_context_attachment(attachment),
-                    )
+                    .attach_context(now_ms()?, expected_revision, attachment.into())
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
@@ -586,6 +605,85 @@ impl AgentdState {
                     None => automation_unavailable(),
                 }
             }
+            crate::AgentdMethod::AutomationRunThresholdCircuit { invocation } => {
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
+                let Some(store) = automation.as_ref() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_unavailable(),
+                    );
+                };
+                let fence = threshold_circuit_fence(
+                    &self.identity,
+                    current_generation,
+                    &invocation.candidate.circuit_digest,
+                )?;
+                let decision = store
+                    .run_threshold_circuit_v1(
+                        &invocation,
+                        &fence,
+                        now_ms()?,
+                        AUTOMATION_THRESHOLD_CIRCUIT_LEASE_MS,
+                    )
+                    .await
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!("threshold circuit execution: {error}"))
+                    })?;
+                self.fence_after_durable_change()?;
+                AgentdPayload::AutomationThresholdCircuit(decision)
+            }
+            crate::AgentdMethod::AutomationPrepareEffect {
+                operation_id,
+                wire_payload_hex,
+                expected_predecessor_digest,
+                compensation_for,
+            } => {
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
+                let Some(store) = automation.as_ref() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_unavailable(),
+                    );
+                };
+                let Some(host) = self.automation_effect_host() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_effect_unavailable(),
+                    );
+                };
+                let wire_payload = decode_effect_wire_hex(&wire_payload_hex)?;
+                let preparation = host
+                    .prepare(
+                        store,
+                        operation_id,
+                        &wire_payload,
+                        expected_predecessor_digest,
+                        compensation_for,
+                        now_ms()?,
+                    )
+                    .await?;
+                self.fence_after_durable_change()?;
+                AgentdPayload::AutomationEffectPreparation(Box::new(preparation))
+            }
             crate::AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
@@ -634,13 +732,11 @@ impl AgentdState {
                 step_id,
                 attempt,
             } => {
-                require_automation_ready(
+                require_automation_recovery_ready(
                     lifecycle,
-                    app_server_ready,
                     critical_stores_ready,
                     revocation_ready,
                     required_ports_ready,
-                    admission_open,
                     fenced,
                 )?;
                 let Some(store) = automation.as_ref() else {
@@ -666,7 +762,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {
@@ -1106,12 +1202,13 @@ fn decode_effect_wire_hex(value: &str) -> Result<Vec<u8>, AgentdError> {
             "automation effect wire payload hex is empty, odd, or too large".to_string(),
         ));
     }
+    let bytes = value.as_bytes();
     let mut output = Vec::with_capacity(value.len() / 2);
-    for pair in value.as_bytes().chunks_exact(2) {
-        let high = control_hex_nibble(pair[0]).ok_or_else(|| {
+    for offset in (0..bytes.len()).step_by(2) {
+        let high = control_hex_nibble(bytes[offset]).ok_or_else(|| {
             AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
         })?;
-        let low = control_hex_nibble(pair[1]).ok_or_else(|| {
+        let low = control_hex_nibble(bytes[offset + 1]).ok_or_else(|| {
             AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
         })?;
         output.push((high << 4) | low);
@@ -1275,36 +1372,6 @@ fn require_current_run_identity(
     Ok(())
 }
 
-fn internal_run_snapshot(value: crate::AgentRunSnapshot) -> crate::RunSnapshot {
-    crate::RunSnapshot {
-        run_id: value.run_id,
-        request_digest: value.request_digest,
-        objective_digest: value.objective_digest,
-        body_digest: value.body_digest,
-        artifact_set_digest: value.artifact_set_digest,
-        authority_epoch: value.authority_epoch,
-        generation: value.generation,
-        fence_digest: value.fence_digest,
-        deadline_ms: value.deadline_ms,
-    }
-}
-
-fn internal_context_attachment(value: crate::AgentContextAttachment) -> crate::ContextAttachment {
-    crate::ContextAttachment {
-        run_id: value.run_id,
-        request_digest: value.request_digest,
-        objective_digest: value.objective_digest,
-        body_digest: value.body_digest,
-        artifact_set_digest: value.artifact_set_digest,
-        authority_epoch: value.authority_epoch,
-        generation: value.generation,
-        fence_digest: value.fence_digest,
-        deadline_ms: value.deadline_ms,
-        context_digest: value.context_digest,
-        compilation_receipt_digest: value.compilation_receipt_digest,
-    }
-}
-
 fn internal_run_phase(value: crate::AgentRunPhase) -> crate::RunPhase {
     match value {
         crate::AgentRunPhase::Admitted => crate::RunPhase::Admitted,
@@ -1362,6 +1429,49 @@ fn wire_cancellation_disposition(
         crate::CancellationDisposition::AlreadyTerminal => {
             crate::AgentCancellationDisposition::AlreadyTerminal
         }
+    }
+}
+
+fn threshold_circuit_fence(
+    identity: &crate::AgentdIdentity,
+    generation: u64,
+    circuit_digest: &Sha256Digest,
+) -> Result<TaskFlowFence, AgentdError> {
+    let mut bytes = b"hepta.agentd.threshold-circuit-fence.v1\0".to_vec();
+    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    bytes.extend_from_slice(&generation.to_be_bytes());
+    bytes.extend_from_slice(circuit_digest.as_str().as_bytes());
+    TaskFlowFence::new(
+        identity.agent_id.clone(),
+        "agentd.automation-threshold-circuit",
+        generation,
+        generation,
+        Sha256Digest::for_bytes(&bytes).as_str().to_string(),
+    )
+    .map_err(|error| AgentdError::Protocol(format!("threshold circuit fence: {error}")))
+}
+
+fn require_automation_recovery_ready(
+    lifecycle: AgentLifecycle,
+    critical_stores_ready: bool,
+    revocation_ready: bool,
+    required_ports_ready: bool,
+    fenced: bool,
+) -> Result<(), AgentdError> {
+    if matches!(
+        lifecycle,
+        AgentLifecycle::Running | AgentLifecycle::Draining
+    ) && critical_stores_ready
+        && revocation_ready
+        && required_ports_ready
+        && !fenced
+    {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(
+            "automation recovery is unavailable outside a live Running/Draining generation"
+                .to_string(),
+        ))
     }
 }
 

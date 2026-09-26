@@ -1313,7 +1313,10 @@ impl AutomationStore {
         })
     }
 
-    fn validate_taskflow_fence(&self, fence: &TaskFlowFence) -> Result<(), TaskFlowError> {
+    pub(super) fn validate_taskflow_fence(
+        &self,
+        fence: &TaskFlowFence,
+    ) -> Result<(), TaskFlowError> {
         fence.validate()?;
         if fence.owner_agent_id != *self.taskflow_owner_agent_id() {
             return Err(TaskFlowError::StaleFence);

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -136,8 +136,8 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "symbol": "pub async fn execute_authorized_taskflow_effect",
+        "path": "codex-rs/hepta-automation/src/product_effect.rs",
+        "symbol": "pub async fn execute_prepared_product_effect_async",
         "buildTarget": "codex-hepta-automation"
       },
       "delegatedCallees": [
@@ -152,6 +152,62 @@
           "role": "delegated_callee",
           "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
           "symbol": "pub async fn execute_authorized_taskflow_effect_async",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/product_effect.rs",
+          "symbol": "pub async fn prepare_product_effect_v1(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/product_effect.rs",
+          "symbol": "pub async fn execute_prepared_product_effect_async",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/product_effect_store.rs",
+          "symbol": "pub async fn product_effect_preparation_by_attempt(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/threshold_circuit.rs",
+          "symbol": "pub async fn run_threshold_circuit_v1(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+          "symbol": "pub fn validate_circuit_successor_v1(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/timer_lifecycle.rs",
+          "symbol": "pub async fn handoff_timer(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+          "symbol": "pub async fn create_task_from_operation(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/dispatch_recovery_cursor.rs",
+          "symbol": "pub async fn next_uncertain_dispatch(",
           "ownerModule": "automation.taskflow",
           "buildTarget": "codex-hepta-automation"
         }
@@ -176,19 +232,56 @@
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/product_effect.rs",
+          "kind": "product_preparation_integrity_crash_cut_and_key_binding",
+          "command": "just test --locked -p codex-hepta-automation --test product_effect --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/threshold_circuit_tests.rs",
+          "kind": "deterministic_parameter_choice_restart_and_version_isolation",
+          "command": "just test --locked -p codex-hepta-automation --lib --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/threshold_circuit_capacity.rs",
+          "kind": "ordinary_disk_restricted_circuit_capacity",
+          "command": "just test --locked -p codex-hepta-automation --test threshold_circuit_capacity --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+          "kind": "host_profile_rotation_exact_payload_and_expired_reconciliation",
+          "command": "just test --locked -p codex-hepta-agentd --lib -E test(automation_effect_host) --retries 0"
         }
       ],
       "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
       "operation": "execute_step",
-      "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
-      "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "nativeSymbol": "pub async fn execute_prepared_product_effect_async",
+      "sourcePath": "codex-rs/hepta-automation/src/product_effect.rs",
       "sourcePathExists": true,
-      "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
+      "productCallers": [
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "pub(crate) async fn execute(",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_prepare",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "crate::AgentdMethod::AutomationPrepareEffect",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "productCompositionState": "named_host_preparation_async_dispatch_and_bound_profile_recovery_candidate",
       "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "General DecisionCell/Intuition product binding and circuit feedback/organ semantics remain outside the restricted threshold profile.",
+    "Final exact-head and applicable synthetic-merge execution qualifications are not established by this map.",
+    "No-contact preparation reclaim, final-use/lease bounds and stale-generation entry guard are implemented candidates; final native and public-socket crash qualification remain pending."
+  ],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
     "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
@@ -199,7 +292,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -222,7 +315,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+  "productCallerState": "named_agentd_scheduler_prepare_execute_reconcile_and_restricted_threshold_control",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -231,13 +324,25 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
     "kind": "path_blob_manifest_v1",
     "entries": [
+      {
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "blobSha": "c4fc90a2b2909355d507e4eef1cae782e42259ec"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+        "blobSha": "d7cf8c2ce1ef051ff27d2dfeea3c0d85a9708fd6"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/product_effect.rs",
+        "blobSha": "034dd96515465ce4164d232a95a045b6a441cd82"
+      },
       {
         "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
         "blobSha": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
@@ -245,14 +350,6 @@
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
         "blobSha": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
-      },
-      {
-        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
-      },
-      {
-        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
       }
     ]
   },
@@ -264,8 +361,13 @@
     "codex-rs/app-server/src/request_processors/thread_processor.rs",
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host_config.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery_policy_tests.rs",
     "codex-rs/hepta-agentd/src/client.rs",
+    "codex-rs/hepta-agentd/src/error.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -277,7 +379,8 @@
     "codex-rs/hepta-types"
   ],
   "repositoryControlledProductCompositionGaps": [
-    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
+    "Independent final-use trust/revocation/clock and attested provider profiles must be provisioned and qualified on the selected host.",
+    "Legacy unknown effects without a frozen original provider profile require explicit historical binding migration."
   ],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",
@@ -299,16 +402,38 @@
       "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
       "nativeSymbol": "run_automation_scheduler",
       "state": "existing_app_server_queue_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "AgentdAutomationEffectHost",
+      "state": "optional_attested_product_host_candidate"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "crate::AgentdMethod::AutomationRunThresholdCircuit",
+      "state": "restricted_capability_free_threshold_profile"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
-      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+      "object": "a5c02539d2edebd4866ef9156d1b283f9fd5c3f2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "1b89ad80f5a76e4c694cdb3428334237ee31120f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+      "object": "c60ba631c13b7f582d51dcffae791934fc544b68"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
       "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "d68bfdf8188b8ec65fc0cff0693bf39a648a4c00"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
@@ -316,19 +441,39 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "b52eb8ad2cb292ac38da61d37ba1a3736d7ccbef"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "c4fc90a2b2909355d507e4eef1cae782e42259ec"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/dispatch_recovery_cursor.rs",
+      "object": "05fe137736e28eca990e091336b1c8a4e7d38177"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      "object": "de778590c90dd9751449a2417e106f377083f5ca"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "object": "d7cf8c2ce1ef051ff27d2dfeea3c0d85a9708fd6"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+      "object": "f6f6605e7a6803e6a9c4330548fa7139c63ccf9c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+      "object": "326b8e84307fe3c16ecfd25aa5bb5bf4b3dfe954"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/product_effect.rs",
+      "object": "034dd96515465ce4164d232a95a045b6a441cd82"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/product_effect_store.rs",
+      "object": "7c3e5076ae362acc683beb38ebd334774aeaf708"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
@@ -347,20 +492,40 @@
       "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
     },
     {
+      "path": "codex-rs/hepta-automation/src/threshold_circuit.rs",
+      "object": "c6eaaf9284211b021a7d7bfac439a08f1096e61d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/threshold_circuit_tests.rs",
+      "object": "d917afd14945b0205f779101fc1b085c83482ea5"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/timer_lifecycle.rs",
+      "object": "9ff5154eb6c245d14907cfbfb393f9cb5f85e17e"
+    },
+    {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "eec7f92828743ee9f13847f161cb4b73af83d4ad"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "e8c115af00232a8377a81e7c1a1f1a1fbf230118"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+      "object": "36e8aa0f241d858c83c500229003f1fc052c3b63"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/product_effect.rs",
+      "object": "65f140e30640fc343eb34784e57f731581e11dde"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/threshold_circuit_capacity.rs",
+      "object": "f299040021a9354294487c54b3f416a105d28ca5"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+      "object": "daec5cf6e80a2fe30f0e1f4f4e1b16977d4a3546"
     }
   ]
 }

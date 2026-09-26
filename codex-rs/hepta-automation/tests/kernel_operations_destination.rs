@@ -22,31 +22,26 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn new() -> Self {
-        let temp = tempfile::tempdir().expect("temp root");
-        let root = temp.path().canonicalize().expect("canonical temp root");
-        let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
-        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+    fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        let temp = tempfile::tempdir()?;
+        let root = temp.path().canonicalize()?;
+        let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
+        let registry = FleetRegistry::initialize(fleet_root.clone())?;
         let workspace = root.join("workspace");
-        std::fs::create_dir(&workspace).expect("workspace");
-        let workspace = workspace.canonicalize().expect("canonical workspace");
-        let agent_id = AgentId::parse(AGENT_ID).expect("agent id");
+        std::fs::create_dir(&workspace)?;
+        let workspace = workspace.canonicalize()?;
+        let agent_id = AgentId::parse(AGENT_ID)?;
         let manifest = AgentManifest::new(
             agent_id,
-            WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
+            WorkspaceBinding::new(workspace, &fleet_root)?,
             ResourceBudget::local_default(),
-        )
-        .expect("manifest");
-        let layout = registry.register(manifest).expect("register agent").layout;
-        Self {
+        )?;
+        let layout = registry.register(manifest)?.layout;
+        Ok(Self {
             _temp: temp,
             layout,
-        }
+        })
     }
-}
-
-fn generation(value: u64) -> Generation {
-    Generation::new(value).expect("generation")
 }
 
 fn draft() -> AutomationTaskDraft {
@@ -61,11 +56,15 @@ fn draft() -> AutomationTaskDraft {
 
 #[tokio::test]
 async fn exact_operation_replay_returns_one_task_and_one_destination_receipt() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("valid owner fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
-        .expect("operation");
+    let operation = automation_task_operation_intent(
+        store.owner_agent_id(),
+        &draft,
+        Generation::new(7).expect("fixture generation"),
+    )
+    .expect("operation");
 
     let first = store
         .create_task_from_operation(&operation, &draft)
@@ -88,11 +87,15 @@ async fn exact_operation_replay_returns_one_task_and_one_destination_receipt() {
 
 #[tokio::test]
 async fn same_operation_identity_with_changed_task_payload_conflicts() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("valid owner fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
-        .expect("operation");
+    let operation = automation_task_operation_intent(
+        store.owner_agent_id(),
+        &draft,
+        Generation::new(7).expect("fixture generation"),
+    )
+    .expect("operation");
     store
         .create_task_from_operation(&operation, &draft)
         .await
@@ -100,9 +103,12 @@ async fn same_operation_identity_with_changed_task_payload_conflicts() {
 
     let mut changed = draft.clone();
     changed.prompt = "changed semantic payload".to_owned();
-    let changed_operation =
-        automation_task_operation_intent(store.owner_agent_id(), &changed, generation(7))
-            .expect("changed operation");
+    let changed_operation = automation_task_operation_intent(
+        store.owner_agent_id(),
+        &changed,
+        Generation::new(7).expect("fixture generation"),
+    )
+    .expect("changed operation");
     assert_eq!(changed_operation.operation_id, operation.operation_id);
     assert_ne!(changed_operation.payload_digest, operation.payload_digest);
     assert_eq!(
@@ -116,12 +122,15 @@ async fn same_operation_identity_with_changed_task_payload_conflicts() {
 
 #[tokio::test]
 async fn mismatched_destination_or_scope_is_denied_before_domain_mutation() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("valid owner fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let mut operation =
-        automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
-            .expect("operation");
+    let mut operation = automation_task_operation_intent(
+        store.owner_agent_id(),
+        &draft,
+        Generation::new(7).expect("fixture generation"),
+    )
+    .expect("operation");
     operation.destination =
         codex_hepta_types::StableId::new("cognitive.store").expect("different destination");
     assert_eq!(
@@ -133,11 +142,15 @@ async fn mismatched_destination_or_scope_is_denied_before_domain_mutation() {
 
 #[tokio::test]
 async fn destination_dedupe_and_task_survive_store_reopen() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("valid owner fixture");
     let draft = draft();
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
-    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
-        .expect("operation");
+    let operation = automation_task_operation_intent(
+        store.owner_agent_id(),
+        &draft,
+        Generation::new(7).expect("fixture generation"),
+    )
+    .expect("operation");
     let first = store
         .create_task_from_operation(&operation, &draft)
         .await

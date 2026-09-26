@@ -168,14 +168,30 @@ class WorkspacePreflightTests(unittest.TestCase):
         )
 
     def test_transitive_build_and_target_optional_edges_are_not_loopholes(self):
-        for root_kind in ("dependencies", "build-dependencies", "target.'cfg(windows)'.dependencies"):
-            for helper_kind in ("dependencies", "build-dependencies", "target.'cfg(unix)'.build-dependencies"):
+        for root_kind in (
+            "dependencies",
+            "build-dependencies",
+            "target.'cfg(windows)'.dependencies",
+        ):
+            for helper_kind in (
+                "dependencies",
+                "build-dependencies",
+                "target.'cfg(unix)'.build-dependencies",
+            ):
                 with self.subTest(root_kind=root_kind, helper_kind=helper_kind):
                     self.helper_chain(root_kind, helper_kind)
-                    self.assertTrue(any("execution boundary" in e for e in verify_workspace(self.root)[1]))
+                    self.assertTrue(
+                        any(
+                            "execution boundary" in e
+                            for e in verify_workspace(self.root)[1]
+                        )
+                    )
 
     def test_transitive_test_only_edges_do_not_contaminate_shipped_graph(self):
-        for root_kind, helper_kind in (("dev-dependencies", "dependencies"), ("dependencies", "dev-dependencies")):
+        for root_kind, helper_kind in (
+            ("dev-dependencies", "dependencies"),
+            ("dependencies", "dev-dependencies"),
+        ):
             with self.subTest(root_kind=root_kind, helper_kind=helper_kind):
                 self.helper_chain(root_kind, helper_kind)
                 self.assertEqual(verify_workspace(self.root), (3, []))
@@ -183,29 +199,56 @@ class WorkspacePreflightTests(unittest.TestCase):
     def test_inherited_transitive_alias_resolves_from_workspace(self):
         self.helper_chain()
         with (self.root / "Cargo.toml").open("a") as stream:
-            stream.write('[workspace.dependencies]\nalias = { package = "codex-hepta-memory", path = "memory" }\n')
-        self.write("helper/Cargo.toml", '[package]\nname = "helper"\n[dependencies]\nalias.workspace = true\n')
-        self.assertTrue(any("execution boundary" in e for e in verify_workspace(self.root)[1]))
+            stream.write(
+                '[workspace.dependencies]\nalias = { package = "codex-hepta-memory", path = "memory" }\n'
+            )
+        self.write(
+            "helper/Cargo.toml",
+            '[package]\nname = "helper"\n[dependencies]\nalias.workspace = true\n',
+        )
+        self.assertTrue(
+            any("execution boundary" in e for e in verify_workspace(self.root)[1])
+        )
 
     def test_local_patch_cannot_hide_a_transitive_product_edge(self):
         self.helper_chain()
-        self.write("app/Cargo.toml", '[package]\nname = "codex-core"\n[dependencies]\nhelper = "1.0"\n')
+        self.write(
+            "app/Cargo.toml",
+            '[package]\nname = "codex-core"\n[dependencies]\nhelper = "1.0"\n',
+        )
         with (self.root / "Cargo.toml").open("a") as stream:
             stream.write('[patch.crates-io]\nhelper = { path = "helper" }\n')
-        self.assertTrue(any("helper --dependencies--> codex-hepta-memory" in e for e in verify_workspace(self.root)[1]))
+        self.assertTrue(
+            any(
+                "helper --dependencies--> codex-hepta-memory" in e
+                for e in verify_workspace(self.root)[1]
+            )
+        )
 
     def test_patch_rename_and_wrong_package_identity_are_checked(self):
         self.helper_chain()
-        self.write("app/Cargo.toml", '[package]\nname = "codex-extension-api"\n[dependencies]\nhelper = "1.0"\n')
+        self.write(
+            "app/Cargo.toml",
+            '[package]\nname = "codex-extension-api"\n[dependencies]\nhelper = "1.0"\n',
+        )
         with (self.root / "Cargo.toml").open("a") as stream:
-            stream.write('[patch.crates-io]\ninnocent = { package = "helper", path = "helper" }\n')
-        self.assertTrue(any("execution boundary" in e for e in verify_workspace(self.root)[1]))
+            stream.write(
+                '[patch.crates-io]\ninnocent = { package = "helper", path = "helper" }\n'
+            )
+        self.assertTrue(
+            any("execution boundary" in e for e in verify_workspace(self.root)[1])
+        )
         self.write("helper/Cargo.toml", '[package]\nname = "different"\n')
-        self.assertTrue(any("must name helper" in e for e in verify_workspace(self.root)[1]))
+        self.assertTrue(
+            any("must name helper" in e for e in verify_workspace(self.root)[1])
+        )
 
     def test_patch_used_only_in_tests_does_not_widen_boundary(self):
         self.helper_chain()
-        self.write("app/Cargo.toml", '[package]\nname = "codex-core"\n[dev-dependencies]\nhelper = "1.0"\n')
+        self.write(
+            "app/Cargo.toml",
+            '[package]\nname = "codex-core"\n[dev-dependencies]\nhelper = "1.0"\n',
+        )
         with (self.root / "Cargo.toml").open("a") as stream:
             stream.write('[patch.crates-io]\nhelper = { path = "helper" }\n')
         self.assertEqual(verify_workspace(self.root), (3, []))
@@ -220,28 +263,46 @@ class WorkspacePreflightTests(unittest.TestCase):
 
     def test_transitive_secret_product_name_is_also_blocked(self):
         self.helper_chain()
-        self.write("helper/Cargo.toml", '[package]\nname = "helper"\n[dependencies]\ncodex-heptabao = "1.0"\n')
-        self.assertTrue(any("codex-heptabao" in e for e in verify_workspace(self.root)[1]))
+        self.write(
+            "helper/Cargo.toml",
+            '[package]\nname = "helper"\n[dependencies]\ncodex-heptabao = "1.0"\n',
+        )
+        self.assertTrue(
+            any("codex-heptabao" in e for e in verify_workspace(self.root)[1])
+        )
 
     def test_shared_helper_is_checked_for_each_execution_boundary(self):
         self.helper_chain()
         self.write("Cargo.toml", '[workspace]\nmembers = ["app", "extension"]\n')
-        self.write("extension/Cargo.toml", '[package]\nname = "codex-extension-api"\n[dependencies]\nhelper = { path = "../helper" }\n')
+        self.write(
+            "extension/Cargo.toml",
+            '[package]\nname = "codex-extension-api"\n[dependencies]\nhelper = { path = "../helper" }\n',
+        )
         errors = verify_workspace(self.root)[1]
         self.assertEqual(len(errors), 2)
         self.assertTrue(any("codex-core --" in e for e in errors))
         self.assertTrue(any("codex-extension-api --" in e for e in errors))
 
     def test_shared_kernel_contracts_are_not_product_implementations(self):
-        self.write("app/Cargo.toml", '[package]\nname = "codex-core"\n[dependencies]\ncodex-hepta-contracts = { path = "../contracts" }\n')
-        self.write("contracts/Cargo.toml", '[package]\nname = "codex-hepta-contracts"\n')
+        self.write(
+            "app/Cargo.toml",
+            '[package]\nname = "codex-core"\n[dependencies]\ncodex-hepta-contracts = { path = "../contracts" }\n',
+        )
+        self.write(
+            "contracts/Cargo.toml", '[package]\nname = "codex-hepta-contracts"\n'
+        )
         self.assertEqual(verify_workspace(self.root), (2, []))
 
     def test_shared_contracts_cannot_hide_product_implementation(self):
         self.test_shared_kernel_contracts_are_not_product_implementations()
         with (self.root / "contracts/Cargo.toml").open("a") as stream:
             stream.write('[dependencies]\ncodex-hepta-memory = "1.0"\n')
-        self.assertTrue(any("codex-hepta-contracts --dependencies--> codex-hepta-memory" in e for e in verify_workspace(self.root)[1]))
+        self.assertTrue(
+            any(
+                "codex-hepta-contracts --dependencies--> codex-hepta-memory" in e
+                for e in verify_workspace(self.root)[1]
+            )
+        )
 
     def sqlx_package(self):
         self.write(
@@ -251,8 +312,12 @@ class WorkspacePreflightTests(unittest.TestCase):
 
     def test_duplicate_up_migration_is_rejected_before_compilation(self):
         self.sqlx_package()
-        self.write("app/migrations/0004_effect.sql", "CREATE TABLE effects (id INTEGER);\n")
-        self.write("app/migrations/0004_calendar.sql", "CREATE TABLE calendars (id INTEGER);\n")
+        self.write(
+            "app/migrations/0004_effect.sql", "CREATE TABLE effects (id INTEGER);\n"
+        )
+        self.write(
+            "app/migrations/0004_calendar.sql", "CREATE TABLE calendars (id INTEGER);\n"
+        )
         count, errors = verify_workspace(self.root)
         self.assertEqual(count, 1)
         self.assertEqual(len(errors), 1)
@@ -261,9 +326,11 @@ class WorkspacePreflightTests(unittest.TestCase):
 
     def test_numeric_aliases_and_inherited_sqlx_name_do_not_hide_collision(self):
         with (self.root / "Cargo.toml").open("a") as stream:
-            stream.write('[workspace.dependencies]\nrenamed = { package = "sqlx", version = "0.9" }\n')
+            stream.write(
+                '[workspace.dependencies]\nrenamed = { package = "sqlx", version = "0.9" }\n'
+            )
         with (self.root / "app/Cargo.toml").open("a") as stream:
-            stream.write('[dependencies]\nrenamed.workspace = true\n')
+            stream.write("[dependencies]\nrenamed.workspace = true\n")
         self.write("app/migrations/4_alpha.sql", "SELECT 1;\n")
         self.write("app/migrations/+0004_beta.sql", "SELECT 2;\n")
         errors = verify_workspace(self.root)[1]
@@ -272,7 +339,9 @@ class WorkspacePreflightTests(unittest.TestCase):
 
     def test_reversible_pair_is_not_a_duplicate(self):
         self.sqlx_package()
-        self.write("app/migrations/0004_owner.up.sql", "CREATE TABLE owner (id INTEGER);\n")
+        self.write(
+            "app/migrations/0004_owner.up.sql", "CREATE TABLE owner (id INTEGER);\n"
+        )
         self.write("app/migrations/0004_owner.down.sql", "DROP TABLE owner;\n")
         self.assertEqual(verify_workspace(self.root), (1, []))
 
@@ -295,7 +364,10 @@ class WorkspacePreflightTests(unittest.TestCase):
         self.sqlx_package()
         with (self.root / "app/Cargo.toml").open("a") as stream:
             stream.write('helper = { path = "../helper" }\n')
-        self.write("helper/Cargo.toml", '[package]\nname = "helper"\n[dependencies]\nsqlx = "0.9"\n')
+        self.write(
+            "helper/Cargo.toml",
+            '[package]\nname = "helper"\n[dependencies]\nsqlx = "0.9"\n',
+        )
         self.write("app/migrations/0004_owner.sql", "SELECT 1;\n")
         self.write("helper/migrations/0004_owner.sql", "SELECT 1;\n")
         self.assertEqual(verify_workspace(self.root), (2, []))
@@ -319,7 +391,9 @@ class WorkspacePreflightTests(unittest.TestCase):
                 self.write(name, "SELECT 1;\n")
                 errors = verify_workspace(self.root)[1]
                 self.assertEqual(len(errors), 1)
-                self.assertIn("SQLx migration version must be a positive i64", errors[0])
+                self.assertIn(
+                    "SQLx migration version must be a positive i64", errors[0]
+                )
                 (self.root / name).unlink()
 
     def test_malformed_manifest_is_reported_without_execution(self):
@@ -413,7 +487,6 @@ class WorkspacePreflightTests(unittest.TestCase):
             before, {path: path.read_bytes() for path in self.root.rglob("Cargo.toml")}
         )
 
-
     def duplicate_boundary_workspaces(self, name="codex-core", kind="dependencies"):
         # Different package versions and explicit workspaces are legitimate
         # distinct Cargo identities; a name-only index must not drop either.
@@ -433,7 +506,11 @@ class WorkspacePreflightTests(unittest.TestCase):
 
     def test_each_same_named_boundary_in_independent_workspaces_is_checked(self):
         for name in ("codex-core", "codex-extension-api"):
-            for kind in ("dependencies", "build-dependencies", "target.'cfg(unix)'.dependencies"):
+            for kind in (
+                "dependencies",
+                "build-dependencies",
+                "target.'cfg(unix)'.dependencies",
+            ):
                 with self.subTest(name=name, kind=kind):
                     self.duplicate_boundary_workspaces(name, kind)
                     count, errors = verify_workspace(self.root)
@@ -450,7 +527,9 @@ class WorkspacePreflightTests(unittest.TestCase):
         errors = verify_workspace(self.root)[1]
         self.assertEqual(len(errors), 2)
         for path in ("app/Cargo.toml", "foreign/Cargo.toml"):
-            self.assertTrue(any(error.startswith(str(self.root / path) + ":") for error in errors))
+            self.assertTrue(
+                any(error.startswith(str(self.root / path) + ":") for error in errors)
+            )
 
     def test_same_named_foreign_boundary_transitive_dependencies_are_checked(self):
         self.duplicate_boundary_workspaces()
@@ -467,16 +546,19 @@ class WorkspacePreflightTests(unittest.TestCase):
         count, errors = verify_workspace(self.root)
         self.assertEqual(count, 4)
         self.assertEqual(len(errors), 1)
-        self.assertIn("codex-core --dependencies--> helper --build-dependencies--> codex-hepta-memory", errors[0])
+        self.assertIn(
+            "codex-core --dependencies--> helper --build-dependencies--> codex-hepta-memory",
+            errors[0],
+        )
 
     def test_same_named_foreign_boundary_inherits_its_own_alias(self):
         self.duplicate_boundary_workspaces()
         self.write(
             "foreign/Cargo.toml",
-            '[workspace]\n[workspace.dependencies]\n'
+            "[workspace]\n[workspace.dependencies]\n"
             'alias = { package = "codex-hepta-memory", version = "1.0" }\n'
             '[package]\nname = "codex-core"\nversion = "2.0.0"\n'
-            '[dependencies]\nalias.workspace = true\n',
+            "[dependencies]\nalias.workspace = true\n",
         )
         errors = verify_workspace(self.root)[1]
         self.assertEqual(len(errors), 1)
@@ -496,8 +578,12 @@ class WorkspacePreflightTests(unittest.TestCase):
 
     def test_duplicate_names_inside_one_workspace_still_fail(self):
         self.write("Cargo.toml", '[workspace]\nmembers = ["app", "other"]\n')
-        self.write("app/Cargo.toml", '[package]\nname = "codex-core"\nversion = "1.0.0"\n')
-        self.write("other/Cargo.toml", '[package]\nname = "codex-core"\nversion = "2.0.0"\n')
+        self.write(
+            "app/Cargo.toml", '[package]\nname = "codex-core"\nversion = "1.0.0"\n'
+        )
+        self.write(
+            "other/Cargo.toml", '[package]\nname = "codex-core"\nversion = "2.0.0"\n'
+        )
         count, errors = verify_workspace(self.root)
         self.assertEqual(count, 2)
         self.assertEqual(len(errors), 1)
@@ -506,7 +592,9 @@ class WorkspacePreflightTests(unittest.TestCase):
     def test_multiple_aliases_to_one_boundary_are_one_vertex(self):
         self.duplicate_boundary_workspaces()
         with (self.root / "host/Cargo.toml").open("a") as stream:
-            stream.write('again = { package = "codex-core", path = "../foreign/../foreign" }\n')
+            stream.write(
+                'again = { package = "codex-core", path = "../foreign/../foreign" }\n'
+            )
         count, errors = verify_workspace(self.root)
         self.assertEqual(count, 3)
         self.assertEqual(len(errors), 1)
@@ -534,14 +622,19 @@ class WorkspacePreflightTests(unittest.TestCase):
         )
         errors = verify_workspace(self.root)[1]
         self.assertEqual(len(errors), 1)
-        self.assertIn("codex-core --dependencies--> codex-hepta-contracts --dependencies--> codex-hepta-memory", errors[0])
+        self.assertIn(
+            "codex-core --dependencies--> codex-hepta-contracts --dependencies--> codex-hepta-memory",
+            errors[0],
+        )
 
     def test_same_named_boundary_cycle_remains_finite_and_deterministic(self):
         self.duplicate_boundary_workspaces()
         with (self.root / "foreign/Cargo.toml").open("a") as stream:
             stream.write('previous = { package = "codex-core", path = "../app" }\n')
         with (self.root / "app/Cargo.toml").open("a") as stream:
-            stream.write('[dependencies]\nnext = { package = "codex-core", path = "../foreign" }\n')
+            stream.write(
+                '[dependencies]\nnext = { package = "codex-core", path = "../foreign" }\n'
+            )
         result = verify_workspace(self.root)
         self.assertEqual(result, verify_workspace(self.root))
         self.assertEqual(result[0], 3)

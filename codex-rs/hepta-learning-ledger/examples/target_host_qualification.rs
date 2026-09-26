@@ -14,6 +14,7 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::time::Instant;
 
+use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -64,6 +65,11 @@ struct TargetHostReceipt {
     segment_count: usize,
     append_latency: LatencySummary,
     rotation_latency: LatencySummary,
+    lookup_latency: LatencySummary,
+    retry_latency: LatencySummary,
+    recovered_retry_preserves_identity: bool,
+    substituted_retry_rejected: bool,
+    source_identity_attested: bool,
     reopen_micros: u64,
     sustained_appends_per_second: f64,
     storage_bytes: u64,
@@ -129,6 +135,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut rotation_micros = Vec::new();
     let total_start = Instant::now();
     let mut segment_count = 1_usize;
+    let mut first_chain_digest = None;
 
     for index in 0..record_count {
         if index != 0 && index % segment_record_limit == 0 {
@@ -147,7 +154,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         let evidence = sign(writer.verifier(), index, &payload)?;
         let predecessor = writer.witness_frontier()?.anchor.chain_digest;
         let started = Instant::now();
-        writer.append_decision(predecessor, request, &evidence, NOW)?;
+        let appended = writer.append_decision(predecessor, request, &evidence, NOW)?;
+        if index == 0 {
+            first_chain_digest = Some(appended.chain_digest);
+        }
         append_micros.push(elapsed_micros(started));
     }
 
@@ -161,12 +171,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let storage_bytes = directory_bytes(&root)?;
     let reopen_start = Instant::now();
-    let segments = (0..segment_count)
-        .map(|index| read_write(&root.join(index.to_string())))
-        .collect::<Result<Vec<_>, _>>()?;
-    let recovered = SegmentedLedger::recover(
+    let recovered = SegmentedLedger::recover_with_opener(
         read_write(&root.join("owner"))?,
-        segments,
+        segment_count,
+        |index| read_write(&root.join(index.to_string())).map_err(Into::into),
         binding,
         limits,
         checkpoint,
@@ -174,7 +182,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let witness = LedgerWitnessStore::recover(read_write(&root.join("witness"))?, binding)?;
     let segment_directory = File::open(&root)?;
     let witness_directory = File::open(&root)?;
-    let reopened = LedgerWriter::from_segmented(
+    let mut reopened = LedgerWriter::from_segmented(
         recovered,
         witness,
         activated_trust()?,
@@ -186,6 +194,51 @@ fn main() -> Result<(), Box<dyn Error>> {
     let reopened_frontier = reopened.witness_frontier()?;
     if reopened_frontier != frontier || exact_reopen_record_count != record_count {
         return Err("reopen did not reproduce the exact witnessed history".into());
+    }
+    // Exercise oldest and newest identities in the same recovered, signed
+    // history. Neither a retry nor a rejected substitution may grow either
+    // the data files or the separately retained witness.
+    let first = decision(0)?;
+    let last = decision(record_count - 1)?;
+    let first_chain_digest = first_chain_digest.ok_or("first receipt missing")?;
+    let mut lookup_micros = Vec::with_capacity(100);
+    for index in 0..100 {
+        let request = if index % 2 == 0 { &first } else { &last };
+        let started = Instant::now();
+        reopened.verify_active_decision_binding(&request.record_id, &request.episode_id)?;
+        lookup_micros.push(elapsed_micros(started));
+    }
+    let evidence = sign(
+        reopened.verifier(),
+        0,
+        &decision_signing_payload_v2(&first)?,
+    )?;
+    let mut retry_micros = Vec::with_capacity(32);
+    for _ in 0..32 {
+        let started = Instant::now();
+        let replay = reopened.append_decision(Digest32::ZERO, first.clone(), &evidence, NOW)?;
+        retry_micros.push(elapsed_micros(started));
+        if replay.disposition != AppendDisposition::IdempotentReplay
+            || replay.chain_digest != first_chain_digest
+        {
+            return Err("recovered retry changed original operation identity".into());
+        }
+    }
+    let mut substituted = first;
+    substituted.support_digest = digest("substituted-after-recovery");
+    let evidence = sign(
+        reopened.verifier(),
+        0,
+        &decision_signing_payload_v2(&substituted)?,
+    )?;
+    if reopened
+        .append_decision(Digest32::ZERO, substituted, &evidence, NOW)
+        .is_ok()
+    {
+        return Err("same-ID different-body retry was accepted".into());
+    }
+    if reopened.witness_frontier()? != frontier || directory_bytes(&root)? != storage_bytes {
+        return Err("retry or substitution changed persisted history".into());
     }
     drop(reopened);
 
@@ -202,6 +255,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         segment_count,
         append_latency: summarize(&mut append_micros),
         rotation_latency: summarize(&mut rotation_micros),
+        lookup_latency: summarize(&mut lookup_micros),
+        retry_latency: summarize(&mut retry_micros),
+        recovered_retry_preserves_identity: true,
+        substituted_retry_rejected: true,
+        // Git checkout identity plus a binary hash is not a build attestation.
+        source_identity_attested: false,
         reopen_micros,
         sustained_appends_per_second: record_count as f64 / total_elapsed.as_secs_f64(),
         storage_bytes,

@@ -271,3 +271,48 @@ The bootstrap source-location obligation for `auth.authbus` is implemented by wo
 - `codex-rs/hepta-authbus-p1-3-qualification`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Correctness continuation: enforced owner boundaries
+
+The raw `AuthBusAuthorityStore` is crate-private. Public mutations enter
+`AuthBusAuthorityHost`, with an async permit and stable database/checkpoint
+file locks covering predecessor recovery, local mutation, external publication
+and local promotion. An alternate witness filename cannot bypass the database
+lock. A visible witness is re-fsynced before acknowledging a previously
+uncertain publication. `OwnerBusy` and publication failure do not prove that a
+prior operation did not commit; preserve its operation identity when querying.
+
+Settlement resolves the `Settlement`-purpose issuer inside the owner write
+transaction, not from a caller-provided registration. New results require an
+active epoch at admission; exact retries of already committed results remain
+readable after revocation. The immutable `dispatched_at_ms` is distinct from
+`updated_at_ms`, so later uncertainty cannot invalidate a legitimate earlier
+observation. Migration 0005 never invents missing legacy dispatch boundaries.
+Migration retains the old frontier dialect through an interrupted v4 witness
+handshake, then separately publishes the dispatch-bound v2 digest. Once migrated,
+the owner rejects legacy-digest downgrades.
+
+Focused regression sources are `hepta-authbus/src/host_tests.rs`,
+`settlement_boundary_tests.rs`, `migration_tests.rs`, and the evidence owner's
+`authbus_outbox_tests.rs` / `authbus_recovery_tests.rs`. They cover independent
+process exclusion, external publication failure/lost ACK, writer-lock trust
+races, late success/no-effect after restart, legacy terminal/archive migration,
+and signed enqueue through checkpoint recovery, ACK and a second reopen.
+Source presence, executable pass results and production qualification remain
+separate facts; see `CURRENT_IMPLEMENTATION.md` for the precise contracts.
+
+
+### Live owner-lock fencing
+
+Stable lock handles are revalidated against the current canonical path, inode,
+owner, single-link count and private file/directory permissions at every lock
+admission and around checkpoint synchronization. An observed identity failure
+permanently fences that handle; recreating a pathname or restoring permissions
+does not revive it. A fresh host must reconcile the existing durable frontier.
+A post-commit identity failure is an unacknowledged result, not a rollback or a
+reason to repeat an external effect. The local OS and private directory owner
+remain trusted; this protocol does not claim distributed lock fencing.
+
+The four `host_lock_tests.rs` regressions add live deletion/replacement,
+metadata drift, stale-handle rejection and post-commit reopening to the
+existing concurrent-owner, migration and checkpoint fault cases.

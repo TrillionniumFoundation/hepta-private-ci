@@ -155,6 +155,38 @@ Read-only data dependencies:
 
 Any future cache is non-authoritative and must bind peer/principal/scope/query/frontier-or-snapshot witness/expiry/deletion-revocation cutoff. Restore may discard such a cache; it may never renew consent, revive a revoked grant or become a source of truth. A future cross-host profile that introduces persisted transport metadata or a new wire schema requires its own owner-reviewed migration and rollback contract before composition.
 
+### Current owner-generation binding and recovery
+
+The local reader uses `CognitiveStore::bind_current_read_generation`, not a fixed
+`cognitive_1.sqlite3` path. The memory owner initializes a private generation lock;
+readers open that existing lock without creating files or migrating databases.
+Each discovery/read/revalidation holds a shared generation fence from active
+pointer resolution through the bounded SQLite operation. Recovery takes the
+same fence exclusively through copy, verification and active-pointer publication.
+This fence is independent of the recovered writer's lifetime-exclusive writer
+lock: readers can observe the published generation without admitting a second
+writer. An idle retained reader retains metadata only, not an open SQLite pool.
+Each operation awaits physical pool close before releasing its generation fence.
+Cancellation transfers only connection cleanup and that fence to the existing
+runtime; cleanup submits no new query or evidence. Thus an idle retained reader
+does not prevent recovery, while an unfinished physical connection cannot race
+publication. Complete source-file identity verification remains unchanged.
+
+Every local reader, query generation binding, prepared attachment and explanation
+binds `owner_generation_sha256`. It includes the owner and canonical active path;
+on Unix it also includes device/inode identity. A retained reader reacquires the
+current operation fence and rejects a different generation before reading.
+Prepared bindings from another generation return `OwnerGeneration` drift even
+when memory bytes and grant revisions happen to match. This digest is local
+identity binding, not remote authentication or a portable owner-cut witness.
+
+Missing/redirected generation fences or invalid active pointers fail closed.
+Discovery never falls back to the predecessor. Upgraded owners must initialize
+the generation fence before serving readers; unupgraded processes must be stopped
+before recovery, and rollback to binaries that ignore this fence is not supported
+while the new profile is active. No new database, credential store or issuer is
+introduced. Cold-copy recovery constructors are not live federation entrypoints.
+
 ## 7. Runtime, concurrency and transaction model
 
 The canonical V2 engine is stateless across attempts. One call performs:
@@ -166,7 +198,7 @@ The canonical V2 engine is stateless across attempts. One call performs:
 5. a second live-authority observation;
 6. final validity/completeness/expiry calculation and result-digest sealing.
 
-The engine holds no global lock across I/O and owns no transaction. Product `CognitiveRuntime::AvailableFederatedV2` keeps only bounded owner-layout candidates plus the consumer identity, rediscovers current read-only grants for each physical retrieval, and caps total source slots at the existing federation bound. Discovery is concurrent across the bounded owner-candidate set; admitted peer attempts are then polled concurrently with `join_all` under one shared request horizon. Deterministic sorting/deduplication occurs before admission and again after results return, so completion order cannot change aggregate candidate order. The product budget includes discovery; individual attempts share the request's global horizon rather than each receiving a fresh unbounded timeout.
+The engine holds no global lock across I/O and owns no transaction. Product `CognitiveRuntime::AvailableFederatedV2` keeps only bounded owner-layout candidates plus the consumer identity, rediscovers current read-only grants for each physical retrieval, and caps total source slots at the existing federation bound. Discovery collects completed owners incrementally with `FuturesUnordered` under a one-second sub-budget of the existing two-second total request horizon. Pending discovery futures are dropped at that boundary, healthy completed results are retained, and admitted peer attempts are then polled concurrently with `join_all` under the remaining shared request horizon. Deterministic sorting/deduplication occurs before admission and again after results return, so completion order cannot change aggregate candidate order. The product budget includes discovery; individual attempts share the request's global horizon rather than each receiving a fresh unbounded timeout.
 
 The local in-process adapter may temporarily hold the retrieved batch in request-local memory until canonical V2 admission completes. Stale/revoked/failed results never release that captured batch to downstream attachment. Final model-input revalidation is another bounded read and drops the federated proposal on timeout or drift.
 
@@ -180,7 +212,7 @@ Failures are not collapsed into a successful empty read:
 - non-current preflight authority prevents transport dispatch;
 - timeout, cancellation or transport nonterminal outcome is indeterminate/failed coverage and never triggers blind retry;
 - post-I/O revoke or generation drift suppresses all remote items and contributes failed aggregate coverage;
-- an unobservable owner capability store contributes a bounded failed discovery slot, while a successfully observed owner with no active matching grant is simply not enrolled;
+- an unobservable owner capability store contributes a bounded `discovery_unavailable` slot; a discovery deadline contributes `deadline_or_cancelled`; failure slots are sorted deterministically and share the <=16 source budget. A successfully observed owner with no active matching grant is simply not enrolled;
 - a grant for a different consumer workspace is filtered before a query is formed;
 - final physical-send revalidation timeout, capability drift, memory drift, capability expiry crossing during the bounded batch, clock regression, or secret-like content removes the federated proposal rather than blocking the turn or sending stale evidence. This is a final-use source-currentness fence, not retroactive cancellation authority over a provider attempt already admitted by the host: repository-wide dispatch semantics permit an admitted effect to remain in flight while later revocation blocks new admission.
 
@@ -227,6 +259,8 @@ Current operating and state-format references:
 ## 12. Verification and qualification
 
 Current focused test sources (source references, not pass receipts):
+
+- `codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs`: actual recovery, retained-reader rejection, recovered revocation/correction/forgetting, operation-fence exclusion and missing-fence refusal.
 
 - [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs).
 - [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), covering response-binding tamper/replay, prefix-sensitive item-order integrity, `Partial + []` preservation, expiry ceilings, preflight/post-I/O authority drift, true in-flight cancellation/deadline interruption, duplicate identities and bounded partial results.
@@ -320,3 +354,20 @@ The bootstrap source-location obligation for `memory.federation` is implemented 
 - `codex-rs/hepta-memory-federation`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Current bounded discovery qualification
+
+The local product collector permits at most eight active owner discoveries. Each
+owner has a 250 ms discovery allowance inside one total one-second discovery
+budget; the existing two-second complete recall horizon is unchanged. Completed
+healthy observations are retained, and unfinished or queued owners contribute
+bounded failed/omitted coverage. These are admission bounds, not a latency SLO.
+
+The current recovery read session retains its generation fence until SQLite
+connection close. An idle reader holds no SQLite pool. The owner alone creates
+and changes its generation fence and active database pointer. Cancellation
+cleanup does not mint a cancellation receipt or a new authority.
+
+The [authenticated cross-host profile](CROSS_HOST_PROFILE.md) is a design contract,
+not a registered or implemented product transport. SSH-based native validation
+on a second machine is not cross-host memory federation qualification.

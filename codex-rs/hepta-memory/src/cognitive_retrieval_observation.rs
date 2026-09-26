@@ -4,6 +4,8 @@
 
 use super::*;
 
+const MAX_CONTRADICTION_GROUPS_PER_CANDIDATE: usize = 32;
+
 /// Whether the executed channel queries and generator exhausted their input.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 pub enum RetrievalLimitObservation {
@@ -45,6 +47,13 @@ pub struct ObservedRetrievalCandidate {
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
     pub channel_ranks: Vec<RetrievalChannelRank>,
+    /// Exact canonical contradiction relation identities supported by this
+    /// immutable memory revision. Values are SHA-256 digests of the SQLite
+    /// owner's canonical relation IDs, never an observation-wide synthetic group.
+    pub contradiction_group_sha256s: Vec<Sha256Digest>,
+    /// False means the bounded relation lookup saturated. A consumer must not
+    /// infer an exhaustive contradiction group set from the retained prefix.
+    pub contradiction_groups_complete: bool,
 }
 
 /// Created only by the owner read API from one SQLite read transaction.
@@ -105,15 +114,30 @@ impl CognitiveStore {
                 MAX_RETRIEVAL_OWNER_CHANNELS * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
-        let mut observed = candidates
-            .iter()
-            .map(|candidate| ObservedRetrievalCandidate {
+        let mut observed = Vec::with_capacity(candidates.len());
+        for candidate in &candidates {
+            let (contradiction_group_sha256s, contradiction_groups_complete) = if candidate
+                .channels
+                .contains(&RetrievalChannel::ContradictionSupport)
+            {
+                self.contradiction_groups_for_candidate_tx(
+                    &mut transaction,
+                    candidate,
+                    request.now_unix_seconds,
+                )
+                .await?
+            } else {
+                (Vec::new(), true)
+            };
+            observed.push(ObservedRetrievalCandidate {
                 revalidation: candidate.revalidation.clone(),
                 reciprocal_rank_score: candidate.reciprocal_rank_score,
                 channels: candidate.channels.clone(),
                 channel_ranks: candidate.channel_ranks.clone(),
-            })
-            .collect::<Vec<_>>();
+                contradiction_group_sha256s,
+                contradiction_groups_complete,
+            });
+        }
         observed.sort_by(|left, right| {
             left.revalidation
                 .memory
@@ -132,7 +156,7 @@ impl CognitiveStore {
             candidates,
         };
         let bytes = serde_json::to_vec(&(
-            "hepta:cognitive:retrieval-observation:v1",
+            "hepta:cognitive:retrieval-observation:v2",
             &self.owner_agent_id,
             access.workspace_sha256(),
             &batch.query_sha256,
@@ -153,6 +177,48 @@ impl CognitiveStore {
         };
         transaction.commit().await.map_err(unavailable)?;
         Ok(observation)
+    }
+
+    async fn contradiction_groups_for_candidate_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        candidate: &RetrievalCandidate,
+        now_unix_seconds: i64,
+    ) -> Result<(Vec<Sha256Digest>, bool), CognitiveStoreError> {
+        let rows = sqlx::query_scalar::<_, String>(
+            "SELECT DISTINCT canonical_relation_id
+             FROM kg_revision_relations
+             WHERE memory_id = ? AND memory_revision = ? AND relation = ?
+               AND valid_from_unix_seconds <= ?
+               AND (valid_to_unix_seconds IS NULL OR ? < valid_to_unix_seconds)
+             ORDER BY canonical_relation_id
+             LIMIT ?",
+        )
+        .bind(candidate.memory.id.memory_id.as_str())
+        .bind(to_i64(
+            candidate.memory.id.revision,
+            "contradiction memory revision",
+        )?)
+        .bind(KgRelationSemanticV1::Contradicts.relation())
+        .bind(now_unix_seconds)
+        .bind(now_unix_seconds)
+        .bind(
+            i64::try_from(MAX_CONTRADICTION_GROUPS_PER_CANDIDATE + 1).map_err(|_| {
+                CognitiveStoreError::Invalid(
+                    "contradiction group lookup bound exceeds i64".to_string(),
+                )
+            })?,
+        )
+        .fetch_all(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        let complete = rows.len() <= MAX_CONTRADICTION_GROUPS_PER_CANDIDATE;
+        let groups = rows
+            .into_iter()
+            .take(MAX_CONTRADICTION_GROUPS_PER_CANDIDATE)
+            .map(|canonical_relation_id| Sha256Digest::for_bytes(canonical_relation_id.as_bytes()))
+            .collect();
+        Ok((groups, complete))
     }
 
     pub(super) fn validate_retrieval_request(

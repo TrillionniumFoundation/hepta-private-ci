@@ -30,6 +30,11 @@ The exact process driver, Agentd readiness/drain acknowledgements and current-ge
 | `signed_rollback` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn apply_production_grant(` |
 | `reconcile_signed_intent` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn resolve_production_recovery(` |
 
+Remaining repository implementation gaps:
+
+- Retained signed history has a bounded fail-closed capacity; export acknowledgement and safe reclamation are not implemented.
+- Current exact-head and deterministic-merge executions must pass; source composition alone is not qualification.
+
 External evidence gates:
 
 - exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration
@@ -77,12 +82,15 @@ Agentd preserves dispatch-boundary uncertainty and accepts terminal state only f
 | `shared_terminal_cell_train` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn train(` |
 | `shared_terminal_cell_load` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn load(` |
 | `shared_terminal_cell_predict` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn predict(` |
+| `shared_terminal_cell_restore` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn restore(` |
+| `compose_authoritative_owner_inputs` | `owner_native` | `codex-rs/hepta-agentd/src/intelligence_ingress.rs` — `pub fn authoritative_provider<` |
 
 Remaining repository implementation gaps:
 
 - Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.
 - Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.
 - Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton.
+- Provide a repository-shipped authenticated canonical invocation profile and wire the actual Circuit-to-Cell normal daemon consumer. Shared Replay owner tests and cross-process restore do not establish these product paths.
 
 External evidence gates:
 
@@ -118,7 +126,7 @@ External evidence gates:
 
 ## 6. `inference.control`
 
-The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.
+One retained DurableInferenceControl owns legacy/native records and future-byte liabilities, with a stable writer sidecar across checkpoint replacement; checkpoints retain all identities and unknown-effect responsibilities.
 
 The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.
 
@@ -128,12 +136,14 @@ The actual Agent-fenced App Server client supplies matching turn observations th
 | `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn dispatch_native(` |
 | `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn cancel_native(` |
 | `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn settle_native(` |
+| `compact_journal` | `owner_native` | `codex-rs/hepta-infer-core/src/journal_maintenance.rs` — `pub fn compact_journal(` |
+| `journal_capacity_status` | `owner_native` | `codex-rs/hepta-infer-core/src/journal_maintenance.rs` — `pub fn journal_capacity_status(` |
 
 Remaining repository implementation gaps:
 
 - Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.
 - Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.
-- Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history.
+- Current-state checkpoints reclaim superseded events; content-addressed external archives, identity garbage collection and trusted backup anti-rollback remain unimplemented.
 
 External evidence gates:
 
@@ -263,6 +273,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 52 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 56 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.

@@ -6,6 +6,7 @@
 //! revision and deterministic occurrence identity, then keeps queue admission
 //! distinct from terminal execution.
 
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
@@ -995,9 +996,9 @@ impl AutomationStore {
         Ok(row)
     }
 
-    /// Return a bounded set of non-terminal occurrences that already crossed
-    /// Core admission or need explicit reconciliation. Claimed pre-admission
-    /// work remains owned by the scheduler lease/uncertainty path.
+    /// Return a bounded read-only snapshot of non-terminal occurrences. This
+    /// API does not advance the product recovery cursor and is intended for
+    /// diagnostics and bounded inspection, not scheduler discovery.
     pub async fn pending_occurrence_work(
         &self,
         limit: usize,
@@ -1019,29 +1020,135 @@ impl AutomationStore {
         .fetch_all(self.taskflow_pool())
         .await
         .map_err(unavailable)?;
-        let mut work = Vec::with_capacity(rows.len());
-        for row in rows {
-            let occurrence = occurrence_from_row(&row, self.taskflow_owner_agent_id().as_str())?;
-            let thread_id: String = row
-                .try_get("thread_id")
+        rows.iter()
+            .map(|row| occurrence_work_from_row(row, self.taskflow_owner_agent_id()))
+            .collect()
+    }
+
+    /// Read one known pending occurrence by its exact durable identity. A
+    /// caller that already holds `(task_id, occurrence)` must never intersect
+    /// that identity with a truncated global recovery page.
+    pub async fn pending_occurrence_work_exact(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+    ) -> Result<Option<AutomationOccurrenceWork>, AutomationError> {
+        let row = sqlx::query(
+            "SELECT o.*, t.thread_id, t.prompt
+             FROM automation_occurrence_lifecycle o
+             JOIN automation_tasks t ON t.task_id = o.task_id
+             WHERE o.owner_agent_id = ? AND o.task_id = ? AND o.occurrence = ?
+               AND o.state IN ('admitted', 'running', 'indeterminate')",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(unavailable)?;
+        row.as_ref()
+            .map(|row| occurrence_work_from_row(row, self.taskflow_owner_agent_id()))
+            .transpose()
+    }
+
+    /// Select one pending occurrence and durably advance a round-robin cursor.
+    /// The cursor is owner-local discovery progress only. It prevents one
+    /// long-running occurrence from monopolizing every recovery pass while
+    /// preserving the occurrence's immutable identity and outcome state.
+    pub async fn next_pending_occurrence_work(
+        &self,
+    ) -> Result<Option<AutomationOccurrenceWork>, AutomationError> {
+        let (mut transaction, _) = self.begin_timer_write().await?;
+        let cursor = sqlx::query(
+            "SELECT owner_agent_id, last_updated_at_ms, last_task_id, last_occurrence
+             FROM automation_occurrence_recovery_cursor WHERE singleton = 1",
+        )
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+
+        let mut row = None;
+        if let Some(cursor) = cursor {
+            let owner: String = cursor
+                .try_get("owner_agent_id")
                 .map_err(|_| AutomationError::Corrupt)?;
-            let prompt: String = row
-                .try_get("prompt")
+            if owner != self.taskflow_owner_agent_id().as_str() {
+                return Err(AutomationError::AccessDenied);
+            }
+            let last_updated_at_ms: i64 = cursor
+                .try_get("last_updated_at_ms")
                 .map_err(|_| AutomationError::Corrupt)?;
-            work.push(AutomationOccurrenceWork {
-                admission: AutomationAdmission {
-                    agent_id: self.taskflow_owner_agent_id().clone(),
-                    task_id: occurrence.task_id,
-                    occurrence: occurrence.occurrence,
-                    scheduled_for_ms: occurrence.scheduled_for_ms,
-                    thread_id,
-                    prompt,
-                    client_user_message_id: occurrence.client_user_message_id.clone(),
-                },
-                occurrence,
-            });
+            let last_task_id: String = cursor
+                .try_get("last_task_id")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let last_occurrence: i64 = cursor
+                .try_get("last_occurrence")
+                .map_err(|_| AutomationError::Corrupt)?;
+            row = sqlx::query(
+                "SELECT o.*, t.thread_id, t.prompt
+                 FROM automation_occurrence_lifecycle o
+                 JOIN automation_tasks t ON t.task_id = o.task_id
+                 WHERE o.owner_agent_id = ?
+                   AND o.state IN ('admitted', 'running', 'indeterminate')
+                   AND (o.updated_at_ms > ?
+                        OR (o.updated_at_ms = ? AND o.task_id > ?)
+                        OR (o.updated_at_ms = ? AND o.task_id = ? AND o.occurrence > ?))
+                 ORDER BY o.updated_at_ms, o.task_id, o.occurrence
+                 LIMIT 1",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(last_updated_at_ms)
+            .bind(last_updated_at_ms)
+            .bind(&last_task_id)
+            .bind(last_updated_at_ms)
+            .bind(&last_task_id)
+            .bind(last_occurrence)
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
         }
-        Ok(work)
+        if row.is_none() {
+            row = sqlx::query(
+                "SELECT o.*, t.thread_id, t.prompt
+                 FROM automation_occurrence_lifecycle o
+                 JOIN automation_tasks t ON t.task_id = o.task_id
+                 WHERE o.owner_agent_id = ?
+                   AND o.state IN ('admitted', 'running', 'indeterminate')
+                 ORDER BY o.updated_at_ms, o.task_id, o.occurrence
+                 LIMIT 1",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+        }
+        let Some(row) = row else {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(None);
+        };
+        let work = occurrence_work_from_row(&row, self.taskflow_owner_agent_id())?;
+        let updated = sqlx::query(
+            "INSERT INTO automation_occurrence_recovery_cursor (
+                 singleton, owner_agent_id, last_updated_at_ms, last_task_id, last_occurrence
+             ) VALUES (1, ?, ?, ?, ?)
+             ON CONFLICT(singleton) DO UPDATE SET
+                 last_updated_at_ms = excluded.last_updated_at_ms,
+                 last_task_id = excluded.last_task_id,
+                 last_occurrence = excluded.last_occurrence
+             WHERE automation_occurrence_recovery_cursor.owner_agent_id = excluded.owner_agent_id",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(to_i64(work.occurrence.updated_at_ms)?)
+        .bind(work.occurrence.task_id.to_string())
+        .bind(to_i64(work.occurrence.occurrence)?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if updated.rows_affected() != 1 {
+            return Err(AutomationError::AccessDenied);
+        }
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(Some(work))
     }
 }
 
@@ -1164,7 +1271,59 @@ pub(crate) async fn verify_occurrence_store(
     for row in &rows {
         occurrence_from_row(row, expected_owner)?;
     }
+    if let Some(cursor) = sqlx::query(
+        "SELECT owner_agent_id, last_updated_at_ms, last_task_id, last_occurrence
+         FROM automation_occurrence_recovery_cursor WHERE singleton = 1",
+    )
+    .fetch_optional(pool)
+    .await
+    .map_err(unavailable)?
+    {
+        let owner: String = cursor
+            .try_get("owner_agent_id")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let updated_at_ms: i64 = cursor
+            .try_get("last_updated_at_ms")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let task_id: String = cursor
+            .try_get("last_task_id")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let occurrence: i64 = cursor
+            .try_get("last_occurrence")
+            .map_err(|_| AutomationError::Corrupt)?;
+        if owner != expected_owner {
+            return Err(AutomationError::AccessDenied);
+        }
+        if updated_at_ms < 0 || occurrence <= 0 || AutomationTaskId::parse(&task_id).is_err() {
+            return Err(AutomationError::Corrupt);
+        }
+    }
     Ok(())
+}
+
+fn occurrence_work_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+    expected_owner: &AgentId,
+) -> Result<AutomationOccurrenceWork, AutomationError> {
+    let occurrence = occurrence_from_row(row, expected_owner.as_str())?;
+    let thread_id: String = row
+        .try_get("thread_id")
+        .map_err(|_| AutomationError::Corrupt)?;
+    let prompt: String = row
+        .try_get("prompt")
+        .map_err(|_| AutomationError::Corrupt)?;
+    Ok(AutomationOccurrenceWork {
+        admission: AutomationAdmission {
+            agent_id: expected_owner.clone(),
+            task_id: occurrence.task_id,
+            occurrence: occurrence.occurrence,
+            scheduled_for_ms: occurrence.scheduled_for_ms,
+            thread_id,
+            prompt,
+            client_user_message_id: occurrence.client_user_message_id.clone(),
+        },
+        occurrence,
+    })
 }
 
 fn occurrence_from_row(
@@ -1663,5 +1822,104 @@ mod tests {
     fn missed_run_math_is_bounded_and_deterministic() {
         assert_eq!(first_after(1100, 100, 1450).expect("first future"), 1500);
         assert_eq!(latest_not_after(1100, 100, 1450).expect("coalesce"), 1400);
+    }
+
+    #[tokio::test]
+    async fn exact_pending_lookup_is_not_limited_by_the_discovery_page() {
+        let temp = tempfile::tempdir().expect("owner root");
+        let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner agent id");
+        let store = AutomationStore::open_root(
+            temp.path()
+                .canonicalize()
+                .expect("canonical owner root")
+                .join("automation"),
+            owner.clone(),
+        )
+        .await
+        .expect("automation store");
+        let mut transaction = store.taskflow_pool().begin().await.expect("transaction");
+        let mut exact_task = None;
+        for index in 1_u64..=1_025 {
+            let task_id = AutomationTaskId::parse(&format!("019153a4-3088-7000-a56a-{index:012x}"))
+                .expect("task id");
+            if index == 1_025 {
+                exact_task = Some(task_id);
+            }
+            let task = task_id.to_string();
+            let client = format!("recovery-client-{index}");
+            let occurrence_id = deterministic_occurrence_id(owner.as_str(), task_id, 1, index);
+            let run_id = format!("automation-run:{}", digest_suffix(&occurrence_id));
+            sqlx::query(
+                "INSERT INTO automation_tasks (
+                     task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
+                     state, next_run_at_ms, next_occurrence, created_at_ms, updated_at_ms
+                 ) VALUES (?, ?, ?, ?, 'once', NULL, 'completed', NULL, 2, ?, ?)",
+            )
+            .bind(&task)
+            .bind(owner.as_str())
+            .bind(format!("thread-{index}"))
+            .bind(format!("prompt-{index}"))
+            .bind(i64::try_from(index).expect("created time"))
+            .bind(i64::try_from(index).expect("updated time"))
+            .execute(&mut *transaction)
+            .await
+            .expect("task row");
+            sqlx::query(
+                "INSERT INTO automation_runs (
+                     task_id, occurrence, scheduled_for_ms, client_user_message_id, state,
+                     lease_generation, lease_token, lease_expires_at_ms,
+                     queued_submission_id, submitted_at_ms, schedule_revision
+                 ) VALUES (?, 1, ?, ?, 'submitted', NULL, NULL, NULL, ?, ?, 1)",
+            )
+            .bind(&task)
+            .bind(i64::try_from(index).expect("scheduled time"))
+            .bind(&client)
+            .bind(format!("queue-{index}"))
+            .bind(i64::try_from(index).expect("submitted time"))
+            .execute(&mut *transaction)
+            .await
+            .expect("run row");
+            sqlx::query(
+                "INSERT INTO automation_occurrence_lifecycle (
+                     task_id, occurrence, occurrence_id, owner_agent_id, schedule_revision,
+                     scheduled_for_ms, client_user_message_id, state, overlap_policy,
+                     claim_generation, claim_token, taskflow_run_id, queued_submission_id,
+                     recovery_phase, created_at_ms, updated_at_ms
+                 ) VALUES (?, 1, ?, ?, 1, ?, ?, 'admitted', 'allow', 1, ?, ?, ?,
+                           'awaiting_turn', ?, ?)",
+            )
+            .bind(&task)
+            .bind(&occurrence_id)
+            .bind(owner.as_str())
+            .bind(i64::try_from(index).expect("scheduled time"))
+            .bind(&client)
+            .bind(format!("claim-{index}"))
+            .bind(&run_id)
+            .bind(format!("queue-{index}"))
+            .bind(i64::try_from(index).expect("created time"))
+            .bind(i64::try_from(index).expect("updated time"))
+            .execute(&mut *transaction)
+            .await
+            .expect("occurrence row");
+        }
+        transaction.commit().await.expect("commit fixtures");
+        let exact_task = exact_task.expect("exact task");
+        let page = store
+            .pending_occurrence_work(MAX_RECOVERY_SCAN)
+            .await
+            .expect("bounded discovery page");
+        assert_eq!(page.len(), MAX_RECOVERY_SCAN);
+        assert!(
+            page.iter()
+                .all(|work| work.occurrence.task_id != exact_task),
+            "the fixture must place the exact identity beyond the first bounded page"
+        );
+        let exact = store
+            .pending_occurrence_work_exact(exact_task, 1)
+            .await
+            .expect("exact read")
+            .expect("pending occurrence beyond first page");
+        assert_eq!(exact.occurrence.task_id, exact_task);
+        assert_eq!(exact.occurrence.occurrence, 1);
     }
 }

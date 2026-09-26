@@ -7,20 +7,34 @@ on:
       - work/architecture-scalability-convergence-20260918
     paths:
       - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-inferd/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'docs/modules/inference.control/**'
+      - 'docs/readiness/LANE_B_NATIVE_HOST.md'
+      - 'qualification/module-execution-dossiers/detail/inference.control.md'
       - 'codex-rs/hepta-types/**'
       - 'codex-rs/Cargo.toml'
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/rust-toolchain*'
       - 'scripts/hepta_ci_exec.py'
+      - 'scripts/hepta_inference_owner_checks.py'
+      - 'scripts/test_hepta_inference_owner_checks.py'
       - '.github/workflows/hepta-inference-maintenance.yml'
   pull_request:
     paths:
       - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-inferd/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'docs/modules/inference.control/**'
+      - 'docs/readiness/LANE_B_NATIVE_HOST.md'
+      - 'qualification/module-execution-dossiers/detail/inference.control.md'
       - 'codex-rs/hepta-types/**'
       - 'codex-rs/Cargo.toml'
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/rust-toolchain*'
       - 'scripts/hepta_ci_exec.py'
+      - 'scripts/hepta_inference_owner_checks.py'
+      - 'scripts/test_hepta_inference_owner_checks.py'
       - '.github/workflows/hepta-inference-maintenance.yml'
   workflow_dispatch:
 
@@ -103,9 +117,16 @@ jobs:
             "${GITHUB_PROSPECTIVE_MERGE_SHA:-}" "${GITHUB_PROSPECTIVE_MERGE_TREE:-}" \
             > "$RUNNER_TEMP/hepta-inference-records/identity.txt"
           git archive --format=tar "$CANDIDATE" | gzip -1 > "$RUNNER_TEMP/hepta-inference-records/source-input.tar.gz"
-          rustc --version --verbose > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
-          cargo --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
-          cargo fmt --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          # Rustup resolves overrides from the working directory, not from
+          # --manifest-path. Bootstrap inside the pinned workspace and bind all
+          # subsequent recorder/root invocations to that same toolchain.
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal --component clippy --component rustfmt --component rust-src
+          export RUSTUP_TOOLCHAIN="$toolchain"
+          (cd codex-rs && rustc --version --verbose) > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo fmt --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
       - name: Select exact-tree native execution
         id: execution
         env:
@@ -126,18 +147,23 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/runner.json" --minimum-tests 1 -- python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/controls-scope.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_repository_controls
+      - name: Install the repository test entry tools
+        if: steps.execution.outputs.run_native == 'true'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Run actual owner tests without unrelated product prerequisites
         if: steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-      - name: Measure post-compaction growth and maintenance
-        if: steps.execution.outputs.run_native == 'true'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/owner.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-core -p codex-hepta-inferd -p codex-hepta-types
+      - name: Measure exclusive-owner history, handoff and process recovery
+        if: always() && steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+          python3 scripts/hepta_inference_owner_checks.py --output-dir "$RUNNER_TEMP/hepta-inference-records"
       - name: Check owner formatting without modifying tested source
         if: steps.execution.outputs.run_native == 'true'
         shell: bash
@@ -167,6 +193,133 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-inference-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-inference-records/*
+          if-no-files-found: error
+          retention-days: 14
+
+  native-product-regression:
+    name: Inference native product chain (${{ matrix.lane }})
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify GitHub prospective merge identity
+        if: matrix.lane == 'base-merge'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          merge_sha="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" --jq '.object.sha')"
+          [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]]
+          observation="$(gh api "repos/$REPO/git/commits/$merge_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$observation")
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          merge_tree="$(jq -er '.tree.sha' <<<"$observation")"
+          test "$merge_tree" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$merge_sha" >> "$GITHUB_ENV"
+          printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$merge_tree" >> "$GITHUB_ENV"
+      - name: Construct deterministic prospective merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind tested identity and retain reproducible input
+        id: identity
+        env:
+          CANDIDATE: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          git diff --quiet
+          git diff --cached --quiet
+          printf 'TESTED_SHA=%s\nHEPTA_CI_LANE=%s\n' "$CANDIDATE" "$LANE" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/hepta-inference-records"
+          printf 'source=%s\nbase=%s\ntested=%s\ntree=%s\nlane=%s\ngithub_merge=%s\ngithub_merge_tree=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$CANDIDATE" "$(git rev-parse HEAD^{tree})" "$LANE" \
+            "${GITHUB_PROSPECTIVE_MERGE_SHA:-}" "${GITHUB_PROSPECTIVE_MERGE_TREE:-}" \
+            > "$RUNNER_TEMP/hepta-inference-records/identity.txt"
+          git archive --format=tar "$CANDIDATE" | gzip -1 > "$RUNNER_TEMP/hepta-inference-records/source-input.tar.gz"
+          # Rustup resolves overrides from the working directory, not from
+          # --manifest-path. Bootstrap inside the pinned workspace and bind all
+          # subsequent recorder/root invocations to that same toolchain.
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal --component clippy --component rustfmt --component rust-src
+          export RUSTUP_TOOLCHAIN="$toolchain"
+          (cd codex-rs && rustc --version --verbose) > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          (cd codex-rs && cargo fmt --version) >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
+      - name: Install repository test entry tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Build exact-source native runtime executable
+        id: runtime_binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-runtime-build.json" -- cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-app-server --bin codex-app-server
+          target="$(cargo metadata --locked --manifest-path codex-rs/Cargo.toml --no-deps --format-version 1 | jq -er '.target_directory')"
+          test -x "$target/debug/codex-app-server"
+          sha256sum "$target/debug/codex-app-server" > "$RUNNER_TEMP/hepta-inference-records/native-runtime-binary.sha256"
+          printf 'HEPTA_TEST_CODEX_EXE=%s/debug/codex-app-server\n' "$target" >> "$GITHUB_ENV"
+      - name: Execute native authorization, uncertain-send and restart regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-product.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E 'test(native_) | test(final_use_authorizer::)'
+      - name: Require the real Agentd product witness independently
+        if: always() && steps.identity.outcome == 'success' && steps.runtime_binary.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-agentd-witness.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E 'test(real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)'
+      - name: Check strict native product lint independently
+        if: always() && steps.identity.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/native-clippy.json" -- cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-inferd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+      - name: Verify exact source navigation after executable feedback
+        if: always() && steps.identity.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/source-maps.json" -- python3 scripts/hepta-implementation-maps.py verify --expected-sha "$TESTED_SHA" --expected-tree "$(git rev-parse HEAD^{tree})"
+      - name: Verify tested source unchanged
+        if: always() && steps.identity.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain independent native execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-inference-native-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
           path: ${{ runner.temp }}/hepta-inference-records/*
           if-no-files-found: error
           retention-days: 14

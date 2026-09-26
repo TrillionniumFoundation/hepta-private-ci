@@ -1,3 +1,5 @@
+#![cfg(test)]
+
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::time::SystemTime;
@@ -29,6 +31,15 @@ impl ProductionAuthorityVerifier for AllowVerifier {
         _expected_agent: &AgentId,
     ) -> Result<(), String> {
         Ok(())
+    }
+
+    fn enter_use(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<codex_hepta_memory::ProductionAuthorityUseGuard, String> {
+        self.verify(authority, expected_agent)?;
+        Ok(codex_hepta_memory::ProductionAuthorityUseGuard::from_verified_use(()))
     }
 }
 

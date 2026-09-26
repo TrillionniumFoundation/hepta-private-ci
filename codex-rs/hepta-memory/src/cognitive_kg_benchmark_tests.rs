@@ -1,8 +1,13 @@
 use std::fs;
+use std::sync::Arc;
 use std::time::Instant;
 
+use codex_hepta_kg::KnowledgeRelationQueryV2;
+use codex_hepta_kg::query_relations_with_work;
+use codex_hepta_types::StableId;
 use serde_json::json;
 use tempfile::TempDir;
+use tokio::sync::Barrier;
 
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
@@ -17,6 +22,8 @@ use crate::MemoryRevisionDraft;
 use crate::MemoryVerification;
 use crate::RetrievalRequest;
 use crate::SourceDraft;
+use crate::cognitive_intelligence_writer::canonical_entity_id;
+use crate::cognitive_kg_store::load_canonical_generation_tx;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 
@@ -25,6 +32,8 @@ const ENTITIES_PER_WRITE: usize = 16;
 const RELATIONS_PER_WRITE: usize = 128;
 const DEFAULT_QUERY_SAMPLES: usize = 20;
 const DEFAULT_REOPEN_SAMPLES: usize = 5;
+const DEFAULT_CONTENTION_READERS: usize = 4;
+const DEFAULT_CONTENTION_ROUNDS: usize = 10;
 
 fn configured_count(name: &str, default: usize, maximum: usize) -> usize {
     std::env::var(name)
@@ -91,6 +100,20 @@ fn linux_rss_kib() -> Option<u64> {
 }
 
 #[cfg(target_os = "linux")]
+fn linux_peak_rss_kib() -> Option<u64> {
+    let status = fs::read_to_string("/proc/self/status").ok()?;
+    status.lines().find_map(|line| {
+        let rest = line.strip_prefix("VmHWM:")?;
+        rest.split_whitespace().next()?.parse().ok()
+    })
+}
+
+#[cfg(not(target_os = "linux"))]
+fn linux_peak_rss_kib() -> Option<u64> {
+    None
+}
+
+#[cfg(target_os = "linux")]
 fn linux_cpu_ticks() -> Option<u64> {
     let stat = fs::read_to_string("/proc/self/stat").ok()?;
     let close = stat.rfind(')')?;
@@ -121,8 +144,23 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         configured_count("HEPTA_KG_BENCH_QUERY_SAMPLES", DEFAULT_QUERY_SAMPLES, 100);
     let reopen_samples =
         configured_count("HEPTA_KG_BENCH_REOPEN_SAMPLES", DEFAULT_REOPEN_SAMPLES, 20);
+    let contention_readers = configured_count(
+        "HEPTA_KG_BENCH_CONTENTION_READERS",
+        DEFAULT_CONTENTION_READERS,
+        16,
+    );
+    let contention_rounds = configured_count(
+        "HEPTA_KG_BENCH_CONTENTION_ROUNDS",
+        DEFAULT_CONTENTION_ROUNDS,
+        50,
+    );
+    let host_profile_id = std::env::var("HEPTA_KG_TARGET_PROFILE_ID")
+        .unwrap_or_else(|_| "unidentified-host".to_string());
 
-    eprintln!("KG_PHASE open writes={writes} queries={query_samples} reopens={reopen_samples}");
+    eprintln!(
+        "KG_PHASE open writes={writes} queries={query_samples} reopens={reopen_samples} \
+         contention_readers={contention_readers} contention_rounds={contention_rounds}"
+    );
     let benchmark_started = Instant::now();
     let temp = TempDir::new().expect("KG benchmark temp dir");
     let owner = agent_id(185);
@@ -136,7 +174,7 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         "KG_PHASE write start elapsed_ms={}",
         benchmark_started.elapsed().as_millis()
     );
-    let facts = facts();
+    let base_facts = facts();
 
     let cpu_before = linux_cpu_ticks();
     let rss_before = linux_rss_kib();
@@ -167,7 +205,7 @@ async fn qualification_knowledge_graph_capacity_receipt() {
                         citations: Vec::new(),
                     },
                 },
-                &facts,
+                &base_facts,
             )
             .await
             .expect("KG benchmark mutation");
@@ -261,6 +299,127 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         query_ns.push(elapsed_ns(started));
     }
 
+    let mut generation_transaction = store.pool.begin().await.expect("KG work transaction");
+    let canonical_generation = load_canonical_generation_tx(
+        &mut generation_transaction,
+        &scope.projection_key(),
+        current_generation,
+    )
+    .await
+    .expect("KG benchmark canonical generation");
+    generation_transaction
+        .rollback()
+        .await
+        .expect("rollback KG work transaction");
+    let seed_node_id = StableId::new(canonical_entity_id(&owner, &scope, "bench-node-00"))
+        .expect("KG benchmark seed identity");
+    let (bounded_query_result, bounded_query_work) = query_relations_with_work(
+        &canonical_generation,
+        KnowledgeRelationQueryV2 {
+            query_id: StableId::new("query:knowledge-graph-capacity-work-v2")
+                .expect("KG benchmark query identity"),
+            generation_digest: canonical_generation.generation_digest,
+            seed_node_ids: vec![seed_node_id],
+            relation_kinds: Vec::new(),
+            valid_at_unix_seconds: Some(200),
+            maximum_edges: 1,
+        },
+    )
+    .expect("KG benchmark bounded relation query");
+    assert_eq!(bounded_query_result.edges.len(), 1);
+    assert!(bounded_query_result.omitted_count > 0);
+    assert_eq!(bounded_query_work.selected_edges_cloned, 1);
+    assert_eq!(
+        bounded_query_work.omitted_edges,
+        u64::from(bounded_query_result.omitted_count)
+    );
+
+    eprintln!(
+        "KG_PHASE contention elapsed_ms={}",
+        benchmark_started.elapsed().as_millis()
+    );
+    let mut contention_writer_ns = Vec::with_capacity(contention_rounds);
+    let mut contention_reader_ns = Vec::with_capacity(contention_rounds * contention_readers);
+    let mut contention_round_ns = Vec::with_capacity(contention_rounds);
+    for round in 0..contention_rounds {
+        let barrier = Arc::new(Barrier::new(contention_readers + 2));
+        let writer_store = store.clone();
+        let writer_access = access.clone();
+        let writer_scope = scope.clone();
+        let writer_barrier = Arc::clone(&barrier);
+        let writer = tokio::spawn(async move {
+            writer_barrier.wait().await;
+            let started = Instant::now();
+            let content = format!("Benchmark graph contention memory {round:04}");
+            writer_store
+                .remember_with_kg(
+                    &writer_access,
+                    &SourceDraft {
+                        scope: writer_scope.clone(),
+                        kind: LedgerSourceKind::ExplicitMemoryDirective,
+                        event_key: format!("kg-benchmark-contention-source-{round:04}"),
+                        content: content.as_bytes().to_vec(),
+                        observed_at_unix_seconds: 100,
+                    },
+                    &MemoryDraft {
+                        stable_key: format!("kg-benchmark-contention-memory-{round:04}"),
+                        revision: MemoryRevisionDraft {
+                            scope: writer_scope,
+                            content,
+                            verification: MemoryVerification::Verified,
+                            lifecycle: MemoryLifecycleState::Active,
+                            valid_from_unix_seconds: 100,
+                            valid_to_unix_seconds: None,
+                            citations: Vec::new(),
+                        },
+                    },
+                    &facts(),
+                )
+                .await
+                .expect("KG contention writer");
+            elapsed_ns(started)
+        });
+        let mut readers = Vec::with_capacity(contention_readers);
+        for reader_index in 0..contention_readers {
+            let reader_store = store.clone();
+            let reader_access = access.clone();
+            let reader_barrier = Arc::clone(&barrier);
+            readers.push(tokio::spawn(async move {
+                reader_barrier.wait().await;
+                let started = Instant::now();
+                let result = reader_store
+                    .retrieve_memory_candidates(
+                        &reader_access,
+                        &RetrievalRequest::new(
+                            format!("Benchmark Graph contention {round} reader {reader_index}"),
+                            200,
+                        ),
+                    )
+                    .await
+                    .expect("KG contention reader");
+                assert!(!result.candidates.is_empty(), "KG contention query empty");
+                elapsed_ns(started)
+            }));
+        }
+        let round_started = Instant::now();
+        barrier.wait().await;
+        contention_writer_ns.push(writer.await.expect("join KG contention writer"));
+        for reader in readers {
+            contention_reader_ns.push(reader.await.expect("join KG contention reader"));
+        }
+        contention_round_ns.push(elapsed_ns(round_started));
+    }
+    let post_contention_generation: i64 =
+        sqlx::query_scalar("SELECT generation FROM kg_projection WHERE projection_scope = ?")
+            .bind(scope.projection_key())
+            .fetch_one(&store.pool)
+            .await
+            .expect("KG post-contention generation");
+    assert_eq!(
+        post_contention_generation,
+        current_generation + i64::try_from(contention_rounds).expect("bounded contention rounds")
+    );
+
     let database_path = store.path().to_path_buf();
     let wal_path = database_path.with_extension("sqlite3-wal");
     let database_bytes = file_size(&database_path);
@@ -292,15 +451,18 @@ async fn qualification_knowledge_graph_capacity_receipt() {
 
     let cpu_after = linux_cpu_ticks();
     let rss_after = linux_rss_kib();
+    let peak_rss = linux_peak_rss_kib();
     let cpu_ticks_delta = cpu_before
         .zip(cpu_after)
         .and_then(|(before, after)| after.checked_sub(before));
 
     let receipt = json!({
-        "schema": "hepta.knowledge-graph-perf-library.v1",
+        "schema": "hepta.knowledge-graph-perf-library.v2",
         "algorithm": "revision_facts_v1_per_trigger_generation",
+        "hostProfileId": host_profile_id,
         "writes": writes,
         "currentGeneration": current_generation,
+        "postContentionGeneration": post_contention_generation,
         "logicalNodes": logical_counts.0,
         "logicalEdges": logical_counts.1,
         "revisionEntityRows": revision_fact_counts.0,
@@ -325,6 +487,39 @@ async fn qualification_knowledge_graph_capacity_receipt() {
             "p95": percentile_ns(&query_ns, 95),
             "p99": percentile_ns(&query_ns, 99),
         },
+        "boundedQueryWork": {
+            "returnedEdges": bounded_query_result.edges.len(),
+            "omittedEdges": bounded_query_result.omitted_count,
+            "validatedNodes": bounded_query_work.validated_nodes,
+            "validatedEdges": bounded_query_work.validated_edges,
+            "validatedSupports": bounded_query_work.validated_supports,
+            "visibilityNodesScanned": bounded_query_work.visibility_nodes_scanned,
+            "visibilitySupportsInspected": bounded_query_work.visibility_supports_inspected,
+            "relationEdgesScanned": bounded_query_work.relation_edges_scanned,
+            "relationSupportsInspected": bounded_query_work.relation_supports_inspected,
+            "matchingEdges": bounded_query_work.matching_edges,
+            "selectedEdgesCloned": bounded_query_work.selected_edges_cloned,
+            "selectedSupportsCloned": bounded_query_work.selected_supports_cloned,
+        },
+        "contention": {
+            "rounds": contention_rounds,
+            "readersPerRound": contention_readers,
+            "writerNs": {
+                "p50": percentile_ns(&contention_writer_ns, 50),
+                "p95": percentile_ns(&contention_writer_ns, 95),
+                "p99": percentile_ns(&contention_writer_ns, 99),
+            },
+            "readerNs": {
+                "p50": percentile_ns(&contention_reader_ns, 50),
+                "p95": percentile_ns(&contention_reader_ns, 95),
+                "p99": percentile_ns(&contention_reader_ns, 99),
+            },
+            "roundNs": {
+                "p50": percentile_ns(&contention_round_ns, 50),
+                "p95": percentile_ns(&contention_round_ns, 95),
+                "p99": percentile_ns(&contention_round_ns, 99),
+            },
+        },
         "reopenNs": {
             "p50": percentile_ns(&reopen_ns, 50),
             "p95": percentile_ns(&reopen_ns, 95),
@@ -337,6 +532,7 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         "process": {
             "rssKiBBefore": rss_before,
             "rssKiBAfter": rss_after,
+            "peakRssKiB": peak_rss,
             "linuxCpuTicksDelta": cpu_ticks_delta,
         },
         "claim": "measurement_only_no_host_independent_latency_threshold",

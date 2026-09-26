@@ -1737,7 +1737,9 @@ async fn dispatch_lock_root_is_canonical_anchored_and_replacement_fails_closed()
     let real_home = parent.join("real-home");
     let redirected_home = parent.join("redirected-home");
     let configured_home = parent.join("configured-home");
-    fs::create_dir_all(&real_home).unwrap();
+    crate::runtime::test_support::create_private_test_home(&real_home)
+        .await
+        .unwrap();
     fs::create_dir_all(&redirected_home).unwrap();
     std::os::unix::fs::symlink(&real_home, &configured_home).unwrap();
 
@@ -1918,7 +1920,9 @@ async fn ordinary_queue_limit_remains_per_thread_not_database_wide() {
 #[tokio::test]
 async fn migrating_existing_queue_backfills_thread_revisions() {
     let home = unique_temp_dir();
-    tokio::fs::create_dir_all(&home).await.unwrap();
+    crate::runtime::test_support::create_private_test_home(&home)
+        .await
+        .unwrap();
     let sqlite = crate::SqliteConfig::new_for_testing(home.as_path().abs());
     let queue_path = sqlite.queue_db_path();
     let old_queue_migrator = Migrator {

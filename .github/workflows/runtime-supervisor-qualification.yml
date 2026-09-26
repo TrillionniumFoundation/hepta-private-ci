@@ -1,0 +1,185 @@
+name: Runtime supervisor qualification
+
+on:
+  pull_request:
+    paths:
+      - CALLERS.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
+      - codex-rs/app-server/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-fleet/**
+      - codex-rs/hepta-memory/**
+      - codex-rs/hepta-supervisor/**
+      - docs/modules/runtime.supervisor/**
+      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
+      - qualification/runtime-supervisor/**
+      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-supervisor-acceptance-bundle.py
+      - scripts/hepta-supervisor-receipt-gate.py
+      - scripts/hepta-supervisor-validation.py
+      - scripts/tests/test_hepta_supervisor_acceptance_bundle.py
+      - scripts/tests/test_hepta_supervisor_lock_boundaries.py
+      - scripts/tests/test_hepta_supervisor_receipt_gate.py
+      - scripts/hepta_ci_candidate.py
+      - scripts/hepta_ci_v8.py
+      - .github/workflows/runtime-supervisor-qualification.yml
+  push:
+    branches:
+      - main
+    paths:
+      - CALLERS.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
+      - codex-rs/app-server/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-fleet/**
+      - codex-rs/hepta-memory/**
+      - codex-rs/hepta-supervisor/**
+      - docs/modules/runtime.supervisor/**
+      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
+      - qualification/runtime-supervisor/**
+      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-supervisor-acceptance-bundle.py
+      - scripts/hepta-supervisor-receipt-gate.py
+      - scripts/hepta-supervisor-validation.py
+      - scripts/tests/test_hepta_supervisor_acceptance_bundle.py
+      - scripts/tests/test_hepta_supervisor_lock_boundaries.py
+      - scripts/tests/test_hepta_supervisor_receipt_gate.py
+      - scripts/hepta_ci_candidate.py
+      - scripts/hepta_ci_v8.py
+      - .github/workflows/runtime-supervisor-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-supervisor-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  RUST_BACKTRACE: "1"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_INCREMENTAL: "0"
+  TMPDIR: /tmp
+
+jobs:
+  qualification:
+    name: Runtime supervisor (${{ matrix.os }}, ${{ matrix.lane }}, ${{ matrix.instances }} instances)
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(github.event_name == 'pull_request' && '{"include":[{"os":"ubuntu-24.04","lane":"source-head","instances":256},{"os":"ubuntu-24.04","lane":"merge-candidate","instances":8},{"os":"macos-15","lane":"source-head","instances":64},{"os":"macos-15","lane":"merge-candidate","instances":8}]}' || '{"include":[{"os":"ubuntu-24.04","lane":"source-head","instances":256},{"os":"macos-15","lane":"source-head","instances":64}]}') }}
+    env:
+      EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      HOST_INSTANCES: ${{ matrix.instances }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source or prospective merge identity
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          if [ "$LANE" = merge-candidate ]; then
+            expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
+          fi
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Test receipt, lock-boundary and acceptance-packet policy
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.tests.test_hepta_supervisor_receipt_gate \
+            scripts.tests.test_hepta_supervisor_lock_boundaries \
+            scripts.tests.test_hepta_supervisor_acceptance_bundle
+
+      - name: Prepare Linux native process prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash to native integration tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          install_root="$RUNNER_TEMP/hepta-tools"
+          mkdir -p "$install_root"
+          install -m 0755 "$(command -v dotslash)" "$install_root/dotslash"
+          echo "$install_root" >> "$GITHUB_PATH"
+
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Execute exact-candidate supervisor qualification
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-supervisor-validation.py \
+            --out "$RUNNER_TEMP/runtime-supervisor-${{ matrix.os }}-${{ matrix.lane }}" \
+            --expected-sha "$EXPECTED_SHA" \
+            --host-instances "$HOST_INSTANCES" \
+            --command-timeout 5400
+
+      - name: Retain exact execution receipts and bounded logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/runtime-supervisor-${{ matrix.os }}-${{ matrix.lane }}/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Verify candidate remained unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  required:
+    name: Runtime supervisor required
+    if: ${{ always() }}
+    needs: qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every exact-candidate supervisor lane
+        env:
+          RESULT: ${{ needs.qualification.result }}
+        run: test "$RESULT" = success

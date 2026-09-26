@@ -51,6 +51,7 @@ pub use daemon::run_supervisord_with_grant_verifier;
 pub use daemon_client::SupervisordClient;
 pub use daemon_protocol::ControlStateDigest;
 pub use daemon_protocol::MAX_SUPERVISORD_ROSTER;
+pub use daemon_protocol::ProductionMutationContext;
 pub use daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 pub use daemon_protocol::SupervisorEpoch;
 pub use daemon_protocol::SupervisordAgentStatus;
@@ -180,3 +181,39 @@ pub use writer_handoff::WriterHandoffPlanV1;
 pub use unix::UnixManagedProcess;
 #[cfg(unix)]
 pub use unix::UnixProcessDriver;
+
+#[cfg(unix)]
+mod unix_control_io;
+
+#[cfg(feature = "production-authority")]
+mod release_controller;
+#[cfg(feature = "production-authority")]
+mod release_controller_store;
+#[cfg(feature = "production-authority")]
+pub use release_controller::MAX_PRODUCTION_RECOVERY_DECISION_BYTES;
+#[cfg(feature = "production-authority")]
+pub use release_controller::MAX_PRODUCTION_RELEASE_JOURNAL_BYTES;
+#[cfg(feature = "production-authority")]
+pub use release_controller::MAX_PRODUCTION_RELEASE_REQUEST_BYTES;
+#[cfg(feature = "production-authority")]
+pub use release_controller::PRODUCTION_RELEASE_JOURNAL_SCHEMA_VERSION;
+#[cfg(feature = "production-authority")]
+pub use release_controller::PRODUCTION_RELEASE_REQUEST_SCHEMA_VERSION;
+#[cfg(feature = "production-authority")]
+pub use release_controller::ProductionReleaseCallerStatusV1;
+#[cfg(feature = "production-authority")]
+pub use release_controller::ProductionReleaseController;
+#[cfg(feature = "production-authority")]
+pub use release_controller::ProductionReleaseControllerError;
+#[cfg(feature = "production-authority")]
+pub use release_controller::ProductionReleaseJournalV1;
+#[cfg(feature = "production-authority")]
+pub use release_controller::ProductionReleaseRequestV1;
+#[cfg(feature = "production-authority")]
+pub use release_controller::read_production_recovery_decision;
+#[cfg(feature = "production-authority")]
+pub use release_controller::read_production_release_request;
+
+mod signed_history;
+
+mod stop_recovery;

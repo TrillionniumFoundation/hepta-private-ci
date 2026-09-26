@@ -14,12 +14,14 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-state = { workspace = true }
 codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sqlx = { workspace = true }
 thiserror = { workspace = true }
+tokio = { workspace = true, features = ["sync"] }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

@@ -273,7 +273,15 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        // This test adapter mirrors the product host's cache.take() before
+        // loading CURRENT: I/O rejection must also close the consumer.
+        let registry = read_registry_snapshot(snapshot, current).map_err(|error| {
+            self.unavailable = true;
+            PinnedCandidateLoadError::Storage(error)
+        })?;
         self.with_verified_registry(current, registry, consume)
     }
 }

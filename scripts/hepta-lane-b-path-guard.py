@@ -123,6 +123,36 @@ def delegated_dependency_matches(
     return False
 
 
+def delegated_owner_roots(
+    root: Path, owner: str, lane_roots: dict[str, list[str]]
+) -> list[str]:
+    if owner in lane_roots:
+        return lane_roots[owner]
+    registry_path = canonical_path(
+        root,
+        "docs/modules/SOURCE_BINDINGS.json",
+        "source binding registry",
+        require_file=True,
+    )
+    registry = load(registry_path)
+    need(
+        registry.get("schema") == "hepta.module-source-binding.v2"
+        and registry.get("schemaVersion") == 2,
+        "delegated source binding schema",
+    )
+    bindings = registry.get("bindings")
+    need(isinstance(bindings, list), "delegated source bindings")
+    matches = [
+        row for row in bindings if isinstance(row, dict) and row.get("module") == owner
+    ]
+    need(len(matches) == 1, f"unknown or ambiguous delegated owner {owner}")
+    declared = matches[0].get("declaredRoots")
+    need(isinstance(declared, list) and bool(declared), f"{owner}: declared roots")
+    for path in declared:
+        canonical_path(root, path, f"{owner}: declared owner root", require_file=None)
+    return declared
+
+
 def verify_anchor(
     root: Path,
     module: str,
@@ -139,13 +169,14 @@ def verify_anchor(
         need(inside(path, roots[module]), f"{module}: owner-root escape {path}")
     else:
         delegated_owner = anchor.get("ownerModule")
+        need(isinstance(delegated_owner, str), f"{module}: delegated owner")
+        declared = delegated_owner_roots(root, delegated_owner, roots)
         need(
-            isinstance(delegated_owner, str) and delegated_owner in roots,
-            f"{module}: delegated owner",
-        )
-        need(
-            inside(path, roots[delegated_owner])
-            or delegated_dependency_matches(root, roots[delegated_owner], anchor),
+            inside(path, declared)
+            or (
+                delegated_owner in roots
+                and delegated_dependency_matches(root, declared, anchor)
+            ),
             f"{module}: delegate-root escape {path}",
         )
     symbol = anchor["symbol"]

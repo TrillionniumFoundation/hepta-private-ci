@@ -5,7 +5,6 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_authbus::AuthBusAuthorityHost;
-use codex_hepta_authbus::AuthBusAuthorityStore;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_authbus::PolicyEffect;
@@ -491,20 +490,24 @@ impl AuthBusEvidence {
         }
     }
 
-    fn time_spec(&self) -> IssuerSpec {
-        IssuerSpec {
-            issuer_id: StableId::new("issuer:bao-time").unwrap(),
-            key_epoch: Generation::new(1).unwrap(),
+    fn time_spec(&self) -> Result<IssuerSpec, BaoAuthBusError> {
+        Ok(IssuerSpec {
+            issuer_id: StableId::new("issuer:bao-time")
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
+            key_epoch: Generation::new(1)
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
             verifying_key: self.time_key.verifying_key(),
-        }
+        })
     }
 
-    fn settlement_spec(&self) -> IssuerSpec {
-        IssuerSpec {
-            issuer_id: StableId::new("issuer:bao-settlement").unwrap(),
-            key_epoch: Generation::new(1).unwrap(),
+    fn settlement_spec(&self) -> Result<IssuerSpec, BaoAuthBusError> {
+        Ok(IssuerSpec {
+            issuer_id: StableId::new("issuer:bao-settlement")
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
+            key_epoch: Generation::new(1)
+                .map_err(|_| BaoAuthBusError::Evidence("invalid test issuer"))?,
             verifying_key: self.settlement_key.verifying_key(),
-        }
+        })
     }
 }
 
@@ -571,9 +574,6 @@ async fn authbus_host(
     ),
     TestError,
 > {
-    use std::io::Write;
-    use std::os::unix::fs::OpenOptionsExt;
-
     let database_root = tempfile::tempdir()?;
     let checkpoint_root = tempfile::tempdir()?;
     std::fs::set_permissions(database_root.path(), std::fs::Permissions::from_mode(0o700))?;
@@ -586,29 +586,11 @@ async fn authbus_host(
         .path()
         .join("authbus-authority-checkpoint.json");
 
-    let raw = AuthBusAuthorityStore::open(&database).await?;
-    let frontier = raw.authority_frontier_digest().await?;
-    drop(raw);
-    let document = serde_json::json!({
-        "schema_version": 1,
-        "owner_id": "bao-product-owner",
-        "generation": 1,
-        "digest": frontier.to_string(),
-    });
-    let mut file = std::fs::OpenOptions::new()
-        .create_new(true)
-        .write(true)
-        .mode(0o600)
-        .open(&checkpoint)?;
-    serde_json::to_writer(&mut file, &document)?;
-    file.flush()?;
-    file.sync_all()?;
-
-    let host = AuthBusAuthorityHost::open(&database, checkpoint, "bao-product-owner").await?;
+    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint, "bao-product-owner").await?;
     let mut evidence = AuthBusEvidence::new(now);
-    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
+    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec()?)
         .await?;
-    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
+    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec()?)
         .await?;
 
     let binding = client.binding(request)?;
@@ -680,8 +662,10 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .consume_kv_v2_with_authbus(
             &authbus,
             &admission,
-            &authority,
-            &grant,
+            BaoFinalUseContext {
+                authority: &authority,
+                grant: &grant,
+            },
             &request,
             &mut evidence,
             |bytes| {
@@ -724,8 +708,10 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
         .consume_kv_v2_with_authbus(
             &authbus,
             &admission,
-            &authority,
-            &grant,
+            BaoFinalUseContext {
+                authority: &authority,
+                grant: &grant,
+            },
             &request,
             &mut evidence,
             |_| Ok(()),

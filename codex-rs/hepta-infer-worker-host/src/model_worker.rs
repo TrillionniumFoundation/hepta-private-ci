@@ -21,7 +21,8 @@ const MAX_TOKENS: u32 = 1_000_000;
 const MAX_NEURON_FEATURES: usize = 512;
 const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ModelManifest {
     pub model_id: String,
     pub model_digest: String,
@@ -126,6 +127,7 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    ModelCleanupPending,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -137,6 +139,7 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    CleanupPending(String),
 }
 
 impl fmt::Display for Error {
@@ -157,11 +160,18 @@ pub trait ModelDriver {
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ModelLifecycle {
+    Active,
+    CleanupRequired,
+}
+
 #[derive(Debug)]
 struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    lifecycle: ModelLifecycle,
 }
 
 #[derive(Debug)]
@@ -201,6 +211,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
         &self.worker_id
     }
 
+    /// Count every retained handle, including one awaiting failed cleanup.
+    /// At most MAX_MODELS u64 observations are summed; u128 cannot overflow.
+    /// Deriving the total avoids a second mutable ledger on failure paths.
+    #[must_use]
+    pub fn resident_memory_bytes(&self) -> u128 {
+        self.models
+            .values()
+            .map(|loaded| u128::from(loaded.handle.observed_memory_bytes))
+            .sum()
+    }
+
     pub fn load_model(
         &mut self,
         now_ms: u64,
@@ -215,11 +236,34 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        let resident = self.resident_memory_bytes();
+        if resident >= u128::from(self.grant.maximum_memory_bytes) {
             return Err(Error::ModelCapacity);
+        }
+        let handle = self.driver.load(&manifest)?;
+        let next_resident = resident + u128::from(handle.observed_memory_bytes);
+        let load_error = validate_identity(&handle.opaque_id, "model handle")
+            .err()
+            .or_else(|| {
+                (next_resident > u128::from(self.grant.maximum_memory_bytes))
+                    .then_some(Error::ModelCapacity)
+            });
+        if let Some(load_error) = load_error {
+            if let Err(cleanup_error) = self.driver.unload(handle.clone()) {
+                self.models.insert(
+                    manifest.model_id.clone(),
+                    LoadedModel {
+                        manifest,
+                        handle,
+                        active_requests: 0,
+                        lifecycle: ModelLifecycle::CleanupRequired,
+                    },
+                );
+                return Err(Error::CleanupPending(format!(
+                    "post-load validation failed ({load_error}); cleanup failed ({cleanup_error})"
+                )));
+            }
+            return Err(load_error);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -234,6 +278,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                lifecycle: ModelLifecycle::Active,
             },
         );
         Ok(observation)
@@ -256,6 +301,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Active {
+            return Err(Error::ModelCleanupPending);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -333,17 +381,20 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     pub fn unload_model(
         &mut self,
-        now_ms: u64,
+        _now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        // Releasing an owned handle does not authorize new execution. Expiry
+        // and revocation must not strand resources or prevent cleanup retries.
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        loaded.lifecycle = ModelLifecycle::CleanupRequired;
+        // Keep the handle and its accounting until the driver confirms release.
+        self.driver.unload(loaded.handle.clone())?;
+        self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -352,7 +403,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
-        validate_grant(now_ms, &self.grant)
+        validate_grant(now_ms, &self.grant)?;
+        if self.resident_memory_bytes() > u128::from(self.grant.maximum_memory_bytes) {
+            return Err(Error::ModelCapacity);
+        }
+        Ok(())
     }
 }
 
@@ -516,6 +571,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Active {
+            return Err(Error::ModelCleanupPending);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
@@ -715,3 +773,7 @@ fn validate_neuron_feature_output(
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "model_worker_resource_lifecycle_tests.rs"]
+mod resource_lifecycle_tests;

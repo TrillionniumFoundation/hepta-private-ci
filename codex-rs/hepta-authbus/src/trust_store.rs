@@ -14,7 +14,6 @@ use crate::IssuerRecord;
 use crate::IssuerRegistration;
 use crate::IssuerRetirement;
 use crate::IssuerSpec;
-use crate::SettlementIssuerRegistration;
 use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
 use crate::authority_store::advance_time;
@@ -183,22 +182,6 @@ impl AuthBusAuthorityStore {
         })
     }
 
-    pub async fn settlement_issuer(
-        &self,
-        issuer_id: &StableId,
-        key_epoch: Generation,
-    ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
-        let record = self
-            .issuer_record(IssuerPurpose::Settlement, issuer_id, key_epoch)
-            .await?;
-        Ok(SettlementIssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
-    }
-
     pub async fn observe_trusted_time_attestation(
         &self,
         attestation: &SignedTrustedTimeAttestation,
@@ -238,7 +221,7 @@ async fn insert_issuer(
     .map_err(|error| {
         if error
             .as_database_error()
-            .is_some_and(|database| database.is_unique_violation())
+            .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
         {
             AuthBusAuthorityError::AlreadyExists
         } else {
@@ -266,7 +249,7 @@ async fn load_active_issuer(
     issuer_from_row(&row)
 }
 
-async fn load_issuer(
+pub(crate) async fn load_issuer(
     tx: &mut Transaction<'_, Sqlite>,
     purpose: IssuerPurpose,
     issuer_id: &StableId,

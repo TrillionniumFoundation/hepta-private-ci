@@ -316,15 +316,17 @@ def verify() -> int:
         module = row["module"]
         product_caller = row["dimensions"]["productCaller"]["state"]
         if module == "objective.compiler":
-            need(
-                product_caller == "source_composed_authenticated_agentd_not_activated",
-                f"truth boundary {module} productCaller",
+            expected_product_caller = "source_composed_authenticated_agentd_not_activated"
+        elif module == "utility.ndu":
+            expected_product_caller = (
+                "request_local_read_only_product_caller_established_authenticated_production_owner_not_composed"
             )
         else:
-            need(
-                product_caller == "not_established",
-                f"truth boundary {module} productCaller",
-            )
+            expected_product_caller = "not_established"
+        need(
+            product_caller == expected_product_caller,
+            f"truth boundary {module} productCaller",
+        )
         for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",

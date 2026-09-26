@@ -32,6 +32,16 @@ The daemon-owned `AgentRunCoordinator` freezes the exact prepared envelope into 
 
 Ledger append uncertainty never becomes success. `Indeterminate` or ambiguous I/O returns `PendingIntelligenceLedgerAppendV1`, preserving the exact event and original predecessor. Reconciliation requires a freshly recovered journal and exact replay. Physical after-send uncertainty is also explicit: lost turn/start acknowledgement or a cancellation/deadline grace window without terminal provider evidence transitions the same Agentd run to `Indeterminate`; no automatic redispatch is permitted.
 
+The authenticated terminal facade (`append_observed_outcome_v2` /
+`append_outcome_credit_v2`) now uses `LedgerWriter::recover_authenticated_append`
+for already committed Outcome and CreditBatch records. It checks the complete
+request payload before lookup and preserves the original Outcome receipt when a
+missing CreditBatch cannot pass current admission. A real child-process test exits
+after the durable commits and recovers both exact receipts after signature expiry;
+this exercises the owner/facade, not App Server, live observer provisioning or
+independent acceptance. The default daemon still must persist its canonical
+handoff and pending lookup identities in the existing owners before dispatch.
+
 ## 4. Deterministic algorithm and scheduling
 
 1. Validate canonical budget, frozen snapshot and bounded legal candidate set.
@@ -46,7 +56,7 @@ Ledger append uncertainty never becomes success. `Indeterminate` or ambiguous I/
 10. Revalidate every owner again, return an authority-free `IntelligenceHostEnvelopeV1`, then let Agentd perform one further final-use currentness fence before deriving a dispatch proposal and freezing the exact envelope into `ContextAttached`.
 11. runtime.codex rechecks that exact Agentd run/context/envelope revision, persists its native dispatch write-ahead, advances the run to `Dispatched`, and only then crosses App Server `turn/start`.
 12. Provider terminal observation returns to the same run revision. Lost turn-start acknowledgement, transport loss or no-terminal cancellation grace becomes `Indeterminate`, never safe replay.
-13. Durable Decision and independently observed terminal Outcome remain separate learning-ledger events and still require currentness at append/reconcile time.
+13. Durable Decision and independently observed terminal Outcome remain separate learning-ledger events. New appends and current data use require live admission; exact historical acknowledgement lookup does not renew authority or data eligibility.
 
 Each real owner call is measured with a monotonic `Instant` and rejected when it exceeds its stage budget. The entire cognition run also has a total timeout around a blocking worker. Late worker results have no effect/ledger capability and are discarded; this is effect isolation, not a claim that `spawn_blocking` can kill a running synchronous Rust instruction.
 
@@ -60,20 +70,20 @@ These are enforcement bounds, not target-host measurements. The blocking worker 
 
 Source tests now include:
 
-- `INTEL-01`: `codex-rs/hepta-intelligence/src/canonical_tests.rs`: seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt and duplicate candidate rejection.
+- `INTEL-01`: `codex-rs/hepta-intelligence/src/canonical_tests.rs`: seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt, duplicate rejection, legal-set membership and positive selected propensity.
 - `INTEL-02`: `codex-rs/hepta-agentd/src/intelligence_product_tests.rs`: real objective/NDU/neuron/prompt/intuition/context/evaluation APIs, Agentd dispatch proposal, real durable Decision -> independent terminal Outcome, acknowledged reopen and idempotent retry.
 - `INTEL-03`: The Agentd product tests also cover missing current owner, signed-currentness substitution, final-use revocation-frontier race, exact admit/context/dispatch/terminal lifecycle and total-budget timeout before any ledger capability is exposed.
 - `INTEL-04`: Agent protocol tests cover strict bounded run-lifecycle DTO round trips with owner-controlled admission time.
 - `INTEL-05`: Native inference source binds physical turn dispatch and terminal/indeterminate reconciliation to the exact Agentd intelligence run; a real-process App Server E2E for the exact candidate remains required before `productExecutionProved` can become true.
 - `INTEL-06`: Existing vertical/evaluated-shadow tests remain compatibility regression coverage.
 
-These are executable source tests. They become exact-candidate evidence only when the repository workflows execute them on the exact head and deterministic merge candidate. Target-host resource evidence remains a separate receipt.
+These are executable source tests. They become exact-candidate evidence only when the repository workflows execute them on the exact head and deterministic merge candidate. Target-host resource evidence remains a separate receipt. Tests gated by `qualification-legacy-learning-write` prove only the legacy qualification adapter; they are not evidence that the normal daemon has installed the product learning writer or a concrete invocation provider.
 
 ## 7. Integration, rollback and capability ceiling
 
 The product topology now has a daemon routing edge: Agentd owns the composition-runner source; authenticated `ObjectiveStart` invokes it only when the host-owned invocation provider is installed; `intelligence.control` remains an in-process composition facade and the seven facts remain with their owners. `AppServerModelDriver::run_intelligence` can consume the resulting exact run/context binding. This source routing is not evidence of a live provider or target-host exercise. Dispatch is not a model success claim: it is a durable/Agentd transition that precedes the physical App Server effect boundary.
 
-Currentness is final-use, not admission-only. Key rotation, owner generation drift, authority-epoch drift or revocation-frontier drift invalidates the frozen run before publication. The currentness manifest itself must verify under the separately configured signer key, so rewriting JSON fields cannot substitute a new current key. An exact durable Decision/Outcome retry may replay after restart only when currentness still permits use.
+Currentness is final-use, not admission-only. Key rotation, owner generation drift, authority-epoch drift or revocation-frontier drift invalidates the frozen run before publication. The currentness manifest itself must verify under the separately configured signer key, so rewriting JSON fields cannot substitute a new current key. A new append or actual data/model use after restart still requires currentness. The authenticated terminal facade may recover the exact historical Outcome/CreditBatch acknowledgement after signature expiry without replaying an event; the complete payload, original predecessor, persisted authentication and active run/episode binding must match.
 
 This source grants no model/provider/tool/effect authority, no production activation, no selection/promotion/release authority and no independent acceptance. C1 prompted-memory retrieval remains a distinct planned capability and is not closed by the basic product composition.
 

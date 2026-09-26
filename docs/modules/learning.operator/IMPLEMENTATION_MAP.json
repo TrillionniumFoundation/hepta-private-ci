@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f075c337dd940ccc6d252ff0e6d941ef73933deb",
-    "tree": "c86994b828aa0e17239068332ac2279d4f1be5ca"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/lib.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/lib_tests.rs::deterministic_and_canonical"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_targets",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/reference_tests.rs::op_01_farthest_point_sensor_core_is_deterministic"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_sensor_core",
       "mappingClass": "owner_native",
@@ -51,7 +55,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/reference_tests.rs::op_01_tabular_reference_produces_exact_targets_and_gaps"
+      ],
       "sourcePathExists": true,
       "designOperation": "evaluate_bellman_reference",
       "mappingClass": "owner_native",
@@ -63,7 +69,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/reference_tests.rs::op_02_applicability_rejects_degenerate_diffusion"
+      ],
       "sourcePathExists": true,
       "designOperation": "validate_applicability_certificate",
       "mappingClass": "owner_native",
@@ -75,7 +83,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs::op_02_signed_applicability_requires_authenticated_independent_evaluator"
+      ],
       "sourcePathExists": true,
       "designOperation": "validate_applicability_with_signed_evidence_v2",
       "mappingClass": "owner_native",
@@ -87,7 +97,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/learned.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/learned_tests.rs::op_05_tabular_operator_fits_complete_grid_deterministically"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator",
       "mappingClass": "owner_native",
@@ -99,7 +111,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/learned_tests.rs::op_05_default_fit_rejects_relabelled_duplicate_evidence"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator_strict_v2",
       "mappingClass": "owner_native",
@@ -111,7 +125,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs::op_06_tabular_fit_requires_exact_frozen_dataset_evidence"
+      ],
       "sourcePathExists": true,
       "designOperation": "verify_tabular_operator_plan_v2",
       "mappingClass": "owner_native",
@@ -123,7 +139,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs::op_06_tabular_fit_requires_exact_frozen_dataset_evidence"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator_verified_v2",
       "mappingClass": "owner_native",
@@ -135,7 +153,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/learned.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/learned_tests.rs::op_05_tabular_prediction_is_synthetic_and_domain_bounded"
+      ],
       "sourcePathExists": true,
       "designOperation": "predict_tabular_operator",
       "mappingClass": "owner_native",
@@ -147,7 +167,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/loaded_tests.rs::independent_pin_and_all_truncations_are_checked"
+      ],
       "sourcePathExists": true,
       "designOperation": "encode_tabular_payload_v1",
       "mappingClass": "owner_native",
@@ -159,7 +181,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/loaded_tests.rs::distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
+      ],
       "sourcePathExists": true,
       "designOperation": "load_pinned_tabular_operator_v1",
       "mappingClass": "owner_native",
@@ -171,7 +195,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/reference_tests.rs::op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget"
+      ],
       "sourcePathExists": true,
       "designOperation": "admit_operator_regularity",
       "mappingClass": "owner_native",
@@ -183,7 +209,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs::op_02_signed_regularity_binds_evaluator_identity_and_exact_assessment"
+      ],
       "sourcePathExists": true,
       "designOperation": "admit_operator_regularity_with_signed_evidence_v2",
       "mappingClass": "owner_native",
@@ -195,7 +223,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/world_model_tests.rs::op_04_transition_model_is_action_conditioned_and_probability_exact"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_transition_model",
       "mappingClass": "owner_native",
@@ -207,7 +237,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs::op_06_world_model_requires_exact_frozen_dataset_evidence"
+      ],
       "sourcePathExists": true,
       "designOperation": "verify_world_model_dataset_v2",
       "mappingClass": "owner_native",
@@ -219,7 +251,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs::op_06_world_model_requires_exact_frozen_dataset_evidence"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_transition_model_verified_v2",
       "mappingClass": "owner_native",
@@ -231,7 +265,9 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
       "state": "source_implemented_not_default_product_loop_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/world_model_tests.rs::op_04_prediction_is_synthetic_and_unsupported_pairs_abstain"
+      ],
       "sourcePathExists": true,
       "designOperation": "predict_transition",
       "mappingClass": "owner_native",
@@ -240,12 +276,14 @@
     {
       "operation": "freeze_terminal_cell_from_owner_v1",
       "designOperation": "freeze_terminal_cell_from_owner_v1",
-      "nativeSymbol": "pub fn freeze_terminal_cell_from_owner_v1(",
+      "nativeSymbol": "freeze_terminal_cell_from_owner_v1",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal"
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+        "codex-rs/hepta-bellman-operator/src/owner_terminal_tests.rs::actual_owner_rejects_target_action_and_profile_replacement_under_same_receipt",
+        "codex-rs/hepta-bellman-operator/src/owner_terminal_tests.rs::frozen_owner_trust_rotation_invalidates_prepared_training"
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
@@ -254,12 +292,14 @@
     {
       "operation": "fit_terminal_cell_from_owner_v1",
       "designOperation": "fit_terminal_cell_from_owner_v1",
-      "nativeSymbol": "pub fn fit_terminal_cell_from_owner_v1(",
+      "nativeSymbol": "fit_terminal_cell_from_owner_v1",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal"
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+        "codex-rs/hepta-bellman-operator/src/owner_terminal_tests.rs::actual_owner_correction_expiry_and_restart_preserve_training_identity",
+        "codex-rs/hepta-bellman-operator/src/owner_terminal_tests.rs::frozen_owner_trust_rotation_invalidates_prepared_training"
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
@@ -267,9 +307,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose the default dataset freeze -> verified training -> independent evaluation -> selection -> new-process load shadow loop.",
-    "Obtain successful exact-head and deterministic synthetic-merge qualification receipts for this candidate.",
-    "Execute the verified training and independent evidence regressions on the unified candidate."
+    "Compose the default dataset freeze -> owner-materialized training -> independent product evaluation -> signed artifact publication/selection -> new-process load -> feedback loop in the normal Agentd bootstrap; a callable host alone is not this loop.",
+    "Obtain successful exact-head and deterministic synthetic-merge qualification receipts for the final unified candidate.",
+    "Bind the production trust bootstrap and independently retained minimum trust generation to restore; a self-contained old artifact and an old trust snapshot cannot establish current authority."
   ],
   "externalEvidenceGates": [
     "independent scientific and semantic review",
@@ -294,8 +334,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "f075c337dd940ccc6d252ff0e6d941ef73933deb",
-    "tree": "c86994b828aa0e17239068332ac2279d4f1be5ca"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -316,51 +356,83 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "e8a1240287492669163968891bb1f21e53ffe23e"
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "ed9f5bcd8b01a4cf3280ad749f6999c83ee24944"
+      "object": "af07b3f6b842d58ab48cf3ec70e25130f4ede027"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
       "object": "b051815e3f38374fd4a3261d5e977de0a897e47c"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
+      "object": "ed4b15661af4628e650f82f62c6dc72573f23eea"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/dataset_bound.rs",
-      "object": "8ac1e1cc98d989a64e45781aecfce968acc1af61"
+      "object": "8eabe992b1ed7f0e417b2d5a2da9a0e79a50cc1c"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs",
+      "object": "036363db56af7278e4442bf5c6b8463b49ec6e32"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned.rs",
-      "object": "893f0d5bf8f1313cd0c20fdd13ab50fad3257293"
+      "object": "d2b45b06af22609d4d4ab52dbfdee88e4e6e423f"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
-      "object": "63efa2f84b011b41d8a4bc58c24aced6cef2b873"
+      "object": "d66ee5e27044501b662a80989a1a3321f6b682e3"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
+      "object": "db6ca93d904e0c8e6fd603ddf99686d0eb23b57b"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
-      "object": "4ab6f3074524e87a66777e9dfbb34b1426adbe72"
+      "object": "566761236f4bd140bb98e0eda2ee9258f0247cbe"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
+      "object": "1888954078a6879b4cdfb94141befa257d3d1f86"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/loaded.rs",
-      "object": "2f8452594305cf0d05ce1c034a33a6e004be55b2"
+      "object": "9b7ea343617370801aef4adc1b7441baaeab3555"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs",
+      "object": "0bb48f6156893f6c6253bb40ce987afd6068bb05"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
-      "object": "a66b1b9098116911a79ffee154caa8c94e857ce2"
+      "object": "ebdbe19e5858a085cb735330a4f6b51b683b82bd"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/owner_terminal_tests.rs",
+      "object": "a078cdd455711f08660769f3a4f2ed234784494c"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/reference.rs",
       "object": "f25b30be042dc7922311d8b43a3ade746a3b0df6"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+      "object": "c2c4a486a66c6c64cd6d2bb53bb29340203ff40e"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/world_model.rs",
       "object": "0c1494d4a627f1eeaffd8315a1cc4aed048ca7eb"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
+      "object": "23244f3c86315ff454df6fe62e09887596d0ac1c"
+    },
+    {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
-      "object": "9fa795685e26a6074e893d4d8ae6f514c554d2e3"
+      "object": "a27017d7a265dc50ae77da19544ab1ac908b8267"
     }
   ]
 }

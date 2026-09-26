@@ -325,3 +325,510 @@ fn malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes() {
         );
     }
 }
+
+#[test]
+fn distinct_model_versions_remain_reopenable() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
+    owner
+        .commit(|core| add_payload(core, 0))
+        .must("first profile");
+
+    let current = owner.registry().must("current");
+    let mut second = current
+        .realization_bindings
+        .get(&id("realization:0"))
+        .must("first binding")
+        .clone();
+    let payload = current
+        .realization_payloads
+        .get(&id("realization:0"))
+        .must("first payload")
+        .to_vec();
+    second.realization_id = id("realization:second-version");
+    second.model_version = "v2".into();
+    owner
+        .register_realization_payload_v2(second, payload, None)
+        .must("second model version");
+    let expected = owner.registry().must("registry").clone();
+    drop(owner);
+
+    let reopened = DurablePromptRegistry::open_state_dir(&path, 64).must("reopen");
+    assert_eq!(reopened.registry().must("registry"), &expected);
+}
+
+#[test]
+fn rejected_first_configuration_leaves_directory_retryable() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir(&path, 0),
+        Err(DurableRegistryError::Core(Error::ZeroCapacity))
+    ));
+    assert!(!path.join("registry.lock").exists());
+    assert!(!path.join("registry.json").exists());
+
+    let owner = DurablePromptRegistry::open_state_dir(&path, 64).must("corrected retry");
+    assert_eq!(owner.registry().must("registry").revision().get(), 1);
+}
+
+#[test]
+fn guarded_reopen_rejects_valid_pre_revocation_backup() {
+    let temp = tempfile::tempdir().must("temp");
+    let registry_path = temp.path().join("owner");
+    let checkpoint_path = temp.path().join("witness").join("checkpoint.json");
+    let mut owner = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &registry_path,
+        &checkpoint_path,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("guarded owner");
+    owner
+        .commit(|core| add_payload(core, 0))
+        .must("seed active payload");
+    let old_manifest = std::fs::read(registry_path.join("registry.json")).must("old manifest");
+    let old_payloads = std::fs::read(registry_path.join(payloads::FILE_NAME)).must("old payloads");
+    owner
+        .revoke_factor(
+            &id("factor:0"),
+            &id("operator:test"),
+            digest("revoked after backup"),
+            1,
+        )
+        .must("durable revocation");
+    drop(owner);
+
+    std::fs::write(registry_path.join("registry.json"), old_manifest).must("restore manifest");
+    std::fs::write(registry_path.join(payloads::FILE_NAME), old_payloads).must("restore payloads");
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+            &registry_path,
+            &checkpoint_path,
+            "agent:test:prompt.registry",
+            64,
+        ),
+        Err(DurableRegistryError::RollbackDetected)
+    ));
+}
+
+#[test]
+fn checkpoint_bound_registry_cannot_reopen_unguarded() {
+    let temp = tempfile::tempdir().must("temp");
+    let registry_path = temp.path().join("owner");
+    let checkpoint_path = temp.path().join("witness").join("checkpoint.json");
+    drop(
+        DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+            &registry_path,
+            &checkpoint_path,
+            "agent:test:prompt.registry",
+            64,
+        )
+        .must("guarded owner"),
+    );
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir(&registry_path, 64),
+        Err(DurableRegistryError::RecoveryCheckpointRequired)
+    ));
+}
+
+#[test]
+fn guarded_indeterminate_commit_promotes_exact_pending_successor_on_reopen() {
+    let temp = tempfile::tempdir().must("temp");
+    let registry_path = temp.path().join("owner");
+    let checkpoint_path = temp.path().join("witness").join("checkpoint.json");
+    let mut owner = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &registry_path,
+        &checkpoint_path,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("guarded owner");
+    let expected = factor(7);
+    owner.fail_directory_sync_after_rename_once();
+    assert!(matches!(
+        owner.register_factor(expected.clone()),
+        Err(DurableRegistryError::IndeterminateDurability)
+    ));
+    drop(owner);
+
+    let reopened = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &registry_path,
+        &checkpoint_path,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("reconcile pending successor");
+    assert_eq!(
+        reopened
+            .registry()
+            .must("registry")
+            .factor(&expected.factor_id),
+        Some(&expected)
+    );
+}
+
+#[test]
+fn guarded_precommit_failure_aborts_pending_checkpoint() {
+    let temp = tempfile::tempdir().must("temp");
+    let registry_path = temp.path().join("owner");
+    let checkpoint_path = temp.path().join("witness").join("checkpoint.json");
+    let mut owner = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &registry_path,
+        &checkpoint_path,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("guarded owner");
+    let rejected = factor(8);
+    owner.fail_storage_full_before_rename_once();
+    assert!(matches!(
+        owner.register_factor(rejected.clone()),
+        Err(DurableRegistryError::StorageFull)
+    ));
+    drop(owner);
+
+    let reopened = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &registry_path,
+        &checkpoint_path,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("reopen predecessor");
+    assert!(
+        reopened
+            .registry()
+            .must("registry")
+            .factor(&rejected.factor_id)
+            .is_none()
+    );
+}
+
+#[test]
+fn rejected_rollback_does_not_trim_newer_committed_payloads() {
+    let temp = tempfile::tempdir().must("temp");
+    let registry_path = temp.path().join("owner");
+    let checkpoint_path = temp.path().join("witness").join("checkpoint.json");
+    let mut owner = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &registry_path,
+        &checkpoint_path,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("guarded owner");
+    owner
+        .commit(|core| add_payload(core, 0))
+        .must("first committed payload");
+    let old_manifest = std::fs::read(registry_path.join("registry.json")).must("old manifest");
+    owner
+        .commit(|core| add_payload(core, 1))
+        .must("second committed payload");
+    let current_manifest =
+        std::fs::read(registry_path.join("registry.json")).must("current manifest");
+    let current_payloads =
+        std::fs::read(registry_path.join(payloads::FILE_NAME)).must("current payloads");
+    let current_witness = std::fs::read(&checkpoint_path).must("current witness");
+    drop(owner);
+    std::fs::write(registry_path.join("registry.json"), &old_manifest)
+        .must("restore old manifest only");
+    for guarded in [false, true] {
+        let result = if guarded {
+            DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+                &registry_path,
+                &checkpoint_path,
+                "agent:test:prompt.registry",
+                64,
+            )
+        } else {
+            DurablePromptRegistry::open_state_dir(&registry_path, 64)
+        };
+        assert!(result.is_err(), "rejected rollback must not open");
+        assert_eq!(
+            std::fs::read(registry_path.join(payloads::FILE_NAME)).must("untouched payloads"),
+            current_payloads
+        );
+        assert_eq!(
+            std::fs::read(registry_path.join("registry.json")).must("untouched manifest"),
+            old_manifest
+        );
+        assert_eq!(
+            std::fs::read(&checkpoint_path).must("untouched witness"),
+            current_witness
+        );
+    }
+    std::fs::write(registry_path.join("registry.json"), current_manifest)
+        .must("restore current manifest");
+    let reopened = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &registry_path,
+        &checkpoint_path,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("newer committed extents remain recoverable");
+    assert!(
+        reopened
+            .registry()
+            .must("registry")
+            .factor(&id("factor:1"))
+            .is_some()
+    );
+}
+
+#[test]
+fn damaged_independent_witness_poison_writer_before_further_reads_or_writes() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    let checkpoint = temp.path().join("witness").join("checkpoint.json");
+    let mut owner = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &path,
+        &checkpoint,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("guarded owner");
+    owner.register_factor(factor(0)).must("first factor");
+    let before = std::fs::read(path.join("registry.json")).must("old manifest");
+    let witness = std::fs::read(&checkpoint).must("retained witness");
+    std::fs::write(&checkpoint, b"damaged witness").must("simulate witness corruption");
+    assert!(owner.register_factor(factor(1)).is_err());
+    assert!(owner.requires_reopen());
+    assert!(matches!(
+        owner.registry(),
+        Err(DurableRegistryError::ReopenRequired)
+    ));
+    assert!(matches!(
+        owner.register_factor(factor(2)),
+        Err(DurableRegistryError::ReopenRequired)
+    ));
+    assert_eq!(
+        std::fs::read(path.join("registry.json")).must("manifest unchanged"),
+        before
+    );
+    drop(owner);
+    std::fs::write(&checkpoint, witness).must("restore independently retained exact witness");
+    let reopened = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &path,
+        &checkpoint,
+        "agent:test:prompt.registry",
+        64,
+    )
+    .must("reconcile exact predecessor");
+    assert!(
+        reopened
+            .registry()
+            .must("registry")
+            .factor(&id("factor:1"))
+            .is_none()
+    );
+}
+
+#[test]
+fn new_factor_cannot_consume_capacity_reserved_for_retirement_and_revocation() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
+    owner
+        .commit(|core| add_payload(core, 0))
+        .must("seed active realization");
+    let before = std::fs::read(path.join("registry.json")).must("manifest");
+    let limit = before.len() as u64 + capacity::reserved_bytes(owner.registry().must("registry"));
+    owner.store.metadata_limit.set(limit);
+    assert!(matches!(
+        owner.register_factor(factor(1)),
+        Err(DurableRegistryError::CapacityExceeded)
+    ));
+    assert_eq!(
+        std::fs::read(path.join("registry.json")).must("unchanged"),
+        before
+    );
+    owner
+        .retire_factor(
+            &id("factor:0"),
+            &id("operator:test"),
+            digest("retire at capacity"),
+        )
+        .must("reserved retirement");
+    owner
+        .revoke_factor(
+            &id("factor:0"),
+            &id("operator:test"),
+            digest("revoke at capacity"),
+            1,
+        )
+        .must("reserved revocation");
+    assert!(
+        std::fs::metadata(path.join("registry.json"))
+            .must("manifest size")
+            .len()
+            <= limit
+    );
+    drop(owner);
+    let reopened = DurablePromptRegistry::open_state_dir(&path, 64).must("reopen revoked owner");
+    assert_eq!(
+        reopened
+            .registry()
+            .must("registry")
+            .factor(&id("factor:0"))
+            .must("factor")
+            .lifecycle,
+        Lifecycle::Revoked
+    );
+}
+
+#[test]
+fn invalid_guarded_initial_configuration_is_side_effect_free_and_retryable() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    let checkpoint = temp.path().join("witness").join("checkpoint.json");
+    for (witness, owner_id) in [
+        (
+            std::path::PathBuf::from("relative-checkpoint.json"),
+            "agent:test",
+        ),
+        (path.join("checkpoint.json"), "agent:test"),
+        (checkpoint.clone(), ""),
+    ] {
+        assert!(
+            DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+                &path, &witness, owner_id, 64
+            )
+            .is_err()
+        );
+        assert!(
+            !path.exists(),
+            "bad arguments must not create registry.lock"
+        );
+    }
+    DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &path,
+        &checkpoint,
+        "agent:test",
+        64,
+    )
+    .must("corrected initial configuration");
+}
+
+#[test]
+fn guarded_post_rename_uncertainty_reconciles_exact_pending_successor() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    let checkpoint = temp.path().join("witness").join("checkpoint.json");
+    let mut owner = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &path,
+        &checkpoint,
+        "agent:test",
+        64,
+    )
+    .must("owner");
+    owner.register_factor(factor(0)).must("predecessor");
+    let old_manifest = std::fs::read(path.join("registry.json")).must("old manifest");
+    owner.fail_directory_sync_after_rename_once();
+    assert!(matches!(
+        owner.register_factor(factor(1)),
+        Err(DurableRegistryError::IndeterminateDurability)
+    ));
+    assert!(owner.requires_reopen());
+    drop(owner);
+    let reopened = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &path,
+        &checkpoint,
+        "agent:test",
+        64,
+    )
+    .must("pending successor reconciliation");
+    assert!(
+        reopened
+            .registry()
+            .must("registry")
+            .factor(&id("factor:1"))
+            .is_some()
+    );
+    drop(reopened);
+    std::fs::write(path.join("registry.json"), old_manifest)
+        .must("attempt predecessor rollback after promotion");
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+            &path,
+            &checkpoint,
+            "agent:test",
+            64
+        ),
+        Err(DurableRegistryError::RollbackDetected)
+    ));
+}
+
+#[test]
+fn guarded_precommit_storage_full_aborts_pending_without_changing_predecessor() {
+    let temp = tempfile::tempdir().must("temp");
+    let path = temp.path().join("owner");
+    let checkpoint = temp.path().join("witness").join("checkpoint.json");
+    let mut owner = DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &path,
+        &checkpoint,
+        "agent:test",
+        64,
+    )
+    .must("owner");
+    owner.register_factor(factor(0)).must("predecessor");
+    let old_manifest = std::fs::read(path.join("registry.json")).must("old manifest");
+    let old_witness = std::fs::read(&checkpoint).must("old witness");
+    owner.fail_storage_full_before_rename_once();
+    assert!(matches!(
+        owner.register_factor(factor(1)),
+        Err(DurableRegistryError::StorageFull)
+    ));
+    assert!(!owner.requires_reopen());
+    assert_eq!(
+        std::fs::read(path.join("registry.json")).must("manifest"),
+        old_manifest
+    );
+    assert_eq!(std::fs::read(&checkpoint).must("witness"), old_witness);
+    owner
+        .register_factor(factor(1))
+        .must("retry after proven precommit failure");
+}
+
+#[test]
+fn unsafe_checkpoint_parent_is_rejected_before_initial_registry_creation() {
+    use std::os::unix::fs::PermissionsExt;
+    let temp = tempfile::tempdir().must("temp");
+    let root = temp.path().join("registry");
+    let shared = temp.path().join("shared-checkpoints");
+    std::fs::create_dir(&shared).must("shared parent");
+    std::fs::set_permissions(&shared, std::fs::Permissions::from_mode(0o755))
+        .must("non-private checkpoint parent");
+    assert!(matches!(
+        DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+            &root,
+            &shared.join("checkpoint.json"),
+            "agent:test",
+            64,
+        ),
+        Err(DurableRegistryError::UnsafeRecoveryCheckpoint)
+    ));
+    assert!(
+        !root.exists(),
+        "invalid parent must not strand a writer lock"
+    );
+    let checkpoint = temp
+        .path()
+        .join("private-checkpoints")
+        .join("checkpoint.json");
+    drop(
+        DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+            &root,
+            &checkpoint,
+            "agent:test",
+            64,
+        )
+        .must("corrected initial open"),
+    );
+    DurablePromptRegistry::open_state_dir_with_recovery_checkpoint(
+        &root,
+        &checkpoint,
+        "agent:test",
+        64,
+    )
+    .must("reopen corrected registry");
+}

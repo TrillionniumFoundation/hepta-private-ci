@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "d7a40d0c5d3631be7a86ebf09b9eb2e3f1f3e997",
+    "tree": "5ad71db087fb32f1792b0d91e792f44e9279222c"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "prompt.registry",
@@ -22,45 +22,185 @@
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "promptregistry",
-      "nativeSymbol": "PromptRegistry",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/lib.rs",
+      "operation": "open_state_dir",
+      "nativeSymbol": "open_state_dir",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "promptregistry",
+      "designOperation": "open_state_dir",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "register_realization_v2",
-      "nativeSymbol": "register_realization_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
+      "operation": "open_state_dir_with_recovery_checkpoint",
+      "nativeSymbol": "open_state_dir_with_recovery_checkpoint",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "host_retained_recovery_checkpoint",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_state_dir_with_recovery_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "register_factor",
+      "nativeSymbol": "register_factor",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "draft_only",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "register_factor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_factor_final_use",
+      "nativeSymbol": "admit_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_factor_final_use",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "register_realization_payload_final_use_v2",
+      "nativeSymbol": "register_realization_payload_final_use_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "register_realization_payload_final_use_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "retire_factor_final_use",
+      "nativeSymbol": "retire_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retire_factor_final_use",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_factor_final_use",
+      "nativeSymbol": "revoke_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke_factor_final_use",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "snapshot_v2",
+      "nativeSymbol": "snapshot_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "register_realization_v2",
+      "designOperation": "snapshot_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
       "operation": "read_compatible_v2",
       "nativeSymbol": "read_compatible_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_compatible_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "dereference_realization_v2",
+      "nativeSymbol": "dereference_realization_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "dereference_realization_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "registry",
+      "nativeSymbol": "registry",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "requires_reopen",
+      "nativeSymbol": "requires_reopen",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "requires_reopen",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Connect normal authenticated daemon input production and independent Generator/Evaluator selection to the existing AgentdPromptPipelineOwner; guarded host installation alone is not complete product execution.",
+    "Complete signed current provider/model trust and runtime/provider-journal antirollback beyond registry-only independent checkpoint restoration.",
+    "Implement safe history archival/reclamation and indexed exact lookup without dropping revocations or unresolved send identities; qualify legacy images that lack capacity reservations.",
+    "Run exact final-head and deterministic synthetic-merge tests, all-target compilation, strict lint and real product-process regressions before widening the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

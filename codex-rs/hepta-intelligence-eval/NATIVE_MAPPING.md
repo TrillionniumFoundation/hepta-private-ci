@@ -89,6 +89,18 @@ insufficient evidence; an outcome model cannot repair zero support.
 
 Cluster and temporal estimator receipts now carry private integrity seals. `ProductEvaluationRunnerV1` derives each final `MetricGateV1` from the sealed candidate/baseline interval selected by the preregistered product metric-source contract; caller-supplied intervals are not part of this product path. Privacy review, change-point admission and real future-window collection remain external evidence obligations.
 
+## Publication and recovery adapters
+
+`src/product_publication.rs` prepares authenticated signing bytes but not receipts.
+`../hepta-agentd/src/intelligence_evaluation_publication.rs` implements the concrete
+sink over the existing daemon evidence endpoint. The evidence owner refreshes the
+issuer after writer serialization. `src/product_recovery_tests.rs` covers local
+crash/replay cuts, and `../hepta-agentd/tests/support/evaluation_publication.rs`
+exercises the real daemon publication transport, restart and revocation.
+The input provider, complete job scheduler and original-intent outbox remain
+product integration obligations, not capabilities supplied by the test fixtures.
+The isolated storage probe is `examples/fenced_holdout_probe.rs`.
+
 ## Product integration obligations
 
 A product receipt must name:

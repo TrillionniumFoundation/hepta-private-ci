@@ -86,7 +86,7 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its tasks through the existing `RuntimeTasks` host. The composition registers required tasks and invokes the automation-owned constructor; adding a normal optional task no longer adds a central completion enum or cleanup branch. Optional failure invokes its owner-local quarantine callback, while a failed quarantine, writer error or generation fence stops the host. Retirement uses cooperative cancellation and acknowledged owner cleanup, not a timeout relabeled as success.
 
-Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`; a runner by itself advertises nothing, compatibility `RunStart` remains distinct, and unsigned evaluation input remains rejected.
+Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`. Default daemon startup now rejects a lone runner/provider before opening services, and a complete pair also requires explicit Objective profile, AuthBus trust and replay checkpoint. The final ingress rejects a half-attached pair rather than falling back. Only a profile with neither component remains compatibility mode; unsigned evaluation input remains rejected.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
@@ -142,18 +142,53 @@ this target. [HNMF](../../hnmf/TECHNICAL.md) owns contribution/learning semantic
 ### Same-host shared Replay composition
 
 [AgentdSharedReplayHostV1](../../../codex-rs/hepta-agentd/src/shared_terminal_cell.rs)
-consumes existing Memory, ledger and artifact owners. It binds Replay to the
-consumer/workspace/parameter scope, and binds each training decision to the exact
-owner/Memory/revision support rather than equal text. Train, load and prediction
-revalidate source use and frozen ledger. Load/prediction also check the supplied
-artifact-owner registry and exact bytes. The embedding owner must supply the
-current registry; this candidate API does not mint signed production CURRENT.
+consumes the existing Memory, ledger and artifact owners. Replay binds the native
+consumer, workspace and parameter scope. Training decisions bind exact
+owner/Memory/revision support, not equal text. The native builder attaches the
+fenced `LearningArtifactOwnerHost` and independent `ArtifactSelectionVerifierV1`;
+load and prediction no longer accept caller-supplied registry snapshots.
 
-The integration test uses separate source/receiver stores and covers no sharing,
-Recall-only, Replay-only, both, altered bytes/targets/workspaces, independent
-artifact revocation and support withdrawal after loading. This is an owner-path
-behavioral test, not a real-task transfer study, process-isolation proof or
-production Laya service. Selected model state and effect authority are unchanged.
+A load authenticates signed selection against the owner's live signed CURRENT,
+resolves registered payload bytes under that owner, and validates the frozen
+ledger plus current Memory grant. Following asynchronous source checks it checks
+CURRENT again. Prediction holds the artifact owner publication lock across its
+final selection check and pure table calculation. A failed or cancelled use closes
+the loaded consumer; a later call cannot revive it. These checks do not lock
+independent Memory owners against future corrections or grant external effects.
+
+The version-1 recovery bundle contains the actual table, dataset receipt, source
+identity/revision and compatibility bindings. It does not copy private Memory
+text. Its complete bytes are bound by the independently selected manifest. Limits
+are 4 MiB per bundle and 4096 source records; unknown fields, altered bytes,
+unsupported versions and mismatched producer/consumer identities are rejected.
+The old raw-table candidate interface is not an implicit recovery fallback.
+The full V2 manifest is separately restored from the same artifact owner and
+matched to the V1 support digest. This one-source profile requires exactly the
+frozen dataset as its declared dataset set, dataset-derived provenance, and the
+inner artifact digest in its declared lineage. An independently signed CURRENT
+with a different declared dataset is not accepted. Original manifest expiry is
+retained in the loaded handle and checked on every prediction, independently of
+the selector credential lifetime. Expiry closes the handle even if a later call
+supplies an earlier time.
+
+`persist_selected_descriptor` stores the signed selection in the existing artifact
+owner transaction directory under its content digest. A native composition must
+retain that digest and an independent CURRENT recovery floor. `restore` resolves
+that descriptor, current selection and source/ledger state; it never calls train.
+Missing/corrupt descriptors, absent payloads, changed grants, revoked artifacts
+and expired selection fail closed. Selection and writer keys remain independently
+configured; the implementation supplies no production signing keys.
+
+The integration test uses independent source/receiver stores and separate restore
+processes without passing a training candidate. It covers Recall/Replay separation,
+source identity substitution, missing/tampered bytes and descriptors, independent
+artifact revocation with a still-valid old signed view, and source withdrawal.
+The manifest regression additionally checks unrelated/extra datasets, wrong
+lineage, dataset-independent substitution, missing/truncated full metadata,
+metadata larger than 16 KiB, and a manifest expiring before its selector.
+It is not ordinary-daemon bootstrap, a paid-model run, Laya training, remote peer
+isolation or proof of improved learning utility. The repository-shipped canonical
+invocation provider and Circuit-to-Cell product consumer remain incomplete.
 
 ## 5. Contracts, ports and compatibility
 
@@ -392,7 +427,18 @@ The following additional work packages are source-planning envelopes introduced 
 
 The default `runtime.rs` path registers long-lived components through the existing `RuntimeTasks` host. Required component exit, generation fencing and rejected quarantine remain host-fatal; an optional scheduler failure removes its owner-local routes while unrelated App Server traffic remains available. Service retirement uses a child cancellation token, owner drain acknowledgement and a monotone service generation. Ordinary host shutdown must not permanently retire the durable timer. The real-process regression is `codex-rs/hepta-agentd/tests/optional_module_restart.rs`; shutdown outcome regressions are in `tests/runtime_shutdown_outcomes.rs`. These tests do not establish general dynamic code loading or authorize writer transfer.
 
-The configured product profile now routes authenticated `ObjectiveStart` through the canonical runner and a host-owned invocation provider, then freezes the exact prepared envelope into the existing Agentd run/context lifecycle. Bare/compatibility profiles do not install that provider, do not advertise `intelligence.canonical_v1`, and compatibility `RunStart` is never counted as canonical execution. Real provider dispatch, durable product Decision/Outcome recovery and target-host qualification remain separate boundaries.
+The configured product profile now routes authenticated `ObjectiveStart` through the canonical runner and a host-owned invocation provider, then freezes the exact prepared envelope into the existing Agentd run/context lifecycle. The shipped CLI still has no in-repository native invocation-provider bootstrap; supplying runner authority flags alone is now an explicit startup error, not a functioning canonical profile. Native embedding must supply both components and the authenticated ingress configuration. The guard is not a claim that a real seven-owner provider has been implemented. Bare/compatibility profiles do not install that provider, do not advertise `intelligence.canonical_v1`, and compatibility `RunStart` is never counted as canonical execution. Real provider dispatch, durable product Decision/Outcome recovery and target-host qualification remain separate boundaries.
+
+The repository-owned `AgentdIntelligenceInvocationV1::authoritative_provider`
+constructor composes the request owner and the seven existing stage-input readers.
+Before reading any owner it checks the durable run's Agent identity, generation
+and existing Objective fence; after reading it validates the complete immutable
+RunStart bindings. Readers are invoked again on each preparation, stop on the
+first owner error, and do not grant authority. The constructor does not load a
+native daemon profile, synthesize missing owners or replace AuthBus verification.
+`intelligence_invocation_owner_tests.rs` exercises actual reader calls and the
+existing signed canonical preparation; its fixtures are not ordinary-daemon or
+Circuit-to-Cell qualification. The default bootstrap gap above remains open.
 
 ## 17. Source implementation receipt
 
@@ -409,3 +455,26 @@ This receipt records repository source bindings for the current documentation ca
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+## RunStart input recovery and canonical preparation
+
+The existing ObjectiveStart owner retains the original canonical signed request
+body in the learning-owned RunStart journal. Recovery checks current AuthBus
+trust and Fleet fencing, then recomputes the objective projection from that
+source, the selected profile and the original admission time. An exact lost-ACK
+retry reuses the committed publication and original deadline rather than
+recompiling with a later clock.
+
+Historical records without retained input remain readable for reconciliation,
+but cannot be resumed by constructing replacement input. Existing outcomes must
+be resolved before admitting new work; this is not permission to redispatch.
+
+Canonical input production and preparation share one bounded owner-worker pool.
+Timed-out blocking work retains its permit until it exits. The run coordinator
+mutex is not held during owner computation. Prepared results are bound back to
+the revalidated durable record before context attachment.
+
+These changes strengthen the existing provider interface. A repository-installed
+seven-owner invocation provider, its selected owner inputs and independent
+evaluator trust still require product composition; none is created by this
+recovery change.

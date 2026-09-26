@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 use crate::DeletionRebuildError;
 use crate::JournalAnchor;
 use crate::JournalError;
+use crate::OperationStoreError;
 use crate::SparseConfig;
 use crate::SparseSignalReceipt;
 
@@ -193,6 +194,83 @@ impl NeuronRuntimeConfigV1 {
             return Err(NeuronRuntimeError::InvalidConfig);
         }
         self.calibration.validate(self.generation)
+    }
+
+    /// Exact immutable identity for one runtime generation. This binds every
+    /// model, preprocessing, calibration and resource field that may affect a
+    /// committed checkpoint or its interpretation.
+    pub fn semantic_digest(&self) -> Result<Digest32, NeuronRuntimeError> {
+        let mut bytes = b"hepta.neuron.runtime-config.v1".to_vec();
+        push_id(&mut bytes, &self.config_id)?;
+        bytes.extend_from_slice(&self.generation.get().to_be_bytes());
+        push_id(&mut bytes, &self.model_id)?;
+        for digest in [
+            self.model_manifest_digest,
+            self.encoder_digest,
+            self.head_digest,
+            self.weights_digest,
+            self.tokenizer_digest,
+            self.preprocessor_digest,
+            self.quantization_digest,
+            self.runtime_digest,
+            self.device_digest,
+            self.normalization_digest,
+            self.native_config_digest,
+            self.calibration.calibration_artifact_digest,
+            self.calibration.ood_artifact_digest,
+        ] {
+            if digest.is_zero() {
+                return Err(NeuronRuntimeError::InvalidConfig);
+            }
+            bytes.extend_from_slice(digest.as_array());
+        }
+        for value in [
+            self.input_feature_dimension,
+            self.state_width,
+            self.modulator_dimension,
+        ] {
+            bytes.extend_from_slice(
+                &u64::try_from(value)
+                    .map_err(|_| NeuronRuntimeError::Arithmetic)?
+                    .to_be_bytes(),
+            );
+        }
+        bytes.extend_from_slice(&self.calibration.generation.get().to_be_bytes());
+        for value in [
+            self.calibration.valid_from_sequence,
+            self.calibration.expires_after_sequence,
+        ] {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
+        for value in [
+            self.calibration.zero_confidence_error_q24,
+            self.calibration.maximum_in_domain_error_q24,
+        ] {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
+        for value in [
+            self.calibration.minimum_confidence_ppm,
+            self.calibration.maximum_ood_ppm,
+            self.calibration.minimum_active_ppm,
+            self.calibration.maximum_active_ppm,
+            self.calibration.maximum_projection_count,
+            self.calibration.measured_ece_ppm,
+            self.calibration.maximum_ece_ppm,
+            self.calibration.measured_false_acceptance_ppm,
+            self.calibration.maximum_false_acceptance_ppm,
+            self.resource_envelope.write_amplification_ppm,
+        ] {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
+        for value in [
+            self.resource_envelope.p95_latency_micros,
+            self.resource_envelope.p99_latency_micros,
+            self.resource_envelope.transient_allocation_bytes,
+            self.resource_envelope.checkpoint_bytes,
+        ] {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
+        Ok(Digest32::of_bytes(&bytes))
     }
 }
 
@@ -404,6 +482,9 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     PendingReconciliation,
+    OperationConflict,
+    OperationHistoryMismatch,
+    Operation(OperationStoreError),
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
     Journal(JournalError),
@@ -444,6 +525,12 @@ impl From<DeletionRebuildError> for NeuronRuntimeError {
 impl From<WitnessStoreError> for NeuronRuntimeError {
     fn from(error: WitnessStoreError) -> Self {
         Self::Witness(error)
+    }
+}
+
+impl From<OperationStoreError> for NeuronRuntimeError {
+    fn from(error: OperationStoreError) -> Self {
+        Self::Operation(error)
     }
 }
 

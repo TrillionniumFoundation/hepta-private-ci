@@ -4,22 +4,36 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-contracts/CALLERS.toml"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-learning-ledger/**"
       - "docs/modules/intuition.policy/**"
       - "qualification/module-execution-dossiers/detail/intuition.policy.md"
       - ".github/workflows/hepta-intuition-qualification.yml"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/test_hepta_ci_exec*.py"
+      - "scripts/test_hepta_intuition_workflow.py"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
       - ".github/actions/hepta-synthetic-merge/**"
   push:
     branches:
       - main
     paths:
       - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-contracts/CALLERS.toml"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-learning-ledger/**"
       - "docs/modules/intuition.policy/**"
       - "qualification/module-execution-dossiers/detail/intuition.policy.md"
       - ".github/workflows/hepta-intuition-qualification.yml"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/test_hepta_ci_exec*.py"
+      - "scripts/test_hepta_intuition_workflow.py"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
   workflow_dispatch:
 
 permissions:
@@ -34,6 +48,11 @@ jobs:
     name: Intuition exact source qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      HEPTA_CI_LANE: source-head
     defaults:
       run:
         working-directory: codex-rs
@@ -45,53 +64,82 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - uses: ./.github/actions/setup-ci
+      - name: Install nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           components: rustfmt,clippy
       - name: Verify exact source identity
+        id: identity
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
-        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          echo "HEPTA_INTUITION_EVIDENCE=$RUNNER_TEMP/intuition-$HEPTA_CI_LANE" >> "$GITHUB_ENV"
       - name: Format qualified policy surfaces
-        run: cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence -- --check
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/format.json"
+          -- cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
       - name: Compile all qualified policy targets
-        run: cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/compile.json"
+          -- cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
       - name: Strict Clippy for qualified policy
-        run: cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets -- -D warnings
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/clippy.json"
+          -- cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Run policy and frozen-data qualification tests
-        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
-      - name: Capture source-host profile
-        shell: bash
-        run: |
-          set -euo pipefail
-          {
-            echo "source_sha=$(git rev-parse HEAD)"
-            uname -a
-            rustc -Vv
-            if command -v lscpu >/dev/null 2>&1; then lscpu; fi
-          } | tee ../intuition-source-host-profile.txt
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/tests.json" --minimum-tests 1
+          -- just test --locked -p codex-hepta-intuition -p codex-hepta-intelligence --retries 0
+      - name: Run authenticated Agentd product and lifecycle tests
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/product-tests.json" --minimum-tests 1
+          -- just test --locked -p codex-hepta-agentd --lib
+          -E 'test(intelligence_product) | test(intelligence_run_start) | test(intuition_policy) | test(intelligence_invocation)'
+          --retries 0
+      - name: Capture tested host profile
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/host-profile.json"
+          -- bash -euo pipefail -c
+          '{ echo "source_sha=$SOURCE_SHA"; echo "tested_sha=$TESTED_SHA";
+          uname -a; rustc -Vv; if command -v lscpu >/dev/null 2>&1; then lscpu; fi;
+          } | tee "$HEPTA_INTUITION_EVIDENCE/host-profile.txt"'
       - name: Run kernel fast-policy gate
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo run --locked --release -p codex-hepta-intuition --example fast_gate | tee ../intuition-kernel-fast-gate.csv
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/kernel-fast-gate.json"
+          -- bash -euo pipefail -c
+          'cargo run --locked --release -p codex-hepta-intuition --example fast_gate
+          | tee "$HEPTA_INTUITION_EVIDENCE/kernel-fast-gate.csv"'
       - name: Run authenticated end-to-end fast-policy gate
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo run --locked --release -p codex-hepta-intelligence --example intuition_authenticated_fast_gate | tee ../intuition-authenticated-fast-gate.csv
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/authenticated-fast-gate.json"
+          -- bash -euo pipefail -c
+          'cargo run --locked --release -p codex-hepta-intelligence --example intuition_authenticated_fast_gate
+          | tee "$HEPTA_INTUITION_EVIDENCE/authenticated-fast-gate.csv"'
       - name: Verify patch hygiene
-        working-directory: ${{ github.workspace }}
-        run: git diff --check
-      - name: Retain fast-policy measurements
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/patch-hygiene.json"
+          -- git diff --check
+      - name: Retain command outcomes and raw measurements
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-fast-${{ github.event.pull_request.head.sha || github.sha }}
-          path: |
-            intuition-kernel-fast-gate.csv
-            intuition-authenticated-fast-gate.csv
-            intuition-source-host-profile.txt
+          name: intuition-${{ env.HEPTA_CI_LANE }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/intuition-${{ env.HEPTA_CI_LANE }}/
           if-no-files-found: error
           retention-days: 30
 
@@ -100,6 +148,10 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: base-merge
     defaults:
       run:
         working-directory: codex-rs
@@ -121,20 +173,82 @@ jobs:
           author-email: hepta-intuition-ci@users.noreply.github.com
           message: Synthetic merge
       - uses: ./.github/actions/setup-ci
+      - name: Install nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          components: rustfmt
+          components: rustfmt,clippy
       - name: Verify exact merge identity
+        id: identity
         env:
           EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
         shell: bash
-        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-      - name: Test qualified policy on merge candidate
-        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
-      - name: Gate kernel fast policy on merge candidate
-        run: cargo run --locked --release -p codex-hepta-intuition --example fast_gate
-      - name: Gate authenticated end-to-end fast policy on merge candidate
-        run: cargo run --locked --release -p codex-hepta-intelligence --example intuition_authenticated_fast_gate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          echo "TESTED_SHA=$EXPECTED_SHA" >> "$GITHUB_ENV"
+          echo "HEPTA_INTUITION_EVIDENCE=$RUNNER_TEMP/intuition-$HEPTA_CI_LANE" >> "$GITHUB_ENV"
+      - name: Format qualified policy surfaces
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/format.json"
+          -- cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
+      - name: Compile all qualified policy targets
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/compile.json"
+          -- cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
+      - name: Strict Clippy for qualified policy
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/clippy.json"
+          -- cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Run policy and frozen-data qualification tests
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/tests.json" --minimum-tests 1
+          -- just test --locked -p codex-hepta-intuition -p codex-hepta-intelligence --retries 0
+      - name: Run authenticated Agentd product and lifecycle tests
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/product-tests.json" --minimum-tests 1
+          -- just test --locked -p codex-hepta-agentd --lib
+          -E 'test(intelligence_product) | test(intelligence_run_start) | test(intuition_policy) | test(intelligence_invocation)'
+          --retries 0
+      - name: Capture tested host profile
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/host-profile.json"
+          -- bash -euo pipefail -c
+          '{ echo "source_sha=$SOURCE_SHA"; echo "tested_sha=$TESTED_SHA";
+          uname -a; rustc -Vv; if command -v lscpu >/dev/null 2>&1; then lscpu; fi;
+          } | tee "$HEPTA_INTUITION_EVIDENCE/host-profile.txt"'
+      - name: Run kernel fast-policy gate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/kernel-fast-gate.json"
+          -- bash -euo pipefail -c
+          'cargo run --locked --release -p codex-hepta-intuition --example fast_gate
+          | tee "$HEPTA_INTUITION_EVIDENCE/kernel-fast-gate.csv"'
+      - name: Run authenticated end-to-end fast-policy gate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/authenticated-fast-gate.json"
+          -- bash -euo pipefail -c
+          'cargo run --locked --release -p codex-hepta-intelligence --example intuition_authenticated_fast_gate
+          | tee "$HEPTA_INTUITION_EVIDENCE/authenticated-fast-gate.csv"'
       - name: Verify patch hygiene
-        working-directory: ${{ github.workspace }}
-        run: git diff --check
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/patch-hygiene.json"
+          -- git diff --check
+      - name: Retain command outcomes and raw measurements
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-${{ env.HEPTA_CI_LANE }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/intuition-${{ env.HEPTA_CI_LANE }}/
+          if-no-files-found: error
+          retention-days: 30

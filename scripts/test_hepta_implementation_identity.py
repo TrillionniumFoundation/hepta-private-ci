@@ -6,6 +6,7 @@ Source/checkout mutation coverage lives in test_hepta_implementation_maps and
 source_identity; these tests retain the additional migration safety properties.
 No test is skipped and no historical-only verification fallback is restored.
 """
+
 import contextlib
 import copy
 import io
@@ -26,7 +27,9 @@ class MigrationIntegrityTests(unittest.TestCase):
 
     def migrate_row(self, row):
         return self.subject.migrate_map(
-            row, self.fixture.modules[0], {"alpha": "test-lane"},
+            row,
+            self.fixture.modules[0],
+            {"alpha": "test-lane"},
             self.subject.current_source_base(),
         )
 
@@ -37,7 +40,9 @@ class MigrationIntegrityTests(unittest.TestCase):
                 for container in (None, "claimBoundary", "completion"):
                     with self.subTest(key=key, value=value, container=container):
                         row = copy.deepcopy(original)
-                        target = row if container is None else row.setdefault(container, {})
+                        target = (
+                            row if container is None else row.setdefault(container, {})
+                        )
                         target[key] = value
                         with self.assertRaisesRegex(ValueError, "must be boolean"):
                             self.migrate_row(row)
@@ -58,7 +63,9 @@ class MigrationIntegrityTests(unittest.TestCase):
     def test_source_change_cannot_launder_execution_claim(self):
         self.fixture.rows["alpha"]["claimBoundary"]["productExecutionProved"] = True
         self.fixture.change_maps()
-        self.fixture.write("src/alpha/lib.rs", "pub fn calculate() { let changed = 1; }\n")
+        self.fixture.write(
+            "src/alpha/lib.rs", "pub fn calculate() { let changed = 1; }\n"
+        )
         self.fixture.commit("changed source after execution claim")
         path = self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
         before = path.read_bytes()
@@ -80,7 +87,9 @@ class MigrationIntegrityTests(unittest.TestCase):
                 original = (self.root / path).read_text()
                 self.fixture.write(path, original + "// semantic source change\n")
                 self.fixture.commit("change bound evidence")
-                with self.assertRaisesRegex(SystemExit, "mapped source/evidence changed"):
+                with self.assertRaisesRegex(
+                    SystemExit, "mapped source/evidence changed"
+                ):
                     self.fixture.verify()
                 self.fixture.write(path, original)
                 self.fixture.commit("restore bytes")
@@ -88,9 +97,12 @@ class MigrationIntegrityTests(unittest.TestCase):
 
     def test_conflicting_evidence_aliases_reject(self):
         row = self.fixture.rows["alpha"]
-        row["operations"][0]["delegatedCallees"] = [{
-            "path": "tests/native.rs", "sourcePath": "host/caller.rs",
-        }]
+        row["operations"][0]["delegatedCallees"] = [
+            {
+                "path": "tests/native.rs",
+                "sourcePath": "host/caller.rs",
+            }
+        ]
         self.fixture.change_maps()
         with self.assertRaisesRegex(SystemExit, "conflicting evidence paths"):
             self.fixture.verify()
@@ -111,7 +123,10 @@ class MigrationIntegrityTests(unittest.TestCase):
         before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
         with self.assertRaisesRegex(ValueError, "empty module selection"):
             self.subject.migrate([])
-        self.assertEqual((self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(), before)
+        self.assertEqual(
+            (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
+            before,
+        )
 
     def test_malformed_operation_is_a_bounded_error(self):
         row = self.fixture.rows["alpha"]
@@ -123,18 +138,33 @@ class MigrationIntegrityTests(unittest.TestCase):
             self.fixture.verify()
 
     def test_duplicate_json_key_is_rejected(self):
-        self.fixture.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", '{"module":"alpha","module":"beta"}')
+        self.fixture.write(
+            "docs/modules/alpha/IMPLEMENTATION_MAP.json",
+            '{"module":"alpha","module":"beta"}',
+        )
         self.fixture.commit("duplicate keys")
         with self.assertRaisesRegex(SystemExit, "duplicate JSON key"):
             self.fixture.verify()
 
     def test_repeatable_module_option_uses_canonical_migration(self):
-        with patch("sys.argv", ["hepta-implementation-maps.py", "migrate",
-                                "--module", "alpha", "--module", "alpha"]):
+        with patch(
+            "sys.argv",
+            [
+                "hepta-implementation-maps.py",
+                "migrate",
+                "--module",
+                "alpha",
+                "--module",
+                "alpha",
+            ],
+        ):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 self.subject.main()
-        self.assertEqual(json.loads(output.getvalue())["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
+        self.assertEqual(
+            json.loads(output.getvalue())["maps"],
+            ["docs/modules/alpha/IMPLEMENTATION_MAP.json"],
+        )
 
     def test_strict_alias_cannot_enable_historical_only_pass(self):
         self.fixture.write("src/alpha/lib.rs", "pub fn changed() {}\n")

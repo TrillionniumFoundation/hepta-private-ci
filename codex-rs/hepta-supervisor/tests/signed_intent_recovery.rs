@@ -153,26 +153,34 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (quarantined, first_report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
+    )?;
+    assert!(first_report.faults.is_empty());
+    assert!(quarantined.production_recovery_required(&fleet.agent_id)?);
+    assert!(quarantined.any_production_recovery_required());
+    assert_eq!(
+        quarantined
+            .production_mutation_state(&fleet.agent_id)?
+            .expect("state")
+            .receipt
+            .status,
+        codex_hepta_supervisor::ProductionMutationStatus::RecoveryRequired
     );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    drop(quarantined);
 
     let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
+    let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
+    assert!(!recovered.production_recovery_required(&fleet.agent_id)?);
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .expect("terminal intent");

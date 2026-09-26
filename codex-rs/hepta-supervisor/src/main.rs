@@ -4,6 +4,8 @@ use codex_hepta_memory::H7ArtifactVerifier;
 use codex_hepta_paths::HeptaFleetRoot;
 use tokio_util::sync::CancellationToken;
 
+const MAX_PUBLIC_KEY_FILE_BYTES: u64 = 128;
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let options = parse_options()?;
@@ -116,9 +118,22 @@ fn load_grant_verifier(
 }
 
 fn load_public_key(path: PathBuf, label: &str) -> anyhow::Result<[u8; 32]> {
+    if !path.is_absolute() {
+        anyhow::bail!("{label} path must be absolute");
+    }
     let metadata = std::fs::symlink_metadata(&path)?;
     if !metadata.file_type().is_file() {
         anyhow::bail!("{label} must be a regular, non-symlink file");
+    }
+    if metadata.len() > MAX_PUBLIC_KEY_FILE_BYTES {
+        anyhow::bail!("{label} exceeds the bounded public-key file size");
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o022 != 0 {
+            anyhow::bail!("{label} must not be group/world writable");
+        }
     }
     let bytes = std::fs::read(&path)?;
     let key = if bytes.len() == 32 {
@@ -140,11 +155,15 @@ fn load_public_key(path: PathBuf, label: &str) -> anyhow::Result<[u8; 32]> {
 }
 
 fn parse_epoch(value: std::ffi::OsString, label: &str) -> anyhow::Result<u64> {
-    value
+    let epoch = value
         .to_str()
         .ok_or_else(|| anyhow::anyhow!("{label} is not UTF-8"))?
         .parse::<u64>()
-        .map_err(|error| anyhow::anyhow!("{label} is invalid: {error}"))
+        .map_err(|error| anyhow::anyhow!("{label} is invalid: {error}"))?;
+    if epoch == 0 {
+        anyhow::bail!("{label} must be non-zero");
+    }
+    Ok(epoch)
 }
 
 fn hex_value(value: u8) -> anyhow::Result<u8> {

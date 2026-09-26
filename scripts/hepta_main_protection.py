@@ -7,6 +7,7 @@ is inferred from a local test, a PR's historical result, or a generated receipt.
 Existing rules are never replaced or weakened. Administrator credentials must
 never be supplied to a candidate workflow to run this operator-only command.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -31,25 +32,41 @@ class ProtectionError(RuntimeError):
 
 class API:
     def call(self, method: str, path: str, body: dict[str, Any] | None = None) -> Any:
-        command = ["gh", "api", "--hostname", "github.com", "--method", method,
-                   "-H", "Accept: application/vnd.github+json",
-                   "-H", "X-GitHub-Api-Version: 2022-11-28",
-                   f"repos/{REPOSITORY}/{path}"]
+        command = [
+            "gh",
+            "api",
+            "--hostname",
+            "github.com",
+            "--method",
+            method,
+            "-H",
+            "Accept: application/vnd.github+json",
+            "-H",
+            "X-GitHub-Api-Version: 2022-11-28",
+            f"repos/{REPOSITORY}/{path}",
+        ]
         if body is not None:
             command.extend(["--input", "-"])
         environment = dict(os.environ, GH_PROMPT_DISABLED="1")
         environment.pop("GH_DEBUG", None)
         try:
             result = subprocess.run(
-                command, input=None if body is None else json.dumps(body),
-                text=True, capture_output=True, check=False, env=environment, timeout=60,
+                command,
+                input=None if body is None else json.dumps(body),
+                text=True,
+                capture_output=True,
+                check=False,
+                env=environment,
+                timeout=60,
             )
         except subprocess.TimeoutExpired as exc:
             raise ProtectionError(
                 f"GitHub {method} timed out; a write may have applied: inspect live policy before retry"
             ) from exc
         if result.returncode:
-            raise ProtectionError(f"GitHub {method} {path} failed: {result.stderr.strip()}")
+            raise ProtectionError(
+                f"GitHub {method} {path} failed: {result.stderr.strip()}"
+            )
         try:
             return json.loads(result.stdout)
         except json.JSONDecodeError as exc:
@@ -66,30 +83,43 @@ class API:
             output.extend(rows)
             if len(rows) < 100:
                 return output
-        raise ProtectionError("pagination limit reached; no incomplete policy read accepted")
+        raise ProtectionError(
+            "pagination limit reached; no incomplete policy read accepted"
+        )
 
 
 def desired_ruleset(app_id: int) -> dict[str, Any]:
     if type(app_id) is not int or app_id <= 0:
         raise ProtectionError("a verified GitHub Actions integration ID is required")
     return {
-        "name": RULESET_NAME, "target": "branch", "enforcement": "active",
+        "name": RULESET_NAME,
+        "target": "branch",
+        "enforcement": "active",
         "bypass_actors": [],
         "conditions": {"ref_name": {"include": ["refs/heads/main"], "exclude": []}},
         "rules": [
-            {"type": "deletion"}, {"type": "non_fast_forward"},
-            {"type": "pull_request", "parameters": {
-                "dismiss_stale_reviews_on_push": True,
-                "require_code_owner_review": True,
-                "require_last_push_approval": True,
-                "required_approving_review_count": 1,
-                "required_review_thread_resolution": True,
-            }},
-            {"type": "required_status_checks", "parameters": {
-                "required_status_checks": [{"context": GATE, "integration_id": app_id}],
-                "strict_required_status_checks_policy": True,
-                "do_not_enforce_on_create": False,
-            }},
+            {"type": "deletion"},
+            {"type": "non_fast_forward"},
+            {
+                "type": "pull_request",
+                "parameters": {
+                    "dismiss_stale_reviews_on_push": True,
+                    "require_code_owner_review": True,
+                    "require_last_push_approval": True,
+                    "required_approving_review_count": 1,
+                    "required_review_thread_resolution": True,
+                },
+            },
+            {
+                "type": "required_status_checks",
+                "parameters": {
+                    "required_status_checks": [
+                        {"context": GATE, "integration_id": app_id}
+                    ],
+                    "strict_required_status_checks_policy": True,
+                    "do_not_enforce_on_create": False,
+                },
+            },
         ],
     }
 
@@ -98,7 +128,9 @@ def verify_ruleset(value: dict[str, Any], app_id: int) -> None:
     if value.get("target") != "branch" or value.get("enforcement") != "active":
         raise ProtectionError("ruleset is not an active branch policy")
     if value.get("bypass_actors") != []:
-        raise ProtectionError("ruleset has bypass actors or bypass visibility is unavailable")
+        raise ProtectionError(
+            "ruleset has bypass actors or bypass visibility is unavailable"
+        )
     if value.get("conditions") != desired_ruleset(app_id)["conditions"]:
         raise ProtectionError("ruleset does not exactly target main")
     rows = value.get("rules", [])
@@ -107,14 +139,21 @@ def verify_ruleset(value: dict[str, Any], app_id: int) -> None:
     rules = {row.get("type"): row for row in rows}
     if len(rules) != len(rows):
         raise ProtectionError("duplicate rule types are ambiguous")
-    if not {"deletion", "non_fast_forward", "pull_request", "required_status_checks"} <= rules.keys():
+    if (
+        not {"deletion", "non_fast_forward", "pull_request", "required_status_checks"}
+        <= rules.keys()
+    ):
         raise ProtectionError("missing required protection")
     review = rules["pull_request"].get("parameters", {})
     count = review.get("required_approving_review_count")
     if type(count) is not int or count < 1:
         raise ProtectionError("at least one independent approval is required")
-    for field in ("dismiss_stale_reviews_on_push", "require_code_owner_review",
-                  "require_last_push_approval", "required_review_thread_resolution"):
+    for field in (
+        "dismiss_stale_reviews_on_push",
+        "require_code_owner_review",
+        "require_last_push_approval",
+        "required_review_thread_resolution",
+    ):
         if review.get(field) is not True:
             raise ProtectionError(f"missing independent-review control: {field}")
     checks = rules["required_status_checks"].get("parameters", {})
@@ -122,12 +161,16 @@ def verify_ruleset(value: dict[str, Any], app_id: int) -> None:
         raise ProtectionError("checks do not require an up-to-date base")
     if checks.get("do_not_enforce_on_create", False) is not False:
         raise ProtectionError("creation bypasses required checks")
-    if {"context": GATE, "integration_id": app_id} not in checks.get("required_status_checks", []):
+    if {"context": GATE, "integration_id": app_id} not in checks.get(
+        "required_status_checks", []
+    ):
         raise ProtectionError("required check is not bound to the verified Actions app")
 
 
 def verified_gate_evidence(
-    checks: list[dict[str, Any]], runs: list[dict[str, Any]], head: str,
+    checks: list[dict[str, Any]],
+    runs: list[dict[str, Any]],
+    head: str,
 ) -> dict[str, int]:
     """Bind the newest main workflow attempt before looking for its green gate.
 
@@ -151,10 +194,12 @@ def verified_gate_evidence(
         if path.split("@")[0] != ".github/workflows/" + WORKFLOW:
             continue
         repository = run.get("repository")
-        if (run.get("head_branch") != "main"
-                or run.get("event") not in {"push", "workflow_dispatch"}
-                or not isinstance(repository, dict)
-                or repository.get("full_name") != REPOSITORY):
+        if (
+            run.get("head_branch") != "main"
+            or run.get("event") not in {"push", "workflow_dispatch"}
+            or not isinstance(repository, dict)
+            or repository.get("full_name") != REPOSITORY
+        ):
             continue
         for field in ("id", "run_attempt", "check_suite_id"):
             if type(run.get(field)) is not int or run[field] <= 0:
@@ -171,10 +216,13 @@ def verified_gate_evidence(
         if check.get("name") != GATE or check.get("head_sha") != head:
             continue
         app, suite = check.get("app"), check.get("check_suite")
-        if (not isinstance(app, dict) or app.get("slug") != "github-actions"
-                or not isinstance(suite, dict)
-                or type(suite.get("id")) is not int
-                or suite["id"] != run["check_suite_id"]):
+        if (
+            not isinstance(app, dict)
+            or app.get("slug") != "github-actions"
+            or not isinstance(suite, dict)
+            or type(suite.get("id")) is not int
+            or suite["id"] != run["check_suite_id"]
+        ):
             continue
         if type(check.get("id")) is not int or check["id"] <= 0:
             raise ProtectionError("gate has no valid check identity")
@@ -186,39 +234,56 @@ def verified_gate_evidence(
         raise ProtectionError("latest exact-head gate is not completed successfully")
     app_id = latest["app"].get("id")
     desired_ruleset(app_id)
-    return {"integration_id": app_id, "check_id": latest["id"],
-            "suite_id": run["check_suite_id"], "run_id": run["id"],
-            "run_attempt": run["run_attempt"]}
+    return {
+        "integration_id": app_id,
+        "check_id": latest["id"],
+        "suite_id": run["check_suite_id"],
+        "run_id": run["id"],
+        "run_attempt": run["run_attempt"],
+    }
 
 
-def verified_gate_app(checks: list[dict[str, Any]], runs: list[dict[str, Any]], head: str) -> int:
+def verified_gate_app(
+    checks: list[dict[str, Any]], runs: list[dict[str, Any]], head: str
+) -> int:
     return verified_gate_evidence(checks, runs, head)["integration_id"]
 
 
 def read_gate_evidence(api: API, head: str) -> dict[str, int]:
     checks = api.pages(f"commits/{head}/check-runs?filter=latest", "check_runs")
-    runs = api.pages(f"actions/workflows/{WORKFLOW}/runs?head_sha={head}", "workflow_runs")
+    runs = api.pages(
+        f"actions/workflows/{WORKFLOW}/runs?head_sha={head}", "workflow_runs"
+    )
     gate = verified_gate_evidence(checks, runs, head)
     # Reruns can retain a suite ID. Check-suite membership alone therefore does
     # not prove that the required job belongs to this particular run attempt.
     jobs = api.pages(
-        f"actions/runs/{gate['run_id']}/attempts/{gate['run_attempt']}/jobs", "jobs",
+        f"actions/runs/{gate['run_id']}/attempts/{gate['run_attempt']}/jobs",
+        "jobs",
     )
-    expected_url = (f"https://api.github.com/repos/{REPOSITORY}/check-runs/"
-                    f"{gate['check_id']}")
+    expected_url = (
+        f"https://api.github.com/repos/{REPOSITORY}/check-runs/{gate['check_id']}"
+    )
     if any(not isinstance(job, dict) for job in jobs):
         raise ProtectionError("malformed workflow-attempt job evidence")
     matches = [job for job in jobs if job.get("check_run_url") == expected_url]
     if len(matches) != 1:
         raise ProtectionError("gate is not a unique job in the latest workflow attempt")
     job = matches[0]
-    if (type(job.get("id")) is not int or job["id"] <= 0
-            or type(job.get("run_id")) is not int or job["run_id"] != gate["run_id"]
-            or job.get("head_sha") != head or job.get("name") != GATE
-            or job.get("status") != "completed" or job.get("conclusion") != "success"):
+    if (
+        type(job.get("id")) is not int
+        or job["id"] <= 0
+        or type(job.get("run_id")) is not int
+        or job["run_id"] != gate["run_id"]
+        or job.get("head_sha") != head
+        or job.get("name") != GATE
+        or job.get("status") != "completed"
+        or job.get("conclusion") != "success"
+    ):
         raise ProtectionError("latest workflow-attempt job binding is not successful")
-    if "run_attempt" in job and (type(job["run_attempt"]) is not int
-                                or job["run_attempt"] != gate["run_attempt"]):
+    if "run_attempt" in job and (
+        type(job["run_attempt"]) is not int or job["run_attempt"] != gate["run_attempt"]
+    ):
         raise ProtectionError("job is from a different workflow attempt")
     return {**gate, "job_id": job["id"]}
 
@@ -230,7 +295,11 @@ def snapshot(api: API) -> dict[str, Any]:
     if len(named) > 1:
         raise ProtectionError("multiple named baseline rulesets; refusing to guess")
     detail = api.call("GET", f"rulesets/{named[0]['id']}") if named else None
-    return {"main_head": branch["commit"]["sha"], "rulesets": rulesets, "named_ruleset": detail}
+    return {
+        "main_head": branch["commit"]["sha"],
+        "rulesets": rulesets,
+        "named_ruleset": detail,
+    }
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -258,32 +327,50 @@ def execute(api: API, expected_head: str, audit: Path, apply: bool) -> dict[str,
     if before["named_ruleset"] is not None:
         verify_ruleset(before["named_ruleset"], app_id)
     if not apply:
-        return {"mode": "read-only", "main_head": expected_head,
-                "would_create": before["named_ruleset"] is None}
+        return {
+            "mode": "read-only",
+            "main_head": expected_head,
+            "would_create": before["named_ruleset"] is None,
+        }
     prewrite_gate = read_gate_evidence(api, expected_head)
     write_json(audit / "gate-prewrite.json", prewrite_gate)
     if prewrite_gate != gate:
-        raise ProtectionError("gate identity changed during preflight; no mutation performed")
+        raise ProtectionError(
+            "gate identity changed during preflight; no mutation performed"
+        )
     if snapshot(api) != before:
-        raise ProtectionError("repository state changed during preflight; no mutation performed")
+        raise ProtectionError(
+            "repository state changed during preflight; no mutation performed"
+        )
     if before["named_ruleset"] is None:
         created = api.call("POST", "rulesets", desired)
         write_json(audit / "write-response.json", created)
     after = snapshot(api)
     write_json(audit / "after.json", after)
     if after["named_ruleset"] is None:
-        raise ProtectionError("write has no readable matching ruleset; do not claim enforcement")
+        raise ProtectionError(
+            "write has no readable matching ruleset; do not claim enforcement"
+        )
     verify_ruleset(after["named_ruleset"], app_id)
     if after["main_head"] != expected_head:
-        raise ProtectionError("policy may have been installed, but main changed during mutation; inspect after.json")
+        raise ProtectionError(
+            "policy may have been installed, but main changed during mutation; inspect after.json"
+        )
     # GitHub reads and writes are not one transaction. Preserve the installed
     # protection on a post-write race; never delete it to undo a failed audit.
     after_gate = read_gate_evidence(api, expected_head)
     write_json(audit / "gate-after.json", after_gate)
     if after_gate != gate:
-        raise ProtectionError("policy may be installed, but gate identity changed; inspect audit")
-    return {"mode": "applied-and-read-back", "main_head": expected_head,
-            "ruleset_id": after["named_ruleset"]["id"], "gate": GATE, "integration_id": app_id}
+        raise ProtectionError(
+            "policy may be installed, but gate identity changed; inspect audit"
+        )
+    return {
+        "mode": "applied-and-read-back",
+        "main_head": expected_head,
+        "ruleset_id": after["named_ruleset"]["id"],
+        "gate": GATE,
+        "integration_id": app_id,
+    }
 
 
 def main() -> int:
@@ -302,7 +389,10 @@ def main() -> int:
         print(json.dumps(result, indent=2))
         return 0
     except (OSError, KeyError, ProtectionError) as exc:
-        write_json(args.audit_dir / "failure.json", {"error": str(exc), "applied_successfully": False})
+        write_json(
+            args.audit_dir / "failure.json",
+            {"error": str(exc), "applied_successfully": False},
+        )
         print(str(exc), file=sys.stderr)
         return 1
 

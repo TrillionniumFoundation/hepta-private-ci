@@ -56,6 +56,10 @@ use crate::freeze_dataset_receipt_v3;
 use crate::validate_candidate_set_completeness;
 use crate::verify_dataset_snapshot_receipt_v3;
 
+#[path = "production_recovery.rs"]
+mod recovery;
+pub use recovery::LearningAppendIdentityV1;
+
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -488,11 +492,13 @@ impl LedgerWriter {
             ));
         }
 
-        let snapshot = self.backend.snapshot()?;
-        let source = snapshot
-            .records()
-            .iter()
-            .find(|record| record.event.record_id() == &request.source_record_id)
+        // Withdrawal resolves historical identity, not active eligibility: an
+        // exact retry may legitimately refer to an already withdrawn source.
+        let source_event_digest = self
+            .backend
+            .core()?
+            .record_by_id(&request.source_record_id)?
+            .map(|record| record.event_digest)
             .ok_or_else(|| {
                 ProductionLedgerError::Ledger(LedgerError::TargetNotFound(
                     request.source_record_id.to_string(),
@@ -501,7 +507,7 @@ impl LedgerWriter {
         if !dataset
             .snapshot
             .source_record_digests
-            .contains(&source.event_digest)
+            .contains(&source_event_digest)
         {
             return Err(ProductionLedgerError::Binding(
                 "unlearning source not in dataset",
@@ -520,7 +526,7 @@ impl LedgerWriter {
             record_id: request.record_id,
             lineage_id: request.lineage_id.clone(),
             source_record_id: request.source_record_id.clone(),
-            source_event_digest: source.event_digest,
+            source_event_digest,
             dataset_snapshot_id: request.dataset_snapshot_id.clone(),
             dataset_digest: request.dataset_digest,
             artifact_id: request.artifact_id.clone(),
@@ -532,7 +538,7 @@ impl LedgerWriter {
         Ok(UnlearningLineageReceiptV1 {
             lineage_id: request.lineage_id,
             source_record_id: request.source_record_id,
-            source_event_digest: source.event_digest,
+            source_event_digest,
             dataset_snapshot_id: request.dataset_snapshot_id,
             dataset_digest: request.dataset_digest,
             artifact_id: request.artifact_id,
@@ -630,17 +636,28 @@ impl LedgerWriter {
         Ok(records)
     }
 
+    /// Obtain the exact bytes for an independent evaluator without copying or
+    /// replaying the validated owner history. A later freeze derives them again,
+    /// so an intervening append, correction or revocation invalidates the signature.
+    pub fn dataset_freeze_signing_payload(
+        &self,
+        plan: &DatasetFreezePlanV2,
+    ) -> Result<Vec<u8>, ProductionLedgerError> {
+        let derived = derive_dataset_from_core(self.backend.core()?, plan)?;
+        Ok(derived.signing_payload(plan))
+    }
+
     /// Build a dataset receipt from the current anchored ledger. Source records,
     /// correction cut, revocation cut, eligible frontier and outcome watermark
-    /// are derived from the snapshot and cannot be supplied by the caller.
+    /// are derived from the validated owner, never supplied by the caller.
     pub fn freeze_dataset(
         &self,
         plan: DatasetFreezePlanV2,
         evidence: &SignedLearningEvidenceV1,
         now: u64,
     ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
-        let snapshot = self.backend.snapshot()?;
-        let payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)?;
+        let derived = derive_dataset_from_core(self.backend.core()?, &plan)?;
+        let payload = derived.signing_payload(&plan);
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::Evaluator,
             evidence,
@@ -648,7 +665,7 @@ impl LedgerWriter {
             now,
         )?;
         require_role(&verified, LearningEvidenceRoleV1::Evaluator)?;
-        freeze_dataset_from_ledger(&snapshot, plan, verified.principal().clone(), now)
+        derived.into_receipt(plan, verified.principal().clone(), now)
     }
 
     fn commit(
@@ -825,21 +842,7 @@ pub fn dataset_freeze_signing_payload_v2(
     snapshot: &LedgerSnapshot,
     plan: &DatasetFreezePlanV2,
 ) -> Result<Vec<u8>, ProductionLedgerError> {
-    let derived = derive_dataset(snapshot, plan)?;
-    let mut bytes = b"hepta.learning-ledger.dataset-freeze-plan.v2".to_vec();
-    push_id(&mut bytes, &plan.snapshot_id);
-    bytes.extend_from_slice(plan.objective_digest.as_array());
-    bytes.extend_from_slice(plan.inclusion_policy_digest.as_array());
-    bytes.extend_from_slice(snapshot.head_digest.as_array());
-    bytes.extend_from_slice(&derived.eligible_frontier.to_be_bytes());
-    bytes.extend_from_slice(&derived.outcome_watermark.to_be_bytes());
-    bytes.extend_from_slice(derived.correction_cut_digest.as_array());
-    bytes.extend_from_slice(derived.revocation_cut_digest.as_array());
-    bytes.extend_from_slice(&(derived.source_record_digests.len() as u64).to_be_bytes());
-    for digest in derived.source_record_digests {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    Ok(bytes)
+    Ok(derive_dataset(snapshot, plan)?.signing_payload(plan))
 }
 
 pub fn freeze_dataset_from_ledger(
@@ -848,25 +851,12 @@ pub fn freeze_dataset_from_ledger(
     producer: AuthenticatedPrincipalV1,
     now: u64,
 ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
+    // Compatibility input is not an owner-validated core: retain full replay
+    // validation of the caller's snapshot before deriving any receipt.
     producer
         .validate(now)
         .map_err(ProductionLedgerError::Causal)?;
-    let derived = derive_dataset(snapshot, &plan)?;
-    let request = DatasetFreezeRequestV1 {
-        snapshot_id: plan.snapshot_id,
-        producer,
-        ledger_head_digest: snapshot.head_digest,
-        objective_digest: plan.objective_digest,
-        eligible_frontier: derived.eligible_frontier,
-        outcome_watermark: derived.outcome_watermark,
-        correction_cut_digest: derived.correction_cut_digest,
-        revocation_cut_digest: derived.revocation_cut_digest,
-        inclusion_policy_digest: plan.inclusion_policy_digest,
-        source_record_digests: derived.source_record_digests,
-        pending_outcomes: derived.pending_outcomes,
-        censored_outcomes: derived.censored_outcomes,
-    };
-    freeze_dataset_receipt_v3(request, now).map_err(Into::into)
+    derive_dataset(snapshot, &plan)?.into_receipt(plan, producer, now)
 }
 
 fn validate_production_completeness(
@@ -947,6 +937,7 @@ fn find_authenticated_decision<'a>(
 
 #[derive(Clone, Debug)]
 struct DerivedDataset {
+    ledger_head_digest: Digest32,
     eligible_frontier: u64,
     outcome_watermark: u64,
     correction_cut_digest: Digest32,
@@ -954,6 +945,51 @@ struct DerivedDataset {
     source_record_digests: Vec<Digest32>,
     pending_outcomes: u32,
     censored_outcomes: u32,
+}
+
+impl DerivedDataset {
+    fn signing_payload(&self, plan: &DatasetFreezePlanV2) -> Vec<u8> {
+        let mut bytes = b"hepta.learning-ledger.dataset-freeze-plan.v2".to_vec();
+        push_id(&mut bytes, &plan.snapshot_id);
+        bytes.extend_from_slice(plan.objective_digest.as_array());
+        bytes.extend_from_slice(plan.inclusion_policy_digest.as_array());
+        bytes.extend_from_slice(self.ledger_head_digest.as_array());
+        bytes.extend_from_slice(&self.eligible_frontier.to_be_bytes());
+        bytes.extend_from_slice(&self.outcome_watermark.to_be_bytes());
+        bytes.extend_from_slice(self.correction_cut_digest.as_array());
+        bytes.extend_from_slice(self.revocation_cut_digest.as_array());
+        bytes.extend_from_slice(&(self.source_record_digests.len() as u64).to_be_bytes());
+        for digest in &self.source_record_digests {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        bytes
+    }
+
+    fn into_receipt(
+        self,
+        plan: DatasetFreezePlanV2,
+        producer: AuthenticatedPrincipalV1,
+        now: u64,
+    ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
+        producer
+            .validate(now)
+            .map_err(ProductionLedgerError::Causal)?;
+        let request = DatasetFreezeRequestV1 {
+            snapshot_id: plan.snapshot_id,
+            producer,
+            ledger_head_digest: self.ledger_head_digest,
+            objective_digest: plan.objective_digest,
+            eligible_frontier: self.eligible_frontier,
+            outcome_watermark: self.outcome_watermark,
+            correction_cut_digest: self.correction_cut_digest,
+            revocation_cut_digest: self.revocation_cut_digest,
+            inclusion_policy_digest: plan.inclusion_policy_digest,
+            source_record_digests: self.source_record_digests,
+            pending_outcomes: self.pending_outcomes,
+            censored_outcomes: self.censored_outcomes,
+        };
+        freeze_dataset_receipt_v3(request, now).map_err(Into::into)
+    }
 }
 
 fn derive_dataset(
@@ -964,9 +1000,19 @@ fn derive_dataset(
         return Err(ProductionLedgerError::Binding("empty ledger"));
     }
     let ledger = LearningLedger::from_snapshot(snapshot.clone())?;
-    let active = ledger.active_records();
+    derive_dataset_from_core(&ledger, plan)
+}
+
+fn derive_dataset_from_core(
+    ledger: &LearningLedger,
+    plan: &DatasetFreezePlanV2,
+) -> Result<DerivedDataset, ProductionLedgerError> {
+    let head = ledger
+        .records()
+        .last()
+        .ok_or(ProductionLedgerError::Binding("empty ledger"))?;
     let mut episodes = BTreeSet::new();
-    for record in &active {
+    for record in ledger.active_records_for_objective(&plan.objective_digest) {
         if let LedgerEvent::AuthenticatedDecisionV2(decision) = &record.event
             && decision.objective_digest == plan.objective_digest
         {
@@ -979,13 +1025,16 @@ fn derive_dataset(
 
     let mut source_record_digests = Vec::new();
     let mut correction_digests = Vec::new();
-    let mut revocation_digests = Vec::new();
+    let revocation_digests: Vec<_> = ledger
+        .dataset_revocations()
+        .map(|record| record.event_digest)
+        .collect();
     let mut outcome_watermark = 0_u64;
     let mut pending_outcomes = 0_u32;
     let mut censored_outcomes = 0_u32;
     let mut outcome_episodes = BTreeSet::new();
 
-    for record in &active {
+    for record in ledger.active_records_for_objective(&plan.objective_digest) {
         match &record.event {
             LedgerEvent::AuthenticatedDecisionV2(value) if episodes.contains(&value.episode_id) => {
                 source_record_digests.push(record.event_digest);
@@ -1025,16 +1074,13 @@ fn derive_dataset(
         .checked_add(missing_outcomes)
         .ok_or(ProductionLedgerError::Binding("pending count"))?;
 
-    for record in snapshot.records() {
+    for record in ledger.records_for_objective(&plan.objective_digest) {
         match &record.event {
             LedgerEvent::AuthenticatedOutcomeV2(value)
                 if episodes.contains(&value.episode_id)
                     && value.correction_predecessor.is_some() =>
             {
                 correction_digests.push(record.event_digest);
-            }
-            LedgerEvent::Revocation(_) | LedgerEvent::UnlearningLineageV1(_) => {
-                revocation_digests.push(record.event_digest);
             }
             _ => {}
         }
@@ -1044,12 +1090,9 @@ fn derive_dataset(
     }
     source_record_digests.sort_unstable();
 
-    let eligible_frontier = snapshot
-        .records()
-        .last()
-        .map(|record| record.sequence.get())
-        .ok_or(ProductionLedgerError::Binding("empty ledger"))?;
+    let eligible_frontier = head.sequence.get();
     Ok(DerivedDataset {
+        ledger_head_digest: head.chain_digest,
         eligible_frontier,
         outcome_watermark,
         correction_cut_digest: digest_cut(

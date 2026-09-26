@@ -259,42 +259,40 @@ pub fn apply_incremental_delta(
         return Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity);
     }
 
-    let mut nodes = predecessor
+    // Resolve removals and replacements before copying retained payloads.
+    // Repeated per-node `retain` scanned all edges once for every deletion.
+    // The sets preserve remove-before-upsert semantics with one history pass.
+    let removed_nodes = delta.remove_node_ids.iter().collect::<BTreeSet<_>>();
+    let removed_edges = delta.remove_edge_identities.iter().collect::<BTreeSet<_>>();
+    let nodes = predecessor
         .nodes
         .iter()
+        .filter(|node| {
+            !removed_nodes.contains(&node.node_id) && !upsert_node_ids.contains(&node.node_id)
+        })
         .cloned()
-        .map(|node| (node.node_id.clone(), node))
-        .collect::<BTreeMap<_, _>>();
-    let mut edges = predecessor
+        .chain(delta.upsert_nodes)
+        .collect();
+    let edges = predecessor
         .edges
         .iter()
+        .filter(|edge| {
+            !removed_nodes.contains(&edge.identity.source_node_id)
+                && !removed_nodes.contains(&edge.identity.target_node_id)
+                && !removed_edges.contains(&edge.identity)
+                && !upsert_edge_ids.contains(&edge.identity)
+        })
         .cloned()
-        .map(|edge| (edge.identity.clone(), edge))
-        .collect::<BTreeMap<_, _>>();
-
-    for node_id in delta.remove_node_ids {
-        nodes.remove(&node_id);
-        edges.retain(|identity, _| {
-            identity.source_node_id != node_id && identity.target_node_id != node_id
-        });
-    }
-    for node in delta.upsert_nodes {
-        nodes.insert(node.node_id.clone(), node);
-    }
-    for identity in delta.remove_edge_identities {
-        edges.remove(&identity);
-    }
-    for edge in delta.upsert_edges {
-        edges.insert(edge.identity.clone(), edge);
-    }
+        .chain(delta.upsert_edges)
+        .collect();
 
     canonicalize_generation(
         generation,
         delta.source_snapshot_digest,
         delta.generation_vector_digest,
         delta.graph_profile_digest,
-        nodes.into_values().collect(),
-        edges.into_values().collect(),
+        nodes,
+        edges,
     )
 }
 
@@ -371,11 +369,63 @@ pub struct KnowledgeRelationResultV2 {
     pub authority: AuthorityPosture,
 }
 
+/// Deterministic work counters for one accepted relation query.
+///
+/// The validation fields count records in the generation that is fully checked
+/// before selection. The visibility and relation fields count the actual
+/// selection-loop inspections. This is diagnostic evidence only and grants no
+/// authority or host-independent latency claim.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct KnowledgeRelationQueryWorkV2 {
+    pub validated_nodes: u64,
+    pub validated_edges: u64,
+    pub validated_supports: u64,
+    pub visibility_nodes_scanned: u64,
+    pub visibility_supports_inspected: u64,
+    pub relation_edges_scanned: u64,
+    pub relation_supports_inspected: u64,
+    pub matching_edges: u64,
+    pub selected_edges_cloned: u64,
+    pub selected_supports_cloned: u64,
+    pub omitted_edges: u64,
+}
+
 pub fn query_relations(
     generation: &KnowledgeGenerationV2,
     query: KnowledgeRelationQueryV2,
 ) -> Result<KnowledgeRelationResultV2, KnowledgeGenerationErrorV2> {
+    query_relations_impl::<false>(generation, query).map(|(result, _work)| result)
+}
+
+/// Query with deterministic work diagnostics; result bytes match `query_relations`.
+pub fn query_relations_with_work(
+    generation: &KnowledgeGenerationV2,
+    query: KnowledgeRelationQueryV2,
+) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2> {
+    query_relations_impl::<true>(generation, query)
+}
+
+fn query_relations_impl<const MEASURE_WORK: bool>(
+    generation: &KnowledgeGenerationV2,
+    query: KnowledgeRelationQueryV2,
+) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2> {
     generation.validate()?;
+    let mut work = KnowledgeRelationQueryWorkV2::default();
+    if MEASURE_WORK {
+        work.validated_nodes = saturating_u64(generation.nodes.len());
+        work.validated_edges = saturating_u64(generation.edges.len());
+        work.validated_supports = generation
+            .nodes
+            .iter()
+            .map(|node| saturating_u64(node.supports.len()))
+            .chain(
+                generation
+                    .edges
+                    .iter()
+                    .map(|edge| saturating_u64(edge.supports.len())),
+            )
+            .fold(0_u64, u64::saturating_add);
+    }
     if query.generation_digest != generation.generation_digest {
         return Err(KnowledgeGenerationErrorV2::DigestMismatch(
             "query_generation",
@@ -395,38 +445,37 @@ pub fn query_relations(
     }
     let request_digest = compute_query_request_digest(&query, &seeds, &relation_kinds);
     let visible_nodes = query.valid_at_unix_seconds.map(|at| {
-        generation
-            .nodes
-            .iter()
-            .filter(|node| node.supports.iter().any(|support| support.visible_at(at)))
-            .map(|node| node.node_id.clone())
-            .collect::<BTreeSet<_>>()
-    });
-    let mut edges = generation
-        .edges
-        .iter()
-        .filter(|edge| {
-            (seeds.contains(&edge.identity.source_node_id)
-                || seeds.contains(&edge.identity.target_node_id))
-                && (relation_kinds.is_empty() || relation_kinds.contains(&edge.identity.relation))
-                && visible_nodes.as_ref().is_none_or(|visible| {
-                    visible.contains(&edge.identity.source_node_id)
-                        && visible.contains(&edge.identity.target_node_id)
-                })
-        })
-        .filter_map(|edge| {
-            let mut edge = edge.clone();
-            if let Some(at) = query.valid_at_unix_seconds {
-                edge.supports.retain(|support| support.visible_at(at));
-                if edge.supports.is_empty() {
-                    return None;
+        let mut visible = BTreeSet::new();
+        for node in &generation.nodes {
+            if MEASURE_WORK {
+                work.visibility_nodes_scanned = work.visibility_nodes_scanned.saturating_add(1);
+            }
+            let mut node_is_visible = false;
+            for support in &node.supports {
+                if MEASURE_WORK {
+                    work.visibility_supports_inspected =
+                        work.visibility_supports_inspected.saturating_add(1);
+                }
+                if support.visible_at(at) {
+                    node_is_visible = true;
+                    break;
                 }
             }
-            Some(edge)
-        })
-        .collect::<Vec<_>>();
-    let omitted_count = edges.len().saturating_sub(maximum_edges);
-    edges.truncate(maximum_edges);
+            if node_is_visible {
+                visible.insert(node.node_id.clone());
+            }
+        }
+        visible
+    });
+    let (edges, omitted_count) = collect_relation_query_edges::<MEASURE_WORK>(
+        generation,
+        &seeds,
+        &relation_kinds,
+        visible_nodes.as_ref(),
+        query.valid_at_unix_seconds,
+        maximum_edges,
+        &mut work,
+    );
     let mut result = KnowledgeRelationResultV2 {
         query_id: query.query_id,
         generation_digest: generation.generation_digest,
@@ -438,7 +487,107 @@ pub fn query_relations(
         authority: AuthorityPosture::DENY_ALL,
     };
     result.result_digest = compute_query_result_digest(&result);
-    Ok(result)
+    if MEASURE_WORK {
+        debug_assert_eq!(work.omitted_edges, saturating_u64(omitted_count));
+    }
+    Ok((result, work))
+}
+
+fn collect_relation_query_edges<const MEASURE_WORK: bool>(
+    generation: &KnowledgeGenerationV2,
+    seeds: &BTreeSet<StableId>,
+    relation_kinds: &BTreeSet<KnowledgeRelationKindV2>,
+    visible_nodes: Option<&BTreeSet<StableId>>,
+    valid_at_unix_seconds: Option<i64>,
+    maximum_edges: usize,
+    work: &mut KnowledgeRelationQueryWorkV2,
+) -> (Vec<KnowledgeEdgeV2>, usize) {
+    let mut selected_edges = Vec::with_capacity(maximum_edges.min(generation.edges.len()));
+    let mut omitted_count = 0usize;
+    for edge in &generation.edges {
+        if MEASURE_WORK {
+            work.relation_edges_scanned = work.relation_edges_scanned.saturating_add(1);
+        }
+        let identity = &edge.identity;
+        if !(seeds.contains(&identity.source_node_id) || seeds.contains(&identity.target_node_id))
+            || !(relation_kinds.is_empty() || relation_kinds.contains(&identity.relation))
+            || visible_nodes.is_some_and(|visible| {
+                !visible.contains(&identity.source_node_id)
+                    || !visible.contains(&identity.target_node_id)
+            })
+        {
+            continue;
+        }
+
+        if selected_edges.len() == maximum_edges {
+            if let Some(at) = valid_at_unix_seconds {
+                let mut visible = false;
+                for support in &edge.supports {
+                    if MEASURE_WORK {
+                        work.relation_supports_inspected =
+                            work.relation_supports_inspected.saturating_add(1);
+                    }
+                    if support.visible_at(at) {
+                        visible = true;
+                        break;
+                    }
+                }
+                if !visible {
+                    continue;
+                }
+            }
+            if MEASURE_WORK {
+                work.matching_edges = work.matching_edges.saturating_add(1);
+                work.omitted_edges = work.omitted_edges.saturating_add(1);
+            }
+            omitted_count = omitted_count.saturating_add(1);
+            continue;
+        }
+
+        let selected = if let Some(at) = valid_at_unix_seconds {
+            let mut supports = Vec::new();
+            for support in &edge.supports {
+                if MEASURE_WORK {
+                    work.relation_supports_inspected =
+                        work.relation_supports_inspected.saturating_add(1);
+                }
+                if support.visible_at(at) {
+                    supports.push(support.clone());
+                }
+            }
+            if supports.is_empty() {
+                continue;
+            }
+            if MEASURE_WORK {
+                work.selected_supports_cloned = work
+                    .selected_supports_cloned
+                    .saturating_add(saturating_u64(supports.len()));
+            }
+            KnowledgeEdgeV2 {
+                identity: edge.identity.clone(),
+                confidence: edge.confidence,
+                validity_digest: edge.validity_digest,
+                supports,
+            }
+        } else {
+            if MEASURE_WORK {
+                work.selected_supports_cloned = work
+                    .selected_supports_cloned
+                    .saturating_add(saturating_u64(edge.supports.len()));
+            }
+            edge.clone()
+        };
+        if MEASURE_WORK {
+            work.matching_edges = work.matching_edges.saturating_add(1);
+            work.selected_edges_cloned = work.selected_edges_cloned.saturating_add(1);
+        }
+        selected_edges.push(selected);
+    }
+    (selected_edges, omitted_count)
+}
+
+fn saturating_u64(value: usize) -> u64 {
+    u64::try_from(value).unwrap_or(u64::MAX)
 }
 
 fn canonicalize_generation(

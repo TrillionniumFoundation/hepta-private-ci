@@ -1091,13 +1091,41 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
-    assert_eq!(
-        sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
-        )
-        .fetch_one(&migrated.pool)
+    // A migration ledger alone is not proof of a correct schema. Compare the
+    // migrated KG tables, indexes and immutability/CAS triggers with a fresh
+    // store while the assertions above independently check legacy-data policy.
+    let fresh_owner = agent_id(85);
+    let fresh = CognitiveStore::open(&layout(&temp, &fresh_owner))
         .await
-        .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        .expect("fresh schema oracle");
+    let schema_query = "SELECT type, name, tbl_name, sql FROM sqlite_schema
+                        WHERE (name GLOB 'kg_*' OR tbl_name GLOB 'kg_*')
+                          AND sql IS NOT NULL ORDER BY type, name";
+    let migrated_schema: Vec<(String, String, String, String)> = sqlx::query_as(schema_query)
+        .fetch_all(&migrated.pool)
+        .await
+        .expect("migrated KG schema");
+    let fresh_schema: Vec<(String, String, String, String)> = sqlx::query_as(schema_query)
+        .fetch_all(&fresh.pool)
+        .await
+        .expect("fresh KG schema");
+    assert!(!fresh_schema.is_empty());
+    assert_eq!(migrated_schema, fresh_schema);
+    let failed_migrations: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM _sqlx_migrations WHERE success = 0")
+            .fetch_one(&migrated.pool)
+            .await
+            .expect("migration success ledger");
+    assert_eq!(failed_migrations, 0);
+    fresh.pool.close().await;
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT version FROM _sqlx_migrations ORDER BY version",)
+            .fetch_all(&migrated.pool)
+            .await
+            .expect("migration ledger"),
+        sqlx::migrate!("./migrations")
+            .iter()
+            .map(|migration| migration.version)
+            .collect::<Vec<_>>()
     );
 }

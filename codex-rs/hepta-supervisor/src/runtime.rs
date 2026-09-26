@@ -25,6 +25,7 @@ pub(crate) const MAX_FAULT_BYTES: usize = 512;
 pub(crate) enum RuntimePhase {
     AwaitingHealth { deadline: Instant },
     Running,
+    Unhealthy { deadline: Instant },
     Draining { deadline: Instant },
     Stopping { deadline: Instant },
     Killing,
@@ -37,6 +38,9 @@ pub(crate) struct AgentRuntime<P> {
     pub release_id: ReleaseId,
     pub generation: u64,
     pub phase: RuntimePhase,
+    /// A physical child exists but its lease publication did not confirm.
+    /// Only this case permits cleanup after exact child exit with no lease.
+    pub lease_publication_uncertain: bool,
     pub healthy: bool,
     pub fenced: bool,
 }
@@ -150,12 +154,6 @@ pub(crate) struct AgentSlot<P> {
     pub restart_pending: bool,
     pub restart_not_before: Option<Instant>,
     pub restart_attempt: u32,
-    pub restart_window_started_at: Option<Instant>,
-    pub restart_window_started_unix_millis: Option<u64>,
-    pub restart_retry_at: Option<Instant>,
-    pub restart_automatic: bool,
-    pub restart_after_exit: bool,
-    pub restart_exhausted: bool,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -181,12 +179,6 @@ impl<P> AgentSlot<P> {
             restart_pending: false,
             restart_not_before: None,
             restart_attempt: 0,
-            restart_window_started_at: None,
-            restart_window_started_unix_millis: None,
-            restart_retry_at: None,
-            restart_automatic: false,
-            restart_after_exit: false,
-            restart_exhausted: false,
             active_release: None,
             previous_release: None,
             release_change: None,

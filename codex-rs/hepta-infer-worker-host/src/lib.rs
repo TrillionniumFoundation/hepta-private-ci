@@ -267,3 +267,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+/// Local Laya backend inside the existing inference worker.
+pub mod laya_cell;

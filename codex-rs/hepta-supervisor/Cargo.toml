@@ -12,8 +12,6 @@ doctest = true
 
 [features]
 default = []
-# Offline/shadow harness API; never enabled by a product dependency.
-qualification = []
 # Explicit build opt-in for externally authorized mutation; default daemons
 # remain lifecycle-only and keep signed mutation admission fail-closed.
 production-authority = []
@@ -27,6 +25,12 @@ test = false
 name = "hepta-supervisor-intent-recovery"
 path = "src/bin/hepta-supervisor-intent-recovery.rs"
 test = false
+
+[[bin]]
+name = "hepta-supervisor-release-controller"
+path = "src/bin/hepta-supervisor-release-controller.rs"
+test = false
+required-features = ["production-authority"]
 
 [[bin]]
 name = "hepta-authority-signer"

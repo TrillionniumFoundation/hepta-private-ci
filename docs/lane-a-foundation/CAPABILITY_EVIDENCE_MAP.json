@@ -156,13 +156,15 @@
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "def validate_raw(",
+            "def rejection_bytes("
           ]
         },
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "function validateRaw(",
+            "function rejectionBytes("
           ]
         }
       ],
@@ -1168,7 +1170,7 @@
         "FleetAuthorityPort",
         "FleetAuthorityPort::issue",
         "AuthorityLeaseVerifier::verify_use",
-        "AuthorityLeaseVerifier::with_verified_use"
+        "dispatch_authority_lease_with_witness"
       ],
       "sourceEvidence": [
         {
@@ -1177,7 +1179,7 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use(",
+            "dispatch_authority_lease_with_witness(",
             "allocation_binding"
           ]
         },
@@ -1369,7 +1371,7 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         }
       ],
@@ -1424,7 +1426,7 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         }
       ],
@@ -1489,7 +1491,7 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         }
       ],
@@ -1520,24 +1522,28 @@
       "summary": "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default",
       "publicSymbols": [
         "AgentdConfig::with_production_operations",
-        "AgentdProductionOperationRuntimeConfig::open"
+        "AgentdProductionOperationRuntimeConfig::new"
       ],
       "sourceEvidence": [
         {
           "path": "codex-rs/hepta-agentd/src/config.rs",
           "mustContain": [
-            "pub fn with_production_operations",
-            "production_operations: None",
+            "production_operations: None"
+          ],
+          "requiredIdentifiers": [
+            "with_production_operations",
             "take_production_operations"
           ]
         },
         {
           "path": "codex-rs/hepta-agentd/src/runtime.rs",
           "mustContain": [
-            "AgentdProductionOperationRuntimeConfig::open",
+            "production-operation-reconciler"
+          ],
+          "requiredIdentifiers": [
             "attach_production_operations",
             "run_production_operation_reconciler",
-            "CompletedRuntimeTask::Operations"
+            "RuntimeTasks"
           ]
         },
         {
@@ -1547,14 +1553,30 @@
             "product_callers = [\"codex-rs/hepta-agentd/src/runtime.rs\"]",
             "forbidden = [\"ProductionAuthorityToken::from_verified_bytes\", \"SigningKey::from_bytes\"]"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "requiredIdentifiers": [
+            "AgentdProductionOperationRuntimeConfig",
+            "attach",
+            "verify_current_authority"
+          ]
         }
       ],
       "positiveTests": [
         {
-          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
-          "mustContain": [
-            "cleanup_never_polls_the_join_handle_already_consumed_by_select",
-            "operations_task.is_finished()"
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+          "requiredIdentifiers": [
+            "cancelled_observation_keeps_completion_identity",
+            "shutdown_listener_error_does_not_detach_live_tasks",
+            "cooperative_shutdown_precedes_forced_abort"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_task_outcome_tests.rs",
+          "requiredIdentifiers": [
+            "observed_required_failure_cannot_become_cancelled_success",
+            "shutdown_listener_failure_is_latched_across_reentry"
           ]
         }
       ],

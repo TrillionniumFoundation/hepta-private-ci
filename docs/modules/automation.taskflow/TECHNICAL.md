@@ -26,7 +26,11 @@ architecture. Automation retains timer/calendar wake-up; the existing TaskFlow
 owner supplies durable circuit/run progression. Cells make decisions, organ ports
 encapsulate capabilities, and registered effect owners execute them. The technical
 module ID and existing database ownership remain unchanged during migration.
-This target is planned and is not included in the native-source claims below.
+A bounded source slice is now native: a create-only circuit/parameter registry and
+one authority-free threshold DecisionCell load exact parameters, durably record the
+choice before routing, and advance the existing TaskFlow projection. General
+DecisionCells, organ calls, feedback, joins and learning-driven promotion remain
+separate target work and are not implied by this minimal slice.
 
 ## 2. Source binding and implementation status
 
@@ -39,7 +43,10 @@ Existing owning runtime composition:
 - `codex-rs/hepta-agentd/src/automation.rs`
 - `codex-rs/hepta-agentd/src/automation_recovery.rs`
 - `codex-rs/hepta-agentd/src/state_control.rs` / `src/client.rs`
-- `codex-rs/hepta-agent-protocol` for capability-negotiated Calendar V2 control
+- `codex-rs/hepta-agentd/src/automation_effect_host.rs` for the named, optional
+  final-use/provider product host
+- `codex-rs/hepta-agent-protocol` for capability-negotiated Calendar V2,
+  external-effect preparation and threshold-circuit control
 
 The durable causal-chain implementation is described in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md). The legacy local execution-boundary calculator in `src/taskflow_execution_boundary.rs` remains a deny-all structural assessment and is **not** the positive provider dispatcher. Positive external effect dispatch is the separately bounded `src/authorized_effect.rs` seam consuming kernel-owned final-use authority.
 
@@ -78,7 +85,8 @@ AutomationScheduler (existing wake-up owner)
   -> automation occurrence terminalization
 
 External TaskFlow effect
-  -> durable claimed step
+  -> Agentd host-owned immutable product preparation
+  -> durable claimed step + frozen provider key/profile identity
   -> kernel FinalUseAuthority exact intent/payload binding
   -> synchronous driver OR async final-use/provider-effect bridge
   -> exact wire bytes hashed inside automation before grant consumption
@@ -98,13 +106,13 @@ An organ can hide local circuits; parent circuits call its stable ports rather
 than flattening or taking ownership of private cells and stores.
 
 Current `TaskFlowNodeKind` has Activity, Wait, Effect and success/failure terminal
-nodes; `TaskFlowEdgeSpec` contains from/to. V1 validates an acyclic graph and is a
-bounded durable ledger, not an implemented neural-circuit interpreter. Preserve
-these enums, encoded digests, namespace and cycle rejection. Existing V1 runs
-remain legacy DAG runs. A new admitted version/profile may translate V1 into a
-restricted circuit representation while retaining the original definition digest,
-policy, action meaning, outcomes and effect identities. Unsupported input rejects;
-no old decoder silently accepts a richer graph or receives new fields in place.
+nodes; `TaskFlowEdgeSpec` contains from/to. V1 remains an acyclic bounded durable
+ledger. `NeuralCircuitCandidateV1` compiles typed roles onto that ledger, while the
+minimal threshold runtime admits exactly one `Decide` entry and two authority-free
+success/failure exits. Its parameter bundle and choice are create-only; a crash
+after choice commit resumes that same choice instead of rerunning a newer cell.
+Existing V1 runs remain legacy DAG runs. Unsupported input rejects; no old decoder
+silently accepts a richer graph or receives new fields in place.
 
 ### 4.2 Typed control program and admissible feedback
 
@@ -291,18 +299,34 @@ Consumed contracts:
 - `ModulePort::runtime.codex::automation.taskflow`
 - `OperationIntentV1` (producer-owned `kernel.operations` contract; this candidate composes it at the external-effect boundary)
 - kernel final-use authority/grant binding at the registered effect seam
+- `automation.external_effect@1.0` product preparation/execute/reconcile control
+- `automation.threshold_circuit@1.0` authority-free DecisionCell control
 
 The current external-effect source path uses automation-owned `AuthorizedEffectIntent` only for TaskFlow orchestration identity (run/step/attempt/dependencies/compensation). `AuthorizedEffectIntent::operation_intent_v1()` constructs the producer-owned `kernel.operations::OperationIntentV1` for operation/subject/destination/payload/scope/policy/predecessor semantics, and the TaskFlow digest layers its orchestration fields over that canonical semantic digest. Neither type grants authority.
 
-The synchronous seam remains available. The additive async seam uses `FinalUseAuthority::with_verified_use_async` plus `ProviderEffectTaskFlowDriver`: automation hashes the exact caller-supplied wire bytes before consuming the grant, requires that digest to equal the durable TaskFlow payload digest, and derives a provider logical-effect key from the final-use-bound destination plus TaskFlow run/step. The local step attempt is deliberately excluded from that provider key, so a new local attempt after provider-proven absence cannot silently create a new external effect identity; a changed payload under the same logical effect becomes a provider key/payload conflict. Restart lookup re-derives the provider intent from the durable `AuthorizedEffectPending` record rather than accepting a caller-supplied key.
+The named Agentd host first persists `ProductEffectPreparationV1`: exact intent,
+payload, destination, scope, predecessor/compensation semantics, provider key,
+provider-profile digest and source generation. Only that prepared step may consume a
+grant. Restart reconciliation reads the original stored provider key; scope/profile
+rotation cannot manufacture a fresh logical effect. Terminal receipt replay is
+read-only, while a pending dispatch under an incompatible current profile fails
+closed. The synchronous host uses `FinalUseAuthority::with_verified_effect` and an
+attested HTTP provider. The additive async seam remains available through
+`FinalUseAuthority::with_verified_use_async` plus `ProviderEffectTaskFlowDriver`;
+it is not substituted for the current product host without preserving the stored
+provider identity and recovery semantics.
 
-These source seams do not constitute product activation. `CALLERS.toml` intentionally leaves the async final-use fence, TaskFlow/provider-effect bridge and HTTP provider adapter without product callers until a named host loads independently provisioned final-use trust/revocation state and an independently attested provider configuration/terminal observer.
+This is repository product composition, not deployment activation. A selected host
+must still provision signer trust, a live revocation frontier, an independently
+attested provider configuration and a trusted terminal observer. Target-host
+qualification, independent acceptance, activation, promotion and release remain
+separate evidence gates.
 
 The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is explicitly narrowed to **durable Core queue admission**, not occurrence or effect completion. Existing `Once`/`FixedInterval` callers keep their historical overlap behavior through an explicit default `overlap=allow`. Calendar V2 is additive: it stores an immutable versioned schedule with timezone ID, tzdb digest, bounded transition profile, start/end, local civil time, cadence and explicit DST gap/overlap policy. The Agentd control plane advertises `automation.calendar_v2@1.0`; clients negotiate that capability before using the typed `AutomationCreateCalendarV2` request, which dispatches to the same per-Agent `AutomationStore` and existing scheduler. The compatibility `automation_tasks.schedule_kind='once'` marker for a Calendar V2 task is not the authoritative calendar definition; callers read `calendar_schedule_v2()`.
 
 ## 6. Data authority, persistence and migrations
 
-Schema v16 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v22 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, bounded terminal-observer continuation cursor, recovery phase and terminal receipt.
@@ -312,11 +336,15 @@ Schema v16 retains the original `automation_tasks`, `automation_runs` and dispat
 - `taskflow_effect_dispatch_observations`: immutable first provider observation.
 - `taskflow_effect_dispatch_reconciliations`: immutable terminal reconciliation after a first `indeterminate` observation.
 - `automation_calendar_schedule_versions`: append-only Calendar V2 bytes and digest per schedule revision.
+- `automation_product_effect_preparations`: immutable product intent, provider key/profile and source-generation binding before final use.
+- `automation_circuit_candidates`: create-only circuit candidates and compiled definition digests.
+- `automation_threshold_cell_parameters`: create-only threshold DecisionCell parameter bundles and predecessor chain.
+- `automation_circuit_decisions`: immutable exact input/parameter/circuit choice committed before routing.
 - `automation_schedule` / `automation_occurrence` read views for canonical domain naming.
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v16. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. A binary that does not understand schema v16 must not replace the current owner against an upgraded store.
+Migrations are additive from v3 through v22. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs; v15 closes legacy dispatch-unknown ambiguity; and v16 persists bounded terminal-observer continuation. Migrations v17-v19 retain kernel-operation deduplication, timer lifecycle and converged owner metadata. Migration v20 adds the owner-local fair recovery cursor. Migration v21 freezes product-effect preparation and provider identity. Migration v22 adds create-only circuit candidates, threshold-cell parameters and durable choices. Agentd selects pending work through `next_pending_occurrence_work`; known task/occurrence identities use `pending_occurrence_work_exact`, never the first 1024 records. Discovery progress is not effect authority. A binary that does not understand schema v23 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -324,7 +352,17 @@ One Agent generation owns the per-Agent writer. Scheduler lease generation/token
 
 `DispatchUnknown` no longer authorizes retry or permanently kills the scheduler. The next tick first performs bounded `ReconcileOnly` recovery for the same identity. Only an explicit `Missing` result may append `requeued_proven_absent`, release that same occurrence/client identity, and allocate a new durable step attempt on reclaim.
 
-For external effects, automation computes `AuthorizedEffectIntent` itself over run/step/attempt/operation/subject/destination/payload/final-use-scope/policy-generation/dependency-state/compensation identity. `FinalUseAuthority::claim` durably consumes the signed grant nonce. The synchronous path uses `with_verified_use`; the async path uses an active-dispatch fence entered after live revalidation and before the provider future is created. No mutex guard is held across `await`. A concurrent trusted revocation update returns explicit `DispatchInProgress` and may commit only after the bounded provider future completes or is cancelled, preserving the same before-or-after linearization without blocking a runtime thread. The immutable dispatch attempt separately records the concrete grant ID, authority epoch and nonce digest. Driver errors are allowed only before provider contact; ambiguous contact or a non-terminal provider acknowledgement returns `Indeterminate` and is later closed only by append-only provider reconciliation.
+For external effects, the Agentd host creates the exact `AuthorizedEffectIntent`
+inside a durable preparation transaction before grant use. `FinalUseAuthority::claim`
+durably consumes the signed nonce. The synchronous product path uses
+`with_verified_effect`; the async generic seam uses an active-dispatch fence entered
+after live revalidation and before the provider future is created. The immutable
+attempt separately records grant ID, authority epoch and nonce digest. Driver errors
+are allowed only before provider contact; ambiguous contact or a non-terminal
+provider acknowledgement returns `Indeterminate` and is later closed only by
+append-only provider reconciliation. Reconciliation is admitted during Running or
+Draining, uses the historical run fence and stored provider key, and never grants a
+fresh dispatch.
 
 ## 8. Failure semantics, recovery and rollback
 
@@ -335,7 +373,9 @@ Crash boundaries are explicit:
 - after possible App Server admission: stable-id `ReconcileOnly`; no blind duplicate;
 - after persisted turn: store turn identity, then observe terminal status from persisted turn history;
 - after terminal provider observation but before run projection settlement: reconcile the historical step first, then a newer Agent generation may re-fence only the TaskFlow run projection for `Indeterminate -> Reconcile`; it does not replay the effect;
-- indeterminate external effect: dependent mutation remains blocked; restart scanning returns both never-observed attempts and attempts whose first observation is `indeterminate`. A later terminal/proven-absent owner receipt is appended as separate reconciliation evidence and never overwrites or redispatches the first attempt.
+- indeterminate external effect: dependent mutation remains blocked; restart scanning returns both never-observed attempts and attempts whose first observation is `indeterminate`. A later terminal/proven-absent owner receipt is appended as separate reconciliation evidence and never overwrites or redispatches the first attempt;
+- provider-profile or scope change: new dispatch under a mismatched profile is rejected, while reconciliation uses the durable original provider key; an incompatible provider endpoint/contract still requires an explicitly admitted recovery profile rather than silent reinterpretation;
+- threshold DecisionCell crash after choice commit: reopen loads the exact candidate and parameter bundle, reuses the durable choice and advances only the recorded branch; a newer parameter version cannot rewrite the old run.
 
 Rollback preserves schedule revision, deterministic occurrence identity, stable queue identity and provider reconciliation state.
 
@@ -351,9 +391,9 @@ Current source bounds include:
 
 - schedule catch-up ceiling <=1024 occurrences;
 - Calendar V2 timezone transition profile <=512 transitions and bounded calendar search <=1032 candidate days;
-- occurrence recovery query <=1024 rows;
+- diagnostic recovery page <=1024 rows; product recovery uses one durable round-robin selection and exact known-identity lookup;
 - Agentd terminal observation is bounded to <=16 pages × 100 persisted turns per recovery pass; when more history remains, the opaque `next_cursor` is persisted under exact-CAS and the next pass resumes there. A known turn can therefore age beyond 1600 recent turns without permanent invisibility or unbounded full-history materialization;
-- one historical occurrence reconciliation plus at most one new scheduler admission per Agentd tick;
+- one historical occurrence and one unknown queue-admission reconciliation plus at most one new scheduler admission per Agentd tick;
 - TaskFlow graph/step bounds inherited from the existing TaskFlow ledger/outbox.
 
 These are source limits, not deployment measurements. Target-host latency, backlog and restore evidence remain activation gates.
@@ -436,7 +476,10 @@ Implemented convergence sequence:
 10. add Calendar V2 with explicit timezone/tzdb and DST gap/overlap semantics without changing legacy schedule meaning;
 11. expose Calendar V2 through the existing generation-fenced Agentd control plane with additive capability negotiation;
 12. preserve bounded terminal observation when a known turn ages out of the recent window by durably CAS-advancing the App Server continuation cursor; each pass stays bounded and only full pagination exhaustion may convert the missing known turn to indeterminate;
-13. keep concrete provider activation, target-host qualification and independent evidence gates separate.
+13. add fair durable recovery rotation plus exact task/occurrence lookup beyond the bounded discovery page;
+14. compose the named Agentd effect host with immutable product preparation, stored provider identity and Running/Draining reconciliation;
+15. add one authority-free threshold DecisionCell with create-only candidate/parameter registries and durable choice-before-route ordering;
+16. keep concrete provider activation, target-host qualification and independent evidence gates separate.
 
 No second TaskFlow engine or scheduler is admitted by this work package.
 
@@ -451,20 +494,24 @@ requires version+1 and the exact predecessor digest and rejects capability widen
 a circuit cannot silently turn a routing/parameter update into a new authority surface.
 The V1 compiler deliberately reuses TaskFlow's acyclic/reachability/terminal checks.
 
-Remaining circuit work is narrower and stays on the existing owners:
+The second source slice is also implemented: `ThresholdDecisionCellParametersV1`
+and `ThresholdCircuitInvocationV1` load one exact create-only parameter bundle,
+commit `ThresholdCircuitDecisionV1`, then route the existing run through
+`Wait(resume_node) -> Resume -> success/failure`. It exposes no capability and
+cannot dispatch an effect. Restart and V1-to-V2 parameter/candidate regressions
+prove that a newer cell cannot reinterpret an older recorded choice.
 
-1. Bind actual DecisionCells and organ ports through the existing product/inference
-   path; persist effect-relevant choices and exercise cross-owner crash recovery.
-2. Add declared bounded feedback, subcircuits, cancellation and resource fairness;
-   never enable general cycles by removing V1 checks.
-3. Evaluate shared reusable retrieval circuits under the four task conditions;
-   compare cell-only, routing/termination and joint updates against no-change.
-4. Admit next-generation structural changes only after state/operation migration,
-   current revocation, compatible bundle and independent outcome qualification.
+Remaining circuit work stays on existing owners:
 
-The source-level candidate/compilation slice is not runtime activation: `OrganCall` and
-`WaitJoin` remain restricted roles mapped onto the existing TaskFlow execution model,
-and no external effect is enabled merely because a candidate compiles.
+1. bind authenticated inference/Intuition DecisionCells and typed organ ports;
+2. add bounded feedback, joins, subcircuits, cancellation and hierarchical fairness;
+3. evaluate shared reusable retrieval circuits under matched costs and no-change controls;
+4. admit structural promotion only after state/operation migration, current revocation,
+   compatible bundles and independent outcome qualification.
+
+Neither the structural compiler nor the threshold slice is general Circuit activation:
+`OrganCall` and `WaitJoin` remain restricted roles mapped onto the existing TaskFlow
+execution model, and no external effect is enabled merely because a candidate compiles.
 
 Circuit Runtime is a responsibility evolution, not an instruction to create a
 second crate/daemon/store. Keep TaskFlow names/legacy APIs until real consumers
@@ -474,7 +521,15 @@ qualification is required only where the corresponding boundary is exercised.
 
 ## 14. Activation, compatibility and retirement
 
-The existing Agentd -> App Server automation activity now has a repository source composition path, and Calendar V2 creation is product-addressable through the same generation-fenced Agentd control plane after `automation.calendar_v2@1.0` capability negotiation. This does not activate arbitrary external effects: the repository contains an attestation-gated HTTP provider-effect transport, but `CALLERS.toml` still has no product caller for that adapter/coordinator and Agentd has no independently provisioned `FinalUseAuthority` host configuration for TaskFlow effects. Each activated concrete effect owner/terminal observer therefore still requires its own registered product caller, authority configuration, target-host qualification and acceptance evidence.
+The existing Agentd -> App Server automation activity and Calendar V2 control are
+product-addressable. Agentd now also exposes capability-negotiated external-effect
+prepare/execute/reconcile and threshold-circuit control. The optional
+`AgentdAutomationEffectHost` is the named repository caller: it loads protected
+final-use trust/revocation state and an attested HTTP provider contract, while the
+TaskFlow owner retains preparation/attempt/reconciliation records. This source
+composition does not activate a concrete deployment. Each selected host/provider
+still requires protected configuration, current revocation feed, target-host fault
+and capacity evidence, independent acceptance and explicit activation.
 
 Compatibility adapters and the legacy `Submitted` tick can be retired only after all callers move to occurrence-terminal semantics. Historical causal-chain records remain interpretable during retirement.
 
@@ -491,7 +546,14 @@ policy adoption is not permission to rewrite old run histories or widen authorit
 
 ## 15. Definition of module completion
 
-For this source candidate, the Agentd/Codex causal state chain, Calendar V2 owner plus capability-negotiated Agentd creation surface, durable TaskFlow step/outcome chain, producer-owned `kernel.operations::OperationIntentV1` composition and final-use effect seam are present and bounded. Repository-controlled Calendar V2 product control is composed. External-effect product composition is **not** closed merely by the seam: a real registered caller must bind an independently provisioned `FinalUseAuthority` and an independently attested provider contract/terminal observer. Product completion also requires selected-host execution evidence, authentic/current timezone-profile provenance, deployment qualification, independent acceptance and activation evidence. Promotion/release remain separate externally governed states.
+For this source candidate, the Agentd/Codex causal chain, Calendar V2 owner,
+durable TaskFlow step/outcome chain, producer-owned `OperationIntentV1`, named
+final-use/provider host, immutable external-effect preparation/recovery path and one
+minimal threshold DecisionCell are present and bounded. The named source paths are implemented candidates, not completed product qualification. Module
+completion is still false until exact-head and deterministic-merge gates pass,
+selected-host provider/tzdb/capacity/fault evidence is bound, and independent
+acceptance, activation, promotion and release are recorded. General Neural Circuit
+feedback, joins, organ ports and learning-driven promotion remain outside this slice.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
@@ -517,9 +579,85 @@ This overlay changes no acceptance, activation, promotion or release authority.
 | `taskflow_run` | `src/automation_taskflow.rs`, `src/taskflow.rs` | deterministic durable run and transition ledger |
 | `step_outbox` | `src/taskflow_step.rs` | durable prepare/claim/observe/reconcile chain |
 | `queue_dispatch` | `codex-rs/hepta-agentd/src/automation.rs` | App Server `thread/queue/reconcile(AllowIfAbsent)` |
-| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs`, schema v16 occurrence cursor | `ReconcileOnly`; <=16×100 per-pass scan with durable exact-CAS continuation across passes; only full pagination exhaustion becomes indeterminate |
+| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs`, schema v20 recovery/turn cursors | fair owner-local rotation; exact task/occurrence lookup; `ReconcileOnly`; <=16×100 turn pages per pass |
 | `run_recovery` | `src/taskflow_recovery.rs` | historical-step-first, projection-only re-fence |
-| `external_effect` | `src/authorized_effect.rs`, `src/effect_dispatch_ledger.rs`; `hepta-contracts::FinalUseAuthority` / provider-effect contract | owner-computed canonical intent; synchronous or async final-use fence; exact wire-payload digest; provider-stable logical key; immutable attempt/observation/reconciliation; named product host still pending |
+| `prepare_external_effect` | `src/product_effect.rs`, migration v21; Agentd `automation_effect_host.rs` / `state_control.rs` / `client.rs` | host-owned exact product preparation; immutable provider key/profile; claimed step before grant use |
+| `external_effect` | `src/authorized_effect.rs`, `src/effect_dispatch_ledger.rs`; `hepta-contracts::FinalUseAuthority`; Agentd effect host | exact wire/final-use binding; at-most-once provider contact; stored-key reconciliation during Running/Draining; terminal replay without redispatch |
+| `run_threshold_circuit` | `src/threshold_circuit*.rs`, migration v22; Agentd control/client | create-only candidate and parameter bundle; durable choice before route; restart and successor-version recovery; no capability/effect authority |
 | `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
 
-Current repository source implements bounded Calendar V2 semantics from an explicitly supplied timezone/tzdb transition profile; it does **not** prove that a selected host supplied a current authentic IANA tzdb profile, nor does it prove multi-scheduler/DST target behavior. The Agentd/App Server Codex automation activity has a real source composition path. A concrete arbitrary downstream effect provider/terminal observer, deployment, independent acceptance, activation, promotion and release remain separate evidence gates and stay false.
+Current repository source implements bounded Calendar V2 semantics, the named
+Agentd/App Server activity path, an optional attested HTTP effect host and one
+minimal authority-free DecisionCell. It does **not** prove that a selected host
+supplied current authentic IANA tzdb data, a production provider/revocation feed,
+qualified multi-scheduler/DST behavior or general Circuit semantics. Deployment,
+independent acceptance, activation, promotion and release remain separate evidence
+gates and stay false.
+
+
+### September 26 continuation: exact candidate and qualification boundary
+
+Continue PR #990, not the historical local WIP branch. Schema v20 already supplies
+occurrence rotation and exact lookup; v21 adds an immutable product preparation
+reservation and a distinct completion receipt; v22 holds the restricted threshold
+candidate/parameter/choice records; v23 adds a separate fair unknown-dispatch cursor.
+A public preparation value is not a permit: the executor reloads its complete
+immutable identity and readiness receipt before consuming final-use authority.
+Incomplete preparation never licenses provider contact. A no-contact preparation may
+resume under a newer native run fence as a new bounded immutable attempt, retaining
+the operation and provider key. The provider-attempt insert checks the current fence
+in the same SQLite writer order as takeover. Unknown/terminal contact is not retried.
+The signed final-use deadline cannot outlive the frozen preparation lease.
+
+The product host uses the existing async final-use/provider bridge, retaining the
+original `for_operation` key rather than converting old records to the generic
+logical-key algorithm. Host configuration schema v2 may list up to 16 independently
+attested historical provider profiles for lookup only. An unbound legacy unknown
+attempt cannot infer its old provider from current configuration. A missing original
+profile fails closed; a 404/NotFound remains indeterminate rather than proving that
+an active or previously dispatched operation did nothing.
+
+`automation.effect_preparation@1.0` is separately negotiated from the older external
+execution capability. Recovery remains available during Running/Draining with the
+current Agent generation and required stores. Normal scheduling still requires open
+admission. Each quantum visits at most one pending occurrence and one unknown queue
+admission; transient observation I/O is deferred with the durable identity retained,
+while corruption, identity mismatch and stale generation are not downgraded.
+
+The minimal threshold profile actually reads stored parameter bytes, commits its
+choice and advances existing TaskFlow routes. It is a pure, capability-free control
+profile, not a Laya invocation, learned neural model, general DecisionCell/Intuition
+product integration, feedback interpreter or independently accepted neural circuit.
+Its presence must not close those separate design obligations.
+
+Execution receipts must identify the final source commit, storage medium, toolchain,
+commands and any failed/skipped/timed-out cases. Source mapping and mock HTTP contract
+signatures never constitute independently provisioned deployment authority, real
+provider acceptance, long-run target qualification, activation or release.
+
+
+### Candidate validation status (2026-09-26 continuation)
+
+This continuation is a review candidate on the existing #990 line, not a release
+receipt. The earlier exact source `68d28d68` passed the Lane B path guard. That is
+not an execution receipt for this larger continuation. The candidate has been
+rebased onto the concurrently advanced branch rather than overwriting it.
+
+The ordinary-disk nextest command and native check were attempted without test
+retries or relaxed watchdogs. An exploratory check reached Agentd and exposed a
+missing logging-crate reference; that reference was removed. Later exact check
+attempts were blocked during dependency resolution by absent locked crate archives
+and Git cache restoration. A scoped dependency inventory found 229 absent registry
+archives; HTTP restoration also timed out. No final package-pass count, strict
+Clippy pass, synthetic-merge pass, target-host latency or provider acceptance is
+claimed. One requested local caller/Lane-B command was blocked by the connection's
+safety check and was not routed around it.
+
+The new regressions cover no-contact preparation restart, immutable preparation
+substitution, stale-generation provider entry, original-profile lookup after host
+rotation, same-frontier revocation substitution, cursor fairness, and restricted
+parameter/choice recovery. Their source presence is not an executed pass. A full
+Agentd public-socket qualification, crash-cut matrix and real target-host resource
+measurement are still required; the restricted threshold fixture is not general
+Neuron/Laya/Intuition qualification. All deployment and independent-acceptance flags
+remain false.

@@ -66,10 +66,16 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
     }
 }
 
-fn start(control: &mut DurableInferenceControl, id: &str) {
-    control.reserve_native(request(id), 1).unwrap();
+fn start_with_limit(control: &mut DurableInferenceControl, id: &str, maximum_in_flight: usize) {
+    control
+        .reserve_native(request(id), maximum_in_flight)
+        .unwrap();
     control.dispatch_native(id, dispatch()).unwrap();
     control.native_started(id, "turn-1".to_string()).unwrap();
+}
+
+fn start(control: &mut DurableInferenceControl, id: &str) {
+    start_with_limit(control, id, 1);
 }
 
 #[test]
@@ -391,51 +397,315 @@ fn codex_bound_terminal_requires_adapter_correlation_witness() {
 }
 
 #[test]
-fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
-    use std::io::Write;
-    let path = path("byte-budget");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+fn journal_compaction_reclaims_refinements_and_preserves_exact_replay() {
+    let path = path("compaction-replay");
+    let mut control = DurableInferenceControl::open(&path, 16).unwrap();
     start(&mut control, "r1");
     let mut observed = output(NativeRunStatus::Completed, Some(0));
-    observed.output = "x".repeat(1024 * 1024);
-    for tokens in 0..128 {
+    observed.output = "x".repeat(256 * 1024);
+    for tokens in 0..12 {
         observed.observed_output_tokens = Some(tokens);
-        let before = control.native_record("r1").unwrap().clone();
-        let bytes_before = std::fs::metadata(&path).unwrap().len();
-        match control.settle_native("r1", observed.clone()) {
-            Ok(_) => continue,
-            Err(error) => {
-                assert_eq!(error, Error::CapacityExceeded);
-                assert_eq!(control.native_record("r1"), Some(&before));
-                assert_eq!(std::fs::metadata(&path).unwrap().len(), bytes_before);
-                assert!(bytes_before > super::super::MAX_JOURNAL_BYTES / 2);
-                break;
-            }
-        }
+        control.settle_native("r1", observed.clone()).unwrap();
     }
     let expected = control.native_record("r1").unwrap().clone();
-    drop(control);
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
-    assert_eq!(control.native_record("r1"), Some(&expected));
-    drop(control);
-    // A syntactically valid extra observation still exceeds the total budget.
-    let event = Event::Observe {
-        request_id: "r1".to_string(),
-        output: observed,
-    };
-    let json = serde_json::to_string(&event).unwrap();
-    let mut file = std::fs::OpenOptions::new()
-        .append(true)
-        .open(&path)
-        .unwrap();
-    writeln!(file, "{JOURNAL_PREFIX}{json}").unwrap();
-    drop(file);
-    let oversized_bytes = std::fs::metadata(&path).unwrap().len();
+    let before = control.journal_capacity_status();
+    let receipt = control.compact_journal().unwrap();
+    let after = control.journal_capacity_status();
+    assert_eq!(receipt.before_bytes, before.journal_bytes);
+    assert_eq!(receipt.after_bytes, after.journal_bytes);
+    assert!(receipt.after_bytes < receipt.before_bytes);
+    assert_eq!(receipt.native_records, 1);
+    assert_eq!(receipt.reserved_headroom_bytes, 0);
+    assert_eq!(after.reserved_headroom_bytes, 0);
+    // The replacement inode is locked before rename and remains the owner's
+    // locked writer after compaction; path replacement never opens a double-writer gap.
     assert!(matches!(
-        DurableInferenceControl::open(&path, 8),
-        Err(Error::CapacityExceeded)
+        DurableInferenceControl::open(&path, 16),
+        Err(Error::WriterUnavailable)
     ));
-    assert_eq!(std::fs::metadata(&path).unwrap().len(), oversized_bytes);
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 16).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&expected));
+    let bytes_before_duplicate = reopened.journal_capacity_status().journal_bytes;
+    assert_eq!(reopened.settle_native("r1", observed).unwrap(), expected);
+    assert_eq!(
+        reopened.journal_capacity_status().journal_bytes,
+        bytes_before_duplicate
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn checkpoint_roundtrips_every_reachable_native_state_shape() {
+    fn compact_reopen_exact(path: PathBuf, mut control: DurableInferenceControl) {
+        let expected = control.native.records.clone();
+        let expected_active = control.native.active_reservations;
+        let expected_headroom = control.journal_capacity_status().reserved_headroom_bytes;
+        control.compact_journal().unwrap();
+        assert_eq!(
+            control.journal_capacity_status().reserved_headroom_bytes,
+            expected_headroom
+        );
+        drop(control);
+        let reopened = DurableInferenceControl::open(&path, 64).unwrap();
+        assert_eq!(reopened.native.records, expected);
+        assert_eq!(reopened.native.active_reservations, expected_active);
+        assert_eq!(
+            reopened.journal_capacity_status().reserved_headroom_bytes,
+            expected_headroom
+        );
+        drop(reopened);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    // Seven active identities are the maximum worst-case-output set that fits
+    // this journal budget. Cover every active state shape in one checkpoint.
+    let active_path = path("checkpoint-active-shapes");
+    let mut active = DurableInferenceControl::open(&active_path, 64).unwrap();
+    active.reserve_native(request("reserved"), 16).unwrap();
+
+    active.reserve_native(request("dispatching"), 16).unwrap();
+    active.dispatch_native("dispatching", dispatch()).unwrap();
+
+    start_with_limit(&mut active, "running", 16);
+
+    active
+        .reserve_native(request("cancel-dispatching"), 16)
+        .unwrap();
+    active
+        .dispatch_native("cancel-dispatching", dispatch())
+        .unwrap();
+    active.cancel_native("cancel-dispatching").unwrap();
+
+    start_with_limit(&mut active, "cancel-running", 16);
+    active.cancel_native("cancel-running").unwrap();
+
+    start_with_limit(&mut active, "indeterminate-observation", 16);
+    active
+        .settle_native(
+            "indeterminate-observation",
+            output(NativeRunStatus::Indeterminate, None),
+        )
+        .unwrap();
+
+    active
+        .reserve_native(request("unsafe-rejection"), 16)
+        .unwrap();
+    active
+        .dispatch_native("unsafe-rejection", dispatch())
+        .unwrap();
+    active
+        .reject_native_before_start(
+            "unsafe-rejection",
+            NativeDispatchRejection {
+                status: NativeDispatchRejectionStatus::Rejected,
+                reason: "provider acceptance is unknown".to_string(),
+                response_digest: "7".repeat(64),
+                retry_safe_before_admission: false,
+            },
+        )
+        .unwrap();
+    assert_eq!(active.native.active_reservations, 7);
+    compact_reopen_exact(active_path, active);
+
+    // Released variants do not consume future-terminal headroom. Include an
+    // observed-then-cancelled active record plus every release construction.
+    let released_path = path("checkpoint-released-shapes");
+    let mut released = DurableInferenceControl::open(&released_path, 64).unwrap();
+
+    start_with_limit(&mut released, "observed-then-cancelled", 16);
+    released
+        .settle_native(
+            "observed-then-cancelled",
+            output(NativeRunStatus::Indeterminate, None),
+        )
+        .unwrap();
+    released.cancel_native("observed-then-cancelled").unwrap();
+
+    released
+        .reserve_native(request("pre-dispatch-stop"), 16)
+        .unwrap();
+    released
+        .stop_native_before_dispatch("pre-dispatch-stop", "cancelled locally".to_string())
+        .unwrap();
+
+    released
+        .reserve_native(request("pre-effect-abort"), 16)
+        .unwrap();
+    let (_, token) = released
+        .dispatch_native_with_pre_effect_abort("pre-effect-abort", dispatch())
+        .unwrap();
+    released
+        .abort_native_before_effect(token, "final-use denied".to_string())
+        .unwrap();
+
+    released
+        .reserve_native(request("safe-rejection"), 16)
+        .unwrap();
+    released
+        .dispatch_native("safe-rejection", dispatch())
+        .unwrap();
+    released
+        .reject_native_before_start(
+            "safe-rejection",
+            NativeDispatchRejection {
+                status: NativeDispatchRejectionStatus::Overloaded,
+                reason: "rejected before admission".to_string(),
+                response_digest: "8".repeat(64),
+                retry_safe_before_admission: true,
+            },
+        )
+        .unwrap();
+
+    start_with_limit(&mut released, "completed", 16);
+    released
+        .settle_native("completed", output(NativeRunStatus::Completed, Some(2)))
+        .unwrap();
+
+    start_with_limit(&mut released, "cancelled-terminal", 16);
+    released.cancel_native("cancelled-terminal").unwrap();
+    released
+        .settle_native(
+            "cancelled-terminal",
+            output(NativeRunStatus::Interrupted, None),
+        )
+        .unwrap();
+
+    released
+        .reserve_native(request("unsafe-reconciled"), 16)
+        .unwrap();
+    released
+        .dispatch_native("unsafe-reconciled", dispatch())
+        .unwrap();
+    released
+        .reject_native_before_start(
+            "unsafe-reconciled",
+            NativeDispatchRejection {
+                status: NativeDispatchRejectionStatus::Rejected,
+                reason: "outcome initially unknown".to_string(),
+                response_digest: "9".repeat(64),
+                retry_safe_before_admission: false,
+            },
+        )
+        .unwrap();
+    released
+        .settle_native(
+            "unsafe-reconciled",
+            output(NativeRunStatus::Completed, Some(3)),
+        )
+        .unwrap();
+
+    start_with_limit(&mut released, "late-usage", 16);
+    released
+        .settle_native("late-usage", output(NativeRunStatus::Completed, None))
+        .unwrap();
+    released
+        .settle_native("late-usage", output(NativeRunStatus::Completed, Some(4)))
+        .unwrap();
+
+    assert_eq!(released.native.active_reservations, 1);
+    compact_reopen_exact(released_path, released);
+}
+
+#[test]
+fn reserved_terminal_headroom_rejects_new_work_but_closes_accepted_run() {
+    let path = path("terminal-headroom");
+    let mut control = DurableInferenceControl::open(&path, 32).unwrap();
+    let large_output = "\0".repeat(850_000);
+
+    // Ten released records leave a compacted current-state image between one
+    // and two worst-case terminal frames from the hard journal ceiling.
+    for index in 0..10 {
+        let id = format!("history-{index}");
+        control.reserve_native(request(&id), 2).unwrap();
+        control.dispatch_native(&id, dispatch()).unwrap();
+        control.native_started(&id, "turn-1".to_string()).unwrap();
+        let mut terminal = output(NativeRunStatus::Completed, Some(index));
+        terminal.output = large_output.clone();
+        control.settle_native(&id, terminal).unwrap();
+    }
+    let compacted = control.compact_journal().unwrap();
+    assert_eq!(compacted.reserved_headroom_bytes, 0);
+    let before_live = control.journal_capacity_status();
+    assert!(before_live.admissible_bytes > TERMINAL_HEADROOM_BYTES);
+    assert!(before_live.admissible_bytes < 2 * TERMINAL_HEADROOM_BYTES);
+
+    control.reserve_native(request("live"), 2).unwrap();
+    let live_reserved = control.journal_capacity_status();
+    assert_eq!(
+        live_reserved.reserved_headroom_bytes,
+        TERMINAL_HEADROOM_BYTES
+    );
+    assert_eq!(
+        control.reserve_native(request("blocked"), 2),
+        Err(Error::CapacityExceeded)
+    );
+    assert!(control.native_record("blocked").is_none());
+
+    control.dispatch_native("live", dispatch()).unwrap();
+    control
+        .native_started("live", "turn-1".to_string())
+        .unwrap();
+    let mut terminal = output(NativeRunStatus::Completed, Some(7));
+    terminal.output = "\0".repeat(1024 * 1024);
+    let settled = control.settle_native("live", terminal.clone()).unwrap();
+    assert_eq!(settled.state, NativeReservationState::Released);
+    assert_eq!(control.journal_capacity_status().reserved_headroom_bytes, 0);
+    assert_eq!(control.settle_native("live", terminal).unwrap(), settled);
+    drop(control);
+
+    let reopened = DurableInferenceControl::open(&path, 32).unwrap();
+    assert_eq!(reopened.native_record("live"), Some(&settled));
+    assert!(reopened.native_record("blocked").is_none());
+    assert_eq!(
+        reopened.journal_capacity_status().reserved_headroom_bytes,
+        0
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn unsafe_dispatch_rejection_reconciles_to_terminal_after_reopen() {
+    let path = path("unsafe-rejection-reconcile");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let indeterminate = control
+        .reject_native_before_start(
+            "r1",
+            NativeDispatchRejection {
+                status: NativeDispatchRejectionStatus::Rejected,
+                reason: "provider may have accepted before returning the error".to_string(),
+                response_digest: "9".repeat(64),
+                retry_safe_before_admission: false,
+            },
+        )
+        .unwrap();
+    assert_eq!(indeterminate.state, NativeReservationState::Indeterminate);
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let terminal = output(NativeRunStatus::Completed, Some(13));
+    let settled = reopened.settle_native("r1", terminal.clone()).unwrap();
+    assert_eq!(settled.state, NativeReservationState::Released);
+    assert_eq!(reopened.settle_native("r1", terminal).unwrap(), settled);
+    reopened.reserve_native(request("r2"), 1).unwrap();
+    drop(reopened);
+
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&settled));
+    assert_eq!(
+        reopened.native_record("r2").unwrap().state,
+        NativeReservationState::Reserved
+    );
+    drop(reopened);
     std::fs::remove_file(path).unwrap();
 }
 
@@ -601,3 +871,18 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[path = "native_incremental_tests.rs"]
+mod incremental;
+
+#[path = "native_growth_tests.rs"]
+mod growth;
+
+#[path = "native_maintenance_tests.rs"]
+mod maintenance;
+
+#[path = "native_usage_tests.rs"]
+mod usage;
+
+#[path = "native_prepared_input_tests.rs"]
+mod prepared_input;

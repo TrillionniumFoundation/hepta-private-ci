@@ -203,7 +203,13 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native worker opens DurableInferenceControl with an absolute private journal, stable request ID and explicit in-flight budget. The journal writer fence is held only for replay or one durable mutation; provider/model execution does not hold it, so concurrent handles share the same journal budget without stale writes. Before new admission near the active-journal headroom threshold, the worker compacts current records into replayable checkpoints and preserves the complete prior event stream in a content-addressed sibling archive. A possibly dispatched record remains held/indeterminate across compaction and restart. Archive retention/transfer policy and authenticated post-crash provider reconciliation remain separate owner/operations work; deleting the journal is never recovery.
+The native worker retains one `DurableInferenceControl` per private journal. `open` acquires `<journal>.writer.lock` before opening or replaying the data file and holds it for the owner's entire lifetime, including model execution and checkpoint replacement. The data inode is also locked to exclude an already-running pre-maintenance owner. A second owner fails with `WriterUnavailable`; callers must share the retained owner, not repeatedly open independent handles. Never unlink the writer sidecar while an owner may exist. Stop older binaries before enabling checkpoint publication; mixed-version writers and old-inode handles are not a supported upgrade protocol.
+
+Ordinary mutations stage only their affected record, append and sync, then publish the record and derived counters. Write/sync uncertainty poisons that owner; no result is published to memory and reopening must reconcile the persisted source. Native admission reserves one maximum encoded terminal frame plus bounded metadata per non-released request. Metadata liability decreases through dispatch, start and cancellation. A provider terminal releases the execution slot exactly once; when observed usage is still absent it retains a separate 4 KiB first-usage liability. A matching usage-only observation consumes that liability through a small `RefineUsage` frame bound to the exact predecessor revision, rather than re-appending the immutable terminal body. Other terminal fields are compared in full and retain normal conflict validation. Subsequent known-usage refinements remain subject to ordinary capacity admission; this is not an unlimited billing log. New work cannot spend another request's terminal reserve. Legacy journals already overcommitted under the former fixed threshold reopen in drain-only capacity posture: liability-reducing transitions may proceed within the physical byte limit, but new admissions remain blocked until enough responsibility is released. This is not a retroactive guarantee for legacy admissions.
+
+`journal_capacity_status()` reports physical bytes, reserved future bytes, admissible bytes and retained record counts. `compact_journal()` validates one current-state checkpoint per retained legacy/native identity, fsyncs a same-directory replacement, renames it under the stable writer lock and fsyncs the parent directory on Unix. Admission/append can compact superseded frames before rejecting capacity. A pre-rename crash retains the old journal; a post-rename crash recovers the new complete image. Failed directory sync fences the owner. Stale unpublished temporary files are removed only after acquiring writer ownership. Checkpoint framing declares the retained identity count and requires an end marker, so truncation at a complete row cannot silently become a smaller valid state. These structural checks are not signatures or rollback authority. Checkpoint replay validates state shape once without allocating work proportional to the historical revision. Checkpoint serialization borrows retained bodies. Recovery rejects an already oversized file before parsing and batches state-free newline runs while retaining the total-byte and per-line bounds. An expanded snapshot cannot consume the future bytes already reserved for active work.
+
+The 64 MiB file, 8 MiB encoded-line and configured identity limits remain hard bounds. Compaction reclaims superseded events, not retained request identities or final output text. The pinned slot limit is an upper bound, further constrained by byte liability. Unknown execution retains its slot; absent usage remains unknown. Content-addressed external archives, terminal-identity garbage collection, trusted backup anti-rollback, provider billing/economic quota, hardware authority and a standalone control daemon remain separate, unproved obligations. Local checkpoint tests must not be described as deployed-provider acceptance or full long-horizon storage qualification.
 
 Current operating and state-format references:
 
@@ -396,3 +402,31 @@ The bootstrap source-location obligation for `inference.control` is implemented 
 - `codex-rs/hepta-inferd`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Incremental commit staging and history measurements
+
+The exclusive-writer journal stages only the affected request before append,
+fsync and in-memory publication. It does not clone the complete request history
+for each mutation. Active reservations are maintained by the event reducer and
+rebuilt during replay; terminal refinements do not release capacity twice.
+Exact retries retain the original record and journal bytes.
+
+The shared architecture/maintenance recipe is
+`scripts/hepta_inference_owner_checks.py`. It runs real history growth, exclusive
+owner handoff and process-loss recovery through `just test`, with zero retries
+and at least one observed passing test per command. Later diagnostics still run
+when an earlier command fails.
+
+The growth measurement retains 64/256/1024/4096 requests and real durable
+transitions. It records RSS, disk bytes, append percentiles, lookup and recovery.
+Its bounded test watchdog is not a deployment latency SLO. Total history remains
+retained: the checkpoint crash/capacity tests qualify superseded-frame reclamation,
+not identity deletion, multi-writer delta replay or million-record operation.
+The owner recipe executes the checkpoint, migration, capacity and cross-process
+writer regressions independently; a failed command does not hide later results.
+
+### Native qualification runtime prerequisite
+
+The cross-crate Agentd/worker test uses the real embedded App Server, a real Unix socket and SQLite owner, with an HTTP model fixture; it does not qualify a deployed model provider. Build the same candidate's dispatch-capable `codex-app-server` binary with `cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-app-server --bin codex-app-server`, then pass its absolute path as `HEPTA_TEST_CODEX_EXE` to `just test --locked --retries 0 -p codex-hepta-infer-worker-host --lib -E 'test(native_) | test(final_use_authorizer::)'`. The fixture rejects missing/non-file runtime paths rather than supplying the test harness as a fake executable. Maintenance CI records that build, binary digest and the actual tests independently for source-head and prospective merge. All root-level commands use the toolchain selected by `codex-rs/rust-toolchain.toml`, not the runner default. The real Agentd/SQLite/Unix-socket witness also has its own required execution record, so unrelated passing tests cannot mask its absence or failure. Its structural ordering test follows the authorized observed-send helper and is not a substitute for the executed revocation races.
+
+The first-usage reserve is reconstructed after reopen and checkpoint. The regression matrix includes a maximum terminal body at the physical byte boundary, exact retry without another append, stale predecessor, decreasing usage, terminal body/identity mutation, failed append without in-memory publication, and replay of older full-observation usage frames. State-format upgrades require stopping old writers: older binaries may reject the new usage-delta event and are not a supported rollback reader.

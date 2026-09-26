@@ -317,6 +317,42 @@ pub struct ProductQualificationReceiptV1 {
 }
 
 impl ProductQualificationReceiptV1 {
+    /// Re-authenticate the exact signed bundle against this already persisted
+    /// qualification. This is read-only consumption, never a way to mint a
+    /// qualification without the fenced runner and durable evidence sink.
+    pub fn verify_signed_bundle_current(
+        &self,
+        bundle: &IndependentEvaluationBundleV1,
+        roles: &[MetricRoleContractV2],
+        evidence: &SignedEvaluationEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), ProductEvaluationError> {
+        self.validate_integrity()?;
+        if self.decision.trust_digest != verifier.trust_digest()
+            || self.candidate_id != bundle.candidate_id
+            || self.objective_digest != bundle.objective_digest
+            || self.dataset_digest != bundle.dataset_digest
+            || self.generator != bundle.generator
+            || self.evaluator != bundle.evaluator
+            || self.snapshot_ids != bundle.snapshot_ids
+            || self.claim_scope != bundle.claim_scope
+        {
+            return Err(ProductEvaluationError::Binding(
+                "current qualification consumption",
+            ));
+        }
+        let payload = crate::evaluation_signing_payload_v2(bundle, roles)?;
+        let authenticated =
+            crate::signed_evaluation::authenticate(bundle, evidence, verifier, &payload, now)?;
+        if authenticated != self.decision.authentication_digest {
+            return Err(ProductEvaluationError::Integrity(
+                "qualification signed bundle",
+            ));
+        }
+        Ok(())
+    }
+
     pub fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
         if self.temporal_execution_digest.is_zero()
             || self.objective_digest.is_zero()
@@ -496,31 +532,8 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         let snapshot_ids = bundle.snapshot_ids.clone();
         let claim_scope = bundle.claim_scope;
         let roles = temporal.product_plan.metric_roles.clone();
-        let decision = match timing {
-            ProductTimingEvidenceV1::Qualification => {
-                if bundle.claim_scope != EvaluationClaimScopeV1::Qualification {
-                    return Err(ProductEvaluationError::Binding("qualification scope"));
-                }
-                decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?
-            }
-            ProductTimingEvidenceV1::SystemLongitudinal {
-                timing,
-                minimum_window_micros,
-            } => {
-                if bundle.claim_scope != EvaluationClaimScopeV1::SystemLongitudinal {
-                    return Err(ProductEvaluationError::Binding("longitudinal scope"));
-                }
-                decide_with_signed_longitudinal_evidence_v3(
-                    bundle,
-                    roles,
-                    evidence,
-                    timing,
-                    minimum_window_micros,
-                    verifier,
-                    now,
-                )?
-            }
-        };
+        let decision =
+            publication::verify_qualification(bundle, roles, evidence, timing, verifier, now)?;
         let publication_digest = sink.persist(temporal.execution_digest, &decision)?;
         if publication_digest.is_zero() {
             return Err(ProductEvaluationError::Integrity("publication digest"));
@@ -548,14 +561,15 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    // V4 binds the complete terminal decision object, not only the decision's
+    // opaque evidence digest. Older V3 receipts fail closed and must be
+    // requalified because their mutable disposition/identity fields were not
+    // covered by the product receipt seal.
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
         receipt.dataset_digest,
-        receipt.decision.decision.evidence_digest,
-        receipt.decision.trust_digest,
-        receipt.decision.authentication_digest,
         receipt.publication_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
@@ -568,13 +582,33 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
         EvaluationClaimScopeV1::SystemLongitudinal => 1,
     });
     push_ids(&mut bytes, &receipt.snapshot_ids);
+    push_signed_evaluation_decision(&mut bytes, &receipt.decision);
     bytes.push(u8::from(receipt.authority.grants_any()));
-    bytes.push(u8::from(receipt.decision.decision.authority.grants_any()));
     Digest32::of_bytes(&bytes)
 }
 
+fn push_signed_evaluation_decision(bytes: &mut Vec<u8>, decision: &SignedEvaluationDecisionV1) {
+    push_id(bytes, &decision.decision.evaluation_id);
+    push_id(bytes, &decision.decision.candidate_id);
+    push_id(bytes, &decision.decision.baseline_id);
+    bytes.push(match decision.decision.disposition {
+        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        crate::IndependentEvaluationDispositionV1::Ineligible => 1,
+        crate::IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(bytes, &decision.decision.failed_metrics);
+    for digest in [
+        decision.decision.evidence_digest,
+        decision.trust_digest,
+        decision.authentication_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.push(u8::from(decision.decision.authority.grants_any()));
+}
+
 fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v2".to_vec();
     bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
     bytes.extend_from_slice(receipt.evidence_digest.as_array());
     Digest32::of_bytes(&bytes)
@@ -957,6 +991,10 @@ impl From<ProductEvidenceSinkErrorV1> for ProductEvaluationError {
         Self::Sink(value)
     }
 }
+
+#[path = "product_publication.rs"]
+mod publication;
+pub use publication::product_qualification_publication_payload_v1;
 
 #[cfg(test)]
 #[path = "product_runner_tests.rs"]

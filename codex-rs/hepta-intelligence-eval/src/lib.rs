@@ -149,6 +149,7 @@ pub use product_runner::ProductTemporalEvaluationReceiptV1;
 pub use product_runner::ProductTimingEvidenceV1;
 pub use product_runner::TemporalComparisonInputsV1;
 pub use product_runner::freeze_product_evaluation_plan_v1;
+pub use product_runner::product_qualification_publication_payload_v1;
 pub use self_evolution_selection::PreparedSelfEvolutionSelectionV1;
 pub use self_evolution_selection::SelfEvolutionSelectionError;
 pub use self_evolution_selection::SelfEvolutionSelectionPolicyV1;
@@ -180,7 +181,7 @@ pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 

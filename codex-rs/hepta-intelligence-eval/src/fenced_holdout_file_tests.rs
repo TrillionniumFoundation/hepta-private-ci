@@ -289,3 +289,98 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
         Some(LockedFileCasErrorV1::Rollback)
     );
 }
+
+#[test]
+fn releasing_owner_unlocks_even_when_a_transient_descriptor_remains() {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let transient = file.try_clone().expect("transient inherited descriptor");
+    let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    assert!(matches!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None),
+        Err(LockedFileCasErrorV1::Busy)
+    ));
+    drop(store);
+    let recovered = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
+        .unwrap_or_else(|error| {
+            panic!("retired owner must not remain locked through a transient duplicate: {error}")
+        });
+    drop(recovered);
+    drop(transient);
+}
+
+#[test]
+fn rejected_constructor_releases_only_its_acquired_lock() {
+    let temp = TempFile::new();
+    let mut file = temp.create();
+    file.write_all(b"not a valid store")
+        .expect("invalid fixture");
+    file.sync_all().expect("persist invalid fixture");
+    let transient = file.try_clone().expect("transient duplicate");
+    assert!(matches!(
+        LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding")),
+        Err(LockedFileCasErrorV1::AlreadyInitialized)
+    ));
+    let result = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None);
+    assert!(
+        matches!(result, Err(LockedFileCasErrorV1::MissingHeader)),
+        "failed creation leaked its file lock"
+    );
+    let probe = temp.open();
+    assert!(
+        probe.try_lock().is_ok(),
+        "failed recovery leaked its file lock"
+    );
+    probe.unlock().expect("release probe lock");
+    drop(transient);
+}
+
+#[test]
+fn streaming_replay_matches_original_full_prefix_oracle_and_rejections() {
+    let binding = digest("binding");
+    let fence = HoldoutWriterFenceV1 {
+        owner_id: id("oracle-owner"),
+        generation: 1,
+        lease_digest: digest("oracle-lease"),
+    };
+    let mut payloads = vec![encode_fence(&fence).unwrap()];
+    for index in 0..8 {
+        let mut payload = vec![EVENT_PLAN];
+        payload.extend_from_slice(&encode_holdout_plan(&plan(&format!("oracle-{index}"))).unwrap());
+        payloads.push(payload);
+    }
+    payloads.push(
+        encode_fence(&HoldoutWriterFenceV1 {
+            generation: 2,
+            ..fence
+        })
+        .unwrap(),
+    );
+    let mut incremental = ValidatedReplay::new(binding).unwrap();
+    let mut reference = None;
+    for payload in &payloads {
+        reference = Some(replay_event_reference(binding, reference, payload).unwrap());
+        let anchor = incremental.apply(payload).unwrap();
+        assert_eq!(Some(anchor), reference.as_ref().map(record_anchor));
+    }
+    assert_eq!(incremental.finish().unwrap(), reference);
+    for invalid in [
+        payloads[1].clone(),
+        payloads[0].clone(),
+        vec![255],
+        vec![EVENT_PLAN],
+    ] {
+        let mut incremental = ValidatedReplay::new(binding).unwrap();
+        for payload in &payloads {
+            incremental.apply(payload).unwrap();
+        }
+        let expected = replay_event_reference(binding, reference.clone(), &invalid).unwrap_err();
+        assert_eq!(incremental.apply(&invalid).unwrap_err(), expected);
+    }
+    let mut empty = ValidatedReplay::new(binding).unwrap();
+    assert!(
+        empty.apply(&payloads[1]).is_err(),
+        "plan without initial fence accepted"
+    );
+}

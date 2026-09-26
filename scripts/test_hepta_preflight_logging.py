@@ -58,8 +58,11 @@ class PreflightLoggingTests(unittest.TestCase):
         result = subprocess.run(
             ["bash", "-c", command_for(step)],
             cwd=root,
-            env={**os.environ, "PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}",
-                 "RUNNER_TEMP": str(root)},
+            env={
+                **os.environ,
+                "PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}",
+                "RUNNER_TEMP": str(root),
+            },
             capture_output=True,
             text=True,
             timeout=10,

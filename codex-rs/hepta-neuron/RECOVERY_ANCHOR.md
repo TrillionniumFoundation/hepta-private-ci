@@ -42,14 +42,22 @@ configuration, replay, quota, and cooperating-writer fencing checks remain intac
 The legacy `open` method remains available for bootstrap and explicitly
 unanchored qualification use. It is not an anti-rollback API. A host that has
 acknowledged history must call the anchored method and must never retry a failed
-anchored open through the unanchored method. The closure line now provides `FileAnchorWitnessStore` as a separate locked and synced witness store and `NeuronRuntime` orders journal commit before witness compare-and-swap. The store itself does not authenticate selected-artifact/current-owner truth or grant freshness/revocation authority; those facts still belong to the composing host.
+anchored open through the unanchored method. The closure line provides
+`FileAnchorWitnessStore` as a separate locked and synced witness store and pairs
+it with the complete operation/result sidecar described in
+[OPERATION_STORE.md](OPERATION_STORE.md). Recovery requires that sidecar to exist;
+it never creates a replacement beside acknowledged journal history. The stores
+do not authenticate selected-artifact/current-owner truth or grant
+freshness/revocation authority; those facts still belong to the composing host.
 
-The host transaction order is: durably commit the journal, durably retain its
-acknowledgement witness, then acknowledge externally. If witness publication is
-uncertain, reconcile the already committed tick before retrying. An anchor cannot
-protect acknowledgements that the host failed to retain. Concurrent witness
-updates, segment rotation, deletion/unlearning, backup erasure, physical power
-loss, and target latency require separate implementation and qualification.
+The owner transaction order is: durably prepare the exact result, durably commit
+the journal, durably retain its acknowledgement witness, durably mark the result
+complete, then acknowledge externally. If journal or witness publication is
+uncertain, reopen and reconcile the prepared operation instead of invoking the
+model again. Exact witness read-back distinguishes a CAS that took effect from an
+unrelated frontier. An anchor cannot protect acknowledgements that the host
+failed to retain. Deletion/unlearning, backup erasure, physical power loss and
+target latency still require separate implementation and qualification.
 
 ## Regression coverage
 

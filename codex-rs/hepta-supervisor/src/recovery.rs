@@ -73,6 +73,50 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
+        let durable = crate::restart_journal::read_main_restart_budget(record.layout.run_root())?;
+        if let Some(state) = &durable {
+            slot.restart_attempt = state.attempts;
+            if let Some(binding) = &state.release_binding {
+                if binding.agent_id != *agent_id {
+                    return Err(SupervisorError::CorruptLease(
+                        "restart witness belongs to another Agent".to_string(),
+                    ));
+                }
+                if state.pending && !state.operator_stopped {
+                    if slot
+                        .active_release
+                        .as_ref()
+                        .is_some_and(|release| release.release_id() != &binding.release_id)
+                        || record
+                            .release_state
+                            .current
+                            .as_ref()
+                            .is_some_and(|release| release != &binding.release_id)
+                    {
+                        return Err(SupervisorError::CorruptLease(
+                            "pending restart release conflicts with the recovered owner"
+                                .to_string(),
+                        ));
+                    }
+                    if slot.active_release.is_none() {
+                        // The first failed child's lease may already be finalized.
+                        // Restore only the original, still-admitted retry identity;
+                        // never guess from configuration or publish it as selected.
+                        slot.active_release =
+                            self.resolve_persisted_release(agent_id, &binding.release_id)?;
+                        slot.last_command = slot
+                            .active_release
+                            .as_ref()
+                            .map(|release| release.command().clone());
+                        if slot.active_release.is_none() {
+                            return Err(SupervisorError::CorruptLease(
+                                "pending restart release is no longer admitted".to_string(),
+                            ));
+                        }
+                    }
+                }
+            }
+        }
         let pending = crate::restart_budget::pending_restart(
             record.layout.run_root(),
             self.config.restart_max_attempts,
@@ -81,9 +125,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         if let Some(claim) = pending {
             slot.restart_attempt = claim.attempt;
             slot.restart_not_before = Some(deadline(now, claim.backoff)?);
-            // An adopted replacement is already satisfying this durable
-            // restart. Only a missing runtime needs the replacement queued.
-            slot.restart_pending = slot.runtime.is_none();
+            // Pending means the replacement has not crossed its durable
+            // pre-spawn consumption boundary. An adopted process is therefore
+            // the predecessor and must finish stopping before replacement.
+            slot.restart_pending = slot.runtime.is_none()
+                || durable
+                    .as_ref()
+                    .is_some_and(|state| state.pending_requires_spawn);
         }
         Ok(())
     }
@@ -122,6 +170,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             )));
         }
+        if !slot.restart_pending && slot.release_change.is_none() {
+            crate::restart_budget::resume_restart(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        }
         let starting = self.registry.compare_and_transition(
             agent_id,
             record.lifecycle.generation,
@@ -142,7 +194,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             logs_root: record.layout.logs_root().to_path_buf(),
             command: release.command().clone(),
         };
-        let mut spawned = match self.driver.spawn(&spec) {
+        let spawned = match self.driver.spawn(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
                 self.transition_without_runtime(
@@ -161,19 +213,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: release.release_id().clone(),
             identity: spawned.identity.clone(),
         };
-        if let Err(error) = write_lease(record.layout.run_root(), &lease) {
-            let _ = spawned.process.kill();
-            self.transition_without_runtime(
-                agent_id,
-                slot,
-                starting.generation,
-                AgentLifecycle::Failed,
-            )?;
-            return Err(error);
-        }
+        let lease_result = write_lease(record.layout.run_root(), &lease);
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
-        slot.runtime = Some(AgentRuntime {
+        let runtime = slot.runtime.insert(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
             spawn_generation: starting.generation,
@@ -182,9 +225,26 @@ impl<D: ProcessDriver> Supervisor<D> {
             phase: RuntimePhase::AwaitingHealth {
                 deadline: health_deadline,
             },
+            lease_publication_uncertain: lease_result.is_err(),
             healthy: false,
             fenced: false,
         });
+        if let Err(error) = lease_result {
+            // Retain the exact handle before either the signal or lifecycle
+            // write can fail. A failed lease commit must not orphan a live child.
+            runtime.fenced = true;
+            runtime.phase = RuntimePhase::Stopping { deadline: now };
+            if runtime.process.kill().is_ok() {
+                runtime.phase = RuntimePhase::Killing;
+            }
+            self.transition_without_runtime(
+                agent_id,
+                slot,
+                starting.generation,
+                AgentLifecycle::Failed,
+            )?;
+            return Err(error);
+        }
         slot.event(starting.generation, SupervisorEventKind::Spawned);
         Ok(())
     }
@@ -195,7 +255,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
         now: Instant,
-    ) -> Result<(), SupervisorError> {
+    ) -> Result<bool, SupervisorError> {
         let Some(lease) = read_lease(record.layout.run_root())? else {
             if is_live_lifecycle(record.lifecycle.lifecycle) {
                 let generation = self.transition_without_runtime(
@@ -207,7 +267,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
             self.recover_matrix_companion(agent_id, slot, record, now)?;
-            return Ok(());
+            return Ok(false);
         };
         validate_lease(
             &lease,
@@ -225,6 +285,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             control_socket: record.layout.agentd_control_socket().to_path_buf(),
             identity: lease.identity.clone(),
         };
+        let mut confirmed_missing = false;
         match self
             .driver
             .adopt(&spec)
@@ -262,6 +323,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                                         } else {
                                             RuntimePhase::Stopping { deadline: now }
                                         },
+                                        lease_publication_uncertain: false,
                                         healthy: false,
                                         fenced: true,
                                     });
@@ -292,31 +354,36 @@ impl<D: ProcessDriver> Supervisor<D> {
                     AgentLifecycle::Draining => RuntimePhase::Draining {
                         deadline: deadline(now, self.config.drain_timeout)?,
                     },
-                    AgentLifecycle::Failed => {
-                        process
-                            .request_stop()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        RuntimePhase::Stopping {
-                            deadline: deadline(now, self.config.stop_grace)?,
-                        }
-                    }
-                    AgentLifecycle::Stopped => {
-                        process
-                            .kill()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        RuntimePhase::Killing
-                    }
+                    AgentLifecycle::Failed => RuntimePhase::Stopping {
+                        deadline: deadline(now, self.config.stop_grace)?,
+                    },
+                    AgentLifecycle::Stopped => RuntimePhase::Stopping { deadline: now },
                 };
-                slot.runtime = Some(AgentRuntime {
+                let runtime = slot.runtime.insert(AgentRuntime {
                     process,
                     identity: lease.identity,
                     spawn_generation: lease.spawn_generation,
                     release_id: lease.release_id,
                     generation: record.lifecycle.generation,
                     phase,
+                    lease_publication_uncertain: false,
                     healthy: false,
                     fenced: false,
                 });
+                // Retain the exact handle before a fallible signal. A signal
+                // error is observable, not permission to discard the child.
+                if record.lifecycle.lifecycle == AgentLifecycle::Failed {
+                    runtime
+                        .process
+                        .request_stop()
+                        .map_err(|error| driver_error(agent_id, error))?;
+                } else if record.lifecycle.lifecycle == AgentLifecycle::Stopped {
+                    runtime
+                        .process
+                        .kill()
+                        .map_err(|error| driver_error(agent_id, error))?;
+                    runtime.phase = RuntimePhase::Killing;
+                }
                 slot.event(
                     record.lifecycle.generation,
                     SupervisorEventKind::OrphanAdopted,
@@ -329,6 +396,22 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
             Adoption::Missing => {
+                // The first child may die before readiness publishes a selected
+                // release. Recover its exact admitted release from the validated
+                // lease, not from current configuration or a guessed command.
+                if slot.active_release.is_none()
+                    && record.release_state.current.is_none()
+                    && record.lifecycle.lifecycle == AgentLifecycle::Starting
+                    && lease.release_id.as_str() != "unversioned"
+                {
+                    slot.active_release =
+                        self.resolve_persisted_release(agent_id, &lease.release_id)?;
+                    slot.last_command = slot
+                        .active_release
+                        .as_ref()
+                        .map(|release| release.command().clone());
+                }
+                confirmed_missing = true;
                 remove_lease(record.layout.run_root(), &lease)?;
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
@@ -358,6 +441,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
         self.recover_matrix_companion(agent_id, slot, record, now)?;
-        Ok(())
+        Ok(confirmed_missing)
     }
 }

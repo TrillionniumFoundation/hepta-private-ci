@@ -2,7 +2,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
-use codex_hepta_intelligence::decide_authenticated_intuition_v2;
+use codex_hepta_intelligence::decide_authenticated_intuition_v3;
 use codex_hepta_intuition::AssignmentCommitmentV1;
 use codex_hepta_intuition::AssignmentModeV1;
 use codex_hepta_intuition::CalibratedActionCandidateV1;
@@ -14,13 +14,13 @@ use codex_hepta_intuition::CanonicalRiskRuleV1;
 use codex_hepta_intuition::LearnedScorerContractV1;
 use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::RiskClass;
-use codex_hepta_intuition::ScoringCommitmentV1;
+use codex_hepta_intuition::ScoringCommitmentV2;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_intuition::canonical_completeness_evidence_payload_v1;
 use codex_hepta_intuition::canonical_profile_qualification_payload_v1;
-use codex_hepta_intuition::canonical_runtime_commitment_payload_v1;
-use codex_hepta_intuition::canonical_scored_outputs_digest_v1;
+use codex_hepta_intuition::canonical_runtime_commitment_payload_v2;
+use codex_hepta_intuition::canonical_scored_outputs_digest_v2;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -39,7 +39,8 @@ const P99_BUDGET: Duration = Duration::from_millis(50);
 const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("id")
+    StableId::new(value)
+        .unwrap_or_else(|error| panic!("invalid benchmark fixture identity: {error}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -75,7 +76,7 @@ fn sign(
 struct Fixture {
     request: CalibratedDecisionRequestV1,
     profile: CanonicalPolicyProfileV1,
-    scoring: ScoringCommitmentV1,
+    scoring: ScoringCommitmentV2,
     assignment: AssignmentCommitmentV1,
     verifier: LearningEvidenceVerifierV1,
     completeness: SignedLearningEvidenceV1,
@@ -83,7 +84,7 @@ struct Fixture {
     runtime: SignedLearningEvidenceV1,
 }
 
-fn fixture(candidate_count: usize) -> Fixture {
+fn fixture(candidate_count: usize) -> Result<Fixture, Box<dyn std::error::Error>> {
     let policy_digest = digest("policy:intuition-fast-v1");
     let model_digest = digest("model:intuition-fast-v1");
     let objective_digest = digest("objective:intuition-auth-fast-gate");
@@ -100,8 +101,8 @@ fn fixture(candidate_count: usize) -> Fixture {
             support_digest: digest(&format!("support:{index:03}")),
         })
         .collect::<Vec<_>>();
-    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).expect("set");
-    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).expect("order");
+    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates)?;
+    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates)?;
     let calibration_artifact_digest = digest("calibration:fast-gate");
     let ood_artifact_digest = digest("ood:fast-gate");
     let request = CalibratedDecisionRequestV1 {
@@ -124,7 +125,7 @@ fn fixture(candidate_count: usize) -> Fixture {
             truncation_digest: digest("truncation:fast-gate"),
             candidate_set_digest,
             canonical_order_digest,
-            candidate_count: u32::try_from(candidate_count).expect("bounded"),
+            candidate_count: u32::try_from(candidate_count)?,
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -175,13 +176,12 @@ fn fixture(candidate_count: usize) -> Fixture {
         calibration_artifact_digest,
         ood_artifact_digest,
     };
-    let scoring = ScoringCommitmentV1 {
+    let scoring = ScoringCommitmentV2 {
         model_artifact_digest: model_digest,
         feature_snapshot_digest: digest("feature-snapshot:fast-gate"),
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
-        candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect("scores"),
+        scored_outputs_digest: canonical_scored_outputs_digest_v2(&request)?,
         policy_digest,
         policy_generation: 1,
     };
@@ -249,15 +249,12 @@ fn fixture(candidate_count: usize) -> Fixture {
                 revoked_at: None,
             },
         ],
-    })
-    .expect("verifier");
+    })?;
 
-    let completeness_payload =
-        canonical_completeness_evidence_payload_v1(&request).expect("complete");
-    let profile_payload = canonical_profile_qualification_payload_v1(&profile).expect("profile");
+    let completeness_payload = canonical_completeness_evidence_payload_v1(&request)?;
+    let profile_payload = canonical_profile_qualification_payload_v1(&profile)?;
     let runtime_payload =
-        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment)
-            .expect("runtime");
+        canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)?;
     let completeness = sign(
         &verifier,
         &principals[0],
@@ -286,7 +283,7 @@ fn fixture(candidate_count: usize) -> Fixture {
         &runtime_payload,
     );
 
-    Fixture {
+    Ok(Fixture {
         request,
         profile,
         scoring,
@@ -295,7 +292,7 @@ fn fixture(candidate_count: usize) -> Fixture {
         completeness,
         profile_qualification,
         runtime,
-    }
+    })
 }
 
 fn percentile(sorted: &[Duration], numerator: usize) -> Duration {
@@ -303,12 +300,12 @@ fn percentile(sorted: &[Duration], numerator: usize) -> Duration {
     sorted[index]
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("path,candidates,p50_us,p95_us,p99_us,throughput_per_sec");
     for count in [1usize, 16, 64, 128] {
-        let fixture = fixture(count);
+        let fixture = fixture(count)?;
         for _ in 0..16 {
-            let _ = decide_authenticated_intuition_v2(
+            let _ = decide_authenticated_intuition_v3(
                 fixture.request.clone(),
                 fixture.profile.clone(),
                 fixture.scoring.clone(),
@@ -320,15 +317,14 @@ fn main() {
                 },
                 &fixture.verifier,
                 150,
-            )
-            .expect("warmup");
+            )?;
         }
 
         let wall_start = Instant::now();
         let mut samples = Vec::with_capacity(SAMPLES);
         for _ in 0..SAMPLES {
             let start = Instant::now();
-            let receipt = decide_authenticated_intuition_v2(
+            let receipt = decide_authenticated_intuition_v3(
                 fixture.request.clone(),
                 fixture.profile.clone(),
                 fixture.scoring.clone(),
@@ -340,8 +336,7 @@ fn main() {
                 },
                 &fixture.verifier,
                 150,
-            )
-            .expect("authenticated decision");
+            )?;
             std::hint::black_box(receipt);
             samples.push(start.elapsed());
         }
@@ -366,4 +361,5 @@ fn main() {
             "candidate_count={count} authenticated throughput={throughput}"
         );
     }
+    Ok(())
 }

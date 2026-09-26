@@ -312,3 +312,67 @@ The bootstrap source-location obligation for `knowledge.graph` is implemented by
 - `codex-rs/hepta-kg`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The cross-owner cognitive integration additionally depends on the `codex-hepta-memory` oracle/store tests and the Agentd product qualification suite; prompt-factor composition additionally depends on prompt.registry, the prompt-factor adapter tests and prompt.optimizer graph-consumer tests. These are source/test identities until an exact-candidate run records a passing receipt. The default Agentd crate profile now selects the scoped cognitive writer and fails closed when its store is unavailable, while ordinary Codex/App Server remains default-off. This receipt grants no model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Bounded relation result materialization
+
+`query_relations` retains only the requested canonical edge prefix, including
+only time-visible supports when a time cut is supplied. It still counts every
+visible matching edge to preserve the exact `omitted_count`. Omitted edges and
+their supports are not cloned into the output vector. The complete generation
+is still validated before querying, including records outside the returned
+prefix; this change does not establish indexed O(k) queries, incremental
+whole-generation updates, bounded-history recovery or target-host performance.
+The regression suite varies retained graph size and output limits, checks
+retained output capacity and temporal filtering, and rejects a tampered tail.
+
+## 18. Bounded query work and measurement procedure
+
+`query_relations` keeps exact omission accounting without materializing omitted
+relations. Temporal filtering clones only visible supports on selected edges;
+expired supports on a selected edge are not copied first and discarded later.
+`query_relations_with_work` executes the same generation validation and canonical
+selection, returning diagnostic counters separately from the request/result
+receipts. The counters distinguish full-generation validation record counts,
+visibility scans, relation/support inspections, selected clones and omissions.
+They are not a claim that validation or exact omission counting is O(output).
+The ordinary query uses the same implementation without collecting diagnostics.
+
+Migration regression compares the actual migrated KG tables, indexes and
+triggers with a freshly opened store, in addition to checking preserved source
+facts and revoked legacy projections. Migration-ledger version equality alone
+is insufficient evidence. Recovery tests retain rejection of reused fences;
+a successor uses fresh externally verified authority material.
+
+For reproducible release measurements, use
+[`qualification/knowledge-graph/TARGET_HOST.md`](../../../qualification/knowledge-graph/TARGET_HOST.md).
+The harness checks a clean exact SHA before and after execution, rejects
+missing/duplicate receipts and mismatched workload/host identity, and retains
+the raw execution log even on failure. The benchmark uses the cognitive owner
+and real retrieval, measures concurrent readers/writer and reopen, and reports
+host-specific p50/p95/p99, DB/WAL, RSS and work counts. Measured source identity
+is distinct from a subsequent documentation-only evidence commit.
+
+The selected writer remains complete-generation rebuild. Do not promote the
+incremental reference path based on a microbenchmark or a smaller returned
+result alone: promotion requires current exact-head and synthetic-merge
+correctness, independent full-rebuild equivalence, and a measured end-to-end
+benefit under an explicit target-host budget. No result here changes activation,
+independent acceptance or release state automatically.
+
+### Convergence evidence and remaining gates
+
+[The 2026-09-25 execution record](../../../qualification/knowledge-graph/CONVERGENCE_20260925.md)
+separates the measured source/merge from the subsequent compact-storage witness
+correction. It records passing native/default-product tests, failed or pending
+witness/lint/target-host qualifications, and the decision not to promote the
+incremental writer. No earlier receipt is attributed to a later source SHA.
+
+### 2026-09-26 execution continuation
+
+[The continuation record](../../../qualification/knowledge-graph/CONVERGENCE_20260926.md)
+separates baseline tests from later exact-source execution. Product final-use
+payload fields are grouped without weakening current-owner revalidation. The
+[target-host procedure](../../../qualification/knowledge-graph/TARGET_HOST.md)
+now specifies a dedicated bounded full-workload measurement profile and complete
+resource/work-accounting checks. Neither a longer measurement window nor refreshed
+source observations constitute a product latency pass or production acceptance.

@@ -22,6 +22,8 @@ Remote results retain source owner, observed frontier, scope/purpose binding, ef
 
 No authoritative remote facts, remote writer or peer-consent store are owned by this module. Peer enrollment and permissions remain owned by fleet/authority and memory-owner capability state. Product Agentd stores only bounded owner-layout enrollment candidates; each physical federated recall rediscovers currently active capabilities.
 
+The product reader resolves the owner active generation under an operation-scoped shared fence, which recovery takes exclusively during publication. Both retained reader use and attachment revalidation bind `owner_generation_sha256`; changing the active generation invalidates old bindings. The recovered writer retains its separate writer-exclusive lock.
+
 The canonical V2 engine is stateless across attempts. It binds query/lease/remote response/post-I/O authority observation into result evidence. The current product composition does not add a federation cache or retry queue. If a future cache is admitted, it remains a non-authoritative projection and must bind peer identity, grant/principal, query digest, remote frontier, effective expiry and deletion/revocation cutoff.
 
 ## 4. Deterministic algorithm and scheduling
@@ -42,7 +44,7 @@ For one V2 attempt:
 
 There is no blind retry. Dropping the transport future is the in-flight cancellation boundary; a production transport must stop further adapter I/O when that future is dropped. Any separately authorized retry requires a new nonce/attempt identity.
 
-Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Capability discovery and admitted peer attempts are polled concurrently under one total request horizon, while deterministic sorting/deduplication before admission and after collection prevents completion order from changing output order. Aggregate coverage preserves requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot. An active grant for a different consumer-workspace digest is filtered before enrollment and never triggers transport. An owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
+Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Capability discovery collects completed owners under a one-second sub-budget, retaining healthy results when another owner stalls; admitted peer attempts run under the remainder of one two-second request horizon, while deterministic sorting/deduplication before admission and after collection prevents completion order from changing output order. Aggregate coverage preserves requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot. An active grant for a different consumer-workspace digest is filtered before enrollment and never triggers transport. An owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
 
 Ownership is intentionally split at this boundary: `memory.federation::execute_once` is a **one-peer checked engine** and every native `FederatedResultV2` has `requested_peers = 1`. The `<=16` peer discovery/fan-out/aggregation policy is owned by the product orchestrator in `codex-hepta-memory::CognitiveRuntime::AvailableFederatedV2`, which invokes the canonical engine once per admitted peer under one total request horizon. The canonical crate must not grow a second peer registry or product scheduler; the product orchestrator must not reimplement response integrity or authority admission.
 
@@ -75,6 +77,10 @@ Source tests now include identities for:
 - FED-15: the owner memory frontier is read from the same exact-scope SQLite snapshot as candidates; an empty scope may truthfully report frontier zero, while non-empty evidence cannot;
 - FED-16: product aggregation preserves peer truncation, owner-candidate omission and typed failure coverage rather than collapsing those states into `failed_peers`;
 - FED-17: admitted peer attempts are concurrently polled under one global horizon and deterministic aggregation does not depend on completion order.
+
+- FED-18: real owner recovery cannot revive predecessor grants, records or prepared bindings; corrected/forgotten evidence becomes stale.
+- FED-19: an active read operation fences generation publication; an idle retained reader is rejected after publication; a missing fence never causes legacy fallback.
+- FED-20: missing and stalled owner discovery preserves healthy evidence with deterministic bounded failure coverage.
 
 Test source identity is not an execution receipt. Exact-head/merge-candidate outputs determine pass/fail for the candidate revision.
 

@@ -1,6 +1,4 @@
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -31,12 +29,7 @@ impl DurableOperationStore {
         if !(1..=MAX_DURABLE_LEASE_MS).contains(&lease_ms) {
             return Err(DurableOperationError::Invalid("lease duration"));
         }
-        let now = now_millis()?;
-        let mut tx = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let (mut tx, now) = self.begin_owner_write().await?;
         let candidate = sqlx::query(
             "SELECT l.destination, l.state AS operation_state, l.owner_generation AS ledger_generation,
                     l.revision, o.state AS outbox_state, o.owner_generation AS outbox_generation,
@@ -156,14 +149,6 @@ fn decode_u64(value: Vec<u8>) -> Result<u64, DurableOperationError> {
 
 fn to_i64(value: u64) -> Result<i64, DurableOperationError> {
     i64::try_from(value).map_err(|_| DurableOperationError::Capacity)
-}
-
-fn now_millis() -> Result<i64, DurableOperationError> {
-    let millis = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?
-        .as_millis();
-    i64::try_from(millis).map_err(|_| DurableOperationError::Capacity)
 }
 
 fn unavailable(error: sqlx::Error) -> DurableOperationError {

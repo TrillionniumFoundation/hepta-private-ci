@@ -39,8 +39,15 @@ pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
+    config.require_intelligence_composition()?;
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
+    let self_iteration_bootstrap = config.take_self_iteration_coordinator_bootstrap();
+    if self_iteration_bootstrap.is_some() && plasticity_bootstrap.is_none() {
+        return Err(AgentdError::Invalid(
+            "self-iteration coordinator requires the existing plasticity owner".to_string(),
+        ));
+    }
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -64,6 +71,9 @@ pub async fn run(
     let checkpoint_file = config
         .authbus_checkpoint_file()
         .map(std::path::Path::to_path_buf);
+    let prompt_registry_recovery_checkpoint = config
+        .prompt_registry_recovery_checkpoint_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
     if production_operations.is_some() && production_writer_host.is_none() {
@@ -79,6 +89,10 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    require_intelligence_composition(
+        intelligence_product.is_some(),
+        intelligence_invocation.is_some(),
+    )?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -88,13 +102,18 @@ pub async fn run(
         .filter(|record| record.manifest.agent_id != identity.agent_id)
         .map(|record| record.layout)
         .collect::<Vec<_>>();
-    let state = Arc::new(AgentdState::new(
+    let state = Arc::new(AgentdState::new_with_prompt_registry_recovery(
         identity.clone(),
         registry,
         EVENT_CAPACITY,
+        prompt_registry_recovery_checkpoint.as_deref(),
     )?);
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
+    let self_iteration_runtime =
+        crate::self_iteration_coordinator::compose_self_iteration_coordinator_v1(
+            self_iteration_bootstrap,
+        );
     if let Some(host) = intuition_policy_host {
         state.intuition_policy.set(host).map_err(|_| {
             AgentdError::Invalid("intuition policy host already attached".to_string())
@@ -292,6 +311,12 @@ pub async fn run(
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
+        if let Some(owner) = self_iteration_runtime {
+            tasks.spawn_required(
+                "self-iteration-coordinator",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
         spawn_automation_service(
             &mut tasks,
             automation_store,
@@ -314,6 +339,16 @@ pub async fn run(
             drain_runtime(state).await
         })
         .await
+}
+
+fn require_intelligence_composition(runner: bool, provider: bool) -> Result<(), AgentdError> {
+    if runner != provider {
+        return Err(AgentdError::Invalid(
+            "canonical intelligence requires both a runner and an authoritative invocation provider"
+                .to_string(),
+        ));
+    }
+    Ok(())
 }
 
 fn require_cognitive_retrieval_context_for_mode(

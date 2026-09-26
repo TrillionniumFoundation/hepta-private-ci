@@ -42,25 +42,24 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn new() -> Self {
-        let temp = tempfile::tempdir().expect("temp root");
-        let root = temp.path().canonicalize().expect("canonical root");
-        let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
-        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+    fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        let temp = tempfile::tempdir()?;
+        let root = temp.path().canonicalize()?;
+        let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
+        let registry = FleetRegistry::initialize(fleet_root.clone())?;
         let workspace = root.join("workspace");
-        std::fs::create_dir(&workspace).expect("workspace");
-        let workspace = workspace.canonicalize().expect("canonical workspace");
+        std::fs::create_dir(&workspace)?;
+        let workspace = workspace.canonicalize()?;
         let manifest = AgentManifest::new(
-            AgentId::parse(AGENT_ID).expect("agent id"),
-            WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
+            AgentId::parse(AGENT_ID)?,
+            WorkspaceBinding::new(workspace, &fleet_root)?,
             ResourceBudget::local_default(),
-        )
-        .expect("manifest");
-        let layout = registry.register(manifest).expect("register agent").layout;
-        Self {
+        )?;
+        let layout = registry.register(manifest)?.layout;
+        Ok(Self {
             _temp: temp,
             layout,
-        }
+        })
     }
 }
 
@@ -96,21 +95,26 @@ impl AutomationTurnQueue for UnknownQueue {
     }
 }
 
-fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraft {
+fn draft(
+    id: &str,
+    schedule: AutomationSchedule,
+    due: u64,
+) -> Result<AutomationTaskDraft, AutomationError> {
     let mut draft = AutomationTaskDraft::new(THREAD_ID, "durable causal work", schedule, due, 1);
-    draft.task_id = AutomationTaskId::parse(id).expect("task id");
-    draft
+    draft.task_id = AutomationTaskId::parse(id)?;
+    Ok(draft)
 }
 
 #[tokio::test]
 async fn claim_freezes_schedule_revision_before_occurrence_materialization() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75100",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
 
     let lease = store
@@ -143,13 +147,14 @@ async fn claim_freezes_schedule_revision_before_occurrence_materialization() {
 
 #[tokio::test]
 async fn queue_submission_is_not_occurrence_or_taskflow_success() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75101",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let policy = store.schedule_policy(task.task_id).await.expect("policy");
     assert_eq!(policy.overlap, AutomationOverlapPolicy::Allow);
@@ -233,13 +238,14 @@ async fn queue_submission_is_not_occurrence_or_taskflow_success() {
 
 #[tokio::test]
 async fn allow_overlap_advances_recurrence_without_terminalizing_prior_occurrence() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75104",
         AutomationSchedule::FixedInterval { interval_ms: 1_000 },
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let policy = store.schedule_policy(task.task_id).await.expect("policy");
     assert_eq!(policy.overlap, AutomationOverlapPolicy::Allow);
@@ -297,13 +303,14 @@ async fn allow_overlap_advances_recurrence_without_terminalizing_prior_occurrenc
 
 #[tokio::test]
 async fn forbid_overlap_parks_recurrence_until_terminal_observation() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75102",
         AutomationSchedule::FixedInterval { interval_ms: 1_000 },
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let policy = store
         .set_schedule_policy(
@@ -377,13 +384,14 @@ async fn forbid_overlap_parks_recurrence_until_terminal_observation() {
 
 #[tokio::test]
 async fn terminal_observer_cursor_is_durable_bounded_progress() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75108",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let scheduler = AutomationScheduler::new(
         store.clone(),
@@ -487,13 +495,14 @@ async fn terminal_observer_cursor_is_durable_bounded_progress() {
 
 #[tokio::test]
 async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75103",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let scheduler = AutomationScheduler::new(
         store.clone(),
@@ -605,13 +614,14 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
 
 #[tokio::test]
 async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75105",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let scheduler = AutomationScheduler::new(
         store.clone(),
@@ -701,13 +711,14 @@ async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurren
 
 #[tokio::test]
 async fn stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_occurrence() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75106",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let lease = store
         .claim_due(100, 1, 30_000)
@@ -760,13 +771,14 @@ async fn stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_
 
 #[tokio::test]
 async fn retired_stale_generation_before_uncertainty_closes_without_provider_contact() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75107",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let lease = store
         .claim_due(100, 1, 30_000)
@@ -812,13 +824,14 @@ async fn retired_stale_generation_before_uncertainty_closes_without_provider_con
 
 #[tokio::test]
 async fn reopen_rejects_tampered_canonical_occurrence_identity() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().expect("registered private fixture");
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f75107",
         AutomationSchedule::Once,
         100,
-    );
+    )
+    .expect("valid task fixture");
     store.create_task(&task).await.expect("create task");
     let lease = store
         .claim_due(100, 1, 30_000)
@@ -861,4 +874,133 @@ async fn reopen_rejects_tampered_canonical_occurrence_identity() {
         AutomationStore::open(&fixture.layout).await,
         Err(AutomationError::Corrupt)
     ));
+}
+
+#[tokio::test]
+async fn durable_recovery_cursor_rotates_past_a_long_running_occurrence() {
+    let fixture = Fixture::new().expect("registered private fixture");
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    let first = draft(
+        "019153a4-3088-7000-a56a-9b1964f75a01",
+        AutomationSchedule::Once,
+        100,
+    )
+    .expect("valid task fixture");
+    let second = draft(
+        "019153a4-3088-7000-a56a-9b1964f75a02",
+        AutomationSchedule::Once,
+        200,
+    )
+    .expect("valid task fixture");
+    store.create_task(&first).await.expect("first task");
+    store.create_task(&second).await.expect("second task");
+    assert!(matches!(
+        scheduler.tick(100).await.expect("first tick"),
+        AutomationTick::Submitted { .. }
+    ));
+    assert!(matches!(
+        scheduler.tick(200).await.expect("second tick"),
+        AutomationTick::Submitted { .. }
+    ));
+
+    let selected_first = store
+        .next_pending_occurrence_work()
+        .await
+        .expect("first recovery selection")
+        .expect("first pending occurrence");
+    // Drop the scheduler's retained handle and reopen the actual owner. Discovery
+    // progress must survive process-lifetime state loss, not just one handle.
+    drop(scheduler);
+    store.close().await;
+    drop(store);
+    let store = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen owner");
+    let selected_second = store
+        .next_pending_occurrence_work()
+        .await
+        .expect("second recovery selection")
+        .expect("second pending occurrence");
+    assert_ne!(
+        selected_first.occurrence.task_id, selected_second.occurrence.task_id,
+        "one long-running occurrence must not monopolize every recovery pass"
+    );
+    assert_eq!(
+        [
+            selected_first.occurrence.task_id,
+            selected_second.occurrence.task_id,
+        ]
+        .into_iter()
+        .collect::<std::collections::BTreeSet<_>>(),
+        [first.task_id, second.task_id]
+            .into_iter()
+            .collect::<std::collections::BTreeSet<_>>()
+    );
+}
+
+#[tokio::test]
+async fn unknown_dispatch_cursor_rotates_and_survives_restart_without_requeue() {
+    let fixture = Fixture::new().expect("registered private fixture");
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(UnknownQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    for (id, due) in [
+        ("019153a4-3088-7000-a56a-9b1964f75d01", 100),
+        ("019153a4-3088-7000-a56a-9b1964f75d02", 200),
+    ] {
+        store
+            .create_task(&draft(id, AutomationSchedule::Once, due).expect("valid task fixture"))
+            .await
+            .expect("create");
+        assert!(matches!(
+            scheduler.tick(due).await.expect("tick"),
+            AutomationTick::DispatchUncertain { .. }
+        ));
+    }
+    let first = store
+        .next_uncertain_dispatch()
+        .await
+        .expect("first")
+        .expect("work");
+    drop(scheduler);
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
+    let second = reopened
+        .next_uncertain_dispatch()
+        .await
+        .expect("second")
+        .expect("work");
+    assert_ne!(first.task_id, second.task_id);
+    assert_eq!(
+        reopened
+            .next_uncertain_dispatch()
+            .await
+            .expect("wrap")
+            .expect("work"),
+        first
+    );
+    assert_eq!(
+        reopened
+            .uncertain_dispatches(8)
+            .await
+            .expect("still uncertain")
+            .len(),
+        2
+    );
 }

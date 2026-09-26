@@ -49,6 +49,19 @@ be added to an ordinary source-only change just to satisfy a document gate.
 Path-filtered CI selects the qualification checks from the changed boundary;
 it does not use a global checklist as a proxy for evidence.
 
+For a local Rust/scripts change, `just fmt --only rust --only python-scripts`
+runs those existing formatter groups without downloading Python SDK tooling.
+The command explicitly reports its limited scope. Unscoped `just fmt` and
+`just fmt-check` retain all formatter groups for repository-wide review/CI;
+a local scoped pass is never a replacement for an applicable full check.
+
+The shared Lane B qualification workflow has one existing integration owner,
+`P0.8D-VERTICAL-SLICE`, with TaskFlow and Matrix as explicit co-owners. Their
+module packages no longer independently own the same workflow file. Normal
+protected PR review applies; no unimplemented external path-lease attestation
+is required for that file. This does not waive real lease checks on other
+concurrent ownership overlaps or any runtime, effect, evaluation or release gate.
+
 Ordinary authorized development has no hard changed-path quota. Work packages
 are bounded by semantic scope, ownership, authority change, durable-domain
 impact and required tests. A coherent cross-owner change may be reviewed in one
@@ -550,7 +563,7 @@ proposal
 → rollback-capable selection
 ```
 
-Hepta may self-generate, self-test, self-evaluate, self-diagnose and self-propose. It may not self-authorize, self-review, self-select, self-merge, self-accept, self-promote or self-release.
+Hepta may self-generate, self-test, self-diagnose and self-propose. Internal candidate evaluation is diagnostic only; it cannot supply the independent evaluation or acceptance of that same candidate. The independent-evaluation boundary is the adaptive-module invariant in `docs/architecture/ARCHITECTURE.json`. Hepta may not self-authorize, self-review, self-select, self-merge, self-accept, self-promote or self-release.
 
 ## 17. Runtime and Engineering Control Planes
 

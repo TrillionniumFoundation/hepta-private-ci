@@ -76,7 +76,7 @@ Production Agentd composition uses `CognitiveRuntime::AvailableFederatedV2`. The
 
 For each physical federated recall:
 
-1. concurrently rediscover currently active capabilities from the bounded owner-candidate set;
+1. incrementally collect current capabilities under a one-second discovery sub-budget within the two-second total horizon; preserve healthy results when another owner stalls, classify omitted pending owners as deadline failures, and deterministically apply the shared source limit;
 2. deterministically sort/deduplicate and cap admitted sources at the existing federation source limit, while recording peer truncation and owner-candidate omission;
 3. build a query and lease bound to consumer, peer, scope, purpose, capability generation/revision, query digest, nonce and deadline;
 4. perform canonical live-authority preflight and require `Current` before dispatch;
@@ -86,6 +86,8 @@ For each physical federated recall:
 8. admit evidence only if the final live authority observation is current;
 9. deterministically aggregate requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure counts;
 10. batch-revalidate the prepared attachment at physical model-request assembly: bindings from the same owner/capability share one SQLite read snapshot, the whole batch shares one bounded product deadline, and different owners remain independent federation snapshots; after the batch completes, read the wall clock again and reject if any capability crossed its expiry or the clock regressed; timeout, stale generation, revocation, expiry crossing or owner unavailability drops the federated proposal fail-closed. This fence is evaluated after provider-attempt admission and before transport entry; under the repository-wide dispatch contract it does not claim retroactive cancellation authority over an already admitted effect.
+
+The product adapter resolves the current owner generation through the owner generation fence and binds its identity into the query and each prepared attachment. Retained readers and prepared bindings cannot cross recovery publication; a current recovered writer remains readable without reopening a second writer. See `TECHNICAL.md` for the upgrade/rollback restrictions and local identity boundary.
 
 The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations. Admitted peer attempts are polled concurrently under the same total deadline; completion order never controls result ordering.
 
@@ -149,7 +151,9 @@ The focused V2 suite includes adversarial cases for:
 - peer truncation, owner-candidate omission and typed failure coverage propagation into the final attachment;
 - legacy compatibility composition cannot downgrade an already-composed V2 product runtime;
 - cancellation receipts carrying no success assumption;
-- exact-scope owner memory frontier acquired from the same SQLite snapshot, including legitimate empty frontier zero.
+- exact-scope owner memory frontier acquired from the same SQLite snapshot, including legitimate empty frontier zero;
+- real owner recovery followed by revoke/correct/forget, retained-reader rejection and active-operation fence exclusion;
+- partial discovery with a real healthy owner and a missing or deliberately stalled owner.
 
 Required product qualification additionally includes Agentd composition, owner capability grant/revoke behavior, extension attachment coverage binding, exact-head tests, merge-candidate tests and target-host execution evidence.
 

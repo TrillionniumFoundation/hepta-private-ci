@@ -1,5 +1,3 @@
-#[cfg(target_os = "linux")]
-use std::fs::File;
 use std::io::Write;
 
 use codex_hepta_types::Digest32;
@@ -7,6 +5,7 @@ use codex_hepta_types::StableId;
 
 use super::RuntimeExecutableIdentity;
 use super::RuntimeExecutableOrigin;
+use super::observe_cached;
 use super::observe_file;
 
 fn image(bytes: &[u8]) -> RuntimeExecutableIdentity {
@@ -75,20 +74,27 @@ fn empty_or_oversized_images_never_produce_a_manifest_fallback() {
 }
 
 #[test]
-fn process_observation_caches_actual_executable_bytes() {
-    let first = RuntimeExecutableIdentity::observe_current().expect("current process image");
-    let second = RuntimeExecutableIdentity::observe_current().expect("cached observation");
-    assert!(std::ptr::eq(first, second));
-    assert!(!first.artifact_digest().is_zero());
-    assert!(first.bytes() > 0);
-    #[cfg(target_os = "linux")]
-    {
-        assert_eq!(first.origin(), RuntimeExecutableOrigin::LinuxLoadedImage);
-        let actual = Digest32::of_reader(
-            File::open("/proc/self/exe").expect("loaded image"),
-            first.bytes(),
+fn process_observation_cache_retains_the_exact_observed_bytes() {
+    let mut file = tempfile::NamedTempFile::new().expect("image file");
+    file.write_all(b"small executable fixture")
+        .expect("image bytes");
+    file.flush().expect("flush");
+    let expected = Digest32::of_bytes(b"small executable fixture");
+    let cache = std::sync::OnceLock::new();
+    let first = observe_cached(&cache, || {
+        observe_file(
+            file.reopen()?,
+            RuntimeExecutableOrigin::LinuxLoadedImage,
+            1024,
         )
-        .expect("actual image bytes");
-        assert_eq!(first.artifact_digest(), actual);
-    }
+    })
+    .expect("first observation");
+    let second = observe_cached(&cache, || {
+        panic!("a cached observation must not re-read the executable")
+    })
+    .expect("cached observation");
+    assert!(std::ptr::eq(first, second));
+    assert_eq!(first.origin(), RuntimeExecutableOrigin::LinuxLoadedImage);
+    assert_eq!(first.artifact_digest(), expected);
+    assert_eq!(first.bytes(), 24);
 }

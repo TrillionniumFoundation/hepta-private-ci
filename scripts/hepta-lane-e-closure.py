@@ -7,6 +7,10 @@ import argparse
 import json
 import re
 import sys
+import stat
+import subprocess
+import tomllib
+from hepta_rust_surface import without_disabled_feature_items
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -33,7 +37,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 14)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 13)),
 }
@@ -87,12 +91,25 @@ EXPECTED_OPERATIONS = {
     },
     "learning.operator": {
         "build_targets",
-        "validate_applicability_certificate",
         "build_sensor_core",
         "evaluate_bellman_reference",
+        "validate_applicability_certificate",
+        "validate_applicability_with_signed_evidence_v2",
+        "fit_tabular_operator",
+        "fit_tabular_operator_strict_v2",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "predict_tabular_operator",
+        "encode_tabular_payload_v1",
+        "load_pinned_tabular_operator_v1",
         "admit_operator_regularity",
+        "admit_operator_regularity_with_signed_evidence_v2",
         "fit_transition_model",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
         "predict_transition",
+        "freeze_terminal_cell_from_owner_v1",
+        "fit_terminal_cell_from_owner_v1",
     },
     "learning.eval": {
         "estimate_ope",
@@ -640,7 +657,51 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
         r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
     }
 
-    for path in (ROOT / "codex-rs").rglob("*.rs"):
+    feature = "qualification-legacy-learning-write"
+    manifest = tomllib.loads((ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text())
+    feature_map = manifest.get("features", {})
+    pending = list(feature_map.get("default", []))
+    reached = set()
+    while pending:
+        value = pending.pop()
+        if value not in reached:
+            reached.add(value)
+            pending.extend(feature_map.get(value, []))
+    disabled = feature not in reached
+    # Check the selected repository sources, not ignored build output or test
+    # scratch files (including named pipes used by fault-injection fixtures).
+    # Untracked source edits remain included; every committed source is included.
+    inventory = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-files", "-z", "--cached", "--others",
+         "--exclude-standard", "--", "codex-rs"],
+        check=False, capture_output=True, text=True,
+    )
+    if inventory.returncode:
+        findings.require(False, "product_source_inventory", "cannot enumerate current repository source")
+        return
+    source_paths = [ROOT / name for name in sorted(set(inventory.stdout.split("\0"))) if name]
+    regular_paths = []
+    for path in source_paths:
+        if path.suffix != ".rs" and path.name != "Cargo.toml":
+            continue
+        try:
+            regular = stat.S_ISREG(path.lstat().st_mode)
+        except OSError:
+            regular = False
+        findings.require(regular, "product_source_kind", f"{path.relative_to(ROOT)} is not a regular source file")
+        if regular:
+            regular_paths.append(path)
+    # A downstream normal dependency must not enable the compatibility writer.
+    for cargo in (path for path in regular_paths if path.name == "Cargo.toml"):
+        document = tomllib.loads(cargo.read_text())
+        for section in [document, *document.get("target", {}).values()]:
+            for table in ("dependencies", "build-dependencies"):
+                for dep in section.get(table, {}).values():
+                    if isinstance(dep, dict) and feature in dep.get("features", []):
+                        disabled = False
+    findings.require(disabled, "legacy_writer_enabled", "legacy learning writer is reachable in a normal dependency or Agentd default")
+
+    for path in (path for path in regular_paths if path.suffix == ".rs"):
         relative = path.relative_to(ROOT).as_posix()
         if any(
             relative == root or relative.startswith(f"{root}/")
@@ -655,6 +716,8 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
             continue
 
         text = path.read_text(encoding="utf-8")
+        if disabled:
+            text = without_disabled_feature_items(text, feature)
         for pattern, description in forbidden.items():
             findings.require(
                 re.search(pattern, text) is None,

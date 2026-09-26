@@ -22,6 +22,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             authority_file,
             authority_verifier,
             evaluation_trust: None,
+            intuition_policy: None,
         })
     }
 
@@ -35,6 +36,19 @@ impl AgentdIntelligenceProductRunnerV1 {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
         }
         self.evaluation_trust = Some(std::sync::Arc::new(trust));
+        Ok(self)
+    }
+
+    /// Install the host-selected current intuition profile and activated trust.
+    /// Ordinary product preparation fails closed when this host is absent.
+    pub fn with_intuition_policy_host(
+        mut self,
+        host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
+    ) -> Result<Self, AgentdIntelligenceProductError> {
+        if self.intuition_policy.is_some() {
+            return Err(AgentdIntelligenceProductError::IntuitionPolicyUnavailable);
+        }
+        self.intuition_policy = Some(host);
         Ok(self)
     }
 
@@ -84,7 +98,8 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
         let intuition_ids = inputs
-            .intuition_request
+            .intuition
+            .request
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
@@ -103,7 +118,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
+        let timeout_micros = request.budget.total_micros.min(
+            u64::try_from(crate::control_budget::OWNER_PREPARATION_TIMEOUT.as_micros())
+                .map_err(|_| AgentdIntelligenceProductError::Clock)?,
+        );
         let started_ms = wall_clock_ms()?;
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
         let deadline_ms = started_ms
@@ -111,6 +129,26 @@ impl AgentdIntelligenceProductRunnerV1 {
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
+        let intuition_host = self
+            .intuition_policy
+            .as_ref()
+            .cloned()
+            .ok_or(AgentdIntelligenceProductError::IntuitionPolicyUnavailable)?;
+        let agent_id = codex_hepta_contracts::AgentId::parse(&composition.agent_id)
+            .map_err(|_| AgentdIntelligenceProductError::IntuitionPolicyUnavailable)?;
+        let intuition_owner_id = StableId::new("intuition.policy")
+            .map_err(|_| AgentdIntelligenceProductError::IntuitionPolicyUnavailable)?;
+        let mut current_oracle =
+            FileBackedFreshnessOracleV1::new(authority_file.clone(), authority_verifier.clone());
+        let intuition_owner = current_oracle
+            .current(&intuition_owner_id)
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let intuition_current = AgentdIntuitionCurrentBindingV1 {
+            snapshot_digest: snapshot.digest(),
+            authority_epoch: snapshot.authority_epoch(),
+            revocation_frontier_digest: snapshot.revocation_frontier_digest(),
+            owner: intuition_owner,
+        };
         let evaluation_session = match inputs.signed_evaluation.take() {
             None => None,
             Some(signed) => {
@@ -136,7 +174,18 @@ impl AgentdIntelligenceProductRunnerV1 {
             }
         };
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
+            let mut ports = AgentdOwnerPortsV1::new(
+                inputs,
+                evaluation_session,
+                intuition_host,
+                intuition_current,
+                agent_id,
+                generation,
+                FileBackedFreshnessOracleV1::new(
+                    authority_file.clone(),
+                    authority_verifier.clone(),
+                ),
+            );
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;
@@ -151,6 +200,7 @@ impl AgentdIntelligenceProductRunnerV1 {
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
+                let envelope = *envelope;
                 let mut oracle = FileBackedFreshnessOracleV1::new(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),
@@ -189,7 +239,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     context_digest: envelope.context_receipt_digest.to_string(),
                     compilation_receipt_digest: envelope.envelope_digest.to_string(),
                 };
-                Ok(AgentdIntelligenceProductOutcomeV1::Ready(
+                Ok(AgentdIntelligenceProductOutcomeV1::Ready(Box::new(
                     PreparedAgentdIntelligenceRunV1 {
                         envelope,
                         dispatch_proposal_digest,
@@ -198,7 +248,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                         run_snapshot,
                         context_attachment,
                     },
-                ))
+                )))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
                 Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
@@ -221,40 +271,11 @@ impl AgentdIntelligenceProductRunnerV1 {
             AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
                 let snapshot = prepared.run_snapshot();
                 let admitted = coordinator
-                    .start_run(
-                        wall_clock_ms()?,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
+                    .start_run(wall_clock_ms()?, snapshot.into())
                     .map_err(AgentdIntelligenceProductError::Run)?;
                 let attachment = prepared.context_attachment();
                 let run_receipt = coordinator
-                    .attach_context(
-                        wall_clock_ms()?,
-                        admitted.revision,
-                        crate::ContextAttachment {
-                            run_id: attachment.run_id,
-                            request_digest: attachment.request_digest,
-                            objective_digest: attachment.objective_digest,
-                            body_digest: attachment.body_digest,
-                            artifact_set_digest: attachment.artifact_set_digest,
-                            authority_epoch: attachment.authority_epoch,
-                            generation: attachment.generation,
-                            fence_digest: attachment.fence_digest,
-                            deadline_ms: attachment.deadline_ms,
-                            context_digest: attachment.context_digest,
-                            compilation_receipt_digest: attachment.compilation_receipt_digest,
-                        },
-                    )
+                    .attach_context(wall_clock_ms()?, admitted.revision, attachment.into())
                     .map_err(AgentdIntelligenceProductError::Run)?;
                 Ok(AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
@@ -356,13 +377,15 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         match journal.append_qualification(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
-            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
-                AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {
-                    expected_predecessor,
-                    snapshot,
-                    event,
-                }),
-            ),
+            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => {
+                Err(AgentdIntelligenceLedgerError::Indeterminate(Box::new(
+                    PendingIntelligenceLedgerAppendV1 {
+                        expected_predecessor,
+                        snapshot,
+                        event,
+                    },
+                )))
+            }
             Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
         }
     }

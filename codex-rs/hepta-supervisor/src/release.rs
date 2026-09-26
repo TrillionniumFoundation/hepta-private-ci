@@ -298,7 +298,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             phase: ReleaseChangePhase::WaitingForTargetExit,
             explicit_rollback,
         });
-        if let Err(error) = self.drain_slot(agent_id, slot, now) {
+        if let Err(error) = self.drain_slot_preserving_restart(agent_id, slot, now) {
             let _ = self.enter_unsigned_release_recovery(agent_id, slot);
             slot.release_change = None;
             return Err(error);
@@ -581,7 +581,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 });
                 match record.lifecycle.lifecycle {
                     AgentLifecycle::Running => {
-                        self.drain_slot(agent_id, slot, now)?;
+                        self.drain_slot_preserving_restart(agent_id, slot, now)?;
                         self.advance_release_transaction(
                             agent_id,
                             slot,

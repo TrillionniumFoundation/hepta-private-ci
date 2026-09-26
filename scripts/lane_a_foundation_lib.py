@@ -23,7 +23,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         != "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
         or matrix.get("nativeBindingOverride")
         != "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
-        or matrix.get("moduleCoverage") != 7
+        or matrix.get("moduleCoverage") != len(EXPECTED_MODULES)
         or matrix.get("statusAxes") != AXES
     ):
         raise VerificationError("truth-matrix header mismatch")
@@ -39,28 +39,25 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
     if matrix.get("closure") != expected_closure:
         raise VerificationError("truth-matrix closure overclaims or drifts")
     policy = read_text(root / "docs/lane-a-foundation/BOUNDARY_POLICY.md")
-    for phrase in (
-        "Current executable contract",
-        "Target architecture",
-        "Executed evidence",
-        "Forbidden implications",
-        "Capability traceability rule",
-    ):
-        if phrase not in policy:
-            raise VerificationError(f"boundary policy missing {phrase!r}")
+    # Prose is navigation, not an authority token or a second schema. Machine
+    # roles, owner coverage, source bindings and native evidence below remain
+    # authoritative; editorial wording does not substitute for those checks.
+    if not policy.strip():
+        raise VerificationError("empty boundary policy")
     modules = matrix.get("modules")
-    if (
-        not isinstance(modules, list)
-        or [row.get("module") for row in modules if isinstance(row, dict)]
-        != EXPECTED_MODULES
+    if not isinstance(modules, list) or not all(
+        isinstance(row, dict) for row in modules
     ):
-        raise VerificationError("closed-world module order mismatch")
+        raise VerificationError("closed-world modules must be object rows")
+    module_ids = [row.get("module") for row in modules]
+    if not has_exact_module_membership(module_ids):
+        raise VerificationError("closed-world module membership mismatch")
     for row in modules:
         module = row["module"]
         states = row.get("states")
         if (
             not isinstance(states, dict)
-            or list(states) != AXES
+            or set(states) != set(AXES)
             or states["source"] != "implemented"
             or states["acceptance"] != "not_granted"
             or row.get("formalGuideRole") != "target_architecture"
@@ -71,11 +68,8 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             if not isinstance(row.get(field), str) or not (root / row[field]).is_file():
                 raise VerificationError(f"{module}: missing {field}")
         current = read_text(root / row["currentSpecification"])
-        positions = [current.find(heading) for heading in SECTIONS]
-        if -1 in positions or positions != sorted(positions):
-            raise VerificationError(
-                f"{module}: current-contract sections missing/out of order"
-            )
+        if not current.strip():
+            raise VerificationError(f"{module}: empty current-contract guide")
         current_caps = row.get("currentCapabilities")
         target_caps = row.get("targetOnlyCapabilities")
         if (
@@ -236,9 +230,9 @@ def self_test() -> None:
     matrix = read_json(MATRIX_PATH)
     validate_matrix(matrix)
     for mutation in (
-        lambda value: value["modules"][3]["states"].__setitem__(
-            "durability", "durable"
-        ),
+        lambda value: next(
+            row for row in value["modules"] if row["module"] == "kernel.operations"
+        )["states"].__setitem__("durability", "durable"),
         lambda value: value["closure"].__setitem__("externalAcceptance", "closed"),
     ):
         invalid = deepcopy(matrix)

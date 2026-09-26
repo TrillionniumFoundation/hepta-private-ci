@@ -262,6 +262,11 @@ pub fn write_intent(
             "another signed supervisor intent is unresolved".to_string(),
         ));
     }
+    if let Some(existing) = read_intent(run_root)?
+        && existing.grant_sha256 != intent.grant_sha256
+    {
+        crate::signed_history::archive_terminal(run_root, &existing)?;
+    }
     write_atomic_json(run_root, SIGNED_INTENT_FILE, intent)
 }
 

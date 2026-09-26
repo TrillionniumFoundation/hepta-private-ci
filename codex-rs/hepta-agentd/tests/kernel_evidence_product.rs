@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 #![cfg(unix)]
 
 use std::os::unix::fs::PermissionsExt;
@@ -899,3 +900,6 @@ fn now_ms() -> Result<u64> {
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
+
+#[path = "support/evaluation_publication.rs"]
+mod evaluation_publication;

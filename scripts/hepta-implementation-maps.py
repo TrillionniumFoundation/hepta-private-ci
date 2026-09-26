@@ -1165,27 +1165,59 @@ def top_level_rust_source(text: str) -> str:
 
 
 def public_rust_functions(root: str) -> set[str]:
-    """Root public free functions and explicit single-name re-exports.
+    """Root functions and explicit re-exports, including local #[path] chains.
 
-    The inventoried surface is source-level, including cfg-qualified exports;
-    associated methods and private helpers are not independent operations.
+    This remains a source inventory, not a replacement for Rust compilation.
+    Function bodies, comments, type methods and string contents never introduce
+    exports. All resolved paths retain the repository's symlink/escape checks.
     """
     src = checked_source_path(ROOT, root) / "src"
     lib = src / "lib.rs"
-    if not lib.is_file():
-        return set()
-    text = top_level_rust_source(lib.read_text(encoding="utf-8"))
     declaration = r"\bpub\s+(?:(?:async|const|unsafe)\s+)*(?:extern\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\b"
-    functions = set(re.findall(declaration, text))
-    for module, name in re.findall(
-        r"\bpub\s+use\s+([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)\s*;", text
-    ):
-        source = src / f"{module}.rs"
-        if source.is_file() and name in re.findall(
-            declaration, top_level_rust_source(source.read_text(encoding="utf-8"))
-        ):
-            functions.add(name)
-    return functions
+    reexport = r"\bpub\s+use\s+([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)\s*;"
+    cache: dict[Path, set[str]] = {}
+    active: set[Path] = set()
+
+    def exports(source: Path) -> set[str]:
+        source = checked_source_path(ROOT, str(source.relative_to(ROOT)))
+        if not source.is_file():
+            return set()
+        if source in cache:
+            return cache[source]
+        if source in active or len(active) >= 64:
+            raise ValueError("cyclic or excessive Rust re-export chain")
+        active.add(source)
+        raw = source.read_text(encoding="utf-8")
+        text = top_level_rust_source(raw)
+        functions = set(re.findall(declaration, text))
+        module_dir = (
+            source.parent
+            if source.name in {"lib.rs", "mod.rs"}
+            else source.parent / source.stem
+        )
+        for module, name in re.findall(reexport, text):
+            target = module_dir / f"{module}.rs"
+            module_decl = re.search(rf"\bmod\s+{re.escape(module)}\s*;", text)
+            if module_decl is not None:
+                prefix = text[: module_decl.start()].rstrip()
+                attribute = re.search(
+                    r"#\[\s*path\s*=\s*[^\]]*\]\s*(?:#\[[^\]]*\]\s*)*$", prefix
+                )
+                if attribute is not None:
+                    raw_attribute = raw[attribute.start() : attribute.end()]
+                    path = re.match(r'#\[\s*path\s*=\s*"([^"\n]+)"\s*\]', raw_attribute)
+                    if path is None:
+                        raise ValueError("unsupported Rust module path attribute")
+                    target = source.parent / path.group(1)
+                elif not target.is_file():
+                    target = module_dir / module / "mod.rs"
+            if name in exports(target):
+                functions.add(name)
+        active.remove(source)
+        cache[source] = functions
+        return functions
+
+    return exports(lib)
 
 
 def verify(
@@ -1207,7 +1239,9 @@ def verify(
             (expected_tree, "expected-tree"),
         ):
             if value is not None and re.fullmatch(r"[0-9a-f]{40}", value) is None:
-                raise ValueError(f"--{label} must be an exact 40-character Git object id")
+                raise ValueError(
+                    f"--{label} must be an exact 40-character Git object id"
+                )
         if expected_sha is not None and candidate["commit"] != expected_sha:
             raise ValueError(
                 f"expected candidate SHA {expected_sha}, observed {candidate['commit']}"
@@ -1475,7 +1509,9 @@ def main():
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
         parser.error("--module applies only to migrate")
-    if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
+    if (
+        args.expected_sha is not None or args.expected_tree is not None
+    ) and args.command != "verify":
         parser.error("--expected-sha/--expected-tree apply only to verify")
     if args.command == "migrate":
         migrate(args.modules)

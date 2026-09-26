@@ -639,8 +639,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 };
                 if applies_to_runtime && lifecycle_allows_action {
                     match action.kind {
-                        DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now)?,
-                        DeferredAgentActionKind::Stop => self.stop_slot(agent_id, slot, now)?,
+                        DeferredAgentActionKind::Drain => {
+                            self.drain_slot_preserving_restart(agent_id, slot, now)?
+                        }
+                        DeferredAgentActionKind::Stop => {
+                            self.stop_slot_preserving_restart(agent_id, slot, now)?
+                        }
                     }
                     return Ok(());
                 }

@@ -223,6 +223,15 @@ semantics.
 
 The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
 
+### Publication transport and remaining product assembly
+
+`AgentdEvaluationEvidenceSinkV1` publishes exact terminal bytes through the existing
+Agentd evidence endpoint and its transactional owner. The runner prepares signing
+bytes without issuing a qualification; publication rechecks current trust and the
+original fixed intent. This is not a default authenticated input provider or job
+scheduler. Frozen input persistence and the signing outbox remain product work.
+The production contract specifies current admission and recovery ordering.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.eval.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md).

@@ -221,7 +221,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Offline/reference learning library. Qualification training first verifies a self-describing `DatasetSnapshotReceiptV3` and exact source-record evidence set, then fits through opaque verified inputs. Applicability and regularity qualification reuse the ledger-owned signed-evidence verifier with generator/evaluator role separation. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence. A real Agentd `PinnedCognitiveRanker` consumes an externally selected pinned tabular artifact at the cognitive read boundary, but the default training/evaluation/selection loop remains uncomposed.
+Offline/reference learning library. Default owner-backed training derives targets/actions from actual authenticated `LedgerWriter` records, retains the immutable profile and root-activated trust-distribution identity, and re-materializes the complete plan at final fit. The generic V2 receipt/evidence-set wrappers are qualification-fixture-only and do not certify caller-supplied numerical labels. Applicability and regularity qualification reuse the ledger-owned signed-evidence verifier with generator/evaluator role separation. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence. A real Agentd `PinnedCognitiveRanker` consumes an externally selected pinned tabular artifact at the cognitive read boundary, but the default training/evaluation/selection loop remains uncomposed.
 
 Current operating and state-format references:
 
@@ -549,3 +549,54 @@ The bootstrap source-location obligation for `learning.operator` is implemented 
 - `codex-rs/hepta-bellman-operator`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Current ingress, trust and evidence boundaries (2026-09-25)
+
+The current native profile remains a bounded constant-state Terminal Cell, not a
+neural operator or a causal policy-improvement theorem. The owner-backed frozen
+input binds dataset, target/action derivation, complete training profile and
+learning trust distribution. Target, action, sensor, profile and generation
+replacement under an unchanged receipt must fail. Authenticated corrections,
+expiry and trust rotation invalidate prepared training. Reopening the same valid
+owner facts reproduces the same artifact; it does not choose a new identity.
+
+Raw fitting, raw prediction and generic V2 evidence-membership wrappers require
+`unchecked-qualification-inputs` and are not a product entry. Validated immutable
+loaded models and the independently selected artifact-owner path remain the
+consumer boundary. Exact per-operation test links are in IMPLEMENTATION_MAP.json.
+
+Agentd `AgentdSignedEvaluationV2` consumes a sealed
+`ProductQualificationReceiptV1` produced by `ProductEvaluationRunnerV1` after the
+fenced holdout and durable evidence sink. Its use signature binds the exact run,
+context, snapshot and candidate set to that persisted qualification. Governed
+parameter proposals likewise require `CandidateEvaluationAdmissionV2`; direct
+signed metric comparison is no longer exported as product admission.
+
+Shared-terminal bundle V2 includes the training learning-trust distribution in
+its signed bytes. Reload/use rejects a different current distribution. V1 has no
+such binding and requires explicit new training/publication/selection. Current
+trust must come from the host's authoritative root/minimum-generation bootstrap,
+not from a supplied artifact or an old disk snapshot. The complete default
+Agentd learning/evaluation/publication/feedback bootstrap remains an explicit
+repository integration gap; no `productionImplementation` flag is raised here.
+
+Reproduction commands, from the repository root:
+
+```sh
+python3 -m unittest discover -s scripts -p test_hepta_rust_surface.py
+python3 scripts/hepta-lane-e-closure.py self-test
+python3 scripts/hepta-lane-e-closure.py verify
+python3 scripts/hepta-learning-operator-boundary.py
+cd codex-rs
+just test --locked -p codex-hepta-bellman-operator --lib
+just test --locked -p codex-hepta-bellman-operator --lib --run-ignored only -E 'test(owner_terminal_quality_and_history_profile)' --success-output immediate
+just test --locked -p codex-hepta-intelligence --lib
+just test --locked -p codex-hepta-agentd --test terminal_cell_owner
+just test --locked -p codex-hepta-agentd --test terminal_cell_owner --run-ignored only -E 'test(durable_owner_history_and_concurrent_training_profile)' --success-output immediate
+```
+
+The history profile reports actual local filesystem/CPU costs; the fixture
+learning comparison uses synthetic independently held-out owner facts. Neither
+is a field efficacy result, and the exact candidate and host must accompany any
+reported numbers. The original declared capacity and external acceptance gates
+remain in force.

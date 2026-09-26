@@ -501,14 +501,30 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
     );
 }
 
-#[test]
-fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
+// A signed-registry fixture for send/recovery boundary tests, not an independent
+// Generator/Evaluator selection or real provider execution qualification.
+fn staged_pipeline_fixture() -> (
+    tempfile::TempDir,
+    Arc<AgentdPromptPipelineOwner>,
+    FinalUseAuthority,
+    SigningKey,
+) {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let registry_root = temporary.path().join("prompt-registry");
     let runtime_root = temporary.path().join("prompt-runtime");
     let authority_root = temporary.path().join("prompt-authority");
-    let pipeline = AgentdPromptPipelineOwner::open_state_dirs(&registry_root, &runtime_root, 64)
-        .unwrap_or_else(|error| panic!("pipeline owner: {error}"));
+    let checkpoint = temporary
+        .path()
+        .join("prompt-witness")
+        .join("registry.json");
+    let pipeline = AgentdPromptPipelineOwner::open_state_dirs(
+        &registry_root,
+        Some(&checkpoint),
+        "agent:test:prompt.registry",
+        &runtime_root,
+        64,
+    )
+    .unwrap_or_else(|error| panic!("pipeline owner: {error}"));
     let payload = b"Inspect evidence before mutation.";
     let factor = PromptFactor {
         factor_id: id("factor:agentd-product"),
@@ -659,7 +675,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             .unwrap_or_else(|error| panic!("register realization: {error}"));
     }
 
-    let logical_now = 100_u64;
+    let logical_now = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
     let candidates = pipeline
         .enumerate_candidates(PromptEnumerationRequestV1 {
             set_id: id("enumeration:agentd-product"),
@@ -682,7 +698,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             interaction_digest: digest("interaction"),
             expected_utility_q32: FixedQ32::ONE,
             total_token_upper_bound: 4,
-            valid_until_unix_ms: logical_now + 10_000,
+            valid_until_unix_ms: logical_now + 60_000,
             receipt_digest: digest("portfolio-receipt"),
             authority: AuthorityPosture::DENY_ALL,
         },
@@ -738,9 +754,8 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .unwrap_or_else(|error| panic!("compile and stage: {error}"));
     assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
 
-    let runtime = pipeline.runtime_owner();
-    let staged = runtime
-        .prepare(PromptRuntimePrepareRequest {
+    let staged = pipeline
+        .prepare_for_provider(PromptRuntimePrepareRequest {
             thread_id: "thread:product".to_owned(),
             turn_id: "turn:product".to_owned(),
             model_context_window: Some(128),
@@ -749,10 +764,476 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .unwrap_or_else(|| panic!("staged attachment missing"));
     assert_eq!(staged.developer_fragments.len(), 1);
     assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
+    (temporary, Arc::new(pipeline), authority, signing_key)
+}
+
+#[test]
+fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
+    let (_temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
+    let staged = pipeline
+        .prepare_for_provider(product_prepare())
+        .unwrap_or_else(|error| panic!("guarded preparation: {error}"));
+    assert!(staged.is_some());
 }
 
 #[test]
 fn owner_remains_send_sync_with_fault_injection() {
     fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<super::AgentdPromptRuntimeOwner>();
+}
+
+fn product_prepare() -> PromptRuntimePrepareRequest {
+    PromptRuntimePrepareRequest {
+        thread_id: "thread:product".to_owned(),
+        turn_id: "turn:product".to_owned(),
+        model_context_window: Some(128),
+    }
+}
+
+fn revoke_product_factor(
+    pipeline: &AgentdPromptPipelineOwner,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+) {
+    let mut registry = pipeline
+        .registry
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner);
+    let factor = registry
+        .registry()
+        .unwrap_or_else(|error| panic!("registry: {error}"))
+        .factor(&id("factor:agentd-product"))
+        .cloned()
+        .unwrap_or_else(|| panic!("factor"));
+    let actor = id("operator:prompt-revocation");
+    let scope = digest("scope:prompt-revocation");
+    let reason = digest("reason:prompt-revocation");
+    let now = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    let binding =
+        codex_hepta_prompt_registry::final_use_revoke_binding(&factor, &actor, scope, reason, now)
+            .unwrap_or_else(|error| panic!("binding: {error}"));
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:agentd-prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "grant:agentd-prompt-revocation".to_owned(),
+        nonce: [64; 32],
+        binding,
+        not_before_unix_ms: now.saturating_sub(1000),
+        expires_at_unix_ms: now + 60_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("sign: {error}")),
+            )
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry
+        .revoke_factor_final_use(
+            authority,
+            &signed,
+            &factor.factor_id,
+            &actor,
+            scope,
+            reason,
+            now,
+        )
+        .unwrap_or_else(|error| panic!("durable revocation: {error}"));
+}
+
+#[test]
+fn revocation_after_staging_blocks_prepare_and_dispatch_after_full_reopen() {
+    let (temporary, pipeline, authority, key) = staged_pipeline_fixture();
+    let attachment = pipeline
+        .prepare_for_provider(product_prepare())
+        .unwrap_or_else(|error| panic!("prepare: {error}"))
+        .unwrap_or_else(|| panic!("attachment"));
+    let mut claim = dispatch(
+        &attachment,
+        "thread:product",
+        "turn:product",
+        "attempt:revoked",
+        "request:revoked",
+        digest("wire:revoked"),
+    );
+    claim.dispatched_unix_ms = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    revoke_product_factor(&pipeline, &authority, &key);
+    assert!(pipeline.prepare_for_provider(product_prepare()).is_err());
+    assert!(pipeline.admit_provider_dispatch(claim.clone()).is_err());
+    assert!(
+        pipeline
+            .runtime
+            .dispatch_record(&claim.attempt_id)
+            .unwrap_or_else(|error| panic!("lookup: {error}"))
+            .is_none()
+    );
+    drop(pipeline);
+    let reopened = AgentdPromptPipelineOwner::open_state_dirs(
+        &temporary.path().join("prompt-registry"),
+        Some(
+            &temporary
+                .path()
+                .join("prompt-witness")
+                .join("registry.json"),
+        ),
+        "agent:test:prompt.registry",
+        &temporary.path().join("prompt-runtime"),
+        64,
+    )
+    .unwrap_or_else(|error| panic!("reopen: {error}"));
+    assert!(reopened.prepare_for_provider(product_prepare()).is_err());
+    assert!(reopened.admit_provider_dispatch(claim).is_err());
+}
+
+#[test]
+fn send_revalidation_uses_current_time_not_prequeue_dispatch_time() {
+    let (_temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
+    let mut attachment = pipeline
+        .prepare_for_provider(product_prepare())
+        .unwrap_or_else(|error| panic!("prepare: {error}"))
+        .unwrap_or_else(|| panic!("attachment"));
+    let now = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    attachment.deadline_ms = now.saturating_sub(1);
+    attachment.source_binding_digest = attachment.compute_binding_digest();
+    pipeline
+        .runtime
+        .commit_state(|state| {
+            let key = PromptRuntimeKey {
+                thread_id: "thread:product".into(),
+                turn_id: "turn:product".into(),
+            };
+            let lease = state
+                .registry_leases
+                .get_mut(&key)
+                .ok_or(AgentdPromptRuntimeError::CorruptState)?;
+            lease.valid_until_unix_ms = attachment.deadline_ms;
+            lease.attachment_source_binding_digest = attachment.source_binding_digest;
+            lease.lease_digest = lease.compute_digest();
+            state.staged.insert(key, attachment.clone());
+            Ok(())
+        })
+        .unwrap_or_else(|error| panic!("simulate elapsed queue deadline: {error}"));
+    let mut claim = dispatch(
+        &attachment,
+        "thread:product",
+        "turn:product",
+        "attempt:expired",
+        "request:expired",
+        digest("wire:expired"),
+    );
+    claim.dispatched_unix_ms = now.saturating_sub(1000);
+    assert!(pipeline.admit_provider_dispatch(claim.clone()).is_err());
+    assert!(
+        pipeline
+            .runtime
+            .dispatch_record(&claim.attempt_id)
+            .unwrap_or_else(|error| panic!("lookup: {error}"))
+            .is_none()
+    );
+}
+
+#[test]
+fn missing_source_lease_cannot_be_sent_through_product_host() {
+    let (_temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
+    pipeline
+        .runtime
+        .commit_state(|state| {
+            state.registry_leases.clear();
+            Ok(())
+        })
+        .unwrap_or_else(|error| panic!("legacy stage: {error}"));
+    assert!(pipeline.prepare_for_provider(product_prepare()).is_err());
+}
+
+#[test]
+fn accepted_dispatch_reopens_indeterminate_and_cannot_be_blindly_sent_again() {
+    let (temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
+    let attachment = pipeline
+        .prepare_for_provider(product_prepare())
+        .unwrap_or_else(|error| panic!("prepare: {error}"))
+        .unwrap_or_else(|| panic!("attachment"));
+    let mut claim = dispatch(
+        &attachment,
+        "thread:product",
+        "turn:product",
+        "attempt:crash",
+        "request:crash",
+        digest("wire:crash"),
+    );
+    claim.dispatched_unix_ms = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    pipeline
+        .admit_provider_dispatch(claim.clone())
+        .unwrap_or_else(|error| panic!("admit: {error}"));
+    assert!(
+        pipeline.admit_provider_dispatch(claim.clone()).is_err(),
+        "durable claim retry is not a fresh send permission"
+    );
+    drop(pipeline);
+    let reopened = AgentdPromptPipelineOwner::open_state_dirs(
+        &temporary.path().join("prompt-registry"),
+        Some(
+            &temporary
+                .path()
+                .join("prompt-witness")
+                .join("registry.json"),
+        ),
+        "agent:test:prompt.registry",
+        &temporary.path().join("prompt-runtime"),
+        64,
+    )
+    .unwrap_or_else(|error| panic!("reopen: {error}"));
+    assert!(reopened.prepare_for_provider(product_prepare()).is_err());
+    assert_eq!(
+        reopened
+            .runtime
+            .dispatch_record(&claim.attempt_id)
+            .unwrap_or_else(|error| panic!("lookup: {error}")),
+        Some(claim)
+    );
+}
+
+#[test]
+fn extra_staging_cannot_consume_reserved_terminal_capacity() {
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("temp: {error}"));
+    let path = temporary.path().join("runtime");
+    let owner = AgentdPromptRuntimeOwner::open_state_dir(&path)
+        .unwrap_or_else(|error| panic!("owner: {error}"));
+    let value = attachment();
+    stage_raw(&owner, "thread:one", "turn:one", value.clone());
+    let wire = digest("capacity:wire");
+    owner
+        .record_dispatch(dispatch(
+            &value,
+            "thread:one",
+            "turn:one",
+            "attempt:capacity",
+            "request:capacity",
+            wire,
+        ))
+        .unwrap_or_else(|error| panic!("dispatch: {error}"));
+    let current = owner
+        .state
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .clone();
+    let before =
+        std::fs::read(path.join(STATE_FILE)).unwrap_or_else(|error| panic!("manifest: {error}"));
+    let limit = before.len() as u64
+        + capacity::reserved_bytes(&current).unwrap_or_else(|error| panic!("reserve: {error}"));
+    owner
+        .store
+        .as_ref()
+        .unwrap_or_else(|| panic!("store"))
+        .metadata_limit
+        .store(limit, Ordering::Release);
+    let rejected = owner.commit_state(|state| {
+        state.staged.insert(
+            PromptRuntimeKey {
+                thread_id: "thread:extra".into(),
+                turn_id: "turn:extra".into(),
+            },
+            value.clone(),
+        );
+        Ok(())
+    });
+    assert!(matches!(
+        rejected,
+        Err(AgentdPromptRuntimeError::CapacityExceeded)
+    ));
+    assert_eq!(
+        std::fs::read(path.join(STATE_FILE)).unwrap_or_else(|error| panic!("unchanged: {error}")),
+        before
+    );
+    let mut terminal = delivered_terminal(&value, "attempt:capacity", "request:capacity", wire, 11);
+    terminal.end_turn = Some(false); // Keep the stage: the reserve, not deletion, must make room.
+    terminal
+        .delivery_observation
+        .as_mut()
+        .unwrap_or_else(|| panic!("observation"))
+        .observed_token_positions = Some(
+        (0..codex_hepta_types::MAX_PROMPT_TOKEN_POSITIONS_V1)
+            .map(|n| u32::MAX - (codex_hepta_types::MAX_PROMPT_TOKEN_POSITIONS_V1 - 1 - n) as u32)
+            .collect(),
+    );
+    terminal
+        .validate()
+        .unwrap_or_else(|error| panic!("maximum legal terminal: {error}"));
+    owner
+        .record(terminal.clone())
+        .unwrap_or_else(|error| panic!("reserved terminal: {error}"));
+    drop(owner);
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&path)
+        .unwrap_or_else(|error| panic!("reopen: {error}"));
+    assert_eq!(
+        reopened
+            .terminal_record("attempt:capacity")
+            .unwrap_or_else(|error| panic!("lookup: {error}")),
+        Some(terminal)
+    );
+}
+
+#[test]
+fn retired_agent_generation_cannot_admit_still_live_registry_payload() {
+    let (_temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
+    let attachment = pipeline
+        .prepare_for_provider(product_prepare())
+        .unwrap_or_else(|error| panic!("prepare: {error}"))
+        .unwrap_or_else(|| panic!("attachment"));
+    let mut claim = dispatch(
+        &attachment,
+        "thread:product",
+        "turn:product",
+        "attempt:fenced",
+        "request:fenced",
+        digest("wire:fenced"),
+    );
+    claim.dispatched_unix_ms = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    assert!(
+        pipeline
+            .admit_provider_dispatch_with_fence(claim.clone(), || Err(
+                AgentdPromptRuntimeError::GenerationFenced
+            ))
+            .is_err()
+    );
+    assert!(
+        pipeline
+            .runtime
+            .dispatch_record(&claim.attempt_id)
+            .unwrap_or_else(|error| panic!("lookup: {error}"))
+            .is_none()
+    );
+}
+
+#[test]
+fn cleared_not_dispatched_turn_reopens_without_forgetting_its_attempt() {
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("temp: {error}"));
+    let root = temporary.path().join("runtime");
+    let owner = AgentdPromptRuntimeOwner::open_state_dir(&root)
+        .unwrap_or_else(|error| panic!("owner: {error}"));
+    let value = attachment();
+    stage_raw(&owner, "thread:one", "turn:one", value.clone());
+    let wire = digest("wire:cancelled");
+    let claim = dispatch(
+        &value,
+        "thread:one",
+        "turn:one",
+        "attempt:cancelled",
+        "request:cancelled",
+        wire,
+    );
+    owner
+        .record_dispatch(claim.clone())
+        .unwrap_or_else(|error| panic!("claim: {error}"));
+    let mut terminal =
+        delivered_terminal(&value, "attempt:cancelled", "request:cancelled", wire, 11);
+    terminal.outcome = PromptRuntimeTerminalOutcomeV1::NotDispatched;
+    terminal.end_turn = None;
+    terminal.terminal_reason_code = Some("before_send_cancelled".to_owned());
+    terminal.delivery_observation = None;
+    owner
+        .record(terminal.clone())
+        .unwrap_or_else(|error| panic!("not dispatched: {error}"));
+    assert!(
+        owner
+            .clear_turn("thread:one", "turn:one")
+            .unwrap_or_else(|error| panic!("clear: {error}"))
+    );
+    drop(owner);
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root)
+        .unwrap_or_else(|error| panic!("reopen: {error}"));
+    assert_eq!(
+        reopened
+            .dispatch_record(&claim.attempt_id)
+            .unwrap_or_else(|error| panic!("dispatch: {error}")),
+        Some(claim)
+    );
+    assert_eq!(
+        reopened
+            .terminal_record(&terminal.attempt_id)
+            .unwrap_or_else(|error| panic!("terminal: {error}")),
+        Some(terminal)
+    );
+    assert!(
+        reopened
+            .prepare(PromptRuntimePrepareRequest {
+                thread_id: "thread:one".into(),
+                turn_id: "turn:one".into(),
+                model_context_window: None
+            })
+            .is_err()
+    );
+    assert_eq!(
+        reopened
+            .staged_count()
+            .unwrap_or_else(|error| panic!("count: {error}")),
+        0
+    );
+}
+
+#[test]
+fn fence_after_dispatch_persistence_records_not_dispatched_and_denies_send() {
+    let (temporary, pipeline, _authority, _key) = staged_pipeline_fixture();
+    let attachment = pipeline
+        .prepare_for_provider(product_prepare())
+        .unwrap_or_else(|error| panic!("prepare: {error}"))
+        .unwrap_or_else(|| panic!("attachment"));
+    let mut claim = dispatch(
+        &attachment,
+        "thread:product",
+        "turn:product",
+        "attempt:late-fence",
+        "request:late-fence",
+        digest("wire:late-fence"),
+    );
+    claim.dispatched_unix_ms = current_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
+    let calls = std::sync::atomic::AtomicUsize::new(0);
+    assert!(
+        pipeline
+            .admit_provider_dispatch_with_fence(claim.clone(), || {
+                if calls.fetch_add(1, Ordering::SeqCst) == 0 {
+                    Ok(())
+                } else {
+                    Err(AgentdPromptRuntimeError::GenerationFenced)
+                }
+            })
+            .is_err()
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+    let terminal = pipeline
+        .runtime
+        .terminal_record(&claim.attempt_id)
+        .unwrap_or_else(|error| panic!("lookup: {error}"))
+        .unwrap_or_else(|| panic!("durable local terminal"));
+    assert_eq!(
+        terminal.outcome,
+        PromptRuntimeTerminalOutcomeV1::NotDispatched
+    );
+    assert!(terminal.delivery_observation.is_none());
+    assert!(pipeline.admit_provider_dispatch(claim.clone()).is_err());
+    drop(pipeline);
+    let reopened = AgentdPromptPipelineOwner::open_state_dirs(
+        &temporary.path().join("prompt-registry"),
+        Some(
+            &temporary
+                .path()
+                .join("prompt-witness")
+                .join("registry.json"),
+        ),
+        "agent:test:prompt.registry",
+        &temporary.path().join("prompt-runtime"),
+        64,
+    )
+    .unwrap_or_else(|error| panic!("reopen: {error}"));
+    assert_eq!(
+        reopened
+            .runtime
+            .terminal_record(&claim.attempt_id)
+            .unwrap_or_else(|error| panic!("lookup after reopen: {error}")),
+        Some(terminal)
+    );
 }

@@ -1,1 +1,185 @@
-{"schema":"hepta.lane-b-implementation-truth.v3","schemaVersion":3,"documentClass":"repository_controlled_source_truth","planId":"HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN","planVersion":"8.0.0","laneId":"LANE-B-RUNTIME","sourceBase":{"commit":"7e8379b3954808d4138a7bd2f3773f75691291a3","tree":"ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"},"candidateIdentity":"derived_from_git_head_at_verification_time","claimBoundary":{"documentationStructureComplete":true,"designOperationInventoryComplete":true,"nativeSourceMappingComplete":true,"repositoryControlledDocumentationGapsClosed":true,"repositoryControlledMappingGapsClosed":true,"repositoryControlledSourceBoundaryGapsClosed":false,"targetDesignImplementationComplete":false,"productionConsumerCallsitesComplete":false,"productExecutionComplete":false,"deploymentQualificationComplete":false,"independentAcceptanceComplete":false,"externalEffectsComplete":false,"hardwareEvidenceComplete":false,"futureWindowEfficacyComplete":false,"allGapsClosed":false},"rules":{"exactHeadDerivedNotHardCoded":true,"ownerEntrypointMustRemainInsideOwnerRoot":true,"delegatedCalleeMustNameOwnerModule":true,"sourceSymbolIsNotProductionExecution":true,"unitFixtureIsNotExternalEffectEvidence":true,"terminalObserverCannotBeSelfInvented":true,"externalEvidenceCannotBeSelfIssued":true,"generatedModuleMapsMustEqualTruthProjection":true,"generatedHumanClosureMustEqualTruthProjection":true,"unknownGapsRemainExplicit":true},"allowedMappingClasses":["owner_native","resolved_alias_native","owner_boundary"],"moduleOrder":["runtime.supervisor","runtime.fleet","runtime.agentd","runtime.codex","inference.control","inference.worker","automation.taskflow","channel.matrix","browser.servo","ui.control","ui.native"],"operationCount":52,"modules":[{"module":"runtime.supervisor","mapPath":"docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json","operationIds":["start_instance","observe_health","drain","stop_instance","kill_instance","restart_instance","load_next","rollback_release","signed_upgrade","signed_rollback","reconcile_signed_intent"]},{"module":"runtime.fleet","mapPath":"docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json","operationIds":["admit_host","allocate","renew_or_revoke"]},{"module":"runtime.agentd","mapPath":"docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json","operationIds":["compose_runtime","start_run","admit_revalidated_run_start","cancel_run","attach_context","daemon_run_lifecycle_control","agentd_neuron_owner","shared_terminal_cell_train","shared_terminal_cell_load","shared_terminal_cell_predict"]},{"module":"runtime.codex","mapPath":"docs/modules/runtime.codex/IMPLEMENTATION_MAP.json","operationIds":["open_thread","submit_turn","dispatch_tool","observe_delivery"]},{"module":"inference.control","mapPath":"docs/modules/inference.control/IMPLEMENTATION_MAP.json","operationIds":["reserve_request","schedule","cancel","settle"]},{"module":"inference.worker","mapPath":"docs/modules/inference.worker/IMPLEMENTATION_MAP.json","operationIds":["load_model","run","unload"]},{"module":"automation.taskflow","mapPath":"docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json","operationIds":["register_schedule","materialize_due","claim_occurrence","execute_step"]},{"module":"channel.matrix","mapPath":"docs/modules/channel.matrix/IMPLEMENTATION_MAP.json","operationIds":["admit_event","prepare_send","observe_send"]},{"module":"browser.servo","mapPath":"docs/modules/browser.servo/IMPLEMENTATION_MAP.json","operationIds":["open_profile","observe_page","navigate_or_act"]},{"module":"ui.control","mapPath":"docs/modules/ui.control/IMPLEMENTATION_MAP.json","operationIds":["read_view","submit_request","request_stop"]},{"module":"ui.native","mapPath":"docs/modules/ui.native/IMPLEMENTATION_MAP.json","operationIds":["connect_runtime","render_runtime_view","request_platform_capability","apply_shell_update"]}]}
+{
+  "schema": "hepta.lane-b-implementation-truth.v3",
+  "schemaVersion": 3,
+  "documentClass": "repository_controlled_source_truth",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "laneId": "LANE-B-RUNTIME",
+  "sourceBase": {
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+  },
+  "candidateIdentity": "derived_from_git_head_at_verification_time",
+  "claimBoundary": {
+    "documentationStructureComplete": true,
+    "designOperationInventoryComplete": true,
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "targetDesignImplementationComplete": false,
+    "productionConsumerCallsitesComplete": false,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "externalEffectsComplete": false,
+    "hardwareEvidenceComplete": false,
+    "futureWindowEfficacyComplete": false,
+    "allGapsClosed": false
+  },
+  "rules": {
+    "exactHeadDerivedNotHardCoded": true,
+    "ownerEntrypointMustRemainInsideOwnerRoot": true,
+    "delegatedCalleeMustNameOwnerModule": true,
+    "sourceSymbolIsNotProductionExecution": true,
+    "unitFixtureIsNotExternalEffectEvidence": true,
+    "terminalObserverCannotBeSelfInvented": true,
+    "externalEvidenceCannotBeSelfIssued": true,
+    "generatedModuleMapsMustEqualTruthProjection": true,
+    "generatedHumanClosureMustEqualTruthProjection": true,
+    "unknownGapsRemainExplicit": true
+  },
+  "allowedMappingClasses": [
+    "owner_native",
+    "resolved_alias_native",
+    "owner_boundary"
+  ],
+  "moduleOrder": [
+    "runtime.supervisor",
+    "runtime.fleet",
+    "runtime.agentd",
+    "runtime.codex",
+    "inference.control",
+    "inference.worker",
+    "automation.taskflow",
+    "channel.matrix",
+    "browser.servo",
+    "ui.control",
+    "ui.native"
+  ],
+  "operationCount": 56,
+  "modules": [
+    {
+      "module": "runtime.supervisor",
+      "mapPath": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "start_instance",
+        "observe_health",
+        "drain",
+        "stop_instance",
+        "kill_instance",
+        "restart_instance",
+        "load_next",
+        "rollback_release",
+        "signed_upgrade",
+        "signed_rollback",
+        "reconcile_signed_intent"
+      ]
+    },
+    {
+      "module": "runtime.fleet",
+      "mapPath": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "admit_host",
+        "allocate",
+        "renew_or_revoke"
+      ]
+    },
+    {
+      "module": "runtime.agentd",
+      "mapPath": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "compose_runtime",
+        "start_run",
+        "admit_revalidated_run_start",
+        "cancel_run",
+        "attach_context",
+        "daemon_run_lifecycle_control",
+        "agentd_neuron_owner",
+        "shared_terminal_cell_train",
+        "shared_terminal_cell_load",
+        "shared_terminal_cell_predict",
+        "shared_terminal_cell_restore",
+        "compose_authoritative_owner_inputs"
+      ]
+    },
+    {
+      "module": "runtime.codex",
+      "mapPath": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "open_thread",
+        "submit_turn",
+        "dispatch_tool",
+        "observe_delivery"
+      ]
+    },
+    {
+      "module": "inference.control",
+      "mapPath": "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "reserve_request",
+        "schedule",
+        "cancel",
+        "settle",
+        "compact_journal",
+        "journal_capacity_status"
+      ]
+    },
+    {
+      "module": "inference.worker",
+      "mapPath": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "load_model",
+        "run",
+        "unload"
+      ]
+    },
+    {
+      "module": "automation.taskflow",
+      "mapPath": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "register_schedule",
+        "materialize_due",
+        "claim_occurrence",
+        "execute_step"
+      ]
+    },
+    {
+      "module": "channel.matrix",
+      "mapPath": "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "admit_event",
+        "prepare_send",
+        "observe_send"
+      ]
+    },
+    {
+      "module": "browser.servo",
+      "mapPath": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "open_profile",
+        "observe_page",
+        "navigate_or_act"
+      ]
+    },
+    {
+      "module": "ui.control",
+      "mapPath": "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "read_view",
+        "submit_request",
+        "request_stop"
+      ]
+    },
+    {
+      "module": "ui.native",
+      "mapPath": "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+      "operationIds": [
+        "connect_runtime",
+        "render_runtime_view",
+        "request_platform_capability",
+        "apply_shell_update"
+      ]
+    }
+  ]
+}

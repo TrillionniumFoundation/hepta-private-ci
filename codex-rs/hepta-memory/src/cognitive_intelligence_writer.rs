@@ -19,6 +19,7 @@ use crate::KgFactSetDraft;
 use crate::MemoryDraft;
 use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
+use crate::MemoryRevisionId;
 use crate::MemoryRevisionRecord;
 use crate::MemoryVerification;
 use crate::SourceDraft;
@@ -142,8 +143,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                &MemoryRevisionId {
+                    memory_id: memory_id.clone(),
+                    revision: expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,8 +160,7 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        expected: &MemoryRevisionId,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
@@ -179,8 +181,8 @@ impl CognitiveStore {
             .revise_memory_revision_tx(
                 transaction,
                 access,
-                memory_id,
-                expected_revision,
+                &expected.memory_id,
+                expected.revision,
                 &bound_draft,
             )
             .await?;

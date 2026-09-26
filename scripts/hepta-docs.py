@@ -814,7 +814,9 @@ def verify_document_inventory(system, required):
     declared path is still unique, exact, present and inside the repository.
     """
     paths = system.get("canonicalPaths")
-    need(isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory")
+    need(
+        isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory"
+    )
     normalized = [canonical_exact_path(path, "canonical path") for path in paths]
     need(len(normalized) == len(set(normalized)), "duplicate canonical path")
     missing = sorted(set(required) - set(normalized))
@@ -822,7 +824,10 @@ def verify_document_inventory(system, required):
     root = ROOT.resolve()
     for path in normalized:
         target = ROOT / path
-        need(target.resolve().is_relative_to(root), "canonical path escapes repository " + path)
+        need(
+            target.resolve().is_relative_to(root),
+            "canonical path escapes repository " + path,
+        )
         need(target.is_file(), "missing canonical path " + path)
 
 
@@ -1374,26 +1379,38 @@ def verify() -> int:
             "threat " + t["id"],
         )
     sub = subordinate_state()
+    def require_unique_rows(rows, label):
+        need(isinstance(rows, list) and rows, label + " empty")
+        identities = [row.get("id") for row in rows if isinstance(row, dict)]
+        need(
+            len(identities) == len(rows)
+            and all(isinstance(identity, str) and identity for identity in identities)
+            and len(set(identities)) == len(identities),
+            label + " identities",
+        )
+
     need(
         sub["readiness"].get("overlayId") == "HEPTA-V8-PRECODING-READINESS"
-        and sub["readiness"].get("globalClosure", {}).get("state") == "closed"
-        and len(sub["readiness"]["documents"]) == 9
-        and len(sub["readiness_protocols"]["protocols"]) == 31
-        and len(sub["readiness_gaps"]["gaps"]) == 54,
+        and sub["readiness"].get("globalClosure", {}).get("state") == "closed",
         "readiness subordinate closure",
     )
+    require_unique_rows(sub["readiness"]["documents"], "readiness documents")
+    require_unique_rows(
+        sub["readiness_protocols"]["protocols"], "readiness protocols"
+    )
+    require_unique_rows(sub["readiness_gaps"]["gaps"], "readiness gaps")
     need(
         sub["cns"].get("claimBoundary", {}).get("repositoryReferenceClosure") is True
-        and sub["cns"].get("claimBoundary", {}).get("productionEmbodiment") is False
-        and len(sub["cns"]["organs"]) == 24
-        and len(sub["cns_gaps"]["gaps"]) == 22,
+        and sub["cns"].get("claimBoundary", {}).get("productionEmbodiment") is False,
         "CNS subordinate closure",
     )
+    require_unique_rows(sub["cns"]["organs"], "CNS organs")
+    require_unique_rows(sub["cns_gaps"]["gaps"], "CNS gaps")
     need(
-        sub["hnmf"].get("claimPosture", {}).get("productionActivation") is False
-        and len(sub["hnmf_gaps"]["gaps"]) == 18,
+        sub["hnmf"].get("claimPosture", {}).get("productionActivation") is False,
         "HNMF subordinate closure",
     )
+    require_unique_rows(sub["hnmf_gaps"]["gaps"], "HNMF gaps")
     need((ROOT / "docs/STATUS.md").read_text() == status_text(d), "STATUS stale")
     module_check = subprocess.run(
         [sys.executable, str(ROOT / MODULE_VERIFIER), "verify"],

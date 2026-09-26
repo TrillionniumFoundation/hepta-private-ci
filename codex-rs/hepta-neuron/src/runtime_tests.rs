@@ -12,6 +12,8 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+
+use crate::OperationStoreError;
 use pretty_assertions::assert_eq;
 
 const Q: i64 = 1 << 24;
@@ -39,6 +41,10 @@ impl Fixture {
 
     fn file(&self) -> File {
         self.named_file("journal")
+    }
+
+    fn operations(&self) -> File {
+        self.named_file("operations")
     }
 
     fn named_file(&self, name: &str) -> File {
@@ -95,6 +101,51 @@ impl AnchorWitnessStore for MemoryWitness {
             return Err(WitnessStoreError::Conflict);
         }
         *current = Some(next);
+        Ok(())
+    }
+}
+
+#[derive(Clone, Default)]
+struct AckLossWitness {
+    current: Arc<Mutex<Option<JournalAnchor>>>,
+    lose_next_ack: Arc<AtomicBool>,
+    fail_next_read: Arc<AtomicBool>,
+}
+
+impl AckLossWitness {
+    fn lose_next_ack_and_read(&self) {
+        self.lose_next_ack.store(true, Ordering::SeqCst);
+    }
+}
+
+impl AnchorWitnessStore for AckLossWitness {
+    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+        if self.fail_next_read.swap(false, Ordering::SeqCst) {
+            return Err(WitnessStoreError::Unavailable);
+        }
+        self.current
+            .lock()
+            .map(|value| *value)
+            .map_err(|_| WitnessStoreError::Unavailable)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        expected: Option<JournalAnchor>,
+        next: JournalAnchor,
+    ) -> Result<(), WitnessStoreError> {
+        let mut current = self
+            .current
+            .lock()
+            .map_err(|_| WitnessStoreError::Unavailable)?;
+        if *current != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        *current = Some(next);
+        if self.lose_next_ack.swap(false, Ordering::SeqCst) {
+            self.fail_next_read.store(true, Ordering::SeqCst);
+            return Err(WitnessStoreError::Indeterminate);
+        }
         Ok(())
     }
 }
@@ -269,9 +320,11 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
     let witness = MemoryWitness::default();
     let mut runtime = checked(NeuronRuntime::bootstrap(
         fixture.file(),
+        fixture.operations(),
         native.clone(),
         scope(),
         /*max_records*/ 16,
+        /*max_operations*/ 16,
         config.clone(),
         witness.clone(),
     ));
@@ -290,11 +343,12 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
 
     let mut recovered = checked(NeuronRuntime::recover(
         fixture.file(),
+        fixture.operations(),
         native,
         scope(),
         /*max_records*/ 16,
+        /*max_operations*/ 16,
         config,
-        first_anchor,
         witness,
     ));
     assert_eq!(checked(recovered.current_anchor()), Some(first_anchor));
@@ -314,9 +368,11 @@ fn witness_failure_after_commit_reconciles_without_reinvoking_model() {
     let witness = MemoryWitness::default();
     let mut runtime = checked(NeuronRuntime::bootstrap(
         fixture.file(),
+        fixture.operations(),
         native,
         scope(),
         /*max_records*/ 16,
+        /*max_operations*/ 16,
         config,
         witness.clone(),
     ));
@@ -346,9 +402,11 @@ fn model_identity_drift_rejects_before_checkpoint_mutation() {
     let config = runtime_config(&native);
     let mut runtime = checked(NeuronRuntime::bootstrap(
         fixture.file(),
+        fixture.operations(),
         native,
         scope(),
         /*max_records*/ 16,
+        /*max_operations*/ 16,
         config,
         MemoryWitness::default(),
     ));
@@ -369,9 +427,11 @@ fn collapse_or_ood_forces_abstention_without_granting_authority() {
     config.calibration.maximum_ood_ppm = 10_000;
     let mut runtime = checked(NeuronRuntime::bootstrap(
         fixture.file(),
+        fixture.operations(),
         native,
         scope(),
         /*max_records*/ 16,
+        /*max_operations*/ 16,
         config,
         MemoryWitness::default(),
     ));
@@ -390,9 +450,11 @@ fn expired_calibration_advances_state_but_forces_fail_closed_abstention() {
     let witness = MemoryWitness::default();
     let mut runtime = checked(NeuronRuntime::bootstrap(
         fixture.file(),
+        fixture.operations(),
         native,
         scope(),
         /*max_records*/ 4,
+        /*max_operations*/ 8,
         config,
         witness,
     ));
@@ -421,9 +483,11 @@ fn runtime_rollover_and_chain_recovery_preserve_latest_witness() {
     let final_anchor = {
         let mut runtime = checked(NeuronRuntime::bootstrap(
             fixture.file(),
+            fixture.operations(),
             native.clone(),
             scope(),
             /*max_records*/ 2,
+            /*max_operations*/ 8,
             config.clone(),
             witness.clone(),
         ));
@@ -442,9 +506,11 @@ fn runtime_rollover_and_chain_recovery_preserve_latest_witness() {
 
     let mut recovered = checked(NeuronRuntime::recover_chain_root(
         fixture.file(),
+        fixture.operations(),
         native,
         scope(),
         /*max_records*/ 2,
+        /*max_operations*/ 8,
         config,
         witness.clone(),
     ));
@@ -466,9 +532,11 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
     let old_config = runtime_config(&old_native);
     let mut old_runtime = checked(NeuronRuntime::bootstrap(
         fixture.file(),
+        fixture.operations(),
         old_native,
         scope(),
         /*max_records*/ 4,
+        /*max_operations*/ 8,
         old_config,
         MemoryWitness::default(),
     ));
@@ -497,9 +565,11 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
     };
     let (mut rebuilt, receipt) = checked(NeuronRuntime::bootstrap_after_deletion(
         fixture.named_file("rebuild"),
+        fixture.named_file("rebuild-operations"),
         successor_native,
         scope(),
         /*max_records*/ 4,
+        /*max_operations*/ 8,
         successor_config,
         MemoryWitness::default(),
         predecessor,
@@ -513,4 +583,312 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         rebuilt_first.tick.checkpoint_after,
         predecessor.checkpoint_digest
     );
+}
+
+#[test]
+fn successful_retry_after_restart_returns_exact_output_without_model_reexecution() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let request = input(1, Digest32::ZERO);
+    let mut model = FakeModel::new();
+    let expected = {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            fixture.operations(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 16,
+            /*max_operations*/ 16,
+            config.clone(),
+            witness.clone(),
+        ));
+        checked(runtime.tick(&mut model, request.clone()))
+    };
+    assert_eq!(model.calls, 1);
+    let mut recovered = checked(NeuronRuntime::recover(
+        fixture.file(),
+        fixture.operations(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        /*max_operations*/ 16,
+        config,
+        witness,
+    ));
+    let retried = checked(recovered.tick(&mut model, request));
+    assert_eq!(retried, expected);
+    assert_eq!(model.calls, 1);
+}
+
+#[test]
+fn first_commit_without_witness_recovers_the_same_operation_without_model_reexecution() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    witness.fail_next_compare_and_swap();
+    let request = input(1, Digest32::ZERO);
+    let mut model = FakeModel::new();
+    {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            fixture.operations(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 16,
+            /*max_operations*/ 16,
+            config.clone(),
+            witness.clone(),
+        ));
+        assert!(matches!(
+            runtime.tick(&mut model, request.clone()),
+            Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+        ));
+        assert!(checked(runtime.current_anchor()).is_some());
+    }
+    assert_eq!(checked(witness.current()), None);
+    let mut recovered = checked(NeuronRuntime::recover(
+        fixture.file(),
+        fixture.operations(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        /*max_operations*/ 16,
+        config,
+        witness.clone(),
+    ));
+    let result = checked(recovered.tick(&mut model, request));
+    assert_eq!(model.calls, 1);
+    assert_eq!(
+        checked(witness.current()).map(|anchor| anchor.checkpoint_digest),
+        Some(result.tick.checkpoint_after)
+    );
+}
+
+#[test]
+fn witness_commit_ack_loss_recovers_the_same_operation_without_permanent_pending_state() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = AckLossWitness::default();
+    witness.lose_next_ack_and_read();
+    let request = input(1, Digest32::ZERO);
+    let mut model = FakeModel::new();
+    {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            fixture.operations(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 16,
+            /*max_operations*/ 16,
+            config.clone(),
+            witness.clone(),
+        ));
+        assert!(matches!(
+            runtime.tick(&mut model, request.clone()),
+            Err(NeuronRuntimeError::WitnessAfterCommit {
+                error: WitnessStoreError::Indeterminate,
+                ..
+            })
+        ));
+    }
+    let mut recovered = checked(NeuronRuntime::recover(
+        fixture.file(),
+        fixture.operations(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        /*max_operations*/ 16,
+        config,
+        witness.clone(),
+    ));
+    let result = checked(recovered.tick(&mut model, request));
+    assert_eq!(model.calls, 1);
+    assert_eq!(
+        checked(witness.current()).map(|anchor| anchor.checkpoint_digest),
+        Some(result.tick.checkpoint_after)
+    );
+    let second = checked(recovered.tick(&mut model, input(2, result.tick.checkpoint_after)));
+    assert_eq!(second.tick.checkpoint_before, result.tick.checkpoint_after);
+    assert_eq!(model.calls, 2);
+}
+
+#[test]
+fn same_generation_runtime_config_drift_is_rejected_on_recovery() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let mut model = FakeModel::new();
+    {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            fixture.operations(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 16,
+            /*max_operations*/ 16,
+            config.clone(),
+            witness.clone(),
+        ));
+        checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    }
+    for field in [
+        "encoder",
+        "manifest",
+        "weights",
+        "tokenizer",
+        "calibration",
+        "ood",
+    ] {
+        let mut changed = config.clone();
+        let digest = Digest32::of_bytes(b"incompatible-same-generation-change");
+        match field {
+            "encoder" => changed.encoder_digest = digest,
+            "manifest" => changed.model_manifest_digest = digest,
+            "weights" => changed.weights_digest = digest,
+            "tokenizer" => changed.tokenizer_digest = digest,
+            "calibration" => changed.calibration.calibration_artifact_digest = digest,
+            "ood" => changed.calibration.ood_artifact_digest = digest,
+            _ => panic!("unknown field"),
+        }
+        assert_eq!(
+            NeuronRuntime::recover(
+                fixture.file(),
+                fixture.operations(),
+                native.clone(),
+                scope(),
+                /*max_records*/ 16,
+                /*max_operations*/ 16,
+                changed,
+                witness.clone(),
+            )
+            .err(),
+            Some(NeuronRuntimeError::Operation(
+                OperationStoreError::ContextMismatch
+            )),
+            "field {field}"
+        );
+    }
+}
+
+#[test]
+fn canonical_checkpoint_rejects_a_caller_forged_predecessor() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        fixture.operations(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        /*max_operations*/ 16,
+        config,
+        MemoryWitness::default(),
+    ));
+    let mut model = FakeModel::new();
+    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let second = checked(runtime.tick(&mut model, input(2, first.tick.checkpoint_after)));
+    let mut forged = second.tick;
+    forged.checkpoint_before = Digest32::of_bytes(b"forged-predecessor");
+    assert_eq!(
+        runtime
+            .canonical_checkpoint(&forged, 1_900_000_000_000)
+            .err(),
+        Some(crate::NeuronProtocolError::BindingMismatch("predecessor"))
+    );
+}
+
+#[test]
+fn prepared_result_recovers_after_prepare_ack_loss_without_reinvoking_model() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let request = input(1, Digest32::ZERO);
+    let mut model = FakeModel::new();
+    {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            fixture.operations(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 16,
+            /*max_operations*/ 16,
+            config.clone(),
+            witness.clone(),
+        ));
+        runtime.operations.fail_next_append_after_sync();
+        assert_eq!(
+            runtime.tick(&mut model, request.clone()).err(),
+            Some(NeuronRuntimeError::Operation(
+                OperationStoreError::Indeterminate
+            ))
+        );
+    }
+    assert_eq!(model.calls, 1);
+    assert_eq!(checked(witness.current()), None);
+
+    let mut recovered = checked(NeuronRuntime::recover(
+        fixture.file(),
+        fixture.operations(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        /*max_operations*/ 16,
+        config,
+        witness.clone(),
+    ));
+    let result = checked(recovered.tick(&mut model, request));
+    assert_eq!(model.calls, 1);
+    assert_eq!(
+        checked(witness.current()).map(|anchor| anchor.checkpoint_digest),
+        Some(result.tick.checkpoint_after)
+    );
+}
+
+#[test]
+fn recovery_does_not_initialize_a_missing_operation_history() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let mut model = FakeModel::new();
+    {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            fixture.operations(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 16,
+            /*max_operations*/ 16,
+            config.clone(),
+            witness.clone(),
+        ));
+        checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    }
+    let operation_path = fixture.0.join("operations");
+    checked(fs::write(&operation_path, []));
+    let before = checked(fs::read(&operation_path));
+    assert_eq!(
+        NeuronRuntime::recover(
+            fixture.file(),
+            fixture.operations(),
+            native,
+            scope(),
+            /*max_records*/ 16,
+            /*max_operations*/ 16,
+            config,
+            witness,
+        )
+        .err(),
+        Some(NeuronRuntimeError::Operation(
+            OperationStoreError::HistoryMissing
+        ))
+    );
+    assert_eq!(checked(fs::read(operation_path)), before);
 }

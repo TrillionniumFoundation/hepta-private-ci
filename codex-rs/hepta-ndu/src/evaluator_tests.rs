@@ -8,7 +8,6 @@ use pretty_assertions::assert_eq;
 
 use super::canonical_evaluation_policy_digest;
 use super::canonical_scalarization_digest;
-use super::evaluate_candidates;
 use super::evaluate_candidates_with_policy;
 use super::legacy_evaluation_policy;
 use crate::AggregationOperator;
@@ -35,6 +34,22 @@ fn must_err<T: Debug, E>(result: Result<T, E>) -> E {
         Err(error) => error,
         Ok(value) => panic!("expected error, received value: {value:?}"),
     }
+}
+
+fn must_some<T>(value: Option<T>, context: &str) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("missing expected value: {context}"),
+    }
+}
+
+fn evaluate_legacy(
+    set: ContributionSet,
+    profile: UtilityProfile,
+    scalarization: Option<ScalarizationProfile>,
+) -> Result<crate::NduEvaluationReceipt, crate::NduError> {
+    let policy = legacy_evaluation_policy(&profile)?;
+    Ok(evaluate_candidates_with_policy(set, profile, scalarization, policy)?.base)
 }
 
 fn id(value: &str) -> StableId {
@@ -130,7 +145,7 @@ fn hard_violation_is_filtered_before_utility() {
     let mut unsafe_candidate = contribution("unsafe-high-score", 100, 0);
     unsafe_candidate.feasibility = FeasibilityPosture::HardConstraintViolation;
 
-    let receipt = must(evaluate_candidates(
+    let receipt = must(evaluate_legacy(
         set(vec![abstain, unsafe_candidate]),
         profile(),
         None,
@@ -146,7 +161,7 @@ fn hard_violation_is_filtered_before_utility() {
 
 #[test]
 fn non_dominated_candidates_without_scalarization_require_slow_path() {
-    let receipt = must(evaluate_candidates(
+    let receipt = must(evaluate_legacy(
         set(vec![
             contribution("abstain", 0, 0),
             contribution("fast", 1, 1),
@@ -179,7 +194,7 @@ fn registered_scalarization_produces_advisory_recommendation() {
             },
         ],
     };
-    let receipt = must(evaluate_candidates(
+    let receipt = must(evaluate_legacy(
         set(vec![
             contribution("abstain", 0, 0),
             contribution("fast", 1, 1),
@@ -202,7 +217,7 @@ fn missing_required_contribution_is_not_treated_as_zero() {
     let mut required = profile();
     required.required_organs.organ_ids.push(id("risk-observer"));
 
-    let error = must_err(evaluate_candidates(
+    let error = must_err(evaluate_legacy(
         set(vec![contribution("abstain", 0, 0)]),
         required,
         None,
@@ -216,7 +231,7 @@ fn infeasible_abstain_is_rejected_before_any_recommendation() {
     let mut abstain = contribution("abstain", 0, 0);
     abstain.feasibility = FeasibilityPosture::HardConstraintViolation;
 
-    let error = must_err(evaluate_candidates(
+    let error = must_err(evaluate_legacy(
         set(vec![abstain, contribution("safe", 1, 1)]),
         profile(),
         None,
@@ -254,12 +269,14 @@ fn policy_selects_axis_specific_aggregation_instead_of_implicit_sum() {
     let mut profile = profile();
     profile.required_organs.organ_ids.push(id("observer"));
     let mut policy = must(legacy_evaluation_policy(&profile));
-    policy
-        .utility_rules
-        .iter_mut()
-        .find(|rule| rule.axis == id("success"))
-        .expect("success rule")
-        .operator = AggregationOperator::Maximum;
+    must_some(
+        policy
+            .utility_rules
+            .iter_mut()
+            .find(|rule| rule.axis == id("success")),
+        "success rule",
+    )
+    .operator = AggregationOperator::Maximum;
     let receipt = must(evaluate_candidates_with_policy(
         set(vec![
             contribution_from("abstain", "planner", 0, 0),
@@ -271,17 +288,20 @@ fn policy_selects_axis_specific_aggregation_instead_of_implicit_sum() {
         None,
         policy,
     ));
-    let work = receipt
-        .base
-        .evaluated_candidates
-        .iter()
-        .find(|candidate| candidate.candidate_id == id("work"))
-        .expect("work candidate");
-    let success = work
-        .utility
-        .iter()
-        .find(|value| value.axis == id("success"))
-        .expect("success axis");
+    let work = must_some(
+        receipt
+            .base
+            .evaluated_candidates
+            .iter()
+            .find(|candidate| candidate.candidate_id == id("work")),
+        "work candidate",
+    );
+    let success = must_some(
+        work.utility
+            .iter()
+            .find(|value| value.axis == id("success")),
+        "success axis",
+    );
 
     assert_eq!(success.value, q32(2));
     assert!(!receipt.evaluation_policy_digest.is_zero());
@@ -293,12 +313,14 @@ fn require_equal_aggregation_rejects_conflicting_owners() {
     let mut profile = profile();
     profile.required_organs.organ_ids.push(id("observer"));
     let mut policy = must(legacy_evaluation_policy(&profile));
-    policy
-        .utility_rules
-        .iter_mut()
-        .find(|rule| rule.axis == id("success"))
-        .expect("success rule")
-        .operator = AggregationOperator::RequireEqual;
+    must_some(
+        policy
+            .utility_rules
+            .iter_mut()
+            .find(|rule| rule.axis == id("success")),
+        "success rule",
+    )
+    .operator = AggregationOperator::RequireEqual;
 
     let error = must_err(evaluate_candidates_with_policy(
         set(vec![
@@ -323,7 +345,7 @@ fn pareto_tolerance_is_digest_bound_and_changes_dominance() {
         contribution("near", 1, 0),
         contribution("better", 2, 0),
     ];
-    let exact = must(evaluate_candidates(
+    let exact = must(evaluate_legacy(
         set(contributions.clone()),
         profile.clone(),
         None,
@@ -331,12 +353,14 @@ fn pareto_tolerance_is_digest_bound_and_changes_dominance() {
     assert_eq!(exact.pareto_frontier.len(), 1);
 
     let mut policy = must(legacy_evaluation_policy(&profile));
-    policy
-        .pareto_absolute_tolerances
-        .iter_mut()
-        .find(|value| value.axis == id("success"))
-        .expect("success tolerance")
-        .value = q32(1);
+    must_some(
+        policy
+            .pareto_absolute_tolerances
+            .iter_mut()
+            .find(|value| value.axis == id("success")),
+        "success tolerance",
+    )
+    .value = q32(1);
     let tolerant = must(evaluate_candidates_with_policy(
         set(contributions),
         profile,
@@ -374,11 +398,7 @@ fn missing_uncertainty_axis_is_unavailable() {
     let mut work = contribution("work", 1, 1);
     work.uncertainty.retain(|value| value.axis == id("success"));
 
-    let error = must_err(evaluate_candidates(
-        set(vec![abstain, work]),
-        profile(),
-        None,
-    ));
+    let error = must_err(evaluate_legacy(set(vec![abstain, work]), profile(), None));
     assert_eq!(error.code(), "NDU-E004");
 }
 
@@ -386,7 +406,7 @@ fn missing_uncertainty_axis_is_unavailable() {
 fn candidate_support_digest_binds_organ_and_contribution_semantics() {
     let mut open_profile = profile();
     open_profile.required_organs.organ_ids.clear();
-    let first = must(evaluate_candidates(
+    let first = must(evaluate_legacy(
         set(vec![
             contribution("abstain", 0, 0),
             contribution("work", 1, 1),
@@ -394,26 +414,30 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
         open_profile.clone(),
         None,
     ));
-    let first_support = first
-        .evaluated_candidates
-        .iter()
-        .find(|candidate| candidate.candidate_id == id("work"))
-        .expect("work candidate")
-        .support_digest;
+    let first_support = must_some(
+        first
+            .evaluated_candidates
+            .iter()
+            .find(|candidate| candidate.candidate_id == id("work")),
+        "first work candidate",
+    )
+    .support_digest;
 
     let mut changed = contribution("work", 1, 1);
     changed.organ_id = id("other-organ");
-    let second = must(evaluate_candidates(
+    let second = must(evaluate_legacy(
         set(vec![contribution("abstain", 0, 0), changed]),
         open_profile,
         None,
     ));
-    let second_support = second
-        .evaluated_candidates
-        .iter()
-        .find(|candidate| candidate.candidate_id == id("work"))
-        .expect("work candidate")
-        .support_digest;
+    let second_support = must_some(
+        second
+            .evaluated_candidates
+            .iter()
+            .find(|candidate| candidate.candidate_id == id("work")),
+        "second work candidate",
+    )
+    .support_digest;
 
     assert_ne!(first_support, second_support);
 }

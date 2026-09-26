@@ -201,6 +201,13 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 One append transaction prepares and validates the full semantic event, compares the exact predecessor, writes one canonical frame, syncs the ledger, publishes the in-memory state, then advances and syncs the independent witness before returning success. Atomic conserved credit is one `CreditBatchV2` event. Outcome correction accepts only the current same-episode predecessor head, so a fork, stale branch or cycle cannot commit. Segment rotation runs through `LedgerWriter::rotate_segment`, synchronizes the host-supplied successor directory handle, and only then witnesses the new topology before reporting success.
 
+`LearningAppendIdentityV1` identifies an exact historical signed Decision,
+Outcome or CreditBatch. Recovery compares the original predecessor and persisted
+authentication digest and can finish the exact one-event-late witness; it does not
+append missing records or refresh trust. The authenticated terminal facade binds
+all supplied payload fields before lookup. A recovered acknowledgement is not
+current training eligibility, model selection or proof of an external effect.
+
 Legacy `LearningLedger`, `DurableLedger`, `SegmentedLedger` and `DurableLearningJournal` APIs remain readable compatibility/testing surfaces. New composed callers use `LedgerWriter`; compatibility availability is not permission to create a second production writer.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
@@ -234,7 +241,37 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-learning-ledger/src/lib.rs](../../../codex-rs/hepta-learning-ledger/src/lib.rs) and the linked implementation components.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host. The executable [target-host harness](../../../codex-rs/hepta-learning-ledger/examples/target_host_qualification.rs) records exact source/tree/binary identity, append and rotation p50/p95/p99, sustained append throughput, reopen time, storage growth and RSS on the machine where it is run. Its receipt deliberately keeps power-loss, longitudinal-efficacy and production-activation claims false.
+[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host. The executable [target-host harness](../../../codex-rs/hepta-learning-ledger/examples/target_host_qualification.rs) records exact source/tree/binary identity, append and rotation p50/p95/p99, sustained append throughput, reopen time, storage growth and RSS on the machine where it is run. Its receipt deliberately keeps power-loss, longitudinal-efficacy and production-activation claims false. The same harness now measures oldest/newest indexed lookup and exact retries after segmented recovery, rejects same-ID/different-body substitution, and checks unchanged data/witness bytes and frontier. Test-generated identities are not independent operational custody. `sourceIdentityAttested=false` separates checkout/binary identifiers from build attestation.
+
+### Borrowed dataset freeze and withdrawal lookup
+
+`LedgerWriter::dataset_freeze_signing_payload` derives the evaluator signing
+bytes from the already validated owner core. `freeze_dataset` derives the current
+view again before signature verification, so an intervening append, correction or
+withdrawal cannot reuse a signature for an older head. Its result preserves the
+existing dataset protocol bytes and causal cuts. The owner path does not clone
+and replay the complete history or allocate a global active-record pointer list;
+standalone snapshot helpers still validate their untrusted snapshot by replay.
+Withdrawal resolves the historical source identity through the existing index,
+including inactive records needed for exact idempotent retries.
+
+The validated append/replay path now also builds an objective-local dataset
+index. Frozen signing inputs visit that objective's authenticated decisions,
+outcomes, corrections and credit batches, rather than every unrelated record.
+Activity checks still use the canonical correction/revocation predicate. The V2
+global revocation/unlearning cut remains global, including withdrawals of an
+unrelated objective; it is not replaced with a cheaper but weaker local cut.
+Index offsets are private, are populated only on a validated new append, and are
+rebuilt by recovery. An idempotent retry cannot add another offset.
+
+Warm derivation visits O(N_objective + N_global_revocations) indexed records,
+plus the existing set, activity-lookup and output-sorting costs. It does not
+claim constant-time freeze, bounded total resident history, or checkpoint-based
+cold recovery. The independent full-scan oracle in
+`production_objective_index_tests.rs` compares complete signing bytes through
+unrelated-history growth, corrections, decision/outcome withdrawal, unlearning,
+idempotent replay and recovery. The opt-in growth curves remain host observations,
+not deployment budgets. No compaction or lifetime-capacity claim follows.
 
 ## 11. Observability and operations
 
@@ -485,4 +522,20 @@ The bootstrap source-location obligation for `learning.ledger` is implemented by
 
 - `codex-rs/hepta-learning-ledger`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the ledger/Lane-E/Lane-F workflows, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The native source now includes `LedgerWriter`, `LedgerWitnessStore`, `LearningTrustRootV1`, root-signed `ActivatedLearningTrustV1`, registered protocol adapters and `LedgerIndexCheckpointV1`. This receipt is source implementation evidence only; the exact PR head must still pass current CI before source qualification is claimed. It grants no live product-writer deployment, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Original signed RunStart input persistence
+
+The existing journal retains original ObjectiveStart request bytes in record-v3
+and conflict-v2 payloads. The file header and hash-chain model are unchanged.
+Request bodies are bounded at 48 KiB and checked against the retained body digest
+before append and during recovery. Mixed historical record-v1/v2 and conflict-v1
+payloads remain readable without rewriting earlier frames; missing original
+request bytes are represented explicitly.
+
+Agentd requires current trust, owner projection and generation checks before
+new-format records can be used. Historical records without original input are
+readable for reconciliation, not executable through reconstructed input. The
+storage codec itself neither issues nor verifies an external AuthBus signature.
+Regression tests cover mixed-version recovery, byte-preserving exact retries,
+bounded inputs, truncation, and body substitution.

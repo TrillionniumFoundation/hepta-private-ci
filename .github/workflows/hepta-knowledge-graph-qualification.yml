@@ -14,6 +14,10 @@ on:
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/test_hepta_knowledge_graph_target_measure.py"
+      - "scripts/test_hepta_knowledge_graph_product_witness.py"
+      - "qualification/knowledge-graph/**"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
   push:
@@ -30,6 +34,10 @@ on:
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/test_hepta_knowledge_graph_target_measure.py"
+      - "scripts/test_hepta_knowledge_graph_product_witness.py"
+      - "qualification/knowledge-graph/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
 
 permissions:
@@ -37,7 +45,9 @@ permissions:
 
 concurrency:
   group: hepta-knowledge-graph-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Superseded PR heads cannot satisfy current qualification and may be cancelled.
+  # Mainline evidence remains non-cancellable and SHA-specific.
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -104,6 +114,7 @@ jobs:
           python3 scripts/hepta-implementation-maps.py verify
 
       - name: Observe repository-wide detailed-design health
+        if: ${{ !cancelled() }}
         continue-on-error: true
         shell: bash
         run: |
@@ -113,7 +124,15 @@ jobs:
           # exact-candidate knowledge.graph executable evidence below.
           python3 scripts/hepta-technical-closure.py verify
 
+      - name: Validate target measurement evidence parser
+        if: ${{ !cancelled() }}
+        run: |
+          python3 scripts/test_hepta_knowledge_graph_target_measure.py
+          python3 scripts/test_hepta_knowledge_graph_product_witness.py
+          python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
+
       - name: Check KG-owned Rust formatting
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         shell: bash
         run: |
@@ -123,6 +142,7 @@ jobs:
             --package codex-hepta-agentd -- --check
 
       - name: Prepare native test prerequisites
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -134,16 +154,21 @@ jobs:
           fi
 
       - name: Resolve verified sandboxed V8 artifacts
+        if: ${{ !cancelled() }}
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      # Keep native feedback independent; earlier failed gates still fail this
+      # job. No skipped, missing or failed result is converted into acceptance.
       - name: Test canonical KG kernel
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-kg -- --nocapture
 
       - name: Test prompt-factor owner, projection and real consumer
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -151,10 +176,12 @@ jobs:
           cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
 
       - name: Test durable cognitive KG owner and recovery
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
 
       - name: Crash/reopen KG transaction windows
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -162,16 +189,8 @@ jobs:
             cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor \
             -- --ignored --exact --nocapture --test-threads=1
 
-      - name: Measure PERF-LIBRARY pilot capacity
-        if: matrix.lane == 'source-head'
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
-            -- --ignored --exact --nocapture --test-threads=1
-
       - name: Test default Agentd production cognitive-writer profile
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -179,6 +198,7 @@ jobs:
             --test cognitive_product_e2e -- --nocapture --test-threads=1
 
       - name: Test qualification witness on top of product writer
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -187,6 +207,7 @@ jobs:
             --test cognitive_product_e2e -- --nocapture --test-threads=1
 
       - name: Strict KG lint
+        if: ${{ !cancelled() }}
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -195,6 +216,16 @@ jobs:
             -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
             --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
             -- -D warnings
+
+      - name: Measure PERF-LIBRARY pilot capacity
+        if: ${{ !cancelled() && matrix.lane == 'source-head' }}
+        timeout-minutes: 20
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked --release -p codex-hepta-memory --lib \
+            cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
+            -- --ignored --exact --nocapture --test-threads=1
 
       - name: Preserve exact tracked source
         if: always()

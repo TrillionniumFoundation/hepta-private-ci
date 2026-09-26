@@ -27,7 +27,9 @@
         "codex-rs/hepta-intelligence/src/canonical_tests.rs::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
         "codex-rs/hepta-intelligence/src/canonical_tests.rs::abstention_stops_before_context_and_evaluation",
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
-        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::selected_candidate_must_belong_to_the_frozen_legal_set",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::selected_candidate_requires_positive_propensity"
       ]
     },
     {
@@ -70,14 +72,16 @@
       "tests": [
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::final_use_revocation_race_fails_before_decision_publication"
-      ]
+      ],
+      "note": "This API is compiled only with qualification-legacy-learning-write; it is qualification evidence, not default product LedgerWriter composition proof."
     },
     {
       "operation": "AgentdIntelligenceProductRunnerV1::append_outcome",
       "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
-      ]
+      ],
+      "note": "This API is compiled only with qualification-legacy-learning-write; it is qualification evidence, not default product LedgerWriter composition proof."
     },
     {
       "operation": "AgentdIntelligenceProductRunnerV1::reconcile_ledger_append",
@@ -85,7 +89,7 @@
       "tests": [
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
       ],
-      "note": "The real-file test proves acknowledged reopen and exact idempotent replay. A host-induced fsync Indeterminate remains target fault-injection evidence, not synthesized success."
+      "note": "This API is compiled only with qualification-legacy-learning-write; it is qualification evidence, not default product LedgerWriter composition proof."
     },
     {
       "operation": "signed_currentness_manifest",
@@ -118,9 +122,9 @@
     },
     {
       "operation": "Agentd daemon intelligence ingress",
-      "source": "not_implemented",
+      "source": "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "tests": [],
-      "note": "AgentdState stores the configured runner, but no AgentdMethod/App Server ingress currently invokes prepare/append_decision/append_outcome. Capability advertisement remains disabled until this exists."
+      "note": "Authenticated ObjectiveStart routing source exists, but the normal binary does not yet install a concrete AgentdIntelligenceInvocationProviderV1. Product-route composition and real-process execution therefore remain unproved."
     },
     {
       "operation": "AgentdIntelligenceProductRunnerV1::prepare_and_admit",
@@ -155,6 +159,8 @@
     "ledgerIndeterminate": "in_memory_replay_object_present_process_loss_recovery_pending",
     "turnStartLostAck": "source_reconciliation_present_real_process_e2e_pending",
     "providerTerminalReconciliation": "source_present_real_process_e2e_pending",
-    "processRestart": "pending_daemon_routed_product_e2e_and_durable_pending_recovery"
+    "processRestart": "pending_daemon_routed_product_e2e_and_durable_pending_recovery",
+    "outOfSetSelection": "covered_source",
+    "zeroPropensitySelection": "covered_source"
   }
 }

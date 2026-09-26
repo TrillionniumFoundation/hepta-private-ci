@@ -335,13 +335,23 @@ fn digest_state(
     fence: &HoldoutWriterFenceV1,
     journal: &FinalHoldoutJournalSnapshotV1,
 ) -> Result<Digest32, FencedHoldoutError> {
-    if journal.records.len() > MAX_RECORDS {
+    digest_state_frontier(binding, fence, journal.records.len(), journal.head_digest)
+}
+
+// Shared canonical encoder only; this does not authenticate or publish a state.
+// The locked-file replay caller supplies a journal built by validated consume.
+pub(crate) fn digest_state_frontier(
+    binding: Digest32,
+    fence: &HoldoutWriterFenceV1,
+    record_count: usize,
+    head_digest: Digest32,
+) -> Result<Digest32, FencedHoldoutError> {
+    if record_count > MAX_RECORDS {
         return Err(FencedHoldoutError::Corrupt);
     }
     let owner = fence.owner_id.as_str().as_bytes();
     let owner_len = u32::try_from(owner.len()).map_err(|_| FencedHoldoutError::Binding)?;
-    let record_count =
-        u64::try_from(journal.records.len()).map_err(|_| FencedHoldoutError::Corrupt)?;
+    let record_count = u64::try_from(record_count).map_err(|_| FencedHoldoutError::Corrupt)?;
     let mut bytes = b"hepta.intelligence-eval.final-holdout-cas-state.v1".to_vec();
     bytes.extend_from_slice(binding.as_array());
     bytes.extend_from_slice(&owner_len.to_be_bytes());
@@ -349,7 +359,7 @@ fn digest_state(
     bytes.extend_from_slice(&fence.generation.to_be_bytes());
     bytes.extend_from_slice(fence.lease_digest.as_array());
     bytes.extend_from_slice(&record_count.to_be_bytes());
-    bytes.extend_from_slice(journal.head_digest.as_array());
+    bytes.extend_from_slice(head_digest.as_array());
     Ok(Digest32::of_bytes(&bytes))
 }
 

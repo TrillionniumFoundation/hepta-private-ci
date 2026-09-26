@@ -13,15 +13,34 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 #[path = "native_control.rs"]
 pub mod native;
+
+#[path = "journal_checkpoint_frame.rs"]
+mod checkpoint_frame;
+
+#[path = "journal_maintenance.rs"]
+mod maintenance;
+use maintenance::compaction_path;
+use maintenance::legacy_record_headroom;
+use maintenance::push_image_line;
+use maintenance::replace_headroom;
+use maintenance::replay_legacy_checkpoint;
+use maintenance::required_headroom;
 
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
+const LEGACY_CHECKPOINT_PREFIX: &str = "legacy-checkpoint-v1|";
+const LEGACY_TERMINAL_HEADROOM_BYTES: u64 = 16 * 1024;
+const COMPACTION_TEMP_SUFFIX: &str = ".compact.tmp";
 const MAX_TOKENS: u32 = 1_000_000;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RequestState {
     Pending,
     Reserved,
@@ -69,7 +88,8 @@ impl RequestState {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct InferenceRequest {
     pub request_id: String,
     pub principal_id: String,
@@ -80,7 +100,8 @@ pub struct InferenceRequest {
     pub semantic_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Reservation {
     pub reservation_id: String,
     pub quota_units: u64,
@@ -89,14 +110,16 @@ pub struct Reservation {
     pub valid_until_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Assignment {
     pub worker_id: String,
     pub worker_generation: u64,
     pub assignment_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct TerminalObservation {
     pub request_id: String,
     pub reservation_id: String,
@@ -111,7 +134,8 @@ pub struct TerminalObservation {
     pub usage_units: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RequestRecord {
     pub request: InferenceRequest,
     pub revision: u64,
@@ -130,6 +154,25 @@ pub struct ControlReceipt {
     pub state: RequestState,
     pub idempotent: bool,
     pub terminal_observed: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct JournalCompactionReceipt {
+    pub before_bytes: u64,
+    pub after_bytes: u64,
+    pub legacy_records: usize,
+    pub native_records: usize,
+    pub reserved_headroom_bytes: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct JournalCapacityStatus {
+    pub journal_bytes: u64,
+    pub maximum_journal_bytes: u64,
+    pub reserved_headroom_bytes: u64,
+    pub admissible_bytes: u64,
+    pub legacy_records: usize,
+    pub native_records: usize,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -171,11 +214,25 @@ impl From<std::io::Error> for Error {
 pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
+    _writer_lock: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
     capacity: usize,
     journal_bytes: u64,
+    reserved_headroom_bytes: u64,
     poisoned: bool,
+}
+
+impl Drop for DurableInferenceControl {
+    fn drop(&mut self) {
+        // Closing one descriptor does not release an open-file-description lock
+        // while a forked child or another duplicate still holds that description.
+        // No writer escapes this owner. Release data first, then the stable
+        // ownership lock, so a successor cannot overlap a still-locked old image.
+        // On unlock failure, closing the descriptors remains the safe fallback.
+        let _ = self.file.unlock();
+        let _ = self._writer_lock.unlock();
+    }
 }
 
 impl DurableInferenceControl {
@@ -194,15 +251,44 @@ impl DurableInferenceControl {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
+        // Keep a stable lock inode across checkpoint rename. A process that
+        // opened the old data inode must never become a second writer later.
+        let mut lock_path = path.as_os_str().to_os_string();
+        lock_path.push(".writer.lock");
+        let writer_lock = options.open(PathBuf::from(lock_path))?;
+        writer_lock
+            .try_lock()
+            .map_err(|_| Error::WriterUnavailable)?;
         let file = options.open(&path)?;
-        // Lock before replay: two owners must never admit from the same stale cut.
+        // Retain the data lock as well to exclude pre-maintenance owners.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        // Reject an already oversized file without parsing millions of empty
+        // legacy lines. The streaming limits below also protect actual reads.
+        if file.metadata()?.len() > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
+        let mut checkpoint_frame = checkpoint_frame::CheckpointFrame::default();
         loop {
+            // Empty historical lines carry no state. Consume a whole buffered
+            // run instead of entering the semantic parser once per byte.
+            let blank_bytes = reader
+                .fill_buf()?
+                .iter()
+                .take_while(|byte| **byte == b'\n')
+                .count();
+            if blank_bytes > 0 {
+                journal_bytes += blank_bytes as u64;
+                if journal_bytes > MAX_JOURNAL_BYTES {
+                    return Err(Error::CapacityExceeded);
+                }
+                reader.consume(blank_bytes);
+                continue;
+            }
             line.clear();
             // Bound actual reads and allocation, including files whose metadata
             // races with open. One extra byte distinguishes EOF from overflow.
@@ -226,16 +312,39 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
-                native.replay(json)?;
-            } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+            if checkpoint_frame.observe(line, capacity)? {
+                continue;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
-            {
+            // Each event changes exactly one identity. Check that identity
+            // against the other namespace instead of rescanning the complete
+            // legacy history after every frame (quadratic recovery work).
+            let collision = if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
+                let request_id = native.replay_checkpoint(json)?;
+                records.contains_key(&request_id)
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                let request_id = native.replay(json)?;
+                records.contains_key(&request_id)
+            } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+                let request_id = replay_legacy_checkpoint(&mut records, json)?;
+                native.records.contains_key(&request_id)
+            } else {
+                let event = decode_event(line)?;
+                let collision = native.records.contains_key(event.request_id());
+                apply_event(&mut records, &event, /*replay*/ true)?;
+                collision
+            };
+            if records.len() + native.records.len() > capacity || collision {
                 return Err(Error::CapacityExceeded);
             }
+        }
+        checkpoint_frame.finish()?;
+        // Preserve unpublished recovery evidence if the authoritative source
+        // is corrupt; clean a stale image only after successful semantic replay.
+        let temporary_path = compaction_path(&path);
+        match fs::remove_file(&temporary_path) {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
         }
         #[cfg(unix)]
         {
@@ -245,13 +354,16 @@ impl DurableInferenceControl {
                 .unwrap_or_else(|| Path::new("."));
             File::open(parent)?.sync_all()?;
         }
+        let reserved_headroom_bytes = required_headroom(&records, &native)?;
         Ok(Self {
             path,
             file,
+            _writer_lock: writer_lock,
             records,
             native,
             capacity,
             journal_bytes,
+            reserved_headroom_bytes,
             poisoned: false,
         })
     }
@@ -433,32 +545,63 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
-        let encoded = format!("{}\n", encode_event(&event));
-        self.append(&encoded)?;
+        // Validate only the affected immutable predecessor. Events have no
+        // cross-record transitions; global capacity/namespace admission remains
+        // with submit. A rejected event or uncertain append leaves every live
+        // record untouched, without cloning unrelated historical payloads.
         let request_id = event.request_id().to_string();
-        self.records = next;
-        let record = self
+        let mut staged = BTreeMap::new();
+        if let Some(previous) = self.records.get(&request_id) {
+            staged.insert(request_id.clone(), previous.clone());
+        }
+        apply_event(&mut staged, &event, /*replay*/ false)?;
+        let prepared = staged.remove(&request_id).ok_or(Error::RequestNotFound)?;
+        let result = receipt(&prepared, /*idempotent*/ false);
+        let previous_headroom = self
             .records
             .get(&request_id)
-            .ok_or(Error::RequestNotFound)?;
-        Ok(receipt(record, /*idempotent*/ false))
+            .map_or(0, legacy_record_headroom);
+        let next_headroom = legacy_record_headroom(&prepared);
+        let headroom_after = replace_headroom(
+            self.reserved_headroom_bytes,
+            previous_headroom,
+            next_headroom,
+        )?;
+        let encoded = format!("{}\n", encode_event(&event));
+        self.append_preserving_headroom(&encoded, headroom_after)?;
+        self.records.insert(request_id, prepared);
+        self.reserved_headroom_bytes = headroom_after;
+        Ok(result)
     }
 
+    #[cfg(test)]
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
+        self.append_preserving_headroom(encoded, self.reserved_headroom_bytes)
+    }
+
+    pub(super) fn append_preserving_headroom(
+        &mut self,
+        encoded: &str,
+        required_headroom_after: u64,
+    ) -> Result<(), Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        let next_bytes = self
-            .journal_bytes
-            .checked_add(encoded.len() as u64)
-            .ok_or(Error::ArithmeticOverflow)?;
-        if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES {
             return Err(Error::CapacityExceeded);
         }
+        let encoded_bytes = encoded.len() as u64;
+        if !self.append_fits(self.journal_bytes, encoded_bytes, required_headroom_after)? {
+            let image = self.checkpoint_image()?;
+            if !self.append_fits(image.len() as u64, encoded_bytes, required_headroom_after)? {
+                return Err(Error::CapacityExceeded);
+            }
+            self.replace_with_checkpoint_image(&image)?;
+        }
+        let next_bytes = self
+            .journal_bytes
+            .checked_add(encoded_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
         let persisted = self
             .file
             .write_all(encoded.as_bytes())

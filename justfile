@@ -47,12 +47,12 @@ app-server-test-client *args:
     cargo run -p codex-app-server-test-client -- --codex-bin ./target/debug/codex {args}
 
 # Format the justfile, Rust, Bazel/Starlark, Python SDK code, and Python scripts.
-fmt:
-    @{{ python }} ../scripts/format.py
+fmt *args:
+    @{{ python }} ../scripts/format.py {args}
 
 # Check formatting without modifying files.
-fmt-check:
-    @{{ python }} ../scripts/format.py --check
+fmt-check *args:
+    @{{ python }} ../scripts/format.py --check {args}
 
 fix *args:
     cargo clippy --fix --tests --allow-dirty {args}

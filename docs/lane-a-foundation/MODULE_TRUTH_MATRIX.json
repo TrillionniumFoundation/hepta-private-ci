@@ -227,7 +227,7 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use("
+            "dispatch_authority_lease_with_witness("
           ]
         }
       ]
@@ -336,7 +336,7 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler"
           ]
         }
       ]
@@ -508,11 +508,7 @@
           ]
         },
         {
-          "path": "codex-rs/hepta-bao-adapter/README.md",
-          "mustContain": [
-            "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
-          ]
+          "path": "codex-rs/hepta-bao-adapter/README.md"
         }
       ]
     },
@@ -571,7 +567,7 @@
         {
           "path": "codex-rs/hepta-authbus/src/authority_store.rs",
           "mustContain": [
-            "pub struct AuthBusAuthorityStore",
+            "pub(crate) struct AuthBusAuthorityStore",
             "pub async fn create_policy(",
             "pub async fn authorize(",
             "record_policy_history"

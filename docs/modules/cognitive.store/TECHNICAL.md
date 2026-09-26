@@ -137,6 +137,25 @@ owner, exact Memory revision and separately bound Recall/Replay purposes.
 Replay also binds parameter scope and artifact consumer. This is a local owner
 API, not a new cross-host protocol or public Memory scope.
 
+Migration `0016_shared_experience_active_capacity.sql` adds a current-head quota
+projection inside the same SQLite owner. Immutable policy events remain the
+source of authority and predecessor identity; expiry or revocation does not delete
+that history. `MAX_ACTIVE_POLICY_IDENTITIES` limits currently unrevoked, unexpired
+grants, not every identity ever observed. A new identity or an expired/revoked
+identity returning to use must acquire a slot; renewing an already-live identity
+uses its existing slot. Withdrawal and exact retries remain available at the active-slot limit.
+The admission transaction samples expiry after acquiring the writer, so waiting
+behind another writer cannot admit an already-expired request.
+
+The partial expiry index bounds each admission count by the live quota. A trigger
+updates the projection with the event in the same transaction; direct deletion or
+substitution is rejected. Startup/recovery checks the projection against the
+latest immutable event for every identity and rejects mismatches rather than
+silently accepting an undercount. The migration backfills existing history.
+This removes the historical-identity admission limit, not historical disk cost:
+retained history and startup verification still grow with the owner history;
+checkpoint/archival and a sustained-history SLO are not claimed by this change.
+
 The immutable policy log permits 1024 ordinary revisions and reserved terminal
 revision 1025. Renewal exhaustion cannot prevent withdrawal; the final slot cannot
 contain an active grant. Repeated withdrawal and reopening preserve rejection.
@@ -147,6 +166,7 @@ accepts current verified evidence, not general historical Replay eligibility.
 
 Source: [shared_experience.rs](../../../codex-rs/hepta-memory/src/shared_experience.rs).
 Tests: [shared_experience_tests.rs](../../../codex-rs/hepta-memory/src/shared_experience_tests.rs).
+Capacity/recovery regressions: [shared_experience_capacity_tests.rs](../../../codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs).
 These tests do not establish OS isolation, cross-host enrollment or model unlearning.
 
 ## 5. Contracts, ports and compatibility
@@ -194,6 +214,24 @@ Production semantic mutations additionally bind the live authority grant digest,
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+
+### Live use and deterministic operation results
+
+Production mutations now acquire a verifier-owned `ProductionAuthorityUseGuard`
+after the SQLite writer lock and retain it through durable commit. The default
+`ProductionAuthorityVerifier::enter_use` rejects point-in-time-only verifiers.
+Revocation acknowledgement drains earlier holds; queued requests cannot reuse a
+stale preflight check. A cancelled response waiter does not release the hold
+before the owner commit task finishes. Receipt validation precedes commit.
+
+`ProductionDurableWriter::cognitive_mutation_result` and the matching Agentd host
+method observe the original operation and compact committed-result metadata.
+Identical retries return typed `ObservedResult`, not another mutation. Released
+or expired execution authority does not itself erase the historical result;
+owner, occurrence integrity and successor fence checks still apply. Full normal
+bootstrap/witness coordination and recoverable history archival are not claimed.
+See [production convergence](PRODUCTION_CLOSURE.md) for ordering, current API,
+qualification commands and remaining requirements.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -365,3 +403,14 @@ The bootstrap source-location obligation for `cognitive.store` is implemented by
 - `codex-rs/hepta-cognitive-store`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Bounded production request identity
+
+Production semantic request hashing preserves the canonical JSON identity while
+streaming into SHA-256. The existing 1 MiB source bound is checked before encoding;
+the encoded request has an 8 MiB hard budget, independent of semantic validation.
+Oversize serialization stops before transaction admission, rather than first
+allocating an unbounded duplicate payload. See `production_cognitive_digest.rs`
+and `production_cognitive_digest_tests.rs` in the existing hepta-memory owner.
+Live writer acquisition obtains an external authority use hold before creating or
+taking over a lease; missing hold support leaves the exact database cut unchanged.

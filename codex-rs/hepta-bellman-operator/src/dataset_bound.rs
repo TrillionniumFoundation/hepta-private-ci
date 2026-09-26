@@ -1,9 +1,10 @@
-//! Dataset-bound operator admission.
+//! Qualification-fixture receipt/evidence membership checks.
 //!
-//! The compatibility APIs accept caller-supplied dataset digests. New
-//! qualification code should first bind the exact training rows to a
-//! self-verifying `DatasetSnapshotReceiptV3`, then fit only the resulting
-//! opaque verified input.
+//! Available only in tests or with `unchecked-qualification-inputs`. These
+//! checks bind receipt identities and the named evidence set, NOT the semantic
+//! derivation of caller-supplied targets, actions, states or outcomes. They are
+//! not an authenticated production training ingress. Default product consumers
+//! use owner_terminal materialization of actual current LedgerWriter records.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -23,15 +24,15 @@ use crate::WorldModelSampleV1;
 use crate::fit_tabular_operator_strict_v2;
 use crate::fit_transition_model;
 
-/// Opaque proof that a tabular plan names the exact frozen dataset and exact
-/// source-record evidence admitted by `learning.ledger`; every training row
-/// must name one record in that frozen set.
+/// Receipt identities and source-record membership checked for a qualification
+/// fixture. Numerical targets and feature/action labels are not source-attested.
 #[derive(Clone, Debug)]
 pub struct VerifiedTabularOperatorPlanV2 {
     plan: TabularOperatorPlanV1,
 }
 
-/// Opaque proof that world-model rows are exactly the frozen dataset rows.
+/// Fixture evidence membership only; transition labels/outcomes remain
+/// caller-supplied and must never be promoted to owner-backed production facts.
 #[derive(Clone, Debug)]
 pub struct VerifiedWorldModelDatasetV2 {
     model_id: StableId,

@@ -1,5 +1,7 @@
 use std::collections::BTreeSet;
 use std::fmt;
+use std::future::Future;
+use std::pin::Pin;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -10,7 +12,9 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use futures::StreamExt;
 use futures::future::join_all;
+use futures::stream;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -63,10 +67,35 @@ use crate::RetrievalRequest;
 #[path = "cognitive_runtime_identity.rs"]
 mod identity;
 
+#[cfg(test)]
+#[path = "cognitive_federation_discovery_tests.rs"]
+mod discovery_tests;
+
 const PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(2);
+const PRODUCT_FEDERATION_DISCOVERY_BUDGET: Duration = Duration::from_secs(1);
+const PRODUCT_FEDERATION_OWNER_DISCOVERY_BUDGET: Duration = Duration::from_millis(250);
+const PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY: usize = 8;
 const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;
 const PRODUCT_FEDERATION_PURPOSE: &[u8] = b"hepta.cognitive.federated-recall.product.v2";
 static PRODUCT_FEDERATION_ATTEMPT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+pub(crate) type ProductDiscoveryFuture<'a> = Pin<
+    Box<dyn Future<Output = Result<Vec<FederatedMemoryReader>, CognitiveStoreError>> + Send + 'a>,
+>;
+pub(crate) type ProductDiscoverer =
+    for<'a> fn(&'a HeptaAgentLayout, &'a AgentId, i64) -> ProductDiscoveryFuture<'a>;
+
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+enum ProductDiscoveryFailureKind {
+    Unavailable,
+    Deadline,
+}
+
+#[derive(Debug)]
+struct ProductDiscoveryFailure {
+    owner_agent_id: AgentId,
+    kind: ProductDiscoveryFailureKind,
+}
 
 /// Sanitized reason why an owning runtime could not open its Cognitive Plane.
 ///
@@ -472,6 +501,18 @@ impl CognitiveRuntime {
     }
 }
 
+fn discover_product_owner<'a>(
+    owner_layout: &'a HeptaAgentLayout,
+    consumer_agent_id: &'a AgentId,
+    now_unix_seconds: i64,
+) -> ProductDiscoveryFuture<'a> {
+    Box::pin(FederatedMemoryReader::discover(
+        owner_layout,
+        consumer_agent_id,
+        now_unix_seconds,
+    ))
+}
+
 async fn retrieve_federated_product(
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
@@ -479,60 +520,109 @@ async fn retrieve_federated_product(
     access: &FederationConsumerAccess,
     request: &RetrievalRequest,
 ) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
+    retrieve_federated_product_with_discoverer(
+        consumer_agent_id,
+        owner_layouts,
+        omitted_owner_candidates,
+        access,
+        request,
+        PRODUCT_FEDERATION_DISCOVERY_BUDGET,
+        discover_product_owner,
+    )
+    .await
+}
+
+pub(crate) async fn retrieve_federated_product_with_discoverer(
+    consumer_agent_id: &AgentId,
+    owner_layouts: &[HeptaAgentLayout],
+    omitted_owner_candidates: u32,
+    access: &FederationConsumerAccess,
+    request: &RetrievalRequest,
+    discovery_budget: Duration,
+    discoverer: ProductDiscoverer,
+) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
     if access.agent_id() != consumer_agent_id {
         return Err(CognitiveStoreError::AccessDenied(
             "memory federation caller does not match the product consumer".to_string(),
         ));
     }
 
+    if owner_layouts.len() > MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS {
+        return Err(CognitiveStoreError::Invalid(
+            "memory federation owner candidates exceed the product bound".to_string(),
+        ));
+    }
     let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
     let started_at = Instant::now();
     let global_deadline_ms = logical_start_ms
         .checked_add(u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX))
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
-    let discovery = async {
-        let outcomes = join_all(owner_layouts.iter().map(|owner_layout| async move {
-            (
-                owner_layout.clone(),
-                FederatedMemoryReader::discover(
-                    owner_layout,
-                    consumer_agent_id,
-                    request.now_unix_seconds(),
-                )
-                .await,
+    let discovery_budget =
+        discovery_budget.min(PRODUCT_FEDERATION_TOTAL_BUDGET.saturating_sub(started_at.elapsed()));
+    let discovery_started = Instant::now();
+    let mut pending_owner_ids = owner_layouts
+        .iter()
+        .map(|owner_layout| owner_layout.agent_id().clone())
+        .collect::<BTreeSet<_>>();
+    let mut pending = stream::iter(owner_layouts.iter().cloned())
+        .map(|owner_layout| async move {
+            let outcome = tokio::time::timeout(
+                PRODUCT_FEDERATION_OWNER_DISCOVERY_BUDGET,
+                discoverer(&owner_layout, consumer_agent_id, request.now_unix_seconds()),
             )
-        }))
-        .await;
-        let mut readers = Vec::new();
-        let mut discovery_failures = 0usize;
-        for (owner_layout, outcome) in outcomes {
-            match outcome {
-                Ok(discovered) => {
-                    for reader in discovered {
-                        if reader.capability().scope().consumer_workspace_sha256()
-                            != access.workspace_sha256()
-                        {
-                            continue;
-                        }
-                        readers.push((owner_layout.clone(), reader));
+            .await;
+            (owner_layout, outcome)
+        })
+        .buffer_unordered(PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY);
+
+    let mut readers = Vec::new();
+    let mut discovery_failures = Vec::new();
+    while !pending_owner_ids.is_empty() {
+        let remaining = discovery_budget.saturating_sub(discovery_started.elapsed());
+        if remaining.is_zero() {
+            break;
+        }
+        let next = tokio::time::timeout(remaining, pending.next()).await;
+        let (owner_layout, outcome) = match next {
+            Ok(Some(completed)) => completed,
+            Ok(None) => break,
+            Err(_) => break,
+        };
+        pending_owner_ids.remove(owner_layout.agent_id());
+        match outcome {
+            Ok(Ok(discovered)) => {
+                for reader in discovered {
+                    if reader.capability().scope().consumer_workspace_sha256()
+                        != access.workspace_sha256()
+                    {
+                        continue;
                     }
-                }
-                Err(_) => {
-                    discovery_failures = discovery_failures.saturating_add(1);
+                    readers.push((owner_layout.clone(), reader));
                 }
             }
+            Ok(Err(_)) => discovery_failures.push(ProductDiscoveryFailure {
+                owner_agent_id: owner_layout.agent_id().clone(),
+                kind: ProductDiscoveryFailureKind::Unavailable,
+            }),
+            Err(_) => discovery_failures.push(ProductDiscoveryFailure {
+                owner_agent_id: owner_layout.agent_id().clone(),
+                kind: ProductDiscoveryFailureKind::Deadline,
+            }),
         }
-        (readers, discovery_failures)
-    };
-    let (mut readers, discovery_failures) =
-        tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, discovery)
-            .await
-            .map_err(|_| {
-                CognitiveStoreError::Unavailable(
-                    "memory federation discovery timed out".to_string(),
-                )
-            })?;
+    }
+    drop(pending);
+    discovery_failures.extend(pending_owner_ids.into_iter().map(|owner_agent_id| {
+        ProductDiscoveryFailure {
+            owner_agent_id,
+            kind: ProductDiscoveryFailureKind::Deadline,
+        }
+    }));
+    discovery_failures.sort_by(|left, right| {
+        left.owner_agent_id
+            .cmp(&right.owner_agent_id)
+            .then_with(|| left.kind.cmp(&right.kind))
+    });
     readers.sort_by(|(_, left), (_, right)| {
         left.capability()
             .owner_agent_id()
@@ -540,12 +630,22 @@ async fn retrieve_federated_product(
             .then_with(|| left.capability().id().cmp(right.capability().id()))
     });
     readers.dedup_by(|(_, left), (_, right)| left.capability().id() == right.capability().id());
-    let observable_peer_slots = readers.len().saturating_add(discovery_failures);
+    let observable_peer_slots = readers.len().saturating_add(discovery_failures.len());
     let truncated_peers = observable_peer_slots.saturating_sub(MAX_FEDERATION_SOURCES_PER_AGENT);
     readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
 
-    let discovery_failure_slots =
-        discovery_failures.min(MAX_FEDERATION_SOURCES_PER_AGENT.saturating_sub(readers.len()));
+    let discovery_failure_slots = discovery_failures
+        .len()
+        .min(MAX_FEDERATION_SOURCES_PER_AGENT.saturating_sub(readers.len()));
+    let selected_discovery_failures = &discovery_failures[..discovery_failure_slots];
+    let discovery_unavailable = selected_discovery_failures
+        .iter()
+        .filter(|failure| failure.kind == ProductDiscoveryFailureKind::Unavailable)
+        .count();
+    let discovery_deadline = selected_discovery_failures
+        .iter()
+        .filter(|failure| failure.kind == ProductDiscoveryFailureKind::Deadline)
+        .count();
     let requested_peer_slots = readers.len().saturating_add(discovery_failure_slots);
     let query_sha256 = Sha256Digest::for_bytes(request.query().as_bytes());
     let mut coverage = FederatedCoverageV2 {
@@ -556,7 +656,8 @@ async fn retrieve_federated_product(
         omitted_peer_candidates: omitted_owner_candidates,
         truncated_items: 0,
         failures: FederatedFailureCoverageV2 {
-            discovery_unavailable: u32::try_from(discovery_failure_slots).unwrap_or(u32::MAX),
+            discovery_unavailable: u32::try_from(discovery_unavailable).unwrap_or(u32::MAX),
+            deadline_or_cancelled: u32::try_from(discovery_deadline).unwrap_or(u32::MAX),
             ..FederatedFailureCoverageV2::default()
         },
     };
@@ -586,6 +687,7 @@ async fn retrieve_federated_product(
         let authority = ProductReaderAuthority {
             owner_layout,
             consumer_agent_id,
+            expected_owner_generation_sha256: reader.owner_generation_sha256(),
             expected_capability: reader.capability(),
             logical_start_ms,
             started_at,
@@ -806,6 +908,13 @@ async fn revalidate_federated_product_batch(
     bindings: &[FederatedMemoryRevalidationBinding],
     now_unix_seconds: i64,
 ) -> Result<Vec<FederatedRevalidationStatus>, CognitiveStoreError> {
+    if owner_layouts.len() > MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS
+        || bindings.len() > MAX_RETRIEVAL_RESULTS
+    {
+        return Err(CognitiveStoreError::Invalid(
+            "memory federation final revalidation exceeds product bounds".to_string(),
+        ));
+    }
     if bindings.is_empty() {
         return Ok(Vec::new());
     }
@@ -909,7 +1018,12 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
                 .reader
                 .retrieve_with_frontier(self.access, self.request)
                 .await
-                .map_err(|_| FederationV2Error::TransportRejected)?;
+                .map_err(|error| match error {
+                    CognitiveStoreError::AccessDenied(_) => {
+                        FederationV2Error::AuthorityRevalidationFailed
+                    }
+                    _ => FederationV2Error::TransportRejected,
+                })?;
             let items = batch
                 .candidates
                 .iter()
@@ -949,6 +1063,7 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
 struct ProductReaderAuthority<'a> {
     owner_layout: &'a HeptaAgentLayout,
     consumer_agent_id: &'a AgentId,
+    expected_owner_generation_sha256: &'a Sha256Digest,
     expected_capability: &'a FederationCapability,
     logical_start_ms: u64,
     started_at: Instant,
@@ -976,7 +1091,11 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
                 .find(|reader| reader.capability().id() == self.expected_capability.id());
             let state = match current {
                 None => FederationAuthorityStateV2::Revoked,
-                Some(reader) if reader.capability() == self.expected_capability => {
+                Some(reader)
+                    if reader.capability() == self.expected_capability
+                        && reader.owner_generation_sha256()
+                            == self.expected_owner_generation_sha256 =>
+                {
                     FederationAuthorityStateV2::Current
                 }
                 Some(_) => FederationAuthorityStateV2::StaleGeneration,
@@ -1040,6 +1159,7 @@ fn build_product_query_and_lease(
     let generation_vector_digest = domain_digest32(
         b"hepta.memory-federation.product-generation.v2",
         &[
+            reader.owner_generation_sha256().as_str().as_bytes(),
             capability.id().as_str().as_bytes(),
             &capability.generation().to_be_bytes(),
             &capability.revision().to_be_bytes(),

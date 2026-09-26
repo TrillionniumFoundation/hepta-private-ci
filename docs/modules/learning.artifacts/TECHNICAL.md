@@ -44,6 +44,64 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+### 2.1 Current native source surface
+
+The current source is materially beyond the original V1 bootstrap while preserving the V1 registry and payload formats as compatibility surfaces. The crate now contains:
+
+- `registry.rs` and `storage.rs`: append-only V1 registry, create-only payload/snapshot/head-witness storage, bounded reads, and contained prevalidated writes beneath a host-designated trusted root;
+- `closure_v2.rs`: complete `LearningArtifactManifestV2`, scoped dataset-withdrawal registry, registry-head requirements, and lifecycle transition validation;
+- `admission_v3.rs`: withdrawal-head admission that is additionally bound to `authority_domain_id + registry_id + scope_id`; unscoped registries fail closed for V3 admission;
+- `publication.rs`: crash-recoverable host publication transaction contract that binds the complete V2 admission to the exact V1 compatibility-registry snapshot and independently validated current-head witness before acknowledgement, revalidates the current scoped withdrawal frontier during durable publication, and exposes a deny-all read-only status projection;
+- `lifecycle_journal.rs`: predecessor-bound lifecycle journal whose historical replay validates actor evidence at the event occurrence time rather than at process-recovery time;
+- `durable_snapshots.rs`: create-only, canonical, receipt-bound durable snapshots for scoped withdrawal state and lifecycle state;
+- `pinned.rs` and `dataset_revocation.rs`: exact pinned loading, current-view revalidation, and snapshot-local revocation preparation;
+- `iteration.rs` and `iteration_ledger.rs`: bounded authority-free iteration envelopes, candidates, externally evidenced transitions, and replayable iteration bookkeeping. These records do not run sandboxes or grant selection, promotion, merge or release authority.
+- `owner_host.rs` and `owner_service.rs`: the named fenced product writer, signed writer-lease validation, signed CURRENT chain discovery, durable publication recovery, old-backup/authority-epoch rollback rejection, and opaque `VerifiedCurrentRegistryViewV1` issuance for final-use readers.
+- `selection.rs`: an independent selector trust domain bound to the exact artifact-owner trust snapshot; selector keys must not collide with writer/head authority keys, signed selection binds CURRENT + complete V1 manifest/payload identity, and verified selection yields DENY_ALL load eligibility rather than activation authority.
+
+The shared durable state ceiling is `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This deliberately aligns accepted artifact-registry, withdrawal and lifecycle record counts with the supported bounded snapshot formats so an in-memory state cannot cross a record-count threshold that the crate refuses to persist.
+
+Source implementation is therefore not equivalent to product activation. The crate now has a named source-composed owner service with an exclusive OS writer fence, signed writer/head authentication and bounded local CURRENT discovery. The exact candidate remains qualification-dependent; trusted deployment namespace/parent-directory durability, external CURRENT distribution transport, live selector trust enrollment/private keys, independent canary/operator acceptance/promotion/release and target-host power-loss evidence remain host/external responsibilities.
+
+### Owner-backed selected payload and restart descriptor
+
+`LearningArtifactOwnerHost::read_current_selected_payload` obtains the live signed
+CURRENT from the existing fenced owner, independently verifies selection, then
+resolves exact registered bytes. `read_current_selected_manifest` additionally
+returns the full validated metadata from the live selected owner entry.
+A cloned `ArtifactRegistry` or old signed view cannot replace that owner read. Selection remains DENY_ALL load eligibility, not
+activation, promotion, training permission or effect authority.
+
+The V1 compatibility index's `support_digest` is the complete V2 manifest digest,
+not a single dataset digest. The owner persists that manifest's existing canonical
+binary encoding in `transactions/<manifest-digest>.manifest-v2` before publication
+checkpoint acknowledgement. No manifest or registry digest format changes.
+Selected loading verifies canonical form, every V1 projection field, full lineage
+and the original V2 validity window. Manifest reads are bounded to 64 KiB; collection
+lengths are checked before allocation. Missing, truncated or mismatched metadata
+cannot be reconstructed from an otherwise valid model payload or old selection.
+An old publication may retain its exact metadata through `resume_publication`
+only with the complete transaction snapshot matching its durable checkpoint and
+current writer authorization. Recovery never synthesizes missing lineage.
+
+`persist_selected_descriptor` stores the canonical signed selection in
+`transactions/<digest>.selection`; `read_selected_descriptor` verifies its bounded
+encoding, content identity and current selection on every restore. The descriptor
+limit is 16 KiB. Truncated records, trailing data, oversized identities, missing
+payloads and currentness failures are errors, not fallback or bootstrap signals.
+The consuming native composition retains the descriptor digest and independently
+retained CURRENT floor. Reopening after publication uses
+`open_with_required_current_head`; a self-consistent old backup is not a new floor.
+
+`publish_revocation` requires the live writer lease, exact next signed CURRENT,
+predecessor and authority epoch. It durably stages the immutable revoked registry
+and transition receipt before publishing that signed head. An exact retry is
+idempotent; conflicting heads are rejected. Local snapshot presence alone does
+not commit a transition. New file acknowledgements also flush their containing
+directory; unsupported directory flushing fails closed. Deployment must already
+provide a durable, trusted owner-root namespace. This change is tested on Linux,
+not a new claim of Windows/macOS power-loss qualification.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:

@@ -206,12 +206,21 @@ fn named_product_caller_runs_through_runtime_without_extra_authority() {
             .create_new(true)
             .open(root.path().join("journal")),
     );
+    let operations = checked(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(root.path().join("operations")),
+    );
     let native = native();
     let mut runtime = checked(NeuronRuntime::bootstrap(
         file,
+        operations,
         native.clone(),
         scope(),
         /*max_records*/ 8,
+        /*max_operations*/ 8,
         config(&native),
         Witness::default(),
     ));

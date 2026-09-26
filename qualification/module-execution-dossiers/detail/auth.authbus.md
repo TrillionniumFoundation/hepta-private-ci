@@ -22,7 +22,9 @@ owner; final-use authority remains kernel-owned.
 `reserve(quota_key, amount, operation_id, expected_revision) -> Reservation`;
 `cancel(reservation_id, expected_revision)`;
 `mark_dispatch_attempted(reservation_id, effect_digest)`;
-`settle(reservation_id, authenticated_terminal_evidence) -> Settlement`.
+`settle(signed_terminal_evidence, trusted_time) -> Settlement`.
+The owner resolves issuer purpose, epoch, signing key and lifecycle inside
+the settlement transaction; caller-provided issuer snapshots are not inputs.
 Authorization and reservation never grant provider authority.
 
 ## 3. State records and transaction design
@@ -30,7 +32,7 @@ Authorization and reservation never grant provider authority.
 `auth_policy` has a current head plus immutable revision history.
 `quota_registry` stores exact integer limit/available/reserved/consumed values.
 `quota_reservation` binds operation, amount, effect digest, policy
-identity/revision/decision digest, expiry and lifecycle. Terminal rows can move
+identity/revision/decision digest, expiry, immutable dispatch time and lifecycle. Terminal rows can move
 to an immutable archive without permitting operation-ID reuse. Issuer lifecycle
 and trusted-time floor are durable owner facts.
 
@@ -61,6 +63,11 @@ latency, contention, recovery and disk budgets remain measurement gates.
 - BUS-02: duplicate settlement is idempotent; altered cost conflicts.
 - BUS-03: expiry/restart/timeout after dispatch retains quota until signed terminal evidence.
 - BUS-04: revoked/stale policy cannot cross the dispatch boundary.
+- BUS-05: revocation while awaiting the writer, key rotation, wrong issuer purpose and forged keys cannot settle new results.
+- BUS-06: delayed success/no-effect survives uncertainty and reopen; evidence before dispatch is refused.
+- BUS-07: concurrent/cross-process writers and alternate witness paths are fenced; failed publication is repaired before new mutation.
+- BUS-08: version-4 terminal/archive migration preserves queryability without fabricating dispatch times.
+- BUS-09: lock identity loss permanently fences the old handle; a fresh host recovers an unacknowledged local commit using the original operation.
 - Restore: an external authority/replay witness newer than a restored database fails closed.
 - DB bypass: illegal reservation transitions and deletion of live rows are rejected by SQLite.
 - Product path: Bao TLS read binds operation identity, quota reservation, exact final-use tuple and signed terminal settlement.

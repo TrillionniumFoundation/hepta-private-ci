@@ -82,6 +82,7 @@ pub struct AgentdConfig {
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     objective_profile_file: Option<PathBuf>,
     authbus_checkpoint_file: Option<PathBuf>,
+    prompt_registry_recovery_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
@@ -89,6 +90,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
+    self_iteration_bootstrap: Option<crate::SelfIterationCoordinatorBootstrapV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -205,6 +207,7 @@ impl AgentdConfig {
             evidence_recovery_frontier_trust_file: None,
             objective_profile_file: None,
             authbus_checkpoint_file: None,
+            prompt_registry_recovery_checkpoint_file: None,
             cognitive_ranker: None,
             production_operations: None,
             production_writer_host: None,
@@ -212,6 +215,7 @@ impl AgentdConfig {
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
+            self_iteration_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
@@ -293,6 +297,32 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_checkpoint_file(&self) -> Option<&Path> {
         self.authbus_checkpoint_file.as_deref()
+    }
+
+    /// Independently retained prompt-registry recovery witness. Production
+    /// prompt composition requires an absolute path outside the Agent home
+    /// rollback domain; request bytes cannot select or replace this path.
+    pub fn with_prompt_registry_recovery_checkpoint_file(
+        mut self,
+        path: PathBuf,
+    ) -> Result<Self, AgentdError> {
+        if self.prompt_registry_recovery_checkpoint_file.is_some() {
+            return Err(AgentdError::Invalid(
+                "prompt registry recovery checkpoint already configured".to_string(),
+            ));
+        }
+        if !path.is_absolute() || path.starts_with(&self.identity.home_root) {
+            return Err(AgentdError::Invalid(
+                "prompt registry recovery checkpoint must be absolute and outside Agent home"
+                    .to_string(),
+            ));
+        }
+        self.prompt_registry_recovery_checkpoint_file = Some(path);
+        Ok(self)
+    }
+
+    pub(crate) fn prompt_registry_recovery_checkpoint_file(&self) -> Option<&Path> {
+        self.prompt_registry_recovery_checkpoint_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must
@@ -467,6 +497,27 @@ impl AgentdConfig {
         self.plasticity_bootstrap.take()
     }
 
+    /// Attach the authority-free evaluated-candidate coordinator. The embedding
+    /// retains its typed producer handle; Agentd consumes this sole owner half.
+    pub fn with_self_iteration_coordinator_bootstrap(
+        mut self,
+        bootstrap: crate::SelfIterationCoordinatorBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        if self.self_iteration_bootstrap.is_some() {
+            return Err(AgentdError::Invalid(
+                "self-iteration coordinator already configured".to_string(),
+            ));
+        }
+        self.self_iteration_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_self_iteration_coordinator_bootstrap(
+        &mut self,
+    ) -> Option<crate::SelfIterationCoordinatorBootstrapV1> {
+        self.self_iteration_bootstrap.take()
+    }
+
     /// Attach the authenticated current intuition-policy product caller.
     /// The caller is pinned to this exact Agentd identity/generation and owns
     /// no model, scorer, RNG or learning facts itself.
@@ -532,6 +583,32 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Reject a partially requested canonical profile before daemon services or
+    /// durable owners are opened. No configured component is silently ignored.
+    pub(crate) fn require_intelligence_composition(&self) -> Result<(), AgentdError> {
+        match (
+            self.intelligence_product_runner.as_ref(),
+            self.intelligence_invocation_provider.as_ref(),
+        ) {
+            (None, None) => Ok(()),
+            (Some(_), Some(_)) => {
+                if self.objective_profile_file().is_none()
+                    || self.authbus_trust_file().is_none()
+                    || self.authbus_checkpoint_file().is_none()
+                    || self.prompt_registry_recovery_checkpoint_file().is_none()
+                {
+                    return Err(AgentdError::Invalid(
+                        "canonical intelligence requires an Objective profile, AuthBus trust, AuthBus replay checkpoint and external prompt-registry recovery checkpoint".to_string(),
+                    ));
+                }
+                Ok(())
+            }
+            _ => Err(AgentdError::Invalid(
+                "canonical intelligence runner and invocation provider must be configured together; refusing compatibility fallback".to_string(),
+            )),
+        }
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

@@ -64,7 +64,6 @@ EXECUTABLE_TEXT_PATTERNS = (
 REQUIRED_SAFE_WORKFLOW_TOKENS = (
     "permissions:",
     "contents: read",
-    "persist-credentials: false",
 )
 
 
@@ -130,6 +129,92 @@ def excerpt_for(text: str, line: int) -> str:
     return value[:240]
 
 
+def checkout_credential_violations(path: str, text: str) -> list[Violation]:
+    """Check each block-form checkout's own inputs, irrespective of key order.
+
+    Literal/folded scalar contents are data, not workflow steps. Unsupported
+    inline checkout mappings are rejected rather than taken as a safe checkout.
+    This is a conservative credential check, not a general YAML validator.
+    """
+    field = re.compile(r"^(\s*)(-\s+)?['\"]?([\w-]+)['\"]?\s*:\s*(.*?)\s*$")
+    block = re.compile(r"[|>][1-9+-]*\s*(?:#.*)?$")
+    checkout = re.compile(r"['\"]?actions/checkout@[^\s'\"]+['\"]?\s*(?:#.*)?$", re.I)
+    disabled = re.compile(r"(?:false|'false'|\"false\")\s*(?:#.*)?$", re.I)
+    rows = []
+    scalar_depth = None
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        depth = len(line) - len(line.lstrip())
+        if scalar_depth is not None:
+            if depth > scalar_depth:
+                continue
+            scalar_depth = None
+        match = field.fullmatch(line)
+        # Keep non-field lines as boundaries, but never interpret their content
+        # as a credential input belonging to a neighbouring step.
+        key_depth = depth + (len(match[2]) if match and match[2] else 0)
+        rows.append((number, line, depth, key_depth, match))
+        if match and block.fullmatch(match[4]):
+            scalar_depth = key_depth
+
+    violations = []
+    for index, (number, line, depth, key_depth, match) in enumerate(rows):
+        if not match or match[3] != "uses" or not checkout.fullmatch(match[4]):
+            if "actions/checkout@" in line and line.lstrip().startswith("- {"):
+                violations.append(
+                    Violation(path, "unsupported-checkout-form", number, line.strip())
+                )
+            continue
+        # Recover this step's full mapping, including `with` before `uses`.
+        start = index
+        if not match[2]:
+            for previous in range(index - 1, -1, -1):
+                _, _, prev_depth, prev_key_depth, prev_match = rows[previous]
+                if prev_depth < key_depth:
+                    if prev_match and prev_match[2] and prev_key_depth == key_depth:
+                        start = previous
+                    break
+        end = index + 1
+        while end < len(rows) and rows[end][2] >= key_depth:
+            end += 1
+        settings = [
+            i
+            for i in range(start, end)
+            if rows[i][3] == key_depth and rows[i][4] and rows[i][4][3] == "with"
+        ]
+        safe = False
+        if len(settings) == 1:
+            at = settings[0]
+            value = rows[at][4][4]
+            if not value or value.startswith("#"):
+                children = []
+                for child in rows[at + 1 : end]:
+                    if child[2] <= key_depth:
+                        break
+                    children.append(child)
+                if children:
+                    input_depth = min(child[2] for child in children)
+                    credentials = [
+                        child[4][4]
+                        for child in children
+                        if child[2] == input_depth
+                        and child[4]
+                        and child[4][3] == "persist-credentials"
+                    ]
+                    safe = (
+                        len(credentials) == 1
+                        and disabled.fullmatch(credentials[0]) is not None
+                    )
+        if not safe:
+            violations.append(
+                Violation(
+                    path, "missing-checkout-credential-opt-out", number, line.strip()
+                )
+            )
+    return violations
+
+
 def scan_path(path: str, text: str) -> list[Violation]:
     violations: list[Violation] = []
     for pattern in DENIED_PATH_PATTERNS:
@@ -145,6 +230,9 @@ def scan_path(path: str, text: str) -> list[Violation]:
         for match in pattern.finditer(text):
             line = line_for_offset(text, match.start())
             violations.append(Violation(path, name, line, excerpt_for(text, line)))
+
+    if is_workflow_code(path):
+        violations.extend(checkout_credential_violations(path, text))
 
     if path.startswith(".github/workflows/"):
         for token in REQUIRED_SAFE_WORKFLOW_TOKENS:

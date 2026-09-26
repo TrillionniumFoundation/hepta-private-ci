@@ -3,10 +3,17 @@ name: memory federation v2 final verify
 on:
   push:
     branches:
-      - fix/memory-federation-v2-closure-20260920
+      - work/product-convergence-20260923
     paths:
       - ".github/workflows/memory-federation-v2-final-verify.yml"
       - ".github/actions/hepta-synthetic-merge/**"
+      - "codex-rs/core/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
+      - "justfile"
       - "codex-rs/hepta-memory-federation/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
@@ -17,12 +24,20 @@ on:
       - "qualification/module-execution-dossiers/detail/memory.federation.md"
       - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
       - "scripts/hepta-implementation-maps.py"
+  workflow_dispatch:
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/memory-federation-v2-final-verify.yml"
       - ".github/actions/hepta-synthetic-merge/**"
+      - "codex-rs/core/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
+      - "justfile"
       - "codex-rs/hepta-memory-federation/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
@@ -38,7 +53,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}
+  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.event.pull_request.base.sha || github.event.before }}
   cancel-in-progress: true
 
 jobs:
@@ -55,6 +70,7 @@ jobs:
           persist-credentials: false
 
       - name: Verify exact source identity
+        id: identity
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
@@ -63,39 +79,71 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
       - name: Verify implementation maps
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: python3 scripts/hepta-implementation-maps.py verify
 
       - name: Check formatting
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
         run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
 
+      - name: Install pinned repository test tools
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Test canonical federation contract
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory-federation --lib
 
       - name: Test memory product adapter
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory --lib -E 'test(cognitive_runtime_tests) | test(cognitive_store::recovery) | test(cognitive_federation::read_session) | test(discovery_tests)'
 
       - name: Test legacy federation regression suite
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory --lib -E 'test(cognitive_federation_tests)'
 
       - name: Test model-input federation integration
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory-extension --lib -E 'test(cognitive::federation)'
+
+      - name: Test physical HTTP final-use boundary
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: just test --locked --retries 0 --no-tests fail -p codex-core --test all -E 'test(final_use_guard_runs_after_policy_admission_and_before_http_dispatch)'
 
       - name: Check Agentd and App Server composition
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo check -p codex-hepta-agentd -p codex-app-server
+        run: cargo check --locked -p codex-hepta-agentd -p codex-app-server
 
-      - name: Strict lint canonical and product crates
+      - name: Execute real Agentd federation grant and revoke
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
         run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+          set -euo pipefail
+          cargo build --locked -p codex-app-server --bin codex-app-server
+          target_dir=$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+          export HEPTA_TEST_CODEX_EXE="$target_dir/debug/codex-app-server"
+          test -x "$HEPTA_TEST_CODEX_EXE"
+          just test --locked --retries 0 --no-tests fail -p codex-hepta-agentd --test cognitive_product_e2e \
+            -E 'test(running_consumer_observes_owner_control_grant_and_revoke_without_restart) | test(five_running_agents_share_only_with_the_explicit_consumer)' --test-threads 1
+
+      - name: Strict lint canonical and product crates
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --lib -- -D warnings
 
       - name: Verify patch hygiene
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: |
           set -euo pipefail
           git diff --check
@@ -138,6 +186,7 @@ jobs:
           message: Memory federation synthetic merge
 
       - name: Verify deterministic merge identity
+        id: identity
         env:
           EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
           EXPECTED_TREE: ${{ steps.synthetic.outputs.tree }}
@@ -149,39 +198,71 @@ jobs:
           test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
 
       - name: Verify implementation maps on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: python3 scripts/hepta-implementation-maps.py verify
 
       - name: Check formatting on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
         run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
 
+      - name: Install pinned repository test tools
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Test canonical federation contract on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory-federation --lib
 
       - name: Test memory product adapter on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory --lib -E 'test(cognitive_runtime_tests) | test(cognitive_store::recovery) | test(cognitive_federation::read_session) | test(discovery_tests)'
 
       - name: Test legacy federation regression suite on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory --lib -E 'test(cognitive_federation_tests)'
 
       - name: Test model-input federation integration on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+        run: just test --locked --retries 0 --no-tests fail -p codex-hepta-memory-extension --lib -E 'test(cognitive::federation)'
+
+      - name: Test physical HTTP final-use boundary on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: just test --locked --retries 0 --no-tests fail -p codex-core --test all -E 'test(final_use_guard_runs_after_policy_admission_and_before_http_dispatch)'
 
       - name: Check Agentd and App Server composition on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo check -p codex-hepta-agentd -p codex-app-server
+        run: cargo check --locked -p codex-hepta-agentd -p codex-app-server
 
-      - name: Strict lint canonical and product crates on merge candidate
+      - name: Execute real Agentd federation grant and revoke
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         working-directory: codex-rs
         run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+          set -euo pipefail
+          cargo build --locked -p codex-app-server --bin codex-app-server
+          target_dir=$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+          export HEPTA_TEST_CODEX_EXE="$target_dir/debug/codex-app-server"
+          test -x "$HEPTA_TEST_CODEX_EXE"
+          just test --locked --retries 0 --no-tests fail -p codex-hepta-agentd --test cognitive_product_e2e \
+            -E 'test(running_consumer_observes_owner_control_grant_and_revoke_without_restart) | test(five_running_agents_share_only_with_the_explicit_consumer)' --test-threads 1
+
+      - name: Strict lint canonical and product crates on merge candidate
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --lib -- -D warnings
 
       - name: Verify merge patch hygiene
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: |
           set -euo pipefail
           git diff --check

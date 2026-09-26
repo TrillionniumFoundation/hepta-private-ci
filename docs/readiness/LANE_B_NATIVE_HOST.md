@@ -10,7 +10,7 @@ This page describes executable behavior in the source, including gaps that requi
 | Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
 | Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
-| Automation | Agentd `AutomationScheduler` + schema-v16 `AutomationStore`/TaskFlow/step/effect ledger | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The final-use external-effect seam is durable, but concrete downstream product callers/owners remain independent authority, activation and evidence gates. |
+| Automation | Agentd `AutomationScheduler` + `AutomationStore`/TaskFlow/step/effect ledger (version from `AUTOMATION_SCHEMA_VERSION` in `hepta-automation/src/lib.rs`) | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The final-use external-effect seam is durable, but concrete downstream product callers/owners remain independent authority, activation and evidence gates. |
 | Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
 | Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | `send_observer` is a reusable state machine; no duplicate sender is started |
 
@@ -53,7 +53,7 @@ The host reserves 1 KiB inside that shared 8 KiB limit for planning metadata, ad
 
 ## Durable inference journal
 
-`DurableInferenceControl` acquires an exclusive file lock before replay, validates a candidate transition before append, syncs the journal before publishing the in-memory state and fences its writer after any ambiguous write/sync failure. Reopening a corrupt or partial record fails rather than treating an unknown operation as safe to replay. The native profile now consumes additive `reserve_native`, `dispatch_native`, `native_started`, `cancel_native` and `settle_native` ports in this same owner and file; legacy journal records remain replay-compatible. New native records are versioned `native-v1`. An older binary cannot replay them and must not replace the new owner while such records exist.
+`DurableInferenceControl` acquires a persistent `<journal>.writer.lock` sidecar lock and a data-file lock before replay, validates a candidate transition before append, syncs the journal before publishing the in-memory state and fences its writer after any ambiguous write/sync failure. Reopening a corrupt or partial record fails rather than treating an unknown operation as safe to replay. The native profile now consumes additive `reserve_native`, `dispatch_native`, `native_started`, `cancel_native` and `settle_native` ports in this same owner and file; legacy journal records remain replay-compatible. New native records are versioned `native-v1`. An older binary cannot replay them and must not replace the new owner while such records exist.
 
 The CLI requires an absolute `--journal`, stable `--request-id` and explicit `--maximum-in-flight` from 1 to 256. The first native admission pins that limit for the journal. This is a local concurrent-run budget, not a token cap, payment authorization, hardware discovery or a global limit across unrelated journals. The file lock serializes writers; a host can hold uncertain runs while admitting another only within its pinned budget. New journals are mode 0600 on Unix and native admission rejects a group/world-accessible journal. The journal contains observed model text; use the owning Agent's private storage and retention policy. The App Server thread remains ephemeral, so process-loss reconciliation cannot assume retained provider history.
 
@@ -63,7 +63,7 @@ Provider terminality and `owner_authority` are independent. During execution, no
 
 Pre-dispatch cancellation or connection failure records a local stop and releases its slot without fabricating provider terminality or zero tokens. After dispatch, cancellation/timeout/fencing records interrupt intent and sends the real interrupt RPC; only a matching terminal notification releases the local slot. `observed_output_tokens` remains null if no matching usage event arrived, including on terminal failure or interruption. Observed u64 counts are retained even above a synthetic token budget; no economic settlement is inferred. The typed trusted-host settlement port can refine unknown execution/usage with later matching observations, but automatic provider recovery after restart is still absent. Deleting the journal, changing the request ID or treating a missing observation as zero is not a recovery procedure.
 
-The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at most 16384 records across legacy/native types. New admission/dispatch also requires 16 MiB of remaining journal space for the next bounded observation and metadata. Append checks bounds before writing; replay bounds actual reads and checks capacity incrementally. Oversize, malformed or incomplete histories fail without truncation. At capacity, the owner refuses new durable writes; authenticated archival/retention is remaining implementation work.
+The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at most 16384 retained identities across legacy/native types. Each new admission reserves its own maximum terminal frame and state-dependent metadata; the configured in-flight limit is also constrained by available byte liability. `journal_capacity_status()` reports both actual and reserved capacity. `compact_journal()` and capacity-triggered maintenance publish validated current-state checkpoints under the same stable writer lock; no terminal identity or unknown-effect responsibility is dropped. Unix publication syncs both replacement and parent directory. A crash before rename leaves old state, and one after rename recovers the complete replacement. Older overcommitted journals can drain, but receive no retrospective headroom guarantee. Do not delete `.writer.lock`, mix old/new writers, or remove the journal to recover capacity. Archive retention, external rollback fencing and identity garbage collection remain unproved.
 
 ## Neural Circuit target: preserve the owning execution path
 
@@ -105,8 +105,14 @@ establish clean-Agent transfer, OS isolation, target-host performance or unlearn
 Default Agentd uses RuntimeTasks, including real automation retirement and
 shutdown. Canonical preparation is reached from authenticated ObjectiveStart;
 host composition supplies current owner inputs and signed evaluation, not wire
-profiles. The ordinary CLI still needs an explicitly configured invocation
-provider; automatic construction for every task/domain is not claimed.
+profiles. `AgentdIntelligenceInvocationV1::authoritative_provider` composes
+host-installed request and seven-owner readers, checks the exact Agentd/run
+fence before reading, and validates the combined immutable RunStart bindings.
+The shipped CLI still does not bootstrap these readers into a native profile.
+Runner-only/provider-only daemon configuration is rejected before owner services
+open; a complete pair also requires Objective profile, AuthBus trust and replay
+checkpoint. An unconfigured compatibility profile remains distinct. Startup
+validation is not evidence of a seven-owner invocation or Circuit execution.
 
 Automation repair recognizes displaced histories by checksums, preserves SQL,
 and rejects unknown/dirty/conflicting state. Real-store tests reopen cuts before
@@ -115,9 +121,40 @@ support binds owner/Memory/revision rather than just text.
 
 The native terminal Cell is one-state tabular. Its same-host Replay consumer
 resolves bounded indexed source records, trains a candidate and uses existing
-artifact persistence/loading. Withdrawal blocks later use of a loaded candidate.
+artifact persistence/loading. Independently signed selections and bounded versioned
+recovery bundles now support owner-backed restore without retraining. Every use
+checks the live artifact owner, not a supplied historical registry. Full V2
+manifest bytes, declared source lineage and original expiry are part of recovery;
+a valid selection over the lossy V1 index alone is insufficient. Withdrawal or
+expiry closes a loaded consumer. The complete native API and rejection boundaries are in
+[runtime.agentd](../modules/runtime.agentd/TECHNICAL.md#same-host-shared-replay-composition).
 This is not Laya training, multi-source causal transfer, remote federation,
 production model selection or physical erasure of trained information.
+
+Immutable owner records use the same file-then-directory durability barriers
+on creation and exact retry. An earlier complete write that lost either sync
+acknowledgement is not accepted merely because its bytes can be read. The
+`owner_record_io_tests` regressions inject file-sync and directory-sync failures
+independently, preserve conflicting/partial records, and check retry without
+file replacement. This does not certify storage hardware, power-loss behavior
+or the complete filesystem-fault matrix.
+
+The provider qualification workflow observes immutable source-head and canonical
+prospective-merge identities. Formatting is check-only; the job has no repository
+write credentials and never repairs, commits or pushes its candidate. Format,
+provider-seam tests and strict lint report independently through the existing
+execution recorder for every matching candidate, not one numbered PR. Its
+minimum four behavior tests exercise actual owner-reader invocation, existing
+canonical preparation, per-owner failure propagation, fresh registry reads and
+cross-Agent/generation rejection. These fixture-backed tests do not establish
+that the ordinary daemon bootstraps the readers or consumes a Circuit.
+Neither a failed nor an interrupted qualification can be relabeled as completion.
+
+Dataset freezing now uses a replay-built objective-local record index and the
+unchanged global revocation/unlearning cut. Unrelated ordinary records do not
+force a full scan on each warm freeze. Matching-objective history, global
+withdrawals, dataset output size and all cold replay still have real costs; the
+independent full-scan signing-byte regression is not a sustained-load SLO.
 
 The history workload reports append p50/p95/p99, fit/reload, indexed dataset reads
 and full recovery at explicit Agent/history points. Recovery still replays full
@@ -136,7 +173,10 @@ bounded pages do not certify them. Bind results to an exact committed candidate.
 
 Source checks exercise real SQLite memory retrieval and withdrawal, event identity, terminality, output bounds and journal ownership/rejection. They do not establish a paid provider run, local GPU behavior, launchd deployment, homeserver behavior or long-term learning benefit. The six restored cutover/watchdog scripts pass shell syntax checks; their macOS physical scenarios require that target environment.
 
-## Validation result for this change
+## Historical validation (not current-head qualification)
+
+The results below are retained historical observations. They do not identify a
+current committed candidate and must not be used as current-head receipts.
 
 The six changed runtime libraries were built with the native App Server implementation using `just test` (the original feature-selected test build; that same implementation now compiles by default): 97 tests ran, 96 passed. The one failing pre-existing Matrix control-socket test returned `EPERM`; an independent AF_UNIX bind probe returned the same error in this execution environment. No socket restriction or test was bypassed. The new real SQLite → Lane C → NDU read/withdrawal test, worker event/terminal/output tests and durable journal locking/replay/rejection tests passed. The first high-debug link exhausted the 32 GiB workspace; after clearing generated build files, the same scoped test set completed with incremental compilation disabled and dev/test debug information disabled.
 

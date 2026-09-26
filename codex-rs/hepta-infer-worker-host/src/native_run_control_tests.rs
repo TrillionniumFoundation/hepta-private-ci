@@ -79,6 +79,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             },
         )
         .unwrap();
+    control.compact_journal().unwrap();
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     let cancellation = CancellationToken::new();
@@ -137,6 +138,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
         ..unknown
     };
     control.settle_native("r1", terminal.clone()).unwrap();
+    control.compact_journal().unwrap();
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(
@@ -311,3 +313,172 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
         )
     );
 }
+
+fn prepared_fixture(label: &str, dispatch: bool) -> (AppServerModelDriver, PathBuf) {
+    prepared_fixture_with_socket(label, dispatch, None)
+}
+
+fn prepared_fixture_with_socket(
+    label: &str,
+    dispatch: bool,
+    socket: Option<PathBuf>,
+) -> (AppServerModelDriver, PathBuf) {
+    let (mut driver, path) = fixture(label);
+    if let Some(socket) = socket {
+        driver.config.agentd_socket = socket;
+    }
+    let binding = NativeIntelligenceRunBinding {
+        run_id: "original-intelligence-run".to_string(),
+        expected_revision: 2,
+        context_digest: "b".repeat(64),
+        envelope_digest: "c".repeat(64),
+    };
+    let input = NativePreparedInputV1 {
+        schema_version: 1,
+        prompt: "original prompt that the caller will not resend".to_string(),
+        context_query: Some("original query".to_string()),
+        agentd_socket: driver.config.agentd_socket.clone(),
+        timeout_ms: 5_000,
+        intelligence: Some(binding),
+    };
+    assert_eq!(
+        input.payload_digest().unwrap(),
+        native_source_payload_digest(
+            &input.prompt,
+            &input.context_query,
+            &input.agentd_socket,
+            u128::from(input.timeout_ms),
+            input.intelligence.as_ref()
+        )
+        .unwrap()
+    );
+    let request = NativeRequest {
+        payload_digest: input.payload_digest().unwrap(),
+        ..request(&driver)
+    };
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native_prepared(request, 1, input).unwrap();
+    if dispatch {
+        let dispatch = serde_json::from_value(serde_json::json!({
+            "thread_id": "thread-1", "model_provider": "provider",
+            "context_digest": "a".repeat(64)
+        }))
+        .unwrap();
+        control.dispatch_native("r1", dispatch).unwrap();
+    }
+    control.compact_journal().unwrap();
+    (driver, path)
+}
+
+#[tokio::test]
+async fn resume_retains_original_intelligence_input_and_never_redispatches() {
+    let (driver, path) = prepared_fixture("resume-original", true);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let original = control.native_record("r1").unwrap().prepared_input.clone();
+    // No prompt, query or newly assembled Intelligence decision enters resume.
+    // Connecting to the deliberately nonexistent socket would fail this test.
+    let unknown = driver
+        .resume(&mut control, admission(), &CancellationToken::new())
+        .await
+        .unwrap();
+    assert_eq!(unknown.status, NativeRunStatus::Indeterminate);
+    assert!(!unknown.terminal_observed);
+    assert_eq!(
+        control.native_record("r1").unwrap().prepared_input,
+        original
+    );
+    let terminal = NativeRunOutput {
+        turn_id: "turn-1".to_string(),
+        status: NativeRunStatus::Failed,
+        boundary_status:
+            codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Failed,
+        terminal_observed: true,
+        stop_reason: Some("independently observed failure".to_string()),
+        ..unknown
+    };
+    control.settle_native("r1", terminal.clone()).unwrap();
+    control.compact_journal().unwrap();
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        driver
+            .resume(&mut control, admission(), &CancellationToken::new())
+            .await
+            .unwrap(),
+        terminal
+    );
+    assert_eq!(
+        control.native_record("r1").unwrap().prepared_input,
+        original
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn resume_rejects_new_model_generation_endpoint_or_budget_without_mutation() {
+    let (mut driver, path) = prepared_fixture("resume-drift", true);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let original = control.native_record("r1").unwrap().clone();
+    let bytes = std::fs::read(&path).unwrap();
+    let socket = driver.config.agentd_socket.clone();
+    for field in ["model", "generation", "endpoint", "timeout"] {
+        driver.config.model = "model".to_string();
+        driver.config.generation = 1;
+        driver.config.agentd_socket = socket.clone();
+        driver.config.timeout = Duration::from_secs(5);
+        match field {
+            "model" => driver.config.model = "replacement-model".to_string(),
+            "generation" => driver.config.generation = 2,
+            "endpoint" => driver.config.agentd_socket = PathBuf::from("/tmp/replacement.sock"),
+            "timeout" => driver.config.timeout = Duration::from_secs(6),
+            _ => unreachable!(),
+        }
+        assert!(
+            driver
+                .resume(&mut control, admission(), &CancellationToken::new())
+                .await
+                .is_err(),
+            "{field}"
+        );
+        assert_eq!(control.native_record("r1"), Some(&original));
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    }
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn resume_cannot_turn_an_unsent_reservation_into_new_execution() {
+    let (driver, path) = prepared_fixture("resume-unsent", false);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let original = control.native_record("r1").unwrap().clone();
+    let bytes = std::fs::read(&path).unwrap();
+    assert!(
+        driver
+            .resume(&mut control, admission(), &CancellationToken::new())
+            .await
+            .is_err()
+    );
+    assert_eq!(control.native_record("r1"), Some(&original));
+    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    control
+        .stop_native_before_dispatch("r1", "cancelled before effect".to_string())
+        .unwrap();
+    let stopped = control.native_record("r1").unwrap().clone();
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(
+        driver
+            .resume(&mut control, admission(), &CancellationToken::new())
+            .await
+            .is_err()
+    );
+    assert_eq!(control.native_record("r1"), Some(&stopped));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[cfg(unix)]
+#[path = "native_agentd_release_tests.rs"]
+mod agentd_release_tests;

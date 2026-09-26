@@ -60,6 +60,7 @@ impl SignedLearningTrustDistributionV1 {
 pub struct ActivatedLearningTrustV1 {
     root_id: StableId,
     root_digest: Digest32,
+    root_key_digest: Digest32,
     distribution_id: StableId,
     generation: u64,
     effective_at: u64,
@@ -76,6 +77,12 @@ impl ActivatedLearningTrustV1 {
     #[must_use]
     pub const fn root_digest(&self) -> Digest32 {
         self.root_digest
+    }
+
+    /// Public key identity already authenticated at trust activation.
+    #[must_use]
+    pub const fn root_key_digest(&self) -> Digest32 {
+        self.root_key_digest
     }
 
     #[must_use]
@@ -132,7 +139,7 @@ pub fn activate_learning_trust(
         return Err(LearningTrustDistributionError::InvalidGeneration);
     }
 
-    let verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
+    let mut verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
     let payload = distribution_signing_bytes(
         &signed.root_id,
         distribution,
@@ -160,6 +167,13 @@ pub fn activate_learning_trust(
         }
     }
 
+    // Activation is not a perpetual grant. Distribution expiry is already
+    // bounded by root expiry above; retain the scheduled root revocation too.
+    verifier.bind_distribution_window(
+        distribution.effective_at,
+        signed.expires_at,
+        root.revoked_at,
+    );
     let distribution_digest = digest_distribution(
         root_digest,
         &distribution.distribution_id,
@@ -172,6 +186,7 @@ pub fn activate_learning_trust(
     Ok(ActivatedLearningTrustV1 {
         root_id: root.root_id.clone(),
         root_digest,
+        root_key_digest: Digest32::of_bytes(&root.verifying_key),
         distribution_id: distribution.distribution_id.clone(),
         generation: distribution.generation,
         effective_at: distribution.effective_at,
@@ -292,3 +307,7 @@ impl From<SignedEvidenceError> for LearningTrustDistributionError {
 #[cfg(test)]
 #[path = "trust_distribution_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "trust_distribution_live_tests.rs"]
+mod live_tests;

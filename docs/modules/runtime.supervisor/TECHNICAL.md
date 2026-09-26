@@ -170,7 +170,7 @@ Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new 
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
-Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
+Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. Main restart attempts and pending intents have one canonical owner. Normal Supervisor recovery separately hydrates the release-bound Matrix companion window from the same physical journal without restoring obsolete main-process mirror fields. Companion exhaustion and wall-clock rollback remain fenced across host recovery; an unexhausted recovered window conservatively restarts its bounded delay. A stale companion projection cannot overwrite a pending main restart. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
 
 Rollback and automatic rollback are fresh admissions. Immediately before process start the supervisor re-resolves the release through Fleet, so revoked or no-longer-allowed releases fail closed, then compares current manifest/program digests and the complete allow/revoke admission frontier against the durable transaction. A changed policy frontier is not silently accepted because the predecessor was valid earlier.
 
@@ -399,3 +399,10 @@ This receipt records repository source bindings for the current documentation ca
 - The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+
+## 18. Supervisor convergence mechanics
+
+[Recovery and qualification](RECOVERY_AND_QUALIFICATION.md) defines bounded startup/runtime failure handling, durable explicit-stop suppression, ambiguous signed recovery, native full-frame deadlines and per-Agent tick scheduling. [Production release caller](PRODUCTION_RELEASE_CALLER.md) defines the independent signer/caller/owner path and exact-grant historical lookup.
+
+The current implementation adds no model, tool or secret-reading authority to Supervisor. Default builds still omit `production-authority`; read-only context/history calls are not execution permits. The source files, focused tests and host qualification executable must be checked on the same committed source and applicable deterministic merge. Historical passes, dirty-worktree runs and control-protocol fixtures are not interchangeable with deployed real-Agentd acceptance.

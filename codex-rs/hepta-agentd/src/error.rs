@@ -19,6 +19,8 @@ pub enum AgentdError {
     CognitiveWriteRuntimeUnavailable,
     #[error("agentd protocol error: {0}")]
     Protocol(String),
+    #[error("automation observation temporarily unavailable: {0}")]
+    AutomationObservationUnavailable(String),
     #[error("agentd control overloaded; retry after {retry_after_ms} ms")]
     Overloaded { retry_after_ms: u64 },
     #[error(transparent)]

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -352,6 +352,86 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+    },
+    {
+      "operation": "read_current_selected_payload",
+      "nativeSymbol": "read_current_selected_payload",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_registry_transition.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_current_selected_payload",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "publish_revocation",
+      "nativeSymbol": "publish_revocation",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_registry_transition.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_revocation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "persist_selected_descriptor",
+      "nativeSymbol": "persist_selected_descriptor",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_selected_descriptor.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal",
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/owner_record_io_tests.rs",
+          "kind": "file_and_directory_sync_faults",
+          "command": "just test --locked -p codex-hepta-learning-artifacts --lib -E 'test(owner_host::record_io)' --retries 0"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "persist_selected_descriptor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "read_selected_descriptor",
+      "nativeSymbol": "read_selected_descriptor",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_selected_descriptor.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_selected_descriptor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Existing fenced owner, actual signed CURRENT and independent selection. Durable bounded descriptors and exact-predecessor signed revocation; no activation authority."
+    },
+    {
+      "operation": "read_current_selected_manifest",
+      "nativeSymbol": "read_current_selected_manifest",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_manifest.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_current_selected_manifest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceSemantics": "Resolve full V2 metadata from the same fenced live owner and independent selection; verify canonical bytes, compatibility projection, declared lineage and original expiry. Missing legacy metadata fails closed, with no activation authority."
     }
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
@@ -443,8 +523,28 @@
       "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
     },
     {
+      "path": "codex-rs/hepta-agentd/tests/support/current_artifacts.rs",
+      "object": "ff311fef4f2a3b0fa8a646c15aea48ba84f3b8cb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_manifest_tests.rs",
+      "object": "b023223bcbb612aeb416603d8ec6b7365af91e21"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_process_tests.rs",
+      "object": "97a02e358eacb292e2d89eb930cf47bdc01e8c0a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs",
+      "object": "1af4de8b8af6e8081fb1254b7ec6e9f4adbd8a05"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+      "object": "e8a1240287492669163968891bb1f21e53ffe23e"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "6c602a9ebf4042e39acba109635d17d64d434dcf"
+      "object": "fd446fa15d1b1d5a69982317a074c6d8427ddc73"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
@@ -452,7 +552,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
-      "object": "49af2232566bf4c38380d88b7cf63e9b7975537a"
+      "object": "f9773f5fb024e31f7d23ebddc518ce49abb2973d"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
@@ -468,7 +568,23 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-      "object": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "object": "28aac989952d631512eabf60f06e95ee94d21781"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_manifest.rs",
+      "object": "5e688b15fcc4a883f92bca9306e7273bda567f1d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_record_io_tests.rs",
+      "object": "6be419283e7d01ff0d8ea463dabb4ad2fff70d6f"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_registry_transition.rs",
+      "object": "84adee3ca423e3a2a65016628c737175a5bb6011"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_selected_descriptor.rs",
+      "object": "8f1cb7952fd69c393441a02e7278a2aff66d35ad"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
@@ -476,7 +592,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
-      "object": "3ff1450b5111706d737643351fb5692ee657726c"
+      "object": "a77e8b21d346f17691221cd364ec4d95873ec43c"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
@@ -488,7 +604,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-      "object": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "object": "53219672d87c2887a5b37c6fc0fbaa8999edc52f"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
@@ -500,11 +616,11 @@
     },
     {
       "path": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
-      "object": "35d784e64383f3cc30f19b3e3c79b8258d09688d"
+      "object": "3d44ef849f169679db633160dd195e78226e2cb8"
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
+      "object": "a11760d036c75a27737b3c2c3b4ed6477129a853"
     }
   ]
 }

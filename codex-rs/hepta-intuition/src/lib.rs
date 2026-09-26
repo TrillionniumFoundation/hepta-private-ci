@@ -9,6 +9,7 @@
 pub mod calibrated;
 mod qualified;
 mod runtime_commitment;
+mod runtime_commitment_v2;
 
 pub use calibrated::AbstentionReasonV1;
 pub use calibrated::AssignmentModeV1;
@@ -43,6 +44,10 @@ pub use runtime_commitment::canonical_profile_qualification_payload_v1;
 pub use runtime_commitment::canonical_runtime_commitment_payload_v1;
 pub use runtime_commitment::canonical_scored_outputs_digest_v1;
 pub use runtime_commitment::canonical_scoring_commitment_digest_v1;
+pub use runtime_commitment_v2::ScoringCommitmentV2;
+pub use runtime_commitment_v2::canonical_runtime_commitment_payload_v2;
+pub use runtime_commitment_v2::canonical_scored_outputs_digest_v2;
+pub use runtime_commitment_v2::canonical_scoring_commitment_digest_v2;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;

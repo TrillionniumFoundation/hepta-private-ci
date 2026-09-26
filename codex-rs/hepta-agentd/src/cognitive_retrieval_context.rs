@@ -4,6 +4,13 @@
 //! memory store. Agentd never fabricates model, prompt, encoder, compact,
 //! authority, retrieval-profile, or engram generations.
 
+#[path = "cognitive_retrieval_context_file.rs"]
+mod file;
+#[path = "cognitive_retrieval_owner_cut.rs"]
+pub(crate) mod owner_cut;
+#[path = "cognitive_retrieval_context_config.rs"]
+mod process_config;
+
 use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 

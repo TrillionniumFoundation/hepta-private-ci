@@ -698,20 +698,41 @@ pub fn resolve_agentd_plasticity_admission_v1(
     })
 }
 
+/// Immutable current-owner inputs required for one parameter-plasticity call.
+pub struct AgentdPlasticityOwnerContextV1<'a> {
+    pub artifacts: &'a ArtifactRegistry,
+    pub ledger: &'a DurableLedger,
+    pub evidence_resolver: &'a dyn PlasticityOwnerEvidenceResolverV1,
+    pub evidence_policy: &'a PlasticityOwnerEvidencePolicyV1,
+    pub verifier: &'a LearningEvidenceVerifierV1,
+}
+
+/// Exclusive writer/anchor pair retained by the long-lived Agentd owner.
+pub struct AgentdPlasticityCommitContextV1<'a> {
+    pub writer: &'a mut AnchoredPlasticityWriterV1,
+    pub anchor_store: &'a mut AgentdPlasticityAnchorStoreV1,
+}
+
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
-    artifacts: &ArtifactRegistry,
-    ledger: &DurableLedger,
-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
-    verifier: &LearningEvidenceVerifierV1,
-    writer: &mut AnchoredPlasticityWriterV1,
-    anchor_store: &mut AgentdPlasticityAnchorStoreV1,
+    owners: AgentdPlasticityOwnerContextV1<'_>,
+    commit: AgentdPlasticityCommitContextV1<'_>,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    let AgentdPlasticityOwnerContextV1 {
+        artifacts,
+        ledger,
+        evidence_resolver: owner_evidence_resolver,
+        evidence_policy: owner_evidence_policy,
+        verifier,
+    } = owners;
+    let AgentdPlasticityCommitContextV1 {
+        writer,
+        anchor_store,
+    } = commit;
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),

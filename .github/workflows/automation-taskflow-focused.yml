@@ -1,21 +1,47 @@
 name: automation-taskflow-focused
 
 on:
-  push:
-    branches:
-      - work/automation-taskflow-durable-causal-chain
+  pull_request:
     paths:
+      - CALLERS.toml
       - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
       - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
+      - docs/modules/automation.taskflow/**
+      - qualification/module-execution-dossiers/detail/automation.taskflow.md
+      - .github/workflows/automation-taskflow-focused.yml
+  push:
+    branches:
+      - main
+      - work/product-convergence-20260923
+    paths:
+      - CALLERS.toml
+      - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-types/**
+      - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
+      - docs/modules/automation.taskflow/**
+      - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: automation-taskflow-focused-${{ github.event.pull_request.number || github.ref }}
+  # A superseded PR/work-branch head cannot contribute current qualification.
+  # Mainline evidence is retained to completion.
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
   focused:
@@ -28,17 +54,35 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind exact checked-out source
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Install repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,cargo-nextest@0.9.137
       - name: Rustfmt changed automation owners
-        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agent-protocol -p codex-hepta-agentd -- --check
       - name: Check automation, operations and Agentd
-        run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+        if: ${{ !cancelled() }}
+        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agent-protocol -p codex-hepta-agentd
+      - name: Strict Clippy for the composed owner path
+        if: ${{ !cancelled() }}
+        run: cargo clippy --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agent-protocol -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Test kernel operation contract
-        run: cargo test -p codex-hepta-operations
+        if: ${{ !cancelled() }}
+        run: just test --locked -p codex-hepta-operations
       - name: Test durable automation causal chain
-        run: cargo test -p codex-hepta-automation --test durable_causal_chain
+        if: ${{ !cancelled() }}
+        run: just test --locked -p codex-hepta-automation --test durable_causal_chain
       - name: Test automation package
-        run: cargo test -p codex-hepta-automation
+        if: ${{ !cancelled() }}
+        run: just test --locked -p codex-hepta-automation
       - name: Test automation qualification profile
-        run: cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+        if: ${{ !cancelled() }}
+        run: just test --locked -p codex-hepta-automation --features taskflow-structural-qualification
       - name: Test Agentd library
-        run: cargo test -p codex-hepta-agentd --lib
+        if: ${{ !cancelled() }}
+        run: just test --locked -p codex-hepta-agentd --lib --retries 0

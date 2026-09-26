@@ -144,15 +144,9 @@ def ensure_valid_artifact(artifact: Path, checksum: str, url: str) -> None:
     if has_checksum(artifact, checksum):
         return
 
-    artifact.unlink(missing_ok=True)
-    download_file(url, artifact)
-    if has_checksum(artifact, checksum):
-        return
-
-    artifact.unlink(missing_ok=True)
-    raise RuntimeError(
-        f"Codex-built V8 artifact {artifact} failed checksum validation."
-    )
+    # Only a verified private staging file may replace the shared cache entry.
+    # A failed downloader must not remove bytes published by another builder.
+    download_file(url, artifact, expected_checksum=checksum)
 
 
 def has_checksum(path: Path, expected: str) -> bool:
@@ -166,14 +160,24 @@ def has_checksum(path: Path, expected: str) -> bool:
     return digest.hexdigest() == expected
 
 
-def download_file(url: str, dest: Path) -> None:
+def download_file(
+    url: str, dest: Path, *, expected_checksum: str | None = None
+) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    temp_path = dest.with_suffix(f"{dest.suffix}.tmp")
-    temp_path.unlink(missing_ok=True)
+    # Distinct same-directory staging files allow concurrent builders without
+    # unlinking another process's active download. Publication remains atomic.
+    fd, name = tempfile.mkstemp(prefix=f".{dest.name}.", suffix=".tmp", dir=dest.parent)
+    temp_path = Path(name)
     try:
-        with urlopen(url, timeout=DOWNLOAD_TIMEOUT_SECS) as response:
-            with temp_path.open("wb") as output:
+        with os.fdopen(fd, "wb") as output:
+            with urlopen(url, timeout=DOWNLOAD_TIMEOUT_SECS) as response:
                 shutil.copyfileobj(response, output)
+        if expected_checksum is not None and not has_checksum(
+            temp_path, expected_checksum
+        ):
+            raise RuntimeError(
+                f"Codex-built V8 artifact {dest} failed checksum validation."
+            )
         temp_path.replace(dest)
     finally:
         temp_path.unlink(missing_ok=True)

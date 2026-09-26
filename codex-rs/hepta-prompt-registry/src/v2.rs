@@ -59,7 +59,37 @@ pub struct PromptRealizationBindingV2 {
     pub expires_unix_ms: Option<u64>,
 }
 
+/// One profile identity shared by admission, supersession and restore.
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub(crate) struct RealizationProfileKey<'a> {
+    factor_id: &'a StableId,
+    model_id: &'a StableId,
+    model_version: &'a str,
+    model_digest: Digest32,
+    tokenizer_digest: Digest32,
+    template_digest: Digest32,
+    tool_schema_digest: Digest32,
+    context_profile_digest: Digest32,
+    locale_id: &'a StableId,
+    role: PromptRoleV2,
+}
+
 impl PromptRealizationBindingV2 {
+    pub(crate) fn profile_key(&self) -> RealizationProfileKey<'_> {
+        RealizationProfileKey {
+            factor_id: &self.factor_id,
+            model_id: &self.model_id,
+            model_version: &self.model_version,
+            model_digest: self.model_digest,
+            tokenizer_digest: self.tokenizer_digest,
+            template_digest: self.template_digest,
+            tool_schema_digest: self.tool_schema_digest,
+            context_profile_digest: self.context_profile_digest,
+            locale_id: &self.locale_id,
+            role: self.role,
+        }
+    }
+
     pub fn validate(&self) -> Result<(), PromptRegistryV2Error> {
         if self.model_version.is_empty() || self.model_version.len() > 256 {
             return Err(PromptRegistryV2Error::InvalidModelVersion);
@@ -233,8 +263,26 @@ impl CompatibleRealizationSetV2 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.bindings.len() > MAX_COMPATIBLE_REALIZATIONS_V2 {
+        if self.bindings.len() > MAX_COMPATIBLE_REALIZATIONS_V2
+            || self.required_factor_ids.len() > MAX_COMPATIBLE_REALIZATIONS_V2
+        {
             return Err(PromptRegistryV2Error::ReadLimitExceeded);
+        }
+        let mut realization_ids = BTreeSet::new();
+        let mut factor_ids = BTreeSet::new();
+        for binding in &self.bindings {
+            binding.validate()?;
+            if !realization_ids.insert(&binding.realization_id) {
+                return Err(PromptRegistryV2Error::NonCanonicalBindings);
+            }
+            factor_ids.insert(&binding.factor_id);
+        }
+        if self
+            .required_factor_ids
+            .iter()
+            .any(|id| !factor_ids.contains(id))
+        {
+            return Err(PromptRegistryV2Error::RequiredFactorUnavailable);
         }
         if self
             .required_factor_ids
@@ -424,7 +472,6 @@ impl PromptRegistry {
                     .is_none_or(|expires| now_unix_ms < expires);
                 factor_valid && realization_active && selected_factor && compatible && live
             })
-            .cloned()
             .collect::<Vec<_>>();
         eligible.sort_by(|left, right| {
             left.factor_id
@@ -436,7 +483,7 @@ impl PromptRegistry {
         let mut bindings = Vec::new();
         let mut selected_realizations = BTreeSet::new();
         if factor_filter.is_empty() {
-            bindings.extend(eligible.into_iter().take(maximum_results));
+            bindings.extend(eligible.into_iter().take(maximum_results).cloned());
         } else {
             for factor_id in &factor_filter {
                 let Some(binding) = eligible
@@ -446,14 +493,14 @@ impl PromptRegistry {
                     return Err(PromptRegistryV2Error::RequiredFactorUnavailable);
                 };
                 selected_realizations.insert(binding.realization_id.clone());
-                bindings.push(binding.clone());
+                bindings.push((*binding).clone());
             }
             for binding in eligible {
                 if bindings.len() >= maximum_results {
                     break;
                 }
                 if selected_realizations.insert(binding.realization_id.clone()) {
-                    bindings.push(binding);
+                    bindings.push(binding.clone());
                 }
             }
             bindings.sort_by(|left, right| {
@@ -509,16 +556,7 @@ pub(crate) fn same_profile(
     left: &PromptRealizationBindingV2,
     right: &PromptRealizationBindingV2,
 ) -> bool {
-    left.factor_id == right.factor_id
-        && left.model_id == right.model_id
-        && left.model_version == right.model_version
-        && left.model_digest == right.model_digest
-        && left.tokenizer_digest == right.tokenizer_digest
-        && left.template_digest == right.template_digest
-        && left.tool_schema_digest == right.tool_schema_digest
-        && left.context_profile_digest == right.context_profile_digest
-        && left.locale_id == right.locale_id
-        && left.role == right.role
+    left.profile_key() == right.profile_key()
 }
 
 fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), PromptRegistryV2Error> {

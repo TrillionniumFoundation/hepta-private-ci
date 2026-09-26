@@ -2130,12 +2130,10 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
- "codex-hepta-contracts",
  "codex-hepta-evidence",
  "codex-hepta-governance",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
- "codex-hepta-paths",
  "codex-hepta-prompt-extension",
  "codex-history-notes-extension",
  "codex-home",
@@ -3516,6 +3514,7 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek",
  "http 1.4.0",
+ "libc",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -3532,6 +3531,7 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -3614,10 +3614,8 @@ dependencies = [
  "codex-hepta-prompt-extension",
  "codex-hepta-types",
  "codex-hepta-wire",
- "codex-protocol",
  "serde",
  "serde_json",
- "tokio",
 ]
 
 [[package]]
@@ -4055,6 +4053,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
  "ed25519-dalek",
  "sqlx",
  "tempfile",

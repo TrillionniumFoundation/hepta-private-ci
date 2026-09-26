@@ -18,6 +18,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 mod authenticated;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 mod dataset_bound;
 mod owner_terminal;
 pub use owner_terminal::FrozenTerminalCellV1;
@@ -33,6 +34,7 @@ pub use loaded::TabularPayloadPinV1;
 pub use loaded::encode_tabular_payload_v1;
 mod learned_strict;
 mod reference;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 mod world_model;
 
 pub use authenticated::AuthenticatedApplicabilityAdmissionV2;
@@ -41,12 +43,19 @@ pub use authenticated::AuthenticatedOperatorRegularityAdmissionV2;
 pub use authenticated::SignedOperatorEvidenceV2;
 pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
 pub use authenticated::validate_applicability_with_signed_evidence_v2;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use dataset_bound::OperatorDatasetBindingError;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use dataset_bound::VerifiedWorldModelDatasetV2;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use dataset_bound::fit_tabular_operator_verified_v2;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use dataset_bound::fit_transition_model_verified_v2;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use dataset_bound::verify_tabular_operator_plan_v2;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use dataset_bound::verify_world_model_dataset_v2;
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
@@ -54,10 +63,14 @@ pub use learned::TabularOperatorCellV1;
 pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use learned::fit_tabular_operator;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use learned_strict::fit_tabular_operator_strict_v2;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use learned_strict::predict_tabular_operator_indexed_v2;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
@@ -77,13 +90,21 @@ pub use reference::admit_operator_regularity;
 pub use reference::build_sensor_core;
 pub use reference::evaluate_bellman_reference;
 pub use reference::validate_applicability_certificate;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::TabularWorldModelV1;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::TransitionBranchV1;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::TransitionEstimateV1;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::WorldModelError;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::WorldModelPredictionV1;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::WorldModelSampleV1;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::fit_transition_model;
+#[cfg(any(test, feature = "unchecked-qualification-inputs"))]
 pub use world_model::predict_transition;
 
 const MAX_SAMPLES: usize = 16_384;

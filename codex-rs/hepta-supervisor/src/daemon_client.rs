@@ -83,6 +83,36 @@ impl SupervisordClient {
         }
     }
 
+    pub async fn production_mutation_context(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<crate::ProductionMutationContext, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ProductionMutationContext { agent_id })
+            .await?
+        {
+            SupervisordPayload::ProductionMutationContext { context } => Ok(context),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn production_mutation_lookup(
+        &self,
+        agent_id: AgentId,
+        grant_sha256: codex_hepta_contracts::Sha256Digest,
+    ) -> Result<Option<crate::ProductionMutationState>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ProductionMutationLookup {
+                agent_id,
+                grant_sha256,
+            })
+            .await?
+        {
+            SupervisordPayload::ProductionMutationStatus { state } => Ok(state),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn production_mutation_status(
         &self,
         agent_id: AgentId,

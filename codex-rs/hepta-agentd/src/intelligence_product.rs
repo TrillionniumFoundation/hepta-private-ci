@@ -31,8 +31,8 @@ mod evaluation;
 pub use evaluation::AgentdEvaluationBindingV1;
 use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
-pub use evaluation::AgentdSignedEvaluationV1;
-pub use evaluation::intelligence_evaluation_binding_payload_v1;
+pub use evaluation::AgentdSignedEvaluationV2;
+pub use evaluation::intelligence_evaluation_binding_payload_v2;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -44,6 +44,9 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use crate::intuition_policy_v2::AgentdAuthenticatedIntuitionInputV1;
+use crate::intuition_policy_v2::AgentdIntuitionCurrentBindingV1;
+use crate::intuition_policy_v2::AgentdIntuitionPolicyHostV2;
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::compile;
 use codex_hepta_intelligence::CanonicalFreshnessOracleV1;
@@ -63,9 +66,7 @@ use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::prepare_intelligence_run;
 use codex_hepta_intelligence::validate_current_snapshot;
 use codex_hepta_intelligence_eval::EvaluationRequest;
-use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
-use codex_hepta_intuition::decide_calibrated_v2;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLearningJournal;
 #[cfg(feature = "qualification-legacy-learning-write")]
@@ -224,10 +225,10 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub neural_tick: SparseTick,
     pub neural_previous: Option<SparseCheckpoint>,
     pub prompt_request: OptimizationRequest,
-    pub intuition_request: CalibratedDecisionRequestV1,
+    pub intuition: AgentdAuthenticatedIntuitionInputV1,
     pub context_request: CompilationRequest,
     pub evaluation_request: EvaluationRequest,
-    pub signed_evaluation: Option<AgentdSignedEvaluationV1>,
+    pub signed_evaluation: Option<AgentdSignedEvaluationV2>,
 }
 
 struct AgentdOwnerPortsV1 {
@@ -242,7 +243,12 @@ struct AgentdOwnerPortsV1 {
     neural_tick: Option<SparseTick>,
     neural_previous: Option<Option<SparseCheckpoint>>,
     prompt_request: Option<OptimizationRequest>,
-    intuition_request: Option<CalibratedDecisionRequestV1>,
+    intuition: Option<AgentdAuthenticatedIntuitionInputV1>,
+    intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
+    intuition_current: Option<AgentdIntuitionCurrentBindingV1>,
+    intuition_oracle: FileBackedFreshnessOracleV1,
+    agent_id: codex_hepta_contracts::AgentId,
+    spawn_generation: u64,
     context_request: Option<CompilationRequest>,
     evaluation_request: Option<EvaluationRequest>,
     evaluation_session: Option<AgentdEvaluationSessionV1>,
@@ -253,6 +259,11 @@ impl AgentdOwnerPortsV1 {
     fn new(
         value: AgentdIntelligenceOwnerInputsV1,
         evaluation_session: Option<AgentdEvaluationSessionV1>,
+        intuition_host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
+        intuition_current: AgentdIntuitionCurrentBindingV1,
+        agent_id: codex_hepta_contracts::AgentId,
+        spawn_generation: u64,
+        intuition_oracle: FileBackedFreshnessOracleV1,
     ) -> Self {
         Self {
             objective_envelope: Some(value.objective_envelope),
@@ -266,7 +277,12 @@ impl AgentdOwnerPortsV1 {
             neural_tick: Some(value.neural_tick),
             neural_previous: Some(value.neural_previous),
             prompt_request: Some(value.prompt_request),
-            intuition_request: Some(value.intuition_request),
+            intuition: Some(value.intuition),
+            intuition_host,
+            intuition_current: Some(intuition_current),
+            intuition_oracle,
+            agent_id,
+            spawn_generation,
             context_request: Some(value.context_request),
             evaluation_request: Some(value.evaluation_request),
             evaluation_session,
@@ -464,24 +480,55 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let request = Self::take(
-            &mut self.intuition_request,
-            input.stage,
-            "intuition request",
-        )?;
-        if request.objective_digest != input.objective_digest {
+        let intuition = Self::take(&mut self.intuition, input.stage, "authenticated intuition")?;
+        if intuition.request.objective_digest != input.objective_digest {
             return Err(Self::reject(input.stage, "intuition objective"));
         }
+        let current = Self::take(
+            &mut self.intuition_current,
+            input.stage,
+            "intuition current binding",
+        )?;
+        if current.snapshot_digest != input.snapshot_digest {
+            return Err(Self::reject(input.stage, "intuition snapshot"));
+        }
+        let expected_owner = current.owner.clone();
+        let observed = self
+            .intuition_oracle
+            .current(&expected_owner.owner_id)
+            .map_err(|_| Self::reject(input.stage, "intuition current owner"))?;
+        if observed != expected_owner {
+            self.intuition_host.retire();
+            return Err(Self::reject(input.stage, "intuition owner changed"));
+        }
         let started = Instant::now();
-        let receipt = decide_calibrated_v2(request)
-            .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+        let now = wall_clock_ms().map_err(|_| Self::reject(input.stage, "intuition clock"))?;
+        let receipt = self
+            .intuition_host
+            .decide(
+                &self.agent_id,
+                self.spawn_generation,
+                current,
+                intuition,
+                now,
+            )
+            .map_err(|_| Self::reject(input.stage, "authenticated intuition decision"))?;
+        let observed = self
+            .intuition_oracle
+            .current(&expected_owner.owner_id)
+            .map_err(|_| Self::reject(input.stage, "intuition current owner"))?;
+        if observed != expected_owner {
+            self.intuition_host.retire();
+            return Err(Self::reject(input.stage, "intuition owner changed"));
+        }
         Self::within_budget(input, started)?;
-        if receipt.authority.grants_any() {
+        let policy = &receipt.decision.decision;
+        if policy.authority.grants_any() {
             return Err(Self::reject(input.stage, "intuition authority"));
         }
-        let decision = match &receipt.disposition {
+        let decision = match &policy.disposition {
             CalibratedDispositionV1::Selected(candidate_id) => {
-                let probability = receipt
+                let probability = policy
                     .propensities
                     .iter()
                     .find(|row| &row.candidate_id == candidate_id)
@@ -497,7 +544,12 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             CalibratedDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
             CalibratedDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
         };
-        Self::receipt(input, "intuition.policy", receipt.receipt_digest, decision)
+        Self::receipt(
+            input,
+            "intuition.policy",
+            receipt.host_binding_digest,
+            decision,
+        )
     }
 
     fn compile_context(
@@ -582,7 +634,7 @@ impl PreparedAgentdIntelligenceRunV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
-    Ready(PreparedAgentdIntelligenceRunV1),
+    Ready(Box<PreparedAgentdIntelligenceRunV1>),
     Abstained,
     SlowPath,
 }
@@ -592,7 +644,7 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
     Ready {
-        prepared: PreparedAgentdIntelligenceRunV1,
+        prepared: Box<PreparedAgentdIntelligenceRunV1>,
         run_receipt: crate::RunReceipt,
     },
     Abstained,
@@ -606,8 +658,10 @@ pub enum AgentdIntelligenceProductError {
     Busy,
     TimedOut,
     CandidateSetMismatch,
+    RunStartBinding,
     Clock,
     InvalidAuthorityVerifier,
+    IntuitionPolicyUnavailable,
     Run(crate::AgentRunError),
 }
 
@@ -625,8 +679,11 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
     evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
+    intuition_policy: Option<std::sync::Arc<AgentdIntuitionPolicyHostV2>>,
 }
 
+#[path = "intelligence_run_start.rs"]
+mod run_start;
 #[path = "intelligence_product_runner.rs"]
 mod runner;
 
@@ -722,7 +779,7 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),
-    Indeterminate(PendingIntelligenceLedgerAppendV1),
+    Indeterminate(Box<PendingIntelligenceLedgerAppendV1>),
     NotSelected,
     InvalidOutcome,
 }

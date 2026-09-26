@@ -17,6 +17,9 @@ use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::credit_batch_signing_payload_v2;
+use codex_hepta_learning_ledger::finalize_credit_batch;
+use codex_hepta_learning_ledger::outcome_signing_payload_v2;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -88,6 +91,27 @@ pub fn append_observed_outcome_v2(
     ledger
         .verify_active_decision_binding(&request.run_id, &request.outcome.episode_id)
         .map_err(OutcomeCreditClosureErrorV2::Outcome)?;
+    // Historical acknowledgement is not renewed write authority. Bind the
+    // complete supplied payload before lookup, even when the evidence expired.
+    if Digest32::of_bytes(&outcome_signing_payload_v2(&request.outcome))
+        != request.evidence.payload_digest
+    {
+        return Err(OutcomeCreditClosureErrorV2::Binding(
+            "outcome recovery payload",
+        ));
+    }
+    let identity = ledger.authenticated_append_identity(
+        &request.outcome.record_id,
+        request.expected_ledger_head,
+        &request.evidence,
+    );
+    if let Some(receipt) = ledger
+        .recover_authenticated_append(&identity)
+        .map_err(OutcomeCreditClosureErrorV2::Outcome)?
+    {
+        return Ok(receipt);
+    }
+    // Absence is not permission to write: normal live admission still applies.
     ledger
         .append_outcome(
             request.expected_ledger_head,
@@ -113,17 +137,38 @@ pub fn append_outcome_credit_v2(
     let episode_id = request.outcome.outcome.episode_id.clone();
 
     let outcome_receipt = append_observed_outcome_v2(ledger, request.outcome, now)?;
-    let credit_receipt = ledger
-        .append_credit_batch(
+    let credit_receipt = (|| {
+        // Derive historical identity at the principal's declared authentication
+        // time, not current authorization. Only an exact already-committed
+        // record can use this path; an absent batch still validates `now` below.
+        let finalized = finalize_credit_batch(
+            request.credit.clone(),
+            request.credit.allocator.authenticated_at,
+        )
+        .map_err(ProductionLedgerError::Causal)?;
+        let payload = credit_batch_signing_payload_v2(&request.credit, finalized.batch_digest);
+        if Digest32::of_bytes(&payload) != request.credit_evidence.payload_digest {
+            return Err(ProductionLedgerError::Binding("credit recovery payload"));
+        }
+        let identity = ledger.authenticated_append_identity(
+            &request.credit.batch_id,
+            outcome_receipt.chain_digest,
+            &request.credit_evidence,
+        );
+        if let Some(receipt) = ledger.recover_authenticated_append(&identity)? {
+            return Ok(receipt);
+        }
+        ledger.append_credit_batch(
             outcome_receipt.chain_digest,
             request.credit,
             &request.credit_evidence,
             now,
         )
-        .map_err(|error| OutcomeCreditClosureErrorV2::Credit {
-            outcome: outcome_receipt.clone(),
-            error,
-        })?;
+    })()
+    .map_err(|error| OutcomeCreditClosureErrorV2::Credit {
+        outcome: outcome_receipt.clone(),
+        error,
+    })?;
 
     let mut bytes = b"hepta.intelligence.outcome-credit-closure.v2\0".to_vec();
     push_id(&mut bytes, &run_id)?;
@@ -376,6 +421,23 @@ mod tests {
 
         fn directory(&self) -> File {
             File::open(self._temp.path()).expect("directory")
+        }
+
+        fn recover_writer(&self) -> LedgerWriter {
+            let binding = digest("production-ledger-binding");
+            let witness = LedgerWitnessStore::recover(Self::open(&self.witness_path), binding)
+                .expect("recover witness");
+            let frontier = witness.frontier().expect("witness frontier");
+            let ledger = DurableLedger::recover(
+                Self::open(&self.ledger_path),
+                binding,
+                32,
+                LedgerRecovery::Acknowledged(frontier.anchor),
+            )
+            .expect("recover ledger");
+            let directory = self.directory();
+            LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory)
+                .expect("recover writer")
         }
 
         fn writer(&self) -> LedgerWriter {
@@ -634,5 +696,217 @@ mod tests {
             writer.witness_frontier().expect("frontier").anchor.sequence,
             1
         );
+    }
+
+    use codex_hepta_learning_ledger::LedgerRecovery;
+
+    #[test]
+    fn terminal_retry_after_reopen_and_signature_expiry_returns_original_receipt() {
+        let fixture = Fixture::new();
+        let mut writer = fixture.writer();
+        let decision = append_decision(&mut writer);
+        let observed = outcome("outcome-recovery-record", "outcome-recovery", None, 100);
+        let request = observed_request(&writer, decision.chain_digest, observed);
+        let committed =
+            append_observed_outcome_v2(&mut writer, request.clone(), 50).expect("append");
+        let before = writer.snapshot().expect("snapshot");
+        let frontier = writer.witness_frontier().expect("frontier");
+        drop(writer);
+        let binding = digest("production-ledger-binding");
+        let ledger = DurableLedger::recover(
+            Fixture::open(&fixture.ledger_path),
+            binding,
+            32,
+            LedgerRecovery::Acknowledged(frontier.anchor),
+        )
+        .expect("recover ledger");
+        let witness = LedgerWitnessStore::recover(Fixture::open(&fixture.witness_path), binding)
+            .expect("recover witness");
+        let directory = fixture.directory();
+        let mut writer =
+            LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory)
+                .expect("recover writer");
+        let recovered = append_observed_outcome_v2(&mut writer, request.clone(), 500)
+            .expect("historical receipt needs no renewed signature");
+        assert_eq!(recovered.disposition, AppendDisposition::IdempotentReplay);
+        assert_eq!(recovered.chain_digest, committed.chain_digest);
+        assert_eq!(recovered.event_digest, committed.event_digest);
+        assert_eq!(writer.snapshot().expect("snapshot"), before);
+        assert_eq!(writer.witness_frontier().expect("frontier"), frontier);
+
+        let mut changed = request.clone();
+        changed.outcome.value = Some(FixedQ32::from_raw(999));
+        assert!(matches!(
+            append_observed_outcome_v2(&mut writer, changed, 500),
+            Err(OutcomeCreditClosureErrorV2::Binding(
+                "outcome recovery payload"
+            ))
+        ));
+        let mut changed = request.clone();
+        changed.run_id = id("wrong-run");
+        assert!(append_observed_outcome_v2(&mut writer, changed, 500).is_err());
+        let mut changed = request.clone();
+        changed.expected_ledger_head = digest("wrong-predecessor");
+        assert!(append_observed_outcome_v2(&mut writer, changed, 500).is_err());
+        let mut changed = request;
+        changed.evidence.signature[0] ^= 1;
+        assert!(append_observed_outcome_v2(&mut writer, changed, 500).is_err());
+        assert_eq!(writer.snapshot().expect("unchanged snapshot"), before);
+    }
+
+    #[test]
+    fn absent_outcome_cannot_use_expired_evidence_as_recovery_authority() {
+        let fixture = Fixture::new();
+        let mut writer = fixture.writer();
+        let decision = append_decision(&mut writer);
+        let observed = outcome("absent-outcome-record", "absent-outcome", None, 100);
+        let request = observed_request(&writer, decision.chain_digest, observed);
+        let before = writer.snapshot().expect("snapshot");
+        assert!(append_observed_outcome_v2(&mut writer, request, 500).is_err());
+        assert_eq!(writer.snapshot().expect("unchanged snapshot"), before);
+    }
+
+    #[test]
+    fn full_closure_recovery_preserves_receipts_and_rejects_changed_credit() {
+        let fixture = Fixture::new();
+        let mut writer = fixture.writer();
+        let decision = append_decision(&mut writer);
+        let request = closure_request(
+            &writer,
+            decision.chain_digest,
+            outcome("closed-record", "closed", None, 100),
+            credit("closed", 100),
+        );
+        let mut expected = append_outcome_credit_v2(&mut writer, request.clone(), 50)
+            .expect("commit complete closure");
+        let before = writer.snapshot().expect("snapshot");
+        drop(writer);
+        let mut writer = fixture.recover_writer();
+        expected.outcome.disposition = AppendDisposition::IdempotentReplay;
+        expected.credit.disposition = AppendDisposition::IdempotentReplay;
+        assert_eq!(
+            append_outcome_credit_v2(&mut writer, request.clone(), 500)
+                .expect("recover expired closure"),
+            expected
+        );
+        assert_eq!(
+            append_outcome_credit_v2(&mut writer, request.clone(), 1000)
+                .expect("repeated recovery"),
+            expected
+        );
+        for mutation in 0..4 {
+            let mut changed = request.clone();
+            match mutation {
+                0 => changed.credit.allocations[0].target_id = id("different-artifact"),
+                1 => changed.credit.support_digest = digest("different-credit-support"),
+                2 => changed.credit.allocator.authority_epoch += 1,
+                3 => changed.credit_evidence.signature[0] ^= 1,
+                _ => unreachable!(),
+            }
+            assert!(matches!(
+                append_outcome_credit_v2(&mut writer, changed, 500),
+                Err(OutcomeCreditClosureErrorV2::Credit { .. })
+            ));
+        }
+        assert_eq!(writer.snapshot().expect("unchanged snapshot"), before);
+    }
+
+    #[test]
+    fn partial_closure_recovery_never_uses_expired_authority_for_missing_credit() {
+        let fixture = Fixture::new();
+        let mut writer = fixture.writer();
+        let decision = append_decision(&mut writer);
+        let request = closure_request(
+            &writer,
+            decision.chain_digest,
+            outcome("partial-record", "partial", None, 100),
+            credit("partial", 100),
+        );
+        let mut expected = append_observed_outcome_v2(&mut writer, request.outcome.clone(), 50)
+            .expect("commit outcome only");
+        let before = writer.snapshot().expect("snapshot");
+        drop(writer);
+        let mut writer = fixture.recover_writer();
+        expected.disposition = AppendDisposition::IdempotentReplay;
+        match append_outcome_credit_v2(&mut writer, request, 500) {
+            Err(OutcomeCreditClosureErrorV2::Credit { outcome, .. }) => {
+                assert_eq!(outcome, expected);
+            }
+            other => panic!("missing credit requires current authority: {other:?}"),
+        }
+        assert_eq!(writer.snapshot().expect("unchanged snapshot"), before);
+    }
+
+    #[test]
+    fn full_closure_survives_process_exit_after_commit() {
+        const CHILD_DIRECTORY: &str = "HEPTA_TEST_OUTCOME_CREDIT_CRASH_DIRECTORY";
+        if let Some(directory) = std::env::var_os(CHILD_DIRECTORY) {
+            let directory = PathBuf::from(directory);
+            let binding = digest("production-ledger-binding");
+            let ledger =
+                DurableLedger::create(Fixture::open(&directory.join("ledger")), binding, 32)
+                    .expect("child ledger");
+            let witness =
+                LedgerWitnessStore::create(Fixture::open(&directory.join("witness")), binding)
+                    .expect("child witness");
+            let handle = File::open(&directory).expect("child directory");
+            let mut writer =
+                LedgerWriter::from_durable(ledger, witness, activated_trust(), &handle, &handle)
+                    .expect("child writer");
+            let decision = append_decision(&mut writer);
+            let request = closure_request(
+                &writer,
+                decision.chain_digest,
+                outcome("crash-record", "crash", None, 100),
+                credit("crash", 100),
+            );
+            append_outcome_credit_v2(&mut writer, request, 50).expect("child durable commit");
+            // Exit without destructors or an application-level acknowledgement.
+            // This tests real process recovery, not a live provider/model claim.
+            std::process::exit(73);
+        }
+        let fixture = Fixture::new();
+        let output = std::process::Command::new(std::env::current_exe().expect("test executable"))
+            .args([
+                "--exact",
+                "outcome_credit_v2::tests::full_closure_survives_process_exit_after_commit",
+                "--nocapture",
+            ])
+            .env(CHILD_DIRECTORY, fixture._temp.path())
+            .output()
+            .expect("spawn independent writer process");
+        assert_eq!(
+            output.status.code(),
+            Some(73),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let mut writer = fixture.recover_writer();
+        let before = writer.snapshot().expect("recovered snapshot");
+        let records = writer.records().expect("recovered records");
+        assert_eq!(records.len(), 3);
+        let request = closure_request(
+            &writer,
+            records[0].chain_digest,
+            outcome("crash-record", "crash", None, 100),
+            credit("crash", 100),
+        );
+        let recovered = append_outcome_credit_v2(&mut writer, request, 500)
+            .expect("recover exact historical outcome and credit");
+        assert_eq!(
+            (
+                recovered.outcome.event_digest,
+                recovered.credit.event_digest
+            ),
+            (records[1].event_digest, records[2].event_digest)
+        );
+        assert_eq!(
+            (recovered.outcome.disposition, recovered.credit.disposition),
+            (
+                AppendDisposition::IdempotentReplay,
+                AppendDisposition::IdempotentReplay
+            )
+        );
+        assert_eq!(writer.snapshot().expect("unchanged snapshot"), before);
     }
 }

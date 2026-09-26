@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
-    "tree": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -37,6 +37,11 @@
           "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
           "kind": "native_process_identity",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Creates a generation-fenced managed process from a registered release, retains failed lease-publication children under hard-kill quarantine, and recovers exact process identity without PID-only trust.",
@@ -65,6 +70,11 @@
           "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
           "kind": "readiness_and_generation_fences",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success.",
@@ -93,6 +103,11 @@
           "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
           "kind": "agentd_drain_ack_generation_fence",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut.",
@@ -116,6 +131,11 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "graceful_stop",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Escalates an already fenced lifecycle through graceful process stop without treating process termination as user-task success.",
@@ -139,6 +159,11 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "hard_kill_and_fencing",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Issues a hard kill only to the exact managed process identity after generation fencing; it is an emergency lifecycle action, not release success.",
@@ -162,6 +187,11 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "bounded_restart_budget",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Restarts the current admitted release under generation fencing; automatic crash restarts are separately bounded by the durable restart window/backoff record.",
@@ -195,6 +225,11 @@
           "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
           "kind": "signed_release_and_recovery_authority",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable manifests/program bytes, the per-Agent allow/revoke admission frontier, the exact source/target pair identity, lifecycle/release-state generations and optional signed production authority. The pair digest is a structural binding, not independent semantic-compatibility approval; runtime compatibility is established by the typed Agentd/Matrixd readiness contract before commit. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback.",
@@ -218,6 +253,11 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "rollback_readmission",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+          "kind": "bounded_lifecycle_fault_recovery",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Re-resolves the recorded predecessor at the final-use boundary, rejects revoked or allowance/frontier-drifted releases, verifies its immutable bytes against the durable transaction, and starts rollback only as a fresh process generation.",
@@ -251,6 +291,21 @@
           "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
           "kind": "durable_transaction_integrity",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_signed_tests.rs",
+          "kind": "real_signed_entry_regression",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/production_release_product.rs",
+          "kind": "separate_signer_caller_supervisor_agentd_process_chain",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/release_controller_tests.rs",
+          "kind": "durable_caller_and_terminal_binding",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain.",
@@ -284,6 +339,21 @@
           "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
           "kind": "durable_transaction_integrity",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_signed_tests.rs",
+          "kind": "real_signed_entry_regression",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/production_release_product.rs",
+          "kind": "separate_signer_caller_supervisor_agentd_process_chain",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/release_controller_tests.rs",
+          "kind": "durable_caller_and_terminal_binding",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness.",
@@ -317,6 +387,21 @@
           "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
           "kind": "durable_recovery_terminal_state",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_signed_tests.rs",
+          "kind": "real_signed_entry_regression",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/production_release_product.rs",
+          "kind": "separate_signer_caller_supervisor_agentd_process_chain",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/release_controller_tests.rs",
+          "kind": "durable_caller_and_terminal_binding",
+          "command": "just test --locked -p codex-hepta-supervisor --features production-authority --retries 0"
         }
       ],
       "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback.",
@@ -326,7 +411,10 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Retained signed history has a bounded fail-closed capacity; export acknowledgement and safe reclamation are not implemented.",
+    "Current exact-head and deterministic-merge executions must pass; source composition alone is not qualification."
+  ],
   "externalEvidenceGates": [
     "exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration",
     "target-host startup, watchdog, typed Agentd drain, bounded restart and signed-recovery crash/fault/latency measurements",
@@ -337,7 +425,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -351,8 +439,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "independent_signed_cli_source_composed_exact_candidate_execution_pending",
+  "productionWriterState": "supervisor_owner_and_caller_delivery_journals_composed_deployment_not_qualified",
   "owner": "runtime-control",
   "deputy": "fleet-runtime",
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
@@ -372,9 +460,87 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
-    "tree": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b",
-    "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4",
+    "interpretation": "Reviewed source composition for signed lifecycle, durable bounded fault recovery, independent release caller and host qualification. This observation is not an execution or deployment receipt."
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-release-controller.rs",
+      "nativeSymbol": "main",
+      "role": "normal_independently_authorized_release_cli",
+      "buildTarget": "hepta-supervisor-release-controller"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/release_controller.rs",
+      "nativeSymbol": "dispatch",
+      "role": "durable_delivery_and_exact_grant_recovery",
+      "buildTarget": "codex-hepta-supervisor"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/authority_signer.rs",
+      "nativeSymbol": "SignRequest",
+      "role": "separate_authority_signer_no_private_keys_in_supervisor",
+      "buildTarget": "hepta-authority-signer"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-supervisor",
+      "object": "ba252eb8b988f86f42b7c8e3ad13d6a8f06c2189"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/authority_signer.rs",
+      "object": "aaab6e572b5663e9948da731a25eb708a227bdbc"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-release-controller.rs",
+      "object": "4103a9884d7a2c0e0e558af3303b279e8e2216c5"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_controller.rs",
+      "object": "7010926a9ed45e7aef4a69eadb55f7bfb1a8d00a"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_controller_tests.rs",
+      "object": "b6332c0bc6dfa359fcdc8b6bcabba34ff554067c"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+      "object": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+      "object": "f5767f7bd1b55df0a04317b444a7b40e114c5e35"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "object": "68c0bf6941612d5a0023401a8bdf6081b62bbb83"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_signed_tests.rs",
+      "object": "b3c83281d1e6457306e11a7ebbbaa9aec548a21a"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "object": "1d4084796b2764078f6b774cfc7ebd8b5c04600d"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+      "object": "eb88a374cf9497fc794bba5b62b7c596a4a2200a"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/fault_recovery.rs",
+      "object": "04cfd0cf48956971d8f035f0b7c27a28059f9472"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/production_release_product.rs",
+      "object": "1eadc1fdee58c60f1807eb4c8984797eddff53a2"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
+      "object": "621afc89e6bcba2b568de33559221b92fb0ae893"
+    }
+  ]
 }

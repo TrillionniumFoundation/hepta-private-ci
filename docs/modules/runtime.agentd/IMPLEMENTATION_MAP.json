@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "17286c692508280d6f8a3d154d8bb1fc1b0cb675",
+    "tree": "5b87f023dcf77da8257821050f32c7f55c3cbdb4"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -168,9 +168,14 @@
           "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
           "kind": "bounded_drain_reconciliation",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_intelligence_tests.rs",
+          "kind": "native_unit",
+          "command": "just test --locked -p codex-hepta-agentd --lib -E test(config::tests::intelligence::)"
         }
       ],
-      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain.",
+      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain. Default daemon startup rejects a partial canonical runner/provider profile before services open; final canonical ingress also refuses a partial-pair compatibility fallback. This is configuration rejection, not a concrete native invocation provider.",
       "operation": "daemon_run_lifecycle_control",
       "nativeSymbol": "crate::AgentdMethod::RunStart",
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
@@ -223,7 +228,7 @@
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs",
           "kind": "native_integration",
           "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
         }
@@ -232,7 +237,7 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Same-host purpose-scoped native candidate API. Resolves actual owners; load/predict verify live signed CURRENT plus independent selection and revalidate Memory/ledger. No default daemon bootstrap or effect authority."
     },
     {
       "operation": "shared_terminal_cell_load",
@@ -243,7 +248,7 @@
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs",
           "kind": "native_integration",
           "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
         }
@@ -252,7 +257,7 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Same-host purpose-scoped native candidate API. Resolves actual owners; load/predict verify live signed CURRENT plus independent selection and revalidate Memory/ledger. No default daemon bootstrap or effect authority."
     },
     {
       "operation": "shared_terminal_cell_predict",
@@ -263,7 +268,7 @@
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs",
           "kind": "native_integration",
           "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
         }
@@ -272,13 +277,57 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Same-host purpose-scoped native candidate API. Resolves actual owners; load/predict verify live signed CURRENT plus independent selection and revalidate Memory/ledger. No default daemon bootstrap or effect authority."
+    },
+    {
+      "operation": "shared_terminal_cell_restore",
+      "designOperation": "shared_terminal_cell_restore",
+      "nativeSymbol": "pub async fn restore(",
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs",
+          "kind": "native_integration",
+          "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+        }
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "sourceSemantics": "Restore owner-persisted signed descriptor, complete bounded bundle and current source/ledger in a new process without a training candidate or retraining. Native composition retains external CURRENT floor and descriptor digest; not default daemon activation."
+    },
+    {
+      "designOperation": "compose_authoritative_owner_inputs",
+      "operation": "compose_authoritative_owner_inputs",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+        "symbol": "pub fn authoritative_provider<",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_invocation_owner_tests.rs",
+          "kind": "native_owner_seam",
+          "command": "just test --locked -p codex-hepta-agentd --lib -E 'test(intelligence_ingress)' --retries 0"
+        }
+      ],
+      "sourceSemantics": "Composes host-installed request and seven-owner readers with exact Agent/run fencing and immutable RunStart validation; does not bootstrap the ordinary daemon or authorize effects.",
+      "nativeSymbol": "pub fn authoritative_provider<",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
     "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
     "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.",
-    "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton."
+    "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton.",
+    "Provide a repository-shipped authenticated canonical invocation profile and wire the actual Circuit-to-Cell normal daemon consumer. Shared Replay owner tests and cross-process restore do not establish these product paths."
   ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
@@ -344,19 +393,31 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "168eda095479011354fef8d9e0254157080b9651"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_intelligence_tests.rs",
+      "object": "2d87aeecf668428a74dcc638814890dab94fcb54"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "object": "2bdbfb889a339444508d9e1fe31c23648de5ec9a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_invocation_owner_tests.rs",
+      "object": "39600c1ae4306c1a03a4c5fa20fa6a573609baf6"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+      "object": "34953565c3eca747c775b30270a71cb50dfd8f29"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-      "object": "aed29fe2689084b405dba3864dfcc3375bbf6708"
+      "object": "ede1e2545a5fd6ae896da1fc4edbcec3d7319ed7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/main.rs",
-      "object": "60595420f4bf42089b5745830ac611df1c7ec2c2"
+      "object": "ae3522afcfce61faaa19cf99db0a1eadec47829a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
@@ -368,31 +429,35 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
-      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+      "object": "09a1f524a2f4966b07b5a72b40fc16d91f8b739d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
-      "object": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
+      "object": "2efca904478b819f133a4a80a88e8df918e73fa6"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "fa8091299bff8ace281c8909644c6a531ed5cba0"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "d68bfdf8188b8ec65fc0cff0693bf39a648a4c00"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "bac0aeded80d33b1bc1bf234f19552c9f1c86777"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/shared_terminal_tests.rs",
+      "object": "1af4de8b8af6e8081fb1254b7ec6e9f4adbd8a05"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "e8a1240287492669163968891bb1f21e53ffe23e"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
-      "object": "adf96585c3efb947e35ae73cc096ca1d18d40a78"
+      "object": "716cb307bd28025aff67b911532eeee6db4630cb"
     },
     {
       "path": "codex-rs/hepta-neuron/src/inference_control.rs",
@@ -400,11 +465,11 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime.rs",
-      "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+      "object": "f1b55d581160890448b04724bdf1ecd8dfcfaa12"
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+      "object": "2922425d215e1928d0d72c80789261f4198cb3e5"
     }
   ]
 }

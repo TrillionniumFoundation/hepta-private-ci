@@ -553,13 +553,10 @@ def verify() -> list[str]:
         if not path.is_file():
             failures.append(f"technical document is missing: {technical_document}")
             continue
-        text = path.read_text(encoding="utf-8")
-        if f"**Source status:** `{SOURCE_STATUS}`" not in text:
-            failures.append(f"technical source status is stale: {module_id}")
-        if SOURCE_RECEIPT_HEADING not in text:
-            failures.append(f"technical source receipt is missing: {module_id}")
-        if "Declared roots not yet present:\n\nNone." not in text:
-            failures.append(f"technical missing-root section is stale: {module_id}")
+        # Registry fields above are authoritative. Exact Markdown prose and the
+        # uniform section-17 receipt are validated by their dedicated document
+        # gates rather than repeated here.
+
 
     if not AUDIT_PATH.is_file():
         failures.append("qualification/gap-closure/PLAN_AUDIT.json is missing")
