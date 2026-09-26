@@ -121,7 +121,8 @@ jobs:
               lines.append(
                   f"| `{command['name']}` | {command['exitCode']} | `{command['logSha256']}` |"
               )
-          summary.write_text("\n".join(lines) + "\n", encoding="utf-8", append=False)
+          with summary.open("a", encoding="utf-8") as stream:
+              stream.write("\n".join(lines) + "\n")
           PY
 
       - name: Upload immutable qualification receipt
