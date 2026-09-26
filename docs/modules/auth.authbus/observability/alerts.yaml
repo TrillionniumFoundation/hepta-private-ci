@@ -1,0 +1,118 @@
+schema_version: 1
+module: auth.authbus
+owner: authbus-authority
+rules:
+  - alert: AuthBusOwnerCollision
+    severity: critical
+    expression: increase(hepta_authbus_owner_lock_total{result="collision"}[5m]) > 0
+    for: 0m
+    summary: A second process attempted to own an AuthBus authority database.
+    runbook: ../RECOVERY.md#G-owner-lock-collision
+  - alert: AuthBusOwnerFenceLost
+    severity: critical
+    expression: hepta_authbus_owner_lock_held != 1
+    for: 1m
+    summary: The designated active authority does not report a held owner fence.
+    runbook: ../RECOVERY.md#G-owner-lock-collision
+  - alert: AuthBusCheckpointRollbackOrMismatch
+    severity: critical
+    expression: increase(hepta_authbus_checkpoint_publish_total{result="failure",reason=~"rollback|digest_mismatch|generation_mismatch"}[5m]) > 0
+    for: 0m
+    summary: Database and external checkpoint no longer form an attested frontier.
+    runbook: ../RECOVERY.md#D-checkpoint-ahead-digest-mismatch-or-generation-rollback
+  - alert: AuthBusCheckpointDirtyTooLong
+    severity: critical
+    expression: hepta_authbus_checkpoint_dirty == 1 and hepta_authbus_checkpoint_dirty_age_seconds > 30
+    for: 0m
+    summary: Authoritative mutations have not been published to the external witness.
+    runbook: ../RECOVERY.md#C-checkpoint-behind-database
+  - alert: AuthBusCheckpointPublishWarning
+    severity: warning
+    expression: hepta_authbus_checkpoint_dirty == 1 and hepta_authbus_checkpoint_dirty_age_seconds > 5
+    for: 0m
+    summary: Checkpoint publication is slower than the warning objective.
+    runbook: ../RECOVERY.md#C-checkpoint-behind-database
+  - alert: AuthBusIntegrityFailure
+    severity: critical
+    expression: increase(hepta_authbus_recovery_required{reason=~"sqlite_integrity|schema|foreign_key"}[5m]) > 0
+    for: 0m
+    summary: SQLite integrity or exact schema verification failed.
+    runbook: ../RECOVERY.md#F-sqlite-integrity-or-schema-failure
+  - alert: AuthBusTrustedTimeExpired
+    severity: critical
+    expression: increase(hepta_authbus_trusted_time_total{result="failure",reason=~"expired|rollback|stale"}[5m]) > 0
+    for: 0m
+    summary: Trusted-time validation failed closed.
+    runbook: ../RECOVERY.md#H-issuer-compromise
+  - alert: AuthBusTrustedTimeAgeHigh
+    severity: warning
+    expression: hepta_authbus_trusted_time_age_seconds > 0.5 * on() group_left() hepta_authbus_trusted_time_validity_seconds
+    for: 2m
+    summary: Trusted-time freshness consumed more than half its validity window.
+    runbook: ../OPERATIONS.md#Escalation-conditions
+  - alert: AuthBusExpiredReservationBacklog
+    severity: warning
+    expression: hepta_authbus_reservation_sweep_backlog > 0
+    for: 1m
+    summary: Expired reservations remain after multiple maintenance opportunities.
+    runbook: ../RECOVERY.md#B-expired-held-reservation-backlog
+  - alert: AuthBusExpiredReservationBacklogGrowing
+    severity: critical
+    expression: delta(hepta_authbus_reservation_sweep_backlog[2m]) > 0
+    for: 1m
+    summary: Expired reservation backlog is growing instead of converging.
+    runbook: ../RECOVERY.md#B-expired-held-reservation-backlog
+  - alert: AuthBusIndeterminateReservationOld
+    severity: critical
+    expression: hepta_authbus_reservation_oldest_age_seconds{state="indeterminate"} > 1800
+    for: 0m
+    summary: An ambiguous post-dispatch operation exceeded the reconciliation objective.
+    runbook: ../RECOVERY.md#A-clean-restart-with-unresolved-dispatch
+  - alert: AuthBusMaintenanceStalled
+    severity: critical
+    expression: time() - hepta_authbus_maintenance_last_success_unixtime > 150
+    for: 0m
+    summary: The unified authority maintenance worker has not completed five cadences.
+    runbook: ../OPERATIONS.md#Periodic-authority-work
+  - alert: AuthBusMaintenanceDegraded
+    severity: warning
+    expression: time() - hepta_authbus_maintenance_last_success_unixtime > 60
+    for: 0m
+    summary: The authority maintenance worker missed two cadences.
+    runbook: ../OPERATIONS.md#Periodic-authority-work
+  - alert: AuthBusIssuerVerificationSurge
+    severity: warning
+    expression: sum(rate(hepta_authbus_issuer_verification_total{result="failure"}[5m])) > 5
+    for: 5m
+    summary: Issuer purpose, epoch, lifecycle or signature failures are elevated.
+    runbook: ../KEY_ROTATION.md#Emergency-compromise
+  - alert: AuthBusSettlementFailureSurge
+    severity: warning
+    expression: sum(rate(hepta_authbus_settlement_total{result="failure"}[5m])) > 2
+    for: 5m
+    summary: Settlement verification or binding failures are elevated.
+    runbook: ../KEY_ROTATION.md#Settlement-key-rotation
+  - alert: AuthBusDatabaseCapacityWarning
+    severity: warning
+    expression: sum(hepta_authbus_database_bytes) / hepta_authbus_database_budget_bytes > 0.70
+    for: 10m
+    summary: AuthBus database files exceed 70 percent of the operating budget.
+    runbook: ../OPERATIONS.md#Capacity-controls
+  - alert: AuthBusDatabaseCapacityCritical
+    severity: critical
+    expression: sum(hepta_authbus_database_bytes) / hepta_authbus_database_budget_bytes > 0.90
+    for: 2m
+    summary: AuthBus database files exceed 90 percent of the operating budget.
+    runbook: ../OPERATIONS.md#Capacity-controls
+  - alert: AuthBusOutboxStalled
+    severity: critical
+    expression: hepta_authbus_outbox_oldest_age_seconds{state=~"ready|leased|retrying"} > 600
+    for: 0m
+    summary: Evidence outbox delivery exceeded the critical age objective.
+    runbook: ../RECOVERY.md#A-clean-restart-with-unresolved-dispatch
+  - alert: AuthBusClosedWorldInventoryFailed
+    severity: critical
+    expression: hepta_authbus_api_inventory_pass != 1
+    for: 0m
+    summary: The release permits a raw writer or constructible trusted issuer capability.
+    runbook: ../THREAT_MODEL.md#Activation-blockers
