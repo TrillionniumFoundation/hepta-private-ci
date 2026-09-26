@@ -47,11 +47,11 @@ jobs:
             tools/cognitive-store-host-bootstrap/test_bootstrap.py
           python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
           set +e
-          python3 scripts/cognitive_store_architecture.py > cognitive-store-bootstrap-architecture.log 2>&1
+          python3 scripts/cognitive_store_architecture.py > cognitive-store-bootstrap-architecture.txt 2>&1
           status=$?
           set -e
-          cat cognitive-store-bootstrap-architecture.log
-          printf 'exit_code=%s\n' "$status" >> cognitive-store-bootstrap-architecture.log
+          cat cognitive-store-bootstrap-architecture.txt
+          printf 'exit_code=%s\n' "$status" >> cognitive-store-bootstrap-architecture.txt
       - name: Commit implementation source
         run: |
           set -euo pipefail
@@ -74,12 +74,12 @@ jobs:
           python3 scripts/hepta-implementation-maps.py verify \
             --expected-sha "$(git rev-parse HEAD)" \
             --expected-tree "$(git rev-parse HEAD^{tree})" \
-            > cognitive-store-bootstrap-map-verify.log 2>&1
+            > cognitive-store-bootstrap-map-verify.txt 2>&1
           status=$?
           set -e
-          cat cognitive-store-bootstrap-map-verify.log
-          printf 'exit_code=%s\n' "$status" >> cognitive-store-bootstrap-map-verify.log
-          git add cognitive-store-bootstrap-map-verify.log
+          cat cognitive-store-bootstrap-map-verify.txt
+          printf 'exit_code=%s\n' "$status" >> cognitive-store-bootstrap-map-verify.txt
+          git add cognitive-store-bootstrap-map-verify.txt
           git diff --cached --check
           git commit -m "ci(cognitive-store): retain exact map verifier diagnostic [cognitive-store-bootstrap]"
           git diff --check
