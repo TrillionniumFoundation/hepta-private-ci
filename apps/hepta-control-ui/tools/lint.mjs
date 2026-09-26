@@ -37,4 +37,28 @@ const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"
 if (!packageJson.exports?.["."] || packageJson.main !== "./src/index.js") {
   throw new Error("package root export must be explicit and stable");
 }
-console.log(`checked ${sources.length} JavaScript modules`);
+
+const packageLock = JSON.parse(await readFile(join(root, "package-lock.json"), "utf8"));
+if (
+  packageLock.lockfileVersion !== 3 ||
+  packageLock.name !== packageJson.name ||
+  packageLock.version !== packageJson.version
+) {
+  throw new Error("package-lock.json must be a v3 lock for the exact package identity");
+}
+const declaredDependencies = packageJson.devDependencies ?? {};
+const lockedDeclarations = packageLock.packages?.[""]?.devDependencies ?? {};
+if (JSON.stringify(lockedDeclarations) !== JSON.stringify(declaredDependencies)) {
+  throw new Error("package-lock.json root dependency declarations are stale");
+}
+for (const [name, version] of Object.entries(declaredDependencies)) {
+  if (!/^\d+\.\d+\.\d+$/.test(version)) {
+    throw new Error(`${name} must use an exact dependency version`);
+  }
+  const lockedPackage = packageLock.packages?.[`node_modules/${name}`];
+  if (!lockedPackage || lockedPackage.version !== version || typeof lockedPackage.integrity !== "string") {
+    throw new Error(`${name} is not exactly and integrally locked`);
+  }
+}
+
+console.log(`checked ${sources.length} JavaScript modules and exact dependency lock`);
