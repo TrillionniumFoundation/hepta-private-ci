@@ -124,23 +124,45 @@ jobs:
             -p codex-hepta-learning-ledger \
             -p codex-hepta-shadow-qualification
 
-      - name: Regression tests
+      - name: Regression — codex-hepta-ndu
+        if: always()
         working-directory: codex-rs
-        run: |
-          just test --locked -p codex-hepta-ndu
-          cargo test --locked -p codex-hepta-intelligence-eval --lib
-          cargo test --locked -p codex-hepta-intelligence --lib ndu_stochastic_admission
-          cargo test --locked -p codex-hepta-learning-artifacts --lib pinned
-          cargo test --locked -p codex-hepta-learning-ledger --lib signed_evidence
-          cargo test --locked -p codex-hepta-shadow-qualification value_learning
+        run: just test --locked -p codex-hepta-ndu
+
+      - name: Regression — intelligence-eval
+        if: always()
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-intelligence-eval --lib
+
+      - name: Regression — stochastic admission
+        if: always()
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-intelligence --lib ndu_stochastic_admission
+
+      - name: Regression — learning artifacts
+        if: always()
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-learning-artifacts --lib pinned
+
+      - name: Regression — signed learning evidence
+        if: always()
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-learning-ledger --lib signed_evidence
+
+      - name: Regression — shadow value learning
+        if: always()
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-shadow-qualification value_learning
 
       - name: Control NDU caller regressions
+        if: always()
         working-directory: codex-rs
         run: |
           cargo test --locked -p codex-hepta-control-plane --lib planner_context
           cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
 
       - name: Strict lint
+        if: always()
         working-directory: codex-rs
         run: |
           cargo clippy --locked --all-targets \
@@ -153,6 +175,7 @@ jobs:
             -- -D warnings
 
       - name: Named-host NDU qualification
+        if: always()
         working-directory: codex-rs
         shell: bash
         run: |
