@@ -8,13 +8,43 @@ import {
   ParentFinalUseAuthority,
 } from "../src/agentd-service.js";
 import {
+  createBrowserEffectAdmission,
+} from "../src/effect-admission.js";
+import {
   buildAgentdBrowserFrame,
   encodeAgentdBrowserFrame,
   normalizeAgentdBrowserFrame,
 } from "../src/agentd-protocol.js";
 
 const D1 = "1".repeat(64);
+const D2 = "2".repeat(64);
+const D3 = "3".repeat(64);
+const D4 = "4".repeat(64);
+const D5 = "5".repeat(64);
 const W1 = "a".repeat(64);
+
+function finalUseRequest(input) {
+  return Object.freeze({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    processId: "servo.process.1",
+    profileGeneration: 1,
+    pageGeneration: 1,
+    documentDigest: D2,
+    operationId: input.operationId,
+    action: input.typedAction?.kind ?? "click",
+    typedAction:
+      input.typedAction ??
+      Object.freeze({ kind: "click", selector: "button.primary" }),
+    destinationOrigin: "https://example.com",
+    finalPayloadDigest: D3,
+    profileGrantDigest: D4,
+    effectGrantDigest: D5,
+    authorityEpoch: 7,
+    deadlineMs: 9_000,
+    requestDigest: D1,
+  });
+}
 
 function fakeHost(authority, events) {
   return {
@@ -29,21 +59,27 @@ function fakeHost(authority, events) {
     },
     async navigateOrAct(input) {
       events.push("host_admitted");
-      return authority.withVerifiedUse(
-        {
-          requestDigest: D1,
-          authorityEpoch: 7,
-          operationId: input.operationId,
-          typedAction: input.typedAction,
-        },
-        async (witness) => {
-          events.push("inside_fence");
-          assert.equal(witness.witnessDigest, W1);
-          // This resolves at the durable/local-dispatch boundary. Remote page
-          // terminality is deliberately not part of the authority callback.
-          return { kind: "BrowserEffectObservationV1", status: "indeterminate", terminalObserved: false };
-        },
-      );
+      const request = finalUseRequest(input);
+      return authority.withVerifiedUse(request, async (witness) => {
+        events.push("inside_fence");
+        assert.equal(witness.witnessDigest, W1);
+        const { requestDigest: _requestDigest, ...requestSemantics } = request;
+        const effectSemantics = Object.freeze({
+          ...requestSemantics,
+          verifiedUseTokenWitnessDigest: witness.witnessDigest,
+        });
+        // The worker-originated admission receipt is returned before remote
+        // page execution settles. Agentd must validate it before releasing the
+        // final-use fence.
+        return {
+          kind: "BrowserEffectObservationV1",
+          status: "indeterminate",
+          terminalObserved: false,
+          admission: createBrowserEffectAdmission(effectSemantics, {
+            clock: () => 1_234,
+          }),
+        };
+      });
     },
     async reconcileOperation(input) {
       return { kind: "reconciled", operationId: input.operationId };
@@ -70,7 +106,7 @@ function pairedChannels() {
   };
 }
 
-test("navigate request challenges Agentd before local dispatch and reports the boundary before response", async () => {
+test("navigate request challenges Agentd then returns a bound effect-admission receipt", async () => {
   const channels = pairedChannels();
   const events = [];
   const authority = new ParentFinalUseAuthority(channels.child);
@@ -121,12 +157,71 @@ test("navigate request challenges Agentd before local dispatch and reports the b
   assert.equal(boundary.kind, "dispatch_boundary");
   assert.equal(boundary.payload.localDispatchCrossed, true);
   assert.equal(boundary.payload.requestDigest, D1);
+  assert.equal(
+    boundary.payload.admission.kind,
+    "BrowserEffectAdmissionV1",
+  );
+  assert.equal(boundary.payload.admission.operationId, "operation.1");
+  assert.equal(boundary.payload.admission.workerGeneration, 1);
+  assert.equal(boundary.payload.admission.admittedAt, 1_234);
+  assert.equal(boundary.payload.admission.durableOrRecoverable, true);
   assert.deepEqual(events, ["host_admitted", "inside_fence"]);
 
   const response = await channels.parent.nextFrame();
   assert.equal(response.kind, "response");
   assert.equal(response.payload.ok, true);
   assert.equal(response.payload.result.status, "indeterminate");
+
+  channels.close();
+  await running;
+});
+
+test("admission drift fails closed before Agentd receives dispatch boundary", async () => {
+  const channels = pairedChannels();
+  const events = [];
+  const authority = new ParentFinalUseAuthority(channels.child);
+  const host = fakeHost(authority, events);
+  host.navigateOrAct = async (input) => {
+    const request = finalUseRequest(input);
+    return authority.withVerifiedUse(request, async (witness) => {
+      const { requestDigest: _requestDigest, ...requestSemantics } = request;
+      const effectSemantics = Object.freeze({
+        ...requestSemantics,
+        verifiedUseTokenWitnessDigest: witness.witnessDigest,
+      });
+      return {
+        terminalObserved: false,
+        admission: {
+          ...createBrowserEffectAdmission(effectSemantics, {
+            clock: () => 1_234,
+          }),
+          workerGeneration: 2,
+        },
+      };
+    });
+  };
+  const service = new BrowserAgentdService({
+    host,
+    channel: channels.child,
+    authority,
+  });
+  const running = service.run();
+
+  await channels.parent.send("request", "request.drift", {
+    method: "navigate_or_act",
+    input: { operationId: "operation.drift" },
+  });
+  await channels.parent.nextFrame();
+  await channels.parent.send("authority_enter", "request.drift", {
+    authorized: true,
+    witnessDigest: W1,
+    authorityEpoch: 7,
+    requestDigest: D1,
+  });
+  const response = await channels.parent.nextFrame();
+  assert.equal(response.kind, "response");
+  assert.equal(response.payload.ok, false);
+  assert.match(response.payload.error, /workerGeneration does not bind/);
 
   channels.close();
   await running;
@@ -141,11 +236,7 @@ test("pre-dispatch rejection releases the authority fence without claiming local
     events.push("host_admitted");
     try {
       return await authority.withVerifiedUse(
-        {
-          requestDigest: D1,
-          authorityEpoch: 7,
-          operationId: input.operationId,
-        },
+        finalUseRequest(input),
         async () => {
           events.push("inside_fence");
           throw Object.assign(new Error("stale worker snapshot"), {
@@ -242,7 +333,10 @@ test("Agentd service protocol rejects payload digest drift", () => {
     sequence: 1,
     kind: "request",
     requestId: "request.3",
-    payload: { method: "observe_page", input: { profileId: "profile.1" } },
+    payload: {
+      method: "observe_page",
+      input: { profileId: "profile.1" },
+    },
   });
   assert.throws(
     () => normalizeAgentdBrowserFrame({ ...frame, payloadDigest: D1 }),
@@ -251,7 +345,6 @@ test("Agentd service protocol rejects payload digest drift", () => {
   const encoded = encodeAgentdBrowserFrame(frame);
   assert.equal(encoded.readUInt32BE(0), encoded.length - 4);
 });
-
 
 test("Agentd browser channel applies bounded unread-frame backpressure", async () => {
   const input = new PassThrough();
@@ -264,7 +357,10 @@ test("Agentd browser channel applies bounded unread-frame backpressure", async (
           sequence,
           kind: "request",
           requestId: `request.queue.${sequence}`,
-          payload: { method: "observe_page", input: { profileId: "profile.1" } },
+          payload: {
+            method: "observe_page",
+            input: { profileId: "profile.1" },
+          },
         }),
       ),
     );

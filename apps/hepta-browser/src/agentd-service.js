@@ -3,6 +3,11 @@ import {
   encodeAgentdBrowserFrame,
   buildAgentdBrowserFrame,
 } from "./agentd-protocol.js";
+import {
+  browserEffectPageRevision,
+  normalizeBrowserEffectAdmission,
+} from "./effect-admission.js";
+import { canonicalDigest } from "./runtime-contract.js";
 
 const MAX_QUEUED_AGENTD_FRAMES = 64;
 
@@ -46,6 +51,21 @@ function positiveInteger(value, name) {
   return value;
 }
 
+function expectedAdmissionBinding(request, witness) {
+  const { requestDigest: _requestDigest, ...requestSemantics } = request;
+  const effectSemantics = Object.freeze({
+    ...requestSemantics,
+    verifiedUseTokenWitnessDigest: witness.witnessDigest,
+  });
+  return Object.freeze({
+    operationId: effectSemantics.operationId,
+    semanticDigest: canonicalDigest(effectSemantics),
+    workerGeneration:
+      effectSemantics.profileGeneration ?? effectSemantics.generation,
+    pageRevision: browserEffectPageRevision(effectSemantics),
+  });
+}
+
 export class AgentdBrowserChannel {
   #input;
   #output;
@@ -59,7 +79,9 @@ export class AgentdBrowserChannel {
 
   constructor({ input, output }) {
     if (!input?.on || typeof output?.write !== "function") {
-      throw new TypeError("Agentd browser channel requires readable and writable streams");
+      throw new TypeError(
+        "Agentd browser channel requires readable and writable streams",
+      );
     }
     this.#input = input;
     this.#output = output;
@@ -73,12 +95,16 @@ export class AgentdBrowserChannel {
     if (this.#queue.length) return this.#queue.shift();
     if (this.#failed) throw this.#failed;
     if (this.#ended) return null;
-    return new Promise((resolve, reject) => this.#waiters.push({ resolve, reject }));
+    return new Promise((resolve, reject) =>
+      this.#waiters.push({ resolve, reject }),
+    );
   }
 
   send(kind, requestId, payload) {
     if (this.#failed) return Promise.reject(this.#failed);
-    if (this.#ended) return Promise.reject(new Error("Agentd browser channel is closed"));
+    if (this.#ended) {
+      return Promise.reject(new Error("Agentd browser channel is closed"));
+    }
     const encoded = encodeAgentdBrowserFrame(
       buildAgentdBrowserFrame({
         sequence: this.#nextOutgoingSequence++,
@@ -106,7 +132,9 @@ export class AgentdBrowserChannel {
     }
     for (const frame of frames) {
       if (frame.sequence !== this.#nextIncomingSequence++) {
-        this.#fail(new TypeError("Agentd browser input sequence is not monotonic"));
+        this.#fail(
+          new TypeError("Agentd browser input sequence is not monotonic"),
+        );
         return;
       }
       const waiter = this.#waiters.shift();
@@ -150,7 +178,9 @@ export class ParentFinalUseAuthority {
 
   constructor(channel) {
     if (!(channel instanceof AgentdBrowserChannel)) {
-      throw new TypeError("ParentFinalUseAuthority requires AgentdBrowserChannel");
+      throw new TypeError(
+        "ParentFinalUseAuthority requires AgentdBrowserChannel",
+      );
     }
     this.#channel = channel;
   }
@@ -170,11 +200,16 @@ export class ParentFinalUseAuthority {
   async withVerifiedUse(request, consumer) {
     requireRecord(request, "final-use request");
     if (this.#activeRequestId === null) {
-      throw new TypeError("final-use authority may only run inside one Agentd request");
+      throw new TypeError(
+        "final-use authority may only run inside one Agentd request",
+      );
     }
     const requestId = this.#activeRequestId;
     const requestDigest = digest(request.requestDigest, "requestDigest");
-    const authorityEpoch = positiveInteger(request.authorityEpoch, "authorityEpoch");
+    const authorityEpoch = positiveInteger(
+      request.authorityEpoch,
+      "authorityEpoch",
+    );
     // Final-use authority consumes immutable identity, not the live action
     // body. Avoid duplicating typed action data (notably type.text) into the
     // authority control plane.
@@ -183,25 +218,44 @@ export class ParentFinalUseAuthority {
       authorityEpoch,
     });
     const enter = await this.#channel.nextFrame();
-    if (!enter || enter.kind !== "authority_enter" || enter.requestId !== requestId) {
-      throw new TypeError("Agentd did not enter the matching final-use fence");
+    if (
+      !enter ||
+      enter.kind !== "authority_enter" ||
+      enter.requestId !== requestId
+    ) {
+      throw new TypeError(
+        "Agentd did not enter the matching final-use fence",
+      );
     }
     const payload = requireRecord(enter.payload, "authority enter payload");
     if (payload.authorized !== true) {
-      throw new TypeError("Agentd final-use authority denied browser dispatch");
+      throw new TypeError(
+        "Agentd final-use authority denied browser dispatch",
+      );
     }
     const witness = Object.freeze({
       authorized: true,
       witnessDigest: digest(payload.witnessDigest, "witnessDigest"),
-      authorityEpoch: positiveInteger(payload.authorityEpoch, "authorityEpoch"),
+      authorityEpoch: positiveInteger(
+        payload.authorityEpoch,
+        "authorityEpoch",
+      ),
       requestDigest: digest(payload.requestDigest, "requestDigest"),
     });
-    if (witness.requestDigest !== requestDigest || witness.authorityEpoch !== authorityEpoch) {
-      throw new TypeError("Agentd final-use witness does not bind the Browser request");
+    if (
+      witness.requestDigest !== requestDigest ||
+      witness.authorityEpoch !== authorityEpoch
+    ) {
+      throw new TypeError(
+        "Agentd final-use witness does not bind the Browser request",
+      );
     }
     let result;
     try {
-      result = await consumer(witness);
+      result = requireRecord(
+        await consumer(witness),
+        "browser dispatch-boundary result",
+      );
     } catch (error) {
       if (error?.code === "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
         await this.#channel.send("dispatch_rejected", requestId, {
@@ -212,10 +266,15 @@ export class ParentFinalUseAuthority {
       }
       throw error;
     }
+    const admission = normalizeBrowserEffectAdmission(
+      result.admission,
+      expectedAdmissionBinding(request, witness),
+    );
     await this.#channel.send("dispatch_boundary", requestId, {
       requestDigest,
       witnessDigest: witness.witnessDigest,
       localDispatchCrossed: true,
+      admission,
     });
     return result;
   }
@@ -237,13 +296,19 @@ export class BrowserAgentdService {
       "reconcilePersistedOperation",
       "closeProfile",
     ]) {
-      if (typeof host[method] !== "function") throw new TypeError(`browser host.${method} is required`);
+      if (typeof host[method] !== "function") {
+        throw new TypeError(`browser host.${method} is required`);
+      }
     }
     if (!(channel instanceof AgentdBrowserChannel)) {
-      throw new TypeError("BrowserAgentdService requires AgentdBrowserChannel");
+      throw new TypeError(
+        "BrowserAgentdService requires AgentdBrowserChannel",
+      );
     }
     if (!(authority instanceof ParentFinalUseAuthority)) {
-      throw new TypeError("BrowserAgentdService requires ParentFinalUseAuthority");
+      throw new TypeError(
+        "BrowserAgentdService requires ParentFinalUseAuthority",
+      );
     }
     this.#host = host;
     this.#channel = channel;
@@ -255,7 +320,9 @@ export class BrowserAgentdService {
       const frame = await this.#channel.nextFrame();
       if (frame === null) return;
       if (frame.kind !== "request") {
-        throw new TypeError("Browser service expected an Agentd request frame");
+        throw new TypeError(
+          "Browser service expected an Agentd request frame",
+        );
       }
       await this.#serve(frame);
     }
@@ -263,11 +330,17 @@ export class BrowserAgentdService {
 
   async #serve(frame) {
     try {
-      const payload = requireRecord(frame.payload, "Browser service request payload");
+      const payload = requireRecord(
+        frame.payload,
+        "Browser service request payload",
+      );
       if (!SERVICE_METHODS.has(payload.method)) {
         throw new TypeError("Browser service method is not registered");
       }
-      const input = requireRecord(payload.input, "Browser service input");
+      const input = requireRecord(
+        payload.input,
+        "Browser service input",
+      );
       let result;
       switch (payload.method) {
         case "open_profile":
@@ -296,7 +369,10 @@ export class BrowserAgentdService {
         default:
           throw new TypeError("unreachable Browser service method");
       }
-      await this.#channel.send("response", frame.requestId, { ok: true, result });
+      await this.#channel.send("response", frame.requestId, {
+        ok: true,
+        result,
+      });
     } catch (error) {
       await this.#channel.send("response", frame.requestId, {
         ok: false,
