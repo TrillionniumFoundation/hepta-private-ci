@@ -28,6 +28,7 @@ pub use durable::CognitiveWriteReceipt;
 pub use durable::DURABLE_BACKEND_ID;
 pub use durable::DURABLE_DATABASE_BASENAME;
 pub use durable::DURABLE_SINGLE_WRITER;
+pub use durable::DurableCognitiveReadStore;
 pub use durable::DurableCognitiveSnapshot;
 pub use durable::DurableCognitiveSnapshotCursor;
 pub use durable::DurableCognitiveSnapshotPage;

@@ -1,4 +1,5 @@
 #![cfg(unix)]
+#![cfg(feature = "qualification-cognitive-write")]
 
 use std::collections::BTreeSet;
 use std::error::Error;

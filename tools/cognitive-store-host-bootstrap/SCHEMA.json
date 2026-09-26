@@ -1,0 +1,31 @@
+{
+  "$id": "hepta.cognitive-store-host-bootstrap.v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "payload": {
+      "additionalProperties": true,
+      "required": [
+        "schema",
+        "state",
+        "owner_agent_id",
+        "recovery_anchor",
+        "authority",
+        "lease_id",
+        "writer_generation",
+        "active_pointer_sha256",
+        "database_sha256"
+      ],
+      "type": "object"
+    },
+    "signature": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "payload",
+    "signature"
+  ],
+  "type": "object"
+}

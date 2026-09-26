@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "normal_agentd_runtime_capability_composed_external_bootstrap_pending",
-  "productionWriterState": "sealed_same_transaction_provenance_writer_source_bound_qualification_pending",
+  "productCallerState": "single_canonical_agentd_writer_facade_source_composed_external_bootstrap_qualification_pending",
+  "productionWriterState": "sealed_same_transaction_live_verified_writer_default_escape_closed_qualification_pending",
   "operations": [
     {
       "operation": "semantic_revision_ledger",
@@ -37,10 +37,10 @@
     },
     {
       "operation": "durable_owner",
-      "nativeSymbol": "DurableCognitiveStore",
+      "nativeSymbol": "DurableCognitiveReadStore",
       "sourcePath": "codex-rs/hepta-cognitive-store/src/durable.rs",
-      "state": "canonical_durable_owner_source_implemented_qualification_pending",
-      "authority": "externally_verified",
+      "state": "read_only_product_facade_source_implemented_qualification_pending",
+      "authority": "deny_all_read",
       "tests": [
         "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
@@ -88,7 +88,7 @@
       "operation": "product_writer_host",
       "nativeSymbol": "AgentdProductionWriterHost",
       "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
-      "state": "normal_runtime_composition_source_bound_external_bootstrap_pending",
+      "state": "unique_canonical_product_write_facade_source_implemented_qualification_pending",
       "authority": "externally_verified",
       "tests": [
         "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
@@ -115,7 +115,7 @@
       "operation": "production_mutation_capability",
       "nativeSymbol": "ProductionCognitiveMutationCapability",
       "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
-      "state": "sealed_live_verified_same_transaction_provenance_source_implemented_qualification_pending",
+      "state": "sealed_live_verified_same_transaction_source_implemented_default_escape_closed_qualification_pending",
       "authority": "externally_verified_final_use",
       "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs",
@@ -225,19 +225,60 @@
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
       "sourcePathExists": true
+    },
+    {
+      "operation": "architecture_boundary_gate",
+      "designOperation": "closed_world_raw_store_and_unique_facade_verification",
+      "nativeSymbol": "main",
+      "sourcePath": "scripts/cognitive_store_architecture.py",
+      "mappingClass": "source_verifier",
+      "delegatedCallees": [],
+      "tests": [
+        "docs/modules/cognitive.store/cognitive-store-qualification.generated.yml"
+      ],
+      "state": "source_implemented_execution_pending",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "host_bootstrap_evidence",
+      "designOperation": "authenticate_current_cut_rotation_revocation_canary_rollback",
+      "nativeSymbol": "verify",
+      "sourcePath": "tools/cognitive-store-host-bootstrap/bootstrap.py",
+      "mappingClass": "trusted_host_tool",
+      "delegatedCallees": [],
+      "tests": [
+        "tools/cognitive-store-host-bootstrap/test_bootstrap.py"
+      ],
+      "state": "source_implemented_target_host_acceptance_pending",
+      "authority": "host_evidence_authentication_not_authority_issuance",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "cognitive_store_qualification",
+      "designOperation": "exact_source_head_and_deterministic_base_merge_execution",
+      "nativeSymbol": "Cognitive store qualification",
+      "sourcePath": "docs/modules/cognitive.store/cognitive-store-qualification.generated.yml",
+      "mappingClass": "qualification_workflow",
+      "delegatedCallees": [],
+      "tests": [
+        "scripts/cognitive_store_qualification_manifest.py",
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      ],
+      "state": "source_implemented_execution_pending",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for this source baseline, including child-process crash/reopen and 256/16384 PERF-DURABLE artifacts.",
-    "Obtain terminal-success exact-candidate execution evidence for the same-transaction semantic-validation failure, response-loss/restart duplicate rejection, and live-authority revocation cases already present in source tests.",
-    "Define and qualify long-term ancestry-safe retention/pruning beyond bounded paging; logical tombstones must not be reported as physical erasure, backup deletion, derived-artifact revocation or model unlearning.",
-    "Keep productionImplementation false until the normal-runtime sealed capability path compiles/tests on the exact candidate and product execution evidence is current.",
-    "Standalone deployment must receive an independently authenticated current-cut witness and externally verified live production authority from its host; Agentd must not self-mint either."
+    "Obtain terminal-success source-head and deterministic synthetic-merge manifests for the exact final candidate, including crash/reopen and 256/16384 PERF-DURABLE records.",
+    "Qualify the authenticated bootstrap bundle, canary, active-pointer ambiguity handling and rollback generation on the selected target host.",
+    "Implement and qualify destructive ancestry-safe pruning/physical erasure; current tombstones remain logical non-use and do not imply backup or model deletion."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "trusted host bootstrap and target-host product qualification",
-    "operator acceptance, canary, promotion and release"
+    "independent semantic and security review",
+    "trusted authority issuer and target-host product qualification",
+    "operator acceptance, canary promotion, activation and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -278,12 +319,7 @@
     {
       "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
       "nativeSymbol": "AgentdProductionWriterHost",
-      "state": "concrete_configured_writer_host"
-    },
-    {
-      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
-      "nativeSymbol": "open_cognitive_runtime_after_generation_fence",
-      "state": "default_fenced_store_open"
+      "state": "canonical_production_write_facade"
     }
   ],
   "sourceObjects": [
@@ -363,5 +399,17 @@
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
       "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
     }
-  ]
+  ],
+  "productWriteFacade": {
+    "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "nativeSymbol": "AgentdProductionWriterHost",
+    "uniquenessEnforcedBy": "scripts/cognitive_store_architecture.py"
+  },
+  "phaseClosure": {
+    "architectureAmbiguity": "source_implemented",
+    "compileTimeCapabilityBoundary": "source_implemented_with_closed_world_build_gate",
+    "dedicatedQualification": "workflow_source_implemented_execution_pending",
+    "trustedHostBootstrap": "source_implemented_target_host_acceptance_pending",
+    "dataLifecycleAndRunbooks": "documented_pruning_runtime_pending"
+  }
 }

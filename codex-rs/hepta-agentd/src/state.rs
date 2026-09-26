@@ -8,12 +8,15 @@ use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_cognitive_store::DurableCognitiveReadStore as CognitiveStore;
+#[cfg(test)]
+use codex_hepta_cognitive_store::DurableCognitiveStore as RawCognitiveStore;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -207,10 +210,15 @@ impl AgentdState {
         producer.submit_topology(request, now).await
     }
 
-    pub(crate) fn attach_cognitive_store(
+    /// Attach only the read capability derived from the already composed
+    /// runtime.  The state object never retains a raw mutable store handle.
+    pub(crate) fn attach_cognitive_runtime(
         &self,
-        store: Arc<CognitiveStore>,
+        runtime: &CognitiveRuntime,
     ) -> Result<(), AgentdError> {
+        let Some(store) = CognitiveStore::from_runtime(runtime) else {
+            return Ok(());
+        };
         if store.owner_agent_id() != &self.identity.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "cognitive store owner does not match agentd identity".to_string(),
@@ -222,15 +230,25 @@ impl AgentdState {
                 "cognitive store was attached more than once".to_string(),
             ));
         }
-        *cognitive = Some(store);
+        *cognitive = Some(Arc::new(store));
         Ok(())
+    }
+
+    /// Unit-test-only adapter for legacy fixtures.  Product code cannot call
+    /// this method because it is absent from non-test builds.
+    #[cfg(test)]
+    pub(crate) fn attach_cognitive_store(
+        &self,
+        store: Arc<RawCognitiveStore>,
+    ) -> Result<(), AgentdError> {
+        self.attach_cognitive_runtime(&CognitiveRuntime::Available(store))
     }
 
     pub(crate) fn attach_production_operations(
         &self,
         host: Arc<crate::AgentdProductionWriterHost>,
     ) -> Result<(), AgentdError> {
-        if host.writer().authority().agent_id != self.identity.agent_id {
+        if host.authority().agent_id != self.identity.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "production operation host authority does not match agentd identity".to_string(),
             ));

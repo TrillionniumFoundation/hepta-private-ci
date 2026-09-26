@@ -199,9 +199,7 @@ pub async fn run(
     // the existing availability-tolerant behavior; only the explicit
     // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
-    if let Some(store) = cognitive_runtime.available_store() {
-        state.attach_cognitive_store(Arc::clone(store))?;
-    }
+    state.attach_cognitive_runtime(&cognitive_runtime)?;
     let production_operations = match production_operations {
         Some(operations) => {
             let recovered_host = production_writer_host.as_ref().ok_or_else(|| {

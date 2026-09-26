@@ -1,9 +1,14 @@
-//! Canonical production boundary for the durable cognitive owner.
+//! Canonical cognitive-store boundaries over the single durable SQLite owner.
 //!
-//! `hepta-cognitive-store` owns the module API and semantic invariants.
-//! `hepta-memory::CognitiveStore` remains the single physical SQLite owner;
-//! this module re-exports that implementation rather than introducing a second
-//! database, migration set, writer identity, or synchronization path.
+//! `hepta-memory::CognitiveStore` remains the physical database owner.  Product
+//! serving code receives [`DurableCognitiveReadStore`], which exposes only
+//! bounded read/revalidation operations.  The raw backend and writer types are
+//! compatibility/owner implementation details; the architecture gate permits
+//! their use only inside the physical owner, the unique Agentd production host,
+//! and explicit qualification code.
+
+use std::fmt;
+use std::sync::Arc;
 
 pub const DURABLE_BACKEND_ID: &str = "hepta-memory::CognitiveStore";
 pub const DURABLE_DATABASE_BASENAME: &str = "cognitive_1.sqlite3";
@@ -14,7 +19,6 @@ pub use codex_hepta_memory::CognitiveRecoveryAnchor;
 pub use codex_hepta_memory::CognitiveRecoveryError;
 pub use codex_hepta_memory::CognitiveRecoveryRequirement;
 pub use codex_hepta_memory::CognitiveScope;
-pub use codex_hepta_memory::CognitiveStore as DurableCognitiveStore;
 pub use codex_hepta_memory::CognitiveStoreError as DurableCognitiveStoreError;
 pub use codex_hepta_memory::CognitiveWriteReceipt;
 pub use codex_hepta_memory::DurableCognitiveSnapshot;
@@ -43,7 +47,6 @@ pub use codex_hepta_memory::ProductionCognitiveMutationReceiptV1;
 pub use codex_hepta_memory::ProductionDispatchFuture;
 pub use codex_hepta_memory::ProductionDispatchReceipt;
 pub use codex_hepta_memory::ProductionDispatchRequest;
-pub use codex_hepta_memory::ProductionDurableWriter;
 pub use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 pub use codex_hepta_memory::ProductionOutboxTarget;
 pub use codex_hepta_memory::ProductionQueuedReceipt;
@@ -51,3 +54,106 @@ pub use codex_hepta_memory::ProductionWriterError;
 pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
 pub use codex_hepta_memory::SourceDraft;
 pub use codex_hepta_memory::StableMemoryId;
+
+/// Raw physical owner compatibility alias.
+///
+/// Product serving code must use [`DurableCognitiveReadStore`].  The repository
+/// architecture check rejects new non-test uses of this alias outside the
+/// physical owner bootstrap and `AgentdProductionWriterHost`.
+#[doc(hidden)]
+pub use codex_hepta_memory::CognitiveStore as DurableCognitiveStore;
+
+/// Low-level durable writer compatibility alias.
+///
+/// The default Agentd build does not expose its writer accessor outside the
+/// crate.  Qualification builds opt in explicitly.
+#[doc(hidden)]
+pub use codex_hepta_memory::ProductionDurableWriter;
+
+/// Read-only product capability for one exact durable cognitive owner.
+///
+/// This wrapper has no mutation, source-append, lease-creation, migration or
+/// raw-backend escape method.  It can only be constructed from the already
+/// composed `CognitiveRuntime`, so normal serving code cannot open a second
+/// writer or bypass recovery/authority composition.
+#[derive(Clone)]
+pub struct DurableCognitiveReadStore {
+    backend: Arc<codex_hepta_memory::CognitiveStore>,
+}
+
+impl fmt::Debug for DurableCognitiveReadStore {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("DurableCognitiveReadStore")
+            .field("owner_agent_id", self.backend.owner_agent_id())
+            .finish_non_exhaustive()
+    }
+}
+
+impl DurableCognitiveReadStore {
+    /// Derive a read-only capability from a host-composed runtime.  No file is
+    /// opened and no authority is manufactured here.
+    pub fn from_runtime(runtime: &codex_hepta_memory::CognitiveRuntime) -> Option<Self> {
+        runtime.available_store().map(|backend| Self {
+            backend: Arc::clone(backend),
+        })
+    }
+
+    pub fn owner_agent_id(&self) -> &codex_hepta_contracts::AgentId {
+        self.backend.owner_agent_id()
+    }
+
+    pub async fn lane_c_snapshot(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveSnapshot, DurableCognitiveStoreError> {
+        self.backend
+            .lane_c_snapshot(access, scope, now_unix_seconds)
+            .await
+    }
+
+    pub async fn observe_memory_retrieval(
+        &self,
+        access: &CognitiveAccess,
+        request: &codex_hepta_memory::RetrievalRequest,
+    ) -> Result<codex_hepta_memory::CognitiveRetrievalObservationV1, DurableCognitiveStoreError>
+    {
+        self.backend.observe_memory_retrieval(access, request).await
+    }
+
+    pub async fn revalidate_memory_candidates(
+        &self,
+        access: &CognitiveAccess,
+        bindings: &[codex_hepta_memory::MemoryRevalidationBinding],
+        now_unix_seconds: i64,
+    ) -> Result<Vec<codex_hepta_memory::RevalidationStatus>, DurableCognitiveStoreError> {
+        self.backend
+            .revalidate_memory_candidates(access, bindings, now_unix_seconds)
+            .await
+    }
+
+    pub async fn read_shared_experience(
+        &self,
+        consumer: &codex_hepta_memory::FederationConsumerAccess,
+        key: &codex_hepta_contracts::Sha256Digest,
+        purpose: &codex_hepta_memory::SharedExperiencePurposeV1,
+    ) -> Result<codex_hepta_memory::SharedExperienceUseV1, DurableCognitiveStoreError> {
+        self.backend
+            .read_shared_experience(consumer, key, purpose)
+            .await
+    }
+
+    pub async fn revalidate_lane_c_snapshot(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        expected: &DurableCognitiveSnapshot,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveSnapshot, DurableCognitiveStoreError> {
+        self.backend
+            .revalidate_lane_c_snapshot(access, scope, expected, now_unix_seconds)
+            .await
+    }
+}

@@ -9,7 +9,7 @@ use codex_hepta_cognitive_read::ReadFieldV1;
 use codex_hepta_cognitive_read::ReadIdsError;
 use codex_hepta_cognitive_read::ReadIdsRequestV1;
 use codex_hepta_cognitive_read::ReadIdsResultV1;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_cognitive_store::DurableCognitiveReadStore as CognitiveStore;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError as CognitiveStoreError;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;

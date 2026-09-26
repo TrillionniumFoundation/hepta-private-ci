@@ -353,16 +353,15 @@ impl AgentdConfig {
                 "production cognitive writer host already configured".to_string(),
             ));
         }
-        let writer = host.writer();
-        if writer.owner_agent_id() != &self.identity.agent_id {
+        if host.owner_agent_id() != &self.identity.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "production cognitive writer owner does not match Agentd identity".to_string(),
             ));
         }
-        if writer.generation() != self.identity.spawn_generation {
+        if host.writer_generation() != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
                 "production cognitive writer generation {} does not match Agentd spawn generation {}",
-                writer.generation(),
+                host.writer_generation(),
                 self.identity.spawn_generation
             )));
         }
