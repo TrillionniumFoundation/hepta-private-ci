@@ -41,15 +41,18 @@ required_boundary_ids = [
   "bao_registered_revocation_update",
   "bao_registered_final_use_host",
   "authority_lease_open_state",
+  "authority_lease_open_production_state",
   "authority_lease_put",
   "authority_lease_revoke",
   "authority_lease_prune",
   "authority_lease_epoch_advance",
   "authority_lease_verify_use",
+  "authority_lease_bind_dispatch",
   "authority_lease_delivery",
   "authority_lease_delivery_witness",
   "authority_lease_dispatch_raw",
   "authority_lease_dispatch_witness",
+  "authority_lease_dispatch_binding",
   "final_use_async_dispatch_fence",
   "final_use_guarded_effect",
   "final_use_async_entry",
@@ -157,7 +160,7 @@ call_pattern = "(?:FinalUseAuthority\\s*::\\s*open_state_dir(?:_with_clock|_with
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
 product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
-caller_markers = ["FinalUseAuthority::open_state_dir", "FinalUseAuthority", "authority"]
+caller_markers = ["FinalUseAuthority::", "FinalUseAuthority", "authority"]
 
 [[boundary]]
 id = "final_use_claim"
@@ -354,6 +357,15 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "authority_lease_open_production_state"
+symbol = "AuthorityLeaseRegistry::open_production_state_dir"
+call_pattern = 'AuthorityLeaseRegistry\s*::\s*open_production_state_dir\s*\('
+definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
+definition_markers = ["pub fn open_production_state_dir", "ProductionAuthorityTrustEvidence", "ProductionAuthorityClock", "ProductionAuthorityFrontierStore"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "authority_lease_put"
 symbol = "AuthorityLeaseRegistry::put_lease"
 call_pattern = '\.\s*put_lease\s*\('
@@ -400,8 +412,18 @@ call_pattern = '\.\s*verify_use\s*\('
 caller_type_marker = "AuthorityLeaseVerifier"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_bind_dispatch"
+symbol = "AuthorityLeaseVerifier::bind_dispatch"
+call_pattern = '\.\s*bind_dispatch\s*\('
+caller_type_marker = "AuthorityLeaseVerifier"
+definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
+definition_markers = ["pub fn bind_dispatch(", "AuthorityDispatchBinding", "self.verify_use("]
 product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"]
+caller_markers = ["AuthorityDispatchBinding", ".bind_dispatch(", "FleetAuthorityPort"]
 
 [[boundary]]
 id = "authority_lease_delivery"
@@ -436,8 +458,18 @@ id = "authority_lease_dispatch_witness"
 symbol = "dispatch_authority_lease_with_witness"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
+product_callers = ["codex-rs/hepta-contracts/src/authority_trust.rs"]
+caller_markers = ["dispatch_authority_lease_with_witness", "AuthorityDispatchBinding", "dispatch_boundary"]
+
+[[boundary]]
+id = "authority_lease_dispatch_binding"
+symbol = "AuthorityDispatchBinding::dispatch"
+call_pattern = '\bdispatch_binding\s*\.\s*dispatch\s*\('
+caller_type_marker = "AuthorityDispatchBinding"
+definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
+definition_markers = ["pub struct AuthorityDispatchBinding", "pub fn dispatch<T>(", "dispatch_authority_lease_with_witness"]
 product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["dispatch_authority_lease_with_witness", "issue_with_witness", "FleetAuthorityPort"]
+caller_markers = ["AuthorityDispatchBinding", "dispatch_binding", ".dispatch("]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
@@ -510,6 +542,16 @@ required = ["pub struct AuthorityLeaseRegistry", "pub struct AuthorityLeaseVerif
 forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_trust.rs"
+required = ["pub struct AuthorityDispatchBinding", "pub fn bind_dispatch(", "pub fn dispatch<T>(", "pub trait ProductionAuthorityClock", "pub trait ProductionAuthorityFrontierStore", "pub struct ProductionAuthorityTrustEvidence", "pub fn open_production_state_dir"]
+forbidden = ["impl ProductionAuthorityClock for SystemAuthorityClock", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-fleet/src/authority_port.rs"
+required = ["AuthorityDispatchBinding", ".bind_dispatch(", "dispatch_binding", ".dispatch(", "issue_with_witness"]
+forbidden = [".verify_use(", "dispatch_authority_lease_with_witness"]
+
+[[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
 required = ["pub async fn consume_kv_v2", "claim_final_use(authority, grant, &binding)", "deliver_final_use(authority, verified, &binding"]
 forbidden = ["impl Default for BaoClient", ".claim(grant, &binding)", ".with_verified_use(verified"]
@@ -544,7 +586,6 @@ definition_path = "codex-rs/hepta-automation/src/authorized_effect.rs"
 definition_markers = ["pub struct ProviderEffectTaskFlowDriver", "pub async fn execute_authorized_taskflow_effect_async", "ProviderEffectKey::for_logical_effect"]
 product_callers = []
 caller_markers = []
-
 
 [[boundary]]
 id = "final_use_guarded_effect"
