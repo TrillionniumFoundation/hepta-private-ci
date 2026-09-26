@@ -1,16 +1,12 @@
 name: Intelligence remediation workspace
-
 on:
   push:
     branches: [codex/intelligence-control-remediation-20260927]
-
 permissions:
   contents: read
-
 concurrency:
   group: intelligence-remediation-authoring
   cancel-in-progress: false
-
 jobs:
   source-workspace:
     name: Apply scoped intelligence repair
@@ -41,7 +37,8 @@ jobs:
           p = pathlib.Path('scripts/hepta-intelligence-remediation.patch.b64')
           checksum, encoded = p.read_text().split('\n', 1)
           assert len(encoded) < 2_000_000
-          with gzip.GzipFile(fileobj=io.BytesIO(base64.b64decode(encoded, validate=False))) as f:
+          encoded = encoded.replace('IsZPIi9Db6', 'IsZPIi9DB6')
+          with gzip.GzipFile(fileobj=io.BytesIO(base64.b64decode(encoded))) as f:
               patch = f.read(8_000_001)
           assert len(patch) <= 8_000_000
           assert hashlib.sha256(patch).hexdigest() == checksum
@@ -69,7 +66,7 @@ jobs:
             git add -u
             git rm "$PATCH"
             git diff --cached --check
-            git -c user.name='Intelligence remediation' -c user.email='intelligence-remediation@users.noreply.github.com' commit -m 'fix(intelligence): apply reviewed identity and candidate repairs'
+            git -c user.name='Intelligence remediation' -c user.email='intelligence-remediation@users.noreply.github.com' commit -m 'fix(intelligence): preserve durable run identity and validate candidate closure'
             git push origin "HEAD:refs/heads/$BRANCH"
             echo 'changed=true' >> "$GITHUB_OUTPUT"
           else
@@ -92,8 +89,6 @@ jobs:
     if: needs.source-workspace.outputs.changed == 'true'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
-    permissions:
-      contents: read
     env:
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
@@ -117,7 +112,10 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - run: |
+          if test "$(command -v dotslash)" != /usr/local/bin/dotslash; then
+            sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+          fi
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
