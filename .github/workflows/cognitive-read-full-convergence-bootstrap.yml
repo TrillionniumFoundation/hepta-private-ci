@@ -15,29 +15,24 @@ concurrency:
 jobs:
   apply:
     if: "${{ endsWith(github.event.head_commit.message, 'launch agentd hardening') }}"
-    runs-on: macos-15
-    timeout-minutes: 30
+    runs-on: windows-2025
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
       - name: Apply asserted source migration
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          python3 scripts/cognitive-read-agentd-hardening.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
-      - name: Verify workspace feature policy
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          $ErrorActionPreference = 'Stop'
+          python scripts/cognitive-read-agentd-hardening.py
+          python .github/scripts/verify_cargo_workspace_manifests.py
       - name: Commit materialized source
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
+          $ErrorActionPreference = 'Stop'
           git config user.name 'hepta-ci-convergence'
           git config user.email 'hepta-ci-convergence@users.noreply.github.com'
           git add codex-rs/hepta-agentd scripts/cognitive-read-agentd-hardening.py
           git commit -m 'feat(cognitive.read): harden Agentd product path'
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:$env:GITHUB_REF_NAME"
