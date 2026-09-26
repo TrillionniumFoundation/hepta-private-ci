@@ -1,0 +1,164 @@
+name: runtime.codex isolated source consolidation
+on:
+  push:
+    branches: [codex/runtime-codex-consolidated-20260927]
+permissions:
+  contents: read
+concurrency:
+  group: runtime-codex-consolidate-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  assemble:
+    if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-assembled]') }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      candidate: ${{ steps.publish.outputs.candidate }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check all original and result digests before writing source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, lzma, pathlib, subprocess
+          base = 'a386bee7d84765fff0e7cff86c22a3cb5e33b5b1'
+          pieces = [pathlib.Path(f'.github/runtime-codex-source.part{i}') for i in range(2)]
+          packed = b''.join(p.read_bytes() for p in pieces)
+          if len(packed) != 19104 or hashlib.sha256(packed).hexdigest() != '4535b2670ecc5b06bb28d14d42b1598c35cd17f577209e9f948c8ee7672bf806':
+              raise SystemExit('source transport digest mismatch')
+          decoder = lzma.LZMADecompressor(memlimit=128 * 1024 * 1024)
+          raw = decoder.decompress(packed, max_length=2 * 1024 * 1024)
+          if not decoder.eof or decoder.unused_data:
+              raise SystemExit('invalid or oversized source manifest')
+          manifest = json.loads(raw)
+          if manifest.get('schema') != 1 or manifest.get('base') != base:
+              raise SystemExit('source baseline mismatch')
+          allowed = ('codex-rs/hepta-infer-core/', 'codex-rs/hepta-agent-protocol/', 'codex-rs/hepta-agentd/', 'codex-rs/hepta-infer-worker-host/')
+          exact = {'codex-rs/Cargo.lock', '.github/workflows/runtime-codex-qualification.yml', 'scripts/runtime_codex_receipt_v2.py', 'scripts/tests/test_runtime_codex_receipt_v2.py'}
+          outputs = {}
+          for item in manifest['files']:
+              name = item['path']
+              path, source = pathlib.PurePosixPath(name), pathlib.PurePosixPath(item['source'])
+              if path.is_absolute() or source.is_absolute() or '..' in path.parts or '..' in source.parts or name in outputs:
+                  raise SystemExit('unsafe source path')
+              if name not in exact and not name.startswith(allowed):
+                  raise SystemExit(f'out-of-scope output: {name}')
+              if any(p.is_symlink() for p in (pathlib.Path(name), *pathlib.Path(name).parents)):
+                  raise SystemExit('symlink output is forbidden')
+              fetched = subprocess.run(['git', 'show', f'{base}:{source}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+              original = fetched.stdout if fetched.returncode == 0 else b''
+              if hashlib.sha256(original).hexdigest() != item['oldSha256']:
+                  raise SystemExit(f'original source mismatch: {source}')
+              lines, out = original.decode().splitlines(keepends=True), []
+              for chunk in item['chunks']:
+                  if isinstance(chunk, str):
+                      out.append(chunk)
+                  elif isinstance(chunk, list) and len(chunk) == 2 and all(type(i) is int for i in chunk) and 0 <= chunk[0] <= chunk[1] <= len(lines):
+                      out.extend(lines[chunk[0]:chunk[1]])
+                  else:
+                      raise SystemExit('invalid line-copy segment')
+              result = ''.join(out).encode()
+              if len(result) > 1024 * 1024 or hashlib.sha256(result).hexdigest() != item['sha256']:
+                  raise SystemExit(f'result source mismatch: {name}')
+              outputs[name] = result
+          if len(outputs) != 23:
+              raise SystemExit('incomplete source inventory')
+          for name, content in outputs.items():
+              path = pathlib.Path(name)
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(content)
+          for piece in pieces:
+              piece.unlink()
+          PY
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Format source and test the receipt verifier
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-agent-protocol --package codex-hepta-agentd --package codex-hepta-infer-worker-host
+          python3 -m unittest -v scripts.tests.test_runtime_codex_receipt_v2
+          git diff --check
+      - name: Publish actual source without claiming native qualification
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/codex/runtime-codex-consolidated-20260927
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git add codex-rs/Cargo.lock codex-rs/hepta-infer-core codex-rs/hepta-agent-protocol codex-rs/hepta-agentd codex-rs/hepta-infer-worker-host scripts/runtime_codex_receipt_v2.py .github/workflows/runtime-codex-qualification.yml
+          git add -f scripts/tests/test_runtime_codex_receipt_v2.py
+          git add -u .github/runtime-codex-source.part0 .github/runtime-codex-source.part1
+          git diff --cached --check
+          git commit -m 'runtime.codex: integrate durable abort, lifecycle, monotonic budget and crash tests [runtime-codex-assembled]' -m 'Exact source reviewed locally and formatted on the hosted runner. Preserve failed/missing qualification and all external acceptance gates. No target-host or provider success is claimed.'
+          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin "HEAD:$GITHUB_REF"
+          echo "candidate=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Retain exact source and any uncommitted failure delta
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/runtime-codex-source"
+          git archive HEAD | gzip > "$RUNNER_TEMP/runtime-codex-source/candidate.tar.gz"
+          git diff --binary HEAD > "$RUNNER_TEMP/runtime-codex-source/uncommitted.patch"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/runtime-codex-source/identity.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: runtime-codex-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-codex-source/
+          if-no-files-found: error
+          retention-days: 14
+  native-verification:
+    needs: assemble
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.assemble.outputs.candidate }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Pin actual source, not the bootstrap commit
+        run: |
+          echo 'HEPTA_CI_SOURCE_SHA=${{ needs.assemble.outputs.candidate }}' >> "$GITHUB_ENV"
+          echo 'HEPTA_CI_TESTED_SHA=${{ needs.assemble.outputs.candidate }}' >> "$GITHUB_ENV"
+          echo 'HEPTA_CI_LANE=source-head' >> "$GITHUB_ENV"
+          echo "RECORDS=$RUNNER_TEMP/runtime-codex/records" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/runtime-codex/records"
+      - uses: ./.github/actions/setup-ci
+      - run: sudo apt-get update -y && sudo apt-get install -y build-essential pkg-config libcap-dev
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: aarch64-unknown-linux-gnu
+      - name: Run exact source commands, retaining individual failures
+        working-directory: codex-rs
+        run: python3 ../scripts/runtime_codex_receipt_v2.py execute --records "$RECORDS"
+      - name: Retain truthful failure or success receipt
+        if: always()
+        run: python3 scripts/runtime_codex_receipt_v2.py build --source '${{ needs.assemble.outputs.candidate }}' --lane source-head --records "$RUNNER_TEMP/runtime-codex/records" --output "$RUNNER_TEMP/runtime-codex/receipt.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: runtime-codex-native-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-codex/
+          if-no-files-found: error
+          retention-days: 30

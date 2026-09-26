@@ -11,6 +11,9 @@ use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
@@ -33,6 +36,8 @@ const MAX_REQUEST_BYTES: usize = 16 * 1024;
 const MAX_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_DENIAL_REASON_BYTES: usize = 1024;
 const MAX_ISSUER_TIMEOUT: Duration = Duration::from_secs(30);
+const MAX_BACKWARD_CLOCK_DRIFT: Duration = Duration::from_secs(2);
+const MAX_FORWARD_CLOCK_DRIFT: Duration = Duration::from_secs(300);
 
 type Result<T> = std::result::Result<T, Box<dyn StdError + Send + Sync>>;
 
@@ -61,6 +66,57 @@ pub struct UnixFinalUseAuthorizer {
     issuer_uid: u32,
     issuer_timeout: Duration,
     authority: FinalUseAuthority,
+    clock: MonotonicWallClock,
+}
+
+#[derive(Debug)]
+struct MonotonicWallClock {
+    wall_unix_ms_at_open: u128,
+    monotonic_at_open: Instant,
+}
+
+impl MonotonicWallClock {
+    fn capture() -> Result<Self> {
+        Ok(Self {
+            wall_unix_ms_at_open: wall_unix_ms()?,
+            monotonic_at_open: Instant::now(),
+        })
+    }
+
+    /// Detect material wall-clock rollback or an implausible forward jump
+    /// relative to a process-local monotonic anchor. This is a fail-closed
+    /// runtime fence, not an independent trusted-time service.
+    fn validate(&self) -> Result<()> {
+        let elapsed_ms = self.monotonic_at_open.elapsed().as_millis();
+        let expected_ms = self
+            .wall_unix_ms_at_open
+            .checked_add(elapsed_ms)
+            .ok_or("final-use monotonic clock projection overflow")?;
+        let now_ms = wall_unix_ms()?;
+        let backward_allowance = MAX_BACKWARD_CLOCK_DRIFT.as_millis();
+        let forward_allowance = MAX_FORWARD_CLOCK_DRIFT.as_millis();
+        if now_ms
+            .checked_add(backward_allowance)
+            .is_none_or(|value| value < expected_ms)
+        {
+            return Err("wall clock moved backward across the final-use boundary".into());
+        }
+        if now_ms
+            > expected_ms
+                .checked_add(forward_allowance)
+                .ok_or("final-use forward clock bound overflow")?
+        {
+            return Err("wall clock jumped forward across the final-use boundary".into());
+        }
+        Ok(())
+    }
+}
+
+fn wall_unix_ms() -> Result<u128> {
+    Ok(SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| "system wall clock precedes the Unix epoch")?
+        .as_millis())
 }
 
 impl UnixFinalUseAuthorizer {
@@ -78,6 +134,7 @@ impl UnixFinalUseAuthorizer {
         if issuer_timeout.is_zero() || issuer_timeout > MAX_ISSUER_TIMEOUT {
             return Err("final-use issuer timeout must be 1..=30000 ms".into());
         }
+        let clock = MonotonicWallClock::capture()?;
         let authority = FinalUseAuthority::open_state_dir(
             &config.authority_state_dir,
             config.signer_id,
@@ -93,11 +150,14 @@ impl UnixFinalUseAuthorizer {
             issuer_uid: config.issuer_uid,
             issuer_timeout,
             authority,
+            clock,
         })
     }
 
     async fn claim_exact(&self, binding: FinalUseBinding) -> Result<VerifiedUseToken> {
+        self.clock.validate()?;
         let response = self.request_grant(&binding).await?;
+        self.clock.validate()?;
         if response.schema_version != AUTHORITY_PORT_SCHEMA_VERSION {
             return Err("unsupported final-use authority response schema".into());
         }
@@ -131,6 +191,12 @@ impl UnixFinalUseAuthorizer {
             let mut stream = tokio::net::UnixStream::connect(&self.issuer_socket).await?;
             let peer = stream.peer_cred()?;
             validate_issuer_peer_uid(peer.uid(), self.issuer_uid)?;
+            #[cfg(target_os = "linux")]
+            validate_issuer_peer_process(
+                peer.pid()
+                    .ok_or("final-use authority peer omitted its process identity")?,
+                self.issuer_uid,
+            )?;
             stream.write_all(&request_len.to_be_bytes()).await?;
             stream.write_all(&request_bytes).await?;
             stream.flush().await?;
@@ -242,6 +308,54 @@ fn validate_issuer_peer_uid(actual_uid: u32, expected_uid: u32) -> Result<()> {
     Ok(())
 }
 
+#[cfg(target_os = "linux")]
+fn validate_issuer_peer_process(pid: u32, issuer_uid: u32) -> Result<()> {
+    use std::os::unix::fs::MetadataExt;
+
+    if pid == 0 {
+        return Err("final-use authority peer process id is invalid".into());
+    }
+    let process_root = PathBuf::from(format!("/proc/{pid}"));
+    let process_metadata = std::fs::metadata(&process_root)?;
+    if process_metadata.uid() != issuer_uid {
+        return Err("final-use authority process owner differs from its peer credential".into());
+    }
+    let executable = std::fs::read_link(process_root.join("exe"))?;
+    if !executable.is_absolute() {
+        return Err("final-use authority executable identity is not absolute".into());
+    }
+    let executable_metadata = std::fs::metadata(&executable)?;
+    if !executable_metadata.is_file()
+        || executable_metadata.mode() & 0o022 != 0
+        || (executable_metadata.uid() != 0 && executable_metadata.uid() != issuer_uid)
+    {
+        return Err("final-use authority executable identity or permissions are unsafe".into());
+    }
+    let stat = std::fs::read_to_string(process_root.join("stat"))?;
+    let tail = stat
+        .rsplit_once(") ")
+        .map(|(_, tail)| tail)
+        .ok_or("final-use authority process stat is malformed")?;
+    let start_time = tail
+        .split_whitespace()
+        .nth(19)
+        .ok_or("final-use authority process start identity is missing")?
+        .parse::<u64>()?;
+    if start_time == 0 {
+        return Err("final-use authority process start identity is invalid".into());
+    }
+    let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?;
+    let boot_id = boot_id.trim();
+    if boot_id.len() != 36
+        || !boot_id
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() || byte == b'-')
+    {
+        return Err("target-host boot identity is malformed".into());
+    }
+    Ok(())
+}
+
 #[cfg(unix)]
 fn validate_issuer_socket(path: &Path, issuer_uid: u32) -> Result<()> {
     use std::os::unix::fs::FileTypeExt;
@@ -260,13 +374,72 @@ fn validate_issuer_socket(path: &Path, issuer_uid: u32) -> Result<()> {
     let parent = path
         .parent()
         .ok_or("final-use authority socket has no parent directory")?;
-    let parent_metadata = std::fs::symlink_metadata(parent)?;
-    if !parent_metadata.is_dir() || parent_metadata.mode() & 0o022 != 0 {
-        return Err(
-            "final-use authority socket parent directory is writable by an unsafe principal".into(),
-        );
+    validate_issuer_directory_chain(parent, issuer_uid)
+}
+
+#[cfg(unix)]
+fn validate_issuer_directory_chain(path: &Path, issuer_uid: u32) -> Result<()> {
+    use std::os::unix::fs::MetadataExt;
+
+    let mut current = Some(path);
+    let mut direct_parent = true;
+    while let Some(directory) = current {
+        let metadata = std::fs::symlink_metadata(directory)?;
+        if !metadata.is_dir() || (metadata.uid() != 0 && metadata.uid() != issuer_uid) {
+            return Err("final-use authority socket directory identity is unsafe".into());
+        }
+        let writable = metadata.mode() & 0o022 != 0;
+        let root_sticky_boundary = !direct_parent
+            && metadata.uid() == 0
+            && metadata.mode() & 0o002 != 0
+            && metadata.mode() & 0o1000 != 0;
+        if writable && !root_sticky_boundary {
+            return Err(
+                "final-use authority socket directory is writable by an unsafe principal".into(),
+            );
+        }
+        if directory == Path::new("/") {
+            break;
+        }
+        current = directory.parent();
+        direct_parent = false;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod hardening_tests {
+    use super::*;
+
+    #[test]
+    fn monotonic_wall_clock_accepts_a_fresh_anchor() {
+        MonotonicWallClock::capture().unwrap().validate().unwrap();
+    }
+
+    #[test]
+    fn monotonic_wall_clock_rejects_backward_projection() {
+        let clock = MonotonicWallClock {
+            wall_unix_ms_at_open: wall_unix_ms().unwrap() + 10_000,
+            monotonic_at_open: Instant::now(),
+        };
+        assert!(clock.validate().is_err());
+    }
+
+    #[test]
+    fn monotonic_wall_clock_rejects_implausible_forward_projection() {
+        let clock = MonotonicWallClock {
+            wall_unix_ms_at_open: 0,
+            monotonic_at_open: Instant::now(),
+        };
+        assert!(clock.validate().is_err());
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn current_process_has_a_valid_linux_process_identity() {
+        let uid = rustix::process::geteuid().as_raw();
+        validate_issuer_peer_process(std::process::id(), uid).unwrap();
+    }
 }
 
 #[cfg(all(test, unix))]

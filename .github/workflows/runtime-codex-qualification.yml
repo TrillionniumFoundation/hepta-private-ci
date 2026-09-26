@@ -1,0 +1,139 @@
+name: runtime.codex qualification
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-codex-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualification:
+    name: ${{ matrix.check }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: source-head
+            check: runtime.codex exact-head
+          - lane: base-merge
+            check: runtime.codex synthetic-merge
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: 0
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct and bind exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          RECORDS="$RUNNER_TEMP/runtime-codex/records"
+          echo "RECORDS=$RECORDS" >> "$GITHUB_ENV"
+          echo "EVIDENCE=$RUNNER_TEMP/runtime-codex" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then
+            if [[ ! "$BASE_SHA" =~ ^[0-9a-f]{40}$ || "$BASE_SHA" = 0000000000000000000000000000000000000000 ]]; then
+              BASE_SHA=$(git rev-parse HEAD^)
+            fi
+            git cat-file -e "$BASE_SHA^{commit}"
+            tree=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME='runtime.codex qualification' GIT_AUTHOR_EMAIL='noreply@openai.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z' GIT_COMMITTER_DATE='2000-01-01T00:00:00Z'
+            commit=$(printf '%s\n' 'runtime.codex deterministic synthetic merge' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            git checkout --detach "$commit"
+            echo "HEPTA_CI_BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+          fi
+          echo "HEPTA_CI_SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "HEPTA_CI_TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          mkdir -p "$RECORDS"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Prepare repository tools
+        uses: ./.github/actions/setup-ci
+      - name: Native build prerequisites
+        run: sudo apt-get update -y && sudo apt-get install -y build-essential pkg-config libcap-dev
+      - name: Pinned Rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Nextest runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Verified V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: aarch64-unknown-linux-gnu
+      - name: Test receipt tooling
+        run: python3 -m unittest -v scripts.tests.test_runtime_codex_receipt_v2
+      - name: Execute the complete closed-world focused plan
+        working-directory: codex-rs
+        run: python3 ../scripts/runtime_codex_receipt_v2.py execute --records "$RECORDS"
+      - name: Retain failure as well as success receipts
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          args=(--source "$SOURCE_SHA" --lane "$HEPTA_CI_LANE" --records "$RECORDS" --output "$EVIDENCE/receipt.json")
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then args+=(--base "$HEPTA_CI_BASE_SHA"); fi
+          python3 scripts/runtime_codex_receipt_v2.py build "${args[@]}"
+      - name: Upload all bounded diagnostic records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-${{ matrix.lane }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-codex/
+          retention-days: 30
+          if-no-files-found: error
+
+  attest:
+    name: runtime.codex provenance (${{ matrix.lane }})
+    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    needs: qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+      attestations: write
+    steps:
+      # This job NEVER executes candidate code and owns no provider/issuer key.
+      - name: Fetch this run's exact lane evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: runtime-codex-${{ matrix.lane }}-${{ github.run_id }}
+          path: evidence
+      - name: Attest the actual receipt bytes, including failed qualification
+        id: attestation
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: evidence/receipt.json
+      - name: Retain offline-verifiable signature bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-signature-${{ matrix.lane }}-${{ github.run_id }}
+          path: ${{ steps.attestation.outputs.bundle-path }}
+          if-no-files-found: error
+          retention-days: 30
