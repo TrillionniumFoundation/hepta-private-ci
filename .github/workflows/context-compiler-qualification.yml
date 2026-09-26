@@ -7,8 +7,13 @@ on:
       - codex-rs/hepta-context-compiler/**
       - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-agentd/src/prompt_runtime.rs
+      - codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs
+      - codex-rs/hepta-agentd/src/provider_bound_prompt_runtime_tests.rs
       - codex-rs/ext/hepta-prompt/**
+      - codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs
       - codex-rs/core/src/model_provider_policy/**
+      - codex-rs/codex-api/src/dispatch_metadata.rs
+      - codex-rs/codex-api/src/endpoint/responses.rs
       - docs/modules/context.compiler/**
       - qualification/module-execution-dossiers/detail/context.compiler.md
       - scripts/context_compiler_qualification.py
