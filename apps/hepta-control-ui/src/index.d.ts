@@ -72,6 +72,7 @@ export interface RuntimeClientView {
   readonly connected: boolean;
   readonly authenticated: boolean;
   readonly sessionId: string | null;
+  readonly identityId: string | null;
   readonly connectionGeneration: number | null;
   readonly permissionRevision: number | null;
   readonly permissions: readonly string[];
@@ -81,6 +82,8 @@ export interface RuntimeClientView {
   readonly pending: readonly OperationView[];
   readonly pendingCount: number;
   readonly indeterminateCount: number;
+  readonly completed: readonly OperationView[];
+  readonly completedCount: number;
 }
 
 export interface UiControlTransport {
