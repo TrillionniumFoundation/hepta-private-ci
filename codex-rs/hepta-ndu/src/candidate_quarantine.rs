@@ -113,9 +113,9 @@ pub fn evaluate_candidates_with_quarantine(
             generation: contributions.generation,
             contributions: abstain.clone(),
         },
-        utility_profile,
-        evaluation_policy,
-        scalarization,
+        utility_profile.clone(),
+        scalarization.cloned(),
+        evaluation_policy.clone(),
     )?;
 
     let mut admitted = abstain.clone();
@@ -132,9 +132,9 @@ pub fn evaluate_candidates_with_quarantine(
                 generation: contributions.generation,
                 contributions: probe,
             },
-            utility_profile,
-            evaluation_policy,
-            scalarization,
+            utility_profile.clone(),
+            scalarization.cloned(),
+            evaluation_policy.clone(),
         );
         match result {
             Ok(_) => admitted.extend(candidate),
@@ -158,9 +158,9 @@ pub fn evaluate_candidates_with_quarantine(
             generation: contributions.generation,
             contributions: admitted,
         },
-        utility_profile,
-        evaluation_policy,
-        scalarization,
+        utility_profile.clone(),
+        scalarization.cloned(),
+        evaluation_policy.clone(),
     )?;
     let evaluation_digest_v3 = quarantine_receipt_digest(&evaluation, &quarantined);
     Ok(NduEvaluationReceiptV3 {
