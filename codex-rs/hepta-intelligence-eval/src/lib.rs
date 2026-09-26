@@ -12,6 +12,7 @@ use codex_hepta_types::StableId;
 
 mod attempt_journal;
 mod audited_runner;
+mod checkpoint_holdout_file;
 mod closure;
 mod durable_holdout;
 mod evidence_sink;
@@ -39,6 +40,10 @@ pub use attempt_journal::EvaluationAttemptPhaseV1;
 pub use attempt_journal::EvaluationAttemptSnapshotV1;
 pub use audited_runner::AuditedProductEvaluationErrorV1;
 pub use audited_runner::AuditedProductEvaluationRunnerV1;
+pub use checkpoint_holdout_file::CheckpointFileCasErrorV1;
+pub use checkpoint_holdout_file::FinalHoldoutCompactionReceiptV1;
+pub use checkpoint_holdout_file::HoldoutCheckpointStorageMetricsV1;
+pub use checkpoint_holdout_file::LockedCheckpointFinalHoldoutCasStoreV1;
 pub use closure::CrossFoldPartitionV1;
 pub use closure::CrossFoldPlanReceiptV1;
 pub use closure::CrossFoldPlanV1;
