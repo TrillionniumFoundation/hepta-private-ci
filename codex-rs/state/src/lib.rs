@@ -131,3 +131,6 @@ pub const DB_INIT_METRIC: &str = "codex.sqlite.init.count";
 pub const DB_INIT_DURATION_METRIC: &str = "codex.sqlite.init.duration_ms";
 /// Rollout fallback attempts. Tags: [caller, reason]
 pub const DB_FALLBACK_METRIC: &str = "codex.sqlite.fallback.count";
+
+pub use codex_state_sqlite::open_durable_authority_pool;
+pub use codex_state_sqlite::open_schema_reference_pool;

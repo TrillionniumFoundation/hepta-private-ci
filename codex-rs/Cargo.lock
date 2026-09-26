@@ -3532,6 +3532,7 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state-sqlite",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -3585,6 +3586,7 @@ dependencies = [
  "http 1.4.0",
  "pretty_assertions",
  "rcgen",
+ "rustix 1.1.4",
  "rustls",
  "serde",
  "serde_json",
@@ -5179,6 +5181,7 @@ dependencies = [
  "codex-git-utils",
  "codex-history",
  "codex-protocol",
+ "codex-state-sqlite",
  "codex-utils-absolute-path",
  "libc",
  "libsqlite3-sys",
@@ -5194,6 +5197,16 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
+]
+
+[[package]]
+name = "codex-state-sqlite"
+version = "0.0.0"
+dependencies = [
+ "log",
+ "sqlx",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]

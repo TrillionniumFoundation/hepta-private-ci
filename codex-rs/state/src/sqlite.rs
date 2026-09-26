@@ -10,6 +10,7 @@ use crate::migrations::repair_legacy_recency_migration_version;
 use crate::runtime::RuntimeDbInitError;
 use crate::telemetry;
 use crate::telemetry::DbKind;
+use codex_state_sqlite::open_durable_authority_pool;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use log::LevelFilter;
 use sqlx::ConnectOptions;
@@ -297,18 +298,7 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5))
-            .log_statements(LevelFilter::Off);
-        SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
+        open_durable_authority_pool(path).await
     }
 
     /// Checkpoint a private recovery candidate after all validation handles close.

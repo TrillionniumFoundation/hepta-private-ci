@@ -56,6 +56,8 @@ impl fmt::Debug for BaoToken {
 pub struct BaoReadRequest {
     pub subject_id: String,
     pub consumer_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consumer_configuration_sha256: Option<[u8; 32]>,
     pub namespace: String,
     pub mount: String,
     pub path: String,
@@ -64,15 +66,7 @@ pub struct BaoReadRequest {
     pub expected_secret_sha256: [u8; 32],
 }
 
-/// Contains observations only; it is never a reusable permission or secret.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-pub struct BaoSecretReceipt {
-    pub request_sha256: [u8; 32],
-    pub response_sha256: [u8; 32],
-    pub secret_sha256: [u8; 32],
-    pub version: u64,
-    pub secret_bytes: usize,
-}
+pub use crate::lease_lifecycle::BaoSecretReceipt;
 
 /// Host-selected AuthBus identities for one provider operation. The operation
 /// identity is supplied by the durable operation owner and becomes part of the
@@ -85,6 +79,15 @@ pub struct BaoAuthBusAdmission {
     pub operation_id: StableId,
     pub amount: u64,
     pub expires_at_ms: u64,
+}
+
+/// Exact authorization inputs for one metadata-bound provider read.
+#[derive(Clone, Copy)]
+pub struct BaoAuthorizedReadV1<'a> {
+    pub admission: &'a BaoAuthBusAdmission,
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
+    pub request: &'a BaoReadRequest,
 }
 
 /// Independent evidence producer used by the product host. AuthBus verifies
@@ -181,6 +184,7 @@ impl BaoClient {
             || !segmented(&request.mount)
             || !segmented(&request.path)
             || !component(&request.field)
+            || request.consumer_configuration_sha256 == Some([0; 32])
             || request.version == 0
             || request.expected_secret_sha256 == [0; 32]
         {
@@ -233,13 +237,36 @@ impl BaoClient {
     pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
         &self,
         authbus: &AuthBusAuthorityHost,
-        admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
-        request: &BaoReadRequest,
+        read: BaoAuthorizedReadV1<'_>,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+        self.consume_kv_v2_with_authbus_guarded(
+            authbus,
+            read,
+            evidence,
+            |_| Ok(()),
+            |_| Ok(()),
+            |secret, _receipt| consumer(secret),
+        )
+        .await
+    }
+
+    pub(crate) async fn consume_kv_v2_with_authbus_guarded<E: BaoAuthBusEvidenceProvider>(
+        &self,
+        authbus: &AuthBusAuthorityHost,
+        read: BaoAuthorizedReadV1<'_>,
+        evidence: &mut E,
+        mut reserved: impl FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
+        prepare_delivery: impl FnOnce(&BaoSecretReceipt) -> Result<(), ()>,
+        consumer: impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), ()>,
+    ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+        let BaoAuthorizedReadV1 {
+            admission,
+            authority,
+            grant,
+            request,
+        } = read;
         if admission.policy_revision == 0
             || admission.expected_quota_revision == 0
             || admission.amount == 0
@@ -281,6 +308,8 @@ impl BaoClient {
             )
             .await?;
 
+        reserved(&reservation)?;
+
         // Re-sample authenticated time immediately before the irreversible
         // boundary. Once this transition commits, timeout/transport uncertainty
         // can never refund quota without signed terminal evidence.
@@ -297,8 +326,9 @@ impl BaoClient {
             .await?;
 
         let provider = self
-            .consume_kv_v2(authority, grant, request, consumer)
-            .await;
+            .consume_kv_v2_guarded(authority, grant, request, prepare_delivery, consumer)
+            .await
+            .and_then(|result| result.map_err(|()| BaoClientError::ConsumerIndeterminate));
         match provider {
             Ok(receipt) => {
                 let terminal = Digest32::of_bytes(
@@ -319,7 +349,7 @@ impl BaoClient {
                     "successful settlement lost its receipt",
                 ))
             }
-            Err(error) if ambiguous_after_dispatch(&error) => {
+            Err(error) if ambiguous_after_dispatch(error) => {
                 let time = authbus
                     .observe_trusted_time_attestation(&evidence.trusted_time()?)
                     .await;
@@ -378,7 +408,13 @@ impl BaoClient {
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
         match self
-            .consume_kv_v2_guarded(authority, grant, request, consumer)
+            .consume_kv_v2_guarded(
+                authority,
+                grant,
+                request,
+                |_| Ok(()),
+                |secret, _receipt| consumer(secret),
+            )
             .await?
         {
             Ok(receipt) => Ok(receipt),
@@ -394,7 +430,8 @@ impl BaoClient {
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
         request: &BaoReadRequest,
-        consumer: impl FnOnce(&[u8]) -> Result<(), E>,
+        prepare_delivery: impl FnOnce(&BaoSecretReceipt) -> Result<(), E>,
+        consumer: impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), E>,
     ) -> Result<Result<BaoSecretReceipt, E>, BaoClientError> {
         let binding = self.binding(request)?;
         let mut url = self.origin.clone();
@@ -469,8 +506,12 @@ impl BaoClient {
             version: request.version,
             secret_bytes: secret.len(),
         };
+        if let Err(error) = prepare_delivery(&receipt) {
+            return Ok(Err(error));
+        }
+        // Durable delivery preparation happens before the final authority check.
         match deliver_final_use(authority, verified, &binding, || {
-            consumer(secret.as_bytes())
+            consumer(secret.as_bytes(), &receipt)
         })
         .map_err(BaoClientError::Authority)?
         {
@@ -506,7 +547,7 @@ fn component(value: &str) -> bool {
 fn segmented(value: &str) -> bool {
     value.len() <= 1024 && value.split('/').all(component)
 }
-async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
+pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     authbus: &AuthBusAuthorityHost,
     evidence: &mut E,
     reservation: &QuotaReservation,
@@ -558,7 +599,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     Ok(receipt)
 }
 
-fn ambiguous_after_dispatch(error: &BaoClientError) -> bool {
+fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
     matches!(
         error,
         BaoClientError::TransportUnavailable

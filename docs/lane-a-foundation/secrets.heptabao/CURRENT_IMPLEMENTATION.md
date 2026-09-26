@@ -58,8 +58,10 @@ Source composition alone does not satisfy those gates.
 ## Target-only design
 
 Provider-native secret mutation and network dispatch for generic lease issue,
-renew and revoke, durable operations/evidence composition, quota settlement and
-automatic product enrollment remain target-only. The local lifecycle/registry
+renew and revoke, and automatic product enrollment remain target-only. The current
+registered AuthBus ingress now owns durable metadata intent, immutable consumer
+receipt recovery and original-reservation settlement through the existing lease
+writer; it is not yet a normally activated product-process caller. The local lifecycle/registry
 semantics do not invent unqualified provider endpoints. Fleet revocation transport,
 external anti-rollback, trusted time and HSM/KMS/operator ceremony are deployment
 or separately owned authority concerns.
@@ -97,3 +99,10 @@ A selected production caller must durably record operation intent before
 dispatch, persist response/consumer observations, reconcile indeterminate
 outcomes and settle quota from terminal evidence. Secret bytes must never enter
 general logs, prompts, learning records or ordinary receipts.
+
+## Current durable contract
+
+See [lease owner V3](../../modules/secrets.heptabao/LEASE_OWNER_V3.md) for the
+schema-1/2 migration boundary, single-writer protocol, immutable operation results,
+registered consumer profile and restart reconciliation. Historical fixtures do
+not qualify these changes; use exact-candidate independent native feedback.

@@ -352,6 +352,16 @@ impl AuthBusAuthorityHost {
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         self.store.reservation(reservation_id).await
     }
+
+    /// Find the unique hot or archived reservation for an operation identity.
+    /// This is a read-only recovery projection; it does not reserve quota or
+    /// weaken the semantic checks performed by `reserve`.
+    pub async fn reservation_by_operation(
+        &self,
+        operation_id: &StableId,
+    ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
+        self.store.reservation_by_operation(operation_id).await
+    }
 }
 
 #[derive(Deserialize, Serialize)]

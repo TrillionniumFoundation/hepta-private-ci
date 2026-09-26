@@ -113,16 +113,16 @@ mod unix {
         _state: tempfile::TempDir,
     }
 
-    fn fixture(request_consumer: &str, registered_consumer: &str) -> Fixture {
-        let cert = rcgen::generate_simple_self_signed(vec!["localhost".to_owned()]).unwrap();
+    fn fixture(request_consumer: &str, registered_consumer: &str) -> Result<Fixture, TestError> {
+        let cert = rcgen::generate_simple_self_signed(vec!["localhost".to_owned()])?;
         let client = BaoClient::new(
             "https://localhost:9/",
             cert.cert.pem().as_bytes(),
-            BaoToken::new("fixture-token".into()).unwrap(),
+            BaoToken::new("fixture-token".into())?,
             Duration::from_millis(50),
-        )
-        .unwrap();
+        )?;
         let request = BaoReadRequest {
+            consumer_configuration_sha256: None,
             subject_id: "agent-one".into(),
             consumer_id: request_consumer.into(),
             namespace: "team/one".into(),
@@ -136,30 +136,24 @@ mod unix {
         let issuer = SigningKey::from_bytes(&[71; 32]);
         let approver = SigningKey::from_bytes(&[72; 32]);
         let distributor = SigningKey::from_bytes(&[73; 32]);
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_millis() as u64;
+        let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "security-owner".into(),
             authority_epoch: 5,
             grant_id: "host-read".into(),
             nonce: [21; 32],
-            binding: client.binding(&request).unwrap(),
+            binding: client.binding(&request)?,
             not_before_unix_ms: now - 1_000,
             expires_at_unix_ms: now + 30_000,
         };
         let grant = SignedFinalUseGrant {
-            signature: issuer
-                .sign(&grant.signing_bytes().unwrap())
-                .to_bytes()
-                .to_vec(),
+            signature: issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec(),
             grant,
         };
 
-        let state = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let state = tempfile::tempdir()?;
+        std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o700))?;
         let authority = FinalUseAuthority::open_state_dir(
             state.path(),
             "security-owner".into(),
@@ -169,28 +163,24 @@ mod unix {
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
             },
-        )
-        .unwrap();
+        )?;
         let approval_verifier = FinalUseApprovalVerifier::new(
             "operator-approver".into(),
             approver.verifying_key().to_bytes(),
-        )
-        .unwrap();
+        )?;
         let revocation_verifier = FinalUseRevocationFeedVerifier::new(
             "revocation-distributor".into(),
             distributor.verifying_key().to_bytes(),
-        )
-        .unwrap();
+        )?;
         let consumer =
-            RegisteredBaoConsumer::new(registered_consumer.into(), Arc::new(|_| Ok(()))).unwrap();
+            RegisteredBaoConsumer::new(registered_consumer.into(), Arc::new(|_| Ok(())))?;
         let host = BaoFinalUseHost::new(
             authority,
             approval_verifier,
             revocation_verifier,
             Arc::new(SystemAuthorityClock),
             [consumer],
-        )
-        .unwrap();
+        )?;
         let bootstrap = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
             FinalUseRevocations {
@@ -203,22 +193,21 @@ mod unix {
         );
         let bootstrap = SignedFinalUseRevocationUpdate {
             signature: distributor
-                .sign(&bootstrap.signing_bytes().unwrap())
+                .sign(&bootstrap.signing_bytes()?)
                 .to_bytes()
                 .to_vec(),
             update: bootstrap,
         };
-        host.apply_revocation_update(&bootstrap).unwrap();
-        let approval =
-            FinalUseApproval::for_grant("operator-approver".into(), &grant.grant).unwrap();
+        host.apply_revocation_update(&bootstrap)?;
+        let approval = FinalUseApproval::for_grant("operator-approver".into(), &grant.grant)?;
         let approval = SignedFinalUseApproval {
             signature: approver
-                .sign(&approval.signing_bytes().unwrap())
+                .sign(&approval.signing_bytes()?)
                 .to_bytes()
                 .to_vec(),
             approval,
         };
-        Fixture {
+        Ok(Fixture {
             client,
             host,
             request,
@@ -226,12 +215,12 @@ mod unix {
             approval,
             approver,
             _state: state,
-        }
+        })
     }
 
     #[tokio::test]
     async fn unregistered_signed_consumer_is_denied_before_network_dispatch() {
-        let fixture = fixture("not-enrolled", "model-provider");
+        let fixture = fixture("not-enrolled", "model-provider").unwrap();
         assert_eq!(
             fixture
                 .host
@@ -264,6 +253,7 @@ mod unix {
         )
         .unwrap();
         let request = BaoReadRequest {
+            consumer_configuration_sha256: None,
             subject_id: "agent-one".into(),
             consumer_id: "model-provider".into(),
             namespace: "team/one".into(),
@@ -379,7 +369,7 @@ mod unix {
 
     #[tokio::test]
     async fn forged_independent_approval_is_denied_before_network_dispatch() {
-        let mut fixture = fixture("model-provider", "model-provider");
+        let mut fixture = fixture("model-provider", "model-provider").unwrap();
         let attacker = SigningKey::from_bytes(&[99; 32]);
         fixture.approval.signature = attacker
             .sign(&fixture.approval.approval.signing_bytes().unwrap())
