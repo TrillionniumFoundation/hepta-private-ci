@@ -1,0 +1,220 @@
+name: Hepta knowledge.graph target-host qualification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-kg/**"
+      - "codex-rs/hepta-memory/**"
+      - "docs/modules/knowledge.graph/**"
+      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
+      - "qualification/knowledge-graph/**"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/hepta-knowledge-graph-production-gate.py"
+      - ".github/workflows/hepta-knowledge-graph-target-host.yml"
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact commit on main to qualify; empty selects the dispatched main HEAD
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-knowledge-graph-target-host-rog
+  cancel-in-progress: false
+
+env:
+  CANDIDATE_SHA: ${{ inputs.candidate_sha || github.sha }}
+  HOST_PROFILE_ID: rog-linux-x64-kg-v1
+  EVIDENCE_DIR: ${{ runner.temp }}/knowledge-graph-target-host
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  qualify:
+    name: knowledge.graph target host (rog)
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind trusted main candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$RUNNER_NAME" = rog
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ARCH" = X64
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$CANDIDATE_SHA" origin/main
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain)"
+          mkdir -p "$EVIDENCE_DIR"
+
+      - name: Run qualification under exclusive host fence
+        shell: bash
+        run: |
+          set -euo pipefail
+          LOCK_PATH=/tmp/hepta-knowledge-graph-target-host.lock
+          flock -n "$LOCK_PATH" bash -seuo pipefail <<'LOCKED'
+          mkdir -p "$EVIDENCE_DIR"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          export SOURCE_TREE
+
+          {
+            printf 'source_commit=%s\n' "$CANDIDATE_SHA"
+            printf 'source_tree=%s\n' "$SOURCE_TREE"
+            printf 'runner_name=%s\n' "$RUNNER_NAME"
+            printf 'runner_os=%s\n' "$RUNNER_OS"
+            printf 'runner_arch=%s\n' "$RUNNER_ARCH"
+            printf 'github_ref=%s\n' "$GITHUB_REF"
+            printf 'github_event=%s\n' "$GITHUB_EVENT_NAME"
+            uname -a
+            command -v lscpu >/dev/null 2>&1 && lscpu || true
+            command -v free >/dev/null 2>&1 && free -b || true
+            rustc -Vv
+            cargo -V
+            just --version
+          } > "$EVIDENCE_DIR/host.txt" 2>&1
+
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          output = Path(os.environ["EVIDENCE_DIR"]) / "runner-metadata.json"
+          output.write_text(
+              json.dumps(
+                  {
+                      "runnerName": os.environ["RUNNER_NAME"],
+                      "runnerOs": os.environ["RUNNER_OS"],
+                      "runnerArch": os.environ["RUNNER_ARCH"],
+                      "labels": ["self-hosted", "linux", "x64", "rog"],
+                      "githubRef": os.environ["GITHUB_REF"],
+                      "githubSha": os.environ["CANDIDATE_SHA"],
+                      "eventName": os.environ["GITHUB_EVENT_NAME"],
+                      "exclusiveOwnerFence": True,
+                  },
+                  sort_keys=True,
+                  indent=2,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          python3 scripts/hepta-knowledge-graph-production-gate.py --self-test \
+            2>&1 | tee "$EVIDENCE_DIR/production-gate-self-test.log"
+          python3 scripts/hepta-knowledge-graph-production-gate.py verify-state \
+            --policy qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json \
+            --state qualification/knowledge-graph/ACCEPTANCE_STATE.json \
+            --require-inactive \
+            2>&1 | tee "$EVIDENCE_DIR/inactive-state.log"
+
+          (
+            cd codex-rs
+            cargo test --locked -p codex-hepta-kg -- --nocapture
+          ) 2>&1 | tee "$EVIDENCE_DIR/kernel.log"
+
+          (
+            cd codex-rs
+            cargo test --locked -p codex-hepta-memory --lib \
+              cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor \
+              -- --ignored --exact --nocapture --test-threads=1
+          ) 2>&1 | tee "$EVIDENCE_DIR/rollback-rehearsal.log"
+
+          python3 scripts/hepta-knowledge-graph-target-measure.py \
+            --expected-sha "$CANDIDATE_SHA" \
+            --host-profile-id "$HOST_PROFILE_ID" \
+            --writes 256 \
+            --query-samples 100 \
+            --reopen-samples 20 \
+            --contention-readers 8 \
+            --contention-rounds 20 \
+            --target-dir "$RUNNER_TEMP/kg-target" \
+            --output "$EVIDENCE_DIR/target-host.json" \
+            --raw-output "$EVIDENCE_DIR/target-host.log" \
+            2>&1 | tee "$EVIDENCE_DIR/measurement-driver.log"
+
+          # The benchmark harness is usable on shared CI for debug evidence too.
+          # Bind this exact envelope to the named self-hosted profile only here.
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["EVIDENCE_DIR"]) / "target-host.json"
+          evidence = json.loads(path.read_text(encoding="utf-8"))
+          evidence["hostDesignation"] = "named-self-hosted-target-profile-not-independent-acceptance"
+          interpretation = evidence.setdefault("interpretation", {})
+          interpretation["namedTargetHostProfileMeasured"] = True
+          interpretation["sharedGithubHostedRunnerIsNotTargetHostEvidence"] = True
+          interpretation.pop("ciRunnerIsNotTargetHostEvidence", None)
+          temporary = path.with_suffix(".json.tmp")
+          temporary.write_text(
+              json.dumps(evidence, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          temporary.replace(path)
+          PY
+
+          python3 scripts/hepta-knowledge-graph-production-gate.py evaluate \
+            --policy qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json \
+            --evidence "$EVIDENCE_DIR/target-host.json" \
+            --raw-log "$EVIDENCE_DIR/target-host.log" \
+            --runner-metadata "$EVIDENCE_DIR/runner-metadata.json" \
+            --expected-sha "$CANDIDATE_SHA" \
+            --expected-tree "$SOURCE_TREE" \
+            --output "$EVIDENCE_DIR/admission.json" \
+            2>&1 | tee "$EVIDENCE_DIR/admission.log"
+
+          (
+            cd "$EVIDENCE_DIR"
+            find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 \
+              | sort -z \
+              | xargs -0 sha256sum > SHA256SUMS
+          )
+          LOCKED
+
+      - name: Summarize target-host admission
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf '## knowledge.graph target-host qualification\n\n'
+            printf -- '- Candidate: `%s`\n' "$CANDIDATE_SHA"
+            printf -- '- Profile: `%s`\n' "$HOST_PROFILE_ID"
+            printf -- '- Runner: `%s` (`%s`/`%s`)\n' "$RUNNER_NAME" "$RUNNER_OS" "$RUNNER_ARCH"
+            if test -f "$EVIDENCE_DIR/admission.json"; then
+              python3 - "$EVIDENCE_DIR/admission.json" <<'PY'
+          import json
+          import sys
+          value = json.load(open(sys.argv[1], encoding="utf-8"))
+          print(f"- Target-host admitted: `{str(value['admitted']).lower()}`")
+          print("- Activation/release: `false` (external gates remain separate)")
+          PY
+            else
+              printf -- '- Target-host admitted: `false` (admission receipt absent)\n'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Retain JSON, raw logs, rollback and host receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-target-host-${{ env.CANDIDATE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE_DIR }}/**
+          if-no-files-found: error
+          retention-days: 365

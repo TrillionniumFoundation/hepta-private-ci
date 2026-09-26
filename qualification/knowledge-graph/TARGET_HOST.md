@@ -1,55 +1,80 @@
-# knowledge.graph target-host measurement
+# knowledge.graph production target-host qualification
 
-This procedure records performance evidence for one exact, clean source commit. It does not grant activation, independent acceptance, promotion, merge, or release authority.
+This document defines the first production-admission host profile and the evidence boundary for `knowledge.graph`. It does not activate or release the module. The executable policy is [`PRODUCTION_QUALIFICATION.json`](PRODUCTION_QUALIFICATION.json); the repository acceptance state is [`ACCEPTANCE_STATE.json`](ACCEPTANCE_STATE.json).
 
-## Required host conditions
+## Named target profile
 
-Use a named host profile with documented CPU, memory, kernel, storage, and Rust toolchain. Record ambient load before the run. Do not present a shared GitHub Actions runner as target-host evidence.
+The first named profile is `rog-linux-x64-kg-v1`.
 
-The benchmark uses the real cognitive SQLite owner and product retrieval path. Its default workload performs 256 governed mutations, producing 4,096 logical nodes and 32,768 logical edges, then measures ordinary retrieval, bounded relation-query work, concurrent readers plus a writer, and reopen. The receipt reports p50/p95/p99 latency, DB/WAL bytes, current and peak RSS, Linux CPU ticks, exact edge/support work counters, and contention distributions.
+| Property | Required value |
+|---|---|
+| GitHub runner name | `rog` |
+| Runner labels | `self-hosted`, `linux`, `x64`, `rog` |
+| Runner OS / architecture | `Linux` / `X64` |
+| Source ref | exact commit reachable from `refs/heads/main` |
+| Execution isolation | non-blocking host-global `flock`; concurrent admission is rejected |
+| Build | release, locked dependencies, zero retries |
+| Workload | 256 mutations, 100 queries, 20 reopens, 8 readers × 20 contention rounds |
+| Canonical scale | 4,096 logical nodes and 32,768 logical edges |
 
-## Exact-source invocation
+A shared GitHub-hosted runner is useful for regression and diagnostic evidence but is never a production target-host receipt. A manually supplied profile name is also insufficient: the runner envelope must match the exact name, labels, ref, commit and source tree.
 
-From a clean checkout at the candidate commit:
+The target workflow has no pull-request trigger. It runs from trusted `main` by `push` or controlled `workflow_dispatch`, checks that the selected candidate is an ancestor of `main`, uses a read-only token and checks out the exact SHA. Untrusted pull-request code therefore cannot directly schedule execution on the self-hosted host.
 
-```bash
-source "$HOME/.cargo/env" 2>/dev/null || true
-SHA="$(git rev-parse HEAD)"
-python3 scripts/hepta-knowledge-graph-target-measure.py \
-  --expected-sha "$SHA" \
-  --host-profile-id '<stable-host-profile-id>' \
-  --target-dir /tmp/hepta-knowledge-graph-target \
-  --output /tmp/knowledge-graph-target-host.json \
-  --raw-output /tmp/knowledge-graph-target-host.log
-```
+## Admission budgets
 
-The harness rejects a dirty worktree or mismatched SHA. It validates the structured `hepta.knowledge-graph-perf-library.v2` receipt before writing the target-host evidence file.
+The following are initial fail-closed admission ceilings, not universal customer-facing SLOs.
 
-## Interpretation
+| Measurement | p95 ceiling | p99 ceiling |
+|---|---:|---:|
+| Mutation | 2.0 s | 4.0 s |
+| Query | 100 ms | 250 ms |
+| Reopen | 2.0 s | 4.0 s |
+| Contended writer | 2.5 s | 5.0 s |
+| Contended reader | 250 ms | 500 ms |
 
-- Compare exact-source and deterministic synthetic-merge correctness before using the timing result.
-- Treat latency numbers as host-specific observations, not universal thresholds.
-- The selected runtime writer remains complete-generation rebuild unless an independently checked localized writer preserves semantic equivalence and demonstrates a material target-host benefit.
-- Retain the JSON evidence and raw log with the pull-request qualification record; do not rewrite module acceptance state from the benchmark alone.
+Peak RSS must not exceed 6 GiB. Final database plus WAL must not exceed 1 GiB and its fresh-database growth divided by the 256 measured mutations must not exceed 4 MiB per mutation. A target-host miss blocks admission; it is not converted into a warning. Changing a ceiling requires a separately reviewed policy commit and a fresh exact-SHA run.
 
-## Measurement deadline and evidence completeness
+The receipt must report the selected incremental writer, a full-rebuild oracle interval of 64 generations, and the remaining scale boundary: complete physical source-cut assembly plus reopen digest scan. Passing the host budget does not erase that boundary.
 
-The exact-source harness explicitly selects the `knowledge-graph-measurement`
-nextest profile. Only the ignored full capacity benchmark receives a bounded
-600-second measurement watchdog; ordinary correctness and product deadlines
-are unchanged. All 256 writes, requested query/reopen samples and concurrent
-reader/writer rounds remain required. Retries are disabled. Exceeding the
-watchdog remains a failed measurement and the raw log is retained, not promoted
-into percentile evidence. This measurement window is not a product latency SLO.
+## Required evidence
 
-The receipt parser checks the full revision-fact row counts, absence of legacy
-whole-generation copies, exact contention generation advance, support/edge
-work accounting, throughput against elapsed time, and Linux RSS/CPU fields.
-A successful-looking receipt from a failed process is never accepted. Host
-metadata records the actual benchmark scratch filesystem and ambient load;
-a shared authorized desktop observation is not an isolated-host SLA.
+The workflow retains, for 365 days:
 
-The CI performance step follows both product E2E profiles and strict lint so
-an expensive capacity run cannot suppress correctness feedback. Earlier failed
-gates still fail the job; independently executable prerequisites and tests do
-not convert skipped or missing checks into acceptance.
+- exact source commit and tree;
+- host and runner metadata;
+- structured target-host JSON;
+- raw benchmark and driver logs;
+- kernel log;
+- crash/reopen rollback-rehearsal log;
+- production-gate admission JSON and log;
+- SHA-256 manifest over every retained object.
+
+The gate verifies the raw-log digest, profile, workload, canonical cardinality, runtime writer, oracle interval, p95/p99, RSS, DB/WAL growth and exact source identity. Missing, malformed, duplicated or over-budget evidence fails closed.
+
+## Checkpoint, retention and archive
+
+The operational policy is:
+
+1. An online `PASSIVE` WAL checkpoint is due every 64 generations or when WAL reaches 64 MiB, whichever occurs first.
+2. `TRUNCATE` checkpoint is maintenance-only and requires the same exclusive owner fence as mutation.
+3. Hot generation receipts are retained for at least 90 days.
+4. Every 1,024 generations or 24 hours, whichever occurs first, immutable content-addressed archives are produced for generation receipts, publication receipts, source frontier and admission receipts.
+5. Qualification artifacts are retained 365 days; evidence supporting an activated release is retained at least 2,555 days.
+6. Every archive is append-only and SHA-256 bound. Archive failure does not authorize receipt deletion or pointer advancement.
+
+This policy defines the production obligation. The target-host workflow proves measurement and rollback behavior; a named production operator must separately prove checkpoint/archive execution before acceptance.
+
+## Acceptance, canary and release boundary
+
+A successful target-host admission remains insufficient for activation. `ACCEPTANCE_STATE.json` stays inactive until all of the following are exact-candidate-bound:
+
+1. target-host admission;
+2. independent semantic review by an actor distinct from the source author;
+3. operator acceptance;
+4. rollback rehearsal;
+5. canary acceptance.
+
+Each accepted gate requires a SHA-256-bound receipt and actor identity. Release additionally requires activation. The repository gate rejects `release=true` while activation is false and rejects activation when any required gate is absent, pending, rejected, bound to another candidate or self-reviewed.
+
+The current repository state intentionally keeps `activation=false` and `release=false`.
