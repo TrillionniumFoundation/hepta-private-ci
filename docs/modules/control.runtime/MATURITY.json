@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.module-maturity.v1",
+  "schemaVersion": 1,
+  "module": "control.runtime",
+  "owner": "runtime-control",
+  "deputy": "security-authority",
+  "authorityDelta": "none",
+  "interpretation": "Each scope and dimension is independent. Source implementation, product composition, durability, exact-head qualification, independent acceptance, activation, promotion and release must never be inferred from one another.",
+  "candidate": {
+    "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "pullRequest": 1055,
+    "branch": "codex/control-runtime-v11-convergence",
+    "exactHead": "pending_final_candidate",
+    "syntheticMerge": "pending_final_candidate"
+  },
+  "scopes": [
+    {
+      "id": "planner",
+      "sourceRoots": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+        "codex-rs/hepta-control-plane/src/planner_context.rs",
+        "codex-rs/hepta-control-plane/src/planner_store.rs"
+      ],
+      "dimensions": {
+        "technicalSpecification": "candidate_complete",
+        "deterministicKernel": "candidate_implemented",
+        "requestLocalAgentdCaller": "source_composed_candidate",
+        "globalPlannerProductCaller": "not_established",
+        "durableWriter": "source_candidate_not_selected_or_activated",
+        "authorityIssuer": "explicitly_absent",
+        "effectExecutor": "not_established",
+        "terminalReconciliation": "source_work_in_progress",
+        "exactHeadQualification": "pending_current_candidate_workflows",
+        "independentAcceptance": "not_established",
+        "activation": "not_established",
+        "release": "not_established"
+      },
+      "evidence": [
+        "codex-rs/hepta-agentd/src/cognitive_context.rs::read_with_retrieval_context_and_learning",
+        "codex-rs/hepta-control-plane/src/planner_context.rs::plan_observed_context",
+        "codex-rs/hepta-control-plane/src/planner_store.rs::PlannerStoreV1",
+        "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ]
+    },
+    {
+      "id": "organHost",
+      "sourceRoots": [
+        "codex-rs/hepta-control-plane/src/organ_graph.rs",
+        "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+        "codex-rs/hepta-control-plane/src/organ_registry.rs",
+        "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+        "codex-rs/hepta-control-plane/src/organ_wire.rs"
+      ],
+      "dimensions": {
+        "technicalSpecification": "candidate_complete",
+        "readOnlyHost": "candidate_implemented",
+        "generationReplacement": "candidate_implemented",
+        "ownerProvidedMigration": "candidate_implemented_not_durable_writer",
+        "partialFanoutReconciliation": "not_established",
+        "namedProductionCaller": "not_established",
+        "exactHeadQualification": "pending_current_candidate_workflows",
+        "independentAcceptance": "not_established",
+        "activation": "not_established",
+        "release": "not_established"
+      },
+      "evidence": [
+        "codex-rs/hepta-control-plane/src/organ_runtime.rs::OrganHostV1",
+        "codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+        ".github/workflows/hepta-organ-implementation.yml"
+      ]
+    },
+    {
+      "id": "embodimentReference",
+      "sourceRoots": [
+        "codex-rs/hepta-control-plane/src/embodiment/cart.rs",
+        "codex-rs/hepta-control-plane/src/embodiment/io.rs",
+        "codex-rs/hepta-control-plane/src/embodiment/timing.rs"
+      ],
+      "dimensions": {
+        "technicalSpecification": "reference_complete",
+        "syntheticControllerPlant": "candidate_implemented",
+        "fixedPriorityTiming": "candidate_implemented",
+        "hardwareProductCaller": "not_established",
+        "physicalEffectAuthority": "explicitly_absent",
+        "targetHostQualification": "not_established",
+        "independentAcceptance": "not_established",
+        "activation": "not_established",
+        "release": "not_established"
+      },
+      "evidence": [
+        "typed_controller_and_plant_replay_the_explicit_euler_q24_golden",
+        "blocking_and_higher_priority_interference_are_included"
+      ]
+    }
+  ],
+  "repositoryControlledGates": {
+    "state": "pending",
+    "required": [
+      "source-head package tests",
+      "synthetic-merge package tests",
+      "control NDU caller regressions",
+      "strict Clippy",
+      "formatting",
+      "Lane D semantic conformance",
+      "named-host qualification",
+      "clean tracked state"
+    ]
+  },
+  "externalGates": {
+    "independentSemanticReview": "not_established",
+    "operatorAcceptance": "not_established",
+    "canary": "not_established",
+    "rollbackRehearsal": "not_established",
+    "promotion": "not_established",
+    "release": "not_established"
+  }
+}
