@@ -203,8 +203,11 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
 
 
 def file_digest(path: Path) -> str:
+    digest = hashlib.sha256()
     with path.open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest()
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def validate_host_receipt(path: Path, sha: str, tree: str, lane: str) -> dict:
