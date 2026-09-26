@@ -47,6 +47,17 @@ jobs:
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
 
+      - name: Generate complete Browser service closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/service-closure-manifest.js \
+            "$GITHUB_WORKSPACE/apps/hepta-browser" \
+            "$RUNNER_TEMP/browser-service-closure.json"
+          test -s "$RUNNER_TEMP/browser-service-closure.json"
+          grep -F 'hepta.browser.service-closure.v1' \
+            "$RUNNER_TEMP/browser-service-closure.json"
+
       - name: Verify Agentd formatting
         shell: bash
         run: |
@@ -56,9 +67,7 @@ jobs:
       - name: Exercise private service framing
         working-directory: codex-rs
         shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
+        run: cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
 
       - name: Compile both Browser callers
         working-directory: codex-rs

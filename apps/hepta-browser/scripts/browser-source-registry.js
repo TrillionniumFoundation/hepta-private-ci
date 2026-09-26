@@ -48,9 +48,18 @@ const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/src/runtime.js",
   "apps/hepta-browser/src/worker-driver.js",
   "apps/hepta-browser/src/worker-protocol.js",
+  "apps/hepta-browser/scripts/service-closure-manifest.js",
   "apps/hepta-browser/servo-worker/Cargo.toml",
   "apps/hepta-browser/servo-worker/Cargo.lock",
   "apps/hepta-browser/servo-worker/src/main.rs",
+  "codex-rs/hepta-agentd/Cargo.toml",
+  "codex-rs/hepta-agentd/src/lib.rs",
+  "codex-rs/hepta-agentd/src/lib_base.rs",
+  "codex-rs/hepta-agentd/src/browser_revocation_feed.rs",
+  "codex-rs/hepta-agentd/src/browser_servo.rs",
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs",
+  "docs/modules/browser.servo/OPERATIONS.md",
 ]);
 
 function read(path) {
@@ -69,7 +78,9 @@ function assertExact(actual, expected, label) {
   const left = [...actual].sort();
   const right = [...expected].sort();
   if (JSON.stringify(left) !== JSON.stringify(right)) {
-    throw new Error(`${label} drift: actual=${JSON.stringify(left)} expected=${JSON.stringify(right)}`);
+    throw new Error(
+      `${label} drift: actual=${JSON.stringify(left)} expected=${JSON.stringify(right)}`,
+    );
   }
 }
 
@@ -93,16 +104,31 @@ function derive() {
   const journal = read("apps/hepta-browser/src/journal.js");
   const driver = read("apps/hepta-browser/src/worker-driver.js");
   const egress = read("apps/hepta-browser/src/egress-broker.js");
+  const agentdService = read(
+    "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs",
+  );
+  const closureGenerator = read(
+    "apps/hepta-browser/scripts/service-closure-manifest.js",
+  );
+  const operations = read("docs/modules/browser.servo/OPERATIONS.md");
 
-  const serviceBlock = service.match(/const SERVICE_METHODS = new Set\(\[([\s\S]*?)\]\);/);
+  const serviceBlock = service.match(
+    /const SERVICE_METHODS = new Set\(\[([\s\S]*?)\]\);/,
+  );
   if (!serviceBlock) throw new Error("SERVICE_METHODS registry was not found");
   const serviceMethods = unique(exactQuotedStrings(serviceBlock[1]));
   assertExact(serviceMethods, RPCS.map(([wire]) => wire), "Browser RPC registry");
 
   const runtimeMethods = unique(
-    [...runtime.matchAll(/async\s+([A-Za-z][A-Za-z0-9]*)\s*\(/g)].map((match) => match[1]),
+    [...runtime.matchAll(/async\s+([A-Za-z][A-Za-z0-9]*)\s*\(/g)].map(
+      (match) => match[1],
+    ),
   );
-  assertExact(runtimeMethods, RPCS.map(([, owner]) => owner), "Browser owner facade");
+  assertExact(
+    runtimeMethods,
+    RPCS.map(([, owner]) => owner),
+    "Browser owner facade",
+  );
 
   for (const action of ACTIVE_ACTIONS) {
     if (!actions.includes(`case "${action}"`)) {
@@ -122,11 +148,25 @@ function derive() {
     journalV2: journal.includes("hepta.browser.operation-journal.v2"),
     workerAdmissionBoundary:
       worker.includes("dispatch_boundary") && driver.includes("dispatch_boundary"),
-    semanticObservation:
-      worker.includes("hepta.browser.semantic-observation.v1"),
+    semanticObservation: worker.includes("hepta.browser.semantic-observation.v1"),
     grantScopedEgress:
       egress.includes("effectGrantDigest") && egress.includes("destinationOrigin"),
-    committedServoLock: read("apps/hepta-browser/servo-worker/Cargo.lock").length > 0,
+    committedServoLock:
+      read("apps/hepta-browser/servo-worker/Cargo.lock").length > 0,
+    profileAffineWorkerPool: driver.includes("PooledSubprocessBrowserDriver"),
+    boundedStderrDrain: driver.includes("child.stderr?.resume?.()"),
+    resourceLimits: driver.includes("prlimitPath") && driver.includes("maxProcesses"),
+    longRunningAgentdService:
+      agentdService.includes("open_browser_servo_port_from_file") &&
+      agentdService.includes("while let Some(bytes)"),
+    serviceClosureManifest:
+      closureGenerator.includes("hepta.browser.service-closure.v1") &&
+      agentdService.includes("verify_service_closure"),
+    structuredOperationalMetrics:
+      agentdService.includes("hepta.browser.agentd-metric.v1"),
+    operatorRunbook:
+      operations.includes("Mandatory fault drills") &&
+      operations.includes("Servo pin and CVE refresh"),
   };
   for (const [name, value] of Object.entries(invariants)) {
     if (value !== true) throw new Error(`Browser invariant is absent: ${name}`);
@@ -179,7 +219,7 @@ if (mode === "--write") {
   if (current !== rendered) {
     process.stderr.write(
       "browser.servo source registry drifted; run " +
-      "node apps/hepta-browser/scripts/browser-source-registry.js --write\n",
+        "node apps/hepta-browser/scripts/browser-source-registry.js --write\n",
     );
     process.exitCode = 1;
   }
