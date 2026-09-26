@@ -25,6 +25,8 @@ mod exercise;
 #[path = "canonical_codec.rs"]
 mod codec;
 
+pub use codex_hepta_kg::KnowledgeGenerationV2;
+
 pub use codec::*;
 pub use enumeration::*;
 pub use error::*;
