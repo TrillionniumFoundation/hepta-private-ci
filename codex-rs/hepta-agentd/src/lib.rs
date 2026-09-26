@@ -44,6 +44,7 @@ mod plasticity_runtime;
 mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
+mod run_start_authority;
 mod runtime;
 mod runtime_codex_executor;
 mod runtime_executable;
