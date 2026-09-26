@@ -1,0 +1,15 @@
+candidate_head=0363be4477c6716e72a7653cde429685dfdac414
+source_sha=fdcc0a457fdf608ef186e7ff4e7608a9720521ff
+--- metadata ---
+metadata_status=0
+--- lane-b truth generate ---
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/hepta-lane-b-truth.py", line 12, in <module>
+    import tomllib
+ModuleNotFoundError: No module named 'tomllib'
+truth_status=1
+--- git status ---
+ M docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
+?? qualification/automation-taskflow-p0-diagnostic.txt
+--- diff check ---
+diff_status=0
