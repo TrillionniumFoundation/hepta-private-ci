@@ -8,13 +8,17 @@ use codex_hepta_evidence::EvidenceFrontierRecordV1;
 use codex_hepta_evidence::InMemoryEvidenceFrontierBackend;
 
 fn record(generation: u64, payload: &str) -> EvidenceFrontierRecordV1 {
+    let payload_digest = Sha256Digest::for_bytes(payload.as_bytes());
     EvidenceFrontierRecordV1 {
         schema_version: 1,
         store_id: "store:frontier-contention".to_string(),
         generation,
         signed_frontier_json: payload.to_string(),
-        signed_frontier_sha256: Sha256Digest::for_bytes(payload.as_bytes()),
-        backend_audit_event_id: format!("audit:frontier-{generation}-{payload}"),
+        signed_frontier_sha256: payload_digest.clone(),
+        backend_audit_event_id: format!(
+            "audit:frontier-{generation}-{}",
+            &payload_digest.as_str()[..16]
+        ),
         committed_at_unix_ms: generation,
         backend_key_epoch: 1,
     }
@@ -52,7 +56,12 @@ fn one_of_many_contending_first_publishers_wins_and_history_stays_linear() {
     assert_eq!(
         results
             .iter()
-            .filter(|result| matches!(result, Err(EvidenceFrontierBackendError::CompareAndSwapConflict { .. })))
+            .filter(|result| {
+                matches!(
+                    result,
+                    Err(EvidenceFrontierBackendError::CompareAndSwapConflict { .. })
+                )
+            })
             .count(),
         workers - 1
     );
