@@ -1,0 +1,269 @@
+name: channel.matrix preserve unknown effect
+
+on:
+  push:
+    branches:
+      - codex/channel-matrix-convergence-20260925
+    paths:
+      - .github/workflows/channel-matrix-preserve-unknown.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: channel-matrix-preserve-unknown-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/channel-matrix-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Preserve prior indeterminate effects
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              target.write_text(text.replace(old, new), encoding="utf-8")
+
+          dispatch = "codex-rs/hepta-matrix-store/src/dispatch.rs"
+          replace_once(
+              dispatch,
+              """        if matches!(
+              existing.state,
+              MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+          ) {
+              return Err(MatrixDurableError::Conflict);
+          }
+          """,
+              """        if matches!(
+              existing.state,
+              MatrixDispatchState::Succeeded
+                  | MatrixDispatchState::ObservedUnqualified
+                  | MatrixDispatchState::Redacted
+          ) {
+              return Err(MatrixDurableError::Conflict);
+          }
+          """,
+          )
+          replace_once(
+              dispatch,
+              """        if existing.accepted_event_id.is_some() {
+              // A prior request already crossed the transport boundary. A later
+              // permanent rejection of a retry cannot prove the original event
+              // was absent, so preserve Accepted until homeserver reconciliation.
+              sqlx::query(
+                  \"UPDATE matrix_dispatch_ledger
+                   SET state = 'accepted', transport_observation_sha256 = ?,
+                       updated_at_ms = ?
+                   WHERE stable_txn_id = ?\",
+              )
+              .bind(&digest)
+              .bind(to_i64(now_ms)?)
+              .bind(txn_id.as_str())
+              .execute(&mut *transaction)
+              .await
+              .map_err(unavailable)?;
+              let record = MatrixDispatchRecord {
+                  state: MatrixDispatchState::Accepted,
+                  transport_observation_digest: Some(digest),
+                  updated_at_ms: now_ms,
+                  ..existing
+              };
+              transaction.commit().await.map_err(unavailable)?;
+              return Ok(record);
+          }
+          """,
+              """        if existing.accepted_event_id.is_some()
+              || existing.state == MatrixDispatchState::Indeterminate
+          {
+              // A prior request already crossed the transport boundary or had an
+              // unknown post-entry result. A later permanent rejection of a retry
+              // cannot prove the original event was absent, so preserve the
+              // strongest prior uncertainty until homeserver reconciliation.
+              let preserved_state = if existing.accepted_event_id.is_some() {
+                  MatrixDispatchState::Accepted
+              } else {
+                  MatrixDispatchState::Indeterminate
+              };
+              sqlx::query(
+                  \"UPDATE matrix_dispatch_ledger
+                   SET state = ?, transport_observation_sha256 = ?,
+                       updated_at_ms = ?
+                   WHERE stable_txn_id = ?\",
+              )
+              .bind(preserved_state.as_str())
+              .bind(&digest)
+              .bind(to_i64(now_ms)?)
+              .bind(txn_id.as_str())
+              .execute(&mut *transaction)
+              .await
+              .map_err(unavailable)?;
+              let record = MatrixDispatchRecord {
+                  state: preserved_state,
+                  transport_observation_digest: Some(digest),
+                  updated_at_ms: now_ms,
+                  ..existing
+              };
+              transaction.commit().await.map_err(unavailable)?;
+              return Ok(record);
+          }
+          """,
+          )
+
+          outbound = "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs"
+          replace_once(
+              outbound,
+              """                if observed.state == MatrixDispatchState::Accepted {
+          """,
+              """                if matches!(
+                      observed.state,
+                      MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate
+                  ) {
+          """,
+          )
+
+          test = Path("codex-rs/hepta-matrix-store/tests/indeterminate_rejection.rs")
+          test.parent.mkdir(parents=True, exist_ok=True)
+          test.write_text(r'''use std::error::Error;
+use std::fs;
+
+use codex_hepta_contracts::AgentId;
+use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixUserId;
+use codex_hepta_matrix_protocol::outbox_id;
+use codex_hepta_matrix_protocol::transaction_id;
+use codex_hepta_matrix_store::MatrixAttemptFailureClass;
+use codex_hepta_matrix_store::MatrixDispatchState;
+use codex_hepta_matrix_store::MatrixDurableConfig;
+use codex_hepta_matrix_store::MatrixDurableStore;
+use codex_hepta_matrix_store::OutboxDisposition;
+use codex_hepta_matrix_store::OutboxDraft;
+use codex_hepta_matrix_store::OutboxKind;
+use codex_hepta_matrix_store::OutboxState;
+use codex_hepta_matrix_store::RoomBindingDraft;
+use codex_hepta_paths::HeptaFleetRoot;
+use tempfile::TempDir;
+
+#[tokio::test]
+async fn later_rejection_preserves_prior_indeterminate_effect() -> Result<(), Box<dyn Error>> {
+    let temp = TempDir::new()?;
+    let fleet_root = temp.path().join("fleet");
+    fs::create_dir_all(&fleet_root)?;
+    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let layout = HeptaFleetRoot::parse(fleet_root.canonicalize()?)?
+        .layout()
+        .agent(&agent_id);
+    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let room_id = MatrixRoomId::parse("!allowed:example.test")?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: MatrixUserId::parse("@agent:example.test")?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let logical_id = outbox_id(&agent_id, &room_id, "thread", "turn", "item", "final");
+    let stable_txn_id = transaction_id(&logical_id, 1)?;
+    let disposition = store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_id,
+            revision: 1,
+            txn_id: stable_txn_id.clone(),
+            room_id,
+            kind: OutboxKind::Final,
+            payload: b"complete".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 2,
+        })
+        .await?;
+    assert!(matches!(disposition, OutboxDisposition::Enqueued(_)));
+
+    let mut claims = store.claim_outbox_fenced(10, 100, 1).await?;
+    let claim = claims.pop().ok_or("missing fenced claim")?;
+    store.prepare_outbox_dispatch(&claim.record, 10).await?;
+    let unknown = store
+        .record_outbox_transport_indeterminate(
+            &stable_txn_id,
+            claim.record.attempts,
+            11,
+        )
+        .await?;
+    assert_eq!(unknown.state, MatrixDispatchState::Indeterminate);
+
+    let rejected = store
+        .record_outbox_transport_rejected(
+            &stable_txn_id,
+            claim.record.attempts,
+            12,
+        )
+        .await?;
+    assert_eq!(rejected.state, MatrixDispatchState::Indeterminate);
+    store
+        .finish_outbox_indeterminate(
+            &claim,
+            MatrixAttemptFailureClass::Permanent,
+            None,
+            12,
+            1_000,
+        )
+        .await?;
+
+    let dispatch = store
+        .dispatch_for_txn(&stable_txn_id)
+        .await?
+        .ok_or("dispatch disappeared")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::Indeterminate);
+    let outbox = store
+        .outbox_for_txn(&stable_txn_id)
+        .await?
+        .ok_or("outbox disappeared")?;
+    assert_eq!(outbox.state, OutboxState::RetryScheduled);
+    store.close().await;
+    Ok(())
+}
+''', encoding="utf-8")
+          PY
+
+      - name: Validate bounded patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          grep -q "existing.state == MatrixDispatchState::Indeterminate" codex-rs/hepta-matrix-store/src/dispatch.rs
+          grep -q "MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate" codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+          test -s codex-rs/hepta-matrix-store/tests/indeterminate_rejection.rs
+
+      - name: Commit patch and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/channel-matrix-preserve-unknown.yml
+          git config user.name "Hepta Matrix CI"
+          git config user.email "hepta-matrix-ci@users.noreply.github.com"
+          git add codex-rs/hepta-matrix-store/src/dispatch.rs \
+                  codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs \
+                  codex-rs/hepta-matrix-store/tests/indeterminate_rejection.rs \
+                  .github/workflows/channel-matrix-preserve-unknown.yml
+          git commit -s -m "channel.matrix: preserve indeterminate effects across rejection"
+          git push origin HEAD:codex/channel-matrix-convergence-20260925
