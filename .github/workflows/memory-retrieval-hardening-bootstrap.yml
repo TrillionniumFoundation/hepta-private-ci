@@ -1,0 +1,60 @@
+name: Memory retrieval semantic hardening bootstrap
+
+on:
+  push:
+    branches:
+      - work/memory-retrieval-production-hardening-20260927
+    paths:
+      - scripts/apply_memory_retrieval_hardening.py
+      - .github/workflows/memory-retrieval-hardening-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-retrieval-hardening-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact hardening branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/memory-retrieval-production-hardening-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply semantic hardening
+        run: python3 scripts/apply_memory_retrieval_hardening.py
+
+      - name: Format
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Focused tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-memory-retrieval
+          cargo test --locked -p codex-hepta-memory cognitive_retrieval_adapter
+
+      - name: Strict focused Clippy
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked -p codex-hepta-memory-retrieval -p codex-hepta-memory
+          --all-targets -- -D warnings
+
+      - name: Commit verified semantic hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/apply_memory_retrieval_hardening.py
+          rm .github/workflows/memory-retrieval-hardening-bootstrap.yml
+          git add -A
+          git diff --cached --check
+          git config user.name "Hepta qualification bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(memory.retrieval): close admitted-set semantic gaps"
+          git push origin HEAD:work/memory-retrieval-production-hardening-20260927
