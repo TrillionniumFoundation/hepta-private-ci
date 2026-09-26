@@ -99,6 +99,42 @@ if shorthand_call not in stage2:
         raise RuntimeError("stage 2 response completeness anchor missing")
     stage2 = stage2.replace(colon_call, shorthand_call, 1)
 
+attempt_patches = [
+    (
+        "    let attempts = stream::iter(readers.iter())\n",
+        "    let attempts = stream::iter(readers.into_iter())\n",
+    ),
+    (
+        """            let (query, lease) = build_product_query_and_lease(
+                reader,
+""",
+        """            let (query, lease) = build_product_query_and_lease(
+                &reader,
+""",
+    ),
+    (
+        """            let transport = ProductReaderTransport {
+                reader,
+""",
+        """            let transport = ProductReaderTransport {
+                reader: &reader,
+""",
+    ),
+    (
+        """            let authority = ProductReaderAuthority {
+                owner_layout,
+""",
+        """            let authority = ProductReaderAuthority {
+                owner_layout: &owner_layout,
+""",
+    ),
+]
+for old, new in attempt_patches:
+    if new not in stage2:
+        if old not in stage2:
+            raise RuntimeError(f"stage 2 owned attempt anchor missing: {old!r}")
+        stage2 = stage2.replace(old, new, 1)
+
 stage2_path.write_text(stage2, encoding="utf-8")
 
 print("stage 0 applied")
