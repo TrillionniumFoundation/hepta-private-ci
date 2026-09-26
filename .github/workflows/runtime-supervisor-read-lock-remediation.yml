@@ -69,14 +69,13 @@ jobs:
             scripts.tests.test_hepta_supervisor_receipt_gate \
             scripts.tests.test_hepta_supervisor_lock_boundaries
           git diff --check
-          unexpected="$(git diff --name-only | grep -Ev '^(.github/remediation/runtime-supervisor-read-lock.patch|codex-rs/hepta-supervisor/src/daemon.rs|docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md|docs/modules/runtime.supervisor/TECHNICAL.md)$' || true)"
+          unexpected="$(git diff --name-only | grep -Ev '^(codex-rs/hepta-supervisor/src/daemon.rs|docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md|docs/modules/runtime.supervisor/TECHNICAL.md)$' || true)"
           test -z "$unexpected" || { printf 'unexpected formatted files:\n%s\n' "$unexpected" >&2; exit 1; }
 
       - name: Commit the bounded source remediation
         shell: bash
         run: |
           set -euo pipefail
-          git rm .github/remediation/runtime-supervisor-read-lock.patch
           git add \
             codex-rs/hepta-supervisor/src/daemon.rs \
             docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md \
