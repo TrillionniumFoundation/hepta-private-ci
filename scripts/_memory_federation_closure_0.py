@@ -23,6 +23,12 @@ stage1 = stage1.replace(
     '    #[allow(clippy::too_many_arguments)]\n    pub(crate) fn sign_with_nonce(',
     1,
 )
+workspace_dependency = 'codex-hepta-types = { workspace = true }'
+path_dependency = 'codex-hepta-types = { path = "../hepta-types" }'
+if workspace_dependency in stage1:
+    stage1 = stage1.replace(workspace_dependency, path_dependency)
+elif path_dependency not in stage1:
+    raise RuntimeError("stage 1 memory-federation dependency anchor missing")
 stage1_path.write_text(stage1, encoding="utf-8")
 
 stage2_path = root / "scripts/_memory_federation_closure_2.py"
