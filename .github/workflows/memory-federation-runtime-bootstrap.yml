@@ -90,8 +90,8 @@ jobs:
           git config user.name "Hepta Memory Federation Automation"
           git config user.email "hepta-memory-federation@users.noreply.github.com"
           git rm .github/workflows/memory-federation-runtime-bootstrap.yml
-          git rm scripts/apply_memory_federation_runtime_closure.py
-          git rm scripts/postprocess_memory_federation_runtime_closure.py
+          git rm -f scripts/apply_memory_federation_runtime_closure.py
+          git rm -f scripts/postprocess_memory_federation_runtime_closure.py
           git rm -f qualification/memory-federation/BOOTSTRAP_FAILURE.md || true
           git add -A
           git commit -m "memory.federation: bound product concurrency and V1 surface
