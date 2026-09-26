@@ -1,0 +1,61 @@
+name: Automation TaskFlow exact map rebind
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-full-closure-2026-09-27
+    paths:
+      - "CALLERS.toml"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-agentd/src/automation*.rs"
+      - "docs/modules/automation.taskflow/**"
+      - "docs/readiness/LANE_B_*.md"
+      - "qualification/lane-b/LANE_B_NATIVE_CLOSURE.md"
+      - "qualification/module-execution-dossiers/detail/automation.taskflow.md"
+      - "scripts/automation_taskflow_contract.py"
+      - "scripts/test_automation_taskflow_contract.py"
+      - ".github/workflows/automation-taskflow-focused.yml"
+      - ".github/workflows/blocking-ci.yml"
+      - ".github/workflows/automation-taskflow-map-rebind-final.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-map-rebind-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rebind:
+    if: ${{ !contains(github.event.head_commit.message || '', '[automation-map-rebind]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out current work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-full-closure-2026-09-27
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebind exact source observation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-automation-ci"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+          python3 scripts/hepta-implementation-maps.py migrate --module automation.taskflow
+          python3 scripts/automation_taskflow_contract.py verify
+          git diff --check
+          git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
+          if git diff --cached --quiet; then
+            echo "Implementation map already matches source bytes."
+            exit 0
+          fi
+          git commit -m "docs(automation): rebind exact source identity [automation-map-rebind]"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-full-closure-2026-09-27
