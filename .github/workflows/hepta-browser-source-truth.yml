@@ -1,0 +1,87 @@
+name: Browser source truth
+
+on:
+  push:
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-source-truth.yml'
+  pull_request:
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-source-truth.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-source-truth-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-truth:
+    name: Browser source truth
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact Browser source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Verify generated RPC capability and source registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/browser-source-registry.js --check
+
+      - name: Check Browser JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          for source in apps/hepta-browser/src/*.js apps/hepta-browser/scripts/*.js; do
+            node --check "$source"
+          done
+
+      - name: Run the complete Browser owner suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/*.test.js
+
+      - name: Verify the reviewed Servo lock resolves exactly
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s apps/hepta-browser/servo-worker/Cargo.lock
+          cargo metadata --locked --format-version 1 \
+            --manifest-path apps/hepta-browser/servo-worker/Cargo.toml \
+            --no-deps >/dev/null
+
+      - name: Verify source stayed clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

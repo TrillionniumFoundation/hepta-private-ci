@@ -1,0 +1,188 @@
+#!/usr/bin/env node
+
+import { execFileSync } from "node:child_process";
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+const ROOT = resolve(process.cwd());
+const OUTPUT = resolve(ROOT, "docs/modules/browser.servo/SOURCE_REGISTRY.json");
+
+const RPCS = Object.freeze([
+  ["open_profile", "openProfile"],
+  ["admit_effect_grant", "admitEffectGrant"],
+  ["observe_page", "observePage"],
+  ["navigate_or_act", "navigateOrAct"],
+  ["reconcile_operation", "reconcileOperation"],
+  ["reconcile_persisted_operation", "reconcilePersistedOperation"],
+  ["close_profile", "closeProfile"],
+]);
+
+const ACTIVE_ACTIONS = Object.freeze([
+  "navigate",
+  "click",
+  "type",
+  "focus",
+  "scroll",
+  "wait",
+]);
+
+const FUTURE_FAIL_CLOSED_ACTIONS = Object.freeze([
+  "credential",
+  "upload",
+  "download",
+]);
+
+const SOURCE_PATHS = Object.freeze([
+  "apps/hepta-browser/src/action.js",
+  "apps/hepta-browser/src/agentd-protocol.js",
+  "apps/hepta-browser/src/agentd-service-main.js",
+  "apps/hepta-browser/src/agentd-service.js",
+  "apps/hepta-browser/src/bridge.js",
+  "apps/hepta-browser/src/browser.js",
+  "apps/hepta-browser/src/egress-broker.js",
+  "apps/hepta-browser/src/journal.js",
+  "apps/hepta-browser/src/persisted-reconciler.js",
+  "apps/hepta-browser/src/runtime-boundary.js",
+  "apps/hepta-browser/src/runtime-contract.js",
+  "apps/hepta-browser/src/runtime-host.js",
+  "apps/hepta-browser/src/runtime.js",
+  "apps/hepta-browser/src/worker-driver.js",
+  "apps/hepta-browser/src/worker-protocol.js",
+  "apps/hepta-browser/servo-worker/Cargo.toml",
+  "apps/hepta-browser/servo-worker/Cargo.lock",
+  "apps/hepta-browser/servo-worker/src/main.rs",
+]);
+
+function read(path) {
+  return readFileSync(resolve(ROOT, path), "utf8");
+}
+
+function exactQuotedStrings(source) {
+  return [...source.matchAll(/"([a-z][a-z0-9_]*)"/g)].map((match) => match[1]);
+}
+
+function unique(values) {
+  return [...new Set(values)];
+}
+
+function assertExact(actual, expected, label) {
+  const left = [...actual].sort();
+  const right = [...expected].sort();
+  if (JSON.stringify(left) !== JSON.stringify(right)) {
+    throw new Error(`${label} drift: actual=${JSON.stringify(left)} expected=${JSON.stringify(right)}`);
+  }
+}
+
+function gitBlob(path) {
+  const oid = execFileSync("git", ["hash-object", "--", path], {
+    cwd: ROOT,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "inherit"],
+  }).trim();
+  if (!/^[0-9a-f]{40}$/.test(oid)) {
+    throw new Error(`invalid Git blob id for ${path}: ${oid}`);
+  }
+  return oid;
+}
+
+function derive() {
+  const service = read("apps/hepta-browser/src/agentd-service.js");
+  const runtime = read("apps/hepta-browser/src/runtime.js");
+  const actions = read("apps/hepta-browser/src/action.js");
+  const worker = read("apps/hepta-browser/servo-worker/src/main.rs");
+  const journal = read("apps/hepta-browser/src/journal.js");
+  const driver = read("apps/hepta-browser/src/worker-driver.js");
+  const egress = read("apps/hepta-browser/src/egress-broker.js");
+
+  const serviceBlock = service.match(/const SERVICE_METHODS = new Set\(\[([\s\S]*?)\]\);/);
+  if (!serviceBlock) throw new Error("SERVICE_METHODS registry was not found");
+  const serviceMethods = unique(exactQuotedStrings(serviceBlock[1]));
+  assertExact(serviceMethods, RPCS.map(([wire]) => wire), "Browser RPC registry");
+
+  const runtimeMethods = unique(
+    [...runtime.matchAll(/async\s+([A-Za-z][A-Za-z0-9]*)\s*\(/g)].map((match) => match[1]),
+  );
+  assertExact(runtimeMethods, RPCS.map(([, owner]) => owner), "Browser owner facade");
+
+  for (const action of ACTIVE_ACTIONS) {
+    if (!actions.includes(`case "${action}"`)) {
+      throw new Error(`active action ${action} is absent from action.js`);
+    }
+    if (!worker.includes(`"${action}"`)) {
+      throw new Error(`active action ${action} is absent from the Servo worker`);
+    }
+  }
+  for (const action of FUTURE_FAIL_CLOSED_ACTIONS) {
+    if (!actions.includes(`case "${action}"`)) {
+      throw new Error(`future fail-closed action ${action} is absent from action.js`);
+    }
+  }
+
+  const invariants = {
+    journalV2: journal.includes("hepta.browser.operation-journal.v2"),
+    workerAdmissionBoundary:
+      worker.includes("dispatch_boundary") && driver.includes("dispatch_boundary"),
+    semanticObservation:
+      worker.includes("hepta.browser.semantic-observation.v1"),
+    grantScopedEgress:
+      egress.includes("effectGrantDigest") && egress.includes("destinationOrigin"),
+    committedServoLock: read("apps/hepta-browser/servo-worker/Cargo.lock").length > 0,
+  };
+  for (const [name, value] of Object.entries(invariants)) {
+    if (value !== true) throw new Error(`Browser invariant is absent: ${name}`);
+  }
+
+  return {
+    schema: "hepta.browser.source-registry.v1",
+    schemaVersion: 1,
+    module: "browser.servo",
+    rpcRegistry: RPCS.map(([wire, owner]) => ({
+      wire,
+      owner,
+      service: "apps/hepta-browser/src/agentd-service.js",
+      facade: "apps/hepta-browser/src/runtime.js",
+    })),
+    workerCapabilityMatrix: [
+      ...ACTIVE_ACTIONS.map((action) => ({
+        action,
+        admission: "implemented",
+        worker: "implemented",
+        releaseState: "source_present_not_target_qualified",
+      })),
+      ...FUTURE_FAIL_CLOSED_ACTIONS.map((action) => ({
+        action,
+        admission: "future_capability_fail_closed",
+        worker: "not_connected",
+        releaseState: "out_of_scope",
+      })),
+    ],
+    sourceBlobs: Object.fromEntries(
+      SOURCE_PATHS.map((path) => [path, gitBlob(path)]),
+    ),
+    invariants,
+    claimBoundary: {
+      sourceRegistryGenerated: true,
+      sourcePresenceIsDeploymentEvidence: false,
+      deploymentQualified: false,
+      operatorAccepted: false,
+      releaseQualified: false,
+    },
+  };
+}
+
+const rendered = `${JSON.stringify(derive(), null, 2)}\n`;
+const mode = process.argv[2] ?? "--check";
+if (mode === "--write") {
+  writeFileSync(OUTPUT, rendered, "utf8");
+} else if (mode === "--check") {
+  const current = readFileSync(OUTPUT, "utf8");
+  if (current !== rendered) {
+    process.stderr.write(
+      "browser.servo source registry drifted; run " +
+      "node apps/hepta-browser/scripts/browser-source-registry.js --write\n",
+    );
+    process.exitCode = 1;
+  }
+} else {
+  throw new Error(`unsupported mode: ${mode}`);
+}
