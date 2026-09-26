@@ -298,8 +298,7 @@ mod tests {
     }
 
     #[test]
-    fn reflected_outbound_record_is_rejected_and_poisons_session()
-    -> Result<(), Box<dyn Error>> {
+    fn reflected_outbound_record_is_rejected_and_poisons_session() -> Result<(), Box<dyn Error>> {
         let mut initiator = AuthenticatedWireSession::new(
             session(&[7_u8; 32])?,
             SessionMacKey::new([9_u8; 32])?,
