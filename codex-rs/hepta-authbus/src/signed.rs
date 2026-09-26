@@ -1,8 +1,9 @@
+use std::sync::Arc;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 use tokio::sync::OwnedRwLockReadGuard;
 
 use crate::Error;
@@ -14,15 +15,6 @@ use crate::TrustedReplayContext;
 use crate::VerificationReceipt;
 use crate::VerifiedIssuerHandle;
 use crate::push_id;
-
-/// Internal compatibility projection used only by the durable registry module.
-/// It is not exported and cannot be constructed by product callers.
-pub(crate) struct IssuerRegistration {
-    pub(crate) issuer_id: StableId,
-    pub(crate) key_epoch: Generation,
-    pub(crate) verifying_key: VerifyingKey,
-    pub(crate) revoked: bool,
-}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedMessageClaims {
@@ -60,20 +52,22 @@ pub struct SignedMessage {
 }
 
 /// Cryptographically admitted message. Construction is private. The embedded
-/// registry read guard keeps issuer rotation/revocation fenced until the caller
-/// commits or rolls back the durable replay/admission transaction.
+/// registry read guard keeps issuer rotation/revocation fenced until all clones
+/// of the proof are dropped after durable commit or rollback.
 pub struct AuthenticatedMessage {
     claims: SignedMessageClaims,
     receipt: VerificationReceipt,
     issuer_key_digest: Digest32,
     issuer_revision: u64,
-    _registry_guard: OwnedRwLockReadGuard<()>,
+    _registry_guard: Arc<OwnedRwLockReadGuard<()>>,
 }
 
 impl SignedMessage {
-    pub(crate) fn authenticate(
+    /// Verify against a sealed handle minted by `AuthBusAuthorityHost`.
+    /// Supplying issuer bytes or an untrusted trust-file object is impossible.
+    pub fn authenticate(
         &self,
-        issuer: VerifiedIssuerHandle,
+        issuer: &VerifiedIssuerHandle,
         expected_scope: Digest32,
         expected_payload: Digest32,
         now_ms: u64,
@@ -115,15 +109,12 @@ impl SignedMessage {
             expected_scope,
             expected_payload,
         )?;
-        let issuer_key_digest = issuer.verifying_key_digest();
-        let issuer_revision = issuer.revision();
-        let registry_guard = issuer.into_registry_guard();
         Ok(AuthenticatedMessage {
             claims: self.claims.clone(),
             receipt,
-            issuer_key_digest,
-            issuer_revision,
-            _registry_guard: registry_guard,
+            issuer_key_digest: issuer.verifying_key_digest(),
+            issuer_revision: issuer.revision(),
+            _registry_guard: issuer.registry_guard(),
         })
     }
 }
