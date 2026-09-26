@@ -207,6 +207,11 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install exact locked merge-test dependencies
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
       - name: Requalify merged core and truth projections
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
