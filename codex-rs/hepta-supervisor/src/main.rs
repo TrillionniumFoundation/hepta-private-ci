@@ -4,6 +4,8 @@ use std::path::PathBuf;
 
 use codex_hepta_memory::H7ArtifactVerifier;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_supervisor::FleetStartAdmission;
+use codex_hepta_supervisor::FleetStartTrustProfileV1;
 use tokio_util::sync::CancellationToken;
 
 #[tokio::main]
@@ -15,6 +17,7 @@ async fn main() -> anyhow::Result<()> {
         options.fleet_root,
         cancellation,
         options.grant_verifier,
+        options.fleet_start_admission,
     )
     .await?;
     Ok(())
@@ -23,11 +26,13 @@ async fn main() -> anyhow::Result<()> {
 struct Options {
     fleet_root: HeptaFleetRoot,
     grant_verifier: Option<codex_hepta_supervisor::H7H89ProductionGrantVerifier>,
+    fleet_start_admission: FleetStartAdmission,
 }
 
 fn parse_options() -> anyhow::Result<Options> {
     let mut arguments = std::env::args_os().skip(1);
     let mut fleet_root = None;
+    let mut fleet_start_trust_profile = None;
     let mut key_path = None;
     let mut signer_id = None;
     let mut signer_epoch = None;
@@ -40,6 +45,9 @@ fn parse_options() -> anyhow::Result<Options> {
             .ok_or_else(|| anyhow::anyhow!("missing value for {flag:?}"))?;
         match flag.to_str() {
             Some("--fleet-root") if fleet_root.is_none() => fleet_root = Some(value),
+            Some("--fleet-start-trust-profile") if fleet_start_trust_profile.is_none() => {
+                fleet_start_trust_profile = Some(value)
+            }
             Some("--grant-verifier-key") if key_path.is_none() => key_path = Some(value),
             Some("--grant-signer-id") if signer_id.is_none() => signer_id = Some(value),
             Some("--grant-signer-epoch") if signer_epoch.is_none() => signer_epoch = Some(value),
@@ -47,13 +55,21 @@ fn parse_options() -> anyhow::Result<Options> {
             Some("--h7-signer-id") if h7_signer_id.is_none() => h7_signer_id = Some(value),
             Some("--h7-signer-epoch") if h7_signer_epoch.is_none() => h7_signer_epoch = Some(value),
             _ => anyhow::bail!(
-                "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N]"
+                "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH --fleet-start-trust-profile ABSOLUTE_PATH [--grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N]"
             ),
         }
     }
     let fleet_root = HeptaFleetRoot::parse(PathBuf::from(
         fleet_root.ok_or_else(|| anyhow::anyhow!("--fleet-root is required"))?,
     ))?;
+    let trust_profile_path = PathBuf::from(fleet_start_trust_profile.ok_or_else(|| {
+        anyhow::anyhow!("--fleet-start-trust-profile is required")
+    })?);
+    let trust_profile = load_fleet_start_trust_profile(trust_profile_path)?;
+    let fleet_start_admission = FleetStartAdmission::new(
+        fleet_root.layout().state_root().to_path_buf(),
+        trust_profile,
+    )?;
     let grant_verifier = match (
         key_path,
         signer_id,
@@ -92,7 +108,17 @@ fn parse_options() -> anyhow::Result<Options> {
     Ok(Options {
         fleet_root,
         grant_verifier,
+        fleet_start_admission,
     })
+}
+
+fn load_fleet_start_trust_profile(path: PathBuf) -> anyhow::Result<FleetStartTrustProfileV1> {
+    let metadata = std::fs::symlink_metadata(&path)?;
+    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
+        anyhow::bail!("fleet start trust profile must be a regular, non-symlink file");
+    }
+    let bytes = std::fs::read(path)?;
+    Ok(FleetStartTrustProfileV1::from_json_slice(&bytes)?)
 }
 
 fn load_grant_verifier(
@@ -114,7 +140,7 @@ fn load_grant_verifier(
 
 fn load_public_key(path: PathBuf, label: &str) -> anyhow::Result<[u8; 32]> {
     let metadata = std::fs::symlink_metadata(&path)?;
-    if !metadata.file_type().is_file() {
+    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
         anyhow::bail!("{label} must be a regular, non-symlink file");
     }
     let bytes = std::fs::read(&path)?;

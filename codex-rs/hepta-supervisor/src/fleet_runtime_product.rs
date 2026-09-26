@@ -12,10 +12,10 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::LinuxProcfsCapacityObserverV1;
 use codex_hepta_fleet::SystemFleetClock;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_supervisor::FleetStartAdmission;
 use codex_hepta_supervisor::H7H89ProductionGrantVerifier;
 use codex_hepta_supervisor::SupervisorError;
-use codex_hepta_supervisor::run_supervisord;
-use codex_hepta_supervisor::run_supervisord_with_grant_verifier;
+use codex_hepta_supervisor::run_supervisord_with_fleet_start_admission;
 use sha2::Digest;
 use sha2::Sha256;
 use std::path::Path;
@@ -37,6 +37,7 @@ pub(crate) async fn run_supervisord_product(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
     verifier: Option<H7H89ProductionGrantVerifier>,
+    fleet_start_admission: FleetStartAdmission,
 ) -> Result<(), SupervisorError> {
     let registry = FleetRegistry::open_existing(fleet_root.clone())?;
     let state_root = registry.layout().state_root().to_path_buf();
@@ -49,15 +50,12 @@ pub(crate) async fn run_supervisord_product(
     perform_maintenance(&state_root, identity.as_ref())?;
 
     let supervisor_cancellation = cancellation.clone();
-    let mut supervisor = Box::pin(async move {
-        match verifier {
-            Some(verifier) => {
-                run_supervisord_with_grant_verifier(fleet_root, supervisor_cancellation, verifier)
-                    .await
-            }
-            None => run_supervisord(fleet_root, supervisor_cancellation).await,
-        }
-    });
+    let mut supervisor = Box::pin(run_supervisord_with_fleet_start_admission(
+        fleet_root,
+        supervisor_cancellation,
+        verifier,
+        fleet_start_admission,
+    ));
     let mut interval = tokio::time::interval(CAPACITY_REFRESH_INTERVAL);
     interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
     // The first interval tick is immediate; initial maintenance already ran.
