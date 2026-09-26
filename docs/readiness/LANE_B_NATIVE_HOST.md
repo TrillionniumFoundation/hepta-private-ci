@@ -2,6 +2,8 @@
 
 This page describes executable behavior in the source, including gaps that require implementation. It takes precedence over older statements that all repository-controlled Lane B source gaps are closed.
 
+**Automation store schema: v19.**
+
 ## Actual owners and reusable components
 
 | Function | Runtime owner | New component disposition |
@@ -10,7 +12,7 @@ This page describes executable behavior in the source, including gaps that requi
 | Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
 | Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
-| Automation | Agentd `AutomationScheduler` + schema-v16 `AutomationStore`/TaskFlow/step/effect ledger | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The final-use external-effect seam is durable, but concrete downstream product callers/owners remain independent authority, activation and evidence gates. |
+| Automation | Agentd `AutomationScheduler` + schema-v19 `AutomationStore`/TaskFlow/step/effect ledger | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The Agentd control plane now calls the TaskFlow-owned async provider-effect bridge through its attested provider host; independently provisioned authority/provider configuration, target-host activation and acceptance remain evidence gates. |
 | Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
 | Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | `send_observer` is a reusable state machine; no duplicate sender is started |
 

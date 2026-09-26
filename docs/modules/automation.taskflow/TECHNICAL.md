@@ -316,7 +316,7 @@ Schema v16 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v16. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. A binary that does not understand schema v16 must not replace the current owner against an upgraded store.
+Migrations are additive from v3 through v16. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. A binary that does not understand schema v19 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -517,9 +517,38 @@ This overlay changes no acceptance, activation, promotion or release authority.
 | `taskflow_run` | `src/automation_taskflow.rs`, `src/taskflow.rs` | deterministic durable run and transition ledger |
 | `step_outbox` | `src/taskflow_step.rs` | durable prepare/claim/observe/reconcile chain |
 | `queue_dispatch` | `codex-rs/hepta-agentd/src/automation.rs` | App Server `thread/queue/reconcile(AllowIfAbsent)` |
-| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs`, schema v16 occurrence cursor | `ReconcileOnly`; <=16×100 per-pass scan with durable exact-CAS continuation across passes; only full pagination exhaustion becomes indeterminate |
+| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs`, schema v19 occurrence cursor | `ReconcileOnly`; <=16×100 per-pass scan with durable exact-CAS continuation across passes; only full pagination exhaustion becomes indeterminate |
 | `run_recovery` | `src/taskflow_recovery.rs` | historical-step-first, projection-only re-fence |
 | `external_effect` | `src/authorized_effect.rs`, `src/effect_dispatch_ledger.rs`; `hepta-contracts::FinalUseAuthority` / provider-effect contract | owner-computed canonical intent; synchronous or async final-use fence; exact wire-payload digest; provider-stable logical key; immutable attempt/observation/reconciliation; named product host still pending |
 | `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
 
 Current repository source implements bounded Calendar V2 semantics from an explicitly supplied timezone/tzdb transition profile; it does **not** prove that a selected host supplied a current authentic IANA tzdb profile, nor does it prove multi-scheduler/DST target behavior. The Agentd/App Server Codex automation activity has a real source composition path. A concrete arbitrary downstream effect provider/terminal observer, deployment, independent acceptance, activation, promotion and release remain separate evidence gates and stay false.
+
+## 19. Store schema v19 and product-effect composition
+
+**Automation store schema: v19.** The executable owner opens migrations
+through `0019_converged_owner_schema.sql`.  Schema v17 adds immutable
+destination-operation deduplication, v18 adds the single timer-writer
+lifecycle/epoch, and v19 converges the formerly displaced v17/v18
+migration histories without deleting either owner's records.  The
+reviewed migration and recovery procedure is
+[MIGRATION_AND_RECOVERY_RUNBOOK.md](MIGRATION_AND_RECOVERY_RUNBOOK.md).
+
+Agentd is the named product caller for external TaskFlow effects.  Its
+`AutomationExecuteEffect` control method loads an independently
+configured, attestation-checked provider host and a persistent
+`FinalUseAuthority`, then calls `ProviderEffectTaskFlowDriver` through
+`execute_authorized_taskflow_effect_async`.  Exact provider bytes are
+hashed before grant consumption; the provider key is derived from the
+durable destination plus TaskFlow run/step, and reconciliation performs
+lookup only.  This closes the repository-controlled caller gap.  It does
+not self-issue provider credentials, final-use signatures, a current
+IANA tzdb profile, selected-host measurements or independent acceptance.
+
+Older binaries that do not understand schema v19 must not replace the
+writer or open a copied database.  A rollback is a restore of a complete
+pre-upgrade snapshot plus its matching binary/configuration, never an
+in-place schema decrement.  Same-store timer epoch handoff is supported;
+cross-host database transfer remains fail-closed until the runbook's
+snapshot, exclusive-writer and digest requirements are independently
+satisfied.
