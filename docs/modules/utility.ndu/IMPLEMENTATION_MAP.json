@@ -147,15 +147,15 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "iteration_bound_exhaustion_is_unavailable"
+          "symbol": "iteration_exhaustion_is_unavailable"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+          "symbol": "parent_and_child_updates_cannot_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
+          "symbol": "unrelated_hierarchy_updates_can_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -187,8 +187,8 @@
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "impossible_local_receipt_invariants_are_rejected"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -294,11 +294,15 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "live_selection_and_revocation_require_a_recorded_projection"
+          "symbol": "revocation_requires_a_recorded_projection"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -528,7 +532,7 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "requestLocalReadOnlyProductExecutionProved": true,
+    "requestLocalReadOnlyProductExecutionProved": false,
     "authenticatedOwnerSourceImplemented": true,
     "authenticatedProductionProductExecutionProved": false,
     "productionWriterSourceImplemented": true,
@@ -540,8 +544,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "3ff6ccefc0483bd3c6947a1941302bf0e257cd24",
+    "tree": "a6adbab03b4c8d3a09e55bdf650bbe9e0da3d147"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -609,7 +613,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "54e9cb7eaf82b9980895e56a2113ffcd97fb3b6f"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -633,7 +637,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "645d13e169f5ad849aa8dc7d83213bb888ebd0cb"
+      "object": "4ad1e06beb06279fbd028b0f158fd09f680f6a59"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
@@ -641,15 +645,15 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "776d6aa24763b35de925be2670586798156803f2"
+      "object": "c538727af4aa78a604d451076f0bf82b2f7117f5"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
-      "object": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "object": "4816fe9af7a10d6af5b1d655f2220d996fe9cdac"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "d7621cc38654aa65e8272b05f6f21161b5a1c7c7"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
@@ -687,5 +691,41 @@
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
       "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
     }
-  ]
+  ],
+  "historicalSourceBaselines": [
+    {
+      "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+      "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08",
+      "role": "historical_mapping_baseline",
+      "disposition": "history_only_nonancestor_after_source_integration_not_current_qualification"
+    }
+  ],
+  "historicalClaimBoundaries": [
+    {
+      "sourceBase": {
+        "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+        "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+      },
+      "claimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "requestLocalReadOnlyProductExecutionProved": true,
+        "authenticatedOwnerSourceImplemented": true,
+        "authenticatedProductionProductExecutionProved": false,
+        "productionWriterSourceImplemented": true,
+        "productionWriterActivated": false,
+        "stochasticAdmissionSourceImplemented": true,
+        "independentDecisionSourceImplemented": true,
+        "independentDecisionEvidenceProved": false,
+        "namedHostQualificationReceiptProved": false,
+        "implementedOperationMappingComplete": true
+      }
+    }
+  ],
+  "sourceBaseRole": "current_mapping_baseline_not_execution_receipt"
 }

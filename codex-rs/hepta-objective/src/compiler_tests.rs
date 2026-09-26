@@ -120,6 +120,26 @@ fn forbidden_requested_action_returns_conflict() {
 }
 
 #[test]
+fn multiple_action_overlaps_return_one_canonical_minimal_conflict() {
+    let mut source = envelope();
+    source.allowed_actions.extend([
+        action("zeta-effect"),
+        action("alpha-effect"),
+    ]);
+    source
+        .forbidden_actions
+        .extend([id("zeta-effect"), id("alpha-effect")]);
+
+    let first = must_err(must(compile(source.clone())));
+    source.allowed_actions.reverse();
+    source.forbidden_actions.reverse();
+    let second = must_err(must(compile(source)));
+
+    assert_eq!(first, second);
+    assert_eq!(first.conflicting_ids, vec![id("alpha-effect")]);
+}
+
+#[test]
 fn contradictory_hard_bounds_return_inclusion_minimal_pair() {
     let mut source = envelope();
     source.constraints.extend([

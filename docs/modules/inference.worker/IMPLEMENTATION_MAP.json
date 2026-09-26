@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "79ccaf9d5b3b757ad5cd6fa73c53a11a5d90c69f",
+    "tree": "3e74c117b7cfc63b281f20f02f8b257c15c2147f"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -63,6 +63,13 @@
           "symbol": "pub fn settle_native(",
           "buildTarget": "codex-hepta-infer-core::durable_control::native",
           "ownerModule": "inference.control"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts.rs",
+          "symbol": "matches_new_dispatch",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server",
+          "ownerModule": "inference.worker"
         }
       ],
       "tests": [
@@ -75,6 +82,24 @@
           "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
           "kind": "matching_native_events_and_usage",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
+          "symbol": "runtime_generation_is_bound_to_handoff_not_process_spawn",
+          "kind": "exact_handoff_dispatch_fencing",
+          "command": "just test -p codex-hepta-infer-worker-host --lib -E 'test(native_intelligence_receipts)'"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
+          "symbol": "dispatch_acknowledgement_cannot_drift_or_authorize_replay",
+          "kind": "exact_handoff_dispatch_fencing",
+          "command": "just test -p codex-hepta-infer-worker-host --lib -E 'test(native_intelligence_receipts)'"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
+          "symbol": "dispatch_revision_overflow_and_invalid_handoff_are_rejected",
+          "kind": "exact_handoff_dispatch_fencing",
+          "command": "just test -p codex-hepta-infer-worker-host --lib -E 'test(native_intelligence_receipts)'"
         }
       ],
       "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",

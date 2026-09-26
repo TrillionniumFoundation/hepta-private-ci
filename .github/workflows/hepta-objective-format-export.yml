@@ -1,0 +1,70 @@
+name: Hepta objective format export
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-convergence-20260925
+    paths:
+      - ".github/workflows/hepta-objective-format-export.yml"
+      - "codex-rs/hepta-objective/**"
+      - "codex-rs/hepta-intelligence/src/objective_run.rs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Format objective source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-objective \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          git diff --check
+
+      - name: Assemble exact formatted export
+        shell: bash
+        run: |
+          set -euo pipefail
+          export_root="${RUNNER_TEMP}/objective-format-export"
+          mkdir -p "${export_root}"
+          while IFS= read -r path; do
+            mkdir -p "${export_root}/$(dirname "${path}")"
+            cp "${path}" "${export_root}/${path}"
+          done <<'PATHS'
+          codex-rs/hepta-objective/src/compiler.rs
+          codex-rs/hepta-objective/src/compiler_tests.rs
+          codex-rs/hepta-objective/src/lib.rs
+          codex-rs/hepta-objective/src/validated_admission.rs
+          codex-rs/hepta-objective/src/validated_admission_tests.rs
+          codex-rs/hepta-intelligence/src/objective_run.rs
+          PATHS
+          (
+            cd "${export_root}"
+            find codex-rs -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          )
+          git rev-parse HEAD > "${export_root}/SOURCE_SHA"
+          git rev-parse HEAD^{tree} > "${export_root}/SOURCE_TREE"
+
+      - name: Upload exact formatted export
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-format-export-${{ github.sha }}
+          path: ${{ runner.temp }}/objective-format-export
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1

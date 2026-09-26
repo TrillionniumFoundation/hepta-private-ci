@@ -28,11 +28,11 @@ use codex_hepta_objective::ObjectiveCompileReceipt;
 use codex_hepta_objective::ObjectiveConflictReceipt;
 use codex_hepta_objective::ObjectiveFunctionV1Error;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
-use codex_hepta_objective::admit_objective_v1;
+use codex_hepta_objective::ValidatedAdmissionProfileV1;
 use codex_hepta_objective::canonical_native_objective_conflict_bytes_v1;
 use codex_hepta_objective::canonical_native_objective_semantic_bytes_v1;
-use codex_hepta_objective::compile_admitted_objective_v1;
-use codex_hepta_objective::encode_objective_function_v1;
+use codex_hepta_objective::compile_authoritative_objective_v1;
+use codex_hepta_objective::encode_authenticated_objective_function_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -60,6 +60,9 @@ pub struct PublishedObjectiveRunV1 {
     pub run_start: RunStartSnapshotV1,
     pub publication: RunStartAppendReceipt,
     pub objective_function_v1_digest: Digest32,
+    /// Proof binding source envelope, frozen profile, authenticated admission
+    /// context, compiler contract and admitted native source identity.
+    pub objective_admission_proof_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
@@ -110,8 +113,10 @@ pub fn compile_and_publish_objective_run_v1(
     bindings: ObjectiveRunBindingsV1,
     journal: &mut dyn RunStartJournal,
 ) -> Result<PublishedObjectiveRunV1, ObjectiveRunError> {
-    let admitted = admit_objective_v1(envelope, profile, context)?;
-    let outcome = compile_admitted_objective_v1(admitted)?;
+    let validated_profile = ValidatedAdmissionProfileV1::from_profile(profile)?;
+    let proof_bearing =
+        compile_authoritative_objective_v1(envelope, &validated_profile, context)?;
+    let (outcome, admission_proof) = proof_bearing.into_parts();
     let receipt = outcome.receipt;
     let deadline_unix_micros = receipt
         .deadline_unix_micros
@@ -160,8 +165,9 @@ pub fn compile_and_publish_objective_run_v1(
             RunStartStoreError::ObjectiveDigestMismatch,
         ));
     }
-    let objective_function_v1 =
-        encode_objective_function_v1(&objective, envelope, profile, &receipt)?;
+    let objective_function_v1 = encode_authenticated_objective_function_v1(
+        &objective, envelope, profile, context, &receipt,
+    )?;
     if objective_function_v1.native_semantic_digest() != objective.objective.semantic_digest {
         return Err(ObjectiveRunError::Protocol(
             ObjectiveFunctionV1Error::ProjectionMismatch("native semantic identity"),
@@ -206,6 +212,7 @@ pub fn compile_and_publish_objective_run_v1(
         run_start,
         publication,
         objective_function_v1_digest: objective_function_v1.protocol_digest(),
+        objective_admission_proof_digest: admission_proof.proof_digest(),
         authority: AuthorityPosture::DENY_ALL,
     })
 }

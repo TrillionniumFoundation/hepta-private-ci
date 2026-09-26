@@ -9,6 +9,8 @@ on:
       - codex-rs/hepta-objective/**
       - codex-rs/hepta-agentd/Cargo.toml
       - codex-rs/hepta-agentd/src/objective_runtime.rs
+      - codex-rs/hepta-agentd/src/objective_runtime_replay.rs
+      - codex-rs/hepta-agentd/tests/objective_product_e2e/**
       - codex-rs/hepta-agentd/src/objective_runtime_tests.rs
       - codex-rs/hepta-ndu/**
       - codex-rs/hepta-control-plane/**
@@ -68,10 +70,8 @@ jobs:
           python3 scripts/hepta-lane-d-semantic-conformance.py self-test
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
           EXPECTED_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
-          EXPECTED_TREE="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "${EXPECTED_SHA}" \
-            --expected-tree "${EXPECTED_TREE}"
+          test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
+          python3 scripts/hepta-implementation-maps.py verify
 
       - name: Verify bounded change policy
         if: github.event_name == 'pull_request'

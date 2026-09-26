@@ -21,8 +21,10 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-const MAGIC: &[u8; 8] = b"HEPTRS01";
-const HEADER: usize = 72;
+const MAGIC_V1: &[u8; 8] = b"HEPTRS01";
+const MAGIC_V2: &[u8; 8] = b"HEPTRS02";
+const HEADER_V1: usize = 72;
+const HEADER_V2: usize = 112;
 const FRAME_OVERHEAD: usize = 112;
 const RECORD_DOMAIN_V1: &[u8] = b"hepta.run-start-record.v1";
 const RECORD_DOMAIN: &[u8] = b"hepta.run-start-record.v2";
@@ -138,6 +140,17 @@ pub struct RunStartAnchor {
     pub chain_digest: Digest32,
 }
 
+impl RunStartAnchor {
+    pub const ZERO: Self = Self {
+        sequence: 0,
+        chain_digest: Digest32::ZERO,
+    };
+
+    pub fn is_well_formed(self) -> bool {
+        (self.sequence == 0) == self.chain_digest.is_zero()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RunStartRecovery {
     Unacknowledged,
@@ -159,6 +172,8 @@ pub enum RunStartStoreError {
     BindingMismatch,
     AcknowledgedHistoryMissing,
     AnchorMismatch,
+    RollbackDetected,
+    SegmentMismatch,
     Corrupt,
     Conflict,
     Capacity,
@@ -210,7 +225,69 @@ struct StoredRunStart {
     record: StoredRunStartRecord,
 }
 
-type ReplayedRunStarts = (Vec<StoredRunStart>, BTreeMap<StableId, usize>, u64, u64);
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum RunStartIndexKindV1 {
+    Run {
+        deadline_unix_micros: u64,
+        generation: u64,
+        fence_digest: Digest32,
+        disposition: RunStartObjectiveDispositionV1,
+    },
+    Conflict {
+        deadline_unix_micros: u64,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RunStartIndexEntryV1 {
+    pub run_id: StableId,
+    pub authentication: RunStartAuthenticationV1,
+    pub sequence: u64,
+    pub record_digest: Digest32,
+    pub chain_digest: Digest32,
+    pub kind: RunStartIndexKindV1,
+}
+
+impl RunStartIndexEntryV1 {
+    fn from_stored(value: &StoredRunStart) -> Self {
+        let (run_id, authentication, kind) = match &value.record {
+            StoredRunStartRecord::Run(record) => (
+                record.snapshot.run_id.clone(),
+                record.authentication.clone(),
+                RunStartIndexKindV1::Run {
+                    deadline_unix_micros: record.admission.deadline_unix_micros,
+                    generation: record.snapshot.generation,
+                    fence_digest: record.snapshot.fence_digest,
+                    disposition: record.disposition,
+                },
+            ),
+            StoredRunStartRecord::Conflict(record) => (
+                record.run_id.clone(),
+                record.authentication.clone(),
+                RunStartIndexKindV1::Conflict {
+                    deadline_unix_micros: record.admission.deadline_unix_micros,
+                },
+            ),
+        };
+        Self {
+            run_id,
+            authentication,
+            sequence: value.sequence,
+            record_digest: value.record_digest,
+            chain_digest: value.chain_digest,
+            kind,
+        }
+    }
+}
+
+type ReplayedRunStarts = (
+    Vec<StoredRunStart>,
+    BTreeMap<StableId, usize>,
+    u64,
+    u64,
+    RunStartAnchor,
+    u64,
+);
 
 struct LockedRunStartFile(File);
 
@@ -234,10 +311,13 @@ impl Drop for LockedRunStartFile {
 }
 
 pub struct DurableRunStartJournal {
+    binding: Digest32,
     file: LockedRunStartFile,
     records: Vec<StoredRunStart>,
     by_run: BTreeMap<StableId, usize>,
     max_records: usize,
+    base_anchor: RunStartAnchor,
+    header_length: u64,
     durable_length: u64,
     poisoned: bool,
 }
@@ -250,26 +330,45 @@ impl DurableRunStartJournal {
         binding: Digest32,
         max_records: usize,
     ) -> Result<Self, RunStartStoreError> {
+        Self::create_segment(file, binding, max_records, RunStartAnchor::ZERO)
+    }
+
+    /// Create one segment that continues the globally acknowledged chain from
+    /// `base_anchor`. Segment-local capacity may be rotated without resetting
+    /// the publication sequence or predecessor digest.
+    pub fn create_segment(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+        base_anchor: RunStartAnchor,
+    ) -> Result<Self, RunStartStoreError> {
         validate_domain(binding, max_records)?;
+        validate_base_anchor(base_anchor)?;
         let mut file = LockedRunStartFile::acquire(file)?;
         if file.0.metadata()?.len() != 0 {
             return Err(RunStartStoreError::AlreadyInitialized);
         }
-        let mut header = MAGIC.to_vec();
+        let mut header = MAGIC_V2.to_vec();
         header.extend_from_slice(binding.as_array());
+        header.extend_from_slice(&base_anchor.sequence.to_be_bytes());
+        header.extend_from_slice(base_anchor.chain_digest.as_array());
         let checksum = Digest32::of_bytes(&header);
         header.extend_from_slice(checksum.as_array());
+        debug_assert_eq!(header.len(), HEADER_V2);
         file.0.seek(SeekFrom::Start(0))?;
         file.0
             .write_all(&header)
             .and_then(|()| file.0.sync_all())
             .map_err(|_| RunStartStoreError::Indeterminate)?;
         Ok(Self {
+            binding,
             file,
             records: Vec::new(),
             by_run: BTreeMap::new(),
             max_records,
-            durable_length: HEADER as u64,
+            base_anchor,
+            header_length: HEADER_V2 as u64,
+            durable_length: HEADER_V2 as u64,
             poisoned: false,
         })
     }
@@ -285,13 +384,29 @@ impl DurableRunStartJournal {
         validate_domain(binding, max_records)?;
         validate_recovery(recovery, max_records)?;
         let mut file = LockedRunStartFile::acquire(file)?;
-        let (records, by_run, cursor, length) = replay_frames(&mut file.0, binding, max_records)?;
+        let (records, by_run, cursor, length, base_anchor, header_length) =
+            replay_frames(&mut file.0, binding, max_records)?;
         if let RunStartRecovery::Acknowledged(anchor) = recovery {
-            let record = records
-                .get((anchor.sequence - 1) as usize)
-                .ok_or(RunStartStoreError::AcknowledgedHistoryMissing)?;
-            if record.chain_digest != anchor.chain_digest {
-                return Err(RunStartStoreError::AnchorMismatch);
+            if anchor.sequence < base_anchor.sequence {
+                return Err(RunStartStoreError::AcknowledgedHistoryMissing);
+            }
+            if anchor.sequence == base_anchor.sequence {
+                if anchor != base_anchor {
+                    return Err(RunStartStoreError::AnchorMismatch);
+                }
+            } else {
+                let relative = anchor
+                    .sequence
+                    .checked_sub(base_anchor.sequence)
+                    .and_then(|value| value.checked_sub(1))
+                    .and_then(|value| usize::try_from(value).ok())
+                    .ok_or(RunStartStoreError::AcknowledgedHistoryMissing)?;
+                let record = records
+                    .get(relative)
+                    .ok_or(RunStartStoreError::AcknowledgedHistoryMissing)?;
+                if record.chain_digest != anchor.chain_digest {
+                    return Err(RunStartStoreError::AnchorMismatch);
+                }
             }
         }
         if cursor != length {
@@ -303,13 +418,84 @@ impl DurableRunStartJournal {
                 .map_err(|_| RunStartStoreError::Indeterminate)?;
         }
         Ok(Self {
+            binding,
             file,
             records,
             by_run,
             max_records,
+            base_anchor,
+            header_length,
             durable_length: cursor,
             poisoned: false,
         })
+    }
+
+    #[must_use]
+    pub const fn binding(&self) -> Digest32 {
+        self.binding
+    }
+
+    #[must_use]
+    pub const fn base_anchor(&self) -> RunStartAnchor {
+        self.base_anchor
+    }
+
+    #[must_use]
+    pub const fn record_count(&self) -> usize {
+        self.records.len()
+    }
+
+    #[must_use]
+    pub const fn maximum_records(&self) -> usize {
+        self.max_records
+    }
+
+    #[must_use]
+    pub const fn header_length(&self) -> u64 {
+        self.header_length
+    }
+
+    #[must_use]
+    pub fn head_anchor(&self) -> RunStartAnchor {
+        self.records
+            .last()
+            .map_or(self.base_anchor, |value| RunStartAnchor {
+                sequence: value.sequence,
+                chain_digest: value.chain_digest,
+            })
+    }
+
+    #[must_use]
+    pub fn contains_anchor(&self, anchor: RunStartAnchor) -> bool {
+        if anchor == self.base_anchor {
+            return true;
+        }
+        self.records.iter().any(|value| {
+            value.sequence == anchor.sequence && value.chain_digest == anchor.chain_digest
+        })
+    }
+
+    pub fn index_entries(&self) -> Result<Vec<RunStartIndexEntryV1>, RunStartStoreError> {
+        if self.poisoned {
+            return Err(RunStartStoreError::Poisoned);
+        }
+        Ok(self
+            .records
+            .iter()
+            .map(RunStartIndexEntryV1::from_stored)
+            .collect())
+    }
+
+    pub fn run_record_digest(record: &RunStartRecordV1) -> Result<Digest32, RunStartStoreError> {
+        validate_record(record)?;
+        Ok(Digest32::of_bytes(&encode_record(record)))
+    }
+
+    pub fn conflict_record_digest(
+        record: &RunStartConflictRecordV1,
+    ) -> Result<Digest32, RunStartStoreError> {
+        validate_conflict_record(record)?;
+        Ok(Digest32::of_bytes(&encode_conflict_record(record)))
     }
 
     /// Append one immutable run-start publication. Reuse of `run_id` is
@@ -372,11 +558,16 @@ impl DurableRunStartJournal {
         let predecessor = self
             .records
             .last()
-            .map_or(Digest32::ZERO, |value| value.chain_digest);
+            .map_or(self.base_anchor.chain_digest, |value| value.chain_digest);
         if predecessor != expected_predecessor {
             return Err(RunStartStoreError::Conflict);
         }
-        let sequence = self.records.len() as u64 + 1;
+        let sequence = self
+            .base_anchor
+            .sequence
+            .checked_add(self.records.len() as u64)
+            .and_then(|value| value.checked_add(1))
+            .ok_or(RunStartStoreError::Capacity)?;
         let chain_digest = digest_chain(predecessor, sequence, record_digest);
         let stored = StoredRunStart {
             sequence,
@@ -486,9 +677,7 @@ impl DurableRunStartJournal {
 
     #[must_use]
     pub fn head_digest(&self) -> Digest32 {
-        self.records
-            .last()
-            .map_or(Digest32::ZERO, |value| value.chain_digest)
+        self.head_anchor().chain_digest
     }
 }
 
@@ -912,25 +1101,64 @@ fn replay_frames(
     max_records: usize,
 ) -> Result<ReplayedRunStarts, RunStartStoreError> {
     let length = file.metadata()?.len();
-    if length < HEADER as u64 {
+    if length < HEADER_V1 as u64 {
         return Err(RunStartStoreError::MissingHeader);
     }
     if length > MAX_FILE_BYTES {
         return Err(RunStartStoreError::Capacity);
     }
     file.seek(SeekFrom::Start(0))?;
-    let mut header = [0_u8; HEADER];
-    file.read_exact(&mut header)?;
-    if &header[..8] != MAGIC || Digest32::of_bytes(&header[..40]).as_array() != &header[40..] {
+    let mut magic = [0_u8; 8];
+    file.read_exact(&mut magic)?;
+    let (base_anchor, header_length) = if &magic == MAGIC_V1 {
+        let mut remaining = [0_u8; HEADER_V1 - 8];
+        file.read_exact(&mut remaining)?;
+        let mut header = [0_u8; HEADER_V1];
+        header[..8].copy_from_slice(&magic);
+        header[8..].copy_from_slice(&remaining);
+        if Digest32::of_bytes(&header[..40]).as_array() != &header[40..] {
+            return Err(RunStartStoreError::Corrupt);
+        }
+        if &header[8..40] != binding.as_array() {
+            return Err(RunStartStoreError::BindingMismatch);
+        }
+        (RunStartAnchor::ZERO, HEADER_V1 as u64)
+    } else if &magic == MAGIC_V2 {
+        if length < HEADER_V2 as u64 {
+            return Err(RunStartStoreError::MissingHeader);
+        }
+        let mut remaining = [0_u8; HEADER_V2 - 8];
+        file.read_exact(&mut remaining)?;
+        let mut header = [0_u8; HEADER_V2];
+        header[..8].copy_from_slice(&magic);
+        header[8..].copy_from_slice(&remaining);
+        if Digest32::of_bytes(&header[..80]).as_array() != &header[80..] {
+            return Err(RunStartStoreError::Corrupt);
+        }
+        if &header[8..40] != binding.as_array() {
+            return Err(RunStartStoreError::BindingMismatch);
+        }
+        let base_anchor = RunStartAnchor {
+            sequence: u64::from_be_bytes(
+                header[40..48]
+                    .try_into()
+                    .map_err(|_| RunStartStoreError::Corrupt)?,
+            ),
+            chain_digest: Digest32::from_array(
+                header[48..80]
+                    .try_into()
+                    .map_err(|_| RunStartStoreError::Corrupt)?,
+            ),
+        };
+        validate_base_anchor(base_anchor)?;
+        (base_anchor, HEADER_V2 as u64)
+    } else {
         return Err(RunStartStoreError::Corrupt);
-    }
-    if &header[8..40] != binding.as_array() {
-        return Err(RunStartStoreError::BindingMismatch);
-    }
+    };
 
     let mut records = Vec::new();
     let mut by_run = BTreeMap::new();
-    let mut cursor = HEADER as u64;
+    let mut cursor = header_length;
     while cursor < length {
         if length - cursor < 8 {
             break;
@@ -968,7 +1196,12 @@ fn replay_frames(
                 .try_into()
                 .map_err(|_| RunStartStoreError::Corrupt)?,
         );
-        if sequence != records.len() as u64 + 1 {
+        let expected_sequence = base_anchor
+            .sequence
+            .checked_add(records.len() as u64)
+            .and_then(|value| value.checked_add(1))
+            .ok_or(RunStartStoreError::Capacity)?;
+        if sequence != expected_sequence {
             return Err(RunStartStoreError::Corrupt);
         }
         let predecessor = Digest32::from_array(
@@ -978,7 +1211,9 @@ fn replay_frames(
         );
         let expected_predecessor = records
             .last()
-            .map_or(Digest32::ZERO, |value: &StoredRunStart| value.chain_digest);
+            .map_or(base_anchor.chain_digest, |value: &StoredRunStart| {
+                value.chain_digest
+            });
         if predecessor != expected_predecessor {
             return Err(RunStartStoreError::Corrupt);
         }
@@ -1007,7 +1242,7 @@ fn replay_frames(
         });
         cursor += total as u64;
     }
-    Ok((records, by_run, cursor, length))
+    Ok((records, by_run, cursor, length, base_anchor, header_length))
 }
 
 fn digest_chain(predecessor: Digest32, sequence: u64, record_digest: Digest32) -> Digest32 {
@@ -1028,14 +1263,19 @@ fn validate_domain(binding: Digest32, max_records: usize) -> Result<(), RunStart
     Ok(())
 }
 
+fn validate_base_anchor(anchor: RunStartAnchor) -> Result<(), RunStartStoreError> {
+    if !anchor.is_well_formed() {
+        return Err(RunStartStoreError::InvalidAnchor);
+    }
+    Ok(())
+}
+
 fn validate_recovery(
     recovery: RunStartRecovery,
-    max_records: usize,
+    _max_records: usize,
 ) -> Result<(), RunStartStoreError> {
     if let RunStartRecovery::Acknowledged(anchor) = recovery
-        && (anchor.sequence == 0
-            || anchor.sequence > max_records as u64
-            || anchor.chain_digest.is_zero())
+        && (anchor.sequence == 0 || !anchor.is_well_formed())
     {
         return Err(RunStartStoreError::InvalidAnchor);
     }
@@ -1123,6 +1363,13 @@ impl Reader<'_> {
         Ok(u32::from_be_bytes(self.take()?) as usize)
     }
 }
+
+#[path = "run_start_store.rs"]
+mod store;
+pub use store::DurableRunStartStore;
+pub use store::MAX_RUN_START_SEGMENTS;
+pub use store::RunStartCheckpointOwnerV1;
+pub use store::RunStartCheckpointV1;
 
 #[cfg(test)]
 #[path = "run_start_tests.rs"]

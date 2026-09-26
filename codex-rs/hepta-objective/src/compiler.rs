@@ -48,22 +48,24 @@ pub(crate) fn compile(
     }
 
     let forbidden: BTreeSet<_> = source.forbidden_actions.iter().cloned().collect();
-    let mut removed_action_ids = Vec::new();
-    let mut legal_actions = Vec::new();
-    let mut requested_forbidden = Vec::new();
-    let allowed_actions = std::mem::take(&mut source.allowed_actions);
-    for action in allowed_actions {
-        if forbidden.contains(&action.id) {
-            removed_action_ids.push(action.id.clone());
-            requested_forbidden.push(action.id);
-        } else {
-            legal_actions.push(action);
-        }
-    }
-    if !requested_forbidden.is_empty() {
-        return Ok(Err(conflict_receipt(&source, requested_forbidden)));
+    // Each allowed/forbidden overlap is independently sufficient to prove that
+    // the requested action set is inconsistent. Because allowed actions were
+    // canonically sorted above, selecting the first overlap produces a stable
+    // inclusion-minimal singleton rather than publishing every independent
+    // overlap as one non-minimal conflict core.
+    if let Some(conflicting_action) = source
+        .allowed_actions
+        .iter()
+        .find(|action| forbidden.contains(&action.id))
+    {
+        return Ok(Err(conflict_receipt(
+            &source,
+            vec![conflicting_action.id.clone()],
+        )));
     }
 
+    let removed_action_ids = Vec::new();
+    let mut legal_actions = std::mem::take(&mut source.allowed_actions);
     let abstain = abstain_id()?;
     if !legal_actions.iter().any(|action| action.id == abstain) {
         legal_actions.push(ActionClass {

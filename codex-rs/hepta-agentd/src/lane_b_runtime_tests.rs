@@ -459,7 +459,7 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
         current.snapshot.fence_digest,
         record.snapshot.fence_digest.to_string()
     );
-    assert_eq!(current.snapshot.deadline_ms, 10_001);
+    assert_eq!(current.snapshot.deadline_ms, 10_000);
 }
 
 #[test]

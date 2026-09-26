@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -133,15 +134,15 @@ class SourceIdentityTests(unittest.TestCase):
         self.save_maps()
         self.commit("update map")
 
-    def verify(self):
+    def verify(self, modules=None):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            maps.verify()
+            maps.verify(modules=modules)
         return json.loads(output.getvalue())
 
-    def reject(self):
+    def reject(self, modules=None):
         with self.assertRaises(SystemExit):
-            self.verify()
+            self.verify(modules=modules)
 
     def test_verify_accepts_exact_expected_candidate_identity(self):
         candidate = maps.current_source_base()
@@ -162,6 +163,40 @@ class SourceIdentityTests(unittest.TestCase):
             maps.verify(expected_sha="f" * 40, expected_tree=candidate["tree"])
         with self.assertRaisesRegex(SystemExit, "--expected-tree must be"):
             maps.verify(expected_sha=candidate["commit"], expected_tree="not-a-tree")
+
+    def test_scoped_verify_checks_only_selected_registered_modules(self):
+        self.rows["beta"]["laneId"] = "wrong-lane"
+        self.change_maps()
+
+        result = self.verify(modules=["alpha"])
+        self.assertEqual(result["modules"], 1)
+        self.assertEqual(result["maps"], 1)
+        self.assertEqual(result["selectedModules"], ["alpha"])
+        self.assertEqual(result["registryModules"], 2)
+        self.assertEqual(result["verificationScope"], "module_subset")
+        self.reject()
+
+    def test_scoped_verify_rejects_unknown_and_duplicate_modules(self):
+        with self.assertRaisesRegex(SystemExit, "unknown selected module"):
+            maps.verify(modules=["missing"])
+        with self.assertRaisesRegex(SystemExit, "duplicate selected module identity"):
+            maps.verify(modules=["alpha", "alpha"])
+
+    def test_cli_routes_module_selection_to_verify(self):
+        with (
+            patch.object(
+                sys,
+                "argv",
+                ["hepta-implementation-maps.py", "--module", "alpha", "verify"],
+            ),
+            patch.object(maps, "verify") as verify,
+        ):
+            maps.main()
+        verify.assert_called_once_with(
+            modules=["alpha"],
+            expected_sha=None,
+            expected_tree=None,
+        )
 
     def closed_public_inventory(self, functions):
         self.write(
@@ -389,9 +424,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 9; }\n")
         current = self.commit("change exact blob implementation")
         result = self.migrate(["alpha"])
-        self.assertEqual(
-            result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
-        )
+        self.assertEqual(result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
         migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
         self.assertEqual(migrated["sourceBase"], provenance)
         self.assertEqual(migrated["observedAtHead"], current)
@@ -403,9 +436,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         result = self.verify()
         self.assertEqual(result["provenanceAnchoredExactBlobMaps"], 1)
 
-        before = (
-            self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
-        ).read_bytes()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
         self.write("README.md", "later prose must not rewrite provenance\n")
         self.commit("prose after exact blob observation")
         self.assertEqual(self.migrate(["alpha"])["migrated"], 0)
