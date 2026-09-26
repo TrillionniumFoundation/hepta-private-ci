@@ -24,7 +24,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 /// Data supplied by the evaluator. Every field is checked again at its use site.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdSignedEvaluationV1 {
     pub bundle: IndependentEvaluationBundleV1,
     pub roles: Vec<MetricRoleContractV2>,
