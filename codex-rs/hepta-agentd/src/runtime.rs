@@ -334,7 +334,7 @@ fn require_cognitive_retrieval_context_for_mode(
     }
 }
 
-#[cfg(feature = "production-cognitive-write")]
+#[cfg(feature = "qualification-cognitive-write")]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
@@ -345,7 +345,7 @@ fn require_cognitive_runtime_for_profile(
     }
 }
 
-#[cfg(not(feature = "production-cognitive-write"))]
+#[cfg(not(feature = "qualification-cognitive-write"))]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {

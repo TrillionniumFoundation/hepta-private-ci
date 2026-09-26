@@ -11,15 +11,11 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
-# Agentd is the named Hepta product host for scoped cognitive mutations. This
-# default is local to the Agentd crate; ordinary Codex/App Server binaries do
-# not enable HeptaCognitiveWrite by default.
-default = ["production-cognitive-write"]
-production-cognitive-write = []
-# Adds the qualification-only turn-lifecycle witness seam on top of the real
-# product mutation profile. It never substitutes for production authority.
-qualification-cognitive-write = ["production-cognitive-write"]
-qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
+# Production mutation authority is supplied by the independently recovered
+# Agentd production host, never by a Cargo feature. This feature only enables
+# the qualification witness and fail-closed startup seam.
+default = []
+qualification-cognitive-write = []
 
 [[bin]]
 name = "codex-hepta-agentd"
@@ -87,6 +83,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
+tracing = { workspace = true }
 tokio = { workspace = true, features = [
     "fs",
     "io-util",
@@ -99,7 +96,7 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
-codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }

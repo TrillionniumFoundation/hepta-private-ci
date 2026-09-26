@@ -10,6 +10,7 @@ use std::fmt;
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -23,6 +24,9 @@ use crate::current_records;
 pub const MAX_READ_IDS_V1: usize = 512;
 const READ_IDS_RECEIPT_DOMAIN: &[u8] = b"hepta.cognitive.read.ids.v1";
 const READ_IDS_REQUEST_DOMAIN: &[u8] = b"hepta.cognitive.read.ids.request.v1";
+const RECEIPT_DIGEST_BYTES: usize = 32;
+const U32_BYTES: usize = 4;
+const U64_BYTES: usize = 8;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum ReadFieldV1 {
@@ -94,6 +98,8 @@ pub struct ReadIdsResultV1 {
     included_fields: Vec<ReadFieldV1>,
     records: Vec<ReadProjectionRecordV1>,
     missing_ids: Vec<StableId>,
+    payload_encoded_bytes: usize,
+    total_encoded_bytes: usize,
     receipt_digest: Digest32,
     authority: AuthorityPosture,
     canonical_bytes: Vec<u8>,
@@ -123,6 +129,28 @@ impl ReadIdsResultV1 {
     #[must_use]
     pub fn missing_ids(&self) -> &[StableId] {
         &self.missing_ids
+    }
+
+    /// Canonical bytes covered by [`Self::receipt_digest`].
+    ///
+    /// This excludes the trailing receipt digest itself.
+    #[must_use]
+    pub const fn payload_encoded_bytes(&self) -> usize {
+        self.payload_encoded_bytes
+    }
+
+    /// Complete module-local canonical representation, including the trailing
+    /// receipt digest.
+    #[must_use]
+    pub const fn total_encoded_bytes(&self) -> usize {
+        self.total_encoded_bytes
+    }
+
+    /// Compatibility alias for callers that previously treated the canonical
+    /// representation as one opaque byte budget.
+    #[must_use]
+    pub const fn encoded_bytes(&self) -> usize {
+        self.total_encoded_bytes
     }
 
     #[must_use]
@@ -169,6 +197,10 @@ impl From<Error> for ReadIdsError {
 /// Return the current head for each requested ID from one already validated
 /// snapshot. Missing IDs are explicit. The result is all-or-error under the
 /// caller-selected byte ceiling; exact-ID reads never silently prefix-truncate.
+///
+/// The full canonical length is calculated before citation or projection
+/// cloning. This makes the byte ceiling a construction budget rather than a
+/// check performed after potentially expensive output allocation.
 pub fn read_ids_v1(
     snapshot: &CognitiveSnapshot,
     request: ReadIdsRequestV1,
@@ -204,14 +236,40 @@ pub fn read_ids_v1(
     let current = current_records(snapshot, request.snapshot_digest)?;
     let request_binding_digest = request.binding_digest();
     let included_fields = fields.into_iter().collect::<Vec<_>>();
-    let mut records = Vec::new();
+    let include_content = included_fields.contains(&ReadFieldV1::ContentDigest);
+    let include_predecessor = included_fields.contains(&ReadFieldV1::PredecessorDigest);
+    let include_citations = included_fields.contains(&ReadFieldV1::Citations);
+
+    let mut selected = Vec::with_capacity(ids.len());
     let mut missing_ids = Vec::new();
     for id in ids {
-        let Some(record) = current.get(&id) else {
-            missing_ids.push(id);
-            continue;
-        };
-        let mut citations = if included_fields.contains(&ReadFieldV1::Citations) {
+        match current.get(&id) {
+            Some(record) => selected.push(*record),
+            None => missing_ids.push(id),
+        }
+    }
+
+    let payload_encoded_bytes = encoded_payload_len(
+        &included_fields,
+        &selected,
+        &missing_ids,
+        include_content,
+        include_predecessor,
+        include_citations,
+    )?;
+    let total_encoded_bytes = payload_encoded_bytes
+        .checked_add(RECEIPT_DIGEST_BYTES)
+        .ok_or(ReadIdsError::InvalidCanonicalEncoding)?;
+    if total_encoded_bytes > request.maximum_encoded_bytes {
+        return Err(ReadIdsError::EncodedResultTooLarge {
+            actual: total_encoded_bytes,
+            maximum: request.maximum_encoded_bytes,
+        });
+    }
+
+    let mut records = Vec::with_capacity(selected.len());
+    for record in selected {
+        let mut citations = if include_citations {
             record.citations.clone()
         } else {
             Vec::new()
@@ -222,10 +280,8 @@ pub fn read_ids_v1(
             revision: record.revision,
             kind: record.kind,
             state: record.state,
-            content_digest: included_fields
-                .contains(&ReadFieldV1::ContentDigest)
-                .then_some(record.content_digest),
-            predecessor_digest: if included_fields.contains(&ReadFieldV1::PredecessorDigest) {
+            content_digest: include_content.then_some(record.content_digest),
+            predecessor_digest: if include_predecessor {
                 record.predecessor_digest
             } else {
                 None
@@ -234,7 +290,8 @@ pub fn read_ids_v1(
         });
     }
 
-    let mut bytes = READ_IDS_RECEIPT_DOMAIN.to_vec();
+    let mut bytes = Vec::with_capacity(total_encoded_bytes);
+    bytes.extend_from_slice(READ_IDS_RECEIPT_DOMAIN);
     bytes.extend_from_slice(snapshot.snapshot_digest.as_array());
     bytes.extend_from_slice(request_binding_digest.as_array());
     bytes.extend_from_slice(
@@ -262,13 +319,14 @@ pub fn read_ids_v1(
         push_id(&mut bytes, id);
     }
     bytes.push(0); // DENY_ALL
+    if bytes.len() != payload_encoded_bytes {
+        return Err(ReadIdsError::InvalidCanonicalEncoding);
+    }
+
     let receipt_digest = Digest32::of_bytes(&bytes);
     bytes.extend_from_slice(receipt_digest.as_array());
-    if bytes.len() > request.maximum_encoded_bytes {
-        return Err(ReadIdsError::EncodedResultTooLarge {
-            actual: bytes.len(),
-            maximum: request.maximum_encoded_bytes,
-        });
+    if bytes.len() != total_encoded_bytes {
+        return Err(ReadIdsError::InvalidCanonicalEncoding);
     }
 
     Ok(ReadIdsResultV1 {
@@ -277,10 +335,94 @@ pub fn read_ids_v1(
         included_fields,
         records,
         missing_ids,
+        payload_encoded_bytes,
+        total_encoded_bytes,
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
         canonical_bytes: bytes,
     })
+}
+
+fn encoded_payload_len(
+    included_fields: &[ReadFieldV1],
+    records: &[&MemoryRecord],
+    missing_ids: &[StableId],
+    include_content: bool,
+    include_predecessor: bool,
+    include_citations: bool,
+) -> Result<usize, ReadIdsError> {
+    u32::try_from(included_fields.len()).map_err(|_| ReadIdsError::InvalidCanonicalEncoding)?;
+    u32::try_from(records.len()).map_err(|_| ReadIdsError::InvalidCanonicalEncoding)?;
+    u32::try_from(missing_ids.len()).map_err(|_| ReadIdsError::InvalidCanonicalEncoding)?;
+
+    let mut len = READ_IDS_RECEIPT_DOMAIN.len();
+    add_len(&mut len, 32)?;
+    add_len(&mut len, 32)?;
+    add_len(&mut len, U32_BYTES)?;
+    add_len(&mut len, included_fields.len())?;
+    add_len(&mut len, U32_BYTES)?;
+    for record in records {
+        add_len(
+            &mut len,
+            encoded_record_len(
+                record,
+                include_content,
+                include_predecessor,
+                include_citations,
+            )?,
+        )?;
+    }
+    add_len(&mut len, U32_BYTES)?;
+    for id in missing_ids {
+        add_len(&mut len, encoded_id_len(id)?)?;
+    }
+    add_len(&mut len, 1)?;
+    Ok(len)
+}
+
+fn encoded_record_len(
+    record: &MemoryRecord,
+    include_content: bool,
+    include_predecessor: bool,
+    include_citations: bool,
+) -> Result<usize, ReadIdsError> {
+    let mut len = encoded_id_len(&record.record_id)?;
+    add_len(&mut len, U64_BYTES)?;
+    add_len(&mut len, 1)?;
+    add_len(&mut len, 1)?;
+    add_len(&mut len, 1)?;
+    if include_content {
+        add_len(&mut len, 32)?;
+    }
+    add_len(&mut len, 1)?;
+    if include_predecessor && record.predecessor_digest.is_some() {
+        add_len(&mut len, 32)?;
+    }
+    add_len(&mut len, U32_BYTES)?;
+    if include_citations {
+        u32::try_from(record.citations.len())
+            .map_err(|_| ReadIdsError::InvalidCanonicalEncoding)?;
+        for citation in &record.citations {
+            add_len(&mut len, encoded_id_len(&citation.source_id)?)?;
+            add_len(&mut len, 32)?;
+        }
+    }
+    Ok(len)
+}
+
+fn encoded_id_len(value: &StableId) -> Result<usize, ReadIdsError> {
+    let raw_len = value.as_str().as_bytes().len();
+    u32::try_from(raw_len).map_err(|_| ReadIdsError::InvalidCanonicalEncoding)?;
+    U32_BYTES
+        .checked_add(raw_len)
+        .ok_or(ReadIdsError::InvalidCanonicalEncoding)
+}
+
+fn add_len(total: &mut usize, additional: usize) -> Result<(), ReadIdsError> {
+    *total = total
+        .checked_add(additional)
+        .ok_or(ReadIdsError::InvalidCanonicalEncoding)?;
+    Ok(())
 }
 
 fn encode_record(bytes: &mut Vec<u8>, record: &ReadProjectionRecordV1) -> Result<(), ReadIdsError> {
