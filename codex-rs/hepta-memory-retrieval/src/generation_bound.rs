@@ -997,9 +997,7 @@ impl UnionBuilder {
     }
 }
 
-pub(crate) fn contradiction_population_count(
-    entries: &[&CandidateUnionEntryV1],
-) -> usize {
+pub(crate) fn contradiction_population_count(entries: &[&CandidateUnionEntryV1]) -> usize {
     let mut populations = BTreeMap::<Digest32, u8>::new();
     for entry in entries {
         for evidence in &entry.contradiction_evidence {

@@ -339,7 +339,10 @@ fn low_score_or_high_ood_candidate_cannot_poison_admitted_recall() {
     let with_poison = recall(&cue, &policy, vec![high, poison]).expect("poison excluded");
     assert_eq!(baseline.disposition, RecallDispositionV1::Recalled);
     assert_eq!(with_poison.disposition, RecallDispositionV1::Recalled);
-    assert_eq!(baseline.selections[0].record_id, with_poison.selections[0].record_id);
+    assert_eq!(
+        baseline.selections[0].record_id,
+        with_poison.selections[0].record_id
+    );
     assert_eq!(with_poison.omitted_count, 1);
 }
 

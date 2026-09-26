@@ -342,9 +342,7 @@ impl EngramDynamicsPolicyV1 {
                 return Err(EngramErrorV1::ScoreOutOfRange(name));
             }
         }
-        if self.minimum_activation <= FixedQ32::ZERO
-            || self.minimum_activation > FixedQ32::ONE
-        {
+        if self.minimum_activation <= FixedQ32::ZERO || self.minimum_activation > FixedQ32::ONE {
             return Err(EngramErrorV1::ScoreOutOfRange("minimum_activation"));
         }
         Ok(())
@@ -949,7 +947,10 @@ fn build_admitted_union(
     full: &CandidateUnionV1,
     admitted: &[&CandidateUnionEntryV1],
 ) -> Result<CandidateUnionV1, RecallErrorV1> {
-    let entries = admitted.iter().map(|entry| (*entry).clone()).collect::<Vec<_>>();
+    let entries = admitted
+        .iter()
+        .map(|entry| (*entry).clone())
+        .collect::<Vec<_>>();
     let distinct_channels = entries
         .iter()
         .flat_map(|entry| entry.channels.iter().copied())
@@ -983,8 +984,7 @@ pub fn recall_with_engram(
         build_candidate_union(cue, retrieval_policy, candidates).map_err(EngramErrorV1::Recall)?;
     let score_admitted = score_admitted_entries(&union.entries, retrieval_policy);
     let admitted = risk_admitted_entries(&score_admitted, retrieval_policy);
-    let admitted_union =
-        build_admitted_union(&union, &admitted).map_err(EngramErrorV1::Recall)?;
+    let admitted_union = build_admitted_union(&union, &admitted).map_err(EngramErrorV1::Recall)?;
     let engram = settle_engram(cue, &admitted_union, engram_snapshot, dynamics_policy)?;
 
     let minimum_channels =
@@ -1226,8 +1226,8 @@ fn active_confidence(active_nodes: &[ActiveEngramNodeV1]) -> Result<ProbabilityQ
     let mut activation_total = 0_u128;
     let mut weighted_confidence = 0_u128;
     for node in active_nodes {
-        let activation = u128::try_from(node.activation.raw())
-            .map_err(|_| EngramErrorV1::Arithmetic)?;
+        let activation =
+            u128::try_from(node.activation.raw()).map_err(|_| EngramErrorV1::Arithmetic)?;
         activation_total = activation_total
             .checked_add(activation)
             .ok_or(EngramErrorV1::Arithmetic)?;

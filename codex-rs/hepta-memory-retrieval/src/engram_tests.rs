@@ -593,16 +593,12 @@ fn confidence_is_activation_weighted() {
     let union = build_candidate_union(
         &cue,
         &retrieval_policy(2),
-        vec![
-            candidate(1, FixedQ32::ONE.raw()),
-            candidate(2, 1_i64 << 30),
-        ],
+        vec![candidate(1, FixedQ32::ONE.raw()), candidate(2, 1_i64 << 30)],
     )
     .expect("union");
     let receipt = settle_engram(&cue, &union, &snapshot, &dynamics).expect("settle");
     let numerator = receipt.active_nodes.iter().fold(0_u128, |sum, node| {
-        sum + u128::try_from(node.activation.raw()).unwrap()
-            * u128::from(node.confidence.raw())
+        sum + u128::try_from(node.activation.raw()).unwrap() * u128::from(node.confidence.raw())
     });
     let denominator = receipt.active_nodes.iter().fold(0_u128, |sum, node| {
         sum + u128::try_from(node.activation.raw()).unwrap()
@@ -649,7 +645,10 @@ fn hnmf_settles_only_policy_admitted_candidates() {
     assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
     assert_eq!(packet.selections[0].record_id, id("memory:1"));
     assert_eq!(packet.omitted_count, 1);
-    assert_eq!(packet.engram.expect("engram").resources.candidate_records, 1);
+    assert_eq!(
+        packet.engram.expect("engram").resources.candidate_records,
+        1
+    );
 }
 
 #[test]
