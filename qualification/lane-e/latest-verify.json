@@ -1,0 +1,41 @@
+{
+  "capturedSourceSha": "c6db3e3bc29d2f402d442bbc26f972a7af088cfc",
+  "command": "verify",
+  "findingCount": 8,
+  "findings": [
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/intelligence_product.rs', 'legacy durable journal trait')"
+    },
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/intelligence_product_runner.rs', 'raw V1 Decision append')"
+    },
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/intelligence_product_runner.rs', 'raw V1 Outcome append')"
+    },
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/objective_ingress.rs', 'legacy durable journal trait')"
+    },
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/objective_ingress.rs', 'raw V1 Credit append')"
+    },
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/objective_ingress.rs', 'raw V1 Decision append')"
+    },
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/objective_ingress.rs', 'raw V1 Outcome append')"
+    },
+    {
+      "code": "legacy_writer_exception_stale",
+      "message": "stale legacy writer exception: ('codex-rs/hepta-agentd/src/objective_ingress.rs', 'raw V1 Revocation append')"
+    }
+  ],
+  "ok": false,
+  "schema": "hepta.lane-e-closure-verification.v1"
+}
