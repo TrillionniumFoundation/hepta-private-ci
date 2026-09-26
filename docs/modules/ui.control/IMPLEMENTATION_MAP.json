@@ -18,6 +18,10 @@
   "currentStatus": {
     "clientCore": "substantially_implemented",
     "browserComposition": "repository_shell_implemented",
+    "dependencyLock": "exact_npm_lock_committed_qualification_pending",
+    "sessionLifecycle": "identity_permission_revision_and_shutdown_fenced",
+    "terminalEvidence": "authenticated_backend_observation_projection_implemented",
+    "localRecovery": "bounded_best_effort_storage_without_authority_claim",
     "authentication": "same_origin_session_adapter_implemented_deployment_unbound",
     "transport": "same_origin_http_adapter_implemented_deployment_unbound",
     "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
@@ -45,7 +49,7 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale.",
+      "sourceSemantics": "Projects a coherent generation/revision snapshot, authenticated operator identity, pending operations, and backend-observed terminal evidence while explicitly marking absent snapshots stale.",
       "operation": "read_view",
       "nativeSymbol": "readView()",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
@@ -100,9 +104,11 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "selected Web framework/build artifact and browser support matrix",
-    "deployed authentication/CSP/CSRF/WebSocket topology",
-    "end-to-end accessibility and backend deployment qualification"
+    "production identity-provider and permission-revision integration",
+    "deployed backend operation-id uniqueness and durable lookup evidence",
+    "deployed CSP/CSRF/TLS/reverse-proxy observation",
+    "production monitoring, alert routing, and rollback exercise",
+    "independent assistive-technology and operator acceptance signature"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -112,8 +118,10 @@
     "clientCoreSubstantiallyImplemented": true,
     "repositoryBrowserShellImplemented": true,
     "repositoryAuthTransportAdaptersImplemented": true,
+    "dependencyLockCommitted": true,
     "serverIdempotencyContractDefined": true,
-    "exactHeadQualificationDerivedByWorkflow": true,
+    "exactHeadQualificationWorkflowPresent": true,
+    "exactHeadQualificationDerivedByWorkflow": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
