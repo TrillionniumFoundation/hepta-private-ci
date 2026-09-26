@@ -468,3 +468,7 @@ available.
 ## 18. Daemon-owned product-learning reconciliation
 
 The optional product embedding can attach `AgentdIntelligenceLearningRuntimeConfigV1` after installing the complete canonical runner/provider profile. Agentd then owns one required, bounded reconciliation task for the sealed `AgentdIntelligenceLearningHostV1`: it waits for the current Running fence, observes/reconciles unsettled destination state, drains only the configured residual batch, and rechecks generation after durable work. No CLI default creates the host, ledger writer, final-use authority or signed-grant provider. This closes repository-owned daemon scheduling while preserving the separate real-process, target-host, independent-acceptance, activation and release gates.
+
+### Exact authenticated learning recovery
+
+The durable Decision/Outcome sidecar uses schema version 2 and records the complete verified evidence identity at enqueue time. Destination-first restart reconciliation compares the full persisted V2 ledger event, including controller and authentication digest, before acknowledging prior application. If no exact event exists, the original immutable payload may be replayed only after fresh final-use authority and renewed evidence verification; identity drift is terminally rejected rather than normalized into success.

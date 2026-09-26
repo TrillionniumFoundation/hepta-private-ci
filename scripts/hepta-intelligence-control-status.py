@@ -94,6 +94,14 @@ EXPECTED_SOURCE_FACTS = {
         "learning",
         "reconcile_unsettled",
     ),
+    "exactLearningEvidenceBindingPresent": (
+        "learning",
+        "VerifiedEvidenceBindingPayloadV1",
+    ),
+    "exactDestinationEventObservationPresent": (
+        "learning",
+        "record.event == expected",
+    ),
     "daemonLearningReconcilerPresent": (
         "learning_runtime",
         "run_intelligence_learning_runtime_v1",
@@ -141,6 +149,9 @@ REQUIRED_TESTS = {
     "same_phase_idempotent_replay_does_not_reset_dwell",
     "operation_ids_are_kind_separated_and_stable",
     "evidence_payload_rejects_role_substitution",
+    "persisted_evidence_binding_rejects_signed_identity_substitution",
+    "persisted_principal_binding_rejects_key_and_credential_substitution",
+    "exact_destination_observation_binds_controller_identity",
     "learning_runtime_policy_is_bounded",
 }
 
@@ -304,6 +315,10 @@ def implementation_document(
             "restartReconciliationPresent": facts[
                 "restartReconciliationPresent"
             ],
+            "exactAuthenticatedRecoveryPresent": facts[
+                "exactLearningEvidenceBindingPresent"
+            ]
+            and facts["exactDestinationEventObservationPresent"],
             "daemonLearningReconcilerPresent": facts[
                 "daemonLearningReconcilerPresent"
             ],
@@ -458,12 +473,17 @@ def traceability_document(
                     "formalOutcomeWriterPresent",
                     "durableLearningOutboxPresent",
                     "restartReconciliationPresent",
+                    "exactLearningEvidenceBindingPresent",
+                    "exactDestinationEventObservationPresent",
                     "daemonLearningReconcilerPresent",
                     "physicalTerminalBindingPresent",
                 ],
                 "tests": names(
                     "operation_ids",
                     "evidence_payload",
+                    "persisted_evidence_binding",
+                    "persisted_principal_binding",
+                    "exact_destination_observation",
                     "decision_outcome",
                     "learning_runtime_policy",
                 ),

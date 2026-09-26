@@ -232,3 +232,7 @@ profile capability, not a repository-wide default or deployment claim.
 ## Daemon-owned product-learning service
 
 `AgentdIntelligenceLearningRuntimeConfigV1` composes the durable learning host into the normal Agentd task owner without manufacturing authority. It is accepted only after the all-or-none canonical profile, must bind the unique Running generation, and runs restart reconciliation before bounded prepared-outbox dispatch. The required service is generation-fenced before and after destination work. The default binary remains fail-closed because it does not construct this config.
+
+## Exact learning identity closure
+
+Product Decision/Outcome recovery no longer recognizes semantic lookalikes. The outbox freezes verified principal/controller/credential/key/scope/epoch/authentication identity, reconstructs the exact V2 ledger event during destination observation, and re-verifies that same binding before replay. Dedicated default-profile tests cover signature, principal, credential-chain, key, scope, epoch and controller substitution.
