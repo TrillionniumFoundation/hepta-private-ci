@@ -1,0 +1,58 @@
+name: Memory retrieval retained diagnostics
+
+on:
+  push:
+    branches: [work/memory-retrieval-semantic-product-convergence-20260926]
+    paths: [.github/workflows/hepta-memory-retrieval-diagnostics.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+jobs:
+  diagnostics:
+    if: github.ref == 'refs/heads/work/memory-retrieval-semantic-product-convergence-20260926'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - name: Publish bounded compiler diagnostics from exact retained artifacts
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const crypto = require('crypto');
+            const cp = require('child_process');
+            const selected = [
+              {id: 10912788461, run: 36262948140, sha: '0fdebf85f8aaa23e3dff157d87e8ade7e078608e', digest: '326d3a52959e6b3332e71b7a1cf7ffa72ffeae8338d721bb027c855dcd8471b1'},
+              {id: 10912183555, run: 36262159127, sha: '162ad1513673a6e4d19af2ea348e937cb691cb31', digest: 'e8c32424aa14c9949aa39883c179e08664110fdf7af9d03f1630765368844a11'}
+            ];
+            let body = '<!-- retrieval-retained-diagnostics-v1 -->\n## Hash-verified native failure diagnostics\n\nThese are retained failed-run logs, not green qualification or current-head approval.\n';
+            for (const item of selected) {
+              const {data: metadata} = await github.rest.actions.getArtifact({...context.repo, artifact_id: item.id});
+              if (metadata.expired || metadata.size_in_bytes > 1000000 || metadata.workflow_run.id !== item.run || metadata.workflow_run.head_sha !== item.sha) throw new Error('artifact identity changed');
+              const {data} = await github.rest.actions.downloadArtifact({...context.repo, artifact_id: item.id, archive_format: 'zip'});
+              const raw = Buffer.from(data);
+              if (crypto.createHash('sha256').update(raw).digest('hex') !== item.digest) throw new Error('artifact archive digest mismatch');
+              const archive = path.join(process.env.RUNNER_TEMP, 'retrieval-' + item.id + '.zip');
+              fs.writeFileSync(archive, raw, {flag: 'wx'});
+              const code = `import sys, zipfile
+            with zipfile.ZipFile(sys.argv[1]) as archive:
+                for info in archive.infolist():
+                    if info.file_size > 2_000_000: raise ValueError('oversized retained log')
+                    if info.filename.endswith(('retrieval-kernel-tests.log', 'retrieval-kernel-clippy.log', 'agentd-context-tests.log', 'provider-tests.log', 'source.json')):
+                        text = archive.read(info).decode('utf-8', errors='replace')
+                        print('=== ' + info.filename + ' ===')
+                        print(text[-16000:])
+            `;
+              let text = cp.execFileSync('python3', ['-c', code, archive], {encoding: 'utf8', maxBuffer: 1000000});
+              text = text.replace(/@/g, '[at]').replace(/```/g, "'''");
+              body += '\n### Run ' + item.run + ', artifact ' + item.id + '\nEvent source: `' + item.sha + '`; archive SHA-256: `' + item.digest + '`.\n\n```text\n' + text.slice(-26000) + '\n```\n';
+            }
+            if (body.length > 60000) throw new Error('diagnostic comment bound exceeded');
+            const comments = await github.paginate(github.rest.issues.listComments, {...context.repo, issue_number: 1014, per_page: 100});
+            if (!comments.some(comment => comment.body?.includes('<!-- retrieval-retained-diagnostics-v1 -->'))) {
+              await github.rest.issues.createComment({...context.repo, issue_number: 1014, body});
+            }
