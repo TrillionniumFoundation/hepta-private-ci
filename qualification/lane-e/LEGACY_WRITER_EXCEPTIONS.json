@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.lane-e-legacy-writer-exceptions.v1",
+  "authorityDelta": "none",
+  "exceptions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "finding": "legacy durable journal trait",
+      "classification": "read_only_runstart_bridge",
+      "owner": "runtime.agentd",
+      "rationale": "The Objective owner publishes and recovers RunStart through the pre-existing typed intelligence owner bridge. It does not construct Decision, Outcome, Credit, or Revocation writes.",
+      "requiredMarkers": [
+        "prepare_intelligence_run_v1",
+        "LedgerEvent::RunStart",
+        "fn event_record_id"
+      ],
+      "forbiddenMarkers": [
+        "append_qualification("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "finding": "raw V1 Decision append",
+      "classification": "read_only_runstart_bridge",
+      "owner": "runtime.agentd",
+      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
+      "requiredMarkers": [
+        "match event",
+        "LedgerEvent::RunStart",
+        "fn event_record_id"
+      ],
+      "forbiddenMarkers": [
+        "append_qualification("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "finding": "raw V1 Outcome append",
+      "classification": "read_only_runstart_bridge",
+      "owner": "runtime.agentd",
+      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
+      "requiredMarkers": [
+        "match event",
+        "LedgerEvent::RunStart",
+        "fn event_record_id"
+      ],
+      "forbiddenMarkers": [
+        "append_qualification("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "finding": "raw V1 Credit append",
+      "classification": "read_only_runstart_bridge",
+      "owner": "runtime.agentd",
+      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
+      "requiredMarkers": [
+        "match event",
+        "LedgerEvent::RunStart",
+        "fn event_record_id"
+      ],
+      "forbiddenMarkers": [
+        "append_qualification("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "finding": "raw V1 Revocation append",
+      "classification": "read_only_runstart_bridge",
+      "owner": "runtime.agentd",
+      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
+      "requiredMarkers": [
+        "match event",
+        "LedgerEvent::RunStart",
+        "fn event_record_id"
+      ],
+      "forbiddenMarkers": [
+        "append_qualification("
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "finding": "legacy durable journal trait",
+      "classification": "qualification_feature_only",
+      "owner": "runtime.agentd",
+      "rationale": "Compatibility imports compile only under qualification-legacy-learning-write, which is not a default or product feature.",
+      "requiredMarkers": [
+        "#[cfg(feature = \"qualification-legacy-learning-write\")]",
+        "DurableLearningJournal"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "finding": "raw V1 Decision append",
+      "classification": "qualification_feature_only",
+      "owner": "runtime.agentd",
+      "rationale": "The raw V1 constructor is confined to the explicit qualification compatibility feature.",
+      "requiredMarkers": [
+        "#[cfg(feature = \"qualification-legacy-learning-write\")]",
+        "pub fn append_decision"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "finding": "raw V1 Outcome append",
+      "classification": "qualification_feature_only",
+      "owner": "runtime.agentd",
+      "rationale": "The raw V1 constructor is confined to the explicit qualification compatibility feature.",
+      "requiredMarkers": [
+        "#[cfg(feature = \"qualification-legacy-learning-write\")]",
+        "pub fn append_outcome"
+      ]
+    }
+  ]
+}

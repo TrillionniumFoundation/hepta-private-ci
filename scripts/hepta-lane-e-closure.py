@@ -24,6 +24,9 @@ EVIDENCE_SCRIPT_PATH = ROOT / "scripts/hepta-learning-eval-evidence.py"
 TEMPORARY_WORKFLOW_PATH = (
     ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
 )
+LEGACY_WRITER_EXCEPTIONS_PATH = (
+    ROOT / "qualification/lane-e/LEGACY_WRITER_EXCEPTIONS.json"
+)
 
 EXPECTED_MODULES = {
     "learning.ledger",
@@ -33,7 +36,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 14)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 13)),
 }
@@ -88,11 +91,17 @@ EXPECTED_OPERATIONS = {
     "learning.operator": {
         "build_targets",
         "validate_applicability_certificate",
+        "validate_applicability_with_signed_evidence_v2",
         "build_sensor_core",
         "evaluate_bellman_reference",
         "admit_operator_regularity",
+        "admit_operator_regularity_with_signed_evidence_v2",
         "fit_transition_model",
         "predict_transition",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
     },
     "learning.eval": {
         "estimate_ope",
@@ -626,20 +635,76 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
 
 
 def verify_product_writer_exclusivity(findings: Findings) -> None:
-    """Prevent product crates from bypassing LedgerWriter with raw V1 appends."""
+    """Prevent product crates from bypassing LedgerWriter with raw V1 appends.
+
+    A small closed-world exception file is allowed only for read-only recovery
+    inspection and compile-time qualification compatibility. Every exception is
+    path- and finding-specific, marker-bound, and rejected when stale.
+    """
 
     allowed_roots = {
         "codex-rs/hepta-learning-ledger",
         "codex-rs/hepta-shadow-qualification",
     }
     forbidden = {
-        r"\bDurableLearningJournal\b": "legacy durable journal trait",
-        r"LedgerEvent::Decision\b": "raw V1 Decision append",
-        r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
-        r"LedgerEvent::Credit\b": "raw V1 Credit append",
-        r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
+        r"DurableLearningJournal": "legacy durable journal trait",
+        r"LedgerEvent::Decision": "raw V1 Decision append",
+        r"LedgerEvent::Outcome": "raw V1 Outcome append",
+        r"LedgerEvent::Credit": "raw V1 Credit append",
+        r"LedgerEvent::Revocation": "raw V1 Revocation append",
     }
+    exception_document = load_json(LEGACY_WRITER_EXCEPTIONS_PATH, findings)
+    findings.require(
+        exception_document.get("schema")
+        == "hepta.lane-e-legacy-writer-exceptions.v1",
+        "legacy_writer_exception_schema",
+        "unexpected legacy writer exception schema",
+    )
+    records = exception_document.get("exceptions")
+    if not isinstance(records, list):
+        findings.add(
+            "legacy_writer_exception_records",
+            "legacy writer exceptions must be an array",
+        )
+        records = []
+    exceptions: dict[tuple[str, str], dict[str, Any]] = {}
+    for record in records:
+        if not isinstance(record, dict):
+            findings.add(
+                "legacy_writer_exception_record",
+                "legacy writer exception record must be an object",
+            )
+            continue
+        path = record.get("path")
+        finding = record.get("finding")
+        classification = record.get("classification")
+        if (
+            not isinstance(path, str)
+            or not isinstance(finding, str)
+            or classification
+            not in {"read_only_runstart_bridge", "qualification_feature_only"}
+        ):
+            findings.add(
+                "legacy_writer_exception_record",
+                f"invalid legacy writer exception: {record!r}",
+            )
+            continue
+        key = (path, finding)
+        if key in exceptions:
+            findings.add(
+                "legacy_writer_exception_duplicate",
+                f"duplicate legacy writer exception: {key!r}",
+            )
+            continue
+        exceptions[key] = record
 
+    seen: set[tuple[str, str]] = set()
+    feature_manifest = ROOT / "codex-rs/hepta-agentd/Cargo.toml"
+    feature_text = (
+        feature_manifest.read_text(encoding="utf-8")
+        if feature_manifest.is_file()
+        else ""
+    )
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
         if any(
@@ -656,11 +721,53 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
 
         text = path.read_text(encoding="utf-8")
         for pattern, description in forbidden.items():
+            if re.search(pattern, text) is None:
+                continue
+            key = (relative, description)
+            exception = exceptions.get(key)
+            if exception is None:
+                findings.add(
+                    "legacy_learning_writer_product_bypass",
+                    f"{relative} uses {description}; product learning writes must use LedgerWriter",
+                )
+                continue
+            seen.add(key)
+            markers = exception.get("requiredMarkers")
             findings.require(
-                re.search(pattern, text) is None,
-                "legacy_learning_writer_product_bypass",
-                f"{relative} uses {description}; product learning writes must use LedgerWriter",
+                isinstance(markers, list)
+                and bool(markers)
+                and all(
+                    isinstance(marker, str) and marker in text
+                    for marker in markers
+                ),
+                "legacy_writer_exception_marker",
+                f"{relative} no longer satisfies the audited exception markers for {description}",
             )
+            classification = exception["classification"]
+            if classification == "qualification_feature_only":
+                findings.require(
+                    "qualification-legacy-learning-write" in text
+                    and "qualification-legacy-learning-write = []" in feature_text,
+                    "legacy_writer_exception_feature",
+                    f"{relative} legacy surface is not confined to the explicit qualification feature",
+                )
+            else:
+                forbidden_markers = exception.get("forbiddenMarkers", [])
+                findings.require(
+                    isinstance(forbidden_markers, list)
+                    and all(
+                        isinstance(marker, str) and marker not in text
+                        for marker in forbidden_markers
+                    ),
+                    "legacy_writer_exception_write",
+                    f"{relative} read-only exception contains a forbidden write marker",
+                )
+
+    for key in sorted(set(exceptions) - seen):
+        findings.add(
+            "legacy_writer_exception_stale",
+            f"stale legacy writer exception: {key!r}",
+        )
 
 
 def verify_authority_posture(findings: Findings) -> None:
