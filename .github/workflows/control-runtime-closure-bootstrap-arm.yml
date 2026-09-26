@@ -1,0 +1,60 @@
+name: Control runtime closure bootstrap ARM
+
+on:
+  push:
+    branches:
+      - control-runtime-production-closure-v1
+    paths:
+      - "scripts/control_runtime_closure.py"
+      - "scripts/control_runtime_fixups.py"
+      - ".github/workflows/control-runtime-closure-bootstrap-arm.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-runtime-closure-bootstrap-arm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - name: Check out target branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: control-runtime-production-closure-v1
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact closure patch and fixups
+        run: |
+          python3 scripts/control_runtime_closure.py
+          python3 scripts/control_runtime_fixups.py
+
+      - name: Format Rust sources
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Validate and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/modules/control.runtime/IMPLEMENTATION_MAP.json >/dev/null
+          python3 -m json.tool docs/modules/control.runtime/MATURITY.json >/dev/null
+          git diff --check
+          git config user.name hepta-control-runtime-bot
+          git config user.email control-runtime-bot@invalid
+          git add \
+            codex-rs/hepta-control-plane \
+            codex-rs/hepta-agent-protocol/src/lib.rs \
+            codex-rs/hepta-agentd/src/cognitive_context.rs \
+            docs/modules/control.runtime \
+            docs/readiness/CONTROL_RUNTIME_EXECUTION.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "control.runtime: close request integrity and durable execution source"
+          git push origin HEAD:control-runtime-production-closure-v1
