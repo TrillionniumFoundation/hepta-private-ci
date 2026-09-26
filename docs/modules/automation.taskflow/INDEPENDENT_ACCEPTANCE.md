@@ -1,5 +1,7 @@
 # automation.taskflow independent acceptance
 
+This contract applies to the schema-v19 durable TaskFlow owner and every later compatible candidate that preserves its V1 identities and store semantics.
+
 Repository-controlled implementation and host qualification do not grant release authority. Independent acceptance is a separately signed evidence class and must be issued by a principal distinct from the implementation principal.
 
 ## Evidence chain
