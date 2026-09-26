@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   apply-and-verify:
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-15
     timeout-minutes: 90
     steps:
       - name: Checkout exact hardening branch
@@ -27,17 +27,6 @@ jobs:
           ref: codex/runtime-codex-hardening-20260927
           fetch-depth: 0
           persist-credentials: true
-
-      - name: Prepare native build prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
 
       - name: Install repository Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -59,8 +48,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Normalize reviewed source anchors without weakening one-occurrence
-          # assertions in the patch itself.
           python3 - <<'PY'
           from pathlib import Path
           path = Path('scripts/bootstrap_runtime_codex_hardening.py')
@@ -80,9 +67,6 @@ jobs:
           path.write_text(value)
           PY
           python3 scripts/bootstrap_runtime_codex_hardening.py
-          # Historical native-v1 AbortBeforeEffect events did not carry an
-          # opening. Keep them readable, but only new Some(proof) records may
-          # participate in exact cross-owner compensation.
           python3 - <<'PY'
           from pathlib import Path
           path = Path('codex-rs/hepta-infer-core/src/native_control.rs')
