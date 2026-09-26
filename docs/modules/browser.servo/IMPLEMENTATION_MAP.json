@@ -2,12 +2,12 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "be88ca0dbd21c391fd7728a39d592a568c75cac0",
-    "tree": "f9095696fafabca7aac9ae85bc011a44ebe75048"
+    "commit": "b15e292cc753342dc3aab887cb0318a1601cd90b",
+    "tree": "f1a22499aa339336bcf73fcce2e82e84a53431e7"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
-  "sourceMaturity": "persistent_agentd_owned_servo_worker_pool_b5a1_candidate_lock_generation_pending",
+  "sourceMaturity": "canonical_durable_browser_owner_with_persistent_agentd_service_and_qualified_source_gates",
   "declaredRoots": [
     "apps/hepta-browser",
     "third_party/servo-patches"
@@ -16,8 +16,10 @@
     "apps/hepta-browser",
     "third_party/servo-patches"
   ],
-  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict persistent operation journal; expiresAtMs is a physical process/network lease and owner close is its early-revocation ceremony; long-running Agentd retains the Browser port and monotonic final-use revocation feed; each active profile owns one private Servo worker/profile directory.",
-  "terminalObserverDisposition": "Worker admission and terminal response are distinct. Live terminal settlement is persisted; post-process-loss terminalization requires an Ed25519 observer receipt that also satisfies configured minimum observer generation/time and exact current frontier. Stale, rollback, future or misbound evidence remains indeterminate.",
+  "stateOwnerDisposition": "Owns serialized profile, page, operation and generation state; a monotonic v2 journal persists secret-free immutable operation identities; long-running Agentd browserd retains the restartable Browser port and live monotonic revocation feed; one bounded profile-affine Servo worker and grant-scoped egress broker are owned per active profile.",
+  "terminalObserverDisposition": "Worker admission, local dispatch and terminal observation are distinct. Live settlement is persisted monotonically. Post-process-loss terminalization requires an Ed25519 observer receipt satisfying configured operation, semantic, generation, time and exact frontier policy; absent or stale evidence remains indeterminate and cannot authorize redispatch.",
+  "generatedSourceRegistry": "docs/modules/browser.servo/GENERATED_SOURCE_REGISTRY.json",
+  "serviceClosureManifest": "apps/hepta-browser/service-manifest.json",
   "operations": [
     {
       "designOperation": "open_profile",
@@ -31,10 +33,16 @@
       "delegatedCallees": [
         {
           "role": "persistent_product_owner",
-          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
           "symbol": "open_browser_servo_port_from_file",
-          "buildTarget": "codex-hepta-agentd",
+          "buildTarget": "hepta-agentd-browserd",
           "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "verified_service_bootstrap",
+          "path": "apps/hepta-browser/src/verified-service-bootstrap.js",
+          "symbol": "verifyClosure",
+          "buildTarget": "hepta-browser"
         }
       ],
       "tests": [
@@ -44,12 +52,12 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         },
         {
-          "path": "apps/hepta-browser/test/worker-driver.test.js",
-          "kind": "node_private_worker_boundary",
-          "command": "node --test apps/hepta-browser/test/worker-driver.test.js"
+          "path": "apps/hepta-browser/test/service-closure.test.js",
+          "kind": "transitive_service_artifact_binding",
+          "command": "node --test apps/hepta-browser/test/service-closure.test.js"
         }
       ],
-      "sourceSemantics": "Persistent Agentd admits a profile/principal/generation after durable generation fences, exact artifact/launcher verification and bounded global profile capacity; Agentd retains one private Browser service for its generation and the profile is assigned one private pooled Servo worker plus exact-origin egress broker.",
+      "sourceSemantics": "The persistent Agentd owner loads one exact private configuration, verifies the bootstrap and complete ESM closure, validates exact worker and launcher identities, enforces global profile capacity and assigns one isolated worker and egress broker to the admitted generation.",
       "operation": "open_profile",
       "nativeSymbol": "async openProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -66,10 +74,10 @@
       },
       "delegatedCallees": [
         {
-          "role": "product_dispatch_caller",
-          "path": "codex-rs/hepta-agentd/src/state_control.rs",
-          "symbol": "AgentdMethod::BrowserServo",
-          "buildTarget": "codex-hepta-agentd",
+          "role": "long_running_product_dispatch",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+          "symbol": "Self::AdmitEffectGrant => BrowserServoMethod::AdmitEffectGrant",
+          "buildTarget": "hepta-agentd-browserd",
           "ownerModule": "runtime.agentd"
         }
       ],
@@ -80,7 +88,7 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Adds one bounded effect grant to the existing profile generation after profile ownership, origin scope, expiry, payload digest and authority epoch validation; the Agentd product port exposes the same closed BrowserServo method.",
+      "sourceSemantics": "Adds one bounded immutable effect grant to the current profile generation after origin, expiry, typed payload digest and authority epoch validation.",
       "operation": "admit_effect_grant",
       "nativeSymbol": "async admitEffectGrant(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -95,7 +103,15 @@
         "symbol": "async observePage(",
         "buildTarget": "hepta-browser"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "long_running_product_dispatch",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+          "symbol": "Self::ObservePage => BrowserServoMethod::ObservePage",
+          "buildTarget": "hepta-agentd-browserd",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
       "tests": [
         {
           "path": "apps/hepta-browser/test/runtime.test.js",
@@ -108,7 +124,7 @@
           "command": "cargo test --manifest-path apps/hepta-browser/servo-worker/Cargo.toml --locked"
         }
       ],
-      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations from the selected Servo candidate; each later action revalidates page/document/navigation epoch and exact visible action surface.",
+      "sourceSemantics": "Returns bounded redacted semantic observations with origin, frame provenance, document and navigation revision, visible actionable surface, stable handles, visibility and actionability. Later effects revalidate that exact surface inside the worker.",
       "operation": "observe_page",
       "nativeSymbol": "async observePage(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -139,11 +155,17 @@
           "ownerModule": "runtime.agentd"
         },
         {
-          "role": "product_dispatch_caller",
-          "path": "codex-rs/hepta-agentd/src/state_control.rs",
-          "symbol": "AgentdMethod::BrowserServo",
-          "buildTarget": "codex-hepta-agentd",
+          "role": "long_running_product_dispatch",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+          "symbol": "Self::NavigateOrAct => BrowserServoMethod::NavigateOrAct",
+          "buildTarget": "hepta-agentd-browserd",
           "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "worker_effect_admission",
+          "path": "apps/hepta-browser/servo-worker/src/main.rs",
+          "symbol": "dispatch_boundary",
+          "buildTarget": "hepta-servo-worker"
         }
       ],
       "tests": [
@@ -154,8 +176,13 @@
         },
         {
           "path": "apps/hepta-browser/test/agentd-service.test.js",
-          "kind": "node_private_parent_boundary",
+          "kind": "private_parent_final_use_boundary",
           "command": "node --test apps/hepta-browser/test/agentd-service.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/test/journal-monotonic-v2.test.js",
+          "kind": "monotonic_durable_effect_identity",
+          "command": "node --test apps/hepta-browser/test/journal-monotonic-v2.test.js"
         },
         {
           "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
@@ -166,24 +193,9 @@
           "path": "apps/hepta-browser/scripts/real-browser-e2e.js",
           "kind": "real_servo_lifecycle_egress_recovery",
           "command": "node apps/hepta-browser/scripts/real-browser-e2e.js <qualified-worker>"
-        },
-        {
-          "path": "apps/hepta-browser/test/journal.test.js",
-          "kind": "node_durable_crash_fault_injection",
-          "command": "node --test apps/hepta-browser/test/journal.test.js"
-        },
-        {
-          "path": "apps/hepta-browser/test/persisted-reconciler.test.js",
-          "kind": "node_authenticated_terminal_observer",
-          "command": "node --test apps/hepta-browser/test/persisted-reconciler.test.js"
-        },
-        {
-          "path": "apps/hepta-browser/scripts/public-egress-probe.js",
-          "kind": "trusted_target_real_servo_public_https",
-          "command": "node apps/hepta-browser/scripts/public-egress-probe.js <qualified-worker>"
         }
       ],
-      "sourceSemantics": "Binds proposal provenance, typed payload, current snapshot, grant and live final-use authority. The persistent Agentd owner synchronously refreshes and continuously watches an owner-private monotonic revocation feed using the same FinalUseAuthority fence, so a valid concurrent revocation cannot pass worker admission. Durable intent precedes dispatch_boundary; crash-torn journal tails recover only their fully validated prefix. Post-process-loss success/failure requires an Ed25519-authenticated observer receipt with exact operation/request/semantic/outcome and frontier binding; otherwise the identity remains indeterminate and is never redispatched.",
+      "sourceSemantics": "Binds proposal provenance, typed payload, current semantic page revision, exact effect grant and live final-use authority. Durable intent precedes worker-side admission. Agentd releases its final-use fence only after an exact worker dispatch-boundary receipt; timeout or channel uncertainty terminates and quarantines the child rather than treating AbortSignal delivery as containment. Grant-scoped egress enforces bounded DNS/IP/origin/TLS/redirect and subresource policy.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -200,26 +212,26 @@
       },
       "delegatedCallees": [
         {
-          "role": "product_dispatch_caller",
-          "path": "codex-rs/hepta-agentd/src/state_control.rs",
-          "symbol": "AgentdMethod::BrowserServo",
-          "buildTarget": "codex-hepta-agentd",
+          "role": "long_running_product_dispatch",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+          "symbol": "Self::ReconcileOperation => BrowserServoMethod::ReconcileOperation",
+          "buildTarget": "hepta-agentd-browserd",
           "ownerModule": "runtime.agentd"
         }
       ],
       "tests": [
         {
           "path": "apps/hepta-browser/test/runtime.test.js",
-          "kind": "node_product_boundary",
+          "kind": "node_live_reconciliation",
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         },
         {
           "path": "apps/hepta-browser/test/worker-driver.test.js",
-          "kind": "node_private_worker_reconciliation",
+          "kind": "private_worker_reconciliation",
           "command": "node --test apps/hepta-browser/test/worker-driver.test.js"
         }
       ],
-      "sourceSemantics": "Observes one already-dispatched live-worker identity without minting new authority or redispatching; immutable request/semantic identity must match durable state.",
+      "sourceSemantics": "Observes one already-admitted live-worker identity without entering new-effect authority or redispatching. Immutable request and semantic identity must match durable state.",
       "operation": "reconcile_operation",
       "nativeSymbol": "async reconcileOperation(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -236,26 +248,26 @@
       },
       "delegatedCallees": [
         {
-          "role": "product_dispatch_caller",
-          "path": "codex-rs/hepta-agentd/src/state_control.rs",
-          "symbol": "AgentdMethod::BrowserServo",
-          "buildTarget": "codex-hepta-agentd",
+          "role": "long_running_product_dispatch",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+          "symbol": "Self::ReconcilePersistedOperation => BrowserServoMethod::ReconcilePersistedOperation",
+          "buildTarget": "hepta-agentd-browserd",
           "ownerModule": "runtime.agentd"
         }
       ],
       "tests": [
         {
-          "path": "apps/hepta-browser/test/runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-browser/test/runtime.test.js"
+          "path": "apps/hepta-browser/test/persisted-reconciler.test.js",
+          "kind": "authenticated_current_terminal_observer",
+          "command": "node --test apps/hepta-browser/test/persisted-reconciler.test.js"
         },
         {
-          "path": "apps/hepta-browser/test/persisted-reconciler.test.js",
-          "kind": "node_authenticated_current_terminal_observer",
-          "command": "node --test apps/hepta-browser/test/persisted-reconciler.test.js"
+          "path": "apps/hepta-browser/test/journal-monotonic-v2.test.js",
+          "kind": "durable_restart_projection",
+          "command": "node --test apps/hepta-browser/test/journal-monotonic-v2.test.js"
         }
       ],
-      "sourceSemantics": "Recovers an old crossed identity from the durable journal without reconstructing secret-bearing action bytes; terminalization requires the configured Ed25519 observer plus current generation/time/frontier policy.",
+      "sourceSemantics": "Recovers one crossed operation identity from the secret-free journal. Terminalization requires the configured signed observer and exact current generation, time and frontier policy; failure to prove a terminal outcome remains indeterminate or quarantined.",
       "operation": "reconcile_persisted_operation",
       "nativeSymbol": "async reconcilePersistedOperation(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -272,10 +284,10 @@
       },
       "delegatedCallees": [
         {
-          "role": "product_dispatch_caller",
-          "path": "codex-rs/hepta-agentd/src/state_control.rs",
-          "symbol": "AgentdMethod::BrowserServo",
-          "buildTarget": "codex-hepta-agentd",
+          "role": "long_running_product_dispatch",
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+          "symbol": "Self::CloseProfile => BrowserServoMethod::CloseProfile",
+          "buildTarget": "hepta-agentd-browserd",
           "ownerModule": "runtime.agentd"
         }
       ],
@@ -291,7 +303,7 @@
           "command": "node apps/hepta-browser/scripts/real-browser-e2e.js <qualified-worker>"
         }
       ],
-      "sourceSemantics": "Stops the profile worker and egress broker, refuses unresolved effects, then durably retires the profile generation; owner close is the current early-revocation ceremony for the process/network lease.",
+      "sourceSemantics": "Stops the profile worker and egress broker, refuses unresolved effects, then durably retires the generation. Expiry and explicit close are process/network lease termination boundaries.",
       "operation": "close_profile",
       "nativeSymbol": "async closeProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -300,12 +312,11 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "terminal-success exact-head b5a1 generated candidate Cargo.lock, review and committed-lock rerun",
-    "terminal-success exact-head b5a1 compile/unit tests plus real Browser E2E",
-    "terminal-success reproducible worker artifact/SPDX receipt from the committed b5a1 lock",
-    "trusted Linux target-host Bubblewrap/prlimit/parent-death/no-listener plus real sandboxed-Servo public DNS and certificate-validating HTTPS qualification",
-    "retained cross-profile cookie/cache/storage isolation, revocation-race and 32-cycle resource-soak evidence",
-    "actual current signed remote-business receipts from the configured independent terminal observer where business terminality is claimed",
+    "terminal-success exact-head Browser required and Agentd composition checks",
+    "terminal-success cross-runner byte-identical worker reproducibility receipt from the committed b5a1 lock",
+    "trusted Linux target qualification of the selected bootstrap, ESM closure, worker, Bubblewrap, prlimit, cgroup-v2 delegation and reviewed seccomp profile",
+    "retained real public HTTPS, redirect/subresource policy, cross-profile cookie/cache/storage isolation, revocation-race, crash-reconciliation and resource-soak evidence",
+    "actual current signed remote-business receipts from the independently operated terminal observer where business terminality is claimed",
     "independent operator acceptance, activation, promotion and release"
   ],
   "claimBoundary": {
@@ -325,14 +336,15 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "persistent_agentd_owner_source_present_b5a1_lock_committed_not_qualified",
-  "productionWriterState": "browser_owner_journal_and_settlement_source_present_not_activated",
+  "productCallerState": "long_running_agentd_browserd_source_present_exact_head_and_target_qualification_pending",
+  "productionWriterState": "monotonic_browser_owner_journal_and_signed_terminal_settlement_source_present_not_activated",
   "owner": "browser-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/browser.servo/TECHNICAL.md",
+  "operationsGuide": "docs/modules/browser.servo/OPERATIONS.md",
   "sourceRoot": [
     "apps/hepta-browser",
     "third_party/servo-patches"
   ],
-  "sourceBaseSemantics": "exact_mapped_source_snapshot_map_only_successor"
+  "sourceBaseSemantics": "provenance_only_current_source_objects_are_bound_by_generated_registry"
 }
