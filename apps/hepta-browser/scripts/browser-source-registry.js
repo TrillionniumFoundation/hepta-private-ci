@@ -39,8 +39,11 @@ const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/src/agentd-service.js",
   "apps/hepta-browser/src/bridge.js",
   "apps/hepta-browser/src/browser.js",
+  "apps/hepta-browser/src/effect-egress-gate.js",
+  "apps/hepta-browser/src/effect-network-driver.js",
   "apps/hepta-browser/src/egress-broker.js",
   "apps/hepta-browser/src/journal.js",
+  "apps/hepta-browser/src/observation-redactor.js",
   "apps/hepta-browser/src/persisted-reconciler.js",
   "apps/hepta-browser/src/runtime-boundary.js",
   "apps/hepta-browser/src/runtime-contract.js",
@@ -51,8 +54,11 @@ const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/scripts/browser-source-registry.js",
   "apps/hepta-browser/scripts/service-closure-manifest.js",
   "apps/hepta-browser/test/agentd-service.test.js",
+  "apps/hepta-browser/test/effect-egress-gate.test.js",
+  "apps/hepta-browser/test/effect-network-driver.test.js",
   "apps/hepta-browser/test/journal-durability.test.js",
   "apps/hepta-browser/test/journal-monotonicity.test.js",
+  "apps/hepta-browser/test/observation-redactor.test.js",
   "apps/hepta-browser/servo-worker/Cargo.toml",
   "apps/hepta-browser/servo-worker/Cargo.lock",
   "apps/hepta-browser/servo-worker/src/main.rs",
@@ -118,6 +124,22 @@ function derive() {
   );
   const driver = read("apps/hepta-browser/src/worker-driver.js");
   const egress = read("apps/hepta-browser/src/egress-broker.js");
+  const effectEgress = read("apps/hepta-browser/src/effect-egress-gate.js");
+  const effectNetworkDriver = read(
+    "apps/hepta-browser/src/effect-network-driver.js",
+  );
+  const effectEgressTests = read(
+    "apps/hepta-browser/test/effect-egress-gate.test.js",
+  );
+  const effectNetworkTests = read(
+    "apps/hepta-browser/test/effect-network-driver.test.js",
+  );
+  const observationRedactor = read(
+    "apps/hepta-browser/src/observation-redactor.js",
+  );
+  const observationRedactorTests = read(
+    "apps/hepta-browser/test/observation-redactor.test.js",
+  );
   const agentdService = read(
     "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs",
   );
@@ -205,10 +227,41 @@ function derive() {
     semanticObservation: worker.includes(
       "hepta.browser.semantic-observation.v1",
     ),
+    semanticObservationRedaction:
+      observationRedactor.includes("redactSemanticObservation") &&
+      observationRedactorTests.includes(
+        "semantic redaction preserves stable action handles",
+      ) &&
+      serviceMain.includes("RedactingObservationBrowserDriver"),
+    redactedSemanticDigestRebound:
+      observationRedactor.includes(
+        "semanticDigest: canonicalDigest(semanticObservation)",
+      ) &&
+      observationRedactorTests.includes(
+        "rebinds its digest",
+      ),
     grantScopedEgress:
       egress.includes("GrantScopedEgressBroker") &&
       egress.includes("grantDigest") &&
       egress.includes("allowedOrigins"),
+    effectScopedEgress:
+      effectEgress.includes("EffectScopedEgressBroker") &&
+      effectNetworkDriver.includes("EffectScopedEgressBroker") &&
+      serviceMain.includes("EffectScopedNetworkDriver") &&
+      effectNetworkTests.includes(
+        "operation gate at the worker-visible socket",
+      ),
+    boundedAggregateEgress:
+      effectEgress.includes("aggregate > this.#maximum") &&
+      effectEgressTests.includes(
+        "aggregate response bytes are bounded",
+      ),
+    perOperationEgressReceipt:
+      effectEgress.includes(
+        "hepta.browser.egress-operation-receipt.v1",
+      ) &&
+      effectEgressTests.includes("receiptDigest") &&
+      effectNetworkTests.includes("egressReceipt"),
     committedServoLock:
       read("apps/hepta-browser/servo-worker/Cargo.lock").length > 0,
     profileAffineWorkerPool: driver.includes("PooledSubprocessBrowserDriver"),
@@ -220,7 +273,11 @@ function derive() {
       agentdService.includes("while let Some(bytes)"),
     serviceClosureManifest:
       closureGenerator.includes("hepta.browser.service-closure.v1") &&
-      agentdService.includes("verify_service_closure"),
+      closureGenerator.includes("effect_egress_gate") &&
+      closureGenerator.includes("effect_network_driver") &&
+      closureGenerator.includes("observation_redactor") &&
+      agentdService.includes("verify_service_closure") &&
+      agentdService.includes("observation_redactor"),
     structuredOperationalMetrics: agentdService.includes(
       "hepta.browser.agentd-metric.v1",
     ),
