@@ -136,6 +136,25 @@ class MigrationIntegrityTests(unittest.TestCase):
                 self.subject.main()
         self.assertEqual(json.loads(output.getvalue())["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
 
+    def test_repeatable_module_option_scopes_verification(self):
+        with patch(
+            "sys.argv",
+            [
+                "hepta-implementation-maps.py",
+                "verify",
+                "--module",
+                "alpha",
+                "--module",
+                "alpha",
+            ],
+        ):
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.subject.main()
+        result = json.loads(output.getvalue())
+        self.assertEqual(result["selectedModules"], ["alpha"])
+        self.assertEqual((result["modules"], result["maps"]), (1, 1))
+
     def test_strict_alias_cannot_enable_historical_only_pass(self):
         self.fixture.write("src/alpha/lib.rs", "pub fn changed() {}\n")
         self.fixture.commit("stale source")

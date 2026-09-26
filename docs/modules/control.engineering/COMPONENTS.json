@@ -706,6 +706,27 @@
         "maximumReviewObservations": 256
       },
       "rollback": "discard the observation; reviewer state never becomes merge or independent-acceptance authority"
+    },
+    {
+      "id": "bounded-product-control-pipe",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/product_service.py",
+      "symbols": [
+        "serve_product",
+        "dispatch_product_request"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "verifier_configuration_failed",
+        "invalid_product_request",
+        "product_reply_timeout",
+        "product_store_failure"
+      ],
+      "resourceBounds": {
+        "maximumFrameBytes": 2097152,
+        "maximumRequests": 1000000,
+        "maximumReplyWaitSeconds": 5
+      },
+      "rollback": "reopen the same v10 owner with a compatible process; do not replay unknown physical effects"
     }
   ],
   "externalGates": {

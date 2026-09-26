@@ -170,7 +170,7 @@
           "role": "source_declaration"
         }
       ],
-      "sourceBlob": "dac5309812dc6a885d64524b48842f04414f40c8"
+      "sourceBlob": "841629331361c11277e6fdfff7107cdc8ee86f5d"
     },
     {
       "operation": "admit_distributed_fence",
@@ -605,7 +605,7 @@
           "role": "schema_reference"
         }
       ],
-      "sourceBlob": "e79b6a00d04d72e21f23f45046e22300c24724e7"
+      "sourceBlob": "22d0527cd13e8ee886453ab3e29ce7fc334b6829"
     },
     {
       "operation": "publish_integration_queue",
@@ -764,7 +764,7 @@
           "role": "source_declaration"
         }
       ],
-      "sourceBlob": "cc02bfc1201096d60b66014d97d53b79e1499d60"
+      "sourceBlob": "02cef96acfdc708b74b18396b03013af6ca4454f"
     },
     {
       "operation": "reserve_worker_capacity",
@@ -904,7 +904,58 @@
           "role": "source_declaration"
         }
       ],
-      "sourceBlob": "697270c8421503a6313e4bfb4b878843de65fc2a"
+      "sourceBlob": "a79f58f5aee4d6bfa98490e5565266707d2d919d"
+    },
+    {
+      "operation": "serve_product",
+      "designOperation": "serve_product",
+      "nativeSymbol": "serve_product",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_service.py",
+      "state": "source_implemented",
+      "authority": "none",
+      "sourcePathExists": true,
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_service.py"
+        }
+      ],
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "391081f430260b077a814f15035e27398a8cc914"
+    },
+    {
+      "operation": "restore_product_plan",
+      "designOperation": "restore_product_plan",
+      "nativeSymbol": "EngineeringControlProduct.plan_state",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "state": "source_implemented",
+      "authority": "none",
+      "sourcePathExists": true,
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_service.py"
+        }
+      ],
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "22d0527cd13e8ee886453ab3e29ce7fc334b6829"
+    },
+    {
+      "operation": "observe_external_completion",
+      "designOperation": "observe_external_completion",
+      "nativeSymbol": "EngineeringControlProduct.observe_external_completion",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "state": "source_implemented",
+      "authority": "none",
+      "sourcePathExists": true,
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_service.py"
+        }
+      ],
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "22d0527cd13e8ee886453ab3e29ce7fc334b6829"
     }
   ],
   "repositoryControlledGaps": [
@@ -944,8 +995,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
-    "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548"
+    "commit": "52acccc659cf8fcfc9b5de645ac1f63ecdd25897",
+    "tree": "b5472a397718b5adf2da4dcd4ba33da9d16de073"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -960,6 +1011,11 @@
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
       "nativeSymbol": "main",
       "state": "explicit_dual_lane_qualification_cli_not_worker_merge_authority"
+    },
+    {
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_service.py",
+      "nativeSymbol": "serve_product",
+      "state": "bounded_posix_product_process_not_independent_acceptance"
     }
   ],
   "sourceObjects": [
@@ -969,7 +1025,7 @@
     },
     {
       "path": "tools/hepta-engineering-control",
-      "object": "d980638b1300ab34256dc6ed051641fdc45f5cc1"
+      "object": "63e968535f3f7cdc32a2f643387cb8452b33fddf"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
@@ -981,7 +1037,7 @@
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
-      "object": "cc02bfc1201096d60b66014d97d53b79e1499d60"
+      "object": "02cef96acfdc708b74b18396b03013af6ca4454f"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/evidence.py",
@@ -993,7 +1049,7 @@
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/hardening.py",
-      "object": "6de5c368211d7376d0528bc515b8d7bbdd846f92"
+      "object": "217d7588763836f9a8a36b94c6d8d3a349b54289"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
@@ -1013,11 +1069,15 @@
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
-      "object": "e79b6a00d04d72e21f23f45046e22300c24724e7"
+      "object": "22d0527cd13e8ee886453ab3e29ce7fc334b6829"
+    },
+    {
+      "path": "tools/hepta-engineering-control/control_engineering_v2/product_service.py",
+      "object": "391081f430260b077a814f15035e27398a8cc914"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/qualification_profile.py",
-      "object": "697270c8421503a6313e4bfb4b878843de65fc2a"
+      "object": "a79f58f5aee4d6bfa98490e5565266707d2d919d"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/sandbox_control.py",
@@ -1025,7 +1085,7 @@
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/seal.py",
-      "object": "dac5309812dc6a885d64524b48842f04414f40c8"
+      "object": "841629331361c11277e6fdfff7107cdc8ee86f5d"
     },
     {
       "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
@@ -1045,7 +1105,7 @@
     },
     {
       "path": "tools/hepta-engineering-control/test_consolidated_engineering.py",
-      "object": "bbae5d6f4c8405c1a09d5635fad61900be96222b"
+      "object": "2b1bdcf9855f495690787430d7ba54524e99adbf"
     },
     {
       "path": "tools/hepta-engineering-control/test_control_engineering_v2.py",
@@ -1080,8 +1140,12 @@
       "object": "f6b217be6f1f64e3d8f5c1298f6519eb27ae63f6"
     },
     {
+      "path": "tools/hepta-engineering-control/test_product_service.py",
+      "object": "baa68f6e2bc2a2b411476a575d31ccfc5d8ff205"
+    },
+    {
       "path": "tools/hepta-engineering-control/test_qualification_profile.py",
-      "object": "c344a13b3feabd7f9913a4d197f05203c639832d"
+      "object": "f92d67d88b7fc08230919c214b2cfb3b308a809a"
     },
     {
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",

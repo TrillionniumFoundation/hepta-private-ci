@@ -80,7 +80,9 @@ def git(*args: str, input_text: str | None = None) -> str:
     return p.stdout.strip()
 
 
-def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+def checked_identity(
+    value, candidate: dict[str, str], *, require_ancestor: bool = True
+) -> dict[str, str]:
     if not isinstance(value, dict) or any(
         not isinstance(value.get(key), str)
         or not re.fullmatch(r"[0-9a-f]{40}", value[key])
@@ -92,7 +94,8 @@ def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
         raise ValueError("source identity does not identify a commit")
     if git("rev-parse", f"{commit}^{{tree}}") != tree:
         raise ValueError("source tree mismatch")
-    git("merge-base", "--is-ancestor", commit, candidate["commit"])
+    if require_ancestor:
+        git("merge-base", "--is-ancestor", commit, candidate["commit"])
     return {"commit": commit, "tree": tree}
 
 
@@ -224,10 +227,16 @@ def verify_source_identity(
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
         raise ValueError(f"unknown source identity policy: {policy}")
-    source = checked_identity(row.get("sourceBase"), candidate)
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
+    # A squash integration preserves provenance objects without preserving their
+    # ancestry. Never rewrite that provenance just to satisfy a currentness gate.
+    # Only the explicit exact-blob mode separates these responsibilities; its
+    # observedAtHead still MUST be an ancestor with no source/evidence drift.
+    source = checked_identity(
+        row.get("sourceBase"), candidate, require_ancestor=(mapping_mode != "exact_blob")
+    )
     paths = evidence_paths(row, roots)
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
@@ -409,7 +418,10 @@ def _ephemeral_untracked_artifact(path: str) -> bool:
 
 
 def require_clean_candidate(
-    candidate: dict[str, str], paths: list[str] | None = None
+    candidate: dict[str, str],
+    paths: list[str] | None = None,
+    *,
+    hidden_scope: list[str] | None = None,
 ) -> None:
     # This is a quiescent-checkout verifier, not a concurrent build attestor.
     # Untracked CI reports outside mapped roots are not source mutations.
@@ -422,11 +434,22 @@ def require_clean_candidate(
         for record in git("ls-files", "-v", "-z").split("\0")
         if record and (record[0] == "S" or record[0].islower())
     ]
+    if hidden_scope is not None:
+        scopes = tuple(scope.rstrip("/") for scope in hidden_scope if scope)
+        hidden = [
+            path
+            for path in hidden
+            if any(path == scope or path.startswith(scope + "/") for scope in scopes)
+        ]
     if hidden:
         raise ValueError(
             "candidate index hides tracked paths (assume-unchanged/skip-worktree): "
             + ", ".join(repr(path) for path in hidden[:5])
-            + "; verify a full checkout without hidden index entries"
+            + (
+                "; materialize the selected module inputs before verification"
+                if hidden_scope is not None
+                else "; verify a full checkout without hidden index entries"
+            )
         )
     if current_source_base() != candidate or git(
         "status", "--porcelain=v1", "--untracked-files=no"
@@ -790,7 +813,10 @@ def migrate(selected_modules: list[str] | None = None):
         row = load(str(path.relative_to(ROOT)))
         if row.get("module", mid) != mid:
             raise SystemExit(f"{mid}: identity")
-        anchor = checked_identity(row.get("sourceBase"), source_base)
+        anchor = checked_identity(
+            row.get("sourceBase"), source_base,
+            require_ancestor=(row.get("mappingSourceIdentityMode") != "exact_blob"),
+        )
         mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
         migrated = migrate_map(row, by_id[mid], lanes, anchor)
         if "observedAtHead" in row:
@@ -1193,6 +1219,7 @@ def verify(
     require_current_source: bool = True,
     expected_sha: str | None = None,
     expected_tree: str | None = None,
+    selected_modules: list[str] | None = None,
 ):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
@@ -1216,13 +1243,42 @@ def verify(
             raise ValueError(
                 f"expected candidate tree {expected_tree}, observed {candidate['tree']}"
             )
-        require_clean_candidate(candidate)
+        requested_modules: tuple[str, ...] | None = None
+        preflight_paths: list[str] = []
+        if selected_modules is not None:
+            requested_modules = tuple(dict.fromkeys(selected_modules))
+            if not requested_modules:
+                raise ValueError("empty module selection")
+            if any(
+                re.fullmatch(r"[a-z0-9]+(?:[._-][a-z0-9]+)*", module_id) is None
+                for module_id in requested_modules
+            ):
+                raise ValueError("invalid module selection")
+            preflight_paths = [
+                "docs/modules/MODULES.json",
+                "docs/readiness/READINESS.json",
+                "scripts/hepta-implementation-maps.py",
+                *(f"docs/modules/{module_id}/IMPLEMENTATION_MAP.json" for module_id in requested_modules),
+            ]
+            require_clean_candidate(
+                candidate,
+                preflight_paths,
+                hidden_scope=preflight_paths,
+            )
+        else:
+            require_clean_candidate(candidate)
         modules = load("docs/modules/MODULES.json")["modules"]
         if not isinstance(modules, list) or not modules:
             raise ValueError("module registry must be nonempty")
         ids = [module["id"] for module in modules]
         if len(set(ids)) != len(ids):
             raise ValueError("duplicate module identity")
+        if requested_modules is not None:
+            unknown = sorted(set(requested_modules).difference(ids))
+            if unknown:
+                raise ValueError("unknown modules: " + ", ".join(unknown))
+            requested = set(requested_modules)
+            modules = [module for module in modules if module["id"] in requested]
         lanes = lane_by_module()
     except (ValueError, OSError, subprocess.CalledProcessError) as exc:
         raise SystemExit(f"FAIL_HEPTA_IMPLEMENTATION_MAPS: {exc}") from exc
@@ -1417,9 +1473,16 @@ def verify(
         ) as exc:
             failures.append(f"{mid}: {exc}")
     try:
-        # Two global scans, not two scans per module. The documented contract
-        # remains a quiescent checkout, never concurrent build attestation.
-        require_clean_candidate(candidate, sorted(checked_paths))
+        # Two scans, not two scans per module. Global verification retains the
+        # full-index invariant. A selected-module verification scopes only the
+        # hidden-index check to its registry, map and exact evidence denominator;
+        # tracked worktree dirt remains a global failure in both modes.
+        verification_paths = sorted(set(checked_paths).union(preflight_paths))
+        require_clean_candidate(
+            candidate,
+            verification_paths,
+            hidden_scope=(verification_paths if requested_modules is not None else None),
+        )
     except (ValueError, subprocess.CalledProcessError) as exc:
         failures.append(str(exc))
     if failures:
@@ -1430,6 +1493,11 @@ def verify(
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
                 "modules": len(modules),
                 "maps": len(modules),
+                **(
+                    {"selectedModules": [module["id"] for module in modules]}
+                    if requested_modules is not None
+                    else {}
+                ),
                 "productionImplementationProved": False,
                 "candidateSource": candidate,
                 "currentSourceIdentityRequired": True,
@@ -1455,7 +1523,7 @@ def main():
         "--module",
         action="append",
         dest="modules",
-        help="rebind only this module (repeatable; migrate only)",
+        help="limit migration or verification to this module (repeatable)",
     )
     parser.add_argument(
         "--require-current-source",
@@ -1473,8 +1541,8 @@ def main():
     args = parser.parse_args()
     if args.require_current_source and args.command != "verify":
         parser.error("--require-current-source applies only to verify")
-    if args.modules is not None and args.command != "migrate":
-        parser.error("--module applies only to migrate")
+    if args.modules is not None and args.command not in {"migrate", "verify"}:
+        parser.error("--module applies only to migrate or verify")
     if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
         parser.error("--expected-sha/--expected-tree apply only to verify")
     if args.command == "migrate":
@@ -1485,6 +1553,7 @@ def main():
             "verify": lambda: verify(
                 expected_sha=args.expected_sha,
                 expected_tree=args.expected_tree,
+                selected_modules=args.modules,
             ),
             "sync-plasticity-status": sync_plasticity_status,
         }[args.command]()

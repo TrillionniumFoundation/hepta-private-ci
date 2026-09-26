@@ -295,3 +295,24 @@ WAL bytes, audit verification, online backup, restored-snapshot equality, contro
 against the selected target-host profile; do not invent universal thresholds or delete
 Git-object/materialized-workspace checks to make a benchmark green. The profile has every
 authority field false and is not an operator acceptance receipt.
+
+
+## Normal control-pipe service
+
+Launch `python -m control_engineering_v2 serve --database OWNER_DB --repository REPO
+--repository-full-name ORG/REPO --verifier-factory engineering_host:create_verifier`.
+Configure the factory on an operator-controlled import path, never a candidate
+workspace. There is no automatic reference signer. Monitor owner lock wait,
+recovery scan delay, request rejection and bounded output-channel failure.
+
+An unconsumed reply can follow a committed operation. Reopen the same database,
+query `plan_state`/`claim_state`, and replay only the same native receipt identity.
+Do not create another effect identity to discover whether a previous effect ran.
+Scanning continues with idle/partial input; explicit host commands still control
+retry/replanning and supply external completion/integration observations.
+Historical stage state never grants current merge authorization.
+
+Profile v2 records actual host/source identity, small-sample nearest-rank latency
+and raw samples. Its queue and sandbox workload is sequential. SQLITE_FULL is a
+page-limit injection into a disposable backup, not physical disk/power-loss proof.
+Sustained concurrency, real external custody and deployment remain separate gates.

@@ -35,8 +35,11 @@ state, zero authority delta, write scope and unresolved
 `DOC-2-DEFAULT-BRANCH-SELECTION` predecessors; the binding is emitted by digest
 and does not reinterpret that predecessor as satisfied.
 On pull requests the named product caller executes independently against source-head
-and the deterministic base-merge candidate. Each lane first runs the exact repository
-gap/document verifier plus the complete engineering-control Python suite; both source-head and deterministic
+and the deterministic base-merge candidate. Each product lane first runs the canonical
+implementation-map verifier scoped to `control.engineering`, pinned to the exact tested
+commit/tree, plus the complete engineering-control Python suite. The independent global
+document/map workflow remains a separate merge blocker; an unrelated module provenance
+failure cannot suppress this module's execution receipt. Both source-head and deterministic
 base-merge identities must also pass the separate real Bubblewrap strong-sandbox matrix.
 The same per-lane runner emits a bounded host-profile artifact measuring SQLite, recovery,
 backup/restore, controlled disk-full rollback and complete candidate-sandbox costs without
@@ -281,6 +284,39 @@ install an adapter into Debian, execute a production Debian lifecycle or teach a
 arbitrary external application to evolve. Those require real adapter/runtime work
 and its own measured acceptance evidence.
 
+## Normal product process
+
+`product_service.py` is a bounded POSIX control-pipe adapter around the existing
+EngineeringControlProduct and SQLite v10 owner, not a second execution kernel.
+The trusted launcher selects database, repository and `--verifier-factory
+engineering_host:create_verifier` using `python -m control_engineering_v2 serve`.
+The factory is operator-provided; missing configuration fails before database
+creation. The factory/import directory and process pipes must be inaccessible to
+candidate code. Verifier I/O and current trust/revocation belong to the host contract.
+
+Each newline-delimited JSON request contains exactly `id`, `operation`, `params`.
+Duplicate keys, unknown fields, nonfinite values and caller clock overrides reject.
+Frames/replies are capped at 2 MiB, replies have a five-second backpressure budget,
+and the request count is bounded. Correlation `id` is not a deduplication authority:
+recovery reuses native generation/claim/receipt identities after unknown outcomes.
+
+Operations cover envelope admission, registration, planning, lease, claim,
+heartbeat, result, completion and integration publication/stage/terminal observation.
+`plan_state` restores the persisted decision rather than recomputing it. Completion
+loads the envelope through the stored claim; publication loads the persisted plan.
+`context` returns the immutable binding for independently supplied signatures.
+
+Startup and periodic scans use the existing recovery owner. Idle or partial input
+does not disable scanning; recovery also precedes planning and claims. An explicit
+claim can then enter bounded retry. The service never dispatches unknown physical
+effects, signs observations, performs GitHub merges or deploys. EOF closes the
+owner; reopening the same database preserves native replay semantics.
+
+`test_product_service.py` exercises real CLI processes, lost result acknowledgement,
+kill/reopen, original-plan recovery, completion and terminal observation, terminal
+replay after a further restart, and partial-input recovery followed by bounded retry.
+HMAC identities are test-only fixtures, not real organizational independence.
+
 ## Local CLI
 
 From the repository root, use the module without installing dependencies:
@@ -353,3 +389,23 @@ positive review eligibility even when all legacy booleans are true. Historical
 registries that merely asserted maturity or counted source symbols have been
 retired in favor of these behavior tests and this single implementation map. CI definitions remain in
 the repository's current workflow; this document does not certify an unobserved run.
+
+
+## Profile v2 and startup validation
+
+`hepta.control-engineering-host-profile.v2` retains raw samples and nearest-rank
+p95/p99. Publication-to-claim includes lease acquisition, not distributed queue
+waiting. Heartbeat observation lag excludes external transport. Expiry uses actual
+elapsed wall time followed by an explicitly reported 10 ms polling delay. Up to
+three sequential sandbox samples preserve exact Git-object and workspace checks;
+throughput is not maximum-concurrency qualification. Counts stay visible: small
+samples do not establish long-run production service-level objectives.
+
+The scratch page-limit probe must observe SQLITE_FULL and preserve both audit and
+owner-state snapshots after rollback/reopen. It does not exhaust the physical host
+disk. SQLite backup/restore verifies the full owner snapshot. Fixture sandbox data
+never becomes strong evidence, and host qualification grants no deployment authority.
+
+SQL structural comparison preserves quoted literals. Changing literal case or
+whitespace cannot hide behind keyword normalization. Schema, version metadata,
+integrity, reservation and audit checks share one serialized startup snapshot.

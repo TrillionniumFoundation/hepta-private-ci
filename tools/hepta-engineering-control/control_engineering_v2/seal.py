@@ -20,7 +20,7 @@ from . import control_plane as _control
 from . import facade as _facade
 from . import hardening as _hardening
 from .candidate import Candidate, SandboxReceipt
-from .evidence import EvidenceDecision, ExecutionReceipt, HmacTrustStore
+from .evidence import EvidenceDecision, ExecutionReceipt, SignatureTrustStore
 
 _SEAL_ISSUER = "engineering_evidence_binder"
 
@@ -87,7 +87,7 @@ def _checked_now(now_ns: int | None) -> int:
 
 def verify_sealed_candidate_evidence(
     value: SealedCandidateEvidence,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     *,
     now_ns: int | None = None,
 ) -> None:
@@ -140,7 +140,7 @@ def bind_candidate_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     binding: _hardening.CandidateEvidenceBindingReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     *,
     seal_signing_identity: str,
     now_ns: int | None = None,
@@ -236,7 +236,7 @@ def request_independent_review(
     evidence: SealedCandidateEvidence,
     requested_role: str,
     *,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     now_ns: int | None = None,
 ) -> _facade.ReviewRequest:
     now = _checked_now(now_ns)
@@ -303,7 +303,7 @@ def record_integration_decision(
     decision_id: str,
     evidence: EvidenceDecision | SealedCandidateEvidence,
     *,
-    trust_store: HmacTrustStore | None = None,
+    trust_store: SignatureTrustStore | None = None,
     now_ns: int | None = None,
 ) -> None:
     now = store._now(now_ns)

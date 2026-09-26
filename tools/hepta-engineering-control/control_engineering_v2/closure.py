@@ -13,7 +13,7 @@ from . import assimilation as _assimilation
 from . import control_plane as _control
 from . import hardening as _hardening
 from .candidate import Candidate, SandboxReceipt
-from .evidence import EvidenceDecision, ExecutionReceipt, HmacTrustStore
+from .evidence import EvidenceDecision, ExecutionReceipt, SignatureTrustStore
 
 _BASE_BIND_CANDIDATE_EVIDENCE = _hardening.bind_candidate_evidence
 _BASE_PREPARE_ASSIMILATION = _hardening.hardened_prepare_assimilation_candidate
@@ -27,7 +27,7 @@ def bind_candidate_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     binding: _hardening.CandidateEvidenceBindingReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     *,
     now_ns: int | None = None,
 ) -> _hardening.BoundEvidenceDecision:
@@ -63,7 +63,7 @@ def prepare_assimilation_candidate(
     omissions: Iterable[str],
     sandbox_factory: Any,
     *,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     consent_attestation: _hardening.OwnerConsentAttestation,
     now_ns: int | None = None,
 ) -> _assimilation.AssimilationProposal:

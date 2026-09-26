@@ -10,6 +10,7 @@ import argparse
 from dataclasses import asdict, replace
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import platform
@@ -41,7 +42,7 @@ from .worker_lifecycle import (
     register_worker,
 )
 
-_SCHEMA = "hepta.control-engineering-host-profile.v1"
+_SCHEMA = "hepta.control-engineering-host-profile.v2"
 
 
 def _millis(start_ns: int) -> float:
@@ -54,7 +55,7 @@ def _percentiles(values: list[float]) -> dict[str, float]:
     ordered = sorted(values)
 
     def at(percent: float) -> float:
-        index = min(len(ordered) - 1, max(0, int((len(ordered) - 1) * percent)))
+        index = min(len(ordered) - 1, max(0, math.ceil(len(ordered) * percent) - 1))
         return round(ordered[index], 3)
 
     return {
@@ -62,6 +63,7 @@ def _percentiles(values: list[float]) -> dict[str, float]:
         "minimumMillis": round(ordered[0], 3),
         "medianMillis": round(statistics.median(ordered), 3),
         "p95Millis": at(0.95),
+        "p99Millis": at(0.99),
         "maximumMillis": round(ordered[-1], 3),
     }
 
@@ -93,7 +95,7 @@ def _signed_registration(trust: HmacTrustStore, now: int, root_path: str):
         "engineering_worker_identity",
         "identity-key",
         now,
-        now + 10_000_000_000,
+        now + 600_000_000_000,
     )
     return replace(
         value,
@@ -160,22 +162,29 @@ def _measure_disk_full_rollback(source: Path, target: Path, envelope: WorkEnvelo
         for index in range(512):
             attempts += 1
             before = store.audit_anchor()
+            before_snapshot = store_snapshot_digest(store)
             candidate = replace(
                 envelope,
                 envelope_id=f"disk-full-{index}",
                 objective_digest=hashlib.sha256(f"disk-full-{index}".encode()).hexdigest(),
             )
             try:
-                store.issue_work_envelope(candidate, now_ns=1_000_000)
+                store.issue_work_envelope(candidate, now_ns=time.time_ns())
             except sqlite3.OperationalError as error:
                 if "full" not in str(error).lower():
                     raise
                 store.connection.rollback()
                 observed = True
-                if store.audit_anchor() != before:
+                if store.audit_anchor() != before or store_snapshot_digest(store) != before_snapshot:
                     raise RuntimeError("disk_full_mutation_not_rolled_back")
                 break
-    return {"observed": observed, "attempts": attempts}
+    if not observed:
+        raise RuntimeError("qualification_disk_full_not_observed")
+    with EngineeringStore(target) as reopened:
+        if store_snapshot_digest(reopened) != before_snapshot:
+            raise RuntimeError("disk_full_reopen_snapshot_mismatch")
+    return {"observed": True, "attempts": attempts, "reopenSnapshotMatched": True,
+            "faultModel": "SQLITE_FULL via scratch max_page_count; not physical host disk exhaustion"}
 
 
 def build_host_profile(
@@ -185,14 +194,14 @@ def build_host_profile(
     sandbox_mode: str = "fixture",
 ) -> dict[str, object]:
     root = Path(repository).resolve()
-    if not 1 <= iterations <= 50:
+    if type(iterations) is not int or not 1 <= iterations <= 50:
         raise ValueError("qualification_iterations")
     if sandbox_mode not in {"fixture", "strong"}:
         raise ValueError("qualification_sandbox_mode")
     source_commit, source_tree = _git_identity(root)
     probe_path = _probe_path(root)
     owner_root = probe_path.split("/", 1)[0]
-    now = 1_000_000
+    now = time.time_ns()
     trust = HmacTrustStore(
         {
             ("engineering_worker_identity", "identity-key"): b"identity-fixture",
@@ -209,7 +218,7 @@ def build_host_profile(
         (owner_root,),
         tuple(sorted(DENIED_AUTHORITIES)),
         2,
-        now + 10_000_000_000,
+        now + 600_000_000_000,
     )
 
     with tempfile.TemporaryDirectory(prefix="hepta-control-profile-") as temporary:
@@ -227,67 +236,71 @@ def build_host_profile(
         with EngineeringStore(database) as store:
             registration = _signed_registration(trust, now, owner_root)
             register_worker(store, registration, trust, now_ns=now)
-            package = EngineeringWorkPackage(
-                0,
-                "qualification-package",
-                (),
-                (probe_path,),
-                required_skills=("qualification",),
-                capacity_units=1,
-            )
-            plan_started = time.perf_counter_ns()
-            plan = plan_engineering_work(
-                store,
-                envelope,
-                (package,),
-                (WorkerProfile("qualification-worker", ("qualification",), 1, (owner_root,)),),
-                (),
-                trust,
-                EngineeringCapacity(1, ()),
-                generation_id="qualification-generation",
-                now_ns=now,
-            )
-            plan_millis = _millis(plan_started)
-            lease = store.acquire_path_lease(
-                "qualification-lease",
-                envelope.envelope_id,
-                "qualification-worker",
-                (probe_path,),
-                authority_epoch=1,
-                expires_unix_ns=now + 1_000_000_000,
-                now_ns=now + 1,
-            )
-            queue_wait_started = time.perf_counter_ns()
-            claim_started = time.perf_counter_ns()
-            claim = claim_assignment(
-                store,
-                plan.generation_id,
-                package.package_id,
-                "qualification-worker",
-                lease.lease_id,
-                heartbeat_ttl_ns=1_000_000,
-                now_ns=now + 2,
-            )
-            claim_millis = _millis(claim_started)
-            plan_to_claim_millis = _millis(queue_wait_started)
-            heartbeat_value = _signed_heartbeat(trust, claim, now + 3)
-            heartbeat_started = time.perf_counter_ns()
-            heartbeat_claim(
-                store,
-                heartbeat_value,
-                trust,
-                heartbeat_ttl_ns=1_000_000,
-                now_ns=now + 3,
-            )
-            heartbeat_millis = _millis(heartbeat_started)
-            recovery_started = time.perf_counter_ns()
-            recovery = recover_worker_lifecycle(store, now_ns=now + 1_000_004)
-            recovery_millis = _millis(recovery_started)
-            if recovery.heartbeat_expired_claims != (claim.claim_id,):
-                raise RuntimeError("qualification_recovery_not_observed")
-            audit_started = time.perf_counter_ns()
-            store.verify_audit_chain()
-            audit_millis = _millis(audit_started)
+            samples = {name: [] for name in (
+                "plan", "planToClaim", "claimTransaction", "heartbeatTransaction",
+                "heartbeatReceiptLag", "expiryRecovery", "expiryRecoveryLag",
+                "auditVerification",
+            )}
+            for index in range(iterations):
+                package = EngineeringWorkPackage(
+                    0, f"qualification-package-{index}", (), (probe_path,),
+                    required_skills=("qualification",), capacity_units=1,
+                )
+                plan_started = time.perf_counter_ns()
+                plan = plan_engineering_work(
+                    store, envelope, (package,),
+                    (WorkerProfile("qualification-worker", ("qualification",), 1, (owner_root,)),),
+                    (), trust, EngineeringCapacity(1, ()),
+                    generation_id=f"qualification-generation-{index}",
+                    now_ns=time.time_ns(),
+                )
+                samples["plan"].append(_millis(plan_started))
+                # Start at publication, not immediately before claim. This
+                # deliberately includes lease acquisition, but no external queue.
+                queue_wait_started = time.perf_counter_ns()
+                current = time.time_ns()
+                lease = store.acquire_path_lease(
+                    f"qualification-lease-{index}", envelope.envelope_id,
+                    "qualification-worker", (probe_path,), authority_epoch=1,
+                    expires_unix_ns=current + 60_000_000_000, now_ns=current,
+                )
+                claim_started = time.perf_counter_ns()
+                claim = claim_assignment(
+                    store, plan.generation_id, package.package_id,
+                    "qualification-worker", lease.lease_id,
+                    heartbeat_ttl_ns=2_000_000_000, now_ns=time.time_ns(),
+                )
+                samples["claimTransaction"].append(_millis(claim_started))
+                samples["planToClaim"].append(_millis(queue_wait_started))
+                heartbeat_value = _signed_heartbeat(trust, claim, time.time_ns())
+                heartbeat_started = time.perf_counter_ns()
+                admitted_at = time.time_ns()
+                running = heartbeat_claim(
+                    store, heartbeat_value, trust, heartbeat_ttl_ns=1_000_000_000,
+                    now_ns=admitted_at,
+                )
+                samples["heartbeatReceiptLag"].append(
+                    (admitted_at - heartbeat_value.observed_unix_ns) / 1_000_000
+                )
+                samples["heartbeatTransaction"].append(_millis(heartbeat_started))
+                # Observe a real elapsed deadline, not a fabricated future clock.
+                time.sleep(max(0, (running.heartbeat_deadline_unix_ns - time.time_ns()) / 1_000_000_000) + 0.01)
+                recovery_at = time.time_ns()
+                recovery_started = time.perf_counter_ns()
+                recovery = recover_worker_lifecycle(store, now_ns=recovery_at)
+                samples["expiryRecovery"].append(_millis(recovery_started))
+                samples["expiryRecoveryLag"].append(
+                    max(0, recovery_at - running.heartbeat_deadline_unix_ns) / 1_000_000
+                )
+                if recovery.heartbeat_expired_claims != (claim.claim_id,):
+                    raise RuntimeError("qualification_recovery_not_observed")
+                store.transition_path_lease(
+                    lease.lease_id, disposition="release", expected_revision=lease.revision,
+                    authority_epoch=lease.epoch, now_ns=time.time_ns(),
+                )
+                audit_started = time.perf_counter_ns()
+                store.verify_audit_chain()
+                samples["auditVerification"].append(_millis(audit_started))
             snapshot = store_snapshot_digest(store)
             wal_path = Path(str(database) + "-wal")
             wal_bytes = wal_path.stat().st_size if wal_path.exists() else 0
@@ -321,27 +334,30 @@ def build_host_profile(
             require_network_isolation=(sandbox_mode == "strong"),
         )
         candidate = generate_candidates(candidate_envelope, ())[0]
-        sandbox_started = time.perf_counter_ns()
-        sandbox = SandboxCoordinator(
-            SandboxExecutionPolicy(maximum_parallel_sandboxes=1, infrastructure_retries=0)
-        ).execute(
-            str(root),
-            candidate_envelope,
-            candidate,
-            (
+        sandbox_samples = []
+        for _ in range(min(iterations, 3)):
+            sandbox_started = time.perf_counter_ns()
+            sandbox = SandboxCoordinator(
+                SandboxExecutionPolicy(maximum_parallel_sandboxes=1, infrastructure_retries=0)
+            ).execute(
+                str(root),
+                candidate_envelope,
+                candidate,
                 (
-                    sys.executable,
-                    "-I",
-                    "-c",
-                    f"from pathlib import Path; assert Path({probe_path!r}).is_file()",
+                    (
+                        sys.executable,
+                        "-I",
+                        "-c",
+                        f"from pathlib import Path; assert Path({probe_path!r}).is_file()",
+                    ),
                 ),
-            ),
-        )
-        sandbox_millis = _millis(sandbox_started)
-        if not sandbox.receipt.passed:
-            raise RuntimeError("qualification_sandbox_failed")
-        if sandbox_mode == "strong" and sandbox.candidate.state != "sandbox_tested":
-            raise RuntimeError("qualification_strong_sandbox_not_observed")
+            )
+            sandbox_millis = _millis(sandbox_started)
+            if not sandbox.receipt.passed:
+                raise RuntimeError("qualification_sandbox_failed")
+            if sandbox_mode == "strong" and sandbox.candidate.state != "sandbox_tested":
+                raise RuntimeError("qualification_strong_sandbox_not_observed")
+            sandbox_samples.append(sandbox_millis)
 
         report: dict[str, object] = {
             "schema": _SCHEMA,
@@ -357,14 +373,23 @@ def build_host_profile(
             },
             "measurements": {
                 "storeOpen": _percentiles(open_samples),
-                "planMillis": plan_millis,
-                "planToClaimMillis": plan_to_claim_millis,
-                "claimTransactionMillis": claim_millis,
-                "heartbeatTransactionMillis": heartbeat_millis,
-                "expiryRecoveryMillis": recovery_millis,
+                "latencyMillis": {name: _percentiles(values) for name, values in samples.items()},
+                "samplesMillis": samples,
+                "workload": "sequential single-worker; publication-to-claim includes lease acquisition; heartbeat lag excludes external transport",
+                "expiryProbe": "real wall-clock expiry; 10ms deliberate post-deadline polling delay",
+                "sandboxSequential": {
+                    "latencyMillis": _percentiles(sandbox_samples),
+                    "samplesMillis": sandbox_samples,
+                    "executionsPerSecond": len(sandbox_samples) * 1000 / sum(sandbox_samples),
+                },
+                "planMillis": _percentiles(samples["plan"])["medianMillis"],
+                "planToClaimMillis": _percentiles(samples["planToClaim"])["medianMillis"],
+                "claimTransactionMillis": _percentiles(samples["claimTransaction"])["medianMillis"],
+                "heartbeatTransactionMillis": _percentiles(samples["heartbeatTransaction"])["medianMillis"],
+                "expiryRecoveryMillis": _percentiles(samples["expiryRecovery"])["medianMillis"],
                 "sqliteLockHandoffMillis": round(lock_wait_millis, 3),
                 "walBytes": wal_bytes,
-                "auditVerificationMillis": audit_millis,
+                "auditVerificationMillis": _percentiles(samples["auditVerification"])["medianMillis"],
                 "backupMillis": backup_millis,
                 "restoreOpenAndVerifyMillis": restore_millis,
                 "backupSnapshotMatched": True,

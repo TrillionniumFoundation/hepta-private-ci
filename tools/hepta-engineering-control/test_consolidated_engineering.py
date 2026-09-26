@@ -166,6 +166,37 @@ class OwnerTransactionTests(unittest.TestCase):
             ):
                 EngineeringStore(path)
 
+    def test_schema_literal_case_drift_cannot_hide_behind_sql_normalization(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "owner.sqlite3"
+            with EngineeringStore(path):
+                pass
+            with sqlite3.connect(path) as connection:
+                connection.execute("PRAGMA writable_schema=ON")
+                connection.execute(
+                    "UPDATE sqlite_master SET sql=replace(sql,?,?) "
+                    "WHERE type='table' AND name='worker_registrations'",
+                    ("'active'", "'ACTIVE'"),
+                )
+                connection.execute("PRAGMA writable_schema=OFF")
+            with self.assertRaisesRegex(
+                EngineeringError, "store_schema_definition_mismatch"
+            ):
+                EngineeringStore(path)
+
+    def test_schema_normalization_preserves_quoted_semantics(self):
+        from control_engineering_v2.control_plane import _normalize_schema_sql
+
+        canonical = "CREATE TABLE IF NOT EXISTS x(v TEXT DEFAULT 'Keep  Two')"
+        equivalent = "create   table x(v text default 'Keep  Two')"
+        self.assertEqual(_normalize_schema_sql(canonical), _normalize_schema_sql(equivalent))
+        for changed in ("Keep Two", "keep  two", "IF NOT EXISTS"):
+            with self.subTest(changed=changed):
+                self.assertNotEqual(
+                    _normalize_schema_sql(canonical),
+                    _normalize_schema_sql(canonical.replace("Keep  Two", changed)),
+                )
+
     def test_failed_predecessor_migration_rolls_back_version_publication(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"

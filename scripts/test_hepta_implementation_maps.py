@@ -133,10 +133,10 @@ class SourceIdentityTests(unittest.TestCase):
         self.save_maps()
         self.commit("update map")
 
-    def verify(self):
+    def verify(self, selected_modules=None):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            maps.verify()
+            maps.verify(selected_modules=selected_modules)
         return json.loads(output.getvalue())
 
     def reject(self):
@@ -162,6 +162,29 @@ class SourceIdentityTests(unittest.TestCase):
             maps.verify(expected_sha="f" * 40, expected_tree=candidate["tree"])
         with self.assertRaisesRegex(SystemExit, "--expected-tree must be"):
             maps.verify(expected_sha=candidate["commit"], expected_tree="not-a-tree")
+
+    def test_selected_verify_isolated_from_unrelated_module_drift(self):
+        self.write("src/beta/lib.rs", "pub fn changed_beta() {}\n")
+        self.commit("drift only the unrelated module")
+        selected = self.verify(["alpha", "alpha"])
+        self.assertEqual(selected["selectedModules"], ["alpha"])
+        self.assertEqual((selected["modules"], selected["maps"]), (1, 1))
+        with self.assertRaisesRegex(SystemExit, "beta"):
+            self.verify()
+
+    def test_selected_verify_rejects_unknown_or_empty_selection(self):
+        for selection, message in (([], "empty module selection"), (["unknown"], "unknown modules")):
+            with self.subTest(selection=selection), self.assertRaisesRegex(SystemExit, message):
+                self.verify(selection)
+
+    def test_selected_verify_scopes_hidden_index_rejection(self):
+        self.git("update-index", "--skip-worktree", "src/beta/lib.rs")
+        selected = self.verify(["alpha"])
+        self.assertEqual(selected["selectedModules"], ["alpha"])
+        self.git("update-index", "--no-skip-worktree", "src/beta/lib.rs")
+        self.git("update-index", "--skip-worktree", "src/alpha/lib.rs")
+        with self.assertRaisesRegex(SystemExit, "materialize the selected module inputs"):
+            self.verify(["alpha"])
 
     def closed_public_inventory(self, functions):
         self.write(
@@ -343,6 +366,29 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
             self.git("rev-parse", "HEAD:src/alpha/lib.rs"),
         )
         self.assertFalse(result["claimBoundary"]["productExecutionProved"])
+
+    def test_exact_blob_retains_squashed_provenance_but_not_unrelated_observation(self):
+        row = self.rows["alpha"]
+        row["mappingSourceIdentityMode"] = "exact_blob"
+        row["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        unrelated = self.git(
+            "-c", "commit.gpgsign=false", "commit-tree", self.anchor["tree"],
+            "-m", "pre-squash provenance",
+        )
+        provenance = {"commit": unrelated, "tree": self.anchor["tree"]}
+        row["sourceBase"] = provenance.copy()
+        row["observedAtHead"] = self.anchor.copy()
+        row["observedSourcePaths"] = ["src/alpha"]
+        row["operations"][0]["sourceBlob"] = self.git("rev-parse", "HEAD:src/alpha/lib.rs")
+        self.change_maps()
+        self.assertEqual(self.verify()["provenanceAnchoredExactBlobMaps"], 1)
+        row["observedAtHead"] = provenance.copy()
+        self.change_maps()
+        self.reject()
+        row["observedAtHead"] = self.anchor.copy()
+        row["sourceBase"]["tree"] = "0" * 40
+        self.change_maps()
+        self.reject()
 
     def test_exact_blob_verify_requires_explicit_current_observation(self):
         row = self.rows["alpha"]

@@ -494,6 +494,18 @@
       ],
       "state": "source_implemented_live_ci_execution_pending",
       "capabilityCeiling": "bounded exact-host database/recovery/backup/failure/sandbox measurements only; every authority and deployment-acceptance field remains false"
+    },
+    {
+      "designOperation": "serve_product",
+      "nativeModule": "control_engineering_v2.product_service",
+      "nativeSymbol": "serve_product",
+      "ownerSymbol": "EngineeringControlProduct",
+      "tests": [
+        "ProductServiceTests.test_real_process_ack_loss_reopen_completion_and_terminal_observation",
+        "ProductServiceTests.test_partial_input_does_not_stop_idle_expiration_and_capacity_recovery"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "trusted pipe; no signing, physical execution, merge, deployment or independent acceptance"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -508,23 +520,24 @@
     "no_credential_propagation"
   ],
   "additionalTestFiles": [
-    "tools/hepta-engineering-control/test_candidate_sandbox_hardening.py",
-    "tools/hepta-engineering-control/test_path_policy_hardening.py",
-    "tools/hepta-engineering-control/test_lane_g_hardening.py",
-    "tools/hepta-engineering-control/test_lane_g_closure.py",
-    "tools/hepta-engineering-control/test_lane_g_seal.py",
-    "tools/hepta-engineering-control/test_consolidated_engineering.py",
-    "tools/hepta-engineering-control/test_production_readiness.py",
-    "tools/hepta-engineering-control/test_orchestration.py",
     "tools/hepta-engineering-control/test_candidate_changeset.py",
-    "tools/hepta-engineering-control/test_sandbox_control.py",
-    "tools/hepta-engineering-control/test_mutation_testing.py",
+    "tools/hepta-engineering-control/test_candidate_sandbox_hardening.py",
+    "tools/hepta-engineering-control/test_consolidated_engineering.py",
     "tools/hepta-engineering-control/test_external_controls.py",
-    "tools/hepta-engineering-control/test_product_gate.py",
-    "tools/hepta-engineering-control/test_worker_lifecycle.py",
-    "tools/hepta-engineering-control/test_product_runtime.py",
     "tools/hepta-engineering-control/test_integration_controller.py",
-    "tools/hepta-engineering-control/test_qualification_profile.py"
+    "tools/hepta-engineering-control/test_lane_g_closure.py",
+    "tools/hepta-engineering-control/test_lane_g_hardening.py",
+    "tools/hepta-engineering-control/test_lane_g_seal.py",
+    "tools/hepta-engineering-control/test_mutation_testing.py",
+    "tools/hepta-engineering-control/test_orchestration.py",
+    "tools/hepta-engineering-control/test_path_policy_hardening.py",
+    "tools/hepta-engineering-control/test_product_gate.py",
+    "tools/hepta-engineering-control/test_product_runtime.py",
+    "tools/hepta-engineering-control/test_product_service.py",
+    "tools/hepta-engineering-control/test_production_readiness.py",
+    "tools/hepta-engineering-control/test_qualification_profile.py",
+    "tools/hepta-engineering-control/test_sandbox_control.py",
+    "tools/hepta-engineering-control/test_worker_lifecycle.py"
   ],
   "implementationMap": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
   "mappingSourceIdentityMode": "exact_blob"
