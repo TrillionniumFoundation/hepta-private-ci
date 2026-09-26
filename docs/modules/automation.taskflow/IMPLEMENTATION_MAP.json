@@ -85,14 +85,19 @@
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
           "kind": "calendar_due_materialization",
           "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/runtime_reliability.rs",
+          "kind": "bounded_batch_fifo_identity_backlog_and_failure_policy",
+          "command": "cargo test -p codex-hepta-automation --test runtime_reliability"
         }
       ],
-      "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives canonical UTC occurrence identity from the authoritative schedule profile, and commits TaskFlow step intent before App Server or external-provider contact.",
+      "sourceSemantics": "Claims FIFO due work, freezes schedule revision and canonical occurrence identity, and admits a caller-bounded sequential batch through the unchanged durable per-occurrence transaction; recovery and admission consume separate host budgets.",
       "operation": "materialize_due",
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
       "sourcePathExists": true,
-      "sourceBlob": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "sourceBlob": "6d8e7b470d348b94619e94f6835bcf6b5b588e16"
     },
     {
       "designOperation": "claim_occurrence",
@@ -242,7 +247,12 @@
     "externalEffectAsyncBridgeComplete": true,
     "externalEffectExactWireBindingComplete": true,
     "externalEffectDurableRecoveryIdentityComplete": true,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": true,
+    "boundedAdmissionBatchComplete": true,
+    "separateRecoveryAdmissionBudgetsComplete": true,
+    "failureDispositionComplete": true,
+    "backlogAgeObservable": true,
+    "providerBackpressureBounded": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -255,8 +265,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "fdcc0a457fdf608ef186e7ff4e7608a9720521ff",
-    "tree": "532b9453e1953ebfcf350bcb9a2420534cefd91f"
+    "commit": "0d5d147ffbb441a88a37711f44361ecc54bf6b5e",
+    "tree": "f429d57563a5df92fea5c2f5e21788095e8d33a7"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -268,7 +278,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
-        "blobSha": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+        "blobSha": "6d8e7b470d348b94619e94f6835bcf6b5b588e16"
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -298,11 +308,15 @@
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
+    "codex-rs/hepta-automation/src/failure_policy.rs",
+    "codex-rs/hepta-automation/src/runtime_status.rs",
+    "codex-rs/hepta-automation/tests/runtime_reliability.rs",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-types",
     "docs/modules/automation.taskflow/MIGRATION_AND_RECOVERY_RUNBOOK.md",
     "docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md",
+    "docs/modules/automation.taskflow/SLO.md",
     "docs/modules/automation.taskflow/TECHNICAL.md",
     "docs/readiness/LANE_B_NATIVE_HOST.md",
     "qualification/module-execution-dossiers/detail/automation.taskflow.md",
@@ -357,16 +371,60 @@
       "object": "c1a213ee4898804c86b98fd8883c68c28a71a1fe"
     },
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "cd6650b68a815d69038166b7de50c2857f358641"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
+      "object": "61ea73a23c2f3ccbdde2dabb31e088eadea9eb76"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol",
+      "object": "52e52dd45d1b8aa18029a2e9b35181829c9f090f"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
-      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+      "object": "e9e2464007f130db681f7c395234ee358a926673"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
       "object": "411078b873bc7af14020f2591a52360c3c2709db"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/automation_recovery.rs",
+      "object": "6cff531b720959ddff20844cf9469f754d18eb43"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
       "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "c075e561eaa96820706ad98d20972eb5fd924b06"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
@@ -374,7 +432,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "18182c9d38471f73fc701c4d04812b03052f7eb6"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -385,8 +443,16 @@
       "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
     },
     {
+      "path": "codex-rs/hepta-automation/src/failure_policy.rs",
+      "object": "21a239ba351621b57c6cfbd18473d61dc692db7f"
+    },
+    {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
       "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/runtime_status.rs",
+      "object": "838c8c7ed18047f226f20ae70d8e16a8e3c7d43a"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
@@ -394,7 +460,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/scheduler.rs",
-      "object": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "object": "6d8e7b470d348b94619e94f6835bcf6b5b588e16"
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
@@ -417,6 +483,22 @@
       "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
     },
     {
+      "path": "codex-rs/hepta-automation/tests/runtime_reliability.rs",
+      "object": "1f701d6ccdd72feacbd6b78f00cf1479fb8e28bb"
+    },
+    {
+      "path": "codex-rs/hepta-contracts",
+      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+    },
+    {
+      "path": "codex-rs/hepta-operations",
+      "object": "8455e7543eea71b9dda8eb9675e5d1d30f4659a4"
+    },
+    {
+      "path": "codex-rs/hepta-types",
+      "object": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297"
+    },
+    {
       "path": "docs/modules/automation.taskflow/MIGRATION_AND_RECOVERY_RUNBOOK.md",
       "object": "8905573c453a54fcca06f3f2119aee186a62f435"
     },
@@ -425,8 +507,12 @@
       "object": "6fa6d244ec5d44ec7bbd8a840078da34781b29ac"
     },
     {
+      "path": "docs/modules/automation.taskflow/SLO.md",
+      "object": "78112fae68c7beebd2904035df0c76e492e3b5e8"
+    },
+    {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "4f8bf294608ed475a19e8638380c8588882eba4c"
+      "object": "538d5e70452e373f3a6189a929b252df133ab40c"
     },
     {
       "path": "docs/readiness/LANE_B_NATIVE_HOST.md",
@@ -434,7 +520,7 @@
     },
     {
       "path": "qualification/module-execution-dossiers/detail/automation.taskflow.md",
-      "object": "63383044fa6759ad14e7ad957855962416ad12e2"
+      "object": "c4a0a738945dd7bfecd32741b8d382fb27333ffe"
     },
     {
       "path": "scripts/check_automation_taskflow_schema.py",
@@ -453,5 +539,16 @@
     "v19": "known_displaced_history_convergence",
     "runbook": "docs/modules/automation.taskflow/MIGRATION_AND_RECOVERY_RUNBOOK.md"
   },
-  "releaseScope": "repository source composition only; selected-host deployment, authentic tzdb, independent acceptance, activation, promotion and release remain false"
+  "releaseScope": "repository source composition only; selected-host deployment, authentic tzdb, independent acceptance, activation, promotion and release remain false",
+  "runtimeBudgets": {
+    "tickIntervalMs": 250,
+    "recoveryPerPass": 4,
+    "admissionsPerPass": 8,
+    "libraryAdmissionCeiling": 64,
+    "leaseMs": 30000,
+    "dispatchTimeoutMs": 5000,
+    "terminalTurnPagesPerPass": 16,
+    "terminalTurnsPerPage": 100,
+    "slo": "docs/modules/automation.taskflow/SLO.md"
+  }
 }
