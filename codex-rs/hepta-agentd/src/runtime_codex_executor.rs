@@ -1,31 +1,23 @@
 //! Agentd-owned process adapter for the existing `runtime.codex` worker.
 //!
 //! The adapter deliberately does not implement another model runtime. It owns
-//! only the exact process invocation, an immutable operation manifest, bounded
-//! process I/O, and restart reconciliation. The `hepta-infer-worker` remains the
-//! physical App Server caller and therefore retains final-use authorization,
-//! dispatch fencing, terminal observation, and its native no-replay journal.
+//! only exact process invocation, an immutable operation manifest, bounded I/O,
+//! and restart reconciliation. `hepta-infer-worker` remains the physical App
+//! Server caller and therefore retains final-use authorization, dispatch
+//! fencing, terminal observation, and its native no-replay journal.
 //!
 //! A normal invocation is permitted only when the operation directory is first
-//! created. Any duplicate, crash recovery, or unknown acknowledgement is routed
-//! through `--resume`; this module never recreates a physical `turn/start` for an
-//! operation whose first process might already have crossed the effect boundary.
+//! created. Every duplicate, crash recovery, or unknown acknowledgement is
+//! routed through `--resume`; this module never recreates a physical
+//! `turn/start` for an operation whose first process might already have crossed
+//! the effect boundary.
 
 use std::fmt;
-use std::fs::File;
-use std::fs::OpenOptions;
 use std::future::Future;
-use std::io::Read;
-use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
-use std::process::ExitStatus;
-use std::process::Stdio;
-use std::str::FromStr;
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
@@ -33,19 +25,15 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
-use tokio::io::AsyncRead;
-use tokio::io::AsyncReadExt;
-use tokio::io::AsyncWriteExt;
-use tokio::process::Child;
-use tokio::process::Command;
-use tokio::time::Instant;
-use tokio::time::sleep;
-use tokio::time::sleep_until;
-use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+
+#[path = "runtime_codex_executor_persistence.rs"]
+mod persistence;
+#[path = "runtime_codex_executor_process.rs"]
+mod process;
 
 const JOB_SCHEMA_VERSION: u32 = 1;
 const MAX_EXECUTABLE_BYTES: u64 = 2 * 1024 * 1024 * 1024;
@@ -59,9 +47,6 @@ const MAXIMUM_IN_FLIGHT_LIMIT: usize = 16_384;
 const MAX_EXECUTION_TIMEOUT: Duration = Duration::from_secs(3_600);
 const MIN_INTERRUPT_GRACE: Duration = Duration::from_millis(100);
 const MAX_INTERRUPT_GRACE: Duration = Duration::from_secs(30);
-const MANIFEST_FILE: &str = "manifest.json";
-const RECEIPT_FILE: &str = "receipt.json";
-const NATIVE_JOURNAL_FILE: &str = "native-control.journal";
 
 pub type RuntimeCodexExecutionFuture<'a> = Pin<
     Box<
@@ -109,7 +94,7 @@ impl RuntimeCodexOwnerV1 {
         })
     }
 
-    pub(crate) fn from_agentd(identity: &AgentdIdentity) -> Self {
+    pub fn from_agentd(identity: &AgentdIdentity) -> Self {
         Self {
             agent_id: identity.agent_id.clone(),
             generation: identity.spawn_generation,
@@ -362,17 +347,17 @@ impl ProcessRuntimeCodexExecutorV1 {
                 "invalid runtime.codex process executor limits or digest".to_string(),
             ));
         }
-        validate_protected_file(
+        persistence::validate_protected_file(
             &worker_executable,
             /*executable*/ true,
             worker_artifact_digest,
         )?;
-        validate_protected_file(
+        persistence::validate_protected_file(
             &final_use_authority_config,
             /*executable*/ false,
             final_use_authority_digest,
         )?;
-        prepare_private_directory(&journal_root)?;
+        persistence::prepare_private_directory(&journal_root)?;
         Ok(Self {
             worker_executable,
             worker_artifact_digest,
@@ -384,7 +369,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         })
     }
 
-    pub fn worker_artifact_digest(&self) -> Digest32 {
+    pub const fn worker_artifact_digest(&self) -> Digest32 {
         self.worker_artifact_digest
     }
 
@@ -398,35 +383,30 @@ impl ProcessRuntimeCodexExecutorV1 {
         input: RuntimeCodexExecutionInputV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
-        self.validate_owner(&owner)?;
-        validate_input_deadline(&input)?;
-        self.revalidate_external_files()?;
+        persistence::validate_owner(self, &owner)?;
+        persistence::revalidate_external_files(self)?;
         let input_digest = input.digest()?;
-        let (paths, manifest, existing) = self.prepare_operation(&owner, &input, input_digest)?;
-        if let Some(receipt) = read_receipt_if_present(&paths.receipt, &manifest)? {
+        let prepared = persistence::prepare_operation(self, &owner, &input, input_digest)?;
+        if let Some(receipt) =
+            persistence::read_receipt_if_present(&prepared.paths.receipt, &prepared.manifest)?
+        {
             return Ok(RuntimeCodexExecutionReceiptV1 {
                 idempotent: true,
                 ..receipt
             });
         }
-        let reconciled = existing;
-        let result = self
-            .spawn_worker(
-                &owner,
-                &manifest,
-                &paths,
-                if reconciled { None } else { Some(&input) },
-                cancellation,
-            )
-            .await?;
-        if !result.output.terminal_observed {
-            return Err(AgentdError::Protocol(
-                "runtime.codex worker returned an indeterminate observation; recovery is reconcile-only"
-                    .to_string(),
-            ));
-        }
-        write_json_atomic(&paths.receipt, &result)?;
-        Ok(result)
+        let fresh_input = if prepared.existing { None } else { Some(&input) };
+        let receipt = process::spawn_worker(
+            self,
+            &owner,
+            &prepared.manifest,
+            &prepared.paths,
+            fresh_input,
+            cancellation,
+        )
+        .await?;
+        persistence::write_receipt(&prepared.paths.receipt, &receipt)?;
+        Ok(receipt)
     }
 
     async fn reconcile_pending_inner(
@@ -434,48 +414,46 @@ impl ProcessRuntimeCodexExecutorV1 {
         owner: RuntimeCodexOwnerV1,
         cancellation: CancellationToken,
     ) -> Result<RuntimeCodexReconcileReportV1, AgentdError> {
-        self.validate_owner(&owner)?;
-        self.revalidate_external_files()?;
-        let mut entries = std::fs::read_dir(&self.journal_root)?
-            .collect::<Result<Vec<_>, _>>()?;
-        entries.sort_by_key(std::fs::DirEntry::file_name);
-        if entries.len() > MAX_RECONCILE_OPERATIONS {
-            return Err(AgentdError::Protocol(format!(
-                "runtime.codex recovery found {} operations, exceeding the bounded scan of {MAX_RECONCILE_OPERATIONS}",
-                entries.len()
-            )));
-        }
+        persistence::validate_owner(self, &owner)?;
+        persistence::revalidate_external_files(self)?;
+        let directories = persistence::list_operation_directories(&self.journal_root)?;
         let mut report = RuntimeCodexReconcileReportV1::default();
-        for entry in entries {
+        for directory in directories {
             if cancellation.is_cancelled() {
                 break;
-            }
-            let metadata = entry.metadata()?;
-            if !metadata.is_dir() {
-                return Err(AgentdError::Protocol(format!(
-                    "unexpected non-directory entry in runtime.codex journal root: {}",
-                    entry.path().display()
-                )));
             }
             report.scanned = report
                 .scanned
                 .checked_add(1)
                 .ok_or_else(|| AgentdError::Protocol("recovery counter overflow".to_string()))?;
-            let paths = OperationPaths::for_directory(entry.path());
-            let manifest = read_manifest(&paths.manifest)?;
-            validate_manifest_owner(&manifest, &owner, self.worker_artifact_digest)?;
-            if read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
-                report.already_terminal = report.already_terminal.checked_add(1).ok_or_else(|| {
-                    AgentdError::Protocol("recovery counter overflow".to_string())
-                })?;
+            let paths = persistence::OperationPaths::for_directory(&directory);
+            let manifest = persistence::read_manifest(&paths.manifest)?;
+            persistence::validate_manifest_owner(
+                &manifest,
+                &owner,
+                self.worker_artifact_digest,
+            )?;
+            if persistence::read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
+                report.already_terminal = report
+                    .already_terminal
+                    .checked_add(1)
+                    .ok_or_else(|| {
+                        AgentdError::Protocol("recovery counter overflow".to_string())
+                    })?;
                 continue;
             }
-            match self
-                .spawn_worker(&owner, &manifest, &paths, None, cancellation.child_token())
-                .await
+            match process::spawn_worker(
+                self,
+                &owner,
+                &manifest,
+                &paths,
+                None,
+                cancellation.child_token(),
+            )
+            .await
             {
-                Ok(receipt) if receipt.output.terminal_observed => {
-                    write_json_atomic(&paths.receipt, &receipt)?;
+                Ok(receipt) => {
+                    persistence::write_receipt(&paths.receipt, &receipt)?;
                     report.reconciled_terminal = report
                         .reconciled_terminal
                         .checked_add(1)
@@ -483,10 +461,10 @@ impl ProcessRuntimeCodexExecutorV1 {
                             AgentdError::Protocol("recovery counter overflow".to_string())
                         })?;
                 }
-                Ok(_) | Err(_) => {
-                    // Do not turn one unresolved historical operation into a
-                    // daemon-wide replay or startup failure. The durable job is
-                    // retained and the report remains explicit.
+                Err(_) => {
+                    // One unresolved historical operation remains durable and
+                    // reconcile-only; it does not authorize a replay or make a
+                    // different operation disappear.
                     report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
                         AgentdError::Protocol("recovery counter overflow".to_string())
                     })?;
@@ -494,216 +472,6 @@ impl ProcessRuntimeCodexExecutorV1 {
             }
         }
         Ok(report)
-    }
-
-    fn validate_owner(&self, owner: &RuntimeCodexOwnerV1) -> Result<(), AgentdError> {
-        require_canonical_directory(owner.home_root(), "runtime.codex owner home")?;
-        if !owner.agentd_socket().is_absolute()
-            || !self.journal_root.starts_with(owner.home_root())
-            || self.journal_root == owner.home_root()
-        {
-            return Err(AgentdError::Invalid(
-                "runtime.codex journal root must be a private descendant of Agent home"
-                    .to_string(),
-            ));
-        }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::MetadataExt;
-            let home = std::fs::metadata(owner.home_root())?;
-            let worker = std::fs::metadata(&self.worker_executable)?;
-            let authority = std::fs::metadata(&self.final_use_authority_config)?;
-            if worker.uid() != home.uid() || authority.uid() != home.uid() {
-                return Err(AgentdError::Invalid(
-                    "runtime.codex executable and authority config must share the Agent owner uid"
-                        .to_string(),
-                ));
-            }
-        }
-        Ok(())
-    }
-
-    fn revalidate_external_files(&self) -> Result<(), AgentdError> {
-        validate_protected_file(
-            &self.worker_executable,
-            /*executable*/ true,
-            self.worker_artifact_digest,
-        )?;
-        validate_protected_file(
-            &self.final_use_authority_config,
-            /*executable*/ false,
-            self.final_use_authority_digest,
-        )
-    }
-
-    fn prepare_operation(
-        &self,
-        owner: &RuntimeCodexOwnerV1,
-        input: &RuntimeCodexExecutionInputV1,
-        input_digest: Digest32,
-    ) -> Result<(OperationPaths, RuntimeCodexJobManifestV1, bool), AgentdError> {
-        let operation_key = Digest32::of_bytes(input.run_id().as_str().as_bytes()).to_string();
-        let directory = self.journal_root.join(operation_key);
-        let paths = OperationPaths::for_directory(directory.clone());
-        let timeout_ms = remaining_timeout_ms(input.deadline_ms())?;
-        let expected = RuntimeCodexJobManifestV1 {
-            schema_version: JOB_SCHEMA_VERSION,
-            owner_agent_id: owner.agent_id().to_string(),
-            owner_generation: owner.generation(),
-            run_id: input.run_id().to_string(),
-            expected_revision: input.expected_revision(),
-            context_digest: input.context_digest().to_string(),
-            envelope_digest: input.envelope_digest().to_string(),
-            model: input.model().to_string(),
-            deadline_ms: input.deadline_ms(),
-            timeout_ms,
-            input_digest: input_digest.to_string(),
-            worker_artifact_digest: self.worker_artifact_digest.to_string(),
-        };
-        match std::fs::create_dir(&directory) {
-            Ok(()) => {
-                set_private_directory(&directory)?;
-                write_new_json(&paths.manifest, &expected)?;
-                sync_directory(&directory)?;
-                Ok((paths, expected, false))
-            }
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                let observed = read_manifest(&paths.manifest)?;
-                if observed != expected {
-                    return Err(AgentdError::Protocol(
-                        "runtime.codex operation identity already exists with semantic drift"
-                            .to_string(),
-                    ));
-                }
-                Ok((paths, observed, true))
-            }
-            Err(error) => Err(error.into()),
-        }
-    }
-
-    async fn spawn_worker(
-        &self,
-        owner: &RuntimeCodexOwnerV1,
-        manifest: &RuntimeCodexJobManifestV1,
-        paths: &OperationPaths,
-        fresh_input: Option<&RuntimeCodexExecutionInputV1>,
-        cancellation: CancellationToken,
-    ) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
-        validate_manifest_owner(manifest, owner, self.worker_artifact_digest)?;
-        self.revalidate_external_files()?;
-        let reconciled = fresh_input.is_none();
-        let mut command = Command::new(&self.worker_executable);
-        command
-            .current_dir(owner.home_root())
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .kill_on_drop(true)
-            .arg("--profile")
-            .arg("native-app-server")
-            .arg("--agentd-socket")
-            .arg(owner.agentd_socket())
-            .arg("--agent-id")
-            .arg(owner.agent_id().as_str())
-            .arg("--generation")
-            .arg(owner.generation().to_string())
-            .arg("--model")
-            .arg(&manifest.model)
-            .arg("--journal")
-            .arg(&paths.native_journal)
-            .arg("--request-id")
-            .arg(&manifest.run_id)
-            .arg("--maximum-in-flight")
-            .arg(self.maximum_in_flight.to_string())
-            .arg("--final-use-authority-config")
-            .arg(&self.final_use_authority_config)
-            .arg("--timeout-ms")
-            .arg(manifest.timeout_ms.to_string());
-        if let Some(input) = fresh_input {
-            if input.digest()?.to_string() != manifest.input_digest {
-                return Err(AgentdError::Protocol(
-                    "runtime.codex fresh input no longer matches its durable manifest"
-                        .to_string(),
-                ));
-            }
-            command
-                .arg("--intelligence-run-id")
-                .arg(input.run_id().as_str())
-                .arg("--intelligence-revision")
-                .arg(input.expected_revision().to_string())
-                .arg("--intelligence-context-digest")
-                .arg(input.context_digest().to_string())
-                .arg("--intelligence-envelope-digest")
-                .arg(input.envelope_digest().to_string());
-            if let Some(query) = input.context_query() {
-                command.arg("--context-query").arg(query);
-            }
-        } else {
-            command.arg("--resume");
-        }
-        let mut child = command.spawn()?;
-        let mut stdin = child.stdin.take().ok_or_else(|| {
-            AgentdError::Protocol("runtime.codex worker stdin was not piped".to_string())
-        })?;
-        let stdout = child.stdout.take().ok_or_else(|| {
-            AgentdError::Protocol("runtime.codex worker stdout was not piped".to_string())
-        })?;
-        let stderr = child.stderr.take().ok_or_else(|| {
-            AgentdError::Protocol("runtime.codex worker stderr was not piped".to_string())
-        })?;
-        let prompt = fresh_input.map(|input| input.prompt().as_bytes().to_vec());
-        let stdin_task = tokio::spawn(async move {
-            if let Some(prompt) = prompt {
-                stdin.write_all(&prompt).await?;
-            }
-            stdin.shutdown().await
-        });
-        let stdout_task = tokio::spawn(read_bounded(stdout, MAX_PROCESS_OUTPUT_BYTES));
-        let stderr_task = tokio::spawn(read_bounded(stderr, MAX_PROCESS_ERROR_BYTES));
-
-        let deadline = deadline_instant(manifest.deadline_ms, reconciled)?;
-        let (status, stop) = wait_for_worker(
-            &mut child,
-            &cancellation,
-            deadline,
-            self.interrupt_grace,
-        )
-        .await?;
-        stdin_task
-            .await
-            .map_err(|error| AgentdError::Protocol(format!("runtime.codex stdin task failed: {error}")))??;
-        let stdout = stdout_task
-            .await
-            .map_err(|error| AgentdError::Protocol(format!("runtime.codex stdout task failed: {error}")))??;
-        let stderr = stderr_task
-            .await
-            .map_err(|error| AgentdError::Protocol(format!("runtime.codex stderr task failed: {error}")))??;
-
-        let output = parse_worker_output(&stdout).map_err(|parse_error| {
-            let stderr = String::from_utf8_lossy(&stderr);
-            AgentdError::Protocol(format!(
-                "runtime.codex worker {stop} with status {status}; no valid bounded receipt: {parse_error}; stderr={}",
-                bounded_text(&stderr, 1_024)
-            ))
-        })?;
-        let output_digest = Digest32::of_bytes(&serde_json::to_vec(&output)?);
-        let receipt = RuntimeCodexExecutionReceiptV1 {
-            schema_version: JOB_SCHEMA_VERSION,
-            run_id: manifest.run_id.clone(),
-            input_digest: manifest.input_digest.clone(),
-            worker_artifact_digest: manifest.worker_artifact_digest.clone(),
-            reconciled,
-            idempotent: false,
-            process_exit_code: status.code(),
-            output_digest: output_digest.to_string(),
-            output,
-        };
-        if !receipt.output.terminal_observed {
-            return Err(AgentdError::Protocol(format!(
-                "runtime.codex worker {stop} without terminal observation; operation remains reconcile-only"
-            )));
-        }
-        Ok(receipt)
     }
 }
 
@@ -724,447 +492,6 @@ impl RuntimeCodexExecutorV1 for ProcessRuntimeCodexExecutorV1 {
     ) -> RuntimeCodexReconcileFuture<'a> {
         Box::pin(async move { self.reconcile_pending_inner(owner, cancellation).await })
     }
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-struct RuntimeCodexJobManifestV1 {
-    schema_version: u32,
-    owner_agent_id: String,
-    owner_generation: u64,
-    run_id: String,
-    expected_revision: u64,
-    context_digest: String,
-    envelope_digest: String,
-    model: String,
-    deadline_ms: u64,
-    timeout_ms: u64,
-    input_digest: String,
-    worker_artifact_digest: String,
-}
-
-struct OperationPaths {
-    directory: PathBuf,
-    manifest: PathBuf,
-    receipt: PathBuf,
-    native_journal: PathBuf,
-}
-
-impl OperationPaths {
-    fn for_directory(directory: PathBuf) -> Self {
-        Self {
-            manifest: directory.join(MANIFEST_FILE),
-            receipt: directory.join(RECEIPT_FILE),
-            native_journal: directory.join(NATIVE_JOURNAL_FILE),
-            directory,
-        }
-    }
-}
-
-async fn wait_for_worker(
-    child: &mut Child,
-    cancellation: &CancellationToken,
-    deadline: Instant,
-    interrupt_grace: Duration,
-) -> Result<(ExitStatus, &'static str), AgentdError> {
-    tokio::select! {
-        status = child.wait() => Ok((status?, "exited")),
-        () = cancellation.cancelled() => {
-            interrupt_and_wait(child, interrupt_grace).await.map(|status| (status, "cancelled"))
-        }
-        () = sleep_until(deadline) => {
-            interrupt_and_wait(child, interrupt_grace).await.map(|status| (status, "deadline elapsed"))
-        }
-    }
-}
-
-async fn interrupt_and_wait(
-    child: &mut Child,
-    grace: Duration,
-) -> Result<ExitStatus, AgentdError> {
-    signal_interrupt(child)?;
-    match timeout(grace, child.wait()).await {
-        Ok(status) => Ok(status?),
-        Err(_) => {
-            child.start_kill()?;
-            Ok(child.wait().await?)
-        }
-    }
-}
-
-#[cfg(unix)]
-fn signal_interrupt(child: &mut Child) -> Result<(), AgentdError> {
-    let pid = child
-        .id()
-        .ok_or_else(|| AgentdError::Protocol("runtime.codex child has no pid".to_string()))?;
-    let pid = i32::try_from(pid)
-        .map_err(|_| AgentdError::Protocol("runtime.codex child pid overflow".to_string()))?;
-    // SAFETY: `pid` is the live child returned by Tokio and SIGINT carries no
-    // pointer arguments. The return value is checked immediately.
-    let result = unsafe { libc::kill(pid, libc::SIGINT) };
-    if result == 0 {
-        Ok(())
-    } else {
-        let error = std::io::Error::last_os_error();
-        if error.kind() == std::io::ErrorKind::NotFound {
-            Ok(())
-        } else {
-            Err(error.into())
-        }
-    }
-}
-
-#[cfg(not(unix))]
-fn signal_interrupt(child: &mut Child) -> Result<(), AgentdError> {
-    child.start_kill().map_err(Into::into)
-}
-
-async fn read_bounded<R>(mut reader: R, maximum: usize) -> Result<Vec<u8>, AgentdError>
-where
-    R: AsyncRead + Unpin,
-{
-    let limit = u64::try_from(maximum)
-        .map_err(|_| AgentdError::Protocol("process output bound overflow".to_string()))?
-        .saturating_add(1);
-    let mut bytes = Vec::new();
-    reader.take(limit).read_to_end(&mut bytes).await?;
-    if bytes.len() > maximum {
-        return Err(AgentdError::Protocol(
-            "runtime.codex process output exceeded its bound".to_string(),
-        ));
-    }
-    Ok(bytes)
-}
-
-fn parse_worker_output(bytes: &[u8]) -> Result<NativeRunOutput, AgentdError> {
-    let last = bytes
-        .split(|byte| *byte == b'\n')
-        .rev()
-        .find(|line| !line.iter().all(u8::is_ascii_whitespace))
-        .ok_or_else(|| AgentdError::Protocol("runtime.codex worker emitted no receipt".to_string()))?;
-    Ok(serde_json::from_slice(last)?)
-}
-
-fn validate_input_deadline(input: &RuntimeCodexExecutionInputV1) -> Result<(), AgentdError> {
-    let now = unix_time_ms()?;
-    if input.deadline_ms() <= now {
-        return Err(AgentdError::Invalid(
-            "runtime.codex execution deadline has elapsed".to_string(),
-        ));
-    }
-    Ok(())
-}
-
-fn remaining_timeout_ms(deadline_ms: u64) -> Result<u64, AgentdError> {
-    let remaining = deadline_ms.checked_sub(unix_time_ms()?).ok_or_else(|| {
-        AgentdError::Invalid("runtime.codex execution deadline has elapsed".to_string())
-    })?;
-    let maximum = u64::try_from(MAX_EXECUTION_TIMEOUT.as_millis())
-        .map_err(|_| AgentdError::Protocol("runtime.codex timeout bound overflow".to_string()))?;
-    Ok(remaining.clamp(1, maximum))
-}
-
-fn deadline_instant(deadline_ms: u64, reconciled: bool) -> Result<Instant, AgentdError> {
-    let now_ms = unix_time_ms()?;
-    let duration = if deadline_ms > now_ms {
-        Duration::from_millis(deadline_ms - now_ms)
-    } else if reconciled {
-        // A past execution deadline cannot authorize a new effect, but a
-        // bounded thread/read reconciliation must still be allowed.
-        Duration::from_secs(30)
-    } else {
-        return Err(AgentdError::Invalid(
-            "runtime.codex execution deadline has elapsed".to_string(),
-        ));
-    };
-    Ok(Instant::now() + duration.min(MAX_EXECUTION_TIMEOUT))
-}
-
-fn unix_time_ms() -> Result<u64, AgentdError> {
-    let millis = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|_| AgentdError::Protocol("system clock predates the Unix epoch".to_string()))?
-        .as_millis();
-    u64::try_from(millis)
-        .map_err(|_| AgentdError::Protocol("system clock exceeds u64 milliseconds".to_string()))
-}
-
-fn validate_manifest_owner(
-    manifest: &RuntimeCodexJobManifestV1,
-    owner: &RuntimeCodexOwnerV1,
-    worker_digest: Digest32,
-) -> Result<(), AgentdError> {
-    if manifest.schema_version != JOB_SCHEMA_VERSION
-        || manifest.owner_agent_id != owner.agent_id().to_string()
-        || manifest.owner_generation != owner.generation()
-        || manifest.worker_artifact_digest != worker_digest.to_string()
-        || manifest.expected_revision == 0
-        || StableId::new(manifest.run_id.clone()).is_err()
-        || Digest32::from_str(&manifest.context_digest).is_err()
-        || Digest32::from_str(&manifest.envelope_digest).is_err()
-        || Digest32::from_str(&manifest.input_digest).is_err()
-        || manifest.model.is_empty()
-        || manifest.model.len() > MAX_MODEL_BYTES
-        || manifest.timeout_ms == 0
-        || manifest.timeout_ms
-            > u64::try_from(MAX_EXECUTION_TIMEOUT.as_millis()).unwrap_or(u64::MAX)
-    {
-        return Err(AgentdError::Protocol(
-            "runtime.codex durable manifest failed owner or semantic validation".to_string(),
-        ));
-    }
-    Ok(())
-}
-
-fn read_manifest(path: &Path) -> Result<RuntimeCodexJobManifestV1, AgentdError> {
-    read_bounded_json(path, 64 * 1024)
-}
-
-fn read_receipt_if_present(
-    path: &Path,
-    manifest: &RuntimeCodexJobManifestV1,
-) -> Result<Option<RuntimeCodexExecutionReceiptV1>, AgentdError> {
-    let receipt = match read_bounded_json(path, MAX_PROCESS_OUTPUT_BYTES + 64 * 1024) {
-        Ok(value) => value,
-        Err(AgentdError::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => {
-            return Ok(None);
-        }
-        Err(error) => return Err(error),
-    };
-    if receipt.schema_version != JOB_SCHEMA_VERSION
-        || receipt.run_id != manifest.run_id
-        || receipt.input_digest != manifest.input_digest
-        || receipt.worker_artifact_digest != manifest.worker_artifact_digest
-        || !receipt.output.terminal_observed
-    {
-        return Err(AgentdError::Protocol(
-            "runtime.codex durable receipt does not match its operation manifest".to_string(),
-        ));
-    }
-    Ok(Some(receipt))
-}
-
-fn read_bounded_json<T>(path: &Path, maximum: usize) -> Result<T, AgentdError>
-where
-    T: for<'de> Deserialize<'de>,
-{
-    validate_read_path(path)?;
-    let mut file = File::open(path)?;
-    let metadata = file.metadata()?;
-    let maximum_u64 = u64::try_from(maximum)
-        .map_err(|_| AgentdError::Protocol("JSON read bound overflow".to_string()))?;
-    if !metadata.is_file() || metadata.len() == 0 || metadata.len() > maximum_u64 {
-        return Err(AgentdError::Protocol(format!(
-            "invalid bounded runtime.codex file: {}",
-            path.display()
-        )));
-    }
-    let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(maximum));
-    file.take(maximum_u64.saturating_add(1))
-        .read_to_end(&mut bytes)?;
-    if bytes.len() > maximum {
-        return Err(AgentdError::Protocol(
-            "runtime.codex JSON exceeded its read bound".to_string(),
-        ));
-    }
-    Ok(serde_json::from_slice(&bytes)?)
-}
-
-fn validate_read_path(path: &Path) -> Result<(), AgentdError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(AgentdError::Protocol(format!(
-            "runtime.codex path is not a regular non-symlink file: {}",
-            path.display()
-        )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o022 != 0 {
-            return Err(AgentdError::Protocol(format!(
-                "runtime.codex file is group/other writable: {}",
-                path.display()
-            )));
-        }
-    }
-    Ok(())
-}
-
-fn validate_protected_file(
-    path: &Path,
-    executable: bool,
-    expected_digest: Digest32,
-) -> Result<(), AgentdError> {
-    if !path.is_absolute() || path.canonicalize()? != path {
-        return Err(AgentdError::Invalid(format!(
-            "runtime.codex protected path must be absolute, canonical and symlink-free: {}",
-            path.display()
-        )));
-    }
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_file()
-        || metadata.len() == 0
-        || metadata.len() > MAX_EXECUTABLE_BYTES
-    {
-        return Err(AgentdError::Invalid(format!(
-            "invalid runtime.codex protected file: {}",
-            path.display()
-        )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let mode = metadata.permissions().mode();
-        if mode & 0o022 != 0 || (executable && mode & 0o100 == 0) {
-            return Err(AgentdError::Invalid(format!(
-                "runtime.codex protected file permissions are unsafe: {}",
-                path.display()
-            )));
-        }
-    }
-    let observed = digest_file(path, metadata.len())?;
-    if observed != expected_digest {
-        return Err(AgentdError::GenerationFenced(format!(
-            "runtime.codex protected file digest drifted: {}",
-            path.display()
-        )));
-    }
-    Ok(())
-}
-
-fn digest_file(path: &Path, expected_len: u64) -> Result<Digest32, AgentdError> {
-    let mut file = File::open(path)?;
-    let before = file.metadata()?;
-    if before.len() != expected_len {
-        return Err(AgentdError::GenerationFenced(
-            "runtime.codex protected file changed before observation".to_string(),
-        ));
-    }
-    let digest = Digest32::of_reader(&mut file, expected_len)?;
-    let after = file.metadata()?;
-    if before.len() != after.len() || before.modified()? != after.modified()? {
-        return Err(AgentdError::GenerationFenced(
-            "runtime.codex protected file changed during observation".to_string(),
-        ));
-    }
-    Ok(digest)
-}
-
-fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
-    if !path.is_absolute() {
-        return Err(AgentdError::Invalid(
-            "runtime.codex journal root must be absolute".to_string(),
-        ));
-    }
-    std::fs::create_dir_all(path)?;
-    set_private_directory(path)?;
-    require_canonical_directory(path, "runtime.codex journal root")
-}
-
-fn require_canonical_directory(path: &Path, label: &str) -> Result<(), AgentdError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_dir()
-        || path.canonicalize()? != path
-    {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be an absolute canonical non-symlink directory: {}",
-            path.display()
-        )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(AgentdError::Invalid(format!(
-                "{label} must be owner-only: {}",
-                path.display()
-            )));
-        }
-    }
-    Ok(())
-}
-
-fn set_private_directory(path: &Path) -> Result<(), AgentdError> {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-    }
-    Ok(())
-}
-
-fn write_new_json<T>(path: &Path, value: &T) -> Result<(), AgentdError>
-where
-    T: Serialize,
-{
-    let bytes = serde_json::to_vec(value)?;
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let mut file = options.open(path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    Ok(())
-}
-
-fn write_json_atomic<T>(path: &Path, value: &T) -> Result<(), AgentdError>
-where
-    T: Serialize,
-{
-    let parent = path.parent().ok_or_else(|| {
-        AgentdError::Protocol("runtime.codex receipt has no parent directory".to_string())
-    })?;
-    let bytes = serde_json::to_vec(value)?;
-    let mut staging = None;
-    for suffix in 0_u8..16 {
-        let candidate = parent.join(format!(
-            ".{}.{}.{}.tmp",
-            path.file_name().and_then(|name| name.to_str()).unwrap_or("receipt"),
-            std::process::id(),
-            suffix
-        ));
-        let mut options = OpenOptions::new();
-        options.write(true).create_new(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.mode(0o600);
-        }
-        match options.open(&candidate) {
-            Ok(mut file) => {
-                file.write_all(&bytes)?;
-                file.sync_all()?;
-                staging = Some(candidate);
-                break;
-            }
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
-            Err(error) => return Err(error.into()),
-        }
-    }
-    let staging = staging.ok_or_else(|| {
-        AgentdError::Io(std::io::Error::new(
-            std::io::ErrorKind::AlreadyExists,
-            "unable to allocate runtime.codex receipt staging path",
-        ))
-    })?;
-    std::fs::rename(&staging, path)?;
-    sync_directory(parent)
-}
-
-fn sync_directory(path: &Path) -> Result<(), AgentdError> {
-    File::open(path)?.sync_all()?;
-    Ok(())
-}
-
-fn bounded_text(value: &str, maximum_chars: usize) -> String {
-    value.chars().take(maximum_chars).collect()
 }
 
 #[cfg(test)]
