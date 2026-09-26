@@ -1,0 +1,225 @@
+name: ui.control exact-head qualification
+
+on:
+  push:
+    branches:
+      - main
+      - work/ui-control-full-convergence-20260926
+    paths:
+      - "apps/hepta-control-ui/**"
+      - "docs/modules/ui.control/**"
+      - "qualification/ui-control/**"
+      - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - "scripts/ui-control-artifacts.mjs"
+      - "scripts/hepta-lane-b-path-guard.py"
+      - "scripts/test_hepta_lane_b_path_guard.py"
+      - ".github/workflows/ui-control-qualification.yml"
+  pull_request:
+    paths:
+      - "apps/hepta-control-ui/**"
+      - "docs/modules/ui.control/**"
+      - "qualification/ui-control/**"
+      - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - "scripts/ui-control-artifacts.mjs"
+      - "scripts/hepta-lane-b-path-guard.py"
+      - "scripts/test_hepta_lane_b_path_guard.py"
+      - ".github/workflows/ui-control-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-control-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  UI_CONTROL_APP: apps/hepta-control-ui
+
+jobs:
+  exact-head:
+    name: exact head / unit / contract / three browsers / axe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p ui-control-evidence
+          {
+            printf 'sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          } > ui-control-evidence/source.txt
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
+      - name: Install exact browser-test dependencies without lock mutation
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-package-lock --ignore-scripts --no-audit --no-fund
+          npm ls --json > ../../ui-control-evidence/npm-resolution.json
+
+      - name: Lint and unsafe-sink checks
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npm run lint
+
+      - name: Unit and concurrency qualification
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npm test
+
+      - name: Contract and package-boundary qualification
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run test:contract
+          npm pack --dry-run --json > ../../ui-control-evidence/package-dry-run.json
+
+      - name: Deterministic browser build
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npm run build
+
+      - name: Install Playwright browser engines
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Browser E2E, keyboard, focus, and axe qualification
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        env:
+          CI: "1"
+        run: npm run test:e2e
+
+      - name: Verify generated technical truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/ui-control-artifacts.mjs --check
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_path_guard.py
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-truth.py verify
+
+      - name: Emit exact-head qualification receipt
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        env:
+          UI_CONTROL_LINT: passed
+          UI_CONTROL_UNIT: passed
+          UI_CONTROL_CONTRACT: passed
+          UI_CONTROL_BUILD: passed
+          UI_CONTROL_E2E: passed
+          UI_CONTROL_AXE: passed
+          UI_CONTROL_LANE_B_GUARD: passed
+          UI_CONTROL_DOCS: passed
+        run: npm run receipt -- ../../ui-control-evidence/receipt.json
+
+      - name: Copy browser build manifest
+        run: cp apps/hepta-control-ui/dist/build-manifest.json ui-control-evidence/build-manifest.json
+
+      - name: Verify tracked tree remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Publish qualification summary
+        shell: bash
+        run: |
+          {
+            echo '## ui.control exact-head qualification'
+            echo
+            echo "- SHA: \`$(git rev-parse HEAD)\`"
+            echo "- Tree: \`$(git rev-parse HEAD^{tree})\`"
+            echo '- Unit/concurrency: passed'
+            echo '- Package/contract: passed'
+            echo '- Chromium/Firefox/WebKit: passed'
+            echo '- axe/keyboard/focus: passed'
+            echo '- Lane B truth: passed'
+            echo '- Production deployment and independent acceptance: not claimed'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload immutable qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-exact-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ui-control-evidence/
+            apps/hepta-control-ui/playwright-report/
+            apps/hepta-control-ui/test-results/
+          if-no-files-found: warn
+          retention-days: 30
+
+  synthetic-merge:
+    name: deterministic synthetic merge / core requalification
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out pull-request head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Resolve current base
+        id: base
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          value="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          printf 'sha=%s\n' "$value" >> "$GITHUB_OUTPUT"
+
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.base.outputs.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: ui.control qualification
+          author-email: ui-control-qualification@users.noreply.github.com
+          message: Synthetic ui.control merge
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
+      - name: Requalify merged core and truth projections
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          npm run lint --prefix apps/hepta-control-ui
+          npm test --prefix apps/hepta-control-ui
+          npm run test:contract --prefix apps/hepta-control-ui
+          npm run build --prefix apps/hepta-control-ui
+          node scripts/ui-control-artifacts.mjs --check
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/hepta-lane-b-truth.py verify
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"

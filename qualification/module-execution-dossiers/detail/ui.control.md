@@ -1,52 +1,60 @@
-# ui.control: implementation design
+# ui.control execution dossier
 
-Parent: `docs/modules/ui.control/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: coherent-view and authenticated-transport client boundary implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+> Generated from `qualification/ui-control/UI_CONTROL_MANIFEST.json`.
 
-## 1. Source and work envelope
+## Candidate identity
 
-Roots: `apps/hepta-control-ui`.
-Packages: `UI-V5`.
+- authoritative development branch: `work/ui-control-full-convergence-20260926`
+- convergence baseline: `7cba86aff6e6d035ce0355d72d08896248cb04a5` / `7718bf09154a845a82b4b04d8a3c7fda15757b13`
+- exact candidate SHA/tree: derived by the qualification workflow
+- release authorization: absent
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+## Implemented repository boundary
 
-## 2. Public operations and contract details
+- framework-free ESM client core and explicit package exports;
+- typed session, permission, transport, stale-view, snapshot-drift, and ambiguity failures;
+- atomic pending reservation and concurrent duplicate promise sharing;
+- durable recovery-state export/restore without authority claims;
+- same-origin CSRF-protected HTTP adapter with no mutation retry;
+- semantic HTML browser shell with start/reconcile/stop confirmation and audit identity display;
+- Chromium, Firefox, WebKit, axe-core, keyboard, focus, stale-revision, duplicate-activation, and accepted-timeout tests;
+- single-manifest generated technical guide, implementation map, and this dossier.
 
-`read_view(snapshot_cursor) -> RuntimeView`; `submit_request(intent, displayed_revision, session) -> RequestAcknowledgement`; `request_stop(scope, session) -> StopAcknowledgement`. Use generated protocol clients and backend-authenticated operations. The UI may request or display a decision but cannot issue capabilities, select its own displayed candidate or directly mutate domain stores.
+## Evidence matrix
 
-## 3. State records and transaction design
+| Case | Repository evidence | Expected result |
+|---|---|---|
+| UI-01 coherent view | `runtime-client.test.js` | generation/revision/digest projection accepted |
+| UI-02 same-revision drift | `runtime-client.test.js` | `UI_CONTROL_SNAPSHOT_DRIFT` |
+| UI-03 concurrent duplicate | `runtime-client.test.js` | one transport call, shared result |
+| UI-04 pending capacity race | `runtime-client.test.js` | reservation prevents oversubscription |
+| UI-05 accepted-timeout | unit and browser E2E | indeterminate, then operation lookup |
+| UI-06 semantic conflict | unit and server fixture | fail closed / HTTP 409 |
+| UI-07 stale confirmation | browser E2E | backend 412 surfaced, no operation created |
+| UI-08 accessibility | Playwright + axe-core | zero automated violations; focus restored |
+| UI-09 package boundary | `api-surface.test.js` | explicit exports; deep imports rejected |
+| UI-10 Lane B cross-owner | `test_hepta_lane_b_path_guard.py` | canonical cross-lane map accepted; escapes rejected |
 
-Only presentation/session-local state: connection generation, current view revision, pending request IDs, accessibility focus and explicitly scoped preferences. Server facts remain authoritative. A stale view is visibly marked stale; optimistic presentation never becomes a terminal-effect record. Sensitive action confirmation binds the final displayed target/payload/revision.
+## Qualification commands
 
-## 4. Deterministic algorithm and scheduling
+- `npm run lint --prefix apps/hepta-control-ui`
+- `npm test --prefix apps/hepta-control-ui`
+- `npm run test:contract --prefix apps/hepta-control-ui`
+- `npm run build --prefix apps/hepta-control-ui`
+- `npm run test:e2e --prefix apps/hepta-control-ui`
+- `node scripts/ui-control-artifacts.mjs --check`
+- `python3 scripts/hepta-lane-b-path-guard.py self-test`
+- `python3 -m unittest scripts/test_hepta_lane_b_path_guard.py`
+- `python3 scripts/hepta-lane-b-path-guard.py verify`
 
-Negotiate client/backend version; subscribe to bounded snapshots; reject mixed generations; render state with pending/indeterminate/failed distinctions; route authenticated user intents to the owner; reconcile responses by request ID. Disconnect cancels pending UI affordances but does not assume an external action was cancelled. Emergency controls remain usable without model cooperation.
+## Receipt semantics
 
-## 5. Capacity and performance profile
+The CI receipt records exact SHA/tree, runner/Node identity, check outcomes, and browser build-manifest digest. It sets production deployment, identity-provider, deployed CSP, independent acceptance, and release authorization to false unless separately observed. The tracked repository does not pre-claim those facts.
 
-Pilot view <= 1 MiB subject to backend limits, retained events <= 1000 per view, rendering work scheduled in bounded batches. Measure interaction/stop request latency, disconnected behavior and keyboard/screen-reader paths; UI timing is not hardware-stop timing.
+## Remaining non-repository evidence
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
-
-## 6. Concrete verification cases
-
-- UI-01: incompatible protocol version blocks mutating controls with an explicit explanation.
-- UI-02: stale confirmation cannot authorize a changed target or payload.
-- UI-03: reconnect reconciles pending IDs without duplicate requests.
-- UI-04: keyboard-only and screen-reader users can inspect uncertainty, request stop and recover focus after errors.
-
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
-
-## 7. Integration, rollback and capability ceiling
-
-Web and native clients share the same runtime contracts and state meanings. Human override is authenticated and scoped; hardware emergency stop remains independent. Rollback preserves compatible client/backend versions and does not downgrade authentication.
-
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
-
-## 8. Current native implementation
-
-- **Implemented entrypoints:** `readView` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js); `submitRequest` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js); `requestStop` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js). Coherent-view and authenticated-transport client boundary implemented.
-- **State and recovery:** The client retains session, coherent generation/revision snapshot and at most 1024 pending requests in memory; stale revisions reject and terminal statuses require terminal observations from the injected transport.
-- **Source tests:** [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js), [apps/hepta-control-ui/test/control.test.js](../../../apps/hepta-control-ui/test/control.test.js). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [apps/hepta-control-ui/README.md](../../../apps/hepta-control-ui/README.md), [docs/modules/ui.control/IMPLEMENTATION_MAP.json](../../../docs/modules/ui.control/IMPLEMENTATION_MAP.json).
-- **Remaining work:** Package the chosen web framework and deployed authentication/CSP/CSRF topology; verify actual backend authority and accessible end-to-end behavior.
+- production identity-provider and permission-revision integration
+- deployed backend operation-id uniqueness and durable lookup evidence
+- deployed CSP/CSRF/TLS/reverse-proxy observation
+- production monitoring, alert routing, and rollback exercise
+- independent assistive-technology and operator acceptance signature

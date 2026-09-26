@@ -7,15 +7,26 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.control",
-  "sourceMaturity": "native_web_client_boundary",
+  "sourceMaturity": "browser_console_candidate",
   "declaredRoots": [
     "apps/hepta-control-ui"
   ],
   "resolvedRoots": [
     "apps/hepta-control-ui"
   ],
-  "stateOwnerDisposition": "Owns presentation/session state and pending request identities only; backend modules retain authority and durable facts.",
-  "terminalObserverDisposition": "The authenticated backend observation establishes terminal state; local acknowledgement or disconnect never does.",
+  "statusManifest": "qualification/ui-control/UI_CONTROL_MANIFEST.json",
+  "currentStatus": {
+    "clientCore": "substantially_implemented",
+    "browserComposition": "repository_shell_implemented",
+    "authentication": "same_origin_session_adapter_implemented_deployment_unbound",
+    "transport": "same_origin_http_adapter_implemented_deployment_unbound",
+    "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
+    "exactHeadQualification": "required_and_derived_by_ci_not_committed",
+    "independentAcceptance": "absent",
+    "releaseAuthorization": "absent"
+  },
+  "stateOwnerDisposition": "Owns presentation/session state and bounded pending/recovery identities only; backend modules retain authority, durable operation uniqueness, and terminal facts.",
+  "terminalObserverDisposition": "A durable authenticated backend observation establishes terminal state; local acknowledgement, timeout, disconnect, or browser persistence never does.",
   "operations": [
     {
       "designOperation": "read_view",
@@ -57,7 +68,7 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest.",
+      "sourceSemantics": "Atomically reserves a bounded operation identity before network dispatch and submits an authenticated, revision-bound request.",
       "operation": "submit_request",
       "nativeSymbol": "async submitRequest(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
@@ -80,7 +91,7 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality.",
+      "sourceSemantics": "Uses the authenticated identity/revision path for stop while preserving server-side authority and terminality.",
       "operation": "request_stop",
       "nativeSymbol": "async requestStop(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
@@ -98,6 +109,11 @@
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
     "repositoryControlledSourceBoundaryGapsClosed": true,
+    "clientCoreSubstantiallyImplemented": true,
+    "repositoryBrowserShellImplemented": true,
+    "repositoryAuthTransportAdaptersImplemented": true,
+    "serverIdempotencyContractDefined": true,
+    "exactHeadQualificationDerivedByWorkflow": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -111,8 +127,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "repository_browser_shell_fixture_composed_deployment_unbound",
+  "productionWriterState": "backend_contract_defined_writer_unobserved",
   "owner": "ui-platform",
   "deputy": "accessibility",
   "technicalGuide": "docs/modules/ui.control/TECHNICAL.md",

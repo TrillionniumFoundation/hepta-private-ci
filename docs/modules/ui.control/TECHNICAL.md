@@ -1,243 +1,162 @@
 # ui.control technical development guide
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
+> Generated from `qualification/ui-control/UI_CONTROL_MANIFEST.json`. Edit the manifest or generator, not this file.
+
+## 1. Scope and current truth
+
+`ui.control` is an authority-free runtime-control client and browser console. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
+
+The active convergence branch is `work/ui-control-full-convergence-20260926`. The repository baseline used to start this convergence is `7cba86aff6e6d035ce0355d72d08896248cb04a5` / tree `7718bf09154a845a82b4b04d8a3c7fda15757b13`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v1`.
+
+| Dimension | Current state |
+|---|---|
+| `clientCore` | `substantially_implemented` |
+| `browserComposition` | `repository_shell_implemented` |
+| `authentication` | `same_origin_session_adapter_implemented_deployment_unbound` |
+| `transport` | `same_origin_http_adapter_implemented_deployment_unbound` |
+| `serverIdempotency` | `contract_defined_backend_enforcement_unobserved` |
+| `exactHeadQualification` | `required_and_derived_by_ci_not_committed` |
+| `independentAcceptance` | `absent` |
+| `releaseAuthorization` | `absent` |
+
+## 2. Repository layout
+
+- `apps/hepta-control-ui/src/`: framework-free ESM client core, HTTP transport, session provider, and browser controller.
+- `apps/hepta-control-ui/web/`: semantic HTML/CSS browser shell.
+- `apps/hepta-control-ui/test/`: unit, hostile-input, concurrency, recovery, package, and transport tests.
+- `apps/hepta-control-ui/e2e/`: Chromium, Firefox, and WebKit product-path tests with axe-core.
+- `docs/modules/ui.control/THREAT_MODEL.md`: trust boundaries and mitigations.
+- `docs/modules/ui.control/SERVER_IDEMPOTENCY.md`: normative backend operation ledger contract.
+- `docs/modules/ui.control/OPERATIONS.md`: deployment, monitoring, incident, and rollback runbook.
+
+## 3. Public boundaries
+
+- `RuntimeClient`
+- `SameOriginHttpTransport`
+- `SessionProvider`
+- `createControlConsole`
+- `projectRuntime`
+- `buildOperationIntent`
+- `digestOperationIntent`
+- `normalizeSnapshot`
+- `validateSnapshotTransition`
+- `UiControlError`
+
+The package exposes explicit `exports` for the root/core, browser controller, and HTTP transport. Imports under `@hepta/control-ui/src/*` are deliberately blocked. The browser build uses the same source modules as Node tests and does not need a framework runtime or unsafe HTML injection.
+
+## 4. State model
+
+A usable view is a tuple:
+
+`(sessionId, connectionGeneration, runtimeGeneration, revision, semanticDigest, modules)`
+
+The transition validator enforces:
+
+1. The browser is never the runtime authority and never declares success from a local acknowledgement.
+1. Every mutation binds session, connection generation, runtime generation, displayed revision, snapshot digest, operation id, semantic digest, target, action, and reason.
+1. An operation id is reserved before the first await that can dispatch transport work.
+1. Concurrent duplicate submissions share one in-flight promise; conflicting semantics fail closed.
+1. Accepted-but-timeout is indeterminate and must be recovered by operation id before retry.
+1. The backend operation-id unique constraint is the final idempotency authority.
+1. Same generation and revision with a different semantic digest is snapshot drift and is rejected.
+1. Control actions are disabled while the displayed view is stale or the session lacks the required permission.
+
+The browser persists only bounded recovery metadata. It never persists credentials, CSRF tokens, backend responses containing secrets, or a claim that a mutation succeeded.
+
+## 5. Mutation sequence
+
+```mermaid
+sequenceDiagram
+  participant O as Operator
+  participant UI as Browser shell
+  participant C as RuntimeClient
+  participant T as Same-origin transport
+  participant L as Server operation ledger
+  participant R as Runtime owner
+  O->>UI: confirm action, target, reason
+  UI->>C: submit operation intent
+  C->>C: validate session/view and reserve operationId
+  C->>T: one mutation request
+  T->>L: INSERT operationId + semanticDigest (unique)
+  alt new identity
+    L->>R: enqueue authority-owned request
+  else same identity and digest
+    L-->>T: return existing record
+  else same identity, different digest
+    L-->>T: reject conflict
+  end
+  T-->>C: accepted acknowledgement or connection loss
+  alt acknowledgement received
+    C-->>UI: pending + auditTraceId
+  else outcome ambiguous
+    C-->>UI: indeterminate; require lookup
+    UI->>T: lookup operationId + semanticDigest
+    T->>L: read durable operation record
+    L-->>UI: pending or terminal observation
+  end
+```
+
+## 6. Digest and identity domains
+
+| Value | Domain / authority | Purpose |
+|---|---|---|
+| Runtime projection digest | `hepta.ui-control.runtime-projection.v1` | Stable projection comparison |
+| Snapshot digest | `hepta.ui-control.runtime-snapshot.v1` | Bind session/generation/revision/module bytes |
+| Operation intent digest | `hepta.ui-control.operation-intent.v1` | Bind action/target/generation/revision/reason |
+| Operation ID | Client-generated stable identifier; server unique index | Retry and audit identity |
+| Audit trace ID | Server-generated | Cross-service observation and incident correlation |
 
-**Module:** `ui.control`
+Canonicalization accepts only bounded plain JSON values, safe integers, NFC strings without control/bidi-invisible characters, and keys other than `__proto__`, `constructor`, and `prototype`.
 
-**Owner:** `ui-platform`
+## 7. Authentication, permissions, and transport
 
-**Deputy:** `accessibility`
+The client requires an authenticated session with an exact protocol version, expiry, permission revision, connection generation, stable identity, and explicit permissions. Session refresh may increase permission revision or connection generation; a changed connection generation invalidates the displayed snapshot. Revocation and expiry disable control operations.
 
-**Lifecycle:** `target`
+`SameOriginHttpTransport` enforces same-origin API paths, credentials-included requests, no-store caching, redirect rejection, bounded JSON responses, request IDs, CSRF on mutations, timeout/abort typing, and no automatic mutation retries. A network error after dispatch is ambiguous, not failed.
 
-**Source status:** `existing_bound`
+## 8. Browser interaction and accessibility
 
-**Bootstrap work package:** `UI-V5`
+The browser shell provides:
 
-This stable document is the implementation guide for `ui.control`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+- visible stale, disconnected, pending, terminal, failure, and indeterminate states;
+- operation ID, runtime generation, revision, semantic digest binding, and audit trace display;
+- modal confirmation for start, reconcile, and stop requests;
+- duplicate-activation suppression before network dispatch;
+- semantic tables, labels, alerts, live regions, skip navigation, visible focus, reduced-motion support, and focus restoration;
+- axe-core scans and keyboard assertions in real Chromium, Firefox, and WebKit engines.
 
-## 1. Identity, mission and ownership
+Automated checks do not replace manual screen-reader/operator acceptance; that remains an external signed gate.
 
-Present runtime state and requests without issuing authority or directly writing stores.
+## 9. Typed failures
 
-The primary owner `ui-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `accessibility` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
+Stable error codes include `UI_CONTROL_SESSION_EXPIRED`, `UI_CONTROL_PERMISSION_DENIED`, `UI_CONTROL_STALE_GENERATION`, `UI_CONTROL_STALE_REVISION`, `UI_CONTROL_SNAPSHOT_DRIFT`, `UI_CONTROL_PENDING_LIMIT`, `UI_CONTROL_OPERATION_CONFLICT`, `UI_CONTROL_BACKEND_REJECTED`, `UI_CONTROL_ACK_MISMATCH`, and `UI_CONTROL_AMBIGUOUS_SUBMISSION`.
 
-Plane `presentation`, kind `web`, state model `stateless` and architecture role `presentation` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+Callers branch on `code` and `retryable`; parsing message text is unsupported.
 
-## 2. Source binding and implementation status
+## 10. Qualification
 
-Declared exclusive target roots:
+Repository checks:
 
-- `apps/hepta-control-ui`
+- `npm run lint --prefix apps/hepta-control-ui`
+- `npm test --prefix apps/hepta-control-ui`
+- `npm run test:contract --prefix apps/hepta-control-ui`
+- `npm run build --prefix apps/hepta-control-ui`
+- `npm run test:e2e --prefix apps/hepta-control-ui`
+- `node scripts/ui-control-artifacts.mjs --check`
+- `python3 scripts/hepta-lane-b-path-guard.py self-test`
+- `python3 -m unittest scripts/test_hepta_lane_b_path_guard.py`
+- `python3 scripts/hepta-lane-b-path-guard.py verify`
 
-Existing declared roots at this exact source snapshot:
+The dedicated workflow binds checkout SHA and tree, runs unit/contract/build/browser/axe/Lane-B/document checks, verifies a clean tracked tree, and uploads the generated receipt and browser build manifest. A passing mock/protocol-equivalent E2E proves repository composition, not a production deployment.
 
-- `apps/hepta-control-ui`
+## 11. Remaining external evidence gates
 
-Non-authoritative implementation evidence roots:
+- production identity-provider and permission-revision integration
+- deployed backend operation-id uniqueness and durable lookup evidence
+- deployed CSP/CSRF/TLS/reverse-proxy observation
+- production monitoring, alert routing, and rollback exercise
+- independent assistive-technology and operator acceptance signature
 
-None.
+## 12. Definition of done
 
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `ui.control`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
-
-## 3. Boundary, responsibilities and non-goals
-
-Direct dependencies:
-
-- `runtime.agentd`
-
-Authoritative write domains:
-
-None.
-
-Explicitly denied capabilities:
-
-- `authority_issuance`
-- `direct_store_write`
-
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
-
-## 4. Internal architecture and component decomposition
-
-The bounded components are:
-
-- `generated protocol client`
-- `state projection`
-- `interaction controller`
-- `accessibility and error recovery`
-
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
-
-## 5. Contracts, ports and compatibility
-
-Produced contracts:
-
-None.
-
-Consumed contracts:
-
-- `DomainRead::runtime_health_observationV1`
-- `ModulePort::runtime.agentd::ui.control`
-
-Critical protocol schemas:
-
-None.
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
-
-## 6. Data authority, persistence and migrations
-
-Owned authoritative or rebuildable domains:
-
-None.
-
-Read-only data dependencies:
-
-- `runtime_health_observation`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
-
-## 7. Runtime, concurrency and transaction model
-
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.control.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md).
-
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
-
-## 8. Failure semantics, recovery and rollback
-
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.control.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
-
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
-
-## 9. Security, privacy and threat controls
-
-Owned threat entries:
-
-None.
-
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
-
-## 10. Performance, capacity and hot-path policy
-
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-control-ui/src/control.js](../../../apps/hepta-control-ui/src/control.js) and the linked implementation components.
-
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
-
-## 11. Observability and operations
-
-JavaScript presentation/client boundary, not a server or authority issuer. Connect an authenticated versioned backend, preserve request IDs over reconnect and visibly distinguish stale/pending/indeterminate states. Browser packaging, real backend integration and accessibility acceptance must match the selected host deployment.
-
-Current operating and state-format references:
-
-- [apps/hepta-control-ui/README.md](../../../apps/hepta-control-ui/README.md).
-- [docs/modules/ui.control/IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
-
-## 12. Verification and qualification
-
-Current focused test sources (source references, not pass receipts):
-
-- [apps/hepta-control-ui/test/control.test.js](../../../apps/hepta-control-ui/test/control.test.js); named case: `runtime projection exposes only registered safe fields`.
-- [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js); named case: `submits and reconciles a generation-bound stop request`.
-
-From the repository root, run `node --test apps/hepta-control-ui/test/control.test.js apps/hepta-control-ui/test/runtime-client.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) separately labels target acceptance designs.
-
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
-
-## 13. Implementation sequence and work packages
-
-Applicable work packages:
-
-- `UI-V5`
-
-The bootstrap package is `UI-V5`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
-
-## 14. Activation, compatibility and retirement
-
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
-
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
-
-## 15. Definition of module completion
-
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `ui.control`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `UI-V5`
-
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `independent_source_preparation`.
-- Owner/deputy: `ui-platform` / `accessibility`.
-- Allowed write paths:
-- `apps/hepta-control-ui/**`
-- `apps/hepta-native/**`
-- Development predecessors:
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- Activation predecessors:
-- `P0.8B-READINESS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-## 16. V8.2 pre-coding implementation-readiness overlay
-
-The canonical readiness overlay binds `ui.control` to primary lane `LANE-B-RUNTIME`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-## 17. Source implementation receipt
-
-The bootstrap source-location obligation for `ui.control` is implemented by work package `UI-V5` in:
-
-- `apps/hepta-control-ui`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The repository portion is complete when the authoritative branch is merged, generated projections are current, exact-head and synthetic-merge checks pass, all three browser engines and axe pass, Lane B truth passes, and a receipt is uploaded. Production completion additionally requires every external gate above and an independent acceptance signature.

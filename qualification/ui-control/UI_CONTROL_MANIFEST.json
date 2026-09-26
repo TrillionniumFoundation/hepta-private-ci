@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.ui-control.manifest.v1",
+  "schemaVersion": 1,
+  "module": "ui.control",
+  "laneId": "LANE-B-RUNTIME",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "authoritativeDevelopmentBranch": "work/ui-control-full-convergence-20260926",
+  "baseline": {
+    "commit": "7cba86aff6e6d035ce0355d72d08896248cb04a5",
+    "tree": "7718bf09154a845a82b4b04d8a3c7fda15757b13"
+  },
+  "historicalSourceBase": {
+    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+  },
+  "sourceRoots": [
+    "apps/hepta-control-ui"
+  ],
+  "status": {
+    "clientCore": "substantially_implemented",
+    "browserComposition": "repository_shell_implemented",
+    "authentication": "same_origin_session_adapter_implemented_deployment_unbound",
+    "transport": "same_origin_http_adapter_implemented_deployment_unbound",
+    "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
+    "exactHeadQualification": "required_and_derived_by_ci_not_committed",
+    "independentAcceptance": "absent",
+    "releaseAuthorization": "absent"
+  },
+  "publicApi": [
+    "RuntimeClient",
+    "SameOriginHttpTransport",
+    "SessionProvider",
+    "createControlConsole",
+    "projectRuntime",
+    "buildOperationIntent",
+    "digestOperationIntent",
+    "normalizeSnapshot",
+    "validateSnapshotTransition",
+    "UiControlError"
+  ],
+  "operations": [
+    {
+      "id": "read_view",
+      "symbol": "readView()",
+      "semantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale."
+    },
+    {
+      "id": "submit_request",
+      "symbol": "async submitRequest(",
+      "semantics": "Atomically reserves a bounded operation identity before network dispatch and submits an authenticated, revision-bound request."
+    },
+    {
+      "id": "request_stop",
+      "symbol": "async requestStop(",
+      "semantics": "Uses the authenticated identity/revision path for stop while preserving server-side authority and terminality."
+    }
+  ],
+  "invariants": [
+    "The browser is never the runtime authority and never declares success from a local acknowledgement.",
+    "Every mutation binds session, connection generation, runtime generation, displayed revision, snapshot digest, operation id, semantic digest, target, action, and reason.",
+    "An operation id is reserved before the first await that can dispatch transport work.",
+    "Concurrent duplicate submissions share one in-flight promise; conflicting semantics fail closed.",
+    "Accepted-but-timeout is indeterminate and must be recovered by operation id before retry.",
+    "The backend operation-id unique constraint is the final idempotency authority.",
+    "Same generation and revision with a different semantic digest is snapshot drift and is rejected.",
+    "Control actions are disabled while the displayed view is stale or the session lacks the required permission."
+  ],
+  "verification": {
+    "node": "22",
+    "commands": [
+      "npm run lint --prefix apps/hepta-control-ui",
+      "npm test --prefix apps/hepta-control-ui",
+      "npm run test:contract --prefix apps/hepta-control-ui",
+      "npm run build --prefix apps/hepta-control-ui",
+      "npm run test:e2e --prefix apps/hepta-control-ui",
+      "node scripts/ui-control-artifacts.mjs --check",
+      "python3 scripts/hepta-lane-b-path-guard.py self-test",
+      "python3 -m unittest scripts/test_hepta_lane_b_path_guard.py",
+      "python3 scripts/hepta-lane-b-path-guard.py verify"
+    ],
+    "browserMatrix": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "accessibility": "axe-core WCAG automated scan plus keyboard/focus assertions; manual screen-reader acceptance remains independent evidence"
+  },
+  "externalEvidenceGates": [
+    "production identity-provider and permission-revision integration",
+    "deployed backend operation-id uniqueness and durable lookup evidence",
+    "deployed CSP/CSRF/TLS/reverse-proxy observation",
+    "production monitoring, alert routing, and rollback exercise",
+    "independent assistive-technology and operator acceptance signature"
+  ]
+}
