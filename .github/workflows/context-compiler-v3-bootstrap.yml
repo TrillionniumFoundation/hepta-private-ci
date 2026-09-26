@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: context-compiler-v3-bootstrap
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-and-verify:
@@ -23,12 +23,22 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-        with:
-          components: rustfmt,clippy
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup set profile minimal
+          rustup toolchain install 1.95.0 \
+            --component rustfmt \
+            --component clippy \
+            --target x86_64-unknown-linux-gnu
+          rustup default 1.95.0
+          rustc -Vv
+          cargo -V
 
       - name: Apply V3 source and Core migrations
         run: |
+          set -euo pipefail
           python3 scripts/apply_context_compiler_v3_source.py
           python3 scripts/apply_context_compiler_v3_core.py
 
