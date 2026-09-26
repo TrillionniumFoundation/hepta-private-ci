@@ -102,6 +102,22 @@ def compose_agentd() -> None:
     )
 
 
+def fix_compile_edges() -> None:
+    replace_one(
+        "codex-rs/hepta-agentd/src/intuition_policy.rs",
+        "        match writer.append_decision(expected_predecessor, request, evidence, now) {\n",
+        "        match writer.append_decision(expected_predecessor, request, &evidence, now) {\n",
+    )
+    replace_one(
+        "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+        '    assert_eq!(reopened.snapshot().expect("snapshot").records, 1);\n',
+        "    assert_eq!(\n"
+        "        reopened.snapshot().expect(\"snapshot\").head_digest,\n"
+        "        first_append.chain_digest,\n"
+        "    );\n",
+    )
+
+
 def add_bounded_ledger_retry() -> None:
     path = "codex-rs/hepta-agentd/src/intuition_policy.rs"
     old = """                let record_id = production.record_id.clone();
@@ -250,6 +266,7 @@ A green workflow proves repository qualification only. `qualification/intuition.
 
 def main() -> None:
     compose_agentd()
+    fix_compile_edges()
     add_bounded_ledger_retry()
     upgrade_authenticated_fast_gate()
     update_technical_guide()
