@@ -1,0 +1,140 @@
+name: memory federation production closure bootstrap
+
+on:
+  push:
+    branches:
+      - feat/memory-federation-production-closure-20260927
+    paths:
+      - ".github/workflows/memory-federation-closure-bootstrap.yml"
+      - "scripts/_memory_federation_closure_0.py"
+      - "scripts/_memory_federation_closure_1.py"
+      - "scripts/_memory_federation_closure_2.py"
+      - "scripts/_memory_federation_closure_3.py"
+      - "scripts/_memory_federation_closure_4.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-federation-production-closure-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact bootstrap head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify bootstrap identity
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git merge-base HEAD origin/main)" = "a126987b84737dbc2ee2592442a314117bddb4a2"
+
+      - name: Configure repository writer
+        run: |
+          git config user.name "Hepta Memory Federation Bot"
+          git config user.email "hepta-memory-federation-bot@users.noreply.github.com"
+
+      - name: Apply reviewed closure codemods
+        run: |
+          set -euo pipefail
+          python3 scripts/_memory_federation_closure_0.py
+          python3 scripts/_memory_federation_closure_1.py
+          python3 scripts/_memory_federation_closure_2.py
+          python3 scripts/_memory_federation_closure_3.py
+          python3 scripts/_memory_federation_closure_4.py
+
+      - name: Format closure sources
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server
+
+      - name: Test attestation generator
+        run: python3 -m unittest -v scripts.tests.test_memory_federation_attestation
+
+      - name: Test canonical default surface
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory-federation --lib
+
+      - name: Test compatibility and authenticated wire features
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory-federation --lib --features "legacy-v1,cross-host-wire-v1"
+
+      - name: Test memory product runtime
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+          cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+          cargo test -p codex-hepta-memory --lib cognitive_runtime_identity_tests
+
+      - name: Test physical model-input integration
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+
+      - name: Check named host composition
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-agentd -p codex-app-server
+
+      - name: Strict lint changed Rust surfaces
+        working-directory: codex-rs
+        run: |
+          cargo clippy -p codex-hepta-memory-federation --all-targets --features "legacy-v1,cross-host-wire-v1" -- -D warnings
+          cargo clippy -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+
+      - name: Verify source patch hygiene
+        run: git diff --check
+
+      - name: Commit source, tests, qualification, and CI
+        run: |
+          set -euo pipefail
+          git add -A
+          git commit -m "feat(memory.federation): close runtime and authenticated wire boundaries" \
+            -m "Bound discovery, attempts, and revalidation through a host-pinned profile; bind source-side truncation into V2 evidence; remove V1 from the default surface; add an opt-in authenticated cross-host contract, cancellation acknowledgements, retained command attestations, and a reusable required qualification lane. Cross-host activation and productExecutionProved remain false pending retained evidence and external gates."
+
+      - name: Rebind implementation evidence and generated views
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
+          python3 scripts/hepta-module-docs.py refresh-derived
+          git diff --check
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(memory.federation): rebind exact implementation evidence"
+          fi
+
+      - name: Verify committed implementation evidence
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Remove one-shot bootstrap material
+        run: |
+          set -euo pipefail
+          git rm \
+            scripts/_memory_federation_closure_0.py \
+            scripts/_memory_federation_closure_1.py \
+            scripts/_memory_federation_closure_2.py \
+            scripts/_memory_federation_closure_3.py \
+            scripts/_memory_federation_closure_4.py \
+            .github/workflows/memory-federation-closure-bootstrap.yml
+          git commit -m "chore(memory.federation): remove closure bootstrap"
+
+      - name: Push verified closure branch
+        env:
+          TARGET_BRANCH: feat/memory-federation-production-closure-20260927
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
