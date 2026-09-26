@@ -30,13 +30,17 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
+      - docs/modules/runtime.agentd/**
       - docs/modules/runtime.supervisor/**
+      - qualification/module-execution-dossiers/detail/runtime.agentd.md
       - qualification/module-execution-dossiers/detail/runtime.supervisor.md
       - .github/scripts/check_ci_results.py
       - .github/scripts/verify_cargo_workspace_manifests.py
       - scripts/hepta-implementation-maps.py
       - scripts/hepta-module-docs.py
       - scripts/hepta-supervisor-validation.py
+      - scripts/hepta_agentd_qualification_receipt.py
+      - scripts/test_hepta_agentd_qualification_receipt.py
       - scripts/hepta_module_registry.py
       - scripts/test_hepta_agentd_ci.py
       - scripts/hepta_ci_candidate.py
@@ -71,6 +75,7 @@ jobs:
           python3 scripts/hepta-implementation-maps.py verify
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
           python3 -m unittest discover -v -s scripts -p 'test_hepta_agentd_ci.py'
+          PYTHONPATH=scripts python3 -m unittest -v test_hepta_agentd_qualification_receipt
 
   owner-formatting:
     runs-on: ubuntu-24.04
@@ -163,7 +168,7 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Build exact App Server for native owner qualification
+      - name: Build exact core Agentd and App Server for native owner qualification
         id: native_build
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
@@ -171,12 +176,15 @@ jobs:
         run: |
           set -euo pipefail
           cargo build --locked -p codex-app-server --bin codex-app-server
+          cargo build --locked -p codex-hepta-agentd --bin codex-hepta-agentd --no-default-features
           host="$(rustc -vV | sed -n 's/^host: //p')"
           test -n "$host"
           cargo metadata --locked --all-features --filter-platform "$host" --format-version=1 > "$RUNNER_TEMP/hepta-nextest-metadata.json"
           target="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["target_directory"])' "$RUNNER_TEMP/hepta-nextest-metadata.json")"
           test -x "$target/debug/codex-app-server"
+          test -x "$target/debug/codex-hepta-agentd"
           printf 'HEPTA_TEST_CODEX_EXE=%s/debug/codex-app-server\n' "$target" >> "$GITHUB_ENV"
+          printf 'HEPTA_AGENTD_QUAL_TARGET=%s\n' "$target" >> "$GITHUB_ENV"
       - name: Exercise owner and lifecycle libraries
         if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
@@ -215,10 +223,46 @@ jobs:
             --test cognitive_product_e2e --test plasticity_process_e2e \
             --test runtime_codex_product_e2e --test supervised_two_agents \
             --test supervisord_product_e2e --test queue_capacity_product --test-threads=1
-      - name: Strict owner lint
+      - name: Strict core and writer-profile owner lint
         if: ${{ !cancelled() && steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D warnings
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --no-default-features -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D warnings
+      - name: Build exact qualified Agentd artifact
+        id: qualified_build
+        if: steps.execution.outputs.run_native == 'true' && steps.native_build.outcome == 'success'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-hepta-agentd --bin codex-hepta-agentd --features qualification-cognitive-write
+          test -x "$HEPTA_AGENTD_QUAL_TARGET/debug/codex-hepta-agentd"
+          test -x "$HEPTA_AGENTD_QUAL_TARGET/debug/codex-app-server"
+      - name: Freeze exact source and binary qualification receipt
+        id: qualification_receipt
+        if: steps.qualified_build.outcome == 'success'
+        env:
+          LANE: ${{ matrix.lane }}
+          HOST_PLATFORM: ${{ matrix.os }}
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/runtime-agentd-qualification"
+          python3 scripts/hepta_agentd_qualification_receipt.py \
+            --out "$output" \
+            --expected-sha "$EXPECTED_SHA" \
+            --lane "$LANE" \
+            --host-platform "$HOST_PLATFORM" \
+            --artifact "codex-hepta-agentd=$HEPTA_AGENTD_QUAL_TARGET/debug/codex-hepta-agentd" \
+            --artifact "codex-app-server=$HEPTA_AGENTD_QUAL_TARGET/debug/codex-app-server"
+      - name: Retain exact Agentd qualification artifacts
+        if: steps.qualification_receipt.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-agentd-${{ matrix.os }}-${{ matrix.lane }}-${{ env.EXPECTED_SHA }}
+          path: ${{ runner.temp }}/runtime-agentd-qualification
+          if-no-files-found: error
+          retention-days: 30
       - name: Check unchanged candidate after execution
         if: always()
         run: |
