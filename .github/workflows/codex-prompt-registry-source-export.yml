@@ -26,6 +26,7 @@ jobs:
           python3 scripts/apply-prompt-registry-v4-remediation.py
           python3 scripts/apply-prompt-runtime-closure.py
           python3 scripts/apply-prompt-publisher-closure.py
+          python3 scripts/apply-prompt-publisher-lifecycle.py
           if [[ -f scripts/apply-prompt-registry-operations.py ]]; then
             python3 scripts/apply-prompt-registry-operations.py
           fi
