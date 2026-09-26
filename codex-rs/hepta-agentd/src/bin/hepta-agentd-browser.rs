@@ -43,7 +43,18 @@ struct HostConfig {
     worker_sha256: String,
     profile_root: PathBuf,
     journal_path: PathBuf,
+    reconciliation_root: Option<PathBuf>,
+    reconciliation_observer_id: Option<String>,
+    reconciliation_verifying_key: Option<String>,
     bwrap_path: PathBuf,
+    bwrap_sha256: String,
+    prlimit_path: PathBuf,
+    prlimit_sha256: String,
+    max_profiles: u64,
+    max_address_space_bytes: u64,
+    max_cpu_seconds: u64,
+    max_open_files: u64,
+    max_processes: u64,
     driver_timeout_ms: u64,
 }
 
@@ -114,11 +125,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         worker_sha256: parse_digest(&config.worker_sha256, "worker_sha256")?,
         profile_root: config.profile_root,
         journal_path: config.journal_path,
+        reconciliation_root: config.reconciliation_root,
+        reconciliation_observer_id: config.reconciliation_observer_id,
+        reconciliation_verifying_key: config
+            .reconciliation_verifying_key
+            .as_deref()
+            .map(|value| parse_digest(value, "reconciliation_verifying_key"))
+            .transpose()?,
         bwrap_path: config.bwrap_path,
+        bwrap_sha256: parse_digest(&config.bwrap_sha256, "bwrap_sha256")?,
+        prlimit_path: config.prlimit_path,
+        prlimit_sha256: parse_digest(&config.prlimit_sha256, "prlimit_sha256")?,
+        max_profiles: config.max_profiles,
+        max_address_space_bytes: config.max_address_space_bytes,
+        max_cpu_seconds: config.max_cpu_seconds,
+        max_open_files: config.max_open_files,
+        max_processes: config.max_processes,
         driver_timeout_ms: config.driver_timeout_ms,
     };
+    let parent_frame_timeout = process.parent_frame_timeout()?;
     let transport = ChildBrowserTransport::spawn(&process)?;
-    let port = BrowserServoPort::new(authority, transport);
+    let port = BrowserServoPort::with_frame_timeout(authority, transport, parent_frame_timeout)?;
     let module_method = call.method.module_method();
     let request = if matches!(module_method, BrowserServoMethod::NavigateOrAct) {
         let signed_grant = call

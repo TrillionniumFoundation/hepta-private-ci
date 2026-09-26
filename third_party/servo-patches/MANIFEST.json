@@ -2,11 +2,14 @@
   "schema_version": 1,
   "upstream_repository": "servo/servo",
   "upstream_branch": "main",
-  "upstream_commit": "84bcc9ac701874fa9819e5cdee06356b961d736c",
+  "upstream_commit": "b5a1f5e6ec6f8685d40cd389802ced7abe4980f6",
   "patches": [],
   "integration_mode": "pinned_upstream_with_hepta_adapter_boundary",
   "network_authority": false,
   "effect_authority": false,
   "automatic_update": false,
-  "interpretation": "pinning an upstream source identity is not runtime activation or independent acceptance"
+  "interpretation": "pinning an upstream source identity is not runtime activation or independent acceptance",
+  "qualification_state": "candidate_lock_generation_required_exact_head_pending",
+  "predecessor_commit": "5cc5bd32d02619acdec5736055515e38c5840ce1",
+  "selection_reason": "absorbs the 13 post-5cc commits, including the WebView Servo-handle double-borrow hardening that changes WebView::load used by the Hepta worker; exact generated lock/build/E2E/reproducibility evidence is required before qualification"
 }
