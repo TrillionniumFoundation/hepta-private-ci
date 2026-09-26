@@ -142,7 +142,52 @@ printf '%s\n' '__TERMINAL_JSON__'
 
 #[cfg(unix)]
 #[tokio::test]
-async fn unknown_first_process_is_reconcile_only_and_never_reissued() {
+async fn manifest_before_dispatch_fence_is_not_started_by_recovery() {
+    let fixture = fixture(
+        r#"
+cat >/dev/null
+printf x >> "$COUNTER"
+printf '%s\n' '__TERMINAL_JSON__'
+"#,
+    );
+    let exact_input = input("hello");
+    let input_digest = exact_input.digest().expect("input digest");
+    let prepared = persistence::prepare_operation(
+        &fixture.executor,
+        &fixture.owner,
+        &exact_input,
+        input_digest,
+    )
+    .expect("durable manifest");
+    assert!(!persistence::dispatch_is_fenced(&prepared.paths, &prepared.manifest)
+        .expect("fence state"));
+
+    let report = fixture
+        .executor
+        .reconcile_pending(fixture.owner.clone(), CancellationToken::new())
+        .await
+        .expect("reconcile");
+    assert_eq!(report.scanned, 1);
+    assert_eq!(report.unresolved, 1);
+    assert!(!fixture.counter.exists());
+
+    let receipt = fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            exact_input,
+            CancellationToken::new(),
+        )
+        .await
+        .expect("matching authenticated retry may finish first dispatch");
+    assert!(receipt.succeeded());
+    assert!(!receipt.reconciled);
+    assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn unknown_first_process_is_reconciled_without_redispatch() {
     let fixture = fixture(
         r#"
 MODE=fresh
@@ -169,6 +214,15 @@ printf '%s\n' '__TERMINAL_JSON__'
         .expect_err("first outcome must be unknown");
     assert!(first.to_string().contains("no valid bounded receipt"));
 
+    let report = fixture
+        .executor
+        .reconcile_pending(fixture.owner.clone(), CancellationToken::new())
+        .await
+        .expect("startup reconciliation");
+    assert_eq!(report.scanned, 1);
+    assert_eq!(report.reconciled_terminal, 1);
+    assert_eq!(report.unresolved, 0);
+
     let recovered = fixture
         .executor
         .execute(
@@ -177,14 +231,58 @@ printf '%s\n' '__TERMINAL_JSON__'
             CancellationToken::new(),
         )
         .await
-        .expect("resume receipt");
+        .expect("frozen recovered receipt");
     assert!(recovered.succeeded());
     assert!(recovered.reconciled);
+    assert!(recovered.idempotent);
     assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
     assert_eq!(
         std::fs::read(&fixture.resume_counter).expect("resume counter"),
         b"r"
     );
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn corrupt_dispatch_fence_fails_closed_without_process_creation() {
+    let fixture = fixture(
+        r#"
+cat >/dev/null
+printf x >> "$COUNTER"
+printf '%s\n' '__TERMINAL_JSON__'
+"#,
+    );
+    let exact_input = input("hello");
+    let input_digest = exact_input.digest().expect("input digest");
+    let prepared = persistence::prepare_operation(
+        &fixture.executor,
+        &fixture.owner,
+        &exact_input,
+        input_digest,
+    )
+    .expect("durable manifest");
+    std::fs::write(
+        &prepared.paths.dispatch_fence,
+        br#"{"schema_version":1,"run_id":"run.fixture","input_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","worker_artifact_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}"#,
+    )
+    .expect("corrupt fence");
+    std::fs::set_permissions(
+        &prepared.paths.dispatch_fence,
+        std::fs::Permissions::from_mode(0o600),
+    )
+    .expect("fence permissions");
+
+    let error = fixture
+        .executor
+        .execute(
+            fixture.owner.clone(),
+            exact_input,
+            CancellationToken::new(),
+        )
+        .await
+        .expect_err("corrupt fence must fail closed");
+    assert!(error.to_string().contains("dispatch fence"), "{error}");
+    assert!(!fixture.counter.exists());
 }
 
 #[cfg(unix)]
