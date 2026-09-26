@@ -118,6 +118,37 @@ test("pending capacity is reserved before transport awaits", async () => {
   await first;
 });
 
+test("request preparation rejects a snapshot change during asynchronous digest", { concurrency: false }, async t => {
+  const { client, transport } = await connectedClient();
+  const subtlePrototype = Object.getPrototypeOf(globalThis.crypto.subtle);
+  const originalDigest = subtlePrototype.digest;
+  const gate = deferred();
+  let digestBlocked = false;
+
+  subtlePrototype.digest = async function controlledDigest(...args) {
+    if (!digestBlocked) {
+      digestBlocked = true;
+      await gate.promise;
+    }
+    return originalDigest.apply(this, args);
+  };
+  t.after(() => {
+    subtlePrototype.digest = originalDigest;
+    gate.resolve();
+  });
+
+  const submission = client.submitRequest(operation());
+  await waitFor(() => digestBlocked, "operation intent digest");
+  await client.applySnapshot(snapshot({ revision: 12 }));
+  gate.resolve();
+
+  await assert.rejects(
+    submission,
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.STALE_REVISION,
+  );
+  assert.equal(transport.state.requestCount, 0);
+});
+
 test("same operation id with different semantics fails closed", async () => {
   const gate = deferred();
   const transport = createTransport({
