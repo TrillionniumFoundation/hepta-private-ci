@@ -1,0 +1,125 @@
+name: Hepta control runtime closure (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-control-plane/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-ndu/**'
+      - 'docs/modules/control.runtime/**'
+      - 'scripts/hepta-control-runtime-*'
+      - '.github/workflows/hepta-control-runtime-closure.yml'
+  push:
+    branches: ['revision/control-runtime-closure-*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualification:
+    name: Control runtime (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || 'a126987b84737dbc2ee2592442a314117bddb4a2' }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CARGO_TERM_COLOR: never
+    steps:
+      - name: Check out exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and deterministic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            git cat-file -e "$BASE_SHA^{commit}"
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Control runtime qualification only' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+          fi
+          mkdir -p "$RUNNER_TEMP/control-runtime-evidence"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/control-runtime-evidence/candidate.txt"
+      - name: Install pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Independent commands and exact-candidate receipts
+        id: commands
+        working-directory: codex-rs
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          OUT="$RUNNER_TEMP/control-runtime-evidence"
+          export OUT
+          run_record() {
+            local label="$1"; shift
+            printf '%q ' "$@" > "$OUT/$label.command"
+            printf '\n' >> "$OUT/$label.command"
+            local begin=$(date +%s)
+            "$@" > "$OUT/$label.log" 2>&1
+            local code=$?
+            printf '%s\t%s\t%s\t%s\n' "$label" "$code" "$begin" "$(date +%s)" >> "$OUT/status.tsv"
+            tail -n 60 "$OUT/$label.log"
+          }
+          run_record lockfile python3 ../scripts/verify_cargo_lock.py
+          run_record source-policy python3 ../scripts/hepta-ndu-source-policy.py
+          run_record compile cargo check --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-ndu
+          run_record ndu-regression just test --locked -p codex-hepta-ndu
+          run_record control-package cargo test --locked -p codex-hepta-control-plane
+          run_record control-context cargo test --locked -p codex-hepta-control-plane --lib planner_context
+          run_record control-ndu cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
+          run_record lint cargo clippy --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-ndu -- -D warnings
+          run_record format cargo fmt --package codex-hepta-control-plane --package codex-hepta-ndu -- --check
+          export HEPTA_NDU_HOST_ID=github-hosted-ubuntu-24.04-x86_64
+          export HEPTA_NDU_FS_PROFILE="$(stat -f -c %T "$RUNNER_TEMP")"
+          export HEPTA_NDU_RUSTC="$(rustc --version)"
+          export HEPTA_NDU_CLK_TCK="$(getconf CLK_TCK)"
+          export HEPTA_NDU_RECEIPT_PATH="$OUT/ndu-named-host.json"
+          export HEPTA_NDU_SOURCE_SHA="$(git rev-parse HEAD)"
+          export HEPTA_NDU_SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          export HEPTA_NDU_QUALIFICATION_LANE="$LANE"
+          run_record named-host cargo run --locked --release -p codex-hepta-ndu --bin ndu-named-host-qualification
+          run_record clean-tracked git diff --exit-code
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          out = pathlib.Path(os.environ['OUT'])
+          records = []
+          for line in (out / 'status.tsv').read_text().splitlines():
+              name, code, begin, end = line.split('\t')
+              log = (out / (name + '.log')).read_bytes()
+              records.append({'name': name, 'exitCode': int(code), 'startedUnixSeconds': int(begin), 'endedUnixSeconds': int(end), 'command': (out / (name + '.command')).read_text().strip(), 'logSha256': hashlib.sha256(log).hexdigest()})
+          receipt = {'schema': 'hepta.control-runtime.command-receipts.v1', 'sourceHead': os.environ['SOURCE_SHA'], 'baseHead': os.environ['BASE_SHA'], 'candidateHead': subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip(), 'candidateTree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'], text=True).strip(), 'lane': os.environ['LANE'], 'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'commands': records, 'passed': all(x['exitCode'] == 0 for x in records), 'independentAcceptance': False, 'activation': False, 'release': False}
+          (out / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## Exact-candidate control runtime qualification\n\n```json\n' + json.dumps(receipt, indent=2) + '\n```\n')
+          raise SystemExit(0 if receipt['passed'] else 1)
+          PY
+      - name: Retain all command logs including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/control-runtime-evidence/
+          if-no-files-found: error
+          retention-days: 14
