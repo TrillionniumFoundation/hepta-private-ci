@@ -1,8 +1,11 @@
+use std::fmt;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
+use tokio::sync::OwnedRwLockReadGuard;
 
 use crate::AuthBusAuthorityError;
 use crate::push_id;
@@ -21,20 +24,140 @@ pub enum IssuerLifecycleState {
     Retired,
 }
 
+/// Administrative enrollment input. It is not a trusted registration and is
+/// never accepted by message or settlement verification paths.
 pub struct IssuerSpec {
     pub issuer_id: StableId,
     pub key_epoch: Generation,
     pub verifying_key: VerifyingKey,
 }
 
-#[derive(Clone, Debug)]
+/// Persisted issuer metadata. Trusted fields are read-only outside this crate;
+/// constructing a value with the same data cannot create verification authority.
+#[derive(Clone)]
 pub struct IssuerRecord {
-    pub issuer_id: StableId,
-    pub purpose: IssuerPurpose,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub state: IssuerLifecycleState,
-    pub revision: u64,
+    pub(crate) issuer_id: StableId,
+    pub(crate) purpose: IssuerPurpose,
+    pub(crate) key_epoch: Generation,
+    pub(crate) verifying_key: VerifyingKey,
+    pub(crate) state: IssuerLifecycleState,
+    pub(crate) revision: u64,
+}
+
+impl fmt::Debug for IssuerRecord {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("IssuerRecord")
+            .field("issuer_id", &self.issuer_id)
+            .field("purpose", &self.purpose)
+            .field("key_epoch", &self.key_epoch)
+            .field("verifying_key_digest", &self.verifying_key_digest())
+            .field("state", &self.state)
+            .field("revision", &self.revision)
+            .finish()
+    }
+}
+
+impl IssuerRecord {
+    pub fn issuer_id(&self) -> &StableId {
+        &self.issuer_id
+    }
+
+    pub fn purpose(&self) -> IssuerPurpose {
+        self.purpose
+    }
+
+    pub fn key_epoch(&self) -> Generation {
+        self.key_epoch
+    }
+
+    pub fn verifying_key_digest(&self) -> Digest32 {
+        Digest32::of_bytes(self.verifying_key.as_bytes())
+    }
+
+    pub fn state(&self) -> IssuerLifecycleState {
+        self.state
+    }
+
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+}
+
+/// Opaque, registry-resolved issuer capability. Only `AuthBusAuthorityHost` can
+/// construct one. The owned read guard fences issuer rotation/revocation until
+/// the consuming transaction has committed or rolled back.
+pub struct VerifiedIssuerHandle {
+    issuer_id: StableId,
+    purpose: IssuerPurpose,
+    key_epoch: Generation,
+    verifying_key: VerifyingKey,
+    state: IssuerLifecycleState,
+    revision: u64,
+    registry_guard: OwnedRwLockReadGuard<()>,
+}
+
+impl fmt::Debug for VerifiedIssuerHandle {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("VerifiedIssuerHandle")
+            .field("issuer_id", &self.issuer_id)
+            .field("purpose", &self.purpose)
+            .field("key_epoch", &self.key_epoch)
+            .field("verifying_key_digest", &self.verifying_key_digest())
+            .field("state", &self.state)
+            .field("revision", &self.revision)
+            .finish_non_exhaustive()
+    }
+}
+
+impl VerifiedIssuerHandle {
+    pub fn issuer_id(&self) -> &StableId {
+        &self.issuer_id
+    }
+
+    pub fn purpose(&self) -> IssuerPurpose {
+        self.purpose
+    }
+
+    pub fn key_epoch(&self) -> Generation {
+        self.key_epoch
+    }
+
+    pub fn verifying_key_digest(&self) -> Digest32 {
+        Digest32::of_bytes(self.verifying_key.as_bytes())
+    }
+
+    pub fn state(&self) -> IssuerLifecycleState {
+        self.state
+    }
+
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    pub(crate) fn from_record(
+        record: IssuerRecord,
+        registry_guard: OwnedRwLockReadGuard<()>,
+    ) -> Self {
+        Self {
+            issuer_id: record.issuer_id,
+            purpose: record.purpose,
+            key_epoch: record.key_epoch,
+            verifying_key: record.verifying_key,
+            state: record.state,
+            revision: record.revision,
+            registry_guard,
+        }
+    }
+
+    pub(crate) fn verifying_key(&self) -> &VerifyingKey {
+        &self.verifying_key
+    }
+
+    pub(crate) fn into_registry_guard(self) -> OwnedRwLockReadGuard<()> {
+        self.registry_guard
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
