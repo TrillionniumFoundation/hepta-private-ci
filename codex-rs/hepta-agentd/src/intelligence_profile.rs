@@ -9,6 +9,7 @@ use crate::AgentdIntelligenceInvocationProviderV1;
 use crate::AgentdIntelligenceLearningHostV1;
 use crate::AgentdIntelligenceObservabilityV1;
 use crate::AgentdIntelligenceProductRunnerV1;
+use crate::RegisteredAgentdIntelligenceOutcomeProviderV1;
 
 /// Complete product profile required before Agentd advertises or executes
 /// `intelligence.canonical_v1`. A runner or provider on its own is diagnostic
@@ -19,6 +20,7 @@ pub struct AgentdCanonicalIntelligenceProfileV1 {
     invocation: Arc<dyn AgentdIntelligenceInvocationProviderV1>,
     learning: Arc<AgentdIntelligenceLearningHostV1>,
     observability: Arc<AgentdIntelligenceObservabilityV1>,
+    outcomes: Arc<RegisteredAgentdIntelligenceOutcomeProviderV1>,
 }
 
 impl AgentdCanonicalIntelligenceProfileV1 {
@@ -28,6 +30,7 @@ impl AgentdCanonicalIntelligenceProfileV1 {
         invocation: Arc<dyn AgentdIntelligenceInvocationProviderV1>,
         learning: Arc<AgentdIntelligenceLearningHostV1>,
         observability: Arc<AgentdIntelligenceObservabilityV1>,
+        outcomes: Arc<RegisteredAgentdIntelligenceOutcomeProviderV1>,
     ) -> Result<Self, AgentdError> {
         if profile_digest.is_zero()
             || observability.capability_profile_digest() != profile_digest
@@ -42,6 +45,7 @@ impl AgentdCanonicalIntelligenceProfileV1 {
             invocation,
             learning,
             observability,
+            outcomes,
         })
     }
 
@@ -57,12 +61,14 @@ impl AgentdCanonicalIntelligenceProfileV1 {
         Arc<dyn AgentdIntelligenceInvocationProviderV1>,
         Arc<AgentdIntelligenceLearningHostV1>,
         Arc<AgentdIntelligenceObservabilityV1>,
+        Arc<RegisteredAgentdIntelligenceOutcomeProviderV1>,
     ) {
         (
             self.runner,
             self.invocation,
             self.learning,
             self.observability,
+            self.outcomes,
         )
     }
 }
