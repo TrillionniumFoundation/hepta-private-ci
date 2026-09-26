@@ -42,7 +42,11 @@ jobs:
             cargo check -p codex-hepta-types --tests
           )
 
-          unexpected="$(git -C "$repo_root" -c status.relativePaths=false status --porcelain --untracked-files=no | cut -c4- | grep -v '^codex-rs/Cargo.lock$' || true)"
+          unexpected="$(
+            git -C "$repo_root" status --porcelain --untracked-files=no |
+              cut -c4- |
+              grep -Ev '^(Cargo\.lock|codex-rs/Cargo\.lock)$' || true
+          )"
           if [[ -n "$unexpected" ]]; then
             printf 'lock refresh changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
             exit 1
