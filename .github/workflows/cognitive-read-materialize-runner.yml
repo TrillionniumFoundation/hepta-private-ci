@@ -10,10 +10,8 @@ permissions:
 
 jobs:
   materialize:
-    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): route materializer to trusted runner' }}"
-    runs-on:
-      group: trillionnium-android-gpu
-      labels: [self-hosted, linux, x64]
+    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): route materializer to macos' }}"
+    runs-on: macos-15
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
