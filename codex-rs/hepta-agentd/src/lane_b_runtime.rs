@@ -247,7 +247,7 @@ impl AgentRunCoordinator {
             .checked_add(999)
             .map(|value| value / 1_000)
             .ok_or(AgentRunError::ArithmeticOverflow)?;
-        self.start_run(
+        self.start_bound_run(
             now_ms,
             RunSnapshot {
                 run_id: record.snapshot.run_id.to_string(),

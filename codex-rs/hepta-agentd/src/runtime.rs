@@ -115,6 +115,9 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+        if let Some(runner) = state.intelligence_product.get() {
+            runner.telemetry().set_provider_configured(true);
+        }
     }
     if let Some(current) = retrieval_context {
         state

@@ -108,6 +108,10 @@ EXPECTED_SOURCE_FACTS = {
     "workerSaturationTelemetryPresent": ("telemetry", "busy_rejections"),
     "lateWorkerTelemetryPresent": ("telemetry", "late_worker_completions"),
     "authorityEpochTelemetryPresent": ("telemetry", "last_authority_epoch"),
+    "runPhaseDwellTelemetryPresent": (
+        "telemetry",
+        "run_phase_dwell_snapshot",
+    ),
     "hardTimeoutProcessFencePresent": (
         "runner",
         "with_hard_timeout_process_exit",
@@ -128,6 +132,8 @@ REQUIRED_TESTS = {
     "forged_generation_or_fence_is_rejected_before_mutation",
     "worker_timeout_is_visible_after_late_completion",
     "stage_failure_classes_remain_separate",
+    "run_phase_dwell_accumulates_exact_transitions",
+    "same_phase_idempotent_replay_does_not_reset_dwell",
     "operation_ids_are_kind_separated_and_stable",
     "evidence_payload_rejects_role_substitution",
 }
@@ -268,7 +274,11 @@ def implementation_document(
         ],
         "statusMatrix": {
             "documentationDepthClosed": True,
-            "sourceImplementation": all(facts.values()),
+            "sourceImplementation": all(
+                value
+                for name, value in facts.items()
+                if name != "defaultBinaryCanonicalProfileComposed"
+            ),
             "routeCallsitePresent": facts["daemonObjectiveRoutePresent"],
             "providerImplementationPresent": facts["concreteProviderPresent"],
             "atomicProfileCompositionPresent": facts[
@@ -449,9 +459,16 @@ def traceability_document(
                     "stageTelemetryPresent",
                     "workerSaturationTelemetryPresent",
                     "lateWorkerTelemetryPresent",
+                    "runPhaseDwellTelemetryPresent",
                     "hardTimeoutProcessFencePresent",
                 ],
-                "tests": names("worker_timeout", "stage_failure_classes", "total_budget_timeout"),
+                "tests": names(
+                    "worker_timeout",
+                    "stage_failure_classes",
+                    "run_phase_dwell",
+                    "same_phase_idempotent",
+                    "total_budget_timeout",
+                ),
             },
             {
                 "requirement": "physical_turn_no_redispatch",

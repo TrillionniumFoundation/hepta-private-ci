@@ -39,6 +39,7 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 use std::time::SystemTime;
@@ -133,11 +134,28 @@ const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 struct FileBackedFreshnessOracleV1 {
     path: PathBuf,
     verifier: IntelligenceAuthorityVerifierV1,
+    telemetry: Option<Arc<crate::AgentdIntelligenceTelemetryV1>>,
 }
 
 impl FileBackedFreshnessOracleV1 {
     fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
-        Self { path, verifier }
+        Self {
+            path,
+            verifier,
+            telemetry: None,
+        }
+    }
+
+    fn new_observed(
+        path: PathBuf,
+        verifier: IntelligenceAuthorityVerifierV1,
+        telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
+    ) -> Self {
+        Self {
+            path,
+            verifier,
+            telemetry: Some(telemetry),
+        }
     }
 
     fn read(
@@ -161,6 +179,9 @@ impl FileBackedFreshnessOracleV1 {
             return Err(CanonicalIntelligenceError::FreshnessUnavailable(
                 requested.clone(),
             ));
+        }
+        if let Some(telemetry) = self.telemetry.as_ref() {
+            telemetry.record_authority_manifest(file.authority_epoch);
         }
         let frontier = Digest32::from_str(&file.revocation_frontier_digest)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
@@ -236,6 +257,7 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
 }
 
 struct AgentdOwnerPortsV1 {
+    telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
     objective_envelope: Option<ObjectiveSourceEnvelopeV1>,
     objective_profile: Option<ObjectiveAdmissionProfileV1>,
     objective_context: Option<ObjectiveAdmissionContextV1>,
@@ -258,8 +280,10 @@ impl AgentdOwnerPortsV1 {
     fn new(
         value: AgentdIntelligenceOwnerInputsV1,
         evaluation_session: Option<AgentdEvaluationSessionV1>,
+        telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
     ) -> Self {
         Self {
+            telemetry,
             objective_envelope: Some(value.objective_envelope),
             objective_profile: Some(value.objective_profile),
             objective_context: Some(value.objective_context),
@@ -310,10 +334,12 @@ impl AgentdOwnerPortsV1 {
     }
 
     fn within_budget(
+        &self,
         input: &CanonicalPortInputV1,
         started: Instant,
     ) -> Result<(), CanonicalPortFailureV1> {
         let elapsed = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        self.telemetry.record_stage_latency(input.stage, elapsed);
         if elapsed > input.budget_micros {
             return Err(CanonicalPortFailureV1 {
                 class: CanonicalPortFailureClassV1::TimedOut,
@@ -361,7 +387,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let started = Instant::now();
         let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
             .map_err(|_| Self::reject(input.stage, "objective admission"))?;
-        Self::within_budget(input, started)?;
+        self.within_budget(input, started)?;
         if outcome.receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "objective authority"));
         }
@@ -403,7 +429,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let started = Instant::now();
         let receipt = evaluate_candidates_with_policy(set, profile, scalarization, policy)
             .map_err(|_| Self::reject(input.stage, "utility evaluation"))?;
-        Self::within_budget(input, started)?;
+        self.within_budget(input, started)?;
         if receipt.base.objective_digest != input.objective_digest {
             return Err(Self::reject(input.stage, "utility receipt objective"));
         }
@@ -430,7 +456,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let started = Instant::now();
         let (_, receipt) = sparse_tick(&config, &tick, previous.as_ref())
             .map_err(|_| Self::reject(input.stage, "neural tick"))?;
-        Self::within_budget(input, started)?;
+        self.within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "neural authority"));
         }
@@ -453,7 +479,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let started = Instant::now();
         let receipt =
             optimize(request).map_err(|_| Self::reject(input.stage, "prompt optimization"))?;
-        Self::within_budget(input, started)?;
+        self.within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "prompt authority"));
         }
@@ -480,7 +506,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let started = Instant::now();
         let receipt = decide_calibrated_v2(request)
             .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
-        Self::within_budget(input, started)?;
+        self.within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "intuition authority"));
         }
@@ -517,7 +543,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         }
         let started = Instant::now();
         let receipt = compile(request).map_err(|_| Self::reject(input.stage, "context compile"))?;
-        Self::within_budget(input, started)?;
+        self.within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "context authority"));
         }
@@ -553,7 +579,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let receipt = session
             .evaluate(input, &request.candidate_id, now)
             .map_err(|_| Self::reject(input.stage, "signed evaluation binding or evidence"))?;
-        Self::within_budget(input, started)?;
+        self.within_budget(input, started)?;
         Self::receipt(
             input,
             "learning.eval",
@@ -625,6 +651,7 @@ pub enum AgentdIntelligenceProductError {
     RunIdentityMismatch,
     Clock,
     InvalidAuthorityVerifier,
+    InvalidWorkerPolicy,
     Run(crate::AgentRunError),
 }
 
@@ -642,6 +669,8 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
     evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
+    telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
+    hard_timeout_process_exit_grace: Option<Duration>,
 }
 
 #[path = "intelligence_product_runner.rs"]

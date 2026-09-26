@@ -145,7 +145,8 @@ impl AgentdIntelligenceTelemetryV1 {
     }
 
     pub fn set_provider_configured(&self, configured: bool) {
-        self.provider_configured.store(configured, Ordering::Release);
+        self.provider_configured
+            .store(configured, Ordering::Release);
     }
 
     pub(crate) fn worker_started(self: &Arc<Self>) -> AgentdIntelligenceWorkerGuardV1 {
@@ -221,13 +222,9 @@ impl AgentdIntelligenceTelemetryV1 {
         let counters = &self.stages[stage_index(stage)];
         match class {
             CanonicalPortFailureClassV1::Rejected => saturating_increment(&counters.rejected),
-            CanonicalPortFailureClassV1::Unavailable => {
-                saturating_increment(&counters.unavailable)
-            }
+            CanonicalPortFailureClassV1::Unavailable => saturating_increment(&counters.unavailable),
             CanonicalPortFailureClassV1::TimedOut => saturating_increment(&counters.timed_out),
-            CanonicalPortFailureClassV1::Quarantined => {
-                saturating_increment(&counters.quarantined)
-            }
+            CanonicalPortFailureClassV1::Quarantined => saturating_increment(&counters.quarantined),
             CanonicalPortFailureClassV1::Indeterminate => {
                 saturating_increment(&counters.indeterminate)
             }
@@ -271,6 +268,13 @@ impl AgentdIntelligenceTelemetryV1 {
                 accumulated_ms: [0; RUN_PHASE_COUNT],
             },
         );
+    }
+
+    #[must_use]
+    pub fn tracks_run(&self, run_id: &str) -> bool {
+        self.run_dwell
+            .lock()
+            .is_ok_and(|records| records.contains_key(run_id))
     }
 
     #[must_use]
@@ -342,15 +346,9 @@ impl AgentdIntelligenceTelemetryV1 {
                     let counters = &self.stages[stage_index(stage)];
                     AgentdIntelligenceStageTelemetrySnapshotV1 {
                         stage,
-                        latency_observations: counters
-                            .latency_observations
-                            .load(Ordering::Acquire),
-                        latency_total_micros: counters
-                            .latency_total_micros
-                            .load(Ordering::Acquire),
-                        latency_max_micros: counters
-                            .latency_max_micros
-                            .load(Ordering::Acquire),
+                        latency_observations: counters.latency_observations.load(Ordering::Acquire),
+                        latency_total_micros: counters.latency_total_micros.load(Ordering::Acquire),
+                        latency_max_micros: counters.latency_max_micros.load(Ordering::Acquire),
                         rejected: counters.rejected.load(Ordering::Acquire),
                         unavailable: counters.unavailable.load(Ordering::Acquire),
                         timed_out: counters.timed_out.load(Ordering::Acquire),
@@ -466,12 +464,8 @@ fn saturating_add(value: &AtomicU64, amount: u64) {
 fn decrement_nonzero(value: &AtomicU64) {
     let mut current = value.load(Ordering::Acquire);
     while current != 0 {
-        match value.compare_exchange_weak(
-            current,
-            current - 1,
-            Ordering::AcqRel,
-            Ordering::Acquire,
-        ) {
+        match value.compare_exchange_weak(current, current - 1, Ordering::AcqRel, Ordering::Acquire)
+        {
             Ok(_) => return,
             Err(observed) => current = observed,
         }

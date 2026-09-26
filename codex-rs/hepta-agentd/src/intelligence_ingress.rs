@@ -105,11 +105,7 @@ impl AgentdIntelligenceRunIdentityV1 {
             .ok_or_else(|| AgentdError::Invalid("agent generation overflow".to_string()))?;
         if self.generation != running_generation
             || self.fence_digest
-                != objective_run_fence_digest_v1(
-                    agent_id,
-                    spawn_generation,
-                    self.generation,
-                )
+                != objective_run_fence_digest_v1(agent_id, spawn_generation, self.generation)
         {
             return Err(AgentdError::GenerationFenced(
                 "prepared intelligence run is not bound to this Agentd generation".to_string(),
@@ -264,9 +260,9 @@ where
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
         let mut invocation = (self.factory)(identity, record)?;
-        invocation.inputs.run_identity = Some(
-            AgentdIntelligenceRunIdentityV1::from_run_start(identity, record)?,
-        );
+        invocation.inputs.run_identity = Some(AgentdIntelligenceRunIdentityV1::from_run_start(
+            identity, record,
+        )?);
         invocation.validate(identity, record)?;
         Ok(invocation)
     }

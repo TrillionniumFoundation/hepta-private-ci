@@ -74,8 +74,7 @@ pub fn validate_canonical_outcome_v1(
             envelope.candidate_set_digest,
             &envelope.decision,
         ),
-        CanonicalRunOutcomeV1::Abstained(terminal)
-        | CanonicalRunOutcomeV1::SlowPath(terminal) => (
+        CanonicalRunOutcomeV1::Abstained(terminal) | CanonicalRunOutcomeV1::SlowPath(terminal) => (
             &terminal.run_id,
             terminal.snapshot_digest,
             terminal.candidate_set_digest,
@@ -152,8 +151,7 @@ mod tests {
 
     #[test]
     fn malicious_selected_candidate_outside_legal_set_is_rejected() {
-        let legal = build_legal_candidates(candidates(&["action.a"]))
-            .expect("candidate set");
+        let legal = build_legal_candidates(candidates(&["action.a"])).expect("candidate set");
         let decision = AdvisoryDecisionV1::Selected {
             candidate_id: id("action.outside"),
             propensity: ProbabilityQ32::ONE,
@@ -168,8 +166,7 @@ mod tests {
 
     #[test]
     fn zero_propensity_selection_is_rejected() {
-        let legal = build_legal_candidates(candidates(&["action.a"]))
-            .expect("candidate set");
+        let legal = build_legal_candidates(candidates(&["action.a"])).expect("candidate set");
         let decision = AdvisoryDecisionV1::Selected {
             candidate_id: id("action.a"),
             propensity: ProbabilityQ32::ZERO,

@@ -38,7 +38,6 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_operations::DispatchEffect;
 use codex_hepta_operations::DurableOperationError;
 use codex_hepta_operations::DurableOperationIntentV1;
-use codex_hepta_operations::DurableOperationState;
 use codex_hepta_operations::DurableOperationStore;
 use codex_hepta_operations::OperationBacklogMetrics;
 use codex_hepta_operations::PrepareDisposition;
@@ -305,7 +304,12 @@ impl AgentdIntelligenceLearningHostV1 {
         request: AgentdIntelligenceOutcomeAppendV1,
     ) -> Result<PrepareDisposition, AgentdIntelligenceLearningErrorV1> {
         let payload = LearningPayloadV1::Outcome(outcome_payload(prepared, request)?);
-        let predecessor = decision_operation_id(&payload.run_id()?, payload.episode_id(), payload.run_snapshot_digest()?, prepared.envelope.decision.decision_digest)?;
+        let predecessor = decision_operation_id(
+            &payload.run_id()?,
+            payload.episode_id(),
+            payload.run_snapshot_digest()?,
+            prepared.envelope.decision.decision_digest,
+        )?;
         self.enqueue(prepared, payload, Some(predecessor)).await
     }
 
@@ -371,7 +375,9 @@ impl AgentdIntelligenceLearningHostV1 {
         };
         let payload = self.load_payload(claim.intent.payload_digest)?;
         validate_claim_payload(&claim.intent, &payload)?;
-        let signed = self.grants.signed_grant(&claim.intent.final_use_binding())?;
+        let signed = self
+            .grants
+            .signed_grant(&claim.intent.final_use_binding())?;
         let authorized = self
             .operations
             .authorize_dispatch(&self.authority, &signed, &claim)
@@ -393,16 +399,21 @@ impl AgentdIntelligenceLearningHostV1 {
                     },
                     ApplyObservation::Rejected(digest)
                     | ApplyObservation::Revoked(digest)
-                    | ApplyObservation::Indeterminate(digest) => {
-                        DispatchEffect::Indeterminate {
-                            value: applied.clone(),
-                            reason_digest: *digest,
-                        }
-                    }
+                    | ApplyObservation::Indeterminate(digest) => DispatchEffect::Indeterminate {
+                        value: applied.clone(),
+                        reason_digest: *digest,
+                    },
                 }
             })
             .await?;
-        Ok(Some(self.settle_observation(&claim.intent.scope_id, &claim.intent.operation_id, observation).await?))
+        Ok(Some(
+            self.settle_observation(
+                &claim.intent.scope_id,
+                &claim.intent.operation_id,
+                observation,
+            )
+            .await?,
+        ))
     }
 
     /// Reconcile dispatching/dispatched/indeterminate records after process
@@ -411,14 +422,16 @@ impl AgentdIntelligenceLearningHostV1 {
     pub async fn reconcile_unsettled(
         &self,
         limit: u32,
-    ) -> Result<Vec<AgentdIntelligenceLearningReceiptV1>, AgentdIntelligenceLearningErrorV1>
-    {
+    ) -> Result<Vec<AgentdIntelligenceLearningReceiptV1>, AgentdIntelligenceLearningErrorV1> {
         if limit == 0 || limit > MAX_RECONCILE_BATCH {
             return Err(AgentdIntelligenceLearningErrorV1::Invalid(
                 "reconciliation limit",
             ));
         }
-        let records = self.operations.unsettled_operations(&self.destination, limit).await?;
+        let records = self
+            .operations
+            .unsettled_operations(&self.destination, limit)
+            .await?;
         let mut receipts = Vec::with_capacity(records.len());
         for record in records {
             let record = if record.intent.owner_generation == self.generation {
@@ -458,9 +471,7 @@ impl AgentdIntelligenceLearningHostV1 {
         self.operations.backlog_metrics().await.map_err(Into::into)
     }
 
-    pub fn writer_trust_generation(
-        &self,
-    ) -> Result<u64, AgentdIntelligenceLearningErrorV1> {
+    pub fn writer_trust_generation(&self) -> Result<u64, AgentdIntelligenceLearningErrorV1> {
         Ok(self
             .writer
             .lock()
@@ -818,7 +829,9 @@ fn apply_decision(
         completeness: payload.completeness.to_typed()?,
         support_digest: ledger_digest(&payload.support_digest)?,
     };
-    let evidence = payload.evidence.to_typed(LearningEvidenceRoleV1::Generator)?;
+    let evidence = payload
+        .evidence
+        .to_typed(LearningEvidenceRoleV1::Generator)?;
     writer.append_decision(
         ledger_digest(&payload.expected_ledger_predecessor)?,
         request,
@@ -861,7 +874,9 @@ fn apply_outcome(
             "outcome physical terminal binding",
         ));
     }
-    let evidence = payload.evidence.to_typed(LearningEvidenceRoleV1::Observer)?;
+    let evidence = payload
+        .evidence
+        .to_typed(LearningEvidenceRoleV1::Observer)?;
     writer.append_outcome(
         ledger_digest(&payload.expected_ledger_predecessor)?,
         outcome,
@@ -915,7 +930,10 @@ fn selected_decision(
             candidate_id,
             propensity,
         } if propensity.raw() > 0
-            && prepared.candidate_ids().iter().any(|value| value == candidate_id) =>
+            && prepared
+                .candidate_ids()
+                .iter()
+                .any(|value| value == candidate_id) =>
         {
             Ok((candidate_id, *propensity))
         }
@@ -1063,17 +1081,11 @@ fn ledger_digest(value: &str) -> Result<Digest32, ProductionLedgerError> {
     Digest32::from_str(value).map_err(|_| ProductionLedgerError::Binding("digest"))
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    value: &StableId,
-) -> Result<(), AgentdIntelligenceLearningErrorV1> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), AgentdIntelligenceLearningErrorV1> {
     push_string(bytes, value.as_str())
 }
 
-fn push_string(
-    bytes: &mut Vec<u8>,
-    value: &str,
-) -> Result<(), AgentdIntelligenceLearningErrorV1> {
+fn push_string(bytes: &mut Vec<u8>, value: &str) -> Result<(), AgentdIntelligenceLearningErrorV1> {
     let length = u32::try_from(value.len())
         .map_err(|_| AgentdIntelligenceLearningErrorV1::Invalid("identity length"))?;
     bytes.extend_from_slice(&length.to_be_bytes());
@@ -1141,7 +1153,9 @@ impl EvidencePayloadV1 {
         expected_role: LearningEvidenceRoleV1,
     ) -> Result<SignedLearningEvidenceV1, ProductionLedgerError> {
         if self.role != role_name(expected_role) || self.signature.len() != 64 {
-            return Err(ProductionLedgerError::Binding("learning evidence role/signature"));
+            return Err(ProductionLedgerError::Binding(
+                "learning evidence role/signature",
+            ));
         }
         let signature: [u8; 64] = self
             .signature
@@ -1239,9 +1253,7 @@ impl OutcomePayloadRecordV1 {
             support_digest: ledger_digest(&self.support_digest)?,
             watermark: OutcomeWatermarkV1 {
                 latest_observable_at: self.latest_observable_at,
-                expected_delay_profile_digest: ledger_digest(
-                    &self.expected_delay_profile_digest,
-                )?,
+                expected_delay_profile_digest: ledger_digest(&self.expected_delay_profile_digest)?,
                 terminality,
                 censoring_reason: self
                     .censoring_reason
@@ -1292,8 +1304,8 @@ mod tests {
             .expect("decision operation");
         let second = decision_operation_id(&run, "episode.one", snapshot, decision)
             .expect("decision operation");
-        let outcome = outcome_operation_id(&run, "outcome.one", physical)
-            .expect("outcome operation");
+        let outcome =
+            outcome_operation_id(&run, "outcome.one", physical).expect("outcome operation");
         assert_eq!(first, second);
         assert_ne!(first, outcome);
     }

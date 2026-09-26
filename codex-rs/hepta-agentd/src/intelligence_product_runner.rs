@@ -270,11 +270,8 @@ impl AgentdIntelligenceProductRunnerV1 {
         };
         let worker_telemetry = Arc::clone(&self.telemetry);
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(
-                inputs,
-                evaluation_session,
-                Arc::clone(&worker_telemetry),
-            );
+            let mut ports =
+                AgentdOwnerPortsV1::new(inputs, evaluation_session, Arc::clone(&worker_telemetry));
             let mut oracle = FileBackedFreshnessOracleV1::new_observed(
                 authority_file,
                 authority_verifier,
@@ -282,11 +279,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             );
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;
-        let joined = match timeout(
-            Duration::from_micros(timeout_micros),
-            &mut worker.handle,
-        )
-        .await
+        let joined = match timeout(Duration::from_micros(timeout_micros), &mut worker.handle).await
         {
             Ok(value) => value,
             Err(_) => {
