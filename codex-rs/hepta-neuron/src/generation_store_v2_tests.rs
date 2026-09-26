@@ -13,6 +13,20 @@ use std::sync::atomic::Ordering;
 
 static FIXTURE: AtomicU64 = AtomicU64::new(1);
 
+fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("fixture failed: {error:?}"),
+    }
+}
+
+fn present<T>(value: Option<T>) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("fixture value is missing"),
+    }
+}
+
 struct Fixture {
     root: PathBuf,
     file: PathBuf,
@@ -25,7 +39,7 @@ impl Fixture {
             "hepta-neuron-generation-store-v2-{}-{serial}",
             std::process::id()
         ));
-        fs::create_dir_all(&root).expect("fixture directory");
+        checked(fs::create_dir_all(&root));
         let file = root.join("generation.hptngs02");
         Self { root, file }
     }
@@ -42,7 +56,7 @@ fn digest(label: &str) -> Digest32 {
 }
 
 fn id(label: &str) -> StableId {
-    StableId::new(label).expect("fixture id")
+    checked(StableId::new(label))
 }
 
 fn anchor(sequence: u64) -> JournalAnchor {
@@ -54,7 +68,7 @@ fn anchor(sequence: u64) -> JournalAnchor {
 
 fn context() -> NeuronGenerationStoreContextV2 {
     NeuronGenerationStoreContextV2 {
-        generation: Generation::new(4).expect("generation"),
+        generation: checked(Generation::new(4)),
         scope: JournalScope {
             scope_digest: digest("scope"),
             objective_digest: digest("objective"),
@@ -80,18 +94,17 @@ fn commit(sequence: u64) -> NeuronGenerationCommitV2 {
         body_bundle_digest: digest("body"),
         model_semantic_digest: digest("model"),
         model_observation_digest: digest(&format!("observation-{sequence}")),
-        expected_anchor: (sequence > 1).then(|| anchor(sequence - 1)),
+        expected_anchor: (sequence > 1).then_some(anchor(sequence - 1)),
         next_anchor: anchor(sequence),
         checkpoint_bytes: format!("canonical-checkpoint-{sequence}").into_bytes(),
         full_receipt_bytes: format!("full-receipt-{sequence}").into_bytes(),
         disposition: if sequence == 1 {
             NeuronCommitDispositionV1::CommittedReady
         } else {
-            NeuronCommitDispositionV1::degraded(
+            checked(NeuronCommitDispositionV1::degraded(
                 vec![DegradationReasonV1::LatencyEnvelope],
                 vec![AbstainReasonV1::OutOfDomain],
-            )
-            .expect("disposition")
+            ))
         },
     }
 }
@@ -99,29 +112,28 @@ fn commit(sequence: u64) -> NeuronGenerationCommitV2 {
 #[test]
 fn commit_duplicate_and_reopen_return_exact_full_result() {
     let fixture = Fixture::new();
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
     let value = commit(1);
-    let committed = match store.commit_result(value.clone()).expect("commit") {
+    let committed = match checked(store.commit_result(value.clone())) {
         NeuronGenerationCommitResultV2::Committed(record) => record,
         NeuronGenerationCommitResultV2::Duplicate(_) => panic!("fresh commit was duplicate"),
     };
     assert_eq!(committed.full_receipt_bytes, b"full-receipt-1");
-    match store.commit_result(value.clone()).expect("duplicate") {
+    match checked(store.commit_result(value.clone())) {
         NeuronGenerationCommitResultV2::Duplicate(record) => assert_eq!(record, committed),
         NeuronGenerationCommitResultV2::Committed(_) => panic!("duplicate was committed twice"),
     }
     drop(store);
 
-    let mut reopened =
-        FileNeuronGenerationStoreV2::open_existing(&fixture.file, context()).expect("reopen");
+    let mut reopened = checked(FileNeuronGenerationStoreV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
     assert_eq!(
-        reopened
-            .find_operation(&value.key)
-            .expect("lookup")
-            .expect("stored record"),
+        present(checked(reopened.find_operation(&value.key))),
         committed
     );
-    match reopened.commit_result(value).expect("restart duplicate") {
+    match checked(reopened.commit_result(value)) {
         NeuronGenerationCommitResultV2::Duplicate(record) => assert_eq!(record, committed),
         NeuronGenerationCommitResultV2::Committed(_) => panic!("restart duplicate recommitted"),
     }
@@ -130,9 +142,9 @@ fn commit_duplicate_and_reopen_return_exact_full_result() {
 #[test]
 fn same_tick_with_changed_input_or_receipt_conflicts() {
     let fixture = Fixture::new();
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
     let value = commit(1);
-    store.commit_result(value.clone()).expect("commit");
+    checked(store.commit_result(value.clone()));
 
     let mut changed_input = value.clone();
     changed_input.key.input_semantic_digest = digest("different-input");
@@ -152,43 +164,43 @@ fn same_tick_with_changed_input_or_receipt_conflicts() {
 #[test]
 fn witness_pending_and_ack_are_durable() {
     let fixture = Fixture::new();
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
     let value = commit(1);
-    let record = match store.commit_result(value.clone()).expect("commit") {
+    let record = match checked(store.commit_result(value.clone())) {
         NeuronGenerationCommitResultV2::Committed(record) => record,
         NeuronGenerationCommitResultV2::Duplicate(_) => panic!("unexpected duplicate"),
     };
-    assert_eq!(store.pending_witness().expect("pending"), Some(record));
+    assert_eq!(checked(store.pending_witness()), Some(record));
     drop(store);
 
-    let mut reopened =
-        FileNeuronGenerationStoreV2::open_existing(&fixture.file, context()).expect("reopen");
-    assert_eq!(reopened.pending_witness_count().expect("count"), 1);
-    reopened
-        .acknowledge_witness(&value.key, value.next_anchor)
-        .expect("acknowledge");
-    assert_eq!(reopened.pending_witness().expect("pending"), None);
+    let mut reopened = checked(FileNeuronGenerationStoreV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    assert_eq!(checked(reopened.pending_witness_count()), 1);
+    checked(reopened.acknowledge_witness(&value.key, value.next_anchor));
+    assert_eq!(checked(reopened.pending_witness()), None);
     drop(reopened);
 
-    let reopened =
-        FileNeuronGenerationStoreV2::open_existing(&fixture.file, context()).expect("reopen ack");
-    assert_eq!(reopened.pending_witness_count().expect("count"), 0);
-    assert_eq!(reopened.witnessed_anchor().expect("witness"), Some(anchor(1)));
+    let reopened = checked(FileNeuronGenerationStoreV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    assert_eq!(checked(reopened.pending_witness_count()), 0);
+    assert_eq!(checked(reopened.witnessed_anchor()), Some(anchor(1)));
 }
 
 #[test]
 fn admission_returns_history_before_model_and_conflicts_on_payload_drift() {
     let fixture = Fixture::new();
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
     let value = commit(1);
-    let record = match store.commit_result(value.clone()).expect("commit") {
+    let record = match checked(store.commit_result(value.clone())) {
         NeuronGenerationCommitResultV2::Committed(record) => record,
         NeuronGenerationCommitResultV2::Duplicate(_) => panic!("unexpected duplicate"),
     };
     assert_eq!(
-        store
-            .admit_operation(&value.key, None, 100, 100)
-            .expect("historical admission"),
+        checked(store.admit_operation(&value.key, None, 100, 100)),
         NeuronGenerationAdmissionV2::Historical(record)
     );
     let changed = NeuronOperationKeyV2 {
@@ -204,30 +216,25 @@ fn admission_returns_history_before_model_and_conflicts_on_payload_drift() {
 #[test]
 fn partial_tail_is_truncated_without_fabricated_success() {
     let fixture = Fixture::new();
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
     let first = commit(1);
-    store.commit_result(first.clone()).expect("first");
+    checked(store.commit_result(first.clone()));
     drop(store);
 
-    let stable_length = fs::metadata(&fixture.file).expect("metadata").len();
-    let mut file = OpenOptions::new()
-        .append(true)
-        .open(&fixture.file)
-        .expect("append");
-    file.write_all(&[0, 0, 0]).expect("partial prefix");
-    file.sync_all().expect("sync partial");
+    let stable_length = checked(fs::metadata(&fixture.file)).len();
+    let mut file = checked(OpenOptions::new().append(true).open(&fixture.file));
+    checked(file.write_all(&[0, 0, 0]));
+    checked(file.sync_all());
     drop(file);
 
-    let reopened =
-        FileNeuronGenerationStoreV2::open_existing(&fixture.file, context()).expect("recover");
-    assert_eq!(fs::metadata(&fixture.file).expect("metadata").len(), stable_length);
-    assert_eq!(reopened.pending_witness_count().expect("pending"), 1);
+    let reopened = checked(FileNeuronGenerationStoreV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    assert_eq!(checked(fs::metadata(&fixture.file)).len(), stable_length);
+    assert_eq!(checked(reopened.pending_witness_count()), 1);
     assert_eq!(
-        reopened
-            .find_operation(&first.key)
-            .expect("lookup")
-            .expect("first")
-            .full_receipt_bytes,
+        present(checked(reopened.find_operation(&first.key))).full_receipt_bytes,
         b"full-receipt-1"
     );
 }
@@ -235,19 +242,19 @@ fn partial_tail_is_truncated_without_fabricated_success() {
 #[test]
 fn complete_checksum_corruption_fails_closed() {
     let fixture = Fixture::new();
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
-    store.commit_result(commit(1)).expect("commit");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    checked(store.commit_result(commit(1)));
     drop(store);
 
-    let mut file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(&fixture.file)
-        .expect("open");
-    file.seek(SeekFrom::Start(HEADER_BYTES as u64 + 8))
-        .expect("seek");
-    file.write_all(&[0xff]).expect("corrupt");
-    file.sync_all().expect("sync corruption");
+    let mut file = checked(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&fixture.file),
+    );
+    checked(file.seek(SeekFrom::Start(HEADER_BYTES as u64 + 8)));
+    checked(file.write_all(&[0xff]));
+    checked(file.sync_all());
     drop(file);
 
     assert!(matches!(
@@ -260,7 +267,7 @@ fn complete_checksum_corruption_fails_closed() {
 fn post_sync_uncertainty_recovers_as_one_commit() {
     let fixture = Fixture::new();
     let value = commit(1);
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
     store.fail_next_append(GenerationStoreFailpointV2::AfterFrameSync);
     assert_eq!(
         store.commit_result(value.clone()),
@@ -268,15 +275,14 @@ fn post_sync_uncertainty_recovers_as_one_commit() {
     );
     drop(store);
 
-    let mut reopened =
-        FileNeuronGenerationStoreV2::open_existing(&fixture.file, context()).expect("recover");
-    let recovered = reopened
-        .find_operation(&value.key)
-        .expect("lookup")
-        .expect("recovered commit");
+    let mut reopened = checked(FileNeuronGenerationStoreV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    let recovered = present(checked(reopened.find_operation(&value.key)));
     assert_eq!(recovered.full_receipt_bytes, value.full_receipt_bytes);
     assert!(matches!(
-        reopened.commit_result(value).expect("duplicate"),
+        checked(reopened.commit_result(value)),
         NeuronGenerationCommitResultV2::Duplicate(_)
     ));
 }
@@ -285,7 +291,7 @@ fn post_sync_uncertainty_recovers_as_one_commit() {
 fn during_write_uncertainty_does_not_fabricate_success() {
     let fixture = Fixture::new();
     let value = commit(1);
-    let mut store = FileNeuronGenerationStoreV2::create(&fixture.file, context()).expect("create");
+    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
     store.fail_next_append(GenerationStoreFailpointV2::DuringFrameWrite);
     assert_eq!(
         store.commit_result(value.clone()),
@@ -293,8 +299,10 @@ fn during_write_uncertainty_does_not_fabricate_success() {
     );
     drop(store);
 
-    let reopened =
-        FileNeuronGenerationStoreV2::open_existing(&fixture.file, context()).expect("recover");
-    assert_eq!(reopened.find_operation(&value.key).expect("lookup"), None);
-    assert_eq!(reopened.current_anchor().expect("anchor"), None);
+    let reopened = checked(FileNeuronGenerationStoreV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    assert_eq!(checked(reopened.find_operation(&value.key)), None);
+    assert_eq!(checked(reopened.current_anchor()), None);
 }

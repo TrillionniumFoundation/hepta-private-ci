@@ -1,11 +1,18 @@
 use super::*;
 
+fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("fixture failed: {error:?}"),
+    }
+}
+
 fn digest(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
 
 fn id(label: &str) -> StableId {
-    StableId::new(label).expect("stable fixture id")
+    checked(StableId::new(label))
 }
 
 fn identity() -> ModelSemanticIdentityV2 {
@@ -44,12 +51,12 @@ fn telemetry_is_not_semantic_identity() {
         observed_at_monotonic_micros: 101,
     };
     assert_eq!(
-        semantic.semantic_digest().expect("semantic digest"),
-        semantic.semantic_digest().expect("semantic digest")
+        checked(semantic.semantic_digest()),
+        checked(semantic.semantic_digest())
     );
     assert_ne!(
-        first.observation_digest().expect("first observation"),
-        second.observation_digest().expect("second observation")
+        checked(first.observation_digest()),
+        checked(second.observation_digest())
     );
 }
 
@@ -59,19 +66,19 @@ fn backend_quantization_and_bundle_are_frozen() {
     let mut second = first.clone();
     second.backend_id = id("laya-cuda");
     assert_ne!(
-        first.semantic_digest().expect("first semantic"),
-        second.semantic_digest().expect("second semantic")
+        checked(first.semantic_digest()),
+        checked(second.semantic_digest())
     );
     second = first.clone();
     second.quantization_id = id("q8");
     assert_ne!(
-        first.semantic_digest().expect("first semantic"),
-        second.semantic_digest().expect("second semantic")
+        checked(first.semantic_digest()),
+        checked(second.semantic_digest())
     );
 
     let body = NeuronBodyBundleIdentityV1 {
         body_manifest_digest: digest("body-manifest"),
-        body_generation: Generation::new(3).expect("generation"),
+        body_generation: checked(Generation::new(3)),
         base_bundle_digest: digest("base"),
         organ_id: id("organ-1"),
         organ_bundle_digest: digest("organ"),
@@ -83,46 +90,39 @@ fn backend_quantization_and_bundle_are_frozen() {
     let mut changed = body.clone();
     changed.effective_parameter_digest = digest("other-parameters");
     assert_ne!(
-        body.semantic_digest().expect("body semantic"),
-        changed.semantic_digest().expect("changed body semantic")
+        checked(body.semantic_digest()),
+        checked(changed.semantic_digest())
     );
 }
 
 #[test]
 fn calibration_expiry_policy_is_explicit() {
     assert_eq!(
-        CalibrationExpiryPolicyV1::RejectBeforeMutation
-            .decide(11, 1, 10)
-            .expect("decision"),
+        checked(CalibrationExpiryPolicyV1::RejectBeforeMutation.decide(11, 1, 10)),
         CalibrationWindowDecisionV1::RejectNoUpdate
     );
     assert_eq!(
-        CalibrationExpiryPolicyV1::StateAdvanceAbstainLegacy
-            .decide(11, 1, 10)
-            .expect("decision"),
+        checked(CalibrationExpiryPolicyV1::StateAdvanceAbstainLegacy.decide(11, 1, 10)),
         CalibrationWindowDecisionV1::StateAdvanceAbstainLegacy
     );
     assert_eq!(
-        CalibrationExpiryPolicyV1::RejectBeforeMutation
-            .decide(5, 1, 10)
-            .expect("decision"),
+        checked(CalibrationExpiryPolicyV1::RejectBeforeMutation.decide(5, 1, 10)),
         CalibrationWindowDecisionV1::Admit
     );
 }
 
 #[test]
 fn disposition_is_canonical_and_round_trips() {
-    let value = NeuronCommitDispositionV1::degraded(
+    let value = checked(NeuronCommitDispositionV1::degraded(
         vec![
             DegradationReasonV1::WriteAmplificationEnvelope,
             DegradationReasonV1::LatencyEnvelope,
         ],
         vec![AbstainReasonV1::OutOfDomain],
-    )
-    .expect("disposition");
-    let encoded = value.encode_canonical().expect("encode");
+    ));
+    let encoded = checked(value.encode_canonical());
     assert_eq!(
-        NeuronCommitDispositionV1::decode_canonical(&encoded).expect("decode"),
+        checked(NeuronCommitDispositionV1::decode_canonical(&encoded)),
         value
     );
     assert!(matches!(

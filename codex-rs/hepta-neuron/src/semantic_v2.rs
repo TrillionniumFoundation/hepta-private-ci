@@ -143,9 +143,7 @@ impl NeuronBodyBundleIdentityV1 {
         ];
         validate_digests(&digests)?;
         if self.cell_slot_id.is_some() != self.cell_bundle_digest.is_some()
-            || self
-                .cell_bundle_digest
-                .is_some_and(|digest| digest.is_zero())
+            || self.cell_bundle_digest.is_some_and(Digest32::is_zero)
         {
             return Err(NeuronSemanticV2Error::InvalidBodyBundle);
         }
@@ -410,7 +408,7 @@ impl NeuronOperationKeyV2 {
 fn validate_digests(
     values: &[(&'static str, Digest32)],
 ) -> Result<(), NeuronSemanticV2Error> {
-    for (name, digest) in values {
+    for &(name, digest) in values {
         if digest.is_zero() {
             return Err(NeuronSemanticV2Error::EmptyDigest(name));
         }
