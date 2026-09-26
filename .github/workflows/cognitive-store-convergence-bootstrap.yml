@@ -26,7 +26,10 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
       - name: Apply convergence source
-        run: python3 scripts/cognitive_store_convergence_bootstrap.py
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_convergence_bootstrap.py
+          python3 scripts/cognitive_store_convergence_postpatch.py
       - name: Format changed Rust crates
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-agentd
