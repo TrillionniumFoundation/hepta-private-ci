@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: authbus-production-closure-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   CARGO_INCREMENTAL: "0"
@@ -26,7 +26,7 @@ env:
 jobs:
   apply-and-qualify:
     name: Apply source closure and preserve diagnostics
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
