@@ -96,7 +96,8 @@ jobs:
           test "$GITHUB_REF" = refs/heads/codex/runtime-codex-consolidated-20260927
           git config user.name 'OpenAI Codex'
           git config user.email 'noreply@openai.com'
-          git add codex-rs/Cargo.lock codex-rs/hepta-infer-core codex-rs/hepta-agent-protocol codex-rs/hepta-agentd codex-rs/hepta-infer-worker-host scripts/runtime_codex_receipt_v2.py scripts/tests/test_runtime_codex_receipt_v2.py .github/workflows/runtime-codex-qualification.yml
+          git add codex-rs/Cargo.lock codex-rs/hepta-infer-core codex-rs/hepta-agent-protocol codex-rs/hepta-agentd codex-rs/hepta-infer-worker-host scripts/runtime_codex_receipt_v2.py .github/workflows/runtime-codex-qualification.yml
+          git add -f scripts/tests/test_runtime_codex_receipt_v2.py
           git add -u .github/runtime-codex-source.part0 .github/runtime-codex-source.part1
           git diff --cached --check
           git commit -m 'runtime.codex: integrate durable abort, lifecycle, monotonic budget and crash tests [runtime-codex-assembled]' -m 'Exact source reviewed locally and formatted on the hosted runner. Preserve failed/missing qualification and all external acceptance gates. No target-host or provider success is claimed.'
