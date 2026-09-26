@@ -23,11 +23,11 @@ use crate::AgentdRequest;
 use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
+use crate::control_budget::FRAME_IO_TIMEOUT;
+use crate::control_budget::operation_timeout;
 use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
-use crate::control_budget::FRAME_IO_TIMEOUT;
-use crate::control_budget::operation_timeout;
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
@@ -69,6 +69,11 @@ impl AgentdControlServer {
                 _ = connections.join_next(), if !connections.is_empty() => continue,
                 accepted = self.listener.accept() => accepted?,
             };
+            // Reject an untrusted operating-system user before it can consume
+            // one of the bounded connection permits or any protocol bytes.
+            if stream.ensure_current_user_peer().is_err() {
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
@@ -119,6 +124,10 @@ where
     F: FnOnce(AgentdRequest) -> R,
     R: std::future::Future<Output = Result<AgentdResponse, AgentdError>>,
 {
+    // Keep this check here as well as in the accept loop. Tests and future
+    // in-process callers can invoke this transport boundary directly, and no
+    // such path may bypass the kernel-reported peer identity gate.
+    stream.ensure_current_user_peer()?;
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -132,12 +141,10 @@ where
     }
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
     let request_id = request.request_id;
-    let spawn_generation = request.spawn_generation;
     let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
         error_response(
             &state,
             request_id,
-            spawn_generation,
             "unsupported_schema",
             "unsupported agentd control schema",
         )
@@ -147,14 +154,12 @@ where
             Ok(Err(error)) => error_response(
                 &state,
                 request_id,
-                spawn_generation,
                 "request_rejected",
                 &error.to_string(),
             ),
             Err(_) => error_response(
                 &state,
                 request_id,
-                spawn_generation,
                 "operation_timed_out",
                 "operation acknowledgement timed out; reconcile the original identity before retrying",
             ),
@@ -179,16 +184,21 @@ where
 fn error_response(
     state: &AgentdState,
     request_id: u64,
-    spawn_generation: u64,
     code: &str,
     message: &str,
 ) -> AgentdResponse {
+    // Never echo an untrusted request generation into the response identity.
+    // Refresh the owner fence when possible; a failed refresh already fences
+    // the state and falls back only to this process's immutable spawn epoch.
+    let current_generation = state
+        .current_generation()
+        .unwrap_or(state.identity().spawn_generation);
     AgentdResponse {
         schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
         request_id,
         agent_id: state.identity().agent_id.clone(),
         spawn_generation: state.identity().spawn_generation,
-        current_generation: spawn_generation,
+        current_generation,
         payload: AgentdPayload::Error {
             code: code.to_string(),
             message: bounded_message(message),
