@@ -22,6 +22,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ "${JSON_OUT}" != /* ]]; then
+  JSON_OUT="${ROOT}/${JSON_OUT}"
+fi
+if [[ "${LOG_OUT}" != /* ]]; then
+  LOG_OUT="${ROOT}/${LOG_OUT}"
+fi
+
 mkdir -p "$(dirname "${JSON_OUT}")" "$(dirname "${LOG_OUT}")"
 : >"${LOG_OUT}"
 
