@@ -1,15 +1,15 @@
-name: runtime.codex P0 bootstrap
+name: runtime.codex P0 bootstrap (ARM)
 
 on:
   push:
     branches:
-      - codex/runtime-codex-full-hardening-20260926
+      - codex/runtime-codex-p0-arm-20260926
 
 permissions:
   contents: write
 
 concurrency:
-  group: runtime-codex-p0-${{ github.ref }}
+  group: runtime-codex-p0-arm-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
         !contains(github.event.head_commit.message, '[runtime-codex-bootstrap-complete]') &&
         !contains(github.event.head_commit.message, '[runtime-codex-debug]')
       }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
     env:
       CARGO_INCREMENTAL: 0
@@ -51,7 +51,7 @@ jobs:
       - name: Resolve verified sandboxed V8 artifacts
         uses: ./.github/actions/setup-rusty-v8
         with:
-          target: x86_64-unknown-linux-gnu
+          target: aarch64-unknown-linux-gnu
 
       - name: Apply exact P0 source transformation
         shell: bash
@@ -112,10 +112,10 @@ jobs:
           git add qualification/runtime-codex-debug/identity.txt
           git config user.name "OpenAI Codex"
           git config user.email "noreply@openai.com"
-          git commit -m "runtime.codex: capture worker-host failure [runtime-codex-debug]" \
+          git commit -m "runtime.codex: capture ARM worker-host failure [runtime-codex-debug]" \
             -m "Retain the exact transformed-candidate worker-host failure so the integration defect can be corrected without weakening any test gate." \
             -m "Signed-off-by: OpenAI <noreply@openai.com>"
-          git push origin "HEAD:codex/runtime-codex-full-hardening-20260926"
+          git push origin "HEAD:codex/runtime-codex-p0-arm-20260926"
 
       - name: Stop after retained worker-host failure
         if: ${{ steps.worker_host.outcome == 'failure' }}
@@ -154,4 +154,4 @@ jobs:
           git commit -m "runtime.codex: close exact pre-effect abort [runtime-codex-bootstrap-complete]" \
             -m "Bind Agentd dispatch to the exact runtime.codex request digest, durably stage local abort before owner reconciliation, preserve the exact dispatch winner, and recover unknown dispatch acknowledgements without replay or owner-state divergence." \
             -m "Signed-off-by: OpenAI <noreply@openai.com>"
-          git push origin "HEAD:codex/runtime-codex-full-hardening-20260926"
+          git push origin "HEAD:codex/runtime-codex-p0-arm-20260926"
