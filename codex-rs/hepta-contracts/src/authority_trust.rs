@@ -1,9 +1,9 @@
 //! External trust interfaces used by kernel.authority production compositions.
 //!
 //! These traits deliberately do not manufacture trust. Deployments provide an
-//! attested/monotonic clock and an externally durable CAS frontier store. The
-//! authority owners use them to fail closed on time uncertainty and local
-//! snapshot rollback.
+//! attested/monotonic clock, an externally durable CAS frontier store and a
+//! live key-custody identity. Authority owners use the resulting bundle to fail
+//! closed on time uncertainty, local snapshot rollback and key-set drift.
 
 use crate::VerifiedUseTokenWitnessV1;
 use crate::authority_lease::AuthorityLeaseBinding;
@@ -13,7 +13,17 @@ use crate::authority_lease::AuthorityLeaseRegistry;
 use crate::authority_lease::AuthorityLeaseVerifier;
 use crate::authority_lease::LeaseVerifiedUseToken;
 use crate::authority_lease::dispatch_authority_lease_with_witness;
+use crate::final_use::FinalUseAuthority;
+use crate::final_use::FinalUseError;
+use crate::final_use::FinalUseFrontier;
+use crate::final_use::FinalUseIssuerTrustKey;
+use crate::final_use::FinalUseRevocations;
+use ed25519_dalek::VerifyingKey;
+use sha2::Digest;
+use sha2::Sha256;
+use std::collections::BTreeSet;
 use std::fmt;
+use std::marker::PhantomData;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -90,6 +100,27 @@ pub trait ProductionAuthorityFrontierStore<F>: AuthorityFrontierStore<F> {
     fn production_trust_domain(&self) -> &str;
 }
 
+/// Live KMS/HSM custody identity used by production constructors.
+///
+/// The authority kernel never asks this interface for private key bytes. It
+/// samples the externally controlled public key-set digest and generation, and
+/// rejects an exportable or unexpectedly rolled-back custody state.
+pub trait ProductionAuthorityKeyCustody: Send + Sync {
+    fn provider_id(&self) -> &str;
+
+    fn key_role(&self) -> &str;
+
+    fn production_trust_domain(&self) -> &str;
+
+    fn active_key_set_sha256(&self) -> Result<[u8; 32], AuthorityTrustError>;
+
+    fn active_generation(&self) -> Result<u64, AuthorityTrustError>;
+
+    fn revoked_before_generation(&self) -> Result<u64, AuthorityTrustError>;
+
+    fn private_key_exportable(&self) -> Result<bool, AuthorityTrustError>;
+}
+
 /// Deployment evidence required by the production constructor. The digests
 /// identify externally retained receipts; they are evidence references, not a
 /// claim that this crate performed attestation or a disaster-recovery drill.
@@ -132,6 +163,132 @@ impl ProductionAuthorityTrustEvidence {
             || !self.state_directory_validated
             || !self.kms_or_hsm_custody
             || self.maximum_clock_uncertainty_ms == 0
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        Ok(())
+    }
+}
+
+/// Evidence for the live key-custody component of a production trust bundle.
+/// Every receipt is retained outside the process and content-addressed here.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProductionAuthorityKeyCustodyEvidence {
+    pub schema_version: u32,
+    pub provider_id: String,
+    pub key_role: String,
+    pub trust_domain: String,
+    pub active_key_set_sha256: [u8; 32],
+    pub active_generation: u64,
+    pub revoked_before_generation: u64,
+    pub custody_receipt_sha256: [u8; 32],
+    pub rotation_receipt_sha256: [u8; 32],
+    pub compromise_response_receipt_sha256: [u8; 32],
+    pub private_key_export_prohibited: bool,
+    pub versioned_key_selection: bool,
+    pub staged_rotation_verified: bool,
+    pub retired_key_rejection_verified: bool,
+    pub compromise_response_verified: bool,
+}
+
+impl ProductionAuthorityKeyCustodyEvidence {
+    pub const SCHEMA_VERSION: u32 = 1;
+
+    pub fn validate(&self) -> Result<(), AuthorityTrustError> {
+        let digests = [
+            self.active_key_set_sha256,
+            self.custody_receipt_sha256,
+            self.rotation_receipt_sha256,
+            self.compromise_response_receipt_sha256,
+        ];
+        if self.schema_version != Self::SCHEMA_VERSION
+            || !identifier(&self.provider_id)
+            || !identifier(&self.key_role)
+            || !identifier(&self.trust_domain)
+            || digests.iter().any(|digest| *digest == [0; 32])
+            || self.active_generation == 0
+            || self.revoked_before_generation > self.active_generation
+            || !self.private_key_export_prohibited
+            || !self.versioned_key_selection
+            || !self.staged_rotation_verified
+            || !self.retired_key_rejection_verified
+            || !self.compromise_response_verified
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        Ok(())
+    }
+}
+
+/// Complete production trust bundle. Construction and every privileged open
+/// revalidate the live clock, frontier and key-custody identities against the
+/// retained evidence. No component is optional and no local compatibility
+/// adapter implements all three production marker contracts.
+pub struct ProductionAuthorityTrustBundle<C, S, K, F> {
+    clock: Arc<C>,
+    frontier_store: Arc<S>,
+    key_custody: Arc<K>,
+    evidence: ProductionAuthorityTrustEvidence,
+    key_custody_evidence: ProductionAuthorityKeyCustodyEvidence,
+    _frontier: PhantomData<fn() -> F>,
+}
+
+impl<C, S, K, F> fmt::Debug for ProductionAuthorityTrustBundle<C, S, K, F> {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("ProductionAuthorityTrustBundle([REDACTED LIVE TRUST])")
+    }
+}
+
+impl<C, S, K, F> ProductionAuthorityTrustBundle<C, S, K, F>
+where
+    C: ProductionAuthorityClock,
+    S: ProductionAuthorityFrontierStore<F>,
+    K: ProductionAuthorityKeyCustody,
+{
+    pub fn new(
+        clock: Arc<C>,
+        frontier_store: Arc<S>,
+        key_custody: Arc<K>,
+        evidence: ProductionAuthorityTrustEvidence,
+        key_custody_evidence: ProductionAuthorityKeyCustodyEvidence,
+    ) -> Result<Self, AuthorityTrustError> {
+        let bundle = Self {
+            clock,
+            frontier_store,
+            key_custody,
+            evidence,
+            key_custody_evidence,
+            _frontier: PhantomData,
+        };
+        bundle.validate()?;
+        Ok(bundle)
+    }
+
+    pub fn validate(&self) -> Result<(), AuthorityTrustError> {
+        self.evidence.validate()?;
+        self.key_custody_evidence.validate()?;
+        if self.clock.production_trust_domain() != self.evidence.trust_domain
+            || self.frontier_store.production_trust_domain() != self.evidence.trust_domain
+            || self.key_custody.production_trust_domain() != self.evidence.trust_domain
+            || self.key_custody_evidence.trust_domain.as_str()
+                != self.evidence.trust_domain.as_str()
+            || self.key_custody.provider_id()
+                != self.key_custody_evidence.provider_id.as_str()
+            || self.key_custody.key_role() != self.key_custody_evidence.key_role.as_str()
+            || self.clock.maximum_uncertainty_ms() == 0
+            || self.clock.maximum_uncertainty_ms() > self.evidence.maximum_clock_uncertainty_ms
+            || self.evidence.key_custody_attestation_sha256
+                != self.key_custody_evidence.custody_receipt_sha256
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let live_key_set = self.key_custody.active_key_set_sha256()?;
+        let live_generation = self.key_custody.active_generation()?;
+        let live_revocation_floor = self.key_custody.revoked_before_generation()?;
+        if live_key_set != self.key_custody_evidence.active_key_set_sha256
+            || live_generation != self.key_custody_evidence.active_generation
+            || live_revocation_floor != self.key_custody_evidence.revoked_before_generation
+            || self.key_custody.private_key_exportable()?
         {
             return Err(AuthorityTrustError::Invalid);
         }
@@ -191,33 +348,138 @@ impl AuthorityLeaseVerifier {
 }
 
 impl AuthorityLeaseRegistry {
-    /// Production-only constructor. It is unavailable to the system-clock and
-    /// local-file compatibility adapters because those types do not implement
-    /// the production marker traits. Every external evidence reference and
-    /// fail-closed deployment invariant must validate before local state opens.
-    pub fn open_production_state_dir<C, S>(
+    /// Production-only constructor. The complete bundle is mandatory, and is
+    /// revalidated immediately before local state opens. Compatibility clocks,
+    /// local frontier stores and evidence-only key claims cannot satisfy it.
+    pub fn open_production_state_dir<C, S, K>(
         directory: &Path,
         owner_id: String,
-        clock: Arc<C>,
-        frontier_store: Arc<S>,
-        evidence: &ProductionAuthorityTrustEvidence,
+        bundle: &ProductionAuthorityTrustBundle<C, S, K, AuthorityLeaseFrontier>,
     ) -> Result<Self, AuthorityLeaseError>
     where
         C: ProductionAuthorityClock + 'static,
         S: ProductionAuthorityFrontierStore<AuthorityLeaseFrontier> + 'static,
+        K: ProductionAuthorityKeyCustody,
     {
-        evidence
+        bundle
             .validate()
             .map_err(|_| AuthorityLeaseError::InvalidTrust)?;
-        if clock.production_trust_domain() != evidence.trust_domain
-            || frontier_store.production_trust_domain() != evidence.trust_domain
-            || clock.maximum_uncertainty_ms() == 0
-            || clock.maximum_uncertainty_ms() > evidence.maximum_clock_uncertainty_ms
-        {
-            return Err(AuthorityLeaseError::InvalidTrust);
-        }
+        let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
+        let frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>> =
+            bundle.frontier_store.clone();
         Self::open_state_dir_with_trust(directory, owner_id, clock, frontier_store)
     }
+}
+
+/// Open a FinalUse key-ring owner only when the exact issuer public-key set is
+/// the live, externally custodied set named by the production trust bundle.
+pub fn open_production_final_use_authority<C, S, K>(
+    directory: &Path,
+    signer_id: String,
+    issuer_keys: Vec<FinalUseIssuerTrustKey>,
+    head: FinalUseRevocations,
+    bundle: &ProductionAuthorityTrustBundle<C, S, K, FinalUseFrontier>,
+) -> Result<FinalUseAuthority, FinalUseError>
+where
+    C: ProductionAuthorityClock + 'static,
+    S: ProductionAuthorityFrontierStore<FinalUseFrontier> + 'static,
+    K: ProductionAuthorityKeyCustody,
+{
+    validate_final_use_production_bundle(&issuer_keys, bundle)?;
+    let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
+    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
+        bundle.frontier_store.clone();
+    FinalUseAuthority::open_state_dir_with_issuer_keys(
+        directory,
+        signer_id,
+        issuer_keys,
+        head,
+        clock,
+        frontier_store,
+    )
+}
+
+/// Recover a FinalUse key-ring owner only after the same production bundle and
+/// issuer set validate. Existing state still has to match the external frontier;
+/// the supplied head initializes only a virgin store.
+pub fn recover_production_final_use_authority<C, S, K>(
+    directory: &Path,
+    signer_id: String,
+    issuer_keys: Vec<FinalUseIssuerTrustKey>,
+    head: FinalUseRevocations,
+    bundle: &ProductionAuthorityTrustBundle<C, S, K, FinalUseFrontier>,
+) -> Result<FinalUseAuthority, FinalUseError>
+where
+    C: ProductionAuthorityClock + 'static,
+    S: ProductionAuthorityFrontierStore<FinalUseFrontier> + 'static,
+    K: ProductionAuthorityKeyCustody,
+{
+    validate_final_use_production_bundle(&issuer_keys, bundle)?;
+    let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
+    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
+        bundle.frontier_store.clone();
+    FinalUseAuthority::recover_state_dir_with_issuer_keys(
+        directory,
+        signer_id,
+        issuer_keys,
+        head,
+        clock,
+        frontier_store,
+    )
+}
+
+fn validate_final_use_production_bundle<C, S, K>(
+    issuer_keys: &[FinalUseIssuerTrustKey],
+    bundle: &ProductionAuthorityTrustBundle<C, S, K, FinalUseFrontier>,
+) -> Result<(), FinalUseError>
+where
+    C: ProductionAuthorityClock,
+    S: ProductionAuthorityFrontierStore<FinalUseFrontier>,
+    K: ProductionAuthorityKeyCustody,
+{
+    bundle
+        .validate()
+        .map_err(|_| FinalUseError::InvalidTrust)?;
+    if bundle.key_custody_evidence.key_role.as_str() != "final-use-issuer"
+        || final_use_issuer_trust_sha256(issuer_keys)?
+            != bundle.key_custody_evidence.active_key_set_sha256
+    {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    Ok(())
+}
+
+fn final_use_issuer_trust_sha256(
+    issuer_keys: &[FinalUseIssuerTrustKey],
+) -> Result<[u8; 32], FinalUseError> {
+    if issuer_keys.is_empty() || issuer_keys.len() > 8 {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    let mut keys = issuer_keys.to_vec();
+    keys.sort_by(|left, right| left.key_id.cmp(&right.key_id));
+    let mut ids = BTreeSet::new();
+    let mut public_keys = BTreeSet::new();
+    let mut digest = Sha256::new();
+    digest.update(b"hepta.kernel.authority.final-use-issuer-trust.v1\0");
+    for candidate in keys {
+        let key = VerifyingKey::from_bytes(&candidate.verifying_key)
+            .map_err(|_| FinalUseError::InvalidTrust)?;
+        if !identifier(&candidate.key_id)
+            || key.is_weak()
+            || candidate.not_before_authority_epoch == 0
+            || candidate.not_after_authority_epoch < candidate.not_before_authority_epoch
+            || !ids.insert(candidate.key_id.clone())
+            || !public_keys.insert(candidate.verifying_key)
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        digest.update((candidate.key_id.len() as u64).to_le_bytes());
+        digest.update(candidate.key_id.as_bytes());
+        digest.update(candidate.verifying_key);
+        digest.update(candidate.not_before_authority_epoch.to_le_bytes());
+        digest.update(candidate.not_after_authority_epoch.to_le_bytes());
+    }
+    Ok(digest.finalize().into())
 }
 
 fn identifier(value: &str) -> bool {
@@ -229,48 +491,5 @@ fn identifier(value: &str) -> bool {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn production_evidence_rejects_missing_external_receipts() {
-        let evidence = ProductionAuthorityTrustEvidence {
-            schema_version: ProductionAuthorityTrustEvidence::SCHEMA_VERSION,
-            deployment_id: "prod-one".into(),
-            trust_domain: "authority-root".into(),
-            clock_attestation_sha256: [1; 32],
-            frontier_attestation_sha256: [2; 32],
-            key_custody_attestation_sha256: [3; 32],
-            verifier_topology_attestation_sha256: [4; 32],
-            state_directory_attestation_sha256: [5; 32],
-            disaster_recovery_receipt_sha256: [0; 32],
-            boot_rollback_detection_enabled: true,
-            verifier_only_topology: true,
-            state_directory_validated: true,
-            kms_or_hsm_custody: true,
-            maximum_clock_uncertainty_ms: 50,
-        };
-        assert_eq!(evidence.validate(), Err(AuthorityTrustError::Invalid));
-    }
-
-    #[test]
-    fn production_evidence_accepts_complete_external_receipt_set() {
-        let evidence = ProductionAuthorityTrustEvidence {
-            schema_version: ProductionAuthorityTrustEvidence::SCHEMA_VERSION,
-            deployment_id: "prod-one".into(),
-            trust_domain: "authority-root".into(),
-            clock_attestation_sha256: [1; 32],
-            frontier_attestation_sha256: [2; 32],
-            key_custody_attestation_sha256: [3; 32],
-            verifier_topology_attestation_sha256: [4; 32],
-            state_directory_attestation_sha256: [5; 32],
-            disaster_recovery_receipt_sha256: [6; 32],
-            boot_rollback_detection_enabled: true,
-            verifier_only_topology: true,
-            state_directory_validated: true,
-            kms_or_hsm_custody: true,
-            maximum_clock_uncertainty_ms: 50,
-        };
-        evidence.validate().unwrap();
-    }
-}
+#[path = "authority_trust_tests.rs"]
+mod tests;

@@ -1,0 +1,195 @@
+name: Kernel authority production closure
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'codex-rs/hepta-contracts/src/authority_trust_tests.rs'
+      - 'codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/kernel.authority/**'
+      - '.github/workflows/kernel-authority-production-closure.yml'
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'codex-rs/hepta-contracts/src/authority_trust_tests.rs'
+      - 'codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/kernel.authority/**'
+      - '.github/workflows/kernel-authority-production-closure.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-production-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  identity:
+    name: Pin immutable source and base
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source: ${{ steps.pin.outputs.source }}
+      source_tree: ${{ steps.pin.outputs.source_tree }}
+      base: ${{ steps.pin.outputs.base }}
+    steps:
+      - name: Checkout exact event source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - id: pin
+        name: Verify immutable identities
+        shell: bash
+        env:
+          EVENT_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_BASE: ${{ github.event.pull_request.base.sha || '' }}
+        run: |
+          set -euo pipefail
+          source="$(git rev-parse HEAD)"
+          test "$source" = "$EVENT_SOURCE"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          if [ -n "$EVENT_BASE" ]; then
+            git fetch --no-tags origin "$EVENT_BASE"
+            base="$(git rev-parse "$EVENT_BASE^{commit}")"
+          else
+            git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+            base="$(git rev-parse refs/remotes/origin/main)"
+          fi
+          test -n "$source_tree"
+          test -n "$base"
+          printf 'source=%s\n' "$source" >> "$GITHUB_OUTPUT"
+          printf 'source_tree=%s\n' "$source_tree" >> "$GITHUB_OUTPUT"
+          printf 'base=%s\n' "$base" >> "$GITHUB_OUTPUT"
+          test -z "$(git status --porcelain)"
+
+  qualify:
+    name: Closure (${{ matrix.mode }}, ${{ matrix.lane }})
+    needs: identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        mode: [exact-head, synthetic-merge]
+        lane: [trust-bundle, product-pilot, performance]
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_INCREMENTAL: 0
+      RUST_BACKTRACE: 1
+    steps:
+      - name: Checkout pinned source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.identity.outputs.source }}
+          persist-credentials: false
+      - name: Verify checkout before candidate preparation
+        shell: bash
+        env:
+          EXPECTED_SOURCE: ${{ needs.identity.outputs.source }}
+          EXPECTED_TREE: ${{ needs.identity.outputs.source_tree }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain)"
+      - name: Prepare immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/authority-evidence"
+          python3 qualification/kernel-authority/prepare_candidate.py \
+            --mode '${{ matrix.mode }}' \
+            --base-sha '${{ needs.identity.outputs.base }}' \
+            --output "$RUNNER_TEMP/authority-evidence/identity.json"
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Install pinned repository test tools
+        if: matrix.lane == 'trust-bundle'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute candidate-bound closure lane
+        shell: bash
+        env:
+          LANE: ${{ matrix.lane }}
+          IDENTITY: ${{ runner.temp }}/authority-evidence/identity.json
+          OUTPUT_ROOT: ${{ runner.temp }}/authority-evidence/${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          case "$LANE" in
+            trust-bundle)
+              cd codex-rs
+              cargo fmt --check -p codex-hepta-contracts
+              just test --locked -p codex-hepta-contracts --retries 0
+              cargo clippy --locked -p codex-hepta-contracts --all-targets -- -D warnings
+              ;;
+            product-pilot)
+              python3 qualification/kernel-authority/runtime_qualification.py \
+                --identity "$IDENTITY" \
+                --output-dir "$OUTPUT_ROOT" \
+                pilot
+              ;;
+            performance)
+              python3 qualification/kernel-authority/runtime_qualification.py \
+                --identity "$IDENTITY" \
+                --output-dir "$OUTPUT_ROOT" \
+                benchmark --samples 128
+              ;;
+            *)
+              printf 'unknown lane: %s\n' "$LANE" >&2
+              exit 2
+              ;;
+          esac
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Retain candidate-bound closure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-${{ matrix.mode }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/authority-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+  merge-gate:
+    name: Production closure gate
+    if: always()
+    needs: [identity, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require exact-head and synthetic-merge closure
+        shell: bash
+        env:
+          IDENTITY_RESULT: ${{ needs.identity.result }}
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          SOURCE: ${{ needs.identity.outputs.source }}
+          SOURCE_TREE: ${{ needs.identity.outputs.source_tree }}
+          BASE: ${{ needs.identity.outputs.base }}
+        run: |
+          set -euo pipefail
+          test "$IDENTITY_RESULT" = success
+          test "$QUALIFY_RESULT" = success
+          test "${#SOURCE}" -eq 40
+          test "${#SOURCE_TREE}" -eq 40
+          test "${#BASE}" -eq 40
+          printf 'closure qualified source=%s tree=%s base=%s\n' \
+            "$SOURCE" "$SOURCE_TREE" "$BASE"
