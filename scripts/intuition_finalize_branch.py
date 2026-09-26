@@ -118,45 +118,6 @@ def fix_compile_edges() -> None:
     )
 
 
-def add_bounded_ledger_retry() -> None:
-    path = "codex-rs/hepta-agentd/src/intuition_policy.rs"
-    old = """                let record_id = production.record_id.clone();
-                let receipt = product.learning.append_decision(
-                    expected_ledger_head,
-                    production,
-                    evidence,
-                    now,
-                )?;
-                (Some(record_id), Some(receipt))
-"""
-    new = """                let record_id = production.record_id.clone();
-                let retry_production = production.clone();
-                let retry_evidence = evidence.clone();
-                let receipt = match product.learning.append_decision(
-                    expected_ledger_head,
-                    production,
-                    evidence,
-                    now,
-                ) {
-                    Ok(receipt) => receipt,
-                    Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { .. }) => {
-                        // One bounded exact replay reconciles the only admitted
-                        // uncertain state: ledger committed, witness not advanced.
-                        // The ledger rejects any record/evidence/predecessor drift.
-                        product.learning.append_decision(
-                            expected_ledger_head,
-                            retry_production,
-                            retry_evidence,
-                            now,
-                        )?
-                    }
-                    Err(error) => return Err(error),
-                };
-                (Some(record_id), Some(receipt))
-"""
-    replace_one(path, old, new)
-
-
 def upgrade_authenticated_fast_gate() -> None:
     path = "codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs"
     text = read(path)
@@ -252,7 +213,7 @@ signed ObjectiveStart and durable RunStart
 
 ### Durability, retry and recovery
 
-`IntuitionPolicyLearningSink` owns the sole `LedgerWriter` used by this composition. A selected result cannot return success without a witnessed append. Ordinary append rejection returns a stable failure code. The only uncertain state is `IndeterminateAfterLedgerCommit`, meaning the ledger commit succeeded while the independent witness did not advance. Agentd performs one bounded replay of the exact same deterministic record, signed evidence and original predecessor; the ledger accepts only idempotent equality and rejects drift. A second uncertain result remains explicit and is never interpreted as permission to dispatch. Generation is checked before preparation, before commit and after commit; a post-commit generation change yields an indeterminate service result rather than execution authority.
+`IntuitionPolicyLearningSink` owns the sole `LedgerWriter` used by this composition. A selected result cannot return success without a witnessed append. Ordinary append rejection returns a stable failure code. The only uncertain state is `IndeterminateAfterLedgerCommit`, meaning the ledger commit succeeded while the independent witness did not advance. Agentd returns that state without dispatch authority and does not retry through a poisoned in-process handle. The owner must reopen the ledger and witness against the externally retained anchor, then replay the exact same deterministic record, signed evidence and original predecessor. The recovered writer admits only a one-event-lag idempotent replay and rejects record, evidence or predecessor drift. Generation is checked before preparation, before commit and after commit; a post-commit generation change yields an indeterminate service result rather than execution authority.
 
 ### Qualification and claim boundary
 
@@ -267,7 +228,6 @@ A green workflow proves repository qualification only. `qualification/intuition.
 def main() -> None:
     compose_agentd()
     fix_compile_edges()
-    add_bounded_ledger_retry()
     upgrade_authenticated_fast_gate()
     update_technical_guide()
 
