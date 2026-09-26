@@ -963,9 +963,7 @@ async fn unknown_dispatch_cursor_rotates_and_survives_restart_without_requeue() 
         ("019153a4-3088-7000-a56a-9b1964f75d02", 200),
     ] {
         store
-            .create_task(
-                &draft(id, AutomationSchedule::Once, due).expect("valid task fixture"),
-            )
+            .create_task(&draft(id, AutomationSchedule::Once, due).expect("valid task fixture"))
             .await
             .expect("create");
         assert!(matches!(

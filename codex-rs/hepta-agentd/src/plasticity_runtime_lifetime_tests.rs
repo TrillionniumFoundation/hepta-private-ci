@@ -26,6 +26,13 @@ use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_artifacts::IterationCandidateStateV1;
+use codex_hepta_learning_artifacts::IterationCandidateV1;
+use codex_hepta_learning_artifacts::IterationEnvelopeV1;
+use codex_hepta_learning_artifacts::IterationEvidenceKindV1;
+use codex_hepta_learning_artifacts::IterationEvidenceV1;
+use codex_hepta_learning_artifacts::IterationLedgerSnapshotV1;
+use codex_hepta_learning_artifacts::IterationLedgerV1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
@@ -90,6 +97,12 @@ use crate::reopen_agentd_plasticity_writer_v1;
 use crate::reopen_agentd_topology_writer_v1;
 use crate::resolve_agentd_plasticity_admission_v1;
 use crate::resolve_agentd_topology_admission_v1;
+use crate::self_iteration_coordinator::compose_self_iteration_coordinator_v1;
+use crate::self_iteration_coordinator::self_iteration_coordinator_channel_at_v1;
+use crate::self_iteration_parameter_evaluation_digest_v1;
+use crate::self_iteration_parameter_submission_digest_v1;
+use crate::self_iteration_topology_evaluation_digest_v1;
+use crate::self_iteration_topology_submission_digest_v1;
 
 const Q24: i64 = 1_i64 << 24;
 
@@ -851,6 +864,155 @@ fn signed_topology_request(
     request
 }
 
+fn iteration_evidence(
+    candidate_id: &StableId,
+    actor_id: StableId,
+    kind: IterationEvidenceKindV1,
+    label: &str,
+) -> IterationEvidenceV1 {
+    IterationEvidenceV1 {
+        evidence_id: id(&format!("iteration-evidence:{label}")),
+        candidate_id: candidate_id.clone(),
+        actor_id,
+        kind,
+        evidence_digest: digest(&format!("iteration-evidence:{label}:digest")),
+        observed_unix_seconds: 45,
+    }
+}
+
+fn evaluated_iteration_snapshot(
+    envelope: IterationEnvelopeV1,
+    candidate: IterationCandidateV1,
+    evaluator_identity: StableId,
+    evaluation_digest: Digest32,
+) -> IterationLedgerSnapshotV1 {
+    let candidate_id = candidate.candidate_id.clone();
+    let generator = candidate.generator_identity.clone();
+    let mut ledger = IterationLedgerV1::new(envelope).expect("iteration ledger");
+    ledger
+        .append_candidate(candidate)
+        .expect("iteration candidate");
+    ledger
+        .transition(
+            &candidate_id,
+            IterationCandidateStateV1::StaticallyValidated,
+            iteration_evidence(
+                &candidate_id,
+                generator.clone(),
+                IterationEvidenceKindV1::StaticValidation,
+                "static",
+            ),
+        )
+        .expect("static validation");
+    ledger
+        .transition(
+            &candidate_id,
+            IterationCandidateStateV1::SandboxTested,
+            iteration_evidence(
+                &candidate_id,
+                generator,
+                IterationEvidenceKindV1::Sandbox,
+                "sandbox",
+            ),
+        )
+        .expect("sandbox validation");
+    let mut evaluation = iteration_evidence(
+        &candidate_id,
+        evaluator_identity,
+        IterationEvidenceKindV1::Evaluation,
+        "evaluation",
+    );
+    evaluation.evidence_digest = evaluation_digest;
+    ledger
+        .transition(
+            &candidate_id,
+            IterationCandidateStateV1::IndependentlyEvaluated,
+            evaluation,
+        )
+        .expect("independent evaluation");
+    ledger.snapshot()
+}
+
+fn parameter_iteration_snapshot(
+    request: &ParameterPlasticityProductRequestV1,
+) -> IterationLedgerSnapshotV1 {
+    let envelope = IterationEnvelopeV1 {
+        envelope_id: id("iteration-envelope:parameter:lifetime"),
+        base_commit: digest("iteration-base-commit:parameter"),
+        base_tree: digest("iteration-base-tree:parameter"),
+        objective_digest: request.admission.objective_digest,
+        grammar_digest: request
+            .generator_profile
+            .mutation_policy
+            .mutation_grammar_digest,
+        maximum_files: 4,
+        maximum_diff_bytes: 4_096,
+        maximum_candidates: 4,
+        maximum_parallel_sandboxes: 1,
+        expiry_unix_seconds: 90,
+    };
+    let evaluation_digest = self_iteration_parameter_evaluation_digest_v1(request)
+        .expect("parameter evaluation digest");
+    let evaluator_identity = request
+        .no_change_attestation
+        .as_ref()
+        .map(|attestation| attestation.principal_id.clone())
+        .or_else(|| {
+            request
+                .evaluations
+                .first()
+                .map(|evaluation| evaluation.bundle.evaluator.principal_id.clone())
+        })
+        .expect("parameter evaluator identity");
+    let candidate = IterationCandidateV1 {
+        candidate_id: request.proposal_id.clone(),
+        envelope_id: envelope.envelope_id.clone(),
+        generator_identity: request.generator_attestation.principal_id.clone(),
+        semantic_diff_digest: self_iteration_parameter_submission_digest_v1(&envelope, request)
+            .expect("parameter iteration digest"),
+        test_plan_digest: evaluation_digest,
+        rollback_digest: request.admission.selected_artifact_digest,
+        predecessor: Some(request.admission.baseline_id.clone()),
+        state: IterationCandidateStateV1::Drafted,
+    };
+    evaluated_iteration_snapshot(envelope, candidate, evaluator_identity, evaluation_digest)
+}
+
+fn topology_iteration_snapshot(
+    request: &TopologyPlasticityProductRequestV1,
+) -> IterationLedgerSnapshotV1 {
+    let envelope = IterationEnvelopeV1 {
+        envelope_id: id("iteration-envelope:topology:lifetime"),
+        base_commit: digest("iteration-base-commit:topology"),
+        base_tree: digest("iteration-base-tree:topology"),
+        objective_digest: request.admission.objective_digest,
+        grammar_digest: digest("iteration-topology-grammar:lifetime"),
+        maximum_files: 8,
+        maximum_diff_bytes: 8_192,
+        maximum_candidates: 4,
+        maximum_parallel_sandboxes: 1,
+        expiry_unix_seconds: 90,
+    };
+    let evaluation_digest = self_iteration_topology_evaluation_digest_v1(request);
+    let candidate = IterationCandidateV1 {
+        candidate_id: request.proposal_id.clone(),
+        envelope_id: envelope.envelope_id.clone(),
+        generator_identity: request.proposer_generation_id.clone(),
+        semantic_diff_digest: self_iteration_topology_submission_digest_v1(&envelope, request)
+            .expect("topology iteration digest"),
+        test_plan_digest: evaluation_digest,
+        rollback_digest: request.selected_artifact_digest,
+        predecessor: Some(request.admission.baseline_id.clone()),
+        state: IterationCandidateStateV1::Drafted,
+    };
+    evaluated_iteration_snapshot(
+        envelope,
+        candidate,
+        request.evaluator_attestation.principal_id.clone(),
+        evaluation_digest,
+    )
+}
+
 struct RuntimeFiles {
     ledger: PathBuf,
     parameter_registry: PathBuf,
@@ -901,6 +1063,8 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     let verifier = signing.verifier(sources.objective_digest);
     let request = signed_request(&sources, &ledger, &signing, &verifier);
     let topology_request = signed_topology_request(&sources, &ledger, &signing, &verifier);
+    let parameter_iteration = parameter_iteration_snapshot(&request);
+    let topology_iteration = topology_iteration_snapshot(&topology_request);
 
     let parameter_scope = digest("parameter-registry:scope");
     let topology_scope = digest("topology-registry:scope");
@@ -935,17 +1099,107 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     let state = daemon.state();
     let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
         .expect("compose daemon plasticity owner");
+    let (coordinator, coordinator_bootstrap) =
+        self_iteration_coordinator_channel_at_v1(8, 50).expect("coordinator channel");
+    let coordinator_owner = compose_self_iteration_coordinator_v1(Some(coordinator_bootstrap))
+        .expect("coordinator owner");
     let cancellation = CancellationToken::new();
     let owner_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&state),
         owner,
         cancellation.clone(),
     );
+    let coordinator_task =
+        tokio::spawn(coordinator_owner.run(Arc::clone(&state), cancellation.clone()));
 
-    let first = state
-        .submit_parameter_plasticity_v1(request.clone(), 50)
+    let mut forged_evaluator = parameter_iteration.clone();
+    forged_evaluator
+        .events
+        .last_mut()
+        .expect("evaluation event")
+        .evidence
+        .actor_id = id("forged-independent-evaluator");
+    assert!(matches!(
+        coordinator
+            .submit_parameter(forged_evaluator, request.clone())
+            .await,
+        Err(crate::SelfIterationCoordinatorErrorV1::CandidateBinding(
+            "independent evaluation evidence"
+        ))
+    ));
+
+    let mut forged_evidence = parameter_iteration.clone();
+    forged_evidence
+        .events
+        .last_mut()
+        .expect("evaluation event")
+        .evidence
+        .evidence_digest = digest("forged-independent-evaluation");
+    assert!(matches!(
+        coordinator
+            .submit_parameter(forged_evidence, request.clone())
+            .await,
+        Err(crate::SelfIterationCoordinatorErrorV1::CandidateBinding(
+            "independent evaluation evidence"
+        ))
+    ));
+
+    let mut future_evaluation = parameter_iteration.clone();
+    future_evaluation
+        .events
+        .last_mut()
+        .expect("evaluation event")
+        .evidence
+        .observed_unix_seconds = 51;
+    assert!(matches!(
+        coordinator
+            .submit_parameter(future_evaluation, request.clone())
+            .await,
+        Err(crate::SelfIterationCoordinatorErrorV1::CandidateBinding(
+            "independent evaluation evidence"
+        ))
+    ));
+
+    let mut unevaluated = parameter_iteration.clone();
+    unevaluated.events.pop();
+    unevaluated
+        .candidates
+        .first_mut()
+        .expect("iteration candidate")
+        .state = IterationCandidateStateV1::SandboxTested;
+    assert!(matches!(
+        coordinator
+            .submit_parameter(unevaluated, request.clone())
+            .await,
+        Err(crate::SelfIterationCoordinatorErrorV1::CandidateState)
+    ));
+
+    let mut expired = parameter_iteration.clone();
+    expired.envelope.expiry_unix_seconds = 49;
+    assert!(matches!(
+        coordinator.submit_parameter(expired, request.clone()).await,
+        Err(crate::SelfIterationCoordinatorErrorV1::EnvelopeExpired)
+    ));
+
+    let mut drifted = request.clone();
+    drifted.expected_registry_predecessor = digest("drifted-predecessor");
+    assert!(
+        coordinator
+            .submit_parameter(parameter_iteration.clone(), drifted)
+            .await
+            .is_err(),
+        "request drift must reject before the plasticity writer"
+    );
+
+    let (parameter_coordination, first) = coordinator
+        .submit_parameter(parameter_iteration.clone(), request.clone())
         .await
-        .expect("first product proposal");
+        .expect("first coordinated product proposal");
+    assert_eq!(parameter_coordination.candidate_id, request.proposal_id);
+    assert_eq!(
+        parameter_coordination.product_composition_digest,
+        first.composition_digest
+    );
     assert_eq!(
         first.disposition,
         ParameterPlasticityDispositionV1::NoAdmissibleUpdate
@@ -953,10 +1207,18 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     assert_eq!(first.registry.sequence, 1);
     assert_eq!(first.registry.disposition, AppendDisposition::Inserted);
 
-    let first_topology = state
-        .submit_topology_plasticity_v1(topology_request.clone(), 50)
+    let (topology_coordination, first_topology) = coordinator
+        .submit_topology(topology_iteration.clone(), topology_request.clone())
         .await
-        .expect("first topology product proposal");
+        .expect("first coordinated topology product proposal");
+    assert_eq!(
+        topology_coordination.candidate_id,
+        topology_request.proposal_id
+    );
+    assert_eq!(
+        topology_coordination.product_composition_digest,
+        first_topology.composition_digest
+    );
     assert_eq!(first_topology.durable.sequence, 1);
     assert_eq!(
         first_topology.durable.disposition,
@@ -968,6 +1230,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("owner task join")
         .expect("owner task shutdown");
+    coordinator_task
+        .await
+        .expect("coordinator task join")
+        .expect("coordinator task shutdown");
     drop(state);
 
     let recovered_ledger = DurableLedger::recover(
@@ -1011,17 +1277,30 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         Some(restarted_bootstrap),
     )
     .expect("compose restarted daemon plasticity owner");
+    let (restarted_coordinator, restarted_coordinator_bootstrap) =
+        self_iteration_coordinator_channel_at_v1(8, 50).expect("restart coordinator channel");
+    let restarted_coordinator_owner =
+        compose_self_iteration_coordinator_v1(Some(restarted_coordinator_bootstrap))
+            .expect("restart coordinator owner");
     let restarted_cancellation = CancellationToken::new();
     let restarted_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&restarted_state),
         restarted_owner,
         restarted_cancellation.clone(),
     );
+    let restarted_coordinator_task = tokio::spawn(
+        restarted_coordinator_owner
+            .run(Arc::clone(&restarted_state), restarted_cancellation.clone()),
+    );
 
-    let second = restarted_state
-        .submit_parameter_plasticity_v1(request, 50)
+    let (second_coordination, second) = restarted_coordinator
+        .submit_parameter(parameter_iteration, request)
         .await
-        .expect("idempotent replay after restart");
+        .expect("coordinated idempotent replay after restart");
+    assert_eq!(
+        second_coordination.coordination_digest,
+        parameter_coordination.coordination_digest
+    );
     assert_eq!(second.registry.sequence, 1);
     assert_eq!(second.registry.disposition, AppendDisposition::Unchanged);
     assert_eq!(
@@ -1029,10 +1308,14 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         first.committed_registry_anchor
     );
 
-    let second_topology = restarted_state
-        .submit_topology_plasticity_v1(topology_request, 50)
+    let (second_topology_coordination, second_topology) = restarted_coordinator
+        .submit_topology(topology_iteration, topology_request)
         .await
-        .expect("idempotent topology replay after restart");
+        .expect("coordinated idempotent topology replay after restart");
+    assert_eq!(
+        second_topology_coordination.coordination_digest,
+        topology_coordination.coordination_digest
+    );
     assert_eq!(second_topology.durable.sequence, 1);
     assert_eq!(
         second_topology.durable.disposition,
@@ -1048,6 +1331,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("restart task join")
         .expect("restart task shutdown");
+    restarted_coordinator_task
+        .await
+        .expect("restart coordinator task join")
+        .expect("restart coordinator task shutdown");
     drop(restarted_state);
 
     let (reconciled, _anchor_store): (

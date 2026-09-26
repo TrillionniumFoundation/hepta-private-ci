@@ -5,12 +5,14 @@ use codex_hepta_agentd::evaluation_publication_envelope_payload;
 use codex_hepta_agentd::evaluation_publication_evidence_id;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::ProductQualificationEvidenceSinkV1;
-use codex_hepta_learning_ledger::{
-    AuthenticatedPrincipalV1, LearningEvidenceRoleV1, LearningEvidenceTrustV1,
-    LearningEvidenceVerifierV1, TrustedLearningSignerV1,
-};
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_types::Digest32;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 #[allow(dead_code)]
 #[path = "../../../hepta-intelligence-eval/tests/support/product_qualification_fixture.rs"]

@@ -108,7 +108,9 @@ impl ProductQualificationEvidenceSinkV1 for AgentdEvaluationEvidenceSinkV1 {
         execution_digest: Digest32,
         decision: &SignedEvaluationDecisionV1,
     ) -> Result<Digest32, ProductEvidenceSinkErrorV1> {
-        use ProductEvidenceSinkErrorV1::{Indeterminate, Rejected, Unavailable};
+        use ProductEvidenceSinkErrorV1::Indeterminate;
+        use ProductEvidenceSinkErrorV1::Rejected;
+        use ProductEvidenceSinkErrorV1::Unavailable;
         let terminal = product_qualification_publication_payload_v1(execution_digest, decision)
             .map_err(|_| Rejected)?;
         if self.envelope.evidence_id

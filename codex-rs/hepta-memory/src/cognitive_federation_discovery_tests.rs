@@ -3,10 +3,13 @@ use super::ProductDiscoveryFuture;
 use super::retrieve_federated_product_with_discoverer;
 use crate::FederationConsumerAccess;
 use crate::RetrievalRequest;
-use crate::cognitive_test_support::{agent_id, layout, workspace};
+use crate::cognitive_test_support::agent_id;
+use crate::cognitive_test_support::layout;
+use crate::cognitive_test_support::workspace;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_paths::HeptaAgentLayout;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use tempfile::TempDir;
 

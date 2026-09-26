@@ -102,15 +102,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     if journal.entries().len() != JOURNAL_CAPACITY {
         return Err("journal capacity underfilled".into());
     }
-    let overflow = journal
-        .append_projection(
-            NduProjectionKindV1::Preference,
-            digest("capacity-overflow-identity"),
-            objective,
-            subject,
-            digest("capacity-overflow-payload"),
-        )
-        .expect_err("4097th record must reject");
+    let overflow = match journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("capacity-overflow-identity"),
+        objective,
+        subject,
+        digest("capacity-overflow-payload"),
+    ) {
+        Err(error) => error,
+        Ok(_) => return Err("4097th journal record unexpectedly succeeded".into()),
+    };
     if overflow != NduProjectionJournalError::RecordLimitExceeded {
         return Err("journal capacity boundary mismatch".into());
     }

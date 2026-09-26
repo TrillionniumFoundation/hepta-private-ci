@@ -42,6 +42,12 @@ pub async fn run(
     config.require_intelligence_composition()?;
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
+    let self_iteration_bootstrap = config.take_self_iteration_coordinator_bootstrap();
+    if self_iteration_bootstrap.is_some() && plasticity_bootstrap.is_none() {
+        return Err(AgentdError::Invalid(
+            "self-iteration coordinator requires the existing plasticity owner".to_string(),
+        ));
+    }
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -104,6 +110,10 @@ pub async fn run(
     )?);
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
+    let self_iteration_runtime =
+        crate::self_iteration_coordinator::compose_self_iteration_coordinator_v1(
+            self_iteration_bootstrap,
+        );
     if let Some(host) = intuition_policy_host {
         state.intuition_policy.set(host).map_err(|_| {
             AgentdError::Invalid("intuition policy host already attached".to_string())
@@ -298,6 +308,12 @@ pub async fn run(
         if let Some(owner) = plasticity_runtime {
             tasks.spawn_required(
                 "plasticity-owner",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        if let Some(owner) = self_iteration_runtime {
+            tasks.spawn_required(
+                "self-iteration-coordinator",
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }

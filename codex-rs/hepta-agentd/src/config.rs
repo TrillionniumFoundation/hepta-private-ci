@@ -90,6 +90,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
+    self_iteration_bootstrap: Option<crate::SelfIterationCoordinatorBootstrapV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -214,6 +215,7 @@ impl AgentdConfig {
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
+            self_iteration_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
@@ -493,6 +495,27 @@ impl AgentdConfig {
         &mut self,
     ) -> Option<crate::PlasticityRuntimeBootstrapV1> {
         self.plasticity_bootstrap.take()
+    }
+
+    /// Attach the authority-free evaluated-candidate coordinator. The embedding
+    /// retains its typed producer handle; Agentd consumes this sole owner half.
+    pub fn with_self_iteration_coordinator_bootstrap(
+        mut self,
+        bootstrap: crate::SelfIterationCoordinatorBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        if self.self_iteration_bootstrap.is_some() {
+            return Err(AgentdError::Invalid(
+                "self-iteration coordinator already configured".to_string(),
+            ));
+        }
+        self.self_iteration_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_self_iteration_coordinator_bootstrap(
+        &mut self,
+    ) -> Option<crate::SelfIterationCoordinatorBootstrapV1> {
+        self.self_iteration_bootstrap.take()
     }
 
     /// Attach the authenticated current intuition-policy product caller.
