@@ -42,7 +42,7 @@ The active convergence branch is `work/ui-control-production-convergence-2026092
 - `validateSnapshotTransition`
 - `UiControlError`
 
-The package exposes explicit `exports` for the root/core, browser controller, and HTTP transport. Imports under `@hepta/control-client-core/src/*` are deliberately blocked. The browser build uses the same source modules as Node tests and does not need a framework runtime or unsafe HTML injection.
+The package exposes explicit `exports` for the root/core, browser controller, and HTTP transport. Imports under `@hepta/control-ui/src/*` are deliberately blocked. The browser build uses the same source modules as Node tests and does not need a framework runtime or unsafe HTML injection.
 
 ## 4. State model
 
