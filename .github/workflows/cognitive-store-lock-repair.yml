@@ -16,7 +16,7 @@ jobs:
   repair:
     if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-repaired]') }}
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -30,37 +30,50 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
-      - name: Repair read-only type and resolve exact lockfile
+      - name: Repair read-only type and exact lockfile stanza
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('codex-rs/hepta-cognitive-store/src/durable.rs')
-          text = path.read_text(encoding='utf-8')
+
+          source = Path('codex-rs/hepta-cognitive-store/src/durable.rs')
+          text = source.read_text(encoding='utf-8')
           stale = 'codex_hepta_memory::CognitiveRetrievalObservationV1'
           current = 'codex_hepta_memory::RetrievalObservation'
           if stale in text:
-              text = text.replace(stale, current)
-              path.write_text(text, encoding='utf-8')
+              source.write_text(text.replace(stale, current), encoding='utf-8')
           elif current not in text:
               raise SystemExit('read-only retrieval observation return type is missing')
+
+          lock_path = Path('codex-rs/Cargo.lock')
+          lock = lock_path.read_text(encoding='utf-8')
+          marker = '[[package]]\nname = "codex-hepta-cognitive-store"'
+          start = lock.index(marker)
+          end = lock.find('\n[[package]]', start + len(marker))
+          end = len(lock) if end < 0 else end
+          block = lock[start:end]
+          dependency = ' "codex-hepta-contracts",\n'
+          if dependency not in block:
+              anchor = ' "codex-hepta-cognitive-types",\n'
+              if block.count(anchor) != 1:
+                  raise SystemExit('unexpected cognitive-store Cargo.lock dependency stanza')
+              block = block.replace(anchor, anchor + dependency, 1)
+              lock = lock[:start] + block + lock[end:]
+              lock_path.write_text(lock, encoding='utf-8')
+
           diagnostic = Path('cognitive-store-macos-diagnostic.txt')
           if diagnostic.exists():
               diagnostic.unlink()
-          PY
-          cd codex-rs
-          cargo metadata --format-version 1 > /dev/null
-          python3 - <<'PY'
-          from pathlib import Path
-          text = Path('Cargo.lock').read_text(encoding='utf-8')
-          marker = '[[package]]\nname = "codex-hepta-cognitive-store"'
-          start = text.index(marker)
-          end = text.find('\n[[package]]', start + len(marker))
-          block = text[start:] if end < 0 else text[start:end]
-          if '"codex-hepta-contracts",' not in block:
+
+          verified = lock_path.read_text(encoding='utf-8')
+          start = verified.index(marker)
+          end = verified.find('\n[[package]]', start + len(marker))
+          block = verified[start:] if end < 0 else verified[start:end]
+          if dependency not in block:
               raise SystemExit('Cargo.lock cognitive-store stanza still lacks codex-hepta-contracts')
           print(block)
           PY
+          cd codex-rs
           cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd
           cargo metadata --locked --format-version 1 --no-deps > /dev/null
           cd ..
