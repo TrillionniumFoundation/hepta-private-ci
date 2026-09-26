@@ -9,13 +9,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: runtime-codex-ci-closure-${{ github.ref }}
+  group: runtime-codex-ci-closure-arm-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   apply-test-commit:
     if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-ci-closure]') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - name: Check out exact branch head
