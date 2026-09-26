@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.module-implementation-map-extension.v1",
+  "module": "utility.ndu",
+  "extends": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+  "operations": [
+    {
+      "operation": "ValidatedScalarizationProfileV1",
+      "nativeSymbol": "codex_hepta_ndu::ValidatedScalarizationProfileV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_profile_bound_admission",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+          "symbol": "validated_scalarization_is_profile_bound_and_canonical"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+          "symbol": "incomplete_or_out_of_range_scalarization_is_rejected_before_owner_open"
+        }
+      ]
+    },
+    {
+      "operation": "evaluate_candidates_with_quarantine",
+      "nativeSymbol": "codex_hepta_ndu::evaluate_candidates_with_quarantine",
+      "sourcePath": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_candidate_isolation_v3",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+          "symbol": "malformed_non_abstain_is_quarantined_without_hiding_valid_candidate"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+          "symbol": "malformed_abstain_remains_global_fail_closed"
+        }
+      ]
+    },
+    {
+      "operation": "validate_staged_updates_against_snapshot",
+      "nativeSymbol": "codex_hepta_ndu::validate_staged_updates_against_snapshot",
+      "sourcePath": "codex-rs/hepta-ndu/src/hierarchy.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_authenticated_hierarchy_snapshot_v1",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "snapshot_rejects_non_immediate_and_missing_parent_edges"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "snapshot_binding_rejects_any_ancestor_descendant_same_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "unrelated_branches_can_advance_in_the_same_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "update_must_match_the_authenticated_snapshot_revision_and_edge"
+        }
+      ]
+    }
+  ]
+}
