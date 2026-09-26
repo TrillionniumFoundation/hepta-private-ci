@@ -1,17 +1,14 @@
-//! Signed external bootstrap contracts for the cognitive production writer.
+//! Authority-free semantic contracts for signed cognitive production bootstrap.
 //!
-//! These values carry no write authority by themselves. Agentd verifies their
-//! signatures, external file identities, live revocation state and opaque-token
-//! binding before it asks the physical owner to recover a writable generation.
+//! Wire decoding and signature verification belong to the named Agentd host.
+//! This module owns stable identities, signing bytes, semantic digests and the
+//! exact rollback-successor rule without adding a second writer or authority.
 
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use serde::Deserialize;
-use serde::Serialize;
 
 use crate::CognitiveRecoveryAnchor;
 
@@ -38,11 +35,10 @@ impl fmt::Display for CognitiveBootstrapContractError {
 
 impl StdError for CognitiveBootstrapContractError {}
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CognitiveBootstrapTrustV1 {
     pub schema_version: u32,
-    pub signer_principal_id: String,
+    pub signer_principal_id: StableId,
     pub signer_key_epoch: u64,
     pub public_key_hex: String,
     pub revoked: bool,
@@ -57,30 +53,28 @@ impl CognitiveBootstrapTrustV1 {
                 "invalid cognitive bootstrap trust schema or key epoch",
             ));
         }
-        validate_stable_id(&self.signer_principal_id, "signer principal")?;
         validate_hex(&self.public_key_hex, 32, "signer public key")?;
         Ok(())
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CognitiveAuthorityStateV1 {
     pub schema_version: u32,
     pub namespace: String,
     pub state_revision: u64,
-    pub agent_id: AgentId,
-    pub lease_id: String,
+    pub agent_id: StableId,
+    pub lease_id: StableId,
     pub writer_generation: u64,
-    pub grant_digest: Sha256Digest,
+    pub grant_digest: Digest32,
     pub authority_epoch: u64,
     pub owner_epoch: u64,
     pub lease_expires_at_unix_seconds: u64,
-    pub token_sha256: Sha256Digest,
+    pub token_sha256: Digest32,
     pub revoked: bool,
-    pub predecessor_state_sha256: Option<Sha256Digest>,
+    pub predecessor_state_sha256: Option<Digest32>,
     pub created_at_unix_ms: u64,
-    pub signer_principal_id: String,
+    pub signer_principal_id: StableId,
     pub signer_key_epoch: u64,
     pub signature_hex: String,
 }
@@ -96,13 +90,13 @@ impl CognitiveAuthorityStateV1 {
             || self.lease_expires_at_unix_seconds == 0
             || self.created_at_unix_ms == 0
             || self.signer_key_epoch == 0
+            || self.grant_digest.is_zero()
+            || self.token_sha256.is_zero()
         {
             return Err(CognitiveBootstrapContractError::invalid(
                 "invalid cognitive authority state identity or monotone value",
             ));
         }
-        validate_stable_id(&self.lease_id, "writer lease id")?;
-        validate_stable_id(&self.signer_principal_id, "authority signer principal")?;
         if self.state_revision == 1 && self.predecessor_state_sha256.is_some() {
             return Err(CognitiveBootstrapContractError::invalid(
                 "authority state revision one cannot name a predecessor",
@@ -111,6 +105,14 @@ impl CognitiveAuthorityStateV1 {
         if self.state_revision > 1 && self.predecessor_state_sha256.is_none() {
             return Err(CognitiveBootstrapContractError::invalid(
                 "authority state successor requires a predecessor digest",
+            ));
+        }
+        if self
+            .predecessor_state_sha256
+            .is_some_and(Digest32::is_zero)
+        {
+            return Err(CognitiveBootstrapContractError::invalid(
+                "authority predecessor digest cannot be zero",
             ));
         }
         if !self.signature_hex.is_empty() {
@@ -142,22 +144,21 @@ impl CognitiveAuthorityStateV1 {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CognitiveProductionBootstrapV1 {
     pub schema_version: u32,
     pub namespace: String,
-    pub agent_id: AgentId,
+    pub agent_id: StableId,
     pub recovery_anchor: CognitiveRecoveryAnchor,
-    pub lease_id: String,
+    pub lease_id: StableId,
     pub writer_generation: u64,
     pub rollback_generation_floor: u64,
-    pub authority_state_sha256: Sha256Digest,
-    pub canary_id: String,
+    pub authority_state_sha256: Digest32,
+    pub canary_id: StableId,
     pub source_commit: String,
     pub source_tree: String,
     pub created_at_unix_ms: u64,
-    pub signer_principal_id: String,
+    pub signer_principal_id: StableId,
     pub signer_key_epoch: u64,
     pub signature_hex: String,
 }
@@ -170,15 +171,13 @@ impl CognitiveProductionBootstrapV1 {
             || self.rollback_generation_floor <= self.writer_generation
             || self.created_at_unix_ms == 0
             || self.signer_key_epoch == 0
-            || self.recovery_anchor.owner_agent_id != self.agent_id
+            || self.authority_state_sha256.is_zero()
+            || self.recovery_anchor.owner_agent_id.as_str() != self.agent_id.to_string()
         {
             return Err(CognitiveBootstrapContractError::invalid(
                 "invalid cognitive bootstrap identity, generation or recovery owner",
             ));
         }
-        validate_stable_id(&self.lease_id, "writer lease id")?;
-        validate_stable_id(&self.canary_id, "canary id")?;
-        validate_stable_id(&self.signer_principal_id, "bootstrap signer principal")?;
         validate_git_oid(&self.source_commit, "source commit")?;
         validate_git_oid(&self.source_tree, "source tree")?;
         if !self.signature_hex.is_empty() {
@@ -213,26 +212,26 @@ pub fn cognitive_authority_state_signing_bytes(
     bytes.extend_from_slice(&state.schema_version.to_be_bytes());
     push_part(&mut bytes, state.namespace.as_bytes());
     bytes.extend_from_slice(&state.state_revision.to_be_bytes());
-    push_part(&mut bytes, state.agent_id.as_str().as_bytes());
-    push_part(&mut bytes, state.lease_id.as_bytes());
+    push_id(&mut bytes, &state.agent_id);
+    push_id(&mut bytes, &state.lease_id);
     bytes.extend_from_slice(&state.writer_generation.to_be_bytes());
-    push_digest(&mut bytes, &state.grant_digest);
+    push_digest(&mut bytes, state.grant_digest);
     bytes.extend_from_slice(&state.authority_epoch.to_be_bytes());
     bytes.extend_from_slice(&state.owner_epoch.to_be_bytes());
     bytes.extend_from_slice(&state.lease_expires_at_unix_seconds.to_be_bytes());
-    push_digest(&mut bytes, &state.token_sha256);
+    push_digest(&mut bytes, state.token_sha256);
     bytes.push(u8::from(state.revoked));
-    push_optional_digest(&mut bytes, state.predecessor_state_sha256.as_ref());
+    push_optional_digest(&mut bytes, state.predecessor_state_sha256);
     bytes.extend_from_slice(&state.created_at_unix_ms.to_be_bytes());
-    push_part(&mut bytes, state.signer_principal_id.as_bytes());
+    push_id(&mut bytes, &state.signer_principal_id);
     bytes.extend_from_slice(&state.signer_key_epoch.to_be_bytes());
     Ok(bytes)
 }
 
 pub fn cognitive_authority_state_sha256(
     state: &CognitiveAuthorityStateV1,
-) -> Result<Sha256Digest, CognitiveBootstrapContractError> {
-    Ok(Sha256Digest::for_bytes(
+) -> Result<Digest32, CognitiveBootstrapContractError> {
+    Ok(Digest32::of_bytes(
         &cognitive_authority_state_signing_bytes(state)?,
     ))
 }
@@ -244,31 +243,37 @@ pub fn cognitive_production_bootstrap_signing_bytes(
     let mut bytes = b"hepta.cognitive.production-bootstrap.v1\0".to_vec();
     bytes.extend_from_slice(&bootstrap.schema_version.to_be_bytes());
     push_part(&mut bytes, bootstrap.namespace.as_bytes());
-    push_part(&mut bytes, bootstrap.agent_id.as_str().as_bytes());
+    push_id(&mut bytes, &bootstrap.agent_id);
     push_part(&mut bytes, bootstrap.recovery_anchor.profile.as_bytes());
     push_part(
         &mut bytes,
         bootstrap.recovery_anchor.owner_agent_id.as_str().as_bytes(),
     );
-    push_digest(&mut bytes, &bootstrap.recovery_anchor.schema_digest);
-    push_digest(&mut bytes, &bootstrap.recovery_anchor.state_digest);
-    push_part(&mut bytes, bootstrap.lease_id.as_bytes());
+    push_part(
+        &mut bytes,
+        bootstrap.recovery_anchor.schema_digest.as_str().as_bytes(),
+    );
+    push_part(
+        &mut bytes,
+        bootstrap.recovery_anchor.state_digest.as_str().as_bytes(),
+    );
+    push_id(&mut bytes, &bootstrap.lease_id);
     bytes.extend_from_slice(&bootstrap.writer_generation.to_be_bytes());
     bytes.extend_from_slice(&bootstrap.rollback_generation_floor.to_be_bytes());
-    push_digest(&mut bytes, &bootstrap.authority_state_sha256);
-    push_part(&mut bytes, bootstrap.canary_id.as_bytes());
+    push_digest(&mut bytes, bootstrap.authority_state_sha256);
+    push_id(&mut bytes, &bootstrap.canary_id);
     push_part(&mut bytes, bootstrap.source_commit.as_bytes());
     push_part(&mut bytes, bootstrap.source_tree.as_bytes());
     bytes.extend_from_slice(&bootstrap.created_at_unix_ms.to_be_bytes());
-    push_part(&mut bytes, bootstrap.signer_principal_id.as_bytes());
+    push_id(&mut bytes, &bootstrap.signer_principal_id);
     bytes.extend_from_slice(&bootstrap.signer_key_epoch.to_be_bytes());
     Ok(bytes)
 }
 
 pub fn cognitive_production_bootstrap_sha256(
     bootstrap: &CognitiveProductionBootstrapV1,
-) -> Result<Sha256Digest, CognitiveBootstrapContractError> {
-    Ok(Sha256Digest::for_bytes(
+) -> Result<Digest32, CognitiveBootstrapContractError> {
+    Ok(Digest32::of_bytes(
         &cognitive_production_bootstrap_signing_bytes(bootstrap)?,
     ))
 }
@@ -284,7 +289,7 @@ pub fn validate_cognitive_rollback_successor(
     if successor.agent_id != current.agent_id
         || successor.lease_id != current.lease_id
         || successor.state_revision != current.state_revision.saturating_add(1)
-        || successor.predecessor_state_sha256.as_ref() != Some(&current_digest)
+        || successor.predecessor_state_sha256 != Some(current_digest)
         || successor.writer_generation <= current.writer_generation
         || successor.writer_generation < rollback_generation_floor
         || successor.owner_epoch <= current.owner_epoch
@@ -297,13 +302,6 @@ pub fn validate_cognitive_rollback_successor(
             "rollback successor must use the same owner/lease, exact predecessor, a fresh grant-bound token and strictly newer writer/owner generations",
         ));
     }
-    Ok(())
-}
-
-fn validate_stable_id(value: &str, label: &str) -> Result<(), CognitiveBootstrapContractError> {
-    StableId::new(value.to_string()).map_err(|error| {
-        CognitiveBootstrapContractError::invalid(format!("invalid {label}: {error}"))
-    })?;
     Ok(())
 }
 
@@ -342,11 +340,15 @@ fn push_part(bytes: &mut Vec<u8>, part: &[u8]) {
     bytes.extend_from_slice(part);
 }
 
-fn push_digest(bytes: &mut Vec<u8>, digest: &Sha256Digest) {
-    push_part(bytes, digest.as_str().as_bytes());
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+    push_part(bytes, value.to_string().as_bytes());
 }
 
-fn push_optional_digest(bytes: &mut Vec<u8>, digest: Option<&Sha256Digest>) {
+fn push_digest(bytes: &mut Vec<u8>, digest: Digest32) {
+    push_part(bytes, digest.to_string().as_bytes());
+}
+
+fn push_optional_digest(bytes: &mut Vec<u8>, digest: Option<Digest32>) {
     match digest {
         Some(digest) => {
             bytes.push(1);
@@ -360,27 +362,27 @@ fn push_optional_digest(bytes: &mut Vec<u8>, digest: Option<&Sha256Digest>) {
 mod tests {
     use super::*;
 
-    fn agent() -> AgentId {
-        AgentId::parse("00000000-0000-4000-8000-00000000cb01").expect("agent")
+    fn id(value: &str) -> StableId {
+        StableId::new(value.to_string()).expect("stable id")
     }
 
-    fn state(revision: u64, predecessor: Option<Sha256Digest>) -> CognitiveAuthorityStateV1 {
+    fn state(revision: u64, predecessor: Option<Digest32>) -> CognitiveAuthorityStateV1 {
         CognitiveAuthorityStateV1 {
             schema_version: COGNITIVE_BOOTSTRAP_SCHEMA_VERSION,
             namespace: COGNITIVE_AUTHORITY_STATE_NAMESPACE.to_string(),
             state_revision: revision,
-            agent_id: agent(),
-            lease_id: "cognitive-production-writer".to_string(),
+            agent_id: id("00000000-0000-4000-8000-00000000cb01"),
+            lease_id: id("cognitive-production-writer"),
             writer_generation: revision,
-            grant_digest: Sha256Digest::for_bytes(format!("grant-{revision}").as_bytes()),
+            grant_digest: Digest32::of_bytes(format!("grant-{revision}").as_bytes()),
             authority_epoch: revision,
             owner_epoch: revision,
             lease_expires_at_unix_seconds: 9_999_999_999,
-            token_sha256: Sha256Digest::for_bytes(format!("token-{revision}").as_bytes()),
+            token_sha256: Digest32::of_bytes(format!("token-{revision}").as_bytes()),
             revoked: false,
             predecessor_state_sha256: predecessor,
             created_at_unix_ms: 1,
-            signer_principal_id: "cognitive-bootstrap-signer".to_string(),
+            signer_principal_id: id("cognitive-bootstrap-signer"),
             signer_key_epoch: 1,
             signature_hex: "00".repeat(64),
         }

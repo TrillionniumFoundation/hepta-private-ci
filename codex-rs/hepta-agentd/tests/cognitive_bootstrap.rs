@@ -23,16 +23,17 @@ use codex_hepta_cognitive_store::bootstrap::cognitive_authority_state_signing_by
 use codex_hepta_cognitive_store::bootstrap::cognitive_production_bootstrap_signing_bytes;
 use codex_hepta_cognitive_store::bootstrap::validate_cognitive_rollback_successor;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use serde::Serialize;
+use serde_json::json;
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -69,7 +70,7 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
     drop(initial_store);
 
     let signer = SigningKey::from_bytes(&[61_u8; 32]);
-    let signer_id = "cognitive-bootstrap-signer".to_string();
+    let signer_id = id("cognitive-bootstrap-signer");
     let trust = CognitiveBootstrapTrustV1 {
         schema_version: COGNITIVE_BOOTSTRAP_SCHEMA_VERSION,
         signer_principal_id: signer_id.clone(),
@@ -81,7 +82,7 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
     let state_file = external.join("authority-state.json");
     let bootstrap_file = external.join("bootstrap.json");
     let token_file = external.join("authority-token.bin");
-    write_private_json(&trust_file, &trust)?;
+    write_trust(&trust_file, &trust)?;
 
     let now_ms = current_time_millis()?;
     let token_one = b"externally-issued-cognitive-token-generation-1".to_vec();
@@ -90,14 +91,14 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
             schema_version: COGNITIVE_BOOTSTRAP_SCHEMA_VERSION,
             namespace: COGNITIVE_AUTHORITY_STATE_NAMESPACE.to_string(),
             state_revision: 1,
-            agent_id: owner.clone(),
-            lease_id: "cognitive-production-writer".to_string(),
+            agent_id: id(owner.as_str()),
+            lease_id: id("cognitive-production-writer"),
             writer_generation: 1,
-            grant_digest: Sha256Digest::for_bytes(b"signed-cognitive-grant-generation-1"),
+            grant_digest: Digest32::of_bytes(b"signed-cognitive-grant-generation-1"),
             authority_epoch: 7,
             owner_epoch: 11,
             lease_expires_at_unix_seconds: now_ms / 1000 + 600,
-            token_sha256: Sha256Digest::for_bytes(&token_one),
+            token_sha256: Digest32::of_bytes(&token_one),
             revoked: false,
             predecessor_state_sha256: None,
             created_at_unix_ms: now_ms,
@@ -111,13 +112,13 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
         CognitiveProductionBootstrapV1 {
             schema_version: COGNITIVE_BOOTSTRAP_SCHEMA_VERSION,
             namespace: COGNITIVE_BOOTSTRAP_NAMESPACE.to_string(),
-            agent_id: owner.clone(),
+            agent_id: id(owner.as_str()),
             recovery_anchor: initial_anchor,
             lease_id: state_one.lease_id.clone(),
             writer_generation: state_one.writer_generation,
             rollback_generation_floor: 2,
             authority_state_sha256: cognitive_authority_state_sha256(&state_one)?,
-            canary_id: "bootstrap-canary-generation-1".to_string(),
+            canary_id: id("bootstrap-canary-generation-1"),
             source_commit: "1".repeat(40),
             source_tree: "2".repeat(40),
             created_at_unix_ms: now_ms,
@@ -162,14 +163,14 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
             schema_version: COGNITIVE_BOOTSTRAP_SCHEMA_VERSION,
             namespace: COGNITIVE_AUTHORITY_STATE_NAMESPACE.to_string(),
             state_revision: 2,
-            agent_id: owner.clone(),
+            agent_id: id(owner.as_str()),
             lease_id: state_one.lease_id.clone(),
             writer_generation: 2,
-            grant_digest: Sha256Digest::for_bytes(b"signed-cognitive-grant-generation-2"),
+            grant_digest: Digest32::of_bytes(b"signed-cognitive-grant-generation-2"),
             authority_epoch: 8,
             owner_epoch: 12,
             lease_expires_at_unix_seconds: now_ms / 1000 + 1200,
-            token_sha256: Sha256Digest::for_bytes(&token_two),
+            token_sha256: Digest32::of_bytes(&token_two),
             revoked: false,
             predecessor_state_sha256: Some(state_one_digest),
             created_at_unix_ms: now_ms.saturating_add(1),
@@ -184,13 +185,13 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
         CognitiveProductionBootstrapV1 {
             schema_version: COGNITIVE_BOOTSTRAP_SCHEMA_VERSION,
             namespace: COGNITIVE_BOOTSTRAP_NAMESPACE.to_string(),
-            agent_id: owner.clone(),
+            agent_id: id(owner.as_str()),
             recovery_anchor: rotated_anchor,
             lease_id: state_two.lease_id.clone(),
             writer_generation: state_two.writer_generation,
             rollback_generation_floor: 3,
             authority_state_sha256: cognitive_authority_state_sha256(&state_two)?,
-            canary_id: "bootstrap-canary-generation-2".to_string(),
+            canary_id: id("bootstrap-canary-generation-2"),
             source_commit: "3".repeat(40),
             source_tree: "4".repeat(40),
             created_at_unix_ms: now_ms.saturating_add(1),
@@ -224,7 +225,7 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
         },
         &signer,
     )?;
-    write_private_json(&state_file, &revoked)?;
+    write_state(&state_file, &revoked)?;
     let error = execute_cognitive_bootstrap_canary(&second)
         .await
         .expect_err("live revocation must fence the next semantic mutation");
@@ -234,8 +235,8 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
     stale_rollback.state_revision = 3;
     stale_rollback.predecessor_state_sha256 = Some(cognitive_authority_state_sha256(&state_two)?);
     stale_rollback.owner_epoch = state_two.owner_epoch.saturating_add(1);
-    stale_rollback.grant_digest = Sha256Digest::for_bytes(b"new-grant-but-stale-generation");
-    stale_rollback.token_sha256 = Sha256Digest::for_bytes(b"new-token-but-stale-generation");
+    stale_rollback.grant_digest = Digest32::of_bytes(b"new-grant-but-stale-generation");
+    stale_rollback.token_sha256 = Digest32::of_bytes(b"new-token-but-stale-generation");
     assert!(validate_cognitive_rollback_successor(&state_two, &stale_rollback, 3).is_err());
     Ok(())
 }
@@ -274,17 +275,85 @@ fn install_bundle(
     state: &CognitiveAuthorityStateV1,
     token: &[u8],
 ) -> Result<(), Box<dyn Error>> {
-    write_private_json(bootstrap_file, bootstrap)?;
-    write_private_json(state_file, state)?;
+    write_bootstrap(bootstrap_file, bootstrap)?;
+    write_state(state_file, state)?;
     fs::write(token_file, token)?;
     fs::set_permissions(token_file, fs::Permissions::from_mode(0o600))?;
     Ok(())
 }
 
-fn write_private_json(path: &Path, value: &impl Serialize) -> Result<(), Box<dyn Error>> {
+fn write_trust(path: &Path, value: &CognitiveBootstrapTrustV1) -> Result<(), Box<dyn Error>> {
+    write_json(
+        path,
+        &json!({
+            "schemaVersion": value.schema_version,
+            "signerPrincipalId": value.signer_principal_id.to_string(),
+            "signerKeyEpoch": value.signer_key_epoch,
+            "publicKeyHex": value.public_key_hex,
+            "revoked": value.revoked
+        }),
+    )
+}
+
+fn write_state(path: &Path, value: &CognitiveAuthorityStateV1) -> Result<(), Box<dyn Error>> {
+    write_json(
+        path,
+        &json!({
+            "schemaVersion": value.schema_version,
+            "namespace": value.namespace,
+            "stateRevision": value.state_revision,
+            "agentId": value.agent_id.to_string(),
+            "leaseId": value.lease_id.to_string(),
+            "writerGeneration": value.writer_generation,
+            "grantDigest": value.grant_digest.to_string(),
+            "authorityEpoch": value.authority_epoch,
+            "ownerEpoch": value.owner_epoch,
+            "leaseExpiresAtUnixSeconds": value.lease_expires_at_unix_seconds,
+            "tokenSha256": value.token_sha256.to_string(),
+            "revoked": value.revoked,
+            "predecessorStateSha256": value.predecessor_state_sha256.map(|digest| digest.to_string()),
+            "createdAtUnixMs": value.created_at_unix_ms,
+            "signerPrincipalId": value.signer_principal_id.to_string(),
+            "signerKeyEpoch": value.signer_key_epoch,
+            "signatureHex": value.signature_hex
+        }),
+    )
+}
+
+fn write_bootstrap(
+    path: &Path,
+    value: &CognitiveProductionBootstrapV1,
+) -> Result<(), Box<dyn Error>> {
+    write_json(
+        path,
+        &json!({
+            "schemaVersion": value.schema_version,
+            "namespace": value.namespace,
+            "agentId": value.agent_id.to_string(),
+            "recoveryAnchor": value.recovery_anchor,
+            "leaseId": value.lease_id.to_string(),
+            "writerGeneration": value.writer_generation,
+            "rollbackGenerationFloor": value.rollback_generation_floor,
+            "authorityStateSha256": value.authority_state_sha256.to_string(),
+            "canaryId": value.canary_id.to_string(),
+            "sourceCommit": value.source_commit,
+            "sourceTree": value.source_tree,
+            "createdAtUnixMs": value.created_at_unix_ms,
+            "signerPrincipalId": value.signer_principal_id.to_string(),
+            "signerKeyEpoch": value.signer_key_epoch,
+            "signatureHex": value.signature_hex
+        }),
+    )
+}
+
+fn write_json(path: &Path, value: &serde_json::Value) -> Result<(), Box<dyn Error>> {
     fs::write(path, serde_json::to_vec_pretty(value)?)?;
     fs::set_permissions(path, fs::Permissions::from_mode(0o600))?;
     Ok(())
+}
+
+fn id(value: &str) -> StableId {
+    StableId::new(value.to_string()).expect("stable id")
 }
 
 fn current_time_millis() -> Result<u64, Box<dyn Error>> {
