@@ -30,6 +30,12 @@ test = false
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+
+[[bin]]
+name = "hepta-agentd-browserd"
+path = "src/bin/hepta-agentd-browserd.rs"
+test = false
+
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
