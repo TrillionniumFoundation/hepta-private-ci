@@ -64,13 +64,33 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt,clippy
 
-      - name: Respect the existing Fleet macro grammar
+      - name: Rebase the guarded remediator onto the current branch
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           path = Path('.github/scripts/kernel_authority_remediate.py')
           content = path.read_text(encoding='utf-8')
+
+          old = '''    scaffold_changes = set(
+              filter(
+                  None,
+                  output("git", "diff", "--name-only", f"{EXPECTED_HEAD}..HEAD").splitlines(),
+              )
+          )
+          expected_scaffold = {
+              ".github/scripts/kernel_authority_remediate.py",
+              ".github/workflows/kernel-authority-remediation.yml",
+          }
+          if scaffold_changes != expected_scaffold:
+              raise RuntimeError(
+                  f"branch drifted outside the one-shot scaffold: {sorted(scaffold_changes)}"
+              )
+'''
+          if content.count(old) != 1:
+              raise SystemExit('stale scaffold-drift guard is not exact')
+          content = content.replace(old, '', 1)
+
           old = '''    run(
                   "cargo",
                   "fmt",
@@ -92,14 +112,18 @@ jobs:
           if content.count(old) != 1:
               raise SystemExit('remediator formatting predecessor is not exact')
           content = content.replace(old, new, 1)
+
           needle = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry -p codex-hepta-fleet'
           replacement = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry'
           if content.count(needle) != 2:
               raise SystemExit('expected old and generated product formatting commands')
           index = content.rfind(needle)
           content = content[:index] + replacement + content[index + len(needle):]
+
           path.write_text(content, encoding='utf-8')
           PY
+          git add .github/scripts/kernel_authority_remediate.py
+          git commit -m 'ci(kernel-authority): rebase guarded remediator'
 
       - name: Apply, validate, commit, rebind and push
         env:
