@@ -44,6 +44,12 @@ jobs:
       - name: Verify generated current status
         run: python3 scripts/hepta-learning-eval-status.py verify
 
+      - name: Verify learning.eval closed world
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-eval-closure.py self-test
+          python3 scripts/hepta-learning-eval-closure.py verify
+
       - name: Verify closed public surface
         run: python3 scripts/hepta-learning-eval-api-boundary.py verify
 
@@ -127,8 +133,10 @@ jobs:
               'privateApiCompileFail': evidence / 'private-api-compile-fail.stderr',
               'faultInjection': evidence / 'fault-injection.log',
               'checkpointCapacity': evidence / 'checkpoint-capacity.log',
+              'sourceClosure': root / 'scripts/hepta-learning-eval-closure.py',
               'currentState': root / 'docs/modules/learning.eval/CURRENT_STATE.json',
               'currentStatus': root / 'docs/modules/learning.eval/CURRENT_STATUS.md',
+              'implementationMap': root / 'docs/modules/learning.eval/IMPLEMENTATION_MAP.json',
               'recoveryContract': root / 'codex-rs/hepta-intelligence-eval/RECOVERY_CONTRACT.md',
               'cargoLock': root / 'codex-rs/Cargo.lock',
           }
@@ -143,6 +151,7 @@ jobs:
               'workflowRunAttempt': os.environ['RUN_ATTEMPT'],
               'createdAtUnixMicros': time.time_ns() // 1000,
               'checks': {
+                  'closedWorldSource': 'verified',
                   'rawSignedDecisionPrimitives': 'crate_private_compile_fail_verified',
                   'repositoryConsumers': ['agentd', 'plasticity', 'evaluated-shadow'],
                   'acceptedUnknownEvidencePublication': 'reconciled_or_indeterminate',
