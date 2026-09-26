@@ -90,19 +90,22 @@ jobs:
 
           runtime = Path("codex-rs/hepta-memory/src/cognitive_runtime.rs")
           runtime_text = runtime.read_text(encoding="utf-8")
-          unconditional = '''    aggregate.partial_peers = aggregate
-              .partial_peers
-              .saturating_add(attempt.partial_peers);
-          '''
-          valid_branch = '''    if validity == FederatedValidityV2::Valid {
-              aggregate.completed_peers = aggregate
-          '''
-          valid_replacement = '''    if validity == FederatedValidityV2::Valid {
-              aggregate.partial_peers = aggregate
-                  .partial_peers
-                  .saturating_add(attempt.partial_peers);
-              aggregate.completed_peers = aggregate
-          '''
+          unconditional = (
+              "    aggregate.partial_peers = aggregate\n"
+              "        .partial_peers\n"
+              "        .saturating_add(attempt.partial_peers);\n"
+          )
+          valid_branch = (
+              "    if validity == FederatedValidityV2::Valid {\n"
+              "        aggregate.completed_peers = aggregate\n"
+          )
+          valid_replacement = (
+              "    if validity == FederatedValidityV2::Valid {\n"
+              "        aggregate.partial_peers = aggregate\n"
+              "            .partial_peers\n"
+              "            .saturating_add(attempt.partial_peers);\n"
+              "        aggregate.completed_peers = aggregate\n"
+          )
           if runtime_text.count(unconditional) != 1:
               raise SystemExit("unexpected partial peer aggregation shape")
           if runtime_text.count(valid_branch) != 1:
@@ -131,7 +134,7 @@ jobs:
               )
               .is_err());
               assert!(MemoryFederationHostProfile::try_new(
-                  MAX_PRODUCT_FEDERATION_TOTAL_BUDGET + Duration::from_millis(1),
+                  crate::MAX_PRODUCT_FEDERATION_TOTAL_BUDGET + Duration::from_millis(1),
                   1,
                   1,
                   1,
@@ -141,7 +144,7 @@ jobs:
               .is_err());
               assert!(MemoryFederationHostProfile::try_new(
                   Duration::from_millis(1),
-                  MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS + 1,
+                  crate::MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS + 1,
                   1,
                   1,
                   1,
