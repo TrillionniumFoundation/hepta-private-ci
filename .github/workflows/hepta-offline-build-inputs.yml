@@ -2,7 +2,7 @@ name: Hepta offline native build inputs
 
 on:
   push:
-    branches: [work/architecture-scalability-convergence-20260918]
+    branches: [ops/kg-offline-inputs-20260927]
     paths: [.github/workflows/hepta-offline-build-inputs.yml]
   workflow_dispatch:
 
@@ -15,168 +15,91 @@ concurrency:
 
 jobs:
   inputs:
+    if: github.ref == 'refs/heads/ops/kg-offline-inputs-20260927'
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 25
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: 259dbfa5f6701e23b5f2515ee2c6c2da018c2c75
+      RUSTUP_TOOLCHAIN: 1.95.0
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
-      - name: Resolve the exact locked dependency sources
-        working-directory: codex-rs
-        env:
-          RUSTUP_TOOLCHAIN: 1.95.0
+
+      - name: Export exact input source and credential-free Git objects
+        shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
-          mkdir -p "$RUNNER_TEMP/hepta-offline-inputs"
-          cargo vendor --locked --versioned-dirs "$RUNNER_TEMP/hepta-offline-inputs/vendor" > "$RUNNER_TEMP/hepta-offline-inputs/offline-config.toml"
-          sha256sum Cargo.lock > "$RUNNER_TEMP/hepta-offline-inputs/lock.sha256"
-          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/hepta-offline-inputs/source-sha.txt"
-          git diff --exit-code -- Cargo.lock
-      - name: Diagnose failed resolution in a separate non-qualifying worktree
-        if: failure()
-        env:
-          RUSTUP_TOOLCHAIN: 1.95.0
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git diff --exit-code
-          diagnostic="$RUNNER_TEMP/hepta-repair-diagnostic"
-          output="$RUNNER_TEMP/hepta-repair-evidence"
-          mkdir -p "$output"
-          printf '%s\n' "$GITHUB_SHA" > "$output/source-sha.txt"
-          printf '%s\n' 'Diagnostic suggestions only. Not source-head qualification, independent review, merge or release evidence.' > "$output/SCOPE.txt"
-          git worktree add --detach "$diagnostic" "$GITHUB_SHA"
-          # Preserve the locked external versions where possible. Never test
-          # this changed tree or substitute it for the failed exact candidate.
-          set +e
-          (cd "$diagnostic/codex-rs" && cargo update --workspace) > "$output/lock-resolution.log" 2>&1
-          lock_status=$?
-          cargo fmt --manifest-path "$diagnostic/codex-rs/Cargo.toml" \
-            --package codex-hepta-fleet --package codex-hepta-control-plane \
-            --package codex-hepta-agentd > "$output/format.log" 2>&1
-          format_status=$?
-          set -e
-          printf 'lock_resolution=%s\nformat=%s\n' "$lock_status" "$format_status" > "$output/exit-status.txt"
-          git -C "$diagnostic" diff --no-ext-diff --binary > "$output/suggested.patch"
-          sha256sum "$output/suggested.patch" > "$output/patch.sha256"
-          cat "$output/exit-status.txt"
-          tail -n 100 "$output/lock-resolution.log"
-          tail -n 60 "$output/format.log"
-          # Keep connector-readable diagnostics bounded; the complete patch is
-          # retained as an artifact. No workflow credential is copied or logged.
-          if test "$(wc -c < "$output/suggested.patch")" -le 524288; then
-            echo 'BEGIN_NON_QUALIFYING_REPAIR_PATCH'
-            cat "$output/suggested.patch"
-            echo 'END_NON_QUALIFYING_REPAIR_PATCH'
-          fi
-          git diff --exit-code
-          git diff --cached --exit-code
-      - name: Retain failure diagnostics without changing the failed verdict
-        if: failure()
+          mkdir -p "$RUNNER_TEMP/kg-source-inputs"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/kg-source-inputs/source.tar.gz" HEAD
+          git bundle create "$RUNNER_TEMP/kg-source-inputs/source.bundle" HEAD
+          git bundle verify "$RUNNER_TEMP/kg-source-inputs/source.bundle"
+          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/kg-source-inputs/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/kg-source-inputs/source-tree.txt"
+          cd "$RUNNER_TEMP/kg-source-inputs"
+          sha256sum source.tar.gz source.bundle > SHA256SUMS
+
+      - name: Preserve source before compiler or dependency resolution
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-repair-diagnostics-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-repair-evidence/
-          retention-days: 3
-          if-no-files-found: error
-      - name: Package the pinned host compiler and repository test entry points
-        run: |
-          set -euo pipefail
-          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
-          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
-          mkdir -p "$RUNNER_TEMP/hepta-offline-inputs/bin"
-          cd "$RUNNER_TEMP/hepta-offline-inputs"
-          curl --fail --location --retry 3 --max-time 120 --output just.tar.gz \
-            https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz
-          curl --fail --location --retry 3 --max-time 120 --output nextest.tar.gz \
-            https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
-          printf '%s\n' \
-            'c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59  just.tar.gz' \
-            'b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036  nextest.tar.gz' | sha256sum --check
-          tar -xOzf just.tar.gz just > bin/just
-          tar -xOzf nextest.tar.gz cargo-nextest > bin/cargo-nextest
-          chmod 0755 bin/just bin/cargo-nextest
-          tar -C "$RUNNER_TEMP/hepta-offline-inputs" -czf "$RUNNER_TEMP/hepta-offline-inputs/test-tools.tar.gz" bin
-      - name: Export exact source and credential-free Git objects
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git diff --quiet
-          git diff --cached --quiet
-          git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-offline-inputs/source.tar.gz" "$GITHUB_SHA"
-          git rev-parse "$GITHUB_SHA^{tree}" > "$RUNNER_TEMP/hepta-offline-inputs/source-tree.txt"
-          # Exact-revision CI planning needs commit/tree ancestry, not .git/config.
-          # A bundle contains Git objects/refs, never hooks or checkout credentials.
-          git bundle create "$RUNNER_TEMP/hepta-offline-inputs/source.bundle" HEAD
-          git bundle verify "$RUNNER_TEMP/hepta-offline-inputs/source.bundle"
-      - name: Package source inputs only, never credentials or mutable Cargo configuration
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP/hepta-offline-inputs"
-          tar -czf dependencies.tar.gz vendor offline-config.toml lock.sha256 source-sha.txt
-          sha256sum compiler.tar.gz dependencies.tar.gz source.tar.gz test-tools.tar.gz > SHA256SUMS
-          sha256sum source.bundle > GIT_SHA256SUMS
-          git -C "$GITHUB_WORKSPACE" diff --exit-code
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-offline-build-inputs-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/hepta-offline-inputs/compiler.tar.gz
-            ${{ runner.temp }}/hepta-offline-inputs/dependencies.tar.gz
-            ${{ runner.temp }}/hepta-offline-inputs/source.tar.gz
-            ${{ runner.temp }}/hepta-offline-inputs/source-sha.txt
-            ${{ runner.temp }}/hepta-offline-inputs/source-tree.txt
-            ${{ runner.temp }}/hepta-offline-inputs/test-tools.tar.gz
-            ${{ runner.temp }}/hepta-offline-inputs/SHA256SUMS
-          retention-days: 3
+          name: kg-offline-source-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/kg-source-inputs
+          retention-days: 7
           compression-level: 0
           if-no-files-found: error
-      # Keep each archive below the connector download limit. Git history is
-      # independently downloadable and is not a reason to duplicate toolchains.
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-offline-source-git-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/hepta-offline-inputs/source.bundle
-            ${{ runner.temp }}/hepta-offline-inputs/GIT_SHA256SUMS
-            ${{ runner.temp }}/hepta-offline-inputs/source-sha.txt
-            ${{ runner.temp }}/hepta-offline-inputs/source-tree.txt
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: error
-      - name: Export the existing checksum-verified x86 V8 pair
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
+
+      - name: Export pinned x86 compiler for offline verification
+        shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PYV8'
-          import hashlib
-          import os
-          import shutil
-          from pathlib import Path
-          from codex_package.targets import TARGET_SPECS
-          from codex_package.v8 import resolve_codex_v8_cargo_env
-          pair = resolve_codex_v8_cargo_env(TARGET_SPECS["x86_64-unknown-linux-gnu"])
-          if set(pair) != {"RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH"}:
-              raise RuntimeError("expected the verified archive/binding pair")
-          destination = Path(os.environ["RUNNER_TEMP"]) / "hepta-offline-v8"
-          destination.mkdir()
-          checksums = []
-          for name, source in sorted(pair.items()):
-              target = destination / Path(source).name
-              shutil.copyfile(source, target)
-              digest = hashlib.sha256(target.read_bytes()).hexdigest()
-              checksums.append(f"{digest}  {target.name}\n")
-          (destination / "SHA256SUMS").write_text("".join(checksums))
-          PYV8
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host \
+            --profile minimal --component rustfmt --component clippy
+          mkdir -p "$RUNNER_TEMP/kg-compiler-inputs"
+          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" \
+            -czf "$RUNNER_TEMP/kg-compiler-inputs/compiler.tar.gz" .
+          cd "$RUNNER_TEMP/kg-compiler-inputs"
+          sha256sum compiler.tar.gz > SHA256SUMS
+
+      - name: Preserve pinned compiler independently
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-offline-v8-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-offline-v8/*
-          retention-days: 3
+          name: kg-offline-compiler-1.95.0-${{ github.run_id }}
+          path: ${{ runner.temp }}/kg-compiler-inputs
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Resolve and retain exact locked dependency source
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal
+          mkdir -p "$RUNNER_TEMP/kg-dependency-inputs"
+          cargo vendor --locked --versioned-dirs "$RUNNER_TEMP/kg-dependency-inputs/vendor" \
+            > "$RUNNER_TEMP/kg-dependency-inputs/offline-config.toml" \
+            2> "$RUNNER_TEMP/kg-dependency-inputs/vendor.log"
+          sha256sum Cargo.lock > "$RUNNER_TEMP/kg-dependency-inputs/lock.sha256"
+          git diff --exit-code -- Cargo.lock
+          cd "$RUNNER_TEMP/kg-dependency-inputs"
+          tar -czf dependencies.tar.gz vendor offline-config.toml lock.sha256
+          sha256sum dependencies.tar.gz > SHA256SUMS
+
+      - name: Preserve dependency inputs and diagnostic log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-offline-dependencies-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/kg-dependency-inputs/dependencies.tar.gz
+            ${{ runner.temp }}/kg-dependency-inputs/offline-config.toml
+            ${{ runner.temp }}/kg-dependency-inputs/lock.sha256
+            ${{ runner.temp }}/kg-dependency-inputs/SHA256SUMS
+            ${{ runner.temp }}/kg-dependency-inputs/vendor.log
+          retention-days: 7
           compression-level: 0
           if-no-files-found: error
