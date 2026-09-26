@@ -127,6 +127,7 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
                     "clippy",
                     "--locked",
                     "--all-targets",
+                    "--no-deps",
                     *packages,
                     "--",
                     "-D",
@@ -140,6 +141,7 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
                     "cargo",
                     "clippy",
                     "--locked",
+                    "--no-deps",
                     "-p",
                     PRODUCT[0],
                     "--lib",
@@ -187,15 +189,9 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
         (
             "closed-world-map",
             ROOT,
-            ["python3", "scripts/hepta-ndu-implementation-map-closed-world.py"],
-        ),
-        (
-            "maps",
-            ROOT,
             [
                 "python3",
-                "scripts/hepta-implementation-maps.py",
-                "verify",
+                "scripts/hepta-ndu-implementation-map-closed-world.py",
                 "--expected-sha",
                 sha,
                 "--expected-tree",

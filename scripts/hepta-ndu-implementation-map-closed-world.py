@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Fail closed when utility.ndu source or registry projections drift.
 
-The repository-wide implementation-map verifier owns SHA/tree/blob freshness
-for the primary map. This module validator treats the primary map and its
-explicit extension as one closed world: unique operations, real native/test
-symbols, explicit coverage for every tracked Rust source below sourceRoot, and
-an exact TECHNICAL.md projection of the canonical module registry.
+This module validator treats the primary implementation map and its explicit
+extension as one closed world. It binds execution to the exact candidate
+SHA/tree, verifies unique operations, real native/test symbols, explicit source
+coverage and an exact TECHNICAL.md projection of the canonical module registry.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 import re
@@ -38,6 +38,12 @@ def object_no_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(), object_pairs_hook=object_no_duplicates)
+
+
+def git(*args: str) -> str:
+    return subprocess.check_output(
+        ["git", "-C", str(ROOT), *args], text=True
+    ).strip()
 
 
 def all_strings(value: Any) -> set[str]:
@@ -167,11 +173,38 @@ def validate_registry_projection(errors: list[str]) -> dict[str, int]:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--expected-sha", required=True)
+    parser.add_argument("--expected-tree", required=True)
+    args = parser.parse_args()
+
     errors: list[str] = []
     try:
+        candidate_sha = git("rev-parse", "HEAD")
+        candidate_tree = git("rev-parse", "HEAD^{tree}")
+        if not re.fullmatch(r"[0-9a-f]{40}", args.expected_sha):
+            raise ValueError("--expected-sha must be an exact Git object id")
+        if not re.fullmatch(r"[0-9a-f]{40}", args.expected_tree):
+            raise ValueError("--expected-tree must be an exact Git object id")
+        if candidate_sha != args.expected_sha:
+            raise ValueError(
+                f"candidate SHA mismatch: expected={args.expected_sha} actual={candidate_sha}"
+            )
+        if candidate_tree != args.expected_tree:
+            raise ValueError(
+                f"candidate tree mismatch: expected={args.expected_tree} actual={candidate_tree}"
+            )
+        if git("status", "--porcelain", "--untracked-files=all"):
+            raise ValueError("closed-world validation requires a clean checkout")
         primary = load(PRIMARY)
         extension = load(EXTENSION)
-    except (OSError, json.JSONDecodeError, DuplicateKey) as error:
+    except (
+        OSError,
+        json.JSONDecodeError,
+        DuplicateKey,
+        ValueError,
+        subprocess.CalledProcessError,
+    ) as error:
         print(json.dumps({"passed": False, "errors": [str(error)]}, indent=2))
         return 1
 
@@ -263,9 +296,21 @@ def main() -> int:
         errors.append(f"tracked Rust source is outside the closed map: {path}")
 
     registry_projection = validate_registry_projection(errors)
+    try:
+        if git("rev-parse", "HEAD") != candidate_sha or git(
+            "rev-parse", "HEAD^{tree}"
+        ) != candidate_tree:
+            errors.append("candidate identity changed during validation")
+        if git("status", "--porcelain", "--untracked-files=all"):
+            errors.append("checkout changed during closed-world validation")
+    except subprocess.CalledProcessError as error:
+        errors.append(f"final candidate identity check failed: {error}")
+
     result = {
-        "schema": "hepta.ndu.closed-world-map-validation.v3",
+        "schema": "hepta.ndu.closed-world-map-validation.v4",
         "module": primary.get("module"),
+        "sourceSha": candidate_sha,
+        "sourceTree": candidate_tree,
         "operationCount": len(seen_operations),
         "testIdentityCount": len(seen_tests),
         "trackedRustSourceCount": len(tracked),
