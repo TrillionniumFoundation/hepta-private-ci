@@ -106,7 +106,7 @@ fn atomic_manifest_round_trip_and_frontier_replacement_are_exact() {
         checked(read_neuron_store_manifest_v1(&fixture.manifest())),
         advanced
     );
-    let entries = checked(fs::read_dir(&fixture.0)).collect::<Result<Vec<_>, _>>();
+    let entries = checked(checked(fs::read_dir(&fixture.0)).collect::<Result<Vec<_>, _>>());
     assert_eq!(entries.len(), 1);
 }
 
