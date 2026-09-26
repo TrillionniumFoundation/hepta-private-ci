@@ -15,9 +15,10 @@ use std::fs::File;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::RepositoryEvaluationConsumerV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_intelligence_eval::admit_repository_evaluation_v1;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
@@ -407,7 +408,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     }
 
     let mut evaluator_id: Option<StableId> = None;
-    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
+    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v2\0".to_vec();
 
     if disposition == ParameterPlasticityDispositionV1::NoAdmissibleUpdate {
         if let Some(unexpected) = evaluations.keys().next() {
@@ -484,15 +485,31 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         verify_signed_independent_roles_v1(&observer, &evaluator, now)
             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
 
-        let decision =
-            decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
-                .map_err(E::Evaluation)?;
+        let mut consumer_context = b"hepta.intelligence.plasticity-evaluation-use.v1\0".to_vec();
+        consumer_context.extend_from_slice(Digest32::of_bytes(&admission_payload).as_array());
+        consumer_context.extend_from_slice(request.admission.owner_evidence_set_digest.as_array());
+        consumer_context.extend_from_slice(request.generated.generator_digest.as_array());
+        push_id(&mut consumer_context, &candidate_id);
+        let consumer_binding = Digest32::of_bytes(&consumer_context);
+        let decision = admit_repository_evaluation_v1(
+            bundle,
+            metric_roles,
+            &evidence,
+            verifier,
+            now,
+            RepositoryEvaluationConsumerV1::Plasticity,
+            consumer_binding,
+        )
+        .map_err(E::Evaluation)?;
+        decision.validate_integrity().map_err(E::Evaluation)?;
         if decision.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
             return Err(E::Ineligible(decision.decision.disposition));
         }
         push_id(&mut evaluation_binding, &candidate_id);
+        evaluation_binding.extend_from_slice(consumer_binding.as_array());
+        evaluation_binding.extend_from_slice(decision.admission_digest.as_array());
         evaluation_binding.extend_from_slice(decision.decision.evidence_digest.as_array());
         evaluation_binding.extend_from_slice(decision.authentication_digest.as_array());
         evaluation_binding.extend_from_slice(decision.trust_digest.as_array());
