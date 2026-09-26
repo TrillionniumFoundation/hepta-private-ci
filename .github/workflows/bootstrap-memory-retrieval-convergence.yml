@@ -1,0 +1,75 @@
+name: Bootstrap memory retrieval convergence
+
+on:
+  push:
+    branches:
+      - work/memory-retrieval-production-convergence-20260926
+    paths:
+      - scripts/bootstrap_memory_retrieval_convergence.py
+      - .github/workflows/bootstrap-memory-retrieval-convergence.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-memory-retrieval-convergence
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+
+jobs:
+  semantic-convergence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact bootstrap source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Apply exact semantic patch
+        run: python3 scripts/bootstrap_memory_retrieval_convergence.py
+
+      - name: Format changed Rust
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Test retrieval core
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-memory-retrieval --lib
+
+      - name: Test SQLite owner adapter
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-memory --lib
+
+      - name: Strict retrieval and owner Clippy
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked -p codex-hepta-memory-retrieval --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-memory --all-targets -- -D warnings
+
+      - name: Verify clean semantic diff
+        run: |
+          set -euo pipefail
+          git diff --check
+          ! git grep -n 'contradiction_group_digest\|contradiction_group_digests' -- \
+            codex-rs/hepta-memory-retrieval/src \
+            codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs
+          test -n "$(git status --short)"
+
+      - name: Commit qualified semantic convergence
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-memory-retrieval/src \
+            codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs \
+            codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs
+          git commit -m "fix(memory.retrieval): close admission and contradiction semantics" \
+            -m "Bind contradiction evidence to proposition and polarity, admit by score and OOD before safety evaluation and HNMF settling, make zero activation/zero-weight edges inert, and compute activation-weighted confidence. Add regression and property coverage for same-side evidence, poison candidates, ordering, resource counts and policy bounds."
+          git push origin HEAD:work/memory-retrieval-production-convergence-20260926
