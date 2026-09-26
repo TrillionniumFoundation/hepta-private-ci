@@ -1,0 +1,147 @@
+source_sha=014a3f3e79c0bc23ddcb8d52483366c65f0d012b
+exit_status=101
+
+=== matched diagnostics ===
+
+=== final 500 lines ===
+info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+info: downloading 3 components
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/crossterm`
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Updating[0m git repository `https://github.com/dzbarsky/rules_rust`
+[1m[92m    Updating[0m git repository `https://github.com/helix-editor/nucleo.git`
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m block-buffer v0.10.4
+[1m[92m  Downloaded[0m cfg-if v1.0.4
+[1m[92m  Downloaded[0m generic-array v0.14.7
+[1m[92m  Downloaded[0m digest v0.10.7
+[1m[92m  Downloaded[0m version_check v0.9.5
+[1m[92m  Downloaded[0m cpufeatures v0.2.17
+[1m[92m  Downloaded[0m zmij v1.0.19
+[1m[92m  Downloaded[0m unicode-ident v1.0.22
+[1m[92m  Downloaded[0m typenum v1.20.0
+[1m[92m  Downloaded[0m serde_derive v1.0.228
+[1m[92m  Downloaded[0m proc-macro2 v1.0.106
+[1m[92m  Downloaded[0m serde v1.0.228
+[1m[92m  Downloaded[0m serde_json v1.0.149
+[1m[92m  Downloaded[0m memchr v2.8.1
+[1m[92m  Downloaded[0m serde_core v1.0.228
+[1m[92m  Downloaded[0m quote v1.0.45
+[1m[92m  Downloaded[0m itoa v1.0.17
+[1m[92m  Downloaded[0m sha2 v0.10.9
+[1m[92m  Downloaded[0m crypto-common v0.1.7
+[1m[92m  Downloaded[0m syn v2.0.117
+[1m[92m   Compiling[0m version_check v0.9.5
+[1m[92m   Compiling[0m generic-array v0.14.7
+[1m[92m   Compiling[0m typenum v1.20.0
+[1m[92m   Compiling[0m proc-macro2 v1.0.106
+[1m[92m   Compiling[0m quote v1.0.45
+[1m[92m   Compiling[0m unicode-ident v1.0.22
+[1m[92m   Compiling[0m serde_core v1.0.228
+[1m[92m   Compiling[0m crypto-common v0.1.7
+[1m[92m   Compiling[0m block-buffer v0.10.4
+[1m[92m   Compiling[0m zmij v1.0.19
+[1m[92m   Compiling[0m digest v0.10.7
+[1m[92m   Compiling[0m syn v2.0.117
+[1m[92m   Compiling[0m serde_json v1.0.149
+[1m[92m   Compiling[0m serde v1.0.228
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m cpufeatures v0.2.17
+[1m[92m   Compiling[0m sha2 v0.10.9
+[1m[92m   Compiling[0m serde_derive v1.0.228
+[1m[92m   Compiling[0m memchr v2.8.1
+[1m[92m   Compiling[0m itoa v1.0.17
+[1m[92m   Compiling[0m codex-hepta-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-types)
+[1m[92m   Compiling[0m codex-hepta-cognitive-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-types)
+[1m[92m   Compiling[0m codex-hepta-memory-retrieval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory-retrieval)
+[1m[91merror[E0255][0m[1m: the name `contradiction_population_count` is defined multiple times[0m
+    [1m[94m--> [0mhepta-memory-retrieval/src/engram.rs:1274:1
+     [1m[94m|[0m
+[1m[94m  32[0m [1m[94m|[0m use crate::generation_bound::contradiction_population_count;
+     [1m[94m|[0m     [1m[94m-------------------------------------------------------[0m [1m[94mprevious import of the value `contradiction_population_count` here[0m
+[1m[94m...[0m
+[1m[94m1274[0m [1m[94m|[0m fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
+     [1m[94m|[0m [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91m`contradiction_population_count` redefined here[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: `contradiction_population_count` must be defined only once in the value namespace of this module
+[1m[96mhelp[0m: you can use `as` to change the binding name of the import
+     [1m[94m|[0m
+[1m[94m  32[0m [1m[94m| [0muse crate::generation_bound::contradiction_population_count[92m as other_contradiction_population_count[0m;
+     [1m[94m|[0m                                                             [92m+++++++++++++++++++++++++++++++++++++++[0m
+
+[1m[33mwarning[0m[1m: unused import: `crate::generation_bound::contradiction_population_count`[0m
+  [1m[94m--> [0mhepta-memory-retrieval/src/engram.rs:32:5
+   [1m[94m|[0m
+[1m[94m32[0m [1m[94m|[0m use crate::generation_bound::contradiction_population_count;
+   [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+[1m[91merror[E0308][0m[1m: mismatched types[0m
+    [1m[94m--> [0mhepta-memory-retrieval/src/engram.rs:994:77
+     [1m[94m|[0m
+[1m[94m 994[0m [1m[94m|[0m         !engram.contradictions.is_empty() || contradiction_population_count(&admitted) > 0;
+     [1m[94m|[0m                                              [1m[94m------------------------------[0m [1m[91m^^^^^^^^^[0m [1m[91mexpected `&[CandidateUnionEntryV1]`, found `&Vec<&CandidateUnionEntryV1>`[0m
+     [1m[94m|[0m                                              [1m[94m|[0m
+     [1m[94m|[0m                                              [1m[94marguments to this function are incorrect[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: expected reference `&[1m[35m[CandidateUnionEntryV1][0m`
+                found reference `&[1m[35mVec<&CandidateUnionEntryV1>[0m`
+[1m[92mnote[0m: function defined here
+    [1m[94m--> [0mhepta-memory-retrieval/src/engram.rs:1274:4
+     [1m[94m|[0m
+[1m[94m1274[0m [1m[94m|[0m fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
+     [1m[94m|[0m    [1m[92m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[94m---------------------------------[0m
+
+[1m[91merror[E0308][0m[1m: mismatched types[0m
+    [1m[94m--> [0mhepta-memory-retrieval/src/engram.rs:1278:27
+     [1m[94m|[0m
+[1m[94m1278[0m [1m[94m|[0m             *groups.entry(*group).or_insert(0) += 1;
+     [1m[94m|[0m                     [1m[94m-----[0m [1m[91m^^^^^^[0m [1m[91mexpected `Digest32`, found `ContradictionEvidenceV1`[0m
+     [1m[94m|[0m                     [1m[94m|[0m
+     [1m[94m|[0m                     [1m[94marguments to this method are incorrect[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: the return type of this call is `generation_bound::ContradictionEvidenceV1` due to the type of the argument passed
+    [1m[94m--> [0mhepta-memory-retrieval/src/engram.rs:1278:14
+     [1m[94m|[0m
+[1m[94m1278[0m [1m[94m|[0m             *groups.entry(*group).or_insert(0) += 1;
+     [1m[94m|[0m              [1m[96m^^^^^^^^^^^^^[0m[1m[94m------[0m[1m[96m^[0m
+     [1m[94m|[0m                           [1m[94m|[0m
+     [1m[94m|[0m                           [1m[94mthis argument influences the return type of `entry`[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0m/home/runner/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/alloc/src/collections/btree/map.rs:1499:12
+     [1m[94m|[0m
+[1m[94m1499[0m [1m[94m|[0m     pub fn entry(&mut self, key: K) -> Entry<'_, K, V, A>
+     [1m[94m|[0m            [1m[92m^^^^^[0m
+
+[1m[91merror[E0618][0m[1m: expected function, found `generation_bound::RetrievalPolicyV1`[0m
+   [1m[94m--> [0mhepta-memory-retrieval/src/generation_bound_tests.rs:225:26
+    [1m[94m|[0m
+[1m[94m 66[0m [1m[94m|[0m fn policy() -> RetrievalPolicyV1 {
+    [1m[94m|[0m [1m[94m--------------------------------[0m [1m[94mthis function of the same name is available here, but it's shadowed by the local binding[0m
+[1m[94m...[0m
+[1m[94m216[0m [1m[94m|[0m     let policy = policy();
+    [1m[94m|[0m         [1m[94m------[0m [1m[94m`policy` has type `generation_bound::RetrievalPolicyV1`[0m
+[1m[94m...[0m
+[1m[94m225[0m [1m[94m|[0m     let mut ood_policy = policy();
+    [1m[94m|[0m                          [1m[91m^^^^^^[0m[1m[94m--[0m
+    [1m[94m|[0m                          [1m[94m|[0m
+    [1m[94m|[0m                          [1m[94mcall expression requires function[0m
+    [1m[94m|[0m
+   [1m[94m::: [0mhepta-memory-retrieval/src/decision_tests.rs:120:1
+    [1m[94m|[0m
+[1m[94m120[0m [1m[94m|[0m fn policy() -> RetrievalPolicyV1 {
+    [1m[94m|[0m [1m[94m--------------------------------[0m [1m[94mthis function of the same name is available here, but it's shadowed by the local binding[0m
+    [1m[94m|[0m
+   [1m[94m::: [0mhepta-memory-retrieval/src/generator_tests.rs:115:1
+    [1m[94m|[0m
+[1m[94m115[0m [1m[94m|[0m fn policy() -> RetrievalPolicyV1 {
+    [1m[94m|[0m [1m[94m--------------------------------[0m [1m[94mthis function of the same name is available here, but it's shadowed by the local binding[0m
+
+[1mSome errors have detailed explanations: E0255, E0308, E0618.[0m
+[1mFor more information about an error, try `rustc --explain E0255`.[0m
+[1m[33mwarning[0m: `codex-hepta-memory-retrieval` (lib test) generated 1 warning
+[1m[91merror[0m: could not compile `codex-hepta-memory-retrieval` (lib test) due to 4 previous errors; 1 warning emitted
