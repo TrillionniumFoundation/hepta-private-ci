@@ -19,6 +19,36 @@ const MAX_REVOCATION_FEED_BYTES: u64 = 1_048_576;
 const MAX_REVOKED_GRANTS: usize = 65_536;
 const POLL_INTERVAL: Duration = Duration::from_millis(20);
 
+#[cfg(unix)]
+fn effective_uid() -> Result<u32, String> {
+    #[cfg(target_os = "linux")]
+    {
+        let status = fs::read_to_string("/proc/self/status")
+            .map_err(|error| format!("cannot read Browser owner process status: {error}"))?;
+        let uid_line = status
+            .lines()
+            .find(|line| line.starts_with("Uid:"))
+            .ok_or_else(|| "Browser owner process status lacks Uid".to_string())?;
+        let mut fields = uid_line.split_whitespace();
+        if fields.next() != Some("Uid:") {
+            return Err("Browser owner process Uid status is malformed".into());
+        }
+        let _real_uid = fields
+            .next()
+            .ok_or_else(|| "Browser owner process status lacks real uid".to_string())?;
+        return fields
+            .next()
+            .ok_or_else(|| "Browser owner process status lacks effective uid".to_string())?
+            .parse::<u32>()
+            .map_err(|_| "Browser owner effective uid is malformed".to_string());
+    }
+
+    #[cfg(all(unix, not(target_os = "linux")))]
+    {
+        Err("Browser revocation feed owner verification is qualified only on Linux".into())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 struct BrowserRevocationHead {
@@ -201,10 +231,11 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::{MetadataExt, PermissionsExt};
+        let euid = effective_uid()?;
         if parent_metadata.permissions().mode() & 0o077 != 0 {
             return Err("Browser revocation feed parent permissions are too broad".into());
         }
-        if parent_metadata.uid() != rustix::process::geteuid().as_raw() {
+        if parent_metadata.uid() != euid {
             return Err("Browser revocation feed parent is not owned by the Agentd uid".into());
         }
     }
@@ -226,10 +257,11 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::{MetadataExt, PermissionsExt};
+        let euid = effective_uid()?;
         if before.permissions().mode() & 0o077 != 0 {
             return Err("Browser revocation feed permissions are too broad".into());
         }
-        if before.uid() != rustix::process::geteuid().as_raw() || before.nlink() != 1 {
+        if before.uid() != euid || before.nlink() != 1 {
             return Err("Browser revocation feed must be owner-owned with one hard link".into());
         }
     }
@@ -244,11 +276,12 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
+        let euid = effective_uid()?;
         if opened.dev() != after.dev() || opened.ino() != after.ino() {
             return Err("Browser revocation feed changed during secure open".into());
         }
-        if opened.uid() != rustix::process::geteuid().as_raw()
-            || after.uid() != rustix::process::geteuid().as_raw()
+        if opened.uid() != euid
+            || after.uid() != euid
             || opened.nlink() != 1
             || after.nlink() != 1
         {
