@@ -1,0 +1,65 @@
+name: context-compiler-v3-bootstrap
+
+on:
+  push:
+    branches:
+      - context-compiler-v2-product-closure
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-v3-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    if: ${{ !contains(github.event.head_commit.message, '[v3-source-applied]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Apply one-shot V3 source migration
+        run: python3 scripts/apply_context_compiler_v3_source.py
+
+      - name: Format the Rust workspace
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Run focused source tests
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+
+      - name: Run focused strict Clippy
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          --all-targets --all-features -- -D warnings
+
+      - name: Commit verified migration
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-closure-bot"
+          git config user.email "hepta-closure-bot@users.noreply.github.com"
+          git add --all
+          git diff --cached --check
+          git commit -m "feat(context.compiler): establish canonical V3 product source [v3-source-applied]"
+          git push origin "HEAD:${BRANCH}"
