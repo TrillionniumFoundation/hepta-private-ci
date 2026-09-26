@@ -8,15 +8,18 @@ on:
       - "docs/contracts/**"
       - "docs/lane-a-foundation/**"
       - "docs/modules/platform.types/**"
+      - "docs/modules/platform.wire/**"
       - "qualification/module-execution-dossiers/**"
       - "scripts/lane_a_foundation_core.py"
       - "scripts/lane_a_foundation_lib.py"
+      - "scripts/platform_wire_status.py"
       - "scripts/verify_lane_a_foundation.py"
       - "scripts/verify_lane_a_pr_tuple.py"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_kernel_authority_map_freshness.py"
       - "qualification/kernel-authority/**"
       - ".github/workflows/lane-a-foundation.yml"
+      - ".github/workflows/platform-wire-target-host.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
@@ -61,6 +64,8 @@ jobs:
           python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
           python3 codex-rs/hepta-types/conformance/verify_vectors.py
           node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts
           python3 codex-rs/hepta-types/conformance/verify_rejections.py
@@ -76,7 +81,7 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
-      - name: Qualify wire framing, registered ports and both binary directions
+      - name: Qualify wire framing, policy sessions and both binary directions
         id: wire-native
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -93,18 +98,34 @@ jobs:
             local name="$1" minimum="$2"
             shift 2
             if python3 scripts/hepta_ci_exec.py --output "$records/$name.json" \
-            --minimum-tests "$minimum" -- "$@"; then
+              --minimum-tests "$minimum" -- "$@"; then
               :
             else
               status=1
             fi
           }
-          record wire 43 just test --locked -p codex-hepta-wire
+          record wire 48 just test --locked -p codex-hepta-wire
           record ports 8 just test --locked -p codex-hepta-context-compiler \
             -p codex-hepta-codex-adapter --lib -E 'test(wire::tests)'
           record cross-runtime 4 just test --locked -p codex-hepta-shadow-qualification \
             --test cross_runtime_wire_session
-          record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml             -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets -- -D warnings
+          record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire -p codex-hepta-codex-adapter \
+            --all-targets --no-deps -- -D warnings
+          python3 - "$SOURCE_SHA" "$TESTED_SHA" "$status" \
+            > "$records/lifecycle-receipt.json" <<'PY'
+          import json
+          import sys
+
+          source_sha, tested_sha, status = sys.argv[1:]
+          print(json.dumps({
+              "schema": "hepta.platform-wire.receipt.v1",
+              "kind": "platform-wire-exact-head",
+              "source_sha": source_sha,
+              "tested_sha": tested_sha,
+              "status": "passed" if status == "0" else "failed",
+          }, sort_keys=True, indent=2))
+          PY
           exit "$status"
 
       - name: Retain wire results even when the wider Lane A fails
@@ -182,6 +203,8 @@ jobs:
           python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
           python3 codex-rs/hepta-types/conformance/verify_vectors.py
           node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts
           python3 codex-rs/hepta-types/conformance/verify_rejections.py
@@ -197,11 +220,11 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
-      - name: Qualify wire framing, registered ports and both binary directions
+      - name: Qualify wire framing, policy sessions and both binary directions
         id: wire-native
         env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
           TESTED_SHA: ${{ steps.merge.outputs.sha }}
           HEPTA_CI_LANE: synthetic-merge
         shell: bash
@@ -214,25 +237,41 @@ jobs:
             local name="$1" minimum="$2"
             shift 2
             if python3 scripts/hepta_ci_exec.py --output "$records/$name.json" \
-            --minimum-tests "$minimum" -- "$@"; then
+              --minimum-tests "$minimum" -- "$@"; then
               :
             else
               status=1
             fi
           }
-          record wire 43 just test --locked -p codex-hepta-wire
+          record wire 48 just test --locked -p codex-hepta-wire
           record ports 8 just test --locked -p codex-hepta-context-compiler \
             -p codex-hepta-codex-adapter --lib -E 'test(wire::tests)'
           record cross-runtime 4 just test --locked -p codex-hepta-shadow-qualification \
             --test cross_runtime_wire_session
-          record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml             -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets -- -D warnings
+          record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire -p codex-hepta-codex-adapter \
+            --all-targets --no-deps -- -D warnings
+          python3 - "$SOURCE_SHA" "$TESTED_SHA" "$status" \
+            > "$records/lifecycle-receipt.json" <<'PY'
+          import json
+          import sys
+
+          source_sha, tested_sha, status = sys.argv[1:]
+          print(json.dumps({
+              "schema": "hepta.platform-wire.receipt.v1",
+              "kind": "platform-wire-synthetic-merge",
+              "source_sha": source_sha,
+              "tested_sha": tested_sha,
+              "status": "passed" if status == "0" else "failed",
+          }, sort_keys=True, indent=2))
+          PY
           exit "$status"
 
       - name: Retain wire results even when the wider Lane A fails
         if: always() && steps.wire-native.outputs.directory != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: platform-wire-synthetic-merge-${{ github.event.pull_request.head.sha || github.sha }}
+          name: platform-wire-synthetic-merge-${{ github.event.pull_request.head.sha }}
           path: ${{ steps.wire-native.outputs.directory }}
           if-no-files-found: error
           retention-days: 90
