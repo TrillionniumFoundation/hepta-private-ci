@@ -1,0 +1,44 @@
+name: learning.plasticity source snapshot
+
+on:
+  push:
+    branches:
+      - learning-plasticity-full-convergence-20260927
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Record exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > SOURCE_SHA
+          git rev-parse HEAD^{tree} > SOURCE_TREE
+      - name: Build source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar \
+            --exclude=.git \
+            --exclude=target \
+            --exclude='**/__pycache__' \
+            -czf hepta-private-ci-source.tar.gz .
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-plasticity-source-${{ github.sha }}
+          path: |
+            hepta-private-ci-source.tar.gz
+            SOURCE_SHA
+            SOURCE_TREE
+          retention-days: 3
+          if-no-files-found: error
