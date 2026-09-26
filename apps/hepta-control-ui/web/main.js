@@ -9,7 +9,10 @@ import {
 const csrfTokenProvider = () =>
   document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || null;
 
-const transport = new SameOriginHttpTransport({ csrfTokenProvider });
+const transport = new SameOriginHttpTransport({
+  csrfTokenProvider,
+  fetchImpl: globalThis.fetch.bind(globalThis),
+});
 const client = new RuntimeClient({ transport });
 const sessionProvider = new SessionProvider({
   client,
