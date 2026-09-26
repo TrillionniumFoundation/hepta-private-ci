@@ -24,12 +24,25 @@ impl AgentdIntelligenceInvocationV1 {
         record: &RunStartRecordV1,
     ) -> Result<(), AgentdError> {
         let snapshot = &record.snapshot;
+        let epoch = crate::intelligence_identity::AgentdRunEpochV1::running(
+            identity.agent_id.as_str(),
+            identity.spawn_generation,
+            snapshot.generation,
+        )
+        .map_err(crate::state::run_error)?;
+        if snapshot.fence_digest != epoch.fence_digest() {
+            return Err(AgentdError::GenerationFenced(
+                "RunStart fence does not match the Running epoch".to_string(),
+            ));
+        }
+        record
+            .identity_digest()
+            .map_err(|error| AgentdError::Invalid(format!("RunStart identity: {error}")))?;
         if self.request.run_id != snapshot.run_id
             || self.request.snapshot.objective_digest() != snapshot.objective_digest
             || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
-            || self.request.snapshot.body_generation().get() != snapshot.generation
+            || self.request.snapshot.body_generation().get() != identity.spawn_generation
             || self.request.legal_candidates.state_digest != snapshot.objective_digest
-            || snapshot.generation != identity.spawn_generation
         {
             return Err(AgentdError::Invalid(
                 "canonical intelligence invocation does not match the durable RunStart identity"

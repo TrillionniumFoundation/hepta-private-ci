@@ -58,6 +58,92 @@ impl AgentdIntelligenceProductRunnerV1 {
         }))
     }
 
+    /// Bind product preparation to the exact durable RunStart. Its deadline,
+    /// body, artifacts and lifecycle epoch are inherited, never regenerated.
+    pub(crate) async fn prepare_for_run_start(
+        &self,
+        composition: &crate::RuntimeComposition,
+        identity: &crate::AgentdIdentity,
+        record: &codex_hepta_learning_ledger::RunStartRecordV1,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let epoch = crate::intelligence_identity::AgentdRunEpochV1::running(
+            identity.agent_id.as_str(),
+            identity.spawn_generation,
+            record.snapshot.generation,
+        )
+        .map_err(AgentdIntelligenceProductError::Run)?;
+        if composition.agent_id != identity.agent_id.as_str()
+            || composition.agentd_generation != identity.spawn_generation
+            || record.snapshot.fence_digest != epoch.fence_digest()
+            || request.run_id != record.snapshot.run_id
+            || request.snapshot.objective_digest() != record.snapshot.objective_digest
+            || request.snapshot.authority_epoch() != record.snapshot.authority_epoch
+            || request.snapshot.body_generation().get() != identity.spawn_generation
+        {
+            return Err(AgentdIntelligenceProductError::Run(
+                crate::AgentRunError::MixedSnapshot,
+            ));
+        }
+        let source_digest = record.identity_digest().map_err(|_| {
+            AgentdIntelligenceProductError::Run(crate::AgentRunError::InvalidRunStart(
+                "canonical record identity",
+            ))
+        })?;
+        let deadline_ms = record.admission.deadline_unix_micros.div_ceil(1_000);
+        let remaining_ms = deadline_ms
+            .checked_sub(wall_clock_ms()?)
+            .filter(|remaining| *remaining > 0)
+            .ok_or(AgentdIntelligenceProductError::TimedOut)?;
+        let outcome = timeout(
+            Duration::from_millis(remaining_ms),
+            self.prepare_for_composition(composition, request, inputs),
+        )
+        .await
+        .map_err(|_| AgentdIntelligenceProductError::TimedOut)??;
+        match outcome {
+            AgentdIntelligenceProductOutcomeV1::Ready(mut prepared) => {
+                let snapshot = crate::AgentRunSnapshot {
+                    run_id: record.snapshot.run_id.to_string(),
+                    request_digest: source_digest.to_string(),
+                    objective_digest: record.snapshot.objective_digest.to_string(),
+                    body_digest: record.runtime_body_digest.to_string(),
+                    artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
+                    authority_epoch: record.snapshot.authority_epoch,
+                    generation: record.snapshot.generation,
+                    fence_digest: record.snapshot.fence_digest.to_string(),
+                    deadline_ms,
+                };
+                prepared.context_attachment = crate::AgentContextAttachment {
+                    run_id: snapshot.run_id.clone(),
+                    request_digest: snapshot.request_digest.clone(),
+                    objective_digest: snapshot.objective_digest.clone(),
+                    body_digest: snapshot.body_digest.clone(),
+                    artifact_set_digest: snapshot.artifact_set_digest.clone(),
+                    authority_epoch: snapshot.authority_epoch,
+                    generation: snapshot.generation,
+                    fence_digest: snapshot.fence_digest.clone(),
+                    deadline_ms,
+                    context_digest: prepared.envelope.context_receipt_digest.to_string(),
+                    compilation_receipt_digest: prepared.envelope.envelope_digest.to_string(),
+                };
+                prepared.run_snapshot = snapshot;
+                let mut bytes = b"hepta.agentd.intelligence-durable-dispatch.v1\0".to_vec();
+                bytes.extend_from_slice(source_digest.as_array());
+                bytes.extend_from_slice(prepared.dispatch_proposal_digest.as_array());
+                prepared.dispatch_proposal_digest = Digest32::of_bytes(&bytes);
+                Ok(AgentdIntelligenceProductOutcomeV1::Ready(prepared))
+            }
+            AgentdIntelligenceProductOutcomeV1::Abstained => {
+                Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
+            }
+            AgentdIntelligenceProductOutcomeV1::SlowPath => {
+                Ok(AgentdIntelligenceProductOutcomeV1::SlowPath)
+            }
+        }
+    }
+
     pub async fn prepare(
         &self,
         coordinator: &crate::AgentRunCoordinator,
@@ -77,19 +163,22 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let candidate_ids = request
+        let mut candidate_ids = request
             .legal_candidates
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
-        let intuition_ids = inputs
+        let mut intuition_ids = inputs
             .intuition_request
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
-        if candidate_ids != intuition_ids {
+        candidate_ids.sort();
+        intuition_ids.sort();
+        if candidate_ids.windows(2).any(|pair| pair[0] == pair[1]) || candidate_ids != intuition_ids
+        {
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 

@@ -99,7 +99,7 @@ impl AgentdState {
             identity.app_server_socket.display(),
             crate::AGENTD_CONTROL_SCHEMA_VERSION
         );
-        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        let mut run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
             agent_id: identity.agent_id.as_str().to_string(),
             supervisor_generation: identity.spawn_generation,
             agentd_generation: identity.spawn_generation,
@@ -112,6 +112,19 @@ impl AgentdState {
             max_active_runs: usize::from(identity.resources.max_concurrent_turns),
         })
         .map_err(run_error)?;
+
+        let running_generation = identity.spawn_generation.checked_add(1).ok_or_else(|| {
+            AgentdError::GenerationFenced("lifecycle generation overflow".to_string())
+        })?;
+        let run_epoch = crate::intelligence_identity::AgentdRunEpochV1::running(
+            identity.agent_id.as_str(),
+            identity.spawn_generation,
+            running_generation,
+        )
+        .map_err(run_error)?;
+        run_coordinator
+            .bind_run_epoch(run_epoch)
+            .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");
         let prompt_runtime_root = identity.run_root.join("prompt-runtime");
@@ -586,6 +599,7 @@ impl AgentdState {
             return Ok(None);
         };
 
+        self.require_current_run_start(record)?;
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
 
@@ -599,7 +613,13 @@ impl AgentdState {
             .composition()
             .clone();
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_for_run_start(
+                &composition,
+                &self.identity,
+                record,
+                invocation.request,
+                invocation.inputs,
+            )
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(
@@ -618,8 +638,8 @@ impl AgentdState {
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let admitted = runs
-                    .start_run(
+                let run_receipt = runs
+                    .admit_intelligence_context(
                         now_ms,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,
@@ -632,12 +652,6 @@ impl AgentdState {
                             fence_digest: snapshot.fence_digest,
                             deadline_ms: snapshot.deadline_ms,
                         },
-                    )
-                    .map_err(run_error)?;
-                let run_receipt = runs
-                    .attach_context(
-                        now_ms,
-                        admitted.revision,
                         crate::ContextAttachment {
                             run_id: attachment.run_id,
                             request_digest: attachment.request_digest,
@@ -798,11 +812,12 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    crate::intelligence_identity::objective_run_fence_digest(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
+    .to_string()
 }
 
 fn unix_now_ms() -> Result<u64, AgentdError> {

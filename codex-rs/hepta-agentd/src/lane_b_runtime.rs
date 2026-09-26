@@ -150,6 +150,7 @@ struct RunRecord {
 #[derive(Debug)]
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
+    run_epoch: Option<crate::intelligence_identity::AgentdRunEpochV1>,
     runs: BTreeMap<String, RunRecord>,
     accepting_runs: bool,
     max_active_runs: usize,
@@ -169,6 +170,7 @@ impl AgentRunCoordinator {
         let max_active_runs = composition.max_active_runs;
         Ok(Self {
             composition,
+            run_epoch: None,
             runs: BTreeMap::new(),
             accepting_runs: true,
             max_active_runs,
@@ -192,6 +194,7 @@ impl AgentRunCoordinator {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
+        self.require_composition_identity(&snapshot)?;
         validate_snapshot(now_ms, &snapshot)?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
@@ -743,3 +746,6 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
 #[cfg(test)]
 #[path = "lane_b_runtime_tests.rs"]
 mod tests;
+
+#[path = "intelligence_run_admission.rs"]
+mod intelligence_admission;

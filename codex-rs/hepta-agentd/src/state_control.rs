@@ -1262,12 +1262,8 @@ fn require_current_run_identity(
             "run generation {run_generation} does not match current Agent generation {current_generation}"
         )));
     }
-    let mut material = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    material.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    material.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    material.extend_from_slice(&current_generation.to_be_bytes());
-    let expected = codex_hepta_contracts::Sha256Digest::for_bytes(&material);
-    if fence_digest != expected.as_str() {
+    let expected = crate::state::objective_run_fence(identity, current_generation);
+    if fence_digest != expected {
         return Err(AgentdError::GenerationFenced(
             "run fence digest does not match the current Agent generation".to_string(),
         ));

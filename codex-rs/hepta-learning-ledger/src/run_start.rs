@@ -103,6 +103,16 @@ pub struct RunStartRecordV1 {
     pub objective_function_v1_bytes: Vec<u8>,
 }
 
+impl RunStartRecordV1 {
+    /// Digest of the validated canonical bytes used by the durable journal.
+    /// This includes authentication, all snapshot fields and both objective
+    /// encodings; it does not authenticate an arbitrary caller-created record.
+    pub fn identity_digest(&self) -> Result<Digest32, RunStartStoreError> {
+        validate_record(self)?;
+        Ok(Digest32::of_bytes(&encode_record(self)))
+    }
+}
+
 /// Durable hard-conflict outcome for an authenticated objective admission.
 ///
 /// Conflict receipts do not create a runtime snapshot. They still consume the

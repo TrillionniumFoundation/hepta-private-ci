@@ -25,6 +25,7 @@ mod event_buffer;
 mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
+mod intelligence_identity;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
