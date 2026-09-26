@@ -12,18 +12,29 @@ use crate::PromptRuntimeAttachmentV1;
 use crate::PromptRuntimeFinalRequestV2;
 use crate::PromptRuntimeHost;
 use crate::PromptRuntimeHostError;
+use crate::PromptRuntimeRequestKindV2;
+use crate::PromptRuntimeTransportV2;
 
-/// Secret-free binding installed by the provider-policy callback for one
-/// physical HTTP attempt before Core renders and observes the exact body.
+/// Complete secret-free binding installed by the provider-policy callback for
+/// one physical attempt before Core renders and observes the exact HTTP body.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRuntimeExactAttemptV2 {
     pub thread_id: String,
     pub turn_id: String,
     pub attempt_id: String,
     pub request_binding_id: String,
+    pub request_kind: PromptRuntimeRequestKindV2,
     pub provider_id: String,
+    pub provider_config_digest: Digest32,
     pub model: String,
+    pub transport: PromptRuntimeTransportV2,
+    pub endpoint_digest: Digest32,
+    pub logical_request_digest: Digest32,
     pub provider_wire_semantic_digest: Digest32,
+    pub ephemeral_input_digest: Option<Digest32>,
+    pub ephemeral_input_witness_digest: Option<Digest32>,
+    pub previous_response_id_digest: Option<Digest32>,
+    pub generate: bool,
 }
 
 impl PromptRuntimeExactAttemptV2 {
@@ -36,17 +47,55 @@ impl PromptRuntimeExactAttemptV2 {
             ("provider_id", self.provider_id.as_str()),
             ("model", self.model.as_str()),
         ] {
-            if value.is_empty() || value.len() > 256 || value.as_bytes().contains(&0) {
+            if value.is_empty() || value.len() > 512 || value.as_bytes().contains(&0) {
                 return Err(PromptRuntimeHostError::new(
                     "prompt_runtime_exact_attempt_invalid",
                     format!("{name} is not a bounded identity"),
                 ));
             }
         }
-        if self.provider_wire_semantic_digest.is_zero() {
+        for (name, digest) in [
+            ("provider_config", self.provider_config_digest),
+            ("endpoint", self.endpoint_digest),
+            ("logical_request", self.logical_request_digest),
+            ("provider_wire_semantic", self.provider_wire_semantic_digest),
+        ] {
+            if digest.is_zero() {
+                return Err(PromptRuntimeHostError::new(
+                    "prompt_runtime_exact_attempt_invalid",
+                    format!("{name} digest is empty"),
+                ));
+            }
+        }
+        match (
+            self.ephemeral_input_digest,
+            self.ephemeral_input_witness_digest,
+        ) {
+            (Some(input), Some(witness)) if !input.is_zero() && !witness.is_zero() => {}
+            (None, None) => {}
+            _ => {
+                return Err(PromptRuntimeHostError::new(
+                    "prompt_runtime_exact_attempt_invalid",
+                    "ephemeral input and witness digests must be present together",
+                ));
+            }
+        }
+        if self
+            .previous_response_id_digest
+            .is_some_and(Digest32::is_zero)
+        {
             return Err(PromptRuntimeHostError::new(
                 "prompt_runtime_exact_attempt_invalid",
-                "provider wire semantic digest is empty",
+                "previous response digest is empty",
+            ));
+        }
+        if self.request_kind != PromptRuntimeRequestKindV2::Turn
+            || self.transport != PromptRuntimeTransportV2::Http
+            || !self.generate
+        {
+            return Err(PromptRuntimeHostError::new(
+                "prompt_runtime_exact_attempt_invalid",
+                "exact context delivery requires a generating HTTP turn",
             ));
         }
         Ok(())
