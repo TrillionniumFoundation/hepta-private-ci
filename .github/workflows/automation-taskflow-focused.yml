@@ -1,26 +1,68 @@
 name: automation-taskflow-focused
 
 on:
-  push:
-    branches:
-      - work/automation-taskflow-durable-causal-chain
+  pull_request:
     paths:
       - codex-rs/hepta-automation/**
-      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agentd/src/automation.rs
+      - codex-rs/hepta-agentd/src/automation_*.rs
+      - codex-rs/hepta-agentd/src/state_control.rs
+      - codex-rs/hepta-agentd/src/runtime.rs
+      - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
+      - codex-rs/model-provider/**
       - codex-rs/Cargo.lock
+      - CALLERS.toml
+      - docs/modules/automation.taskflow/**
+      - docs/readiness/LANE_B_NATIVE_HOST.md
+      - qualification/module-execution-dossiers/detail/automation.taskflow.md
+      - qualification/lane-b/**
+      - scripts/check_automation_taskflow_schema.py
+      - scripts/test_automation_taskflow_schema.py
+      - scripts/hepta-lane-b-truth.py
+      - scripts/test_hepta_lane_b_truth.py
+      - .github/workflows/automation-taskflow-focused.yml
+  push:
+    branches:
+      - main
+    paths:
+      - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agentd/src/automation.rs
+      - codex-rs/hepta-agentd/src/automation_*.rs
+      - codex-rs/hepta-agentd/src/state_control.rs
+      - codex-rs/hepta-agentd/src/runtime.rs
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-types/**
+      - codex-rs/model-provider/**
+      - codex-rs/Cargo.lock
+      - CALLERS.toml
+      - docs/modules/automation.taskflow/**
+      - docs/readiness/LANE_B_NATIVE_HOST.md
+      - qualification/module-execution-dossiers/detail/automation.taskflow.md
+      - qualification/lane-b/**
+      - scripts/check_automation_taskflow_schema.py
+      - scripts/test_automation_taskflow_schema.py
+      - scripts/hepta-lane-b-truth.py
+      - scripts/test_hepta_lane_b_truth.py
       - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: automation-taskflow-focused-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   focused:
+    name: automation-taskflow-v19 / source-and-runtime
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: codex-rs
@@ -28,17 +70,93 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - name: Rustfmt changed automation owners
+          fetch-depth: 0
+
+      - name: Set up CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Verify schema, documentation and privileged callers
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/check_automation_taskflow_schema.py
+          python3 -m unittest scripts/test_automation_taskflow_schema.py
+          python3 scripts/verify_hepta_callers.py self-test
+          python3 scripts/verify_hepta_callers.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+
+      - name: Rustfmt automation owners
         run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+
       - name: Check automation, operations and Agentd
         run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+
+      - name: Strict clippy automation owners
+        run: cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings
+
       - name: Test kernel operation contract
         run: cargo test -p codex-hepta-operations
+
       - name: Test durable automation causal chain
         run: cargo test -p codex-hepta-automation --test durable_causal_chain
-      - name: Test automation package
+
+      - name: Test automation package and migration convergence
         run: cargo test -p codex-hepta-automation
-      - name: Test automation qualification profile
+
+      - name: Test automation structural qualification
         run: cargo test -p codex-hepta-automation --features taskflow-structural-qualification
-      - name: Test Agentd library
-        run: cargo test -p codex-hepta-agentd --lib
+
+      - name: Test Agentd automation and effect host
+        run: cargo test -p codex-hepta-agentd --lib automation
+
+      - name: Write exact command receipt
+        working-directory: .
+        env:
+          RECEIPT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/automation-taskflow-receipt"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = {
+              "schema": "hepta.automation-taskflow.command-receipt.v1",
+              "commit": os.environ["RECEIPT_SHA"],
+              "commands": [
+                  "python3 scripts/check_automation_taskflow_schema.py",
+                  "python3 -m unittest scripts/test_automation_taskflow_schema.py",
+                  "python3 scripts/verify_hepta_callers.py verify",
+                  "cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check",
+                  "cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd",
+                  "cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings",
+                  "cargo test -p codex-hepta-operations",
+                  "cargo test -p codex-hepta-automation --test durable_causal_chain",
+                  "cargo test -p codex-hepta-automation",
+                  "cargo test -p codex-hepta-automation --features taskflow-structural-qualification",
+                  "cargo test -p codex-hepta-agentd --lib automation",
+              ],
+              "result": "pass",
+              "authorityGranted": False,
+              "deploymentQualified": False,
+              "independentAcceptance": False,
+              "release": False,
+          }
+          target = Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-receipt" / "command-receipt.json"
+          target.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Retain exact command receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-command-receipt-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/automation-taskflow-receipt/command-receipt.json
+          if-no-files-found: error
+          retention-days: 30
