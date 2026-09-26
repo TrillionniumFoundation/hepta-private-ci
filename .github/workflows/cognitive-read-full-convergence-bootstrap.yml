@@ -1,0 +1,95 @@
+name: Cognitive read deterministic hardening materializer
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-full-convergence-20260926
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-deterministic-hardening-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): rerun hardening on windows' }}"
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Force an LF checkout
+        shell: bash
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Materialize and validate asserted source migration
+        id: materialize
+        continue-on-error: true
+        shell: bash
+        run: |
+          exec > >(tee "${RUNNER_TEMP}/cognitive-read-hardening.log") 2>&1
+          set -euxo pipefail
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          else
+            PYTHON=python
+          fi
+          "${PYTHON}" scripts/cognitive-read-agentd-hardening.py
+          "${PYTHON}" scripts/cognitive-read-agentd-finalize.py
+          "${PYTHON}" - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          changed = subprocess.run(
+              ["git", "diff", "--name-only", "-z"],
+              check=True,
+              capture_output=True,
+          ).stdout.split(b"\0")
+          for raw in changed:
+              if not raw:
+                  continue
+              path = Path(raw.decode("utf-8"))
+              data = path.read_bytes()
+              if b"\r\n" in data:
+                  path.write_bytes(data.replace(b"\r\n", b"\n"))
+          PY
+          "${PYTHON}" tests/test_cognitive_read_agentd_hardening.py
+          "${PYTHON}" scripts/verify-cognitive-read-constants.py
+          git diff --check
+          git status --short
+
+      - name: Retain hardening diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-hardening-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-read-hardening.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Reject incomplete materialization
+        if: steps.materialize.outcome != 'success'
+        shell: bash
+        run: exit 1
+
+      - name: Commit complete materialized source
+        if: steps.materialize.outcome == 'success'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name 'hepta-ci-convergence'
+          git config user.email 'hepta-ci-convergence@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'hardening script produced no source changes' >&2
+            exit 1
+          fi
+          git commit -m 'fix(cognitive.read): apply deterministic Agentd convergence hardening'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
