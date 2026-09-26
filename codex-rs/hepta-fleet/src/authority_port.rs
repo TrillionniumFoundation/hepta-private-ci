@@ -236,6 +236,26 @@ mod tests {
                 0,
             )
             .unwrap();
+
+        let committed_frontier = registry.frontier().unwrap();
+        drop(registry);
+        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
+            directory.path(),
+            "security-authority".into(),
+            committed_frontier,
+            Arc::new(FixedClock(2_000)),
+        )
+        .unwrap();
+        assert_eq!(
+            registry
+                .read_lease("fleet-issue-one")
+                .unwrap()
+                .expect("lease survives restart")
+                .lease
+                .revision,
+            1
+        );
+
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
         let (receipt, witness) = port
