@@ -6,6 +6,28 @@
     "tree": "b9269e35306d094bbdf61fa6723f13d6ede75c79"
   },
   "candidateBindingPolicy": "immutable_source_anchor_plus_exact_head_receipt",
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "6792f209b7c530154b9a4083a55338b1a3b2663b",
+    "tree": "0923adfc8b0e36c8447bc778be1c191c823ae18a"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs",
+    "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+    "codex-rs/hepta-matrix-store/src/dispatch.rs",
+    "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+    "codex-rs/hepta-matrixd",
+    "codex-rs/hepta-matrixd/src/runner.rs",
+    "codex-rs/hepta-matrixd/src/runtime.rs",
+    "codex-rs/hepta-matrixd/src/runtime/tests.rs",
+    "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+    "codex-rs/hepta-supervisor/src/matrix.rs",
+    "docs/modules/channel.matrix/TECHNICAL.md"
+  ],
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
   "sourceMaturity": "native_durable_channel_runtime_authorized_dispatch_source_composed_unqualified",
@@ -59,6 +81,7 @@
       "operation": "admit_event",
       "nativeSymbol": "pub async fn process_event(",
       "sourcePath": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "sourceBlob": "7a81a5a338e153bae8df20c46575fc3e5d1b1080",
       "sourcePathExists": true
     },
     {
@@ -93,6 +116,7 @@
       "operation": "prepare_send",
       "nativeSymbol": "pub async fn prepare_outbox_dispatch(",
       "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+      "sourceBlob": "9c424aa2a98970591fb45e15bd1c1e8eb93f94a0",
       "sourcePathExists": true
     },
     {
@@ -132,6 +156,7 @@
       "operation": "observe_send",
       "nativeSymbol": "pub(crate) async fn observe_outbound_event_tx(",
       "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+      "sourceBlob": "9c424aa2a98970591fb45e15bd1c1e8eb93f94a0",
       "sourcePathExists": true
     }
   ],
@@ -170,5 +195,55 @@
   "sourceRoot": [
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-matrix-sdk",
+      "object": "f5973957f32e06693cc756fd58928b8f34676aa1"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs",
+      "object": "f1ba3cd1fc33c7aac6c5f860aa8f72ce14633ec4"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+      "object": "4226334b588c0b32fa95274ee2539879b27e3fe3"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+      "object": "9c424aa2a98970591fb45e15bd1c1e8eb93f94a0"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+      "object": "93983a61fa232d2e9b454c2c1c3a1132aeea16ec"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd",
+      "object": "28890d84f868b61145a54c2bda09131b78d89fcc"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/runner.rs",
+      "object": "31fadf65428421f40386508b14f588792115c326"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "object": "7a81a5a338e153bae8df20c46575fc3e5d1b1080"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/runtime/tests.rs",
+      "object": "1cfe4d48b28ff0053eef92f6d9465b407b934ce2"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+      "object": "7f3ab77bf60de3220f26cd2c47238442c5243d3b"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "object": "58f0ac9ef340c5253b56e22a5baef969a941055f"
+    },
+    {
+      "path": "docs/modules/channel.matrix/TECHNICAL.md",
+      "object": "dc8cc7442a7e97c370648891e78e6b215cc4d0bd"
+    }
   ]
 }
