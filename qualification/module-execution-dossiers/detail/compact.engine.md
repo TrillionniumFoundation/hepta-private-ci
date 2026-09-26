@@ -1,52 +1,116 @@
-# compact.engine: implementation design
+# compact.engine: implementation and execution dossier
 
-Parent: `docs/modules/compact.engine/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded checkpoint and deletion-aware compaction qualification kernels implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Parent: `docs/modules/compact.engine/TECHNICAL.md`. Lane: `LANE-C-MEMORY`. Package: `MEM-5-COMPACT`.
 
-## 1. Source and work envelope
+Status: canonical qualified kernel, four-role signed trust boundary and durable checkpoint owner are present on the convergence branch. Exact-head and deterministic synthetic-merge qualification, product bootstrap composition, fenced physical GC, capacity measurements and independent acceptance remain explicit gates.
 
-Roots: `codex-rs/hepta-compact-engine`.
-Packages: `MEM-5-COMPACT`.
+## 1. Source and ownership
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+Authoritative root:
 
-## 2. Public operations and contract details
+- `codex-rs/hepta-compact-engine`
 
-`plan_compaction(read_snapshot, retention_policy, resource_budget) -> CompactionCandidate`; `build_checkpoint(candidate) -> CompactCheckpoint`; `plan_replay(eligible_events, quotas, profile) -> ReplayBatch`; `propose_skill(episodes, precondition/effect schema) -> SkillCandidate`. No operation overwrites source facts or treats synthetic replay as real evidence.
+No workflow may generate production source or push implementation commits. `.github/workflows/compact-engine-qualification.yml` is read-only and verifies the checked-out source. The deleted write-enabled materializer is not part of the implementation or evidence chain.
 
-## 3. State records and transaction design
+The module owns compaction candidate/payload/evaluation/proof/checkpoint publication records, its active-pointer CAS, local outbox, trust-enrollment history and checkpoint revocations. It does not own cognitive source facts or product deployment authority.
 
-`compact_checkpoint` binds source range/frontier, support manifest, algorithm/version, compressed payload digest, omitted-information description, tombstone cutoff, compatibility and predecessor. Procedural abstractions and semantic prototypes are proposals with source supports and confidence, not replacements for original events. Replay caches are rebuildable and inherit source deletion.
+## 2. Public construction and proof path
 
-## 4. Deterministic algorithm and scheduling
+The exported construction path is:
 
-Select eligible non-revoked events; apply per-source/task/modality quotas; rank by registered retention risk, prediction error, coverage and expected utility; build bounded summaries/checkpoints; verify retained-query and source-reconstruction obligations; publish through owner-approved state. Skills require explicit preconditions, termination, effect model and recovery. A missed consolidation window creates observable degradation, not unlimited catch-up work.
+```text
+CognitiveSnapshot + exact input manifest
+  -> signed selector/generator/tokenizer admission
+  -> build_qualified_candidate
+  -> signed independent evaluator admission
+  -> prove_compaction
+  -> DurableCompactionBundleV1::from_verified
+  -> MemoryCheckpointCoordinatorV1::publish_verified_checkpoint
+```
 
-## 5. Capacity and performance profile
+The record-only `compact()` API is not exported. `QualifiedCompactionCandidateV2` fields are private. The builder enforces authoritative snapshot completeness, exact input coverage, revision/predecessor consistency, deletion non-resurrection, protected support and record/byte/token ceilings.
 
-HNMF replay pilot <=4096 candidates and <=256 selected events; compaction batch and output byte ratio are profile-bound; source retention is not reduced by an unreviewed compression gain. Measure read utility loss, contradiction preservation, storage reduction, CPU and foreground interference.
+## 3. Durable records and transaction
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+`src/compaction_schema.sql` defines:
 
-## 6. Concrete verification cases
+- `compaction_candidates`
+- `compaction_payloads`
+- `compaction_evaluations`
+- `compaction_proofs`
+- `compaction_checkpoints`
+- `active_compaction_checkpoint`
+- `compaction_outbox`
+- `compaction_trust_registry`
+- `compaction_checkpoint_revocations`
 
-- COMPACT-01: source facts and required provenance remain resolvable after checkpoint publication.
-- COMPACT-02: a deleted event is excluded from replay and all derived checkpoint/skill candidates.
-- COMPACT-03: old-task and contradiction holdouts detect information lost by compression.
-- COMPACT-04: crash before publication retains the prior complete checkpoint; restore cannot select a revoked checkpoint.
+Candidate, payload, evaluation, proof, checkpoint and revocation identities are immutable. Publication executes under `BEGIN IMMEDIATE` and atomically persists trust, artifacts, checkpoint, generation/predecessor CAS and outbox. The idempotency key returns the prior publication only for identical semantics and conflicts on drift.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+## 4. Trust boundary
 
-## 7. Integration, rollback and capability ceiling
+Independent enrolled roles are:
 
-Consolidation contributes future artifacts but cannot mutate the current neural snapshot. Prefer the simplest compressor/selector meeting retention and resource constraints. Rollback is a generation selection plus current-lineage revalidation, not restoration of deleted source material.
+- `TrustedRetentionSelectorV1`
+- `TrustedSemanticGeneratorV1`
+- `TrustedTokenizerV1`
+- `TrustedCompactionEvaluatorV1`
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Enrollments and receipts bind schema version, role, Ed25519 key, key ID, trust epoch, validity interval, implementation/attestation digests and anti-replay nonce. Rotation requires an increasing epoch and predecessor key digest. Revocation is one-way. Historical verification uses the durable acceptance time; tokenizer authority is limited to token accounting.
 
-## 8. Current native implementation
+## 5. Recovery and rollback
 
-- **Implemented entrypoints:** `compact` in [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); `build_qualified_candidate` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs); `prove_compaction` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs). Bounded checkpoint and deletion-aware compaction qualification kernels implemented.
-- **State and recovery:** Native checkpoints retain references and explicit omissions from one snapshot; the qualified path preserves protected live support and requires separate loss/reconstruction observations. It neither rewrites source facts nor persists a selected checkpoint.
-- **Source tests:** [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs), [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/compact.engine/TECHNICAL.md](../../../docs/modules/compact.engine/TECHNICAL.md), [docs/learning/NEURAL_BIOMIMICRY_SPEC.md](../../../docs/learning/NEURAL_BIOMIMICRY_SPEC.md).
-- **Remaining work:** Bind independent holdout/reconstruction evidence and owner publication/reload. Target replay scheduling and skill induction are separate capabilities, not implied by checkpoint construction.
+Store open applies the exact schema, enables foreign keys, WAL and full synchronous durability, runs SQLite integrity/foreign-key checks, verifies required schema objects, rehashes persisted payload/artifact bytes and checks every active pointer.
+
+Recovery requeues interrupted outbox claims and selects the active non-revoked checkpoint. A revoked active head falls back to the highest prior non-revoked generation. A transaction failure leaves the previous active generation. Retrying after committed-response loss resolves through the idempotency key.
+
+Source retention remains fenced by a candidate-bound digest and deadline. Source deletion belongs to the source owner. Physical payload deletion remains fail-closed until a reviewed GC transaction proves revocation, inactivity, elapsed retention and durable GC notification.
+
+## 6. Named caller and composition boundary
+
+Repository caller identity:
+
+```text
+memory.checkpoint-coordinator.v1
+```
+
+Native type: `MemoryCheckpointCoordinatorV1` in `src/durable.rs`.
+
+It publishes only a fully verified durable bundle and recovers only after integrity and outbox reconciliation. This is a named source caller. Product execution is not claimed until the cognitive-store/runtime product bootstrap constructs it with the product database and externally enrolled trust identities.
+
+## 7. Current source tests
+
+- `src/qualified_tests.rs` — deterministic selection, exact snapshot binding, protected references, deletion and capacity behavior.
+- `src/trust_tests.rs` — role, signature, epoch, nonce, validity, tamper, rotation and historical verification.
+- `src/durable_tests.rs` — schema open/reopen, outbox response-loss recovery, one-way revocation, immutable rows and artifact-size ceiling.
+
+These paths are test identities, not pass receipts. Final evidence must bind the final commit SHA and include complete step results.
+
+## 8. Qualification commands
+
+From `codex-rs`:
+
+```bash
+cargo fmt --all -- --check
+cargo check --locked -p codex-hepta-compact-engine --all-targets
+cargo test --locked -p codex-hepta-compact-engine --all-targets
+cargo clippy --locked -p codex-hepta-compact-engine --all-targets -- -D warnings
+```
+
+`.github/workflows/compact-engine-qualification.yml` runs those commands on the exact source head and a deterministic synthetic merge. Queued, skipped, cancelled and failed jobs are not evidence.
+
+## 9. Required remaining repository work
+
+Before raising the production implementation/composition claim:
+
+1. obtain green exact-head and synthetic-merge focused receipts on the final SHA;
+2. add full build→proof→publish→restart→reload→reconstruct→incremental-event E2E coverage;
+3. add concurrent writer CAS, duplicate/semantic-drift, revoked-head fallback and row-corruption fixtures;
+4. add explicit pre/post transaction crash injection and migration rollback rehearsal;
+5. add property tests and fuzz targets for ordering, receipt decoding and durable corruption;
+6. compose the named coordinator through the product-owned cognitive-store/runtime bootstrap;
+7. implement separately reviewed fenced physical payload GC;
+8. store 65K-record, 64-MiB and 8M-token target-host measurements.
+
+## 10. External gates and claim boundary
+
+The branch does not claim independent semantic acceptance, production trust enrollment, activation, canary, promotion, merge authority or release. Those remain externally governed. A green source qualification proves only the exact repository candidate tested by that run.
