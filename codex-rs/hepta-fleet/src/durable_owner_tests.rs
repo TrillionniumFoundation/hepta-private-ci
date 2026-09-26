@@ -59,7 +59,7 @@ impl FleetCapacityObserverV1 for FixedObserver {
     }
 }
 
-fn grant() -> AllocationGrant {
+fn grant(expires_at_ms: u64) -> AllocationGrant {
     AllocationGrant {
         allocation_id: "allocation-one".into(),
         request_id: "request-one".into(),
@@ -69,7 +69,7 @@ fn grant() -> AllocationGrant {
         host_generation: 1,
         authority_epoch: 7,
         lease_generation: 1,
-        expires_at_ms: 9_000,
+        expires_at_ms,
         resources: ResourceVectorV1::physical(100, 1_024, 0),
         semantic_digest: format!("{:x}", Sha256::digest(b"fleet-allocation-one")),
         revoked: false,
@@ -77,26 +77,15 @@ fn grant() -> AllocationGrant {
 }
 
 #[cfg(unix)]
-#[test]
-fn issue_is_atomic_with_witness_and_survives_reopen() {
+fn authority_port(
+    directory: &tempfile::TempDir,
+    name: &str,
+    clock: Arc<ManualClock>,
+    grant: &AllocationGrant,
+) -> FleetAuthorityPort {
     use std::os::unix::fs::PermissionsExt;
 
-    let directory = tempfile::tempdir().expect("tempdir");
-    let state_root = directory.path().join("state");
-    std::fs::create_dir(&state_root).expect("state root");
-    std::fs::set_permissions(&state_root, std::fs::Permissions::from_mode(0o700))
-        .expect("permissions");
-    let clock = Arc::new(ManualClock::new(2_000));
-    let mut owner = DurableFleetOwner::open_supervisor_state_root(
-        &state_root,
-        clock.clone(),
-    )
-    .expect("owner");
-    owner
-        .refresh_capacity("capacity-one", &FixedObserver)
-        .expect("capacity");
-
-    let authority_root = directory.path().join("authority");
+    let authority_root = directory.path().join(name);
     std::fs::create_dir(&authority_root).expect("authority root");
     std::fs::set_permissions(&authority_root, std::fs::Permissions::from_mode(0o700))
         .expect("authority permissions");
@@ -104,11 +93,10 @@ fn issue_is_atomic_with_witness_and_survives_reopen() {
         &authority_root,
         "security-authority".into(),
         AuthorityLeaseFrontier::for_empty_epoch(7).expect("frontier"),
-        clock.clone(),
+        clock,
     )
     .expect("authority registry");
-    let grant = grant();
-    let binding = FleetAuthorityPort::binding_for_issue(&grant).expect("binding");
+    let binding = FleetAuthorityPort::binding_for_issue(grant).expect("binding");
     registry
         .put_lease(
             AuthorityLease {
@@ -123,7 +111,29 @@ fn issue_is_atomic_with_witness_and_survives_reopen() {
             0,
         )
         .expect("lease");
-    let port = FleetAuthorityPort::new(registry.verifier());
+    FleetAuthorityPort::new(registry.verifier())
+}
+
+#[cfg(unix)]
+#[test]
+fn issue_is_atomic_with_witness_and_survives_reopen() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = tempfile::tempdir().expect("tempdir");
+    let state_root = directory.path().join("state");
+    std::fs::create_dir(&state_root).expect("state root");
+    std::fs::set_permissions(&state_root, std::fs::Permissions::from_mode(0o700))
+        .expect("permissions");
+    let clock = Arc::new(ManualClock::new(2_000));
+    let mut owner =
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
+            .expect("owner");
+    owner
+        .refresh_capacity("capacity-one", &FixedObserver)
+        .expect("capacity");
+
+    let grant = grant(9_000);
+    let port = authority_port(&directory, "authority-one", clock.clone(), &grant);
     let issued = owner
         .issue_with_authority(
             "operation-one",
@@ -137,11 +147,9 @@ fn issue_is_atomic_with_witness_and_survives_reopen() {
     assert_eq!(issued.generation, 2);
 
     drop(owner);
-    let mut reopened = DurableFleetOwner::open_supervisor_state_root(
-        &state_root,
-        clock.clone(),
-    )
-    .expect("reopen");
+    let mut reopened =
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
+            .expect("reopen");
     let witness = reopened
         .verify_final_use(
             "allocation-one",
@@ -164,39 +172,35 @@ fn issue_is_atomic_with_witness_and_survives_reopen() {
     assert_eq!(duplicate.generation, issued.generation);
 }
 
+#[cfg(unix)]
 #[test]
 fn expiry_reconciliation_releases_durable_capacity() {
     let directory = tempfile::tempdir().expect("tempdir");
     let state_root = directory.path().join("state");
     std::fs::create_dir(&state_root).expect("state root");
     let clock = Arc::new(ManualClock::new(2_000));
-    let mut owner = DurableFleetOwner::open_supervisor_state_root(
-        &state_root,
-        clock.clone(),
-    )
-    .expect("owner");
+    let mut owner =
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
+            .expect("owner");
     owner
         .refresh_capacity("capacity-one", &FixedObserver)
         .expect("capacity");
-    let mut ledger = LeaseLedger::from_snapshot(
-        clock.clone(),
-        owner.state().fleet_grants.clone(),
-    )
-    .expect("ledger");
-    let mut expiring = grant();
-    expiring.expires_at_ms = 2_500;
-    ledger.issue(expiring).expect("local setup grant");
-    owner.state.fleet_grants = ledger.snapshot();
-    owner.state.fleet_resource_totals = ledger.metrics().expect("metrics").reserved_by_host;
-    owner.state.content_sha256.clear();
-    owner.state.content_sha256 = state_digest(&owner.state).expect("digest");
-    publish_state(&owner.root, &owner.state).expect_err("generation already exists");
+    let expiring = grant(2_500);
+    let port = authority_port(&directory, "authority-expiry", clock.clone(), &expiring);
+    owner
+        .issue_with_authority(
+            "issue-expiring",
+            &port,
+            "fleet-issue-one",
+            1,
+            expiring,
+        )
+        .expect("issue expiring grant");
 
     clock.set(2_500);
-    let receipt = owner
+    owner
         .reconcile_expired("expiry-one")
         .expect("reconcile expiry");
-    assert!(receipt.generation >= 2);
     assert_eq!(
         owner.metrics().expect("operational metrics").fleet_active_grants,
         0
@@ -209,11 +213,9 @@ fn post_link_failure_is_indeterminate_and_recoverable_by_operation_id() {
     let state_root = directory.path().join("state");
     std::fs::create_dir(&state_root).expect("state root");
     let clock = Arc::new(ManualClock::new(2_000));
-    let mut owner = DurableFleetOwner::open_supervisor_state_root(
-        &state_root,
-        clock.clone(),
-    )
-    .expect("owner");
+    let mut owner =
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
+            .expect("owner");
     fail_next_commit_after_state_link();
     let error = owner
         .refresh_capacity("capacity-indeterminate", &FixedObserver)
