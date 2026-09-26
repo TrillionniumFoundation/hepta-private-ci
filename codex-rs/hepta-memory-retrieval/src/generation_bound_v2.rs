@@ -39,15 +39,66 @@ pub use legacy::adapt_generation_bound_recall_to_canonical_shadow_v1;
 pub use legacy::build_candidate_union;
 
 /// Proposition-relative evidence direction.
-///
-/// `contradiction_group_digest` is interpreted as the proposition digest. A
-/// candidate from `ContradictionSupport` opposes that proposition; evidence
-/// from every other admitted channel supports it. A proposition is contradictory
-/// only when both directions are present in the policy-admitted set.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum ContradictionPolarityV1 {
     Supports,
     Opposes,
+}
+
+/// Typed interpretation of the backward-compatible contradiction group field.
+///
+/// The digest identifies one proposition. Polarity is explicit and is never
+/// inferred from the number of records sharing that digest. This prevents two
+/// same-side evidence records from being treated as contradictory merely
+/// because they belong to the same proposition group.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct ContradictionEvidenceV1 {
+    pub proposition_digest: Digest32,
+    pub polarity: ContradictionPolarityV1,
+}
+
+impl RetrievalChannelCandidateV1 {
+    #[must_use]
+    pub fn contradiction_evidence(&self) -> Option<ContradictionEvidenceV1> {
+        self.contradiction_group_digest
+            .map(|proposition_digest| ContradictionEvidenceV1 {
+                proposition_digest,
+                polarity: polarity_for_channel(self.channel),
+            })
+    }
+}
+
+impl CandidateUnionEntryV1 {
+    #[must_use]
+    pub fn contradiction_evidence(&self) -> Vec<ContradictionEvidenceV1> {
+        let polarities = self
+            .channels
+            .iter()
+            .copied()
+            .map(polarity_for_channel)
+            .collect::<BTreeSet<_>>();
+        let mut evidence = self
+            .contradiction_group_digests
+            .iter()
+            .flat_map(|proposition_digest| {
+                polarities.iter().map(move |polarity| ContradictionEvidenceV1 {
+                    proposition_digest: *proposition_digest,
+                    polarity: *polarity,
+                })
+            })
+            .collect::<Vec<_>>();
+        evidence.sort();
+        evidence.dedup();
+        evidence
+    }
+}
+
+const fn polarity_for_channel(channel: RetrievalChannelV1) -> ContradictionPolarityV1 {
+    if matches!(channel, RetrievalChannelV1::ContradictionSupport) {
+        ContradictionPolarityV1::Opposes
+    } else {
+        ContradictionPolarityV1::Supports
+    }
 }
 
 pub fn recall(
@@ -169,23 +220,14 @@ pub(crate) fn policy_admitted_union(
 
 pub(crate) fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
     let mut groups = BTreeMap::<Digest32, BTreeSet<ContradictionPolarityV1>>::new();
-    for entry in entries {
-        let supports = entry
-            .channels
-            .iter()
-            .any(|channel| *channel != RetrievalChannelV1::ContradictionSupport);
-        let opposes = entry
-            .channels
-            .contains(&RetrievalChannelV1::ContradictionSupport);
-        for proposition in &entry.contradiction_group_digests {
-            let polarities = groups.entry(*proposition).or_default();
-            if supports {
-                polarities.insert(ContradictionPolarityV1::Supports);
-            }
-            if opposes {
-                polarities.insert(ContradictionPolarityV1::Opposes);
-            }
-        }
+    for evidence in entries
+        .iter()
+        .flat_map(CandidateUnionEntryV1::contradiction_evidence)
+    {
+        groups
+            .entry(evidence.proposition_digest)
+            .or_default()
+            .insert(evidence.polarity);
     }
     groups
         .values()
