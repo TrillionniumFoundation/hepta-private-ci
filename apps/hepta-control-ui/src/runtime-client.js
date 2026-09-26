@@ -31,6 +31,13 @@ import {
 
 export { UI_CONTROL_PERMISSIONS, UI_CONTROL_PROTOCOL_VERSION } from "./runtime-contract.js";
 
+function sameStringArray(left, right) {
+  return (
+    left.length === right.length &&
+    left.every((value, index) => value === right[index])
+  );
+}
+
 export class RuntimeClient {
   #transport;
   #clock;
@@ -78,22 +85,62 @@ export class RuntimeClient {
         "transport does not implement session refresh",
       );
     }
-    const rawSession = await this.#transport.refresh(this.#session, { signal });
+    const previous = this.#session;
+    const rawSession = await this.#transport.refresh(previous, { signal });
     const refreshed = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
-    if (refreshed.sessionId !== this.#session.sessionId) {
+    if (refreshed.sessionId !== previous.sessionId) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
         "session refresh changed the session identity",
       );
     }
-    if (refreshed.connectionGeneration < this.#session.connectionGeneration) {
+    if (refreshed.identityId !== previous.identityId) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
+        "session refresh changed the authenticated operator identity",
+        {
+          details: {
+            sessionId: previous.sessionId,
+            previousIdentityId: previous.identityId,
+            refreshedIdentityId: refreshed.identityId,
+          },
+        },
+      );
+    }
+    if (refreshed.connectionGeneration < previous.connectionGeneration) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.STALE_GENERATION,
         "session refresh regressed connection generation",
       );
     }
+    if (refreshed.permissionRevision < previous.permissionRevision) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+        "session refresh regressed permission revision",
+        {
+          details: {
+            previousPermissionRevision: previous.permissionRevision,
+            refreshedPermissionRevision: refreshed.permissionRevision,
+          },
+        },
+      );
+    }
+    if (
+      refreshed.permissionRevision === previous.permissionRevision &&
+      !sameStringArray(refreshed.permissions, previous.permissions)
+    ) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+        "session permissions changed without a permission revision change",
+        {
+          details: {
+            permissionRevision: previous.permissionRevision,
+          },
+        },
+      );
+    }
     const generationChanged =
-      refreshed.connectionGeneration !== this.#session.connectionGeneration;
+      refreshed.connectionGeneration !== previous.connectionGeneration;
     this.#session = refreshed;
     if (generationChanged) this.#snapshot = null;
     return this.readView();
@@ -102,11 +149,11 @@ export class RuntimeClient {
   async revokeSession({ signal } = {}) {
     if (!this.#session) return;
     const session = this.#session;
+    this.#session = null;
+    this.#snapshot = null;
     if (typeof this.#transport.revoke === "function") {
       await this.#transport.revoke(session, { signal });
     }
-    this.#session = null;
-    this.#snapshot = null;
   }
 
   async refreshView({ signal } = {}) {
@@ -135,6 +182,7 @@ export class RuntimeClient {
       connected: this.#session !== null,
       authenticated: this.#session?.authenticated === true,
       sessionId: this.#session?.sessionId ?? null,
+      identityId: this.#session?.identityId ?? null,
       connectionGeneration: this.#session?.connectionGeneration ?? null,
       permissionRevision: this.#session?.permissionRevision ?? null,
       permissions: this.#session?.permissions ?? Object.freeze([]),
@@ -219,7 +267,6 @@ export class RuntimeClient {
       );
     }
 
-    this.#assertPermission(permission);
     if (this.#session !== session) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.STALE_GENERATION,
@@ -229,11 +276,12 @@ export class RuntimeClient {
           details: {
             operationId,
             observedConnectionGeneration: session.connectionGeneration,
-            currentConnectionGeneration: this.#session.connectionGeneration,
+            currentConnectionGeneration: this.#session?.connectionGeneration ?? null,
           },
         },
       );
     }
+    this.#assertPermission(permission);
     const currentSnapshot = this.#snapshot;
     if (
       !currentSnapshot ||
@@ -375,12 +423,14 @@ export class RuntimeClient {
   }
 
   async close({ signal } = {}) {
-    if (this.#session) {
-      await this.#transport.close(this.#session, { signal });
-    }
+    const session = this.#session;
+    const recoveryState = this.exportRecoveryState();
     this.#session = null;
     this.#snapshot = null;
-    return this.exportRecoveryState();
+    if (session) {
+      await this.#transport.close(session, { signal });
+    }
+    return recoveryState;
   }
 
   #assertConnected() {
