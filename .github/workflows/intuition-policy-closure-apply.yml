@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: [self-hosted]
     timeout-minutes: 60
     steps:
       - name: Check out closure branch
@@ -35,8 +35,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode scripts/apply-intuition-policy-closure.py.gz.b64 | gzip --decompress > /tmp/apply-intuition-policy-closure.py
-          test "$(sha256sum /tmp/apply-intuition-policy-closure.py | cut -d' ' -f1)" = "4ea4908db24250bba84a543db914753ab694e442dca390fbeec85d27750d5ab1"
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          raw = gzip.decompress(base64.b64decode(
+              Path("scripts/apply-intuition-policy-closure.py.gz.b64").read_bytes()
+          ))
+          actual = hashlib.sha256(raw).hexdigest()
+          expected = "4ea4908db24250bba84a543db914753ab694e442dca390fbeec85d27750d5ab1"
+          if actual != expected:
+              raise SystemExit(f"guarded patch digest mismatch: {actual}")
+          Path("/tmp/apply-intuition-policy-closure.py").write_bytes(raw)
+          PY
           python3 -m py_compile /tmp/apply-intuition-policy-closure.py
       - name: Apply guarded source edits
         run: python3 /tmp/apply-intuition-policy-closure.py
