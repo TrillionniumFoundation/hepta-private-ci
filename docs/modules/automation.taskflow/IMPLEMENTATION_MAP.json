@@ -90,6 +90,11 @@
           "path": "codex-rs/hepta-automation/tests/runtime_reliability.rs",
           "kind": "bounded_batch_fifo_identity_backlog_and_failure_policy",
           "command": "cargo test -p codex-hepta-automation --test runtime_reliability"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/runtime_reliability.rs",
+          "kind": "bounded_batch_fifo_identity_backlog_and_failure_policy",
+          "command": "cargo test -p codex-hepta-automation --test runtime_reliability"
         }
       ],
       "sourceSemantics": "Claims FIFO due work, freezes schedule revision and canonical occurrence identity, and admits a caller-bounded sequential batch through the unchanged durable per-occurrence transaction; recovery and admission consume separate host budgets.",
@@ -314,8 +319,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "14c3311e8ac1eb218d9241a630a0f01c043c82de",
-    "tree": "d2f8c3f1575c4e3336250680133ef775d460c4ec"
+    "commit": "d7491cf5101c84a65b0649a7fef472315af3041a",
+    "tree": "39fc04e9593634ac53ee977f865af37258654609"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
