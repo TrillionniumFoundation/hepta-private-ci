@@ -2,11 +2,14 @@ name: Hepta learning.artifacts qualification
 
 on:
   push:
-    branches:
-      - main
-      - work/learning-artifacts-remediation-20260927
+    branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Exact nonzero base commit for ordered-parent merge qualification
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -17,6 +20,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha || github.event.before }}
 
 jobs:
   metadata:
@@ -28,89 +32,117 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Verify exact source and retain closure findings
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          mkdir -p .hepta-evidence/learning-artifacts
-          git rev-parse HEAD HEAD^{tree} > .hepta-evidence/learning-artifacts/source.txt
-          set +e
-          python3 scripts/hepta-lane-e-closure.py verify > .hepta-evidence/learning-artifacts/closure.json 2>&1
-          result=$?
-          set -e
-          cat .hepta-evidence/learning-artifacts/closure.json
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          path = Path('.hepta-evidence/learning-artifacts/closure.json')
-          try:
-              findings = json.loads(path.read_text()).get('findings', [])
-          except (ValueError, OSError):
-              findings = [{'message': 'Closure verifier failed before emitting JSON; inspect closure.json'}]
-          for finding in findings:
-              message = str(finding.get('message', finding))
-              message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-              print('::error title=Lane E closure::' + message)
-          PY
-          exit "$result"
-      - name: Retain exact-source review bundle
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p .hepta-evidence/learning-artifacts
-          git archive --format=tar "$SOURCE_SHA" codex-rs/hepta-learning-artifacts codex-rs/hepta-types codex-rs/hepta-agentd/src/cognitive_ranker.rs codex-rs/Cargo.toml codex-rs/Cargo.lock scripts docs/modules/learning.artifacts docs/lane-e qualification/lane-e .github/workflows/hepta-lane-e-gap-closure.yml > .hepta-evidence/learning-artifacts/source-review.tar
+      - name: Closed-world verification and receipt-verifier regressions
+        run: python3 scripts/hepta-artifact-qualification.py run --lane metadata --source "$SOURCE_SHA" --directory .hepta-evidence/artifact-metadata
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: learning-artifacts-metadata-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
-          path: .hepta-evidence/learning-artifacts
+          name: artifact-metadata-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/artifact-metadata
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
 
   native:
+    name: Artifact native (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [build, lint, format, owner, storage, lifecycle, selection, revocation, pinned, publication, all]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: clippy,rustfmt
-      - name: Exact-head all-target build
-        working-directory: codex-rs
-        run: cargo check --locked -p codex-hepta-learning-artifacts --all-targets
-      - name: Strict artifact lint
-        if: ${{ !cancelled() }}
-        working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
-      - name: Artifact owner and boundary regressions
-        if: ${{ !cancelled() }}
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-learning-artifacts --all-targets -- --nocapture
+      - name: Compile before testing; retain nonzero test counts and exact output
+        env:
+          LANE: ${{ matrix.lane }}
+        run: python3 scripts/hepta-artifact-qualification.py run --lane "$LANE" --source "$SOURCE_SHA" --directory .hepta-evidence/artifact-native
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: artifact-native-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/artifact-native
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Materialize the actual base with ordered parents
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$BASE_SHA" != 0000000000000000000000000000000000000000
+          git cat-file -e "$BASE_SHA^{commit}"
+          git config user.name 'Artifact qualification'
+          git config user.email 'artifact-qualification@users.noreply.github.com'
+          tree=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+          merge=$(printf 'Artifact qualification only\n' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")
+          git checkout --detach "$merge"
+      - name: Build and run all owner tests on the verified merge tree
+        run: python3 scripts/hepta-artifact-qualification.py run --lane synthetic --source "$SOURCE_SHA" --base "$BASE_SHA" --directory .hepta-evidence/artifact-synthetic
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: artifact-synthetic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/artifact-synthetic
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
 
   required:
     name: learning.artifacts exact-head required
     if: always()
-    needs: [metadata, native]
+    needs: [metadata, native, synthetic]
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
-      - name: Reject missing, failed, cancelled or skipped lanes
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        continue-on-error: true
+        with:
+          pattern: artifact-*-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/downloaded
+      - name: Reject absent, stale, failed, cancelled, skipped or zero-test evidence
+        if: always()
         env:
-          RESULTS: ${{ toJSON(needs) }}
-        run: |
-          python3 - <<'PY'
-          import json, os, sys
-          results = json.loads(os.environ['RESULTS'])
-          expected = {'metadata', 'native'}
-          ok = set(results) == expected and all(results[k]['result'] == 'success' for k in expected)
-          print(json.dumps({'sourceSha': os.environ['SOURCE_SHA'], 'jobs': results, 'passed': ok, 'productionActivation': False}, indent=2))
-          sys.exit(0 if ok else 1)
-          PY
+          JOB_RESULTS: ${{ toJSON(needs) }}
+        run: python3 scripts/hepta-artifact-qualification.py collect --source "$SOURCE_SHA" --base "$BASE_SHA" --directory .hepta-evidence/downloaded --output .hepta-evidence/qualification.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: artifact-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/qualification.json
+          if-no-files-found: error
+          retention-days: 14
