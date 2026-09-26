@@ -20,10 +20,10 @@ use crate::AgentdState;
 use crate::error::contextual_io_error;
 use crate::qualification_writer::qualification_turn_writer_host;
 
-#[cfg(feature = "production-cognitive-write")]
-const COGNITIVE_WRITE_ENABLED: bool = true;
-#[cfg(not(feature = "production-cognitive-write"))]
-const COGNITIVE_WRITE_ENABLED: bool = false;
+// Cargo features never grant production mutation authority. The static
+// switch exists only for the qualification witness profile; the production
+// path is enabled exclusively by a recovered mutation host.
+const COGNITIVE_WRITE_ENABLED: bool = cfg!(feature = "qualification-cognitive-write");
 
 #[cfg(feature = "qualification-cognitive-write")]
 const QUALIFICATION_TURN_WRITER_ENABLED: bool = true;

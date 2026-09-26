@@ -1,0 +1,198 @@
+# One-shot exact-map convergence workflow; it deletes itself after a successful run.
+name: Cognitive read implementation-map materializer
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - .github/workflows/cognitive-read-map-materialize.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-map-materialize-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Stage the final source observation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git config user.name 'hepta-ci-convergence'
+          git config user.email 'hepta-ci-convergence@users.noreply.github.com'
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          context_path = Path('codex-rs/hepta-agentd/src/cognitive_context.rs')
+          context = context_path.read_text(encoding='utf-8')
+          old = '\n'.join([
+              'fn planned_context_encoded_len(',
+              '    response: &CognitiveContextSnapshot,',
+              ') -> Result<usize, CognitiveStoreError> {',
+              '    let zero = Digest32::ZERO.to_string();',
+              '    [false, true]',
+              '        .into_iter()',
+              '        .map(|read_allowed| {',
+              '            let mut candidate = response.clone();',
+              '            candidate.snapshot_digest = zero.clone();',
+              '            candidate.read_digest = zero.clone();',
+              '            candidate.plan = Some(CognitiveContextPlan {',
+              '                evaluated_context_digest: zero.clone(),',
+              '                plan_receipt_digest: zero.clone(),',
+              '                read_allowed,',
+              '            });',
+              '            serde_json::to_vec(&candidate)',
+              '                .map(|encoded| encoded.len())',
+              '                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))',
+              '        })',
+              '        .collect::<Result<Vec<_>, _>>()?',
+              '        .into_iter()',
+              '        .max()',
+              '        .ok_or_else(|| CognitiveStoreError::Invalid("missing context plan shape".to_string()))',
+              '}',
+              '',
+          ])
+          new = '\n'.join([
+              'fn planned_context_encoded_len(',
+              '    response: &CognitiveContextSnapshot,',
+              ') -> Result<usize, CognitiveStoreError> {',
+              '    let zero = Digest32::ZERO.to_string();',
+              '    let mut maximum = 0;',
+              '    for read_allowed in [false, true] {',
+              '        let mut candidate = response.clone();',
+              '        candidate.snapshot_digest = zero.clone();',
+              '        candidate.read_digest = zero.clone();',
+              '        candidate.plan = Some(CognitiveContextPlan {',
+              '            evaluated_context_digest: zero.clone(),',
+              '            plan_receipt_digest: zero.clone(),',
+              '            read_allowed,',
+              '        });',
+              '        let encoded = serde_json::to_vec(&candidate)',
+              '            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;',
+              '        maximum = maximum.max(encoded.len());',
+              '    }',
+              '    Ok(maximum)',
+              '}',
+              '',
+          ])
+          if context.count(old) != 1:
+              raise SystemExit('planned_context_encoded_len source shape drifted')
+          context_path.write_text(context.replace(old, new), encoding='utf-8')
+
+          map_path = Path('docs/modules/cognitive.read/IMPLEMENTATION_MAP.json')
+          row = json.loads(map_path.read_text(encoding='utf-8'))
+          anchor = {
+              'commit': 'a126987b84737dbc2ee2592442a314117bddb4a2',
+              'tree': 'a22fd0074c45ae6f3cef2092cd6e273bf9c26c30',
+          }
+          row['sourceBase'] = dict(anchor)
+          row['observedAtHead'] = dict(anchor)
+          observed = row.get('observedImplementationBase')
+          if isinstance(observed, dict):
+              observed['commit'] = anchor['commit']
+              observed['interpretation'] = (
+                  'reviewed main base for this convergence candidate; exact source objects '
+                  'and observedAtHead bind current candidate bytes without granting execution authority'
+              )
+
+          reliability_tests = [
+              'codex-rs/hepta-cognitive-read/src/ids_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/property_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/mutation_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/fuzz_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/golden_vectors.rs',
+              'codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs',
+          ]
+          for operation in row.get('operations', []):
+              if operation.get('operation') == 'read_ids_v1':
+                  operation['tests'] = reliability_tests
+
+          extra_paths = {
+              '.github/actions/hepta-synthetic-merge/action.yml',
+              '.github/actions/setup-ci/action.yml',
+              '.github/scripts/verify_cargo_workspace_manifests.py',
+              '.github/workflows/cognitive-read-qualification.yml',
+              'codex-rs/Cargo.lock',
+              'codex-rs/Cargo.toml',
+              'codex-rs/hepta-agentd/BUILD.bazel',
+              'codex-rs/hepta-agentd/Cargo.toml',
+              'codex-rs/hepta-agentd/src/app_runtime.rs',
+              'codex-rs/hepta-agentd/src/cognitive_context.rs',
+              'codex-rs/hepta-agentd/src/cognitive_context_metrics.rs',
+              'codex-rs/hepta-agentd/src/lib.rs',
+              'codex-rs/hepta-agentd/src/runtime.rs',
+              'codex-rs/hepta-agentd/src/runtime_tests.rs',
+              'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs',
+              'codex-rs/hepta-cognitive-read/BUILD.bazel',
+              'codex-rs/hepta-cognitive-read/Cargo.toml',
+              'codex-rs/hepta-cognitive-read/examples/cognitive_read_bench.rs',
+              'codex-rs/hepta-cognitive-read/src/authoritative.rs',
+              'codex-rs/hepta-cognitive-read/src/authoritative_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/fuzz_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/golden_vectors.rs',
+              'codex-rs/hepta-cognitive-read/src/ids.rs',
+              'codex-rs/hepta-cognitive-read/src/ids_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/lib.rs',
+              'codex-rs/hepta-cognitive-read/src/mutation_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/property_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/transient.rs',
+              'docs/modules/cognitive.read/CONTRACT_LIMITS.md',
+              'docs/modules/cognitive.read/OPERATIONS.md',
+              'docs/modules/cognitive.read/TECHNICAL.md',
+              'qualification/cognitive-read/golden/cognitive_read_vectors.json',
+              'scripts/emit-cognitive-read-qualification.py',
+              'scripts/hepta-implementation-maps.py',
+              'scripts/verify-cognitive-read-constants.py',
+              'scripts/verify-cognitive-read-map.py',
+          }
+          objects = {
+              entry['path']: entry
+              for entry in row.get('sourceObjects', [])
+              if isinstance(entry, dict) and isinstance(entry.get('path'), str)
+          }
+          for path in extra_paths:
+              objects.setdefault(path, {'path': path, 'object': '0' * 40})
+          row['sourceObjects'] = [objects[path] for path in sorted(objects)]
+          map_path.write_text(json.dumps(row, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
+          git diff --check
+          git add codex-rs/hepta-agentd/src/cognitive_context.rs
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit -m 'chore(cognitive.read): stage exact source observation'
+
+      - name: Generate the exact implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module cognitive.read
+          python3 scripts/verify-cognitive-read-constants.py
+          git diff --check
+          test -n "$(git status --porcelain -- docs/modules/cognitive.read/IMPLEMENTATION_MAP.json)"
+
+      - name: Commit the generated map and remove the materializer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/cognitive-read-map-materialize.yml
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(cognitive.read): bind exact converged source map'
+          candidate="$(git rev-parse HEAD)"
+          python3 scripts/verify-cognitive-read-constants.py
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$candidate"
+          git diff --check HEAD~2..HEAD
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
