@@ -28,6 +28,7 @@ use super::RuntimeCodexOwnerV1;
 use crate::AgentdError;
 
 pub(super) const MANIFEST_FILE: &str = "manifest.json";
+pub(super) const DISPATCH_FENCE_FILE: &str = "dispatch-fenced.json";
 pub(super) const RECEIPT_FILE: &str = "receipt.json";
 pub(super) const NATIVE_JOURNAL_FILE: &str = "native-control.journal";
 
@@ -48,8 +49,19 @@ pub(super) struct RuntimeCodexJobManifestV1 {
     pub(super) worker_artifact_digest: String,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct RuntimeCodexDispatchFenceV1 {
+    schema_version: u32,
+    run_id: String,
+    input_digest: String,
+    worker_artifact_digest: String,
+}
+
 pub(super) struct OperationPaths {
+    pub(super) directory: PathBuf,
     pub(super) manifest: PathBuf,
+    pub(super) dispatch_fence: PathBuf,
     pub(super) receipt: PathBuf,
     pub(super) native_journal: PathBuf,
 }
@@ -57,7 +69,9 @@ pub(super) struct OperationPaths {
 impl OperationPaths {
     pub(super) fn for_directory(directory: &Path) -> Self {
         Self {
+            directory: directory.to_path_buf(),
             manifest: directory.join(MANIFEST_FILE),
+            dispatch_fence: directory.join(DISPATCH_FENCE_FILE),
             receipt: directory.join(RECEIPT_FILE),
             native_journal: directory.join(NATIVE_JOURNAL_FILE),
         }
@@ -67,7 +81,6 @@ impl OperationPaths {
 pub(super) struct PreparedOperation {
     pub(super) paths: OperationPaths,
     pub(super) manifest: RuntimeCodexJobManifestV1,
-    pub(super) existing: bool,
 }
 
 pub(super) fn prepare_operation(
@@ -98,13 +111,10 @@ pub(super) fn prepare_operation(
             };
             write_new_json(&paths.manifest, &manifest)?;
             sync_directory(&directory)?;
-            Ok(PreparedOperation {
-                paths,
-                manifest,
-                existing: false,
-            })
+            Ok(PreparedOperation { paths, manifest })
         }
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            require_canonical_directory(&directory, "runtime.codex operation directory")?;
             let manifest = read_manifest(&paths.manifest)?;
             validate_manifest_owner(&manifest, owner, executor.worker_artifact_digest)?;
             if manifest.run_id != input.run_id().as_str()
@@ -120,14 +130,78 @@ pub(super) fn prepare_operation(
                         .to_string(),
                 ));
             }
-            Ok(PreparedOperation {
-                paths,
-                manifest,
-                existing: true,
-            })
+            Ok(PreparedOperation { paths, manifest })
         }
         Err(error) => Err(error.into()),
     }
+}
+
+pub(super) fn dispatch_is_fenced(
+    paths: &OperationPaths,
+    manifest: &RuntimeCodexJobManifestV1,
+) -> Result<bool, AgentdError> {
+    let fence: RuntimeCodexDispatchFenceV1 = match read_bounded_json(&paths.dispatch_fence, 16 * 1024)
+    {
+        Ok(value) => value,
+        Err(AgentdError::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => {
+            // A native worker journal means a prior process crossed the process
+            // boundary even if the outer fence was lost. Never infer Fresh in
+            // that state; require reconcile-only behavior.
+            return match std::fs::symlink_metadata(&paths.native_journal) {
+                Ok(metadata) if metadata.is_file() && !metadata.file_type().is_symlink() => Ok(true),
+                Ok(_) => Err(AgentdError::Protocol(
+                    "runtime.codex native journal is not a regular file".to_string(),
+                )),
+                Err(native_error) if native_error.kind() == std::io::ErrorKind::NotFound => {
+                    Ok(false)
+                }
+                Err(native_error) => Err(native_error.into()),
+            };
+        }
+        Err(error) => return Err(error),
+    };
+    validate_dispatch_fence(&fence, manifest)?;
+    Ok(true)
+}
+
+pub(super) fn mark_dispatch_fenced(
+    paths: &OperationPaths,
+    manifest: &RuntimeCodexJobManifestV1,
+) -> Result<(), AgentdError> {
+    let expected = RuntimeCodexDispatchFenceV1 {
+        schema_version: JOB_SCHEMA_VERSION,
+        run_id: manifest.run_id.clone(),
+        input_digest: manifest.input_digest.clone(),
+        worker_artifact_digest: manifest.worker_artifact_digest.clone(),
+    };
+    match write_new_json(&paths.dispatch_fence, &expected) {
+        Ok(()) => {
+            sync_directory(&paths.directory)?;
+            Ok(())
+        }
+        Err(AgentdError::Io(error)) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            let observed: RuntimeCodexDispatchFenceV1 =
+                read_bounded_json(&paths.dispatch_fence, 16 * 1024)?;
+            validate_dispatch_fence(&observed, manifest)
+        }
+        Err(error) => Err(error),
+    }
+}
+
+fn validate_dispatch_fence(
+    fence: &RuntimeCodexDispatchFenceV1,
+    manifest: &RuntimeCodexJobManifestV1,
+) -> Result<(), AgentdError> {
+    if fence.schema_version != JOB_SCHEMA_VERSION
+        || fence.run_id != manifest.run_id
+        || fence.input_digest != manifest.input_digest
+        || fence.worker_artifact_digest != manifest.worker_artifact_digest
+    {
+        return Err(AgentdError::Protocol(
+            "runtime.codex dispatch fence does not match its immutable manifest".to_string(),
+        ));
+    }
+    Ok(())
 }
 
 pub(super) fn list_operation_directories(root: &Path) -> Result<Vec<PathBuf>, AgentdError> {
@@ -141,7 +215,8 @@ pub(super) fn list_operation_directories(root: &Path) -> Result<Vec<PathBuf>, Ag
     }
     let mut directories = Vec::with_capacity(entries.len());
     for entry in entries {
-        if !entry.metadata()?.is_dir() {
+        let metadata = entry.metadata()?;
+        if !metadata.is_dir() || entry.file_type()?.is_symlink() {
             return Err(AgentdError::Protocol(format!(
                 "unexpected non-directory entry in runtime.codex journal root: {}",
                 entry.path().display()
@@ -168,6 +243,49 @@ pub(super) fn read_receipt_if_present(
             }
             Err(error) => return Err(error),
         };
+    validate_receipt(&receipt, manifest)?;
+    Ok(Some(receipt))
+}
+
+pub(super) fn write_receipt(
+    path: &Path,
+    manifest: &RuntimeCodexJobManifestV1,
+    receipt: &RuntimeCodexExecutionReceiptV1,
+) -> Result<(), AgentdError> {
+    validate_receipt(receipt, manifest)?;
+    if let Some(observed) = read_receipt_if_present(path, manifest)? {
+        if observed == *receipt {
+            return Ok(());
+        }
+        return Err(AgentdError::Protocol(
+            "runtime.codex terminal receipt is immutable and conflicts with an existing receipt"
+                .to_string(),
+        ));
+    }
+    match write_json_atomic(path, receipt) {
+        Ok(()) => Ok(()),
+        Err(AgentdError::Io(error)) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            let observed = read_receipt_if_present(path, manifest)?.ok_or_else(|| {
+                AgentdError::Protocol(
+                    "runtime.codex receipt appeared without readable terminal evidence".to_string(),
+                )
+            })?;
+            if observed == *receipt {
+                Ok(())
+            } else {
+                Err(AgentdError::Protocol(
+                    "runtime.codex terminal receipt conflicts with a concurrent writer".to_string(),
+                ))
+            }
+        }
+        Err(error) => Err(error),
+    }
+}
+
+fn validate_receipt(
+    receipt: &RuntimeCodexExecutionReceiptV1,
+    manifest: &RuntimeCodexJobManifestV1,
+) -> Result<(), AgentdError> {
     if receipt.schema_version != JOB_SCHEMA_VERSION
         || receipt.run_id != manifest.run_id
         || receipt.input_digest != manifest.input_digest
@@ -178,14 +296,7 @@ pub(super) fn read_receipt_if_present(
             "runtime.codex durable receipt does not match its operation manifest".to_string(),
         ));
     }
-    Ok(Some(receipt))
-}
-
-pub(super) fn write_receipt(
-    path: &Path,
-    receipt: &RuntimeCodexExecutionReceiptV1,
-) -> Result<(), AgentdError> {
-    write_json_atomic(path, receipt)
+    Ok(())
 }
 
 pub(super) fn validate_manifest_owner(
@@ -507,8 +618,19 @@ where
             "unable to allocate runtime.codex receipt staging path",
         ))
     })?;
-    std::fs::rename(&staging, path)?;
-    sync_directory(parent)
+    // `hard_link` provides create-if-absent semantics for the immutable receipt;
+    // unlike rename, it never replaces a concurrent writer's terminal evidence.
+    match std::fs::hard_link(&staging, path) {
+        Ok(()) => {
+            sync_directory(parent)?;
+            let _ = std::fs::remove_file(&staging);
+            Ok(())
+        }
+        Err(error) => {
+            let _ = std::fs::remove_file(&staging);
+            Err(error.into())
+        }
+    }
 }
 
 fn sync_directory(path: &Path) -> Result<(), AgentdError> {
