@@ -266,47 +266,6 @@
       "sourceBlob": "861584792d24f979e9c8b90bc27665689ac0083e",
       "productCallers": [],
       "productCompositionState": "owner_runtime_source_complete_product_activation_pending"
-    },
-    {
-      "designOperation": "execute_neural_circuit_v1",
-      "mappingClass": "owner_native",
-      "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
-        "symbol": "pub async fn admit_neural_circuit_activation_v1(",
-        "buildTarget": "codex-hepta-automation"
-      },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/hepta-automation/src/taskflow.rs",
-          "symbol": "pub async fn create_taskflow_run(",
-          "ownerModule": "automation.taskflow",
-          "buildTarget": "codex-hepta-automation"
-        },
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-          "symbol": "pub async fn record_taskflow_step(",
-          "ownerModule": "automation.taskflow",
-          "buildTarget": "codex-hepta-automation"
-        }
-      ],
-      "tests": [
-        {
-          "path": "codex-rs/hepta-automation/tests/neural_circuit_runtime.rs",
-          "kind": "recorded_choice_organ_join_budget_terminal_vertical_slice",
-          "command": "cargo test -p codex-hepta-automation --test neural_circuit_runtime"
-        }
-      ],
-      "sourceSemantics": "Compiles one immutable circuit into the existing TaskFlow owner; binds ingress and bounded budgets; records DecisionCell, organ and join receipts in the existing outbox; moves through fenced Wait/Resume events; hands effects to the existing final-use seam; and emits terminal receipts without creating another scheduler/store/authority.",
-      "operation": "execute_neural_circuit_v1",
-      "nativeSymbol": "pub async fn admit_neural_circuit_activation_v1(",
-      "sourcePath": "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
-      "sourcePathExists": true,
-      "sourceBlob": "861584792d24f979e9c8b90bc27665689ac0083e",
-      "productCallers": [],
-      "productCompositionState": "owner_runtime_source_complete_product_activation_pending"
     }
   ],
   "repositoryControlledGaps": [],
@@ -365,13 +324,25 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "52ddb532e40db82a94f9316d64df68e6982a6de4",
-    "tree": "fe611e23595f84470a8a463ee7c9a40d4b0333ef"
+    "commit": "1bab766aac9ec559fb4144499661e8d261a2cd49",
+    "tree": "09c2de8b406d09702eed338103aabf8bfebf7eac"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
     "kind": "path_blob_manifest_v1",
     "entries": [
+      {
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
+        "blobSha": "861584792d24f979e9c8b90bc27665689ac0083e"
+      },
       {
         "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
         "blobSha": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
@@ -379,14 +350,6 @@
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
         "blobSha": "6d8e7b470d348b94619e94f6835bcf6b5b588e16"
-      },
-      {
-        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
-      },
-      {
-        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
       }
     ]
   },
