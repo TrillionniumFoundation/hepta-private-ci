@@ -85,6 +85,10 @@ jobs:
         working-directory: tools/ui-native-projections
         run: npm ci
 
+      - name: Regenerate source projections
+        working-directory: tools/ui-native-projections
+        run: npm run generate
+
       - name: Lint projection tooling
         working-directory: tools/ui-native-projections
         run: npm run lint
@@ -99,25 +103,35 @@ jobs:
 
       - name: Signing and notarization dry-run
         working-directory: tools/ui-native-projections
-        run: npm run signing-dry-run > ../../native-evidence/signing-dry-run.json
+        run: npm run --silent signing-dry-run > ../../native-evidence/signing-dry-run.json
 
       - name: Generate source dependency SBOM
         working-directory: tools/ui-native-projections
-        run: npm run sbom -- --out native-evidence/ui-native-sbom.spdx.json
+        run: npm run --silent sbom -- --out native-evidence/ui-native-sbom.spdx.json
 
       - name: Generate bound qualification receipt
         working-directory: tools/ui-native-projections
         env:
           HEPTA_SOURCE_KIND: ${{ matrix.source }}
-        run: npm run receipt -- --out native-evidence/projection-receipt.json
+        run: npm run --silent receipt -- --out native-evidence/projection-receipt.json
 
-      - name: Verify source tree remained read-only
+      - name: Verify source tree and evidence integrity
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain --untracked-files=no)"
           test -s native-evidence/projection-receipt.json
           test -s native-evidence/ui-native-sbom.spdx.json
           test -s native-evidence/signing-dry-run.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          for (const path of [
+            'native-evidence/projection-receipt.json',
+            'native-evidence/ui-native-sbom.spdx.json',
+            'native-evidence/signing-dry-run.json',
+          ]) {
+            JSON.parse(fs.readFileSync(path, 'utf8'));
+          }
+          NODE
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
