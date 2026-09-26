@@ -73,6 +73,13 @@ jobs:
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
+  memory-federation:
+    name: Memory federation qualification
+    needs: scope
+    if: needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'
+    uses: ./.github/workflows/memory-federation-v2-final-verify.yml
+    secrets: inherit
+
   bazel:
     name: Bazel
     needs: scope
@@ -195,8 +202,6 @@ jobs:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
           persist-credentials: false
 
       - name: Verify lightweight repository consistency
@@ -217,6 +222,7 @@ jobs:
     needs:
       - scope
       - hepta-contract-gate
+      - memory-federation
       - bazel
       - blob-size-policy
       - cargo-deny
@@ -248,7 +254,7 @@ jobs:
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
           if not (native or full):
-              allowed.append("hepta-contract-gate")
+              allowed += ["hepta-contract-gate", "memory-federation"]
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
