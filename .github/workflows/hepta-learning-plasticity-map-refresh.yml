@@ -1,0 +1,53 @@
+name: Hepta learning.plasticity map refresh preview
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-agentd/src/plasticity_*.rs"
+      - "codex-rs/hepta-agentd/src/control_engineering_self_iteration.rs"
+      - "codex-rs/hepta-agentd/tests/plasticity_*.rs"
+      - "docs/modules/learning.plasticity/**"
+      - "scripts/hepta-learning-plasticity-map-refresh.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/hepta-learning-plasticity-map-refresh.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-plasticity-map-preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh-preview:
+    name: Generate implementation truth preview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Generate map and state projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-plasticity-map-refresh.py
+          python3 -m json.tool docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json >/dev/null
+          python3 -m json.tool docs/modules/learning.plasticity/CURRENT_STATE.json >/dev/null
+
+      - name: Retain generated truth files
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-plasticity-map-refresh-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json
+            docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md
+            docs/modules/learning.plasticity/CURRENT_STATE.json
+          if-no-files-found: error
+          retention-days: 7
