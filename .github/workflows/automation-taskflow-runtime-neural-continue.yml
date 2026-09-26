@@ -133,11 +133,23 @@ jobs:
               --source-sha "$FINAL_SOURCE_SHA"
             python3 scripts/apply_automation_taskflow_qualification.py metadata \
               --source-sha "$FINAL_SOURCE_SHA"
+            python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          data["mappingSourceIdentityMode"] = "exact_blob"
+          path.write_text(
+              json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
           } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/stage3-metadata.log"
           git diff --check
           git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
-            git commit -m "docs(automation): bind Neural Circuit and adversarial source truth [automation-neural-generated]"
+            git commit -m "docs(automation): bind Neural Circuit and exact-blob source truth [automation-neural-generated]"
           fi
 
       - name: Rebind other affected Lane B observations
@@ -296,6 +308,14 @@ jobs:
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
+
+      - name: Preserve committed staged work on failure
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git reset --hard HEAD
           git push origin HEAD:work/automation-taskflow-v19-runtime-closure
 
       - name: Retain continuation diagnostics
