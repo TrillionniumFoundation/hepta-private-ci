@@ -13,11 +13,11 @@ permissions:
 
 concurrency:
   group: automation-taskflow-runtime-neural-continue
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   continue-closure:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 120
     steps:
       - name: Check out exact work branch
