@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: hepta-kg-convergence-apply
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
