@@ -1,0 +1,81 @@
+name: control.engineering convergence apply
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-final-convergence-20260926
+    paths:
+      - .github/control-engineering-convergence/**
+      - .github/workflows/control-engineering-convergence-apply.yml
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: codex/control-engineering-final-convergence-20260926
+  PAYLOAD_SHA256: 10939da9e5e45127755681698bc3a72d4a12e7e21bda4f5be25f3e105ee86636
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind exact branch head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "$TARGET_BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Apply bounded convergence payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/control-engineering-convergence/chunk-* > "$RUNNER_TEMP/payload.b64"
+          base64 --decode "$RUNNER_TEMP/payload.b64" > "$RUNNER_TEMP/payload.tgz"
+          printf '%s  %s\n' "$PAYLOAD_SHA256" "$RUNNER_TEMP/payload.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/payload.tgz" -C "$GITHUB_WORKSPACE"
+          rm -rf .github/control-engineering-convergence
+          rm -f .github/workflows/control-engineering-convergence-apply.yml
+          rm -f .github/workflows/control-engineering-source-snapshot.yml
+      - name: Compile Python sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 -m compileall -q \
+            tools/hepta-engineering-control/control_engineering_v2 \
+            tools/hepta-engineering-control/test_*.py
+      - name: Verify public API contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.api_compat \
+              --package tools/hepta-engineering-control/control_engineering_v2 \
+              --contract docs/modules/control.engineering/PUBLIC_API.json \
+              --check
+      - name: Run complete control.engineering owner suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+      - name: Commit verified convergence source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          test -n "$(git status --porcelain)"
+          git config user.name "Hepta Control Engineering CI"
+          git config user.email "hepta-control-engineering-ci@users.noreply.github.com"
+          git commit -m "control.engineering: add production state and scale controls"
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse origin/$TARGET_BRANCH)"
+          git push origin "HEAD:$TARGET_BRANCH"
