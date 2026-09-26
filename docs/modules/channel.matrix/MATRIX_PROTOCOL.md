@@ -2,48 +2,69 @@
 
 ## 1. Authenticated identity
 
-Every active transport is bound to one homeserver URL, Matrix user ID, device ID, session generation, enrolled room set, room-binding revision and stable Matrix-plane generation. These values participate in the final-use scope digest. A changed device/session/binding cannot reuse an old grant or dispatch claim.
+Every active Matrix transport is bound to one homeserver URL, Matrix user ID, device ID, session generation, enrolled room set, room-binding revision and stable Matrix-plane generation. These values participate in the final-use scope digest. A changed room, device, session, binding or generation cannot reuse an old grant, witness or dispatch claim.
 
-## 2. Ingress
+## 2. Ingress and terminal observation
 
-Only durable `/sync` data is authoritative for ingress and send terminality. Timeline events, replacements and redactions are typed mutations. Unknown critical fields, malformed identities, oversize payloads, stale binding generations and sender/scope mismatches fail closed. Message text is untrusted content, never administrative authority.
+Only durable `/sync` data is authoritative for ingress and send terminality. Timeline events, replacements and redactions are typed bounded mutations. Unknown critical fields, malformed identities, oversize payloads, stale generations and sender/scope mismatches fail closed. Message text is untrusted content, never administrative authority.
 
-## 3. Egress
+A matching outbound event must carry the stable transaction identity and be observed from the enrolled Matrix identity in the exact room/binding/generation. HTTP completion, SDK return, App Server completion and user read receipts do not establish `Confirmed`.
 
-A logical send uses one stable Matrix transaction ID across retries. The canonical payload digest covers the exact bytes passed to the SDK adapter; changing content, room, device/session, binding revision, generation or attempt changes the signed final-use request.
+## 3. Egress identity
 
-The transport return is classified separately from terminal observation:
+A logical send uses one stable Matrix transaction ID across retry, process restart and reconciliation. The canonical payload digest covers the exact event content, including replacement target where present. Changing content, room, device/session, binding revision, generation or attempt changes the signed final-use request.
+
+The transport future is lazy: constructing it performs no external I/O. It is first polled only after the exact final-use token is revalidated and consumed.
+
+## 4. Transport outcome taxonomy
 
 | Result | Local meaning | Durable action |
 |---|---|---|
-| event ID returned | transport accepted | record `accepted`; await matching `/sync` |
-| HTTP 429 | rate limited | honor bounded `retry_after_ms`, add jitter, retain transaction |
-| 5xx / unavailable | retryable or unknown | append classification and retry/reconcile |
-| DNS/TLS/connect failure before request bytes | safe-before-entry only when adapter proves it | bounded retry |
-| read timeout/reset/response loss | effect may exist | `indeterminate`; never terminal failure |
-| authenticated Matrix permanent rejection before any prior acceptance | rejected | terminal `failed` |
-| later rejection after prior acceptance | cannot erase effect | remain `accepted`/reconciliation |
+| valid event ID returned | transport accepted, not terminal | record `accepted`; await matching `/sync` |
+| Matrix `M_LIMIT_EXCEEDED` / HTTP 429 | rate limited | normalize `RetryAfter::Delay` or `DateTime`, bound it, add stable jitter |
+| HTTP 408 | response timeout | indeterminate under the same transaction |
+| HTTP 5xx | server unavailable | typed retry/reconciliation |
+| DNS lookup failure | no usable connection | typed bounded retry |
+| TLS/certificate/handshake failure | transport establishment failed | typed bounded retry; operator-visible class |
+| connect timeout/refusal | connection did not establish | typed bounded retry |
+| read timeout/reset/decode/response loss after entry | effect may exist | `indeterminate`; never terminal failure |
+| authenticated permanent Matrix rejection with no prior effect evidence | rejected | terminal `failed` |
+| later rejection after accepted/unknown effect | cannot erase possible effect | remain accepted/indeterminate and reconcile |
 
-Transport implementations must be lazy: constructing the future performs no network I/O. The future is polled only after the exact final-use entry succeeds.
+Unparseable server event IDs after SDK completion are response loss, not proof of failure. Exhausted uncertain attempts park for reconciliation instead of changing transaction identity or synthesizing failure.
 
-## 4. Final-use broker
+## 5. Final-use broker
 
-The broker protocol is bounded newline-delimited JSON over a private Unix socket. Request and response use schema version 1. The broker validates the complete `MatrixFinalUseRequest` before signing. Matrixd holds only verifier keys; it never holds the signing key.
+The broker protocol is bounded newline-delimited JSON over a private Unix socket. Request and response use schema version 1. The independently operated broker owns signing policy and key; matrixd holds only verifier material.
 
 The request binds operation ID, stable transaction ID, logical outbox ID, attempt, subject, destination, homeserver, user, device, session generation, room, binding revision, Matrix-plane generation, request digest, scope digest and payload digest.
 
-## 5. Trusted terminal observation
+The physical sequence is:
 
-A matching `/sync` event must contain the stable transaction identity and come from the enrolled Matrix identity in the exact room/binding/generation. HTTP completion, SDK return, App Server completion and user read receipts do not substitute for homeserver persistence. Redaction targets the confirmed event and is a separate monotonic observation.
+```text
+signed grant
+-> kernel claim and nonce burn
+-> durable witness
+-> durable dispatching phase
+-> authenticated revocation refresh
+-> exact verified-use entry
+-> poll lazy SDK future
+```
 
-## 6. Limits
+No await or persistence occurs after verified-use entry and before transport poll.
 
-- identities are bounded and validated before allocation-heavy work;
+## 6. Claim and lease protocol
+
+Each physical attempt is fenced by `(stable_txn_id, attempt, lease_epoch, claim_token_sha256)`. The raw random capability remains process-private. Active transitions require the exact live identity, and the physical deadline is strictly shorter than remaining lease time. Clean shutdown releases only claims that have not entered physical I/O.
+
+## 7. Limits
+
+- identities and frames are bounded before allocation-heavy work;
 - payloads use the registered Matrix boundary limit;
-- sync batches and timeline windows are bounded by host configuration;
+- sync batches and timeline windows are host-bounded;
 - unresolved dispatches are capped at 4,096;
-- claim batches are 1–256;
-- retry count is 1–64;
+- claim batches are 1-256;
+- attempts are 1-64;
 - broker frames are at most 128 KiB;
-- broker timeout is 100–10,000 ms;
-- physical send deadline must be strictly shorter than the outbox lease.
+- broker timeout is 100-10,000 ms;
+- retry hints exceeding policy park for operator reconciliation rather than create an unbounded timer.

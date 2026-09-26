@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Bind channel.matrix source composition and documentation to one candidate.
 
-`IMPLEMENTATION_MAP.sourceBase` is historical provenance. A map cannot contain
-its own future commit/tree without a self-reference paradox, so this verifier
-emits the exact HEAD/tree, map digest and every inspected source/document blob.
+A Git commit cannot embed its own future commit/tree identity without a
+self-reference paradox. `IMPLEMENTATION_MAP.sourceBase` is therefore an
+immutable ancestor/provenance anchor. This verifier binds the *current* exact
+HEAD/tree, map digest and every inspected source/document blob into a retained
+receipt, and CI passes the expected candidate SHA explicitly.
 """
 
 from __future__ import annotations
@@ -38,16 +40,45 @@ SOURCE_MARKERS = {
         "MatrixFinalUseBroker::open(&config.layout)",
         "run_outbox_sender(",
     ),
-    "codex-rs/hepta-matrix-sdk/src/outbound.rs": (
-        "record_dispatch_authority_claim(",
+    "codex-rs/hepta-matrix-sdk/src/lib.rs": (
+        "mod outbound_v2;",
+        "pub use outbound_v2::run_outbox_sender;",
+    ),
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs": (
+        "claim_outbox_fenced(",
+        "prepare_outbox_dispatch(record, prepared_at_ms)",
+        "record_outbox_authorized(",
+        "record_outbox_dispatching(",
         "refresh_revocations()",
         "enter_verified_use(token, &request.binding)",
-        "record_outbox_transport_accepted(",
+        "finish_outbox_transport_accepted(",
+        "finish_outbox_indeterminate(",
+    ),
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs": (
+        "classified_retry_at(",
+        "stable_jitter_ms(",
+        "MatrixAttemptFailureClass::RateLimited",
+        "MatrixAttemptFailureClass::ResponseLost",
     ),
     "codex-rs/hepta-matrix-sdk/src/authority.rs": (
         "pub struct MatrixFinalUseRequest",
         "pub trait MatrixOutboundAuthorizer",
         "build_matrix_final_use_request(",
+    ),
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": (
+        "ErrorKind::LimitExceeded",
+        "RetryAfter::Delay",
+        "MatrixTransportError::Dns",
+        "MatrixTransportError::Tls",
+        "MatrixTransportError::ResponseLost",
+    ),
+    "codex-rs/hepta-matrix-store/src/claim/store.rs": (
+        "claim_outbox_fenced(",
+        "record_outbox_authorized(",
+        "record_outbox_dispatching(",
+        "finish_outbox_indeterminate(",
+        "matrix_dispatch_authority_witnesses",
+        "matrix_dispatch_attempt_events",
     ),
     "codex-rs/hepta-matrix-store/src/dispatch.rs": (
         "pub async fn prepare_outbox_dispatch(",
@@ -64,6 +95,17 @@ SOURCE_MARKERS = {
         "CREATE TABLE matrix_dispatch_authority_claims",
         "matrix_dispatch_ledger_identity_immutable",
         "matrix_dispatch_succeeded_requires_authority_claim",
+    ),
+    "codex-rs/hepta-matrix-store/migrations/0007_matrix_claim_fencing.sql": (
+        "CREATE TABLE matrix_dispatch_attempt_claims",
+        "CREATE TABLE matrix_dispatch_active_claims",
+        "CREATE TABLE matrix_dispatch_authority_witnesses",
+        "CREATE TABLE matrix_dispatch_attempt_events",
+        "Matrix attempt history is append-only",
+    ),
+    "codex-rs/state/src/capability_random.rs": (
+        "pub fn random_capability_bytes() -> [u8; 32]",
+        "Uuid::new_v4()",
     ),
 }
 
@@ -109,6 +151,11 @@ def verify(expected_sha: str | None) -> dict[str, object]:
     row = json.loads(MAP.read_text(encoding="utf-8"))
     if row.get("module") != "channel.matrix":
         raise RuntimeError("implementation-map module identity mismatch")
+    if row.get("candidateBindingPolicy") != (
+        "immutable_source_anchor_plus_exact_head_receipt"
+    ):
+        raise RuntimeError("implementation map lacks exact-head binding policy")
+
     source_base = row.get("sourceBase")
     if not isinstance(source_base, dict):
         raise RuntimeError("implementation map lacks sourceBase")
@@ -157,15 +204,38 @@ def verify(expected_sha: str | None) -> dict[str, object]:
             if marker not in (ROOT / path).read_text(encoding="utf-8"):
                 raise RuntimeError(f"delegated callsite is absent: {path}: {marker}")
 
+    sdk_lib = (ROOT / "codex-rs/hepta-matrix-sdk/src/lib.rs").read_text(
+        encoding="utf-8"
+    )
+    if "mod outbound;" in sdk_lib or "pub use outbound::" in sdk_lib:
+        raise RuntimeError("legacy unfenced outbound module is exported")
+
     observer = (ROOT / "codex-rs/hepta-matrixd/src/send_observer.rs").read_text(
         encoding="utf-8"
     )
-    forbidden = ("BTreeMap", "struct MatrixSendObserver", "fn prepare_send(", "fn observe_send(")
+    forbidden = (
+        "BTreeMap",
+        "struct MatrixSendObserver",
+        "fn prepare_send(",
+        "fn observe_send(",
+    )
     present = [token for token in forbidden if token in observer]
     if present:
         raise RuntimeError(f"second in-memory send ledger returned: {present}")
     if "MatrixDispatchState" not in observer:
         raise RuntimeError("send observer does not delegate to durable dispatch state")
+
+    closed_gap_phrases = (
+        "Add an explicit random claim token",
+        "Persist the complete verified-use witness",
+        "add jitter to validated 429 hints",
+    )
+    repository_gaps = row.get("repositoryControlledGaps", [])
+    if not isinstance(repository_gaps, list):
+        raise RuntimeError("repositoryControlledGaps must be a list")
+    for phrase in closed_gap_phrases:
+        if any(phrase in str(gap) for gap in repository_gaps):
+            raise RuntimeError(f"closed repository gap remains declared: {phrase}")
 
     docs = []
     for name in REQUIRED_DOCS:
@@ -201,6 +271,7 @@ def verify(expected_sha: str | None) -> dict[str, object]:
         "map": {
             **file_receipt(MAP),
             "sourceAnchor": {"commit": anchor, "tree": anchor_tree},
+            "bindingPolicy": row.get("candidateBindingPolicy"),
         },
         "sourceComposition": sources,
         "documentation": docs,

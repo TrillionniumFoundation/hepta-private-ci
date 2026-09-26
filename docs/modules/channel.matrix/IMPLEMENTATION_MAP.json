@@ -5,9 +5,10 @@
     "commit": "714ef9e73b141ad5a09471d1ef007de15ebe402b",
     "tree": "b9269e35306d094bbdf61fa6723f13d6ede75c79"
   },
+  "candidateBindingPolicy": "immutable_source_anchor_plus_exact_head_receipt",
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
-  "sourceMaturity": "native_durable_channel_runtime_authorized_dispatch_converging",
+  "sourceMaturity": "native_durable_channel_runtime_authorized_dispatch_source_composed_unqualified",
   "declaredRoots": [
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
@@ -16,7 +17,7 @@
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
   ],
-  "stateOwnerDisposition": "MatrixDurableStore is the sole writer for ingress projection, sync frontier, outbox, dispatch ledger, append-only observations, authority claims and transaction identities.",
+  "stateOwnerDisposition": "MatrixDurableStore is the sole writer for ingress projection, sync frontier, outbox, dispatch ledger, random-capability attempt claims, authority witnesses, append-only attempt events and stable transaction identities.",
   "terminalObserverDisposition": "A matching authenticated homeserver /sync event settles send terminality in the same owner transaction as checkpoint advancement; SDK/HTTP acceptance cannot substitute.",
   "productCallers": [
     {
@@ -71,19 +72,24 @@
       },
       "delegatedCallees": [
         {
-          "role": "authorized_sender_callsite",
-          "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
-          "symbol": "prepare_outbox_dispatch(record, now_ms)"
+          "role": "fenced_authorized_sender_callsite",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs",
+          "symbol": "prepare_outbox_dispatch(record, prepared_at_ms)"
+        },
+        {
+          "role": "physical_final_use_entry",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs",
+          "symbol": "enter_verified_use(token, &request.binding)"
         }
       ],
       "tests": [
         {
           "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
-          "kind": "authority_identity_crash_and_retry",
+          "kind": "authority_identity_claim_fencing_crash_and_retry",
           "command": "just test -p codex-hepta-matrix-sdk"
         }
       ],
-      "sourceSemantics": "Binds one immutable operation and stable Matrix transaction to room/generation/payload, then appends per-attempt authority and transport observations before physical dispatch.",
+      "sourceSemantics": "Binds one immutable operation and stable Matrix transaction to room/generation/payload, mints an opaque random claim capability, persists the verified-use witness and enters physical I/O only after final revocation refresh.",
       "operation": "prepare_send",
       "nativeSymbol": "pub async fn prepare_outbox_dispatch(",
       "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
@@ -113,7 +119,7 @@
       "tests": [
         {
           "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
-          "kind": "ack_loss_and_terminal_reconciliation",
+          "kind": "ack_loss_terminal_reconciliation_and_attempt_history",
           "command": "just test -p codex-hepta-matrix-sdk"
         },
         {
@@ -122,7 +128,7 @@
           "command": "feature-selected target-host qualification"
         }
       ],
-      "sourceSemantics": "Commits trusted homeserver send/redaction observations, outbox settlement and sync checkpoint atomically; unknown transport outcomes remain reconcilable under the same transaction identity.",
+      "sourceSemantics": "Commits trusted homeserver send/redaction observations, outbox settlement and sync checkpoint atomically; typed unknown transport outcomes remain reconcilable under the same transaction identity.",
       "operation": "observe_send",
       "nativeSymbol": "pub(crate) async fn observe_outbound_event_tx(",
       "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
@@ -130,9 +136,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Add an explicit random claim token in addition to the durable attempt fence.",
-    "Persist the complete verified-use witness/head digest and append the exact classified transport error to durable attempt history; add jitter to validated 429 hints.",
-    "Produce current exact-head and deterministic synthetic-merge focused receipts after every source change."
+    "Produce current exact-head and deterministic synthetic-merge focused receipts after the final source and documentation commit."
   ],
   "externalEvidenceGates": [
     "real enrolled homeserver/user/device identity and protected final-use clock/frontier composition",

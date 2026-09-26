@@ -1,112 +1,109 @@
 # channel.matrix storage schema
 
-`MatrixDurableStore` is a per-Agent SQLite owner. The database is opened only under the canonical private Matrix root and verified before serving reads or writes.
+`MatrixDurableStore` is the single per-Agent SQLite writer for Matrix ingress and egress. It opens only below the canonical private Matrix root, under the process lock and exact supervisor lease, and verifies migrations and integrity before serving work.
 
 ## 1. Database identity
 
 - File: `matrix_1.sqlite3`
 - Migration owner: `codex-rs/hepta-matrix-store/migrations/`
-- Current dispatch schema addition: `0006_matrix_dispatch_ledger.sql`
-- Writer: the exact per-Agent `hepta-matrixd` generation admitted by the process lock and supervisor lease
-- Durability: SQLite durable-evidence configuration; migration and integrity failure fail startup closed
+- Dispatch truth: `0006_matrix_dispatch_ledger.sql`
+- Random claim fencing and append-only attempt evidence: `0007_matrix_claim_fencing.sql`
+- Writer: one exact per-Agent `hepta-matrixd` process generation
+- Durability: SQLite durable-evidence configuration; migration, fingerprint or integrity mismatch fails startup closed
 
 ## 2. Core domains
 
 | Domain | Purpose | Authoritative key |
 |---|---|---|
 | `matrix_meta` | schema and owner identity | singleton |
-| `room_bindings` | enrolled room -> Agent Matrix identity, revision and Matrix-plane generation | room ID |
-| `room_threads` | room/binding/generation -> App Server project/thread | composite binding identity |
-| `inbox_events` | deduplicated ingress event projection | Matrix event ID |
+| `room_bindings` | enrolled room, user, revision and Matrix-plane generation | room ID |
+| `room_threads` | room/binding/generation to App Server project/thread | composite binding identity |
+| `inbox_events` | deduplicated ingress projection | Matrix event ID |
 | `inbox_dispatches` | restart-safe Agentd/App Server dispatch | ingress event ID |
-| `outbox_messages` | durable transport queue with stable transaction identity | outbox ID; stable transaction unique |
-| sync checkpoint/mutation tables | exact durable `/sync` frontier and redaction/correction lineage | owner checkpoint and source event identity |
+| `outbox_messages` | bounded transport queue and stable transaction identity | outbox ID; transaction unique |
+| sync checkpoint/mutation tables | durable `/sync` frontier and correction/redaction lineage | owner checkpoint/source event |
 | pending approval/control tables | bounded local control state | typed request/approval identity |
-| `matrix_dispatch_ledger` | single source of send truth | stable transaction ID |
-| `matrix_dispatch_observations` | append-only transport/homeserver/redaction history | observation sequence plus semantic uniqueness |
-| `matrix_dispatch_authority_claims` | immutable per-attempt final-use evidence | stable transaction ID + attempt; grant ID unique |
+| `matrix_dispatch_ledger` | one source of logical-send and terminal truth | stable transaction ID |
+| `matrix_dispatch_observations` | append-only transport/homeserver/redaction observations | sequence plus semantic uniqueness |
+| `matrix_dispatch_authority_claims` | immutable request/grant claim evidence | transaction + attempt; grant unique |
+| `matrix_dispatch_attempt_claims` | immutable random-capability lease identity | transaction + attempt |
+| `matrix_dispatch_active_claims` | current claim phase | stable transaction ID |
+| `matrix_dispatch_authority_witnesses` | verified-use witness and revocation-head digests | transaction + attempt |
+| `matrix_dispatch_attempt_events` | complete append-only attempt lifecycle | event sequence |
 
-## 3. Dispatch ledger columns
+## 3. Dispatch ledger
 
-`matrix_dispatch_ledger` binds:
+`matrix_dispatch_ledger` binds the stable transaction, unique operation, outbox identity, room, binding revision, Matrix-plane generation, canonical payload digest, optional replacement target, authority/grant binding, state, accepted/terminal event IDs, observation digests, attempt and timestamps.
 
-- stable transaction ID;
-- unique operation ID;
-- logical outbox ID;
-- room ID, binding revision and Matrix-plane generation;
-- canonical payload SHA-256;
-- optional authority epoch, grant ID and matching grant payload SHA-256;
-- durable state;
-- accepted and terminal event IDs;
-- transport, send and redaction observation digests;
-- current attempt;
-- prepared, updated and terminal-observed timestamps.
+Identity columns are immutable by trigger. Rows cannot be deleted. Unique partial indexes protect accepted and terminal event IDs. A terminal homeserver observation must satisfy the authority-claim invariant; SDK/HTTP return cannot set `succeeded`.
 
-Identity columns are immutable by trigger. Rows cannot be deleted. Unique partial indexes protect accepted and terminal event IDs. Unresolved rows have a bounded lookup index over state, update time and transaction ID.
+## 4. Random-capability claim fencing
 
-## 4. Authority claims
+Each outbox claim increments the durable attempt and uses `lease_epoch = attempt`. The owner mints an opaque 32-byte process-local capability from two independent UUIDv4 draws. Only its SHA-256 digest is persisted.
 
-Each `matrix_dispatch_authority_claims` row records the exact evidence observed when the kernel authority burned the grant nonce:
+`matrix_dispatch_attempt_claims` records:
 
-- operation, subject and destination;
-- homeserver, Matrix user, device and session generation;
+- stable transaction;
+- attempt and lease epoch;
+- unique capability digest;
+- claimed and lease-expiry timestamps.
+
+`matrix_dispatch_active_claims` references that complete identity and permits only `claimed`, `authorized` and `dispatching`. Updates and closures require the live attempt/lease/token identity. An expired claim receives an `expired` event before replacement. Claim identities and history are immutable and undeletable.
+
+## 5. Authority evidence
+
+The legacy `matrix_dispatch_authority_claims` row binds operation, subject, destination, homeserver, Matrix user, device, session generation, request/scope/payload digests, authority epoch, revocation revision, grant ID, attempt, expiry and claim time.
+
+Migration 7 adds `matrix_dispatch_authority_witnesses`, bound by foreign key to the exact random claim. It persists:
+
 - authority epoch and revocation revision;
-- unique grant ID;
-- request, scope and payload digests;
-- attempt;
-- expiry and claim time.
+- grant ID;
+- `VerifiedUseTokenWitnessV1` digest;
+- claim-time revocation-head digest;
+- witness-recorded time.
 
-Claims are immutable and undeletable. They are not reusable permits. Qualified success/redaction requires a matching claim for the exact transaction, operation, payload, attempt and owner subject.
+The witness is immutable audit evidence, not reusable authority. The raw final-use token and raw claim capability never enter SQLite.
 
-Future schema revisions should additionally persist the serialized `VerifiedUseTokenWitnessV1` digest and claim-time revocation-head digest. Until that migration is present, the epoch/revision and canonical binding are the durable proof surface.
+## 6. Attempt event history
 
-## 5. Observation history
+`matrix_dispatch_attempt_events` is append-only and records:
 
-`matrix_dispatch_observations` is append-only. Kinds are:
+- `claimed`, `prepared`, `authorized`, `dispatching`;
+- `transport_accepted`, `indeterminate`, `retry_scheduled`;
+- `confirmed`, `redacted`, `permanently_rejected`;
+- `revoked`, `canceled`, `expired`.
 
-- `dispatch_started`;
-- `transport_accepted`;
-- `transport_indeterminate`;
-- `transport_rejected`;
-- `homeserver_event`;
-- `redaction`.
-
-Rows bind transaction, attempt, optional event ID, semantic digest and observation time. Duplicate semantic observations are idempotent. Contradictory identities produce a conflict and no mutation.
-
-## 6. Outbox claim and fencing
-
-`outbox_messages.attempts` is the current lease epoch. Every dispatch result update carries `expected_attempt`; stale workers cannot settle a newer claim. `lease_until_ms` bounds ownership. A clean cancellation should release records that have not entered physical I/O; a record whose effect may have entered remains retry/reconciliation state with the same stable transaction.
-
-The long-term schema target is an explicit random `claim_token` in addition to attempt. Until that migration lands, attempt is the durable fencing token and must never be decremented or reused.
+Each event binds transaction, attempt, lease epoch, capability digest, optional event ID, typed failure class, optional retry hint, optional detail digest and timestamp. Failure classes distinguish rate limiting, DNS, TLS, connect timeout/failure, read timeout, connection reset, response loss, server unavailability, permanent rejection and authority denial.
 
 ## 7. Sync atomicity
 
-When a `/sync` timeline mutation contains the stable transaction ID of an outbound event, the store performs in one transaction:
+For a `/sync` mutation containing the outbound transaction identity, one transaction:
 
-1. validate current room binding/generation and authenticated sender;
-2. append the homeserver observation;
-3. transition the dispatch ledger to qualified or unqualified terminal state;
-4. settle the matching outbox row;
-5. append the change record;
-6. advance the sync checkpoint.
+1. validates room binding, generation and authenticated sender;
+2. appends the homeserver observation;
+3. transitions the dispatch ledger to qualified or explicitly unqualified terminal state;
+4. appends the corresponding attempt event through migration triggers;
+5. settles the matching outbox row;
+6. appends the change record;
+7. advances the sync checkpoint.
 
-Redaction follows the same rule. The cursor cannot commit without the corresponding correction to durable send truth.
+Redaction follows the same rule. The cursor cannot commit without the matching durable correction.
 
 ## 8. Startup verification
 
-Store open must verify at least:
+Store open verifies at least:
 
-- owner identity and schema version;
-- migration checksum/history;
-- required tables, indexes, views and triggers;
-- foreign-key integrity;
-- dispatch state constraints;
-- immutable identity triggers;
-- uniqueness of operation, transaction and event identities;
-- no malformed digest, generation or timestamp rows.
+- owner identity, schema version and migration history;
+- required tables, indexes, views and triggers from migrations 1-7;
+- foreign-key and integrity checks;
+- dispatch-state constraints and terminal-authority invariant;
+- immutable/delete-prevention triggers;
+- uniqueness of operation, transaction, event, grant and claim-token identities;
+- active-claim phase/lease consistency;
+- digest, generation, attempt and timestamp bounds.
 
-A mismatch is corruption or an unsupported predecessor, never an invitation to rebuild from a projection silently.
+A mismatch is corruption or unsupported schema, never silent projection rebuild.
 
-## 9. Retention and backup
+## 9. Retention, backup and restore
 
-Dispatch identities, authority claims and observations are audit evidence and require an authenticated retention/archival policy before compaction. Backups must preserve SQLite consistency and the matching authority frontier. Restore qualification must prove that redacted/revoked content cannot reappear through stale indexes, session stores or outbox rows.
+Dispatch identities, grants, witnesses, claim digests, observations and attempt events are audit evidence. Compaction requires authenticated archival and cannot delete unresolved or terminal lineage. A backup must preserve a consistent SQLite snapshot together with matching authority-frontier metadata. Restore qualification must prove revoked/redacted content, expired active claims and stale session/outbox state cannot resurrect or re-enter physical I/O.
