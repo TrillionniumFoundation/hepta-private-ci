@@ -31,12 +31,16 @@ run_step canonical-python python3 codex-rs/hepta-types/conformance/verify_vector
 run_step canonical-node bash -c 'node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts'
 run_step rejections-python python3 codex-rs/hepta-types/conformance/verify_rejections.py
 run_step rejections-node node codex-rs/hepta-types/conformance/verify_rejections.mjs
+run_step manifest-python python3 codex-rs/hepta-types/conformance/verify_manifest_vectors.py
+run_step manifest-node node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs
 run_step generated-drift python3 codex-rs/hepta-types/bindings/generate_bindings.py --check
 run_step binding-python python3 codex-rs/hepta-types/bindings/verify_generated.py
 run_step binding-node node codex-rs/hepta-types/bindings/verify_generated.mjs
 run_step consumer-compile run_rust cargo check --locked --manifest-path "$MANIFEST" \
   -p codex-hepta-types -p codex-hepta-ndu -p codex-hepta-codex-adapter \
   -p codex-hepta-learning-ledger -p codex-hepta-supervisor --lib
+run_step manifest-rust run_rust cargo test --locked --manifest-path "$MANIFEST" \
+  -p codex-hepta-types --test manifest_protocol_consumer
 run_step types-tests just test --locked -p codex-hepta-types --all-targets --retries 0
 run_step ndu-tests just test --locked -p codex-hepta-ndu --lib --retries 0
 run_step prompt-producer just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)' --retries 0
@@ -60,7 +64,7 @@ for row in (evidence / "results.tsv").read_text().splitlines():
 final_head, final_tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
 unchanged = (initial_head, initial_tree) == (final_head, final_tree)
 clean = not initial_status and not git("status", "--porcelain", "--untracked-files=normal")
-passed = len(checks) == 16 and all(row["exitCode"] == 0 for row in checks)
+passed = len(checks) == 19 and all(row["exitCode"] == 0 for row in checks)
 record = {"schema": "hepta.platform-types.consumer-execution.v1", "sourceHead": initial_head,
           "sourceTree": initial_tree, "finalSourceHead": final_head, "finalSourceTree": final_tree,
           "sourceUnchanged": unchanged, "cleanWorktree": clean,

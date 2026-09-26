@@ -80,10 +80,13 @@ class ConsumerExecutionTests(unittest.TestCase):
         self.assertFalse(record["checksPassed"])
         self.assertFalse(record["qualified"])
         checks = {row["name"]: row["exitCode"] for row in record["checks"]}
-        self.assertEqual(len(checks), 16)
+        self.assertEqual(len(checks), 19)
         self.assertEqual(checks["consumer-compile"], 19)
+        self.assertEqual(checks["manifest-rust"], 0)
         self.assertEqual(checks["topology-consumer"], 0)
         self.assertEqual(checks["ndu-lint"], 0)
+        self.assertIn("verify_manifest_vectors.py", commands)
+        self.assertIn("manifest_protocol_consumer", commands)
         self.assertIn("codex-hepta-learning-ledger", commands)
 
     def test_empty_focused_suite_is_not_success(self):
@@ -94,9 +97,13 @@ class ConsumerExecutionTests(unittest.TestCase):
 
     def test_success_requires_all_checks_and_retains_exact_source(self):
         process, record, _ = self.execute("")
-        self.assertEqual(process.returncode, 0 if record["cleanWorktree"] else 1, process.stdout + process.stderr)
+        self.assertEqual(
+            process.returncode,
+            0 if record["cleanWorktree"] else 1,
+            process.stdout + process.stderr,
+        )
         self.assertTrue(record["checksPassed"])
-        self.assertEqual(len(record["checks"]), 16)
+        self.assertEqual(len(record["checks"]), 19)
         self.assertEqual(
             record["sourceHead"],
             subprocess.check_output(

@@ -12,10 +12,23 @@ EXPECTED = [
     "generated.python",
     "generated.javascript",
     "canonical.python-node",
+    "manifest.python",
+    "manifest.javascript",
+    "manifest.rust-public-api",
     "utility.ndu.registered-numeric",
     "runtime.codex.prompt-delivery",
     "learning.ledger.prompt-delivery",
     "runtime.supervisor.topology",
+]
+REQUIRED_EXECUTION = [
+    "complete_hepta_types_all_targets",
+    "complete_utility_ndu_library_tests",
+    "manifest_cross_language_conformance",
+    "manifest_rust_public_api_consumer",
+    "prompt_delivery_producer_tests",
+    "prompt_delivery_ledger_tests",
+    "runtime_topology_admission_tests",
+    "strict_utility_ndu_library_lint",
 ]
 
 
@@ -28,21 +41,16 @@ def main() -> int:
         or value.get("module") != "platform.types"
         or value.get("qualificationScript")
         != "scripts/run_platform_types_consumer_qualification.sh"
-        or value.get("requiredExecution")
-        != [
-            "complete_hepta_types_all_targets",
-            "complete_utility_ndu_library_tests",
-            "prompt_delivery_producer_tests",
-            "prompt_delivery_ledger_tests",
-            "runtime_topology_admission_tests",
-            "strict_utility_ndu_library_lint",
-        ]
+        or value.get("requiredExecution") != REQUIRED_EXECUTION
         or not isinstance(rows, list)
         or [row.get("id") for row in rows if isinstance(row, dict)] != EXPECTED
     ):
         raise SystemExit("platform.types consumer matrix header/order mismatch")
     qualification = QUALIFICATION.read_text(encoding="utf-8")
     for command in (
+        "python3 codex-rs/hepta-types/conformance/verify_manifest_vectors.py",
+        "node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs",
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-types --test manifest_protocol_consumer',
         "just test --locked -p codex-hepta-types --all-targets",
         "just test --locked -p codex-hepta-ndu --lib",
         "just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)'",
@@ -55,13 +63,18 @@ def main() -> int:
 
     seen: set[str] = set()
     for row in rows:
-        identifier = row["id"]
-        if identifier in seen:
-            raise SystemExit(f"duplicate consumer: {identifier}")
+        if not isinstance(row, dict):
+            raise SystemExit("platform.types consumer row must be an object")
+        identifier = row.get("id")
+        if not isinstance(identifier, str) or not identifier or identifier in seen:
+            raise SystemExit(f"invalid or duplicate consumer: {identifier!r}")
         seen.add(identifier)
-        path = ROOT / row["path"]
+        relative_path = row.get("path")
+        if not isinstance(relative_path, str) or not relative_path:
+            raise SystemExit(f"{identifier}: source path required")
+        path = ROOT / relative_path
         if not path.is_file():
-            raise SystemExit(f"missing consumer source: {row['path']}")
+            raise SystemExit(f"missing consumer source: {relative_path}")
         text = path.read_text(encoding="utf-8")
         anchors = row.get("mustContain")
         if not isinstance(anchors, list) or not anchors:

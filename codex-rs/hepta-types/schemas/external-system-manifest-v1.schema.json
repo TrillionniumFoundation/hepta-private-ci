@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/platform.types/external-system-manifest-v1.schema.json",
+  "title": "ExternalSystemManifestV1 strict JSON transport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "system_id",
+    "system_class",
+    "host_identity_digest",
+    "os_release_digest",
+    "package_inventory_digest",
+    "service_graph_digest",
+    "filesystem_scope_digest",
+    "identity_map_digest",
+    "network_surface_digest",
+    "secret_reference_digest",
+    "observed_at",
+    "authorization_witness"
+  ],
+  "properties": {
+    "kind": { "const": "external_system_manifest_v1" },
+    "system_id": { "$ref": "#/$defs/stableId" },
+    "system_class": {
+      "enum": ["debian_host", "debian_service", "posix_host", "posix_service", "digital_adapter"]
+    },
+    "host_identity_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "os_release_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "package_inventory_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "service_graph_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "filesystem_scope_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "identity_map_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "network_surface_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "secret_reference_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "observed_at": { "$ref": "#/$defs/utcTimestamp" },
+    "authorization_witness": { "$ref": "#/$defs/nonzeroDigest" }
+  },
+  "$defs": {
+    "stableId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "nonzeroDigest": { "type": "string", "pattern": "^(?!0{64}$)[0-9a-f]{64}$" },
+    "utcTimestamp": { "type": "string", "minLength": 20, "maxLength": 27, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$" }
+  }
+}

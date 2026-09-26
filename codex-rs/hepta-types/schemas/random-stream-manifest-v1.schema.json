@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/platform.types/random-stream-manifest-v1.schema.json",
+  "title": "RandomStreamManifestV1 strict JSON transport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "manifest_id",
+    "root_seed_digest",
+    "algorithm_namespace",
+    "episode_id",
+    "decision_id",
+    "stream_id",
+    "counter_start",
+    "counter_end_exclusive",
+    "generator_id",
+    "generator_version"
+  ],
+  "properties": {
+    "kind": { "const": "random_stream_manifest_v1" },
+    "manifest_id": { "$ref": "#/$defs/stableId" },
+    "root_seed_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "algorithm_namespace": { "$ref": "#/$defs/enumToken" },
+    "episode_id": { "$ref": "#/$defs/stableId" },
+    "decision_id": { "$ref": "#/$defs/stableId" },
+    "stream_id": { "$ref": "#/$defs/stableId" },
+    "counter_start": { "$ref": "#/$defs/u64String" },
+    "counter_end_exclusive": { "$ref": "#/$defs/u64String" },
+    "generator_id": { "$ref": "#/$defs/enumToken" },
+    "generator_version": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[^\\u0000]+$" }
+  },
+  "$defs": {
+    "stableId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "enumToken": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._:-]*[a-z0-9]$|^[a-z0-9]$" },
+    "nonzeroDigest": { "type": "string", "pattern": "^(?!0{64}$)[0-9a-f]{64}$" },
+    "u64String": { "type": "string", "pattern": "^(0|[1-9][0-9]*)$" }
+  }
+}
