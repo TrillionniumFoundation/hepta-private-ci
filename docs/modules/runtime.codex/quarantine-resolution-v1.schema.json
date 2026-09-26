@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/runtime-codex-quarantine-resolution-v1.json",
+  "title": "runtime.codex quarantine resolution V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "module",
+    "operationId",
+    "requestSha256",
+    "sourceAdmissionSha256",
+    "agentId",
+    "agentGeneration",
+    "appServerSessionId",
+    "clientUserMessageId",
+    "decision",
+    "retryDisposition",
+    "evidence",
+    "authority",
+    "signature"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "module": {
+      "const": "runtime.codex"
+    },
+    "operationId": {
+      "$ref": "#/$defs/stableId"
+    },
+    "requestSha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "sourceAdmissionSha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "agentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "agentGeneration": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "appServerSessionId": {
+      "$ref": "#/$defs/stableId"
+    },
+    "clientUserMessageId": {
+      "$ref": "#/$defs/stableId"
+    },
+    "providerOperationId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/stableId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "confirmed_terminal",
+        "proven_not_applied",
+        "permanent_quarantine"
+      ]
+    },
+    "terminal": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "turnId",
+            "terminalResponseSha256"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "completed",
+                "failed",
+                "interrupted"
+              ]
+            },
+            "turnId": {
+              "$ref": "#/$defs/stableId"
+            },
+            "terminalResponseSha256": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        }
+      ]
+    },
+    "retryDisposition": {
+      "type": "string",
+      "enum": [
+        "never",
+        "new_operation_only_after_proven_not_applied"
+      ]
+    },
+    "replacementOperationId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/stableId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "sha256"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "provider_terminal_receipt",
+              "provider_idempotency_lookup",
+              "app_server_history",
+              "agentd_journal",
+              "runtime_codex_journal",
+              "network_admission_log",
+              "operator_investigation"
+            ]
+          },
+          "sha256": {
+            "$ref": "#/$defs/digest"
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "issuer": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "signerId",
+        "authorityEpoch",
+        "decisionRevision",
+        "issuedAtUnixMs",
+        "expiresAtUnixMs",
+        "nonce"
+      ],
+      "properties": {
+        "signerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "authorityEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "decisionRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "issuedAtUnixMs": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expiresAtUnixMs": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "ed25519"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{128}$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "not": {
+        "const": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "confirmed_terminal"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "terminal"
+        ],
+        "properties": {
+          "retryDisposition": {
+            "const": "never"
+          },
+          "replacementOperationId": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "proven_not_applied"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "terminal": {
+            "type": "null"
+          },
+          "retryDisposition": {
+            "const": "new_operation_only_after_proven_not_applied"
+          },
+          "replacementOperationId": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "required": [
+          "replacementOperationId"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "permanent_quarantine"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "terminal": {
+            "type": "null"
+          },
+          "retryDisposition": {
+            "const": "never"
+          },
+          "replacementOperationId": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}
