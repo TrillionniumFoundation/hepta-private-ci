@@ -5,18 +5,18 @@ on:
     paths:
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-contracts/**'
       - 'apps/hepta-browser/**'
       - 'third_party/servo-patches/**'
       - 'docs/modules/browser.servo/**'
       - 'qualification/module-execution-dossiers/detail/browser.servo.md'
       - '.github/workflows/hepta-browser-agentd-composition.yml'
   push:
-    branches:
-      - main
-      - codex/browser-servo-product-closure-20260919
+    branches: [main]
     paths:
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-contracts/**'
       - 'apps/hepta-browser/**'
       - 'third_party/servo-patches/**'
       - 'docs/modules/browser.servo/**'
@@ -33,6 +33,7 @@ concurrency:
 
 jobs:
   exact-composition:
+    name: Browser Agentd composition
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
@@ -49,6 +50,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
           git rev-parse HEAD HEAD^{tree}
 
       - name: Verify complete Browser owner boundary
@@ -60,7 +63,14 @@ jobs:
             timeout 90s node --test "$test_file"
             echo "::endgroup::"
           done
-          node --check apps/hepta-browser/src/*.js
+          find apps/hepta-browser/src apps/hepta-browser/scripts \
+            -type f -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
+
+      - name: Verify generated Browser source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/browser-source-registry.js --check >/dev/null
 
       - name: Verify Agentd Browser formatting
         shell: bash
@@ -68,26 +78,33 @@ jobs:
           set -euo pipefail
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
 
-      - name: Exercise real FinalUseAuthority handoff tests
+      - name: Exercise FinalUseAuthority, worker admission and revocation-feed tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo test --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --locked -p codex-hepta-agentd browser_revocation_feed --lib
 
-      - name: Compile named Agentd Browser product caller
+      - name: Compile diagnostic and long-running Agentd Browser owners
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser
+          cargo check --locked -p codex-hepta-agentd \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browserd
 
       - name: Deny Agentd Browser lint warnings
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd \
+            --lib \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browserd \
+            --no-deps -- -D warnings
 
       - name: Verify source stayed clean
         if: always()
