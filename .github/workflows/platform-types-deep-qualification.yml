@@ -1,0 +1,109 @@
+name: platform.types deep qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.*"
+      - "codex-rs/hepta-types/**"
+      - "docs/lane-a-foundation/platform.types/**"
+      - "docs/modules/platform.types/**"
+      - "qualification/module-execution-dossiers/detail/platform.types.md"
+      - "scripts/lane_a_foundation_*.py"
+      - "scripts/platform_types_*.py"
+      - "scripts/run_platform_types_deep_qualification.sh"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+      - ".github/workflows/*platform-types*.yml"
+      - ".github/workflows/lane-a-foundation.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-types-deep-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PLATFORM_TYPES_MSRV: "1.95.0"
+  PLATFORM_TYPES_MIRI: "nightly-2026-09-20"
+
+jobs:
+  source:
+    name: Qualify exact platform.types source head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - id: qualify
+        continue-on-error: true
+        shell: bash
+        run: >-
+          scripts/run_platform_types_deep_qualification.sh
+          source-head
+          "${{ github.event.pull_request.head.sha || github.sha }}"
+          "${{ github.event.pull_request.head.sha || github.sha }}"
+      - id: artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-deep-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/platform-types-deep/source-head/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+      - if: ${{ always() }}
+        shell: bash
+        run: |
+          test "${{ steps.qualify.outcome }}" = success
+          test "${{ steps.artifacts.outcome }}" = success
+
+  merge:
+    name: Qualify deterministic platform.types merge candidate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta platform.types CI
+          author-email: hepta-platform-types-ci@users.noreply.github.com
+          message: Synthetic platform.types deep qualification merge
+      - id: qualify
+        continue-on-error: true
+        shell: bash
+        run: >-
+          scripts/run_platform_types_deep_qualification.sh
+          synthetic-merge
+          "${{ steps.merge.outputs.sha }}"
+          "${{ github.event.pull_request.head.sha }}"
+          "${{ github.event.pull_request.base.sha }}"
+          "${{ github.event.pull_request.number }}"
+      - id: artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-deep-merge-${{ steps.merge.outputs.sha }}
+          path: .hepta-evidence/platform-types-deep/synthetic-merge/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+      - if: ${{ always() }}
+        shell: bash
+        run: |
+          test "${{ steps.qualify.outcome }}" = success
+          test "${{ steps.artifacts.outcome }}" = success
