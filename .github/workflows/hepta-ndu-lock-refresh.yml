@@ -1,4 +1,4 @@
-name: Hepta NDU lock refresh diagnostic
+name: Hepta NDU lock and map diagnostic
 
 on:
   push:
@@ -8,6 +8,8 @@ on:
       - "codex-rs/**/Cargo.toml"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
+      - "docs/modules/utility.ndu/**"
+      - "scripts/hepta-ndu-implementation-map-closed-world.py"
       - ".github/workflows/hepta-ndu-lock-refresh.yml"
   workflow_dispatch:
 
@@ -20,7 +22,7 @@ concurrency:
 
 jobs:
   refresh:
-    name: Generate minimal Cargo.lock refresh
+    name: Generate exact lock and map diagnostics
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -30,13 +32,19 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
-      - name: Refresh lockfile from the existing resolution
+      - name: Generate diagnostics
         shell: bash
         run: |
           set -euo pipefail
           OUT="${RUNNER_TEMP}/ndu-lock-refresh"
           mkdir -p "$OUT"
           cp codex-rs/Cargo.lock "$OUT/Cargo.lock.before"
+          set +e
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py \
+            > "$OUT/closed-world-map.log" 2>&1
+          MAP_CODE=$?
+          set -e
+          printf '%s\n' "$MAP_CODE" > "$OUT/closed-world-map.exit"
           (
             cd codex-rs
             cargo metadata --format-version 1 --no-deps > /dev/null
@@ -44,9 +52,11 @@ jobs:
           )
           cp codex-rs/Cargo.lock "$OUT/Cargo.lock"
           git diff --binary -- codex-rs/Cargo.lock > "$OUT/Cargo.lock.patch"
-          sha256sum "$OUT/Cargo.lock.before" "$OUT/Cargo.lock" "$OUT/Cargo.lock.patch" > "$OUT/SHA256SUMS"
+          sha256sum "$OUT/Cargo.lock.before" "$OUT/Cargo.lock" \
+            "$OUT/Cargo.lock.patch" "$OUT/closed-world-map.log" \
+            > "$OUT/SHA256SUMS"
           test -s "$OUT/Cargo.lock.patch"
-      - name: Retain generated lockfile and exact patch
+      - name: Retain generated lockfile, patch, hashes and map log
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -54,3 +64,7 @@ jobs:
           path: ${{ runner.temp }}/ndu-lock-refresh
           if-no-files-found: error
           retention-days: 3
+      - name: Require closed-world map validation
+        if: always()
+        shell: bash
+        run: test "$(cat '${{ runner.temp }}/ndu-lock-refresh/closed-world-map.exit')" = 0
