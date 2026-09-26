@@ -1,0 +1,68 @@
+name: Apply context.compiler foundation closure
+
+on:
+  push:
+    branches:
+      - work/context-compiler-v2-closure-20260927
+    paths:
+      - scripts/apply-context-compiler-foundation.py.gz.b64
+      - .github/workflows/context-compiler-foundation-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-foundation-apply
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 60
+    steps:
+      - name: Check out closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/context-compiler-v2-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Decode and verify guarded patcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode scripts/apply-context-compiler-foundation.py.gz.b64 | gzip --decompress > /tmp/apply-context-compiler-foundation.py
+          test "$(sha256sum /tmp/apply-context-compiler-foundation.py | cut -d' ' -f1)" = "f4432e98288d2160059f90e0dc056205f90a5da7d23f923325b0e0ca637ef2bc"
+          python3 -m py_compile /tmp/apply-context-compiler-foundation.py
+      - name: Apply guarded source edits
+        run: python3 /tmp/apply-context-compiler-foundation.py
+      - name: Format context compiler
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-context-compiler
+      - name: Check context compiler
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-context-compiler --all-targets
+      - name: Strict lint context compiler
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
+      - name: Test context compiler
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-context-compiler
+      - name: Verify patch hygiene
+        run: git diff --check
+      - name: Commit foundation closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Context Compiler Closure Bot"
+          git config user.email "hepta-context-compiler-closure@users.noreply.github.com"
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "feat(context.compiler): bind typed serialization and snapshot lineage"
+          git push origin HEAD:work/context-compiler-v2-closure-20260927
