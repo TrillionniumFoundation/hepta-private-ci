@@ -113,6 +113,11 @@ impl EvidenceFrontierRecordV1 {
         if actual != self.signed_frontier_sha256 {
             return Err(invalid("signed frontier digest does not match its bytes"));
         }
+        let payload: serde_json::Value = serde_json::from_str(&self.signed_frontier_json)
+            .map_err(|_| invalid("signed frontier must be valid JSON"))?;
+        if !payload.is_object() {
+            return Err(invalid("signed frontier must be a JSON object"));
+        }
         Ok(())
     }
 }
@@ -154,6 +159,9 @@ pub enum EvidenceFrontierBackendError {
 /// Production implementations live outside the evidence database rollback
 /// domain. A successful `compare_and_swap` must mean both the frontier record
 /// and its append-only audit event are durable before the receipt is returned.
+/// Retrying the same CAS must return the same committed metadata; changing any
+/// record field is a conflict, not a replay. An empty store uses `None`, never
+/// `Some(0)`, as its expected generation.
 pub trait EvidenceFrontierBackend: Send + Sync {
     fn get_latest(
         &self,
@@ -187,7 +195,10 @@ pub struct InMemoryEvidenceFrontierBackend {
 }
 
 impl InMemoryEvidenceFrontierBackend {
-    pub fn new(backend_id: String, rollback_domain_id: String) -> Result<Self, EvidenceFrontierBackendError> {
+    pub fn new(
+        backend_id: String,
+        rollback_domain_id: String,
+    ) -> Result<Self, EvidenceFrontierBackendError> {
         let identity = EvidenceFrontierBackendIdentityV1 {
             schema_version: 1,
             backend_id,
@@ -215,8 +226,14 @@ impl EvidenceFrontierBackend for InMemoryEvidenceFrontierBackend {
         store_id: &str,
     ) -> Result<Option<EvidenceFrontierRecordV1>, EvidenceFrontierBackendError> {
         validate_id(store_id, "store id")?;
-        let records = self.records.read().map_err(|_| EvidenceFrontierBackendError::Poisoned)?;
-        Ok(records.get(store_id).and_then(|history| history.last()).cloned())
+        let records = self
+            .records
+            .read()
+            .map_err(|_| EvidenceFrontierBackendError::Poisoned)?;
+        Ok(records
+            .get(store_id)
+            .and_then(|history| history.last())
+            .cloned())
     }
 
     fn compare_and_swap(
@@ -230,22 +247,36 @@ impl EvidenceFrontierBackend for InMemoryEvidenceFrontierBackend {
         if new_frontier.store_id != store_id {
             return Err(invalid("frontier record store id does not match request"));
         }
+        if expected_generation == Some(0) {
+            return Err(invalid("initial CAS must use None, not generation zero"));
+        }
+        if new_frontier.backend_key_epoch != self.identity.authentication_key_epoch {
+            return Err(invalid("frontier record backend key epoch is not current"));
+        }
         let required_generation = expected_generation
-            .map(|value| value.checked_add(1).ok_or_else(|| invalid("generation overflow")))
+            .map(|value| {
+                value
+                    .checked_add(1)
+                    .ok_or_else(|| invalid("generation overflow"))
+            })
             .transpose()?
             .unwrap_or(1);
         if new_frontier.generation != required_generation {
-            return Err(invalid("new frontier generation must be expected generation plus one"));
+            return Err(invalid(
+                "new frontier generation must be expected generation plus one",
+            ));
         }
 
-        let mut records = self.records.write().map_err(|_| EvidenceFrontierBackendError::Poisoned)?;
+        let mut records = self
+            .records
+            .write()
+            .map_err(|_| EvidenceFrontierBackendError::Poisoned)?;
         let history = records.entry(store_id.to_string()).or_default();
         let actual = history.last().map(|record| record.generation);
-        let idempotent_replay = history.last().is_some_and(|record| {
-            record.generation == new_frontier.generation
-                && record.signed_frontier_sha256 == new_frontier.signed_frontier_sha256
-                && expected_generation == new_frontier.generation.checked_sub(1)
-        });
+        // required_generation already binds the request's expected generation.
+        // Comparing the entire record also keeps replay receipts from claiming
+        // an audit event, commit time or key epoch that was never persisted.
+        let idempotent_replay = history.last() == Some(&new_frontier);
         if !idempotent_replay && actual != expected_generation {
             return Err(EvidenceFrontierBackendError::CompareAndSwapConflict {
                 expected: expected_generation,
@@ -282,7 +313,10 @@ impl EvidenceFrontierBackend for InMemoryEvidenceFrontierBackend {
         if limit == 0 || limit > EVIDENCE_FRONTIER_HISTORY_MAX_RESULTS {
             return Err(invalid("history limit must be between 1 and 1024"));
         }
-        let records = self.records.read().map_err(|_| EvidenceFrontierBackendError::Poisoned)?;
+        let records = self
+            .records
+            .read()
+            .map_err(|_| EvidenceFrontierBackendError::Poisoned)?;
         Ok(records
             .get(store_id)
             .into_iter()
@@ -315,6 +349,14 @@ fn invalid(message: &str) -> EvidenceFrontierBackendError {
 mod tests {
     use super::*;
 
+    fn backend() -> InMemoryEvidenceFrontierBackend {
+        InMemoryEvidenceFrontierBackend::new(
+            "backend:evidence-test".to_string(),
+            "rollback:test-backend".to_string(),
+        )
+        .expect("backend")
+    }
+
     fn record(generation: u64, payload: &str) -> EvidenceFrontierRecordV1 {
         EvidenceFrontierRecordV1 {
             schema_version: 1,
@@ -330,20 +372,18 @@ mod tests {
 
     #[test]
     fn cas_is_monotonic_idempotent_and_history_is_bounded() {
-        let backend = InMemoryEvidenceFrontierBackend::new(
-            "backend:evidence-test".to_string(),
-            "rollback:test-backend".to_string(),
-        )
-        .expect("backend");
+        let backend = backend();
         let first = record(1, r#"{"generation":1}"#);
         let receipt = backend
             .compare_and_swap("store:evidence-test", None, first.clone())
             .expect("first CAS");
         assert!(!receipt.idempotent_replay);
-        let replay = backend
+        let mut replay = backend
             .compare_and_swap("store:evidence-test", None, first)
-            .expect("idempotent replay");
+            .expect("idempotent initial replay");
         assert!(replay.idempotent_replay);
+        replay.idempotent_replay = false;
+        assert_eq!(receipt, replay);
         let conflict = backend
             .compare_and_swap(
                 "store:evidence-test",
@@ -355,9 +395,16 @@ mod tests {
             conflict,
             EvidenceFrontierBackendError::CompareAndSwapConflict { .. }
         ));
+        let second = record(2, r#"{"generation":2}"#);
         backend
-            .compare_and_swap("store:evidence-test", Some(1), record(2, r#"{"generation":2}"#))
+            .compare_and_swap("store:evidence-test", Some(1), second.clone())
             .expect("second CAS");
+        assert!(
+            backend
+                .compare_and_swap("store:evidence-test", Some(1), second)
+                .expect("second-generation replay")
+                .idempotent_replay
+        );
         assert_eq!(
             backend
                 .get_history("store:evidence-test", Some(1), 16)
@@ -370,13 +417,101 @@ mod tests {
     }
 
     #[test]
+    fn replay_cannot_replace_audit_metadata_or_commit_time() {
+        let backend = backend();
+        let first = record(1, r#"{"generation":1}"#);
+        backend
+            .compare_and_swap("store:evidence-test", None, first.clone())
+            .expect("first CAS");
+        let mut changed_audit = first.clone();
+        changed_audit.backend_audit_event_id = "audit:forged-replay".to_string();
+        let mut changed_time = first.clone();
+        changed_time.committed_at_unix_ms = 999;
+        for drift in [changed_audit, changed_time] {
+            assert!(matches!(
+                backend.compare_and_swap("store:evidence-test", None, drift),
+                Err(EvidenceFrontierBackendError::CompareAndSwapConflict { .. })
+            ));
+        }
+        assert_eq!(
+            backend.get_latest("store:evidence-test").expect("latest"),
+            Some(first)
+        );
+        assert_eq!(
+            backend.get_history("store:evidence-test", None, 16).expect("history").len(),
+            1
+        );
+    }
+
+    #[test]
+    fn zero_expected_generation_overflow_and_key_substitution_fail_closed() {
+        let backend = backend();
+        assert!(backend
+            .compare_and_swap("store:evidence-test", Some(0), record(1, "{}"))
+            .is_err());
+        assert!(backend
+            .compare_and_swap("store:evidence-test", Some(u64::MAX), record(1, "{}"))
+            .is_err());
+        let mut substituted_key = record(1, "{}");
+        substituted_key.backend_key_epoch = 2;
+        assert!(backend
+            .compare_and_swap("store:evidence-test", None, substituted_key)
+            .is_err());
+        assert_eq!(backend.get_latest("store:evidence-test").expect("latest"), None);
+    }
+
+    #[test]
+    fn malformed_frontier_bytes_and_digest_mismatch_are_rejected() {
+        for payload in ["not-json", "null", "[]", "1"] {
+            assert!(record(1, payload).validate().is_err());
+        }
+        let mut bad_digest = record(1, "{}");
+        bad_digest.signed_frontier_sha256 = Sha256Digest::for_bytes(b"other");
+        assert!(bad_digest.validate().is_err());
+        assert!(record(1, &" ".repeat(MAX_SIGNED_FRONTIER_BYTES + 1)).validate().is_err());
+    }
+
+    #[test]
+    fn concurrent_distinct_first_writers_have_one_winner() {
+        let backend = std::sync::Arc::new(backend());
+        let barrier = std::sync::Arc::new(std::sync::Barrier::new(8));
+        let writers: Vec<_> = (0..8)
+            .map(|writer| {
+                let backend = std::sync::Arc::clone(&backend);
+                let barrier = std::sync::Arc::clone(&barrier);
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    backend.compare_and_swap(
+                        "store:evidence-test",
+                        None,
+                        record(1, &format!("{{\"writer\":{writer}}}")),
+                    )
+                })
+            })
+            .collect();
+        let successes = writers
+            .into_iter()
+            .map(|writer| usize::from(writer.join().expect("writer did not panic").is_ok()))
+            .sum::<usize>();
+        assert_eq!(successes, 1);
+        assert_eq!(
+            backend.get_history("store:evidence-test", None, 16).expect("history").len(),
+            1
+        );
+    }
+
+    #[test]
+    fn history_rejects_unbounded_requests() {
+        let backend = backend();
+        assert!(backend.get_history("store:evidence-test", None, 0).is_err());
+        assert!(backend
+            .get_history("store:evidence-test", None, EVIDENCE_FRONTIER_HISTORY_MAX_RESULTS + 1)
+            .is_err());
+    }
+
+    #[test]
     fn ephemeral_backend_cannot_satisfy_production_identity() {
-        let backend = InMemoryEvidenceFrontierBackend::new(
-            "backend:evidence-test".to_string(),
-            "rollback:test-backend".to_string(),
-        )
-        .expect("backend");
-        let identity = backend.verify_backend_identity().expect("identity");
+        let identity = backend().verify_backend_identity().expect("identity");
         assert!(matches!(
             identity.validate_for_production("rollback:local-evidence"),
             Err(EvidenceFrontierBackendError::UnsafeForProduction(_))
