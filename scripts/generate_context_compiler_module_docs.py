@@ -7,6 +7,7 @@ import argparse
 import difflib
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +28,63 @@ def manifest_digest(manifest: dict[str, Any]) -> str:
         separators=(",", ":"),
     ).encode("utf-8")
     return hashlib.sha256(canonical).hexdigest()
+
+
+def git_output(*args: str) -> str:
+    return subprocess.check_output(
+        ["git", *args], cwd=ROOT, text=True, stderr=subprocess.STDOUT
+    ).strip()
+
+
+def source_anchor(manifest: dict[str, Any]) -> dict[str, Any]:
+    paths: set[str] = set()
+    for root in manifest["sourceRoots"]:
+        candidate = ROOT / root
+        if candidate.is_dir():
+            output = git_output("ls-files", "--", root)
+            paths.update(line for line in output.splitlines() if line)
+        elif candidate.is_file():
+            paths.add(root)
+        else:
+            raise RuntimeError(f"missing source root: {root}")
+    for caller in manifest["productCallers"]:
+        path = caller["sourcePath"]
+        candidate = ROOT / path
+        if not candidate.is_file():
+            raise RuntimeError(f"missing product caller: {path}")
+        if caller["nativeSymbol"] not in candidate.read_text(encoding="utf-8"):
+            raise RuntimeError(
+                f"missing product caller symbol {caller['nativeSymbol']} in {path}"
+            )
+        paths.add(path)
+    objects = [
+        {"path": path, "blob": git_output("hash-object", "--", path)}
+        for path in sorted(paths)
+    ]
+    canonical = json.dumps(
+        objects, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return {"sha256": hashlib.sha256(canonical).hexdigest(), "objects": objects}
+
+
+def render_product_callers(manifest: dict[str, Any]) -> str:
+    rows = [
+        "| Phase | Source | Symbol | Current state |",
+        "|---|---|---|---|",
+    ]
+    for caller in manifest["productCallers"]:
+        rows.append(
+            f"| {caller['phase']} | `{caller['sourcePath']}` | "
+            f"`{caller['nativeSymbol']}` | {caller['state']} |"
+        )
+    return "\n".join(rows)
+
+
+def render_role_support(manifest: dict[str, Any]) -> str:
+    rows = ["| Registry role | Product state |", "|---|---|"]
+    for entry in manifest["roleSupport"]:
+        rows.append(f"| `{entry['role']}` | {entry['state']} |")
+    return "\n".join(rows)
 
 
 def render_status_table(manifest: dict[str, Any]) -> str:
@@ -86,6 +144,8 @@ def render_technical(manifest: dict[str, Any], digest: str) -> str:
 - Working branch: `{manifest["branch"]}`
 - Source manifest: `docs/modules/context.compiler/MODULE_MANIFEST.json`
 - Canonical manifest SHA-256: `{digest}`
+- Source fingerprint SHA-256: `{source_anchor(manifest)["sha256"]}`
+- Work package: `{manifest["workPackage"]["id"]}` / `{manifest["workPackage"]["state"]}`
 - Generator: `{manifest["generatedBy"]}`
 
 {render_status_table(manifest)}
@@ -120,10 +180,10 @@ Public strict-path surface:
 {render_sequence(manifest)}
 ```
 
-The current product source reaches compilation, attachment staging and provider-policy dispatch.
-The strict path intentionally remains marked **partial/incomplete** until the host constructs
-`VerifiedProviderRequestV2`, runs a profile-bound `ExactProviderRequestTokenizerV2`, submits those
-attested bytes without reconstruction, and persists the resulting `ContextDeliveryReceiptV2`.
+The current product source reaches compilation, durable staging and the physical exact-encoded-body
+provider-policy gate. The strict path intentionally remains marked **partial/incomplete** until
+current authoritative admission is refreshed in that same pre-transport ceremony and Agentd makes
+the resulting `ContextDeliveryReceiptV2` the sole durable terminal record.
 
 ## 5. Byte and digest identity model
 
@@ -237,6 +297,7 @@ command succeeded.
 
 
 def implementation_map(manifest: dict[str, Any], digest: str) -> dict[str, Any]:
+    anchor = source_anchor(manifest)
     return {
         "schemaVersion": 3,
         "module": manifest["module"],
@@ -249,6 +310,8 @@ def implementation_map(manifest: dict[str, Any], digest: str) -> dict[str, Any]:
         },
         "status": manifest["status"],
         "statusRationale": manifest["statusRationale"],
+        "workPackage": manifest["workPackage"],
+        "sourceAnchor": anchor,
         "sourceRoots": manifest["sourceRoots"],
         "publicSurface": manifest["publicSurface"],
         "proofObjects": [
@@ -263,17 +326,14 @@ def implementation_map(manifest: dict[str, Any], digest: str) -> dict[str, Any]:
         "byteIdentities": manifest["byteIdentities"],
         "targetSequence": manifest["sequence"],
         "productComposition": {
-            "callers": [
-                "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
-                "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-                "codex-rs/ext/hepta-prompt/src/lib.rs",
-                "codex-rs/core/src/model_provider_policy",
-            ],
+            "callers": manifest["productCallers"],
+            "adapterTruth": manifest["adapterTruth"],
+            "roleSupport": manifest["roleSupport"],
+            "legacyPath": manifest["legacyPath"],
             "current": "partial",
             "closureCondition": (
-                "The host supplies exact final request bytes and a qualified profile-bound "
-                "tokenizer, dispatch consumes the attested request without reconstruction, and "
-                "Agentd durably persists ContextDeliveryReceiptV2."
+                "Authoritative admission, exact-body preparation, physical dispatch and V2 terminal "
+                "persistence execute as one qualified sole path."
             ),
         },
         "qualification": manifest["qualification"],
@@ -319,11 +379,10 @@ Only a successful receipt whose `headSha` equals the reviewed commit may change 
 ## 4. Product composition finding
 
 The source product path is real rather than hypothetical: prompt registry compilation feeds
-`hepta-intelligence`, Agentd stages a runtime attachment, and the provider-policy extension observes
-physical dispatch and terminal state. The composition remains **partial** because the current host
-ABI exports semantic/request digests but not a qualified exact tokenizer over the final request
-bytes. The strict API therefore blocks rather than treating registry token costs as final-request
-proof.
+`hepta-intelligence`, Agentd owns durable staging, and Core now observes the exact encoded body before
+transport. Composition remains **partial** because the authoritative admission owner, qualified
+concrete tokenizer and sole-path V2 terminal persistence are not yet all active in one effect-bound
+ceremony. The strict API fails closed rather than falling back to registry token costs.
 
 ## 5. Byte-identity audit
 
@@ -358,6 +417,67 @@ V2 terminal accounting and an all-green receipt for the exact reviewed SHA.
 """
 
 
+def render_current_product_path(manifest: dict[str, Any], digest: str) -> str:
+    anchor = source_anchor(manifest)
+    adapters = "\n".join(
+        f"- **{name}:** {value}" for name, value in manifest["adapterTruth"].items()
+    )
+    open_items = "\n".join(
+        f"{index}. {entry}"
+        for index, entry in enumerate(manifest["knownOpenItems"], start=1)
+    )
+    return f"""<!-- GENERATED FILE: edit MODULE_MANIFEST.json and run {manifest["generatedBy"]} --write. -->
+# `context.compiler` current product path
+
+## Current status
+
+{render_status_table(manifest)}
+
+- Manifest SHA-256: `{digest}`
+- Source fingerprint SHA-256: `{anchor["sha256"]}`
+- Source objects in fingerprint: `{len(anchor["objects"])}`
+- Work package: `{manifest["workPackage"]["id"]}` / `{manifest["workPackage"]["state"]}`
+
+## Actual product callers
+
+{render_product_callers(manifest)}
+
+## Actual call graph
+
+```mermaid
+{render_sequence(manifest)}
+```
+
+The physical exact-body observer is now present. The remaining architectural distinction is that
+strict compilation/staging is not yet the default sole path and the current admission snapshot plus
+V2 terminal receipt are not yet both resolved inside the same provider-attempt lifecycle.
+
+## Concrete adapter truth
+
+{adapters}
+
+## Supported roles
+
+{render_role_support(manifest)}
+
+Unsupported roles remain fail closed. They must not be silently projected into the developer slot.
+
+## Legacy path
+
+- Current state: {manifest["legacyPath"]["state"]}
+- Cutover condition: {manifest["legacyPath"]["cutoverCondition"]}
+
+Legacy V1 receipts are compatibility evidence only and are never promoted into the V2 proof chain.
+
+## Proof steps not yet closed
+
+{open_items}
+
+This document records source composition only. It grants no independent acceptance, activation,
+promotion or release authority.
+"""
+
+
 def render_all(manifest: dict[str, Any]) -> dict[Path, str]:
     digest = manifest_digest(manifest)
     return {
@@ -371,6 +491,9 @@ def render_all(manifest: dict[str, Any]) -> dict[Path, str]:
             + "\n"
         ),
         ROOT / manifest["artifacts"]["executionDossier"]: render_dossier(
+            manifest, digest
+        ),
+        ROOT / manifest["artifacts"]["currentProductPath"]: render_current_product_path(
             manifest, digest
         ),
     }

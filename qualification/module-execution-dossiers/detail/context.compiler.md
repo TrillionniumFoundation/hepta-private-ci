@@ -4,8 +4,8 @@
 ## 1. Evidence identity
 
 - Reviewed base: `a126987b84737dbc2ee2592442a314117bddb4a2`
-- Working branch: `codex/context-compiler-v2-provider-closure-20260927`
-- Manifest SHA-256: `e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930`
+- Working branch: `codex/context-compiler-v2-full-closure-20260927`
+- Manifest SHA-256: `b7cf4f925ed5f11df464e0aa1014ba76249d001412c264a63c5c0ecff13069c0`
 - Generator: `scripts/generate_context_compiler_module_docs.py`
 - Qualification workflow: `.github/workflows/context-compiler-qualification.yml`
 - Receipt artifact: `context-compiler-qualification-receipt`
@@ -15,8 +15,8 @@
 | Dimension | State | Evidence-based interpretation |
 |---|---|---|
 | Core implementation | **complete** | V2 compilation, verified admission, canonical byte coverage, typed snapshot successor, attachment, delivery preparation and provider evidence observation are implemented. |
-| Product composition | **partial** | Prompt registry, hepta-intelligence, Agentd and the provider-policy extension consume context compiler outputs, but the strict provider-bound V2 preparation is not yet the only serving path. |
-| V2 provider closure | **incomplete** | The provider host ABI exposes request digests but no qualified exact tokenizer over the final provider request bytes; strict attestation therefore fails closed until the host capability is supplied. |
+| Product composition | **partial** | The named registry/intelligence/Agentd path, durable stage owner and Core exact-encoded-body observer are composed in source. Strict preparation and V2 terminal accounting are not yet the sole default serving path. |
+| V2 provider closure | **incomplete** | Core can now fail closed on the exact encoded request body, while the strict compiler owns canonical serialization and exact-tokenizer attestations. A qualified concrete tokenizer, authoritative admission owner and sole-path preparation/terminal composition remain open. |
 | Current-head qualification | **absent** | No immutable qualification receipt for the exact branch head may be claimed before the qualification workflow completes. |
 
 This dossier does not infer release qualification from source presence or a historical workflow.
@@ -36,11 +36,10 @@ Only a successful receipt whose `headSha` equals the reviewed commit may change 
 ## 4. Product composition finding
 
 The source product path is real rather than hypothetical: prompt registry compilation feeds
-`hepta-intelligence`, Agentd stages a runtime attachment, and the provider-policy extension observes
-physical dispatch and terminal state. The composition remains **partial** because the current host
-ABI exports semantic/request digests but not a qualified exact tokenizer over the final request
-bytes. The strict API therefore blocks rather than treating registry token costs as final-request
-proof.
+`hepta-intelligence`, Agentd owns durable staging, and Core now observes the exact encoded body before
+transport. Composition remains **partial** because the authoritative admission owner, qualified
+concrete tokenizer and sole-path V2 terminal persistence are not yet all active in one effect-bound
+ceremony. The strict API fails closed rather than falling back to registry token costs.
 
 ## 5. Byte-identity audit
 
@@ -59,31 +58,37 @@ tokenization invalidates the attestation.
 
 ```mermaid
 flowchart TD
-    N0["registry/admission snapshot"]
-    N1["compile_v2"]
+    N0["authoritative registry/admission snapshot"]
+    N1["verify_admission_snapshot_v2 + verify_admission_v2"]
     N0 --> N1
-    N2["canonical context serialization + complete segment coverage"]
+    N2["compile_v2"]
     N1 --> N2
-    N3["build_attachment"]
+    N3["compiler-owned canonical serialization over realized bytes"]
     N2 --> N3
-    N4["fresh typed snapshot successor"]
+    N4["exact tokenizer over canonical context"]
     N3 --> N4
-    N5["prepare_delivery_from_successor_v2"]
+    N5["build_attachment"]
     N4 --> N5
-    N6["provider host constructs exact final request"]
+    N6["typed current snapshot successor"]
     N5 --> N6
-    N7["provider request coverage verification"]
+    N7["prepare_delivery_from_successor_v2"]
     N6 --> N7
-    N8["exact tokenizer over final request bytes"]
+    N8["host materializes and byte-covers the provider request"]
     N7 --> N8
-    N9["provider submit using the attested request"]
+    N9["exact tokenizer over final provider request bytes"]
     N8 --> N9
-    N10["provider terminal evidence"]
+    N10["Core observes the exact encoded body"]
     N9 --> N10
-    N11["observe_delivery"]
+    N11["durable dispatch claim before transport"]
     N10 --> N11
-    N12["durable ContextDeliveryReceiptV2"]
+    N12["physical provider effect"]
     N11 --> N12
+    N13["canonical provider terminal receipt"]
+    N12 --> N13
+    N14["independent delivery verifier + observe_provider_bound_delivery_v2"]
+    N13 --> N14
+    N15["durable ContextDeliveryReceiptV2"]
+    N14 --> N15
 ```
 
 ## 7. Test evidence expected from the exact head
@@ -95,10 +100,12 @@ The workflow records failures instead of deleting or rewriting them and uploads 
 
 ## 8. Remaining closure items
 
-1. Supply a qualified host tokenizer implementation for each provider/model profile.
-2. Bind the host-generated final request coverage and tokenization attestation into the live provider-policy ABI.
-3. Make ContextDeliveryPreparationV2 and ContextDeliveryReceiptV2 the sole Agentd serving and durable terminal path.
-4. Produce an immutable successful qualification receipt for the exact branch head.
+1. Move admission issuance and current revocation snapshots to a construction-closed registry authority owner.
+2. Select and independently qualify the concrete provider/model tokenizer executable and artifacts.
+3. Run prepare_delivery_from_successor_v2 from the exact-body pre-transport callback, not only before staging.
+4. Make ContextDeliveryReceiptV2 the sole durable terminal accounting path and reconcile Indeterminate attempts.
+5. Feature-gate the V1 runtime path after strict-path product qualification.
+6. Produce exact-head, synthetic-merge, target-host benchmark and independent security-review evidence.
 
 ## 9. Reviewer decision
 

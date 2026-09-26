@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "module": "context.compiler",
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-  "branch": "codex/context-compiler-v2-provider-closure-20260927",
+  "branch": "codex/context-compiler-v2-full-closure-20260927",
   "generatedBy": "scripts/generate_context_compiler_module_docs.py",
   "status": {
     "coreImplementation": "complete",
@@ -12,14 +12,15 @@
   },
   "statusRationale": {
     "coreImplementation": "V2 compilation, verified admission, canonical byte coverage, typed snapshot successor, attachment, delivery preparation and provider evidence observation are implemented.",
-    "productComposition": "Prompt registry, hepta-intelligence, Agentd and the provider-policy extension consume context compiler outputs, but the strict provider-bound V2 preparation is not yet the only serving path.",
-    "v2ProviderClosure": "The provider host ABI exposes request digests but no qualified exact tokenizer over the final provider request bytes; strict attestation therefore fails closed until the host capability is supplied.",
+    "productComposition": "The named registry/intelligence/Agentd path, durable stage owner and Core exact-encoded-body observer are composed in source. Strict preparation and V2 terminal accounting are not yet the sole default serving path.",
+    "v2ProviderClosure": "Core can now fail closed on the exact encoded request body, while the strict compiler owns canonical serialization and exact-tokenizer attestations. A qualified concrete tokenizer, authoritative admission owner and sole-path preparation/terminal composition remain open.",
     "currentHeadQualification": "No immutable qualification receipt for the exact branch head may be claimed before the qualification workflow completes."
   },
   "artifacts": {
     "technical": "docs/modules/context.compiler/TECHNICAL.md",
     "implementationMap": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
-    "executionDossier": "qualification/module-execution-dossiers/detail/context.compiler.md"
+    "executionDossier": "qualification/module-execution-dossiers/detail/context.compiler.md",
+    "currentProductPath": "docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md"
   },
   "sourceRoots": [
     "codex-rs/hepta-context-compiler",
@@ -27,7 +28,15 @@
     "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/ext/hepta-prompt/src/lib.rs",
-    "codex-rs/core/src/model_provider_policy"
+    "codex-rs/core/src/model_provider_policy",
+    "codex-rs/hepta-context-compiler/src/provider_bound.rs",
+    "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+    "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+    "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs",
+    "codex-rs/codex-api/src/dispatch_metadata.rs",
+    "codex-rs/codex-api/src/endpoint/responses.rs",
+    "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+    "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs"
   ],
   "publicSurface": [
     "compile_v2",
@@ -70,18 +79,21 @@
     }
   ],
   "sequence": [
-    "registry/admission snapshot",
+    "authoritative registry/admission snapshot",
+    "verify_admission_snapshot_v2 + verify_admission_v2",
     "compile_v2",
-    "canonical context serialization + complete segment coverage",
+    "compiler-owned canonical serialization over realized bytes",
+    "exact tokenizer over canonical context",
     "build_attachment",
-    "fresh typed snapshot successor",
+    "typed current snapshot successor",
     "prepare_delivery_from_successor_v2",
-    "provider host constructs exact final request",
-    "provider request coverage verification",
-    "exact tokenizer over final request bytes",
-    "provider submit using the attested request",
-    "provider terminal evidence",
-    "observe_delivery",
+    "host materializes and byte-covers the provider request",
+    "exact tokenizer over final provider request bytes",
+    "Core observes the exact encoded body",
+    "durable dispatch claim before transport",
+    "physical provider effect",
+    "canonical provider terminal receipt",
+    "independent delivery verifier + observe_provider_bound_delivery_v2",
     "durable ContextDeliveryReceiptV2"
   ],
   "qualification": {
@@ -90,18 +102,98 @@
     "commands": [
       "python3 scripts/generate_context_compiler_module_docs.py --check",
       "cargo fmt --all -- --check",
-      "cargo test -p codex-hepta-context-compiler",
-      "cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings",
-      "cargo deny check",
+      "cargo test --locked -p codex-hepta-context-compiler",
+      "cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings",
+      "cargo deny --locked check bans licenses sources",
+      "cargo deny --locked check advisories (recorded non-blocking repository audit)",
       "bazel test //codex-rs/hepta-context-compiler:all",
       "python3 scripts/hepta-readiness.py verify",
       "python3 scripts/hepta-docs.py verify"
     ]
   },
   "knownOpenItems": [
-    "Supply a qualified host tokenizer implementation for each provider/model profile.",
-    "Bind the host-generated final request coverage and tokenization attestation into the live provider-policy ABI.",
-    "Make ContextDeliveryPreparationV2 and ContextDeliveryReceiptV2 the sole Agentd serving and durable terminal path.",
-    "Produce an immutable successful qualification receipt for the exact branch head."
-  ]
+    "Move admission issuance and current revocation snapshots to a construction-closed registry authority owner.",
+    "Select and independently qualify the concrete provider/model tokenizer executable and artifacts.",
+    "Run prepare_delivery_from_successor_v2 from the exact-body pre-transport callback, not only before staging.",
+    "Make ContextDeliveryReceiptV2 the sole durable terminal accounting path and reconcile Indeterminate attempts.",
+    "Feature-gate the V1 runtime path after strict-path product qualification.",
+    "Produce exact-head, synthetic-merge, target-host benchmark and independent security-review evidence."
+  ],
+  "workPackage": {
+    "id": "CTX-1-CONTEXT-COMPILER",
+    "state": "integration_in_progress"
+  },
+  "productCallers": [
+    {
+      "phase": "registry compile",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "nativeSymbol": "compile_prompt_registry_v2",
+      "state": "legacy-compatible source composed"
+    },
+    {
+      "phase": "strict canonical compile",
+      "sourcePath": "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+      "nativeSymbol": "prepare_provider_bound_prompt_v2",
+      "state": "source composed; not yet the default ingress"
+    },
+    {
+      "phase": "named product owner",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "nativeSymbol": "AgentdPromptPipelineOwner",
+      "state": "legacy compile/stage owner active"
+    },
+    {
+      "phase": "strict durable stage",
+      "sourcePath": "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs",
+      "nativeSymbol": "AgentdProviderBoundPromptRuntimeV2",
+      "state": "durable source composed; not sole serving owner"
+    },
+    {
+      "phase": "exact encoded body",
+      "sourcePath": "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+      "nativeSymbol": "LeaseFinalRequestObserver",
+      "state": "physical pre-transport gate composed"
+    },
+    {
+      "phase": "provider lease ABI",
+      "sourcePath": "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs",
+      "nativeSymbol": "observe_final_request",
+      "state": "exact-body callback composed"
+    },
+    {
+      "phase": "V2 terminal observation",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+      "nativeSymbol": "observe_provider_bound_delivery_v2",
+      "state": "source composed; terminal product adapter remains partial"
+    }
+  ],
+  "adapterTruth": {
+    "admissionVerifier": "Strict APIs require a verifier identity, but the current named product path still constructs provisional registry-bound admissions inside the same trust domain.",
+    "tokenizer": "Strict APIs tokenize actual canonical/final bytes and bind provider/model/binary/version/vocabulary/normalization identities; a concrete independently qualified production executable is not yet selected.",
+    "serializer": "CanonicalContextSerializerV2 is compiler-owned and does not accept caller-supplied final payload bytes.",
+    "providerRequest": "Core observes the exact encoded body immediately before transport and fails closed when a required observer is absent.",
+    "deliveryEvidence": "Canonical provider receipt validation exists; Agentd has not yet made the V2 receipt the sole durable terminal record."
+  },
+  "roleSupport": [
+    {
+      "role": "DeveloperInstruction",
+      "state": "supported by the current runtime projection"
+    },
+    {
+      "role": "SystemInstruction",
+      "state": "fail closed: no exact typed provider slot"
+    },
+    {
+      "role": "UserTemplate",
+      "state": "fail closed: no exact typed provider slot"
+    },
+    {
+      "role": "ToolSchemaFragment",
+      "state": "fail closed: no exact typed provider slot"
+    }
+  ],
+  "legacyPath": {
+    "state": "compatibility path still compiled and currently active",
+    "cutoverCondition": "Enable the strict path by default only after authoritative admission, exact-body pre-dispatch preparation and V2 terminal persistence are composed and qualified."
+  }
 }

@@ -3,10 +3,10 @@
   "module": "context.compiler",
   "generated": {
     "manifest": "docs/modules/context.compiler/MODULE_MANIFEST.json",
-    "manifestSha256": "e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930",
+    "manifestSha256": "b7cf4f925ed5f11df464e0aa1014ba76249d001412c264a63c5c0ecff13069c0",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "branch": "codex/context-compiler-v2-provider-closure-20260927"
+    "branch": "codex/context-compiler-v2-full-closure-20260927"
   },
   "status": {
     "coreImplementation": "complete",
@@ -16,9 +16,170 @@
   },
   "statusRationale": {
     "coreImplementation": "V2 compilation, verified admission, canonical byte coverage, typed snapshot successor, attachment, delivery preparation and provider evidence observation are implemented.",
-    "productComposition": "Prompt registry, hepta-intelligence, Agentd and the provider-policy extension consume context compiler outputs, but the strict provider-bound V2 preparation is not yet the only serving path.",
-    "v2ProviderClosure": "The provider host ABI exposes request digests but no qualified exact tokenizer over the final provider request bytes; strict attestation therefore fails closed until the host capability is supplied.",
+    "productComposition": "The named registry/intelligence/Agentd path, durable stage owner and Core exact-encoded-body observer are composed in source. Strict preparation and V2 terminal accounting are not yet the sole default serving path.",
+    "v2ProviderClosure": "Core can now fail closed on the exact encoded request body, while the strict compiler owns canonical serialization and exact-tokenizer attestations. A qualified concrete tokenizer, authoritative admission owner and sole-path preparation/terminal composition remain open.",
     "currentHeadQualification": "No immutable qualification receipt for the exact branch head may be claimed before the qualification workflow completes."
+  },
+  "workPackage": {
+    "id": "CTX-1-CONTEXT-COMPILER",
+    "state": "integration_in_progress"
+  },
+  "sourceAnchor": {
+    "sha256": "51f436b386117226d4fe87f6b91b78ff821ac0d6f0d6b93190ba3b9ff7663896",
+    "objects": [
+      {
+        "path": "codex-rs/codex-api/src/dispatch_metadata.rs",
+        "blob": "e4b1c02e39dec4eef72d899b7fec87801fec4086"
+      },
+      {
+        "path": "codex-rs/codex-api/src/endpoint/responses.rs",
+        "blob": "e1a4e19406c976223b8dad416b89c184d3fae724"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+        "blob": "f29121e4f0ba09d4a3ec1c70af209beec0f5d048"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/attempt_owner_tests.rs",
+        "blob": "bddec1c10a6e978cbc00840fc421613276e4baf4"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/binding.rs",
+        "blob": "11b4045e18090900814070e63fefbd6caeda5be3"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/binding_tests.rs",
+        "blob": "18015c43f50c17b30e6ccf87b271f3ec9dcbec4e"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/ephemeral_input.rs",
+        "blob": "446f1ee9e53fe4fbbe66880c2065825eb596e84e"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/ephemeral_input_resolver_tests.rs",
+        "blob": "bc47bc8b12b0eb1895ab52e0e227c6ab1d1694af"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/lifecycle.rs",
+        "blob": "5f51397d223b097fb6909988bf02200deebb0c24"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/lifecycle_tests.rs",
+        "blob": "bd6b0aa5ff16375e49e9d48672650c420667845c"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/memory.rs",
+        "blob": "79092990f78cc1c33d89f316023f06eddc7e4888"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/mod.rs",
+        "blob": "74feb9c7fe9d50b493bb350ff472ddc164e7af6b"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/response_terminal.rs",
+        "blob": "63cfd67252eda8f0ede1ad91ebac53ae0d642983"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/response_terminal_tests.rs",
+        "blob": "cebcca91cf37b16dd59ca5f86ff554836785ece6"
+      },
+      {
+        "path": "codex-rs/core/src/model_provider_policy/transport.rs",
+        "blob": "e55af9f325548540aa5623a195b3b3a9d85e2dce"
+      },
+      {
+        "path": "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs",
+        "blob": "af4e95141d2d7e844956533bc266859afa03a8ae"
+      },
+      {
+        "path": "codex-rs/ext/hepta-prompt/src/lib.rs",
+        "blob": "d460584b51eb10ebbd65be29d5fb6a7eedf51927"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "blob": "a4a755a5adc6005cd917b3e8ccc3995d6d34fd67"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs",
+        "blob": "8114900e66ff614c47de177c1b24dd1ea283868b"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/BUILD.bazel",
+        "blob": "b013d318fc470889195dbd73d1950efb423bc4e8"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/Cargo.toml",
+        "blob": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md",
+        "blob": "b61f6c028b9f12c30a2840db2fb222ed7d5ac0f4"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
+        "blob": "52efe73b0da51c5cbb054e8cdcfe3e59e4b08ba6"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs",
+        "blob": "28c5a29b1dd4108c3570c3189a8a414ae5728795"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+        "blob": "f3ee33ca3d01feee10be5e341e71c7b9873d5f2e"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/lib_tests.rs",
+        "blob": "c9350dda2d75a4937fd77b1310cfaa2edafa8c59"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/provider_bound.rs",
+        "blob": "923b131eef11ffccd95476fddd578240d97c1f83"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/provider_bound_tests.rs",
+        "blob": "9b557c22d6629d255fd1ad0fc06abe8963a9ee70"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+        "blob": "77858257e6ff9058ba8abbfa07f829b0f378be22"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/requirements.rs",
+        "blob": "33f723317f83feec2b6e8be8c45d058f58288a7e"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/requirements_tests.rs",
+        "blob": "c0b88410e0738246004ec7c9aac01da4ffc13fde"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+        "blob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "blob": "49232cf8eb81a64110a3ba23e6c0abaf54830438"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/wire.rs",
+        "blob": "6e0583a81b064eec7ceb0b785bc9a48bd801a2f1"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+        "blob": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+        "blob": "803989e30f19c8f6cce78cde09434925f4f0a522"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+        "blob": "1e247f40bb8156357cf6d6274891d09e8b88570e"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+        "blob": "681fa3aa6ec9afeae393fa1e1db4e25a70b82bf8"
+      }
+    ]
   },
   "sourceRoots": [
     "codex-rs/hepta-context-compiler",
@@ -26,7 +187,15 @@
     "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/ext/hepta-prompt/src/lib.rs",
-    "codex-rs/core/src/model_provider_policy"
+    "codex-rs/core/src/model_provider_policy",
+    "codex-rs/hepta-context-compiler/src/provider_bound.rs",
+    "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+    "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+    "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs",
+    "codex-rs/codex-api/src/dispatch_metadata.rs",
+    "codex-rs/codex-api/src/endpoint/responses.rs",
+    "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+    "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs"
   ],
   "publicSurface": [
     "compile_v2",
@@ -78,29 +247,99 @@
     }
   ],
   "targetSequence": [
-    "registry/admission snapshot",
+    "authoritative registry/admission snapshot",
+    "verify_admission_snapshot_v2 + verify_admission_v2",
     "compile_v2",
-    "canonical context serialization + complete segment coverage",
+    "compiler-owned canonical serialization over realized bytes",
+    "exact tokenizer over canonical context",
     "build_attachment",
-    "fresh typed snapshot successor",
+    "typed current snapshot successor",
     "prepare_delivery_from_successor_v2",
-    "provider host constructs exact final request",
-    "provider request coverage verification",
-    "exact tokenizer over final request bytes",
-    "provider submit using the attested request",
-    "provider terminal evidence",
-    "observe_delivery",
+    "host materializes and byte-covers the provider request",
+    "exact tokenizer over final provider request bytes",
+    "Core observes the exact encoded body",
+    "durable dispatch claim before transport",
+    "physical provider effect",
+    "canonical provider terminal receipt",
+    "independent delivery verifier + observe_provider_bound_delivery_v2",
     "durable ContextDeliveryReceiptV2"
   ],
   "productComposition": {
     "callers": [
-      "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
-      "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-      "codex-rs/ext/hepta-prompt/src/lib.rs",
-      "codex-rs/core/src/model_provider_policy"
+      {
+        "phase": "registry compile",
+        "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+        "nativeSymbol": "compile_prompt_registry_v2",
+        "state": "legacy-compatible source composed"
+      },
+      {
+        "phase": "strict canonical compile",
+        "sourcePath": "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+        "nativeSymbol": "prepare_provider_bound_prompt_v2",
+        "state": "source composed; not yet the default ingress"
+      },
+      {
+        "phase": "named product owner",
+        "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "nativeSymbol": "AgentdPromptPipelineOwner",
+        "state": "legacy compile/stage owner active"
+      },
+      {
+        "phase": "strict durable stage",
+        "sourcePath": "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs",
+        "nativeSymbol": "AgentdProviderBoundPromptRuntimeV2",
+        "state": "durable source composed; not sole serving owner"
+      },
+      {
+        "phase": "exact encoded body",
+        "sourcePath": "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+        "nativeSymbol": "LeaseFinalRequestObserver",
+        "state": "physical pre-transport gate composed"
+      },
+      {
+        "phase": "provider lease ABI",
+        "sourcePath": "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs",
+        "nativeSymbol": "observe_final_request",
+        "state": "exact-body callback composed"
+      },
+      {
+        "phase": "V2 terminal observation",
+        "sourcePath": "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+        "nativeSymbol": "observe_provider_bound_delivery_v2",
+        "state": "source composed; terminal product adapter remains partial"
+      }
     ],
+    "adapterTruth": {
+      "admissionVerifier": "Strict APIs require a verifier identity, but the current named product path still constructs provisional registry-bound admissions inside the same trust domain.",
+      "tokenizer": "Strict APIs tokenize actual canonical/final bytes and bind provider/model/binary/version/vocabulary/normalization identities; a concrete independently qualified production executable is not yet selected.",
+      "serializer": "CanonicalContextSerializerV2 is compiler-owned and does not accept caller-supplied final payload bytes.",
+      "providerRequest": "Core observes the exact encoded body immediately before transport and fails closed when a required observer is absent.",
+      "deliveryEvidence": "Canonical provider receipt validation exists; Agentd has not yet made the V2 receipt the sole durable terminal record."
+    },
+    "roleSupport": [
+      {
+        "role": "DeveloperInstruction",
+        "state": "supported by the current runtime projection"
+      },
+      {
+        "role": "SystemInstruction",
+        "state": "fail closed: no exact typed provider slot"
+      },
+      {
+        "role": "UserTemplate",
+        "state": "fail closed: no exact typed provider slot"
+      },
+      {
+        "role": "ToolSchemaFragment",
+        "state": "fail closed: no exact typed provider slot"
+      }
+    ],
+    "legacyPath": {
+      "state": "compatibility path still compiled and currently active",
+      "cutoverCondition": "Enable the strict path by default only after authoritative admission, exact-body pre-dispatch preparation and V2 terminal persistence are composed and qualified."
+    },
     "current": "partial",
-    "closureCondition": "The host supplies exact final request bytes and a qualified profile-bound tokenizer, dispatch consumes the attested request without reconstruction, and Agentd durably persists ContextDeliveryReceiptV2."
+    "closureCondition": "Authoritative admission, exact-body preparation, physical dispatch and V2 terminal persistence execute as one qualified sole path."
   },
   "qualification": {
     "workflow": ".github/workflows/context-compiler-qualification.yml",
@@ -108,18 +347,21 @@
     "commands": [
       "python3 scripts/generate_context_compiler_module_docs.py --check",
       "cargo fmt --all -- --check",
-      "cargo test -p codex-hepta-context-compiler",
-      "cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings",
-      "cargo deny check",
+      "cargo test --locked -p codex-hepta-context-compiler",
+      "cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings",
+      "cargo deny --locked check bans licenses sources",
+      "cargo deny --locked check advisories (recorded non-blocking repository audit)",
       "bazel test //codex-rs/hepta-context-compiler:all",
       "python3 scripts/hepta-readiness.py verify",
       "python3 scripts/hepta-docs.py verify"
     ]
   },
   "knownOpenItems": [
-    "Supply a qualified host tokenizer implementation for each provider/model profile.",
-    "Bind the host-generated final request coverage and tokenization attestation into the live provider-policy ABI.",
-    "Make ContextDeliveryPreparationV2 and ContextDeliveryReceiptV2 the sole Agentd serving and durable terminal path.",
-    "Produce an immutable successful qualification receipt for the exact branch head."
+    "Move admission issuance and current revocation snapshots to a construction-closed registry authority owner.",
+    "Select and independently qualify the concrete provider/model tokenizer executable and artifacts.",
+    "Run prepare_delivery_from_successor_v2 from the exact-body pre-transport callback, not only before staging.",
+    "Make ContextDeliveryReceiptV2 the sole durable terminal accounting path and reconcile Indeterminate attempts.",
+    "Feature-gate the V1 runtime path after strict-path product qualification.",
+    "Produce exact-head, synthetic-merge, target-host benchmark and independent security-review evidence."
   ]
 }

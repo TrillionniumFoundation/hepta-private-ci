@@ -29,6 +29,7 @@ TRUTH_FILES = (
     MANIFEST,
     ROOT / "docs/modules/context.compiler/TECHNICAL.md",
     ROOT / "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+    ROOT / "docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md",
     ROOT / "qualification/module-execution-dossiers/detail/context.compiler.md",
 )
 

@@ -5,16 +5,18 @@
 
 - Module: `context.compiler`
 - Reviewed base SHA: `a126987b84737dbc2ee2592442a314117bddb4a2`
-- Working branch: `codex/context-compiler-v2-provider-closure-20260927`
+- Working branch: `codex/context-compiler-v2-full-closure-20260927`
 - Source manifest: `docs/modules/context.compiler/MODULE_MANIFEST.json`
-- Canonical manifest SHA-256: `e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930`
+- Canonical manifest SHA-256: `b7cf4f925ed5f11df464e0aa1014ba76249d001412c264a63c5c0ecff13069c0`
+- Source fingerprint SHA-256: `51f436b386117226d4fe87f6b91b78ff821ac0d6f0d6b93190ba3b9ff7663896`
+- Work package: `CTX-1-CONTEXT-COMPILER` / `integration_in_progress`
 - Generator: `scripts/generate_context_compiler_module_docs.py`
 
 | Dimension | State | Evidence-based interpretation |
 |---|---|---|
 | Core implementation | **complete** | V2 compilation, verified admission, canonical byte coverage, typed snapshot successor, attachment, delivery preparation and provider evidence observation are implemented. |
-| Product composition | **partial** | Prompt registry, hepta-intelligence, Agentd and the provider-policy extension consume context compiler outputs, but the strict provider-bound V2 preparation is not yet the only serving path. |
-| V2 provider closure | **incomplete** | The provider host ABI exposes request digests but no qualified exact tokenizer over the final provider request bytes; strict attestation therefore fails closed until the host capability is supplied. |
+| Product composition | **partial** | The named registry/intelligence/Agentd path, durable stage owner and Core exact-encoded-body observer are composed in source. Strict preparation and V2 terminal accounting are not yet the sole default serving path. |
+| V2 provider closure | **incomplete** | Core can now fail closed on the exact encoded request body, while the strict compiler owns canonical serialization and exact-tokenizer attestations. A qualified concrete tokenizer, authoritative admission owner and sole-path preparation/terminal composition remain open. |
 | Current-head qualification | **absent** | No immutable qualification receipt for the exact branch head may be claimed before the qualification workflow completes. |
 
 The state words above are deliberately independent. A complete core library does not imply that
@@ -41,6 +43,14 @@ not accepted as proof of the final provider request token count.
 - `codex-rs/hepta-agentd/src/prompt_runtime.rs`
 - `codex-rs/ext/hepta-prompt/src/lib.rs`
 - `codex-rs/core/src/model_provider_policy`
+- `codex-rs/hepta-context-compiler/src/provider_bound.rs`
+- `codex-rs/hepta-context-compiler/src/provider_delivery.rs`
+- `codex-rs/hepta-intelligence/src/provider_bound_prompt.rs`
+- `codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs`
+- `codex-rs/codex-api/src/dispatch_metadata.rs`
+- `codex-rs/codex-api/src/endpoint/responses.rs`
+- `codex-rs/core/src/model_provider_policy/attempt_owner.rs`
+- `codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs`
 
 Public strict-path surface:
 
@@ -57,37 +67,43 @@ Public strict-path surface:
 
 ```mermaid
 flowchart TD
-    N0["registry/admission snapshot"]
-    N1["compile_v2"]
+    N0["authoritative registry/admission snapshot"]
+    N1["verify_admission_snapshot_v2 + verify_admission_v2"]
     N0 --> N1
-    N2["canonical context serialization + complete segment coverage"]
+    N2["compile_v2"]
     N1 --> N2
-    N3["build_attachment"]
+    N3["compiler-owned canonical serialization over realized bytes"]
     N2 --> N3
-    N4["fresh typed snapshot successor"]
+    N4["exact tokenizer over canonical context"]
     N3 --> N4
-    N5["prepare_delivery_from_successor_v2"]
+    N5["build_attachment"]
     N4 --> N5
-    N6["provider host constructs exact final request"]
+    N6["typed current snapshot successor"]
     N5 --> N6
-    N7["provider request coverage verification"]
+    N7["prepare_delivery_from_successor_v2"]
     N6 --> N7
-    N8["exact tokenizer over final request bytes"]
+    N8["host materializes and byte-covers the provider request"]
     N7 --> N8
-    N9["provider submit using the attested request"]
+    N9["exact tokenizer over final provider request bytes"]
     N8 --> N9
-    N10["provider terminal evidence"]
+    N10["Core observes the exact encoded body"]
     N9 --> N10
-    N11["observe_delivery"]
+    N11["durable dispatch claim before transport"]
     N10 --> N11
-    N12["durable ContextDeliveryReceiptV2"]
+    N12["physical provider effect"]
     N11 --> N12
+    N13["canonical provider terminal receipt"]
+    N12 --> N13
+    N14["independent delivery verifier + observe_provider_bound_delivery_v2"]
+    N13 --> N14
+    N15["durable ContextDeliveryReceiptV2"]
+    N14 --> N15
 ```
 
-The current product source reaches compilation, attachment staging and provider-policy dispatch.
-The strict path intentionally remains marked **partial/incomplete** until the host constructs
-`VerifiedProviderRequestV2`, runs a profile-bound `ExactProviderRequestTokenizerV2`, submits those
-attested bytes without reconstruction, and persists the resulting `ContextDeliveryReceiptV2`.
+The current product source reaches compilation, durable staging and the physical exact-encoded-body
+provider-policy gate. The strict path intentionally remains marked **partial/incomplete** until
+current authoritative admission is refreshed in that same pre-transport ceremony and Agentd makes
+the resulting `ContextDeliveryReceiptV2` the sole durable terminal record.
 
 ## 5. Byte and digest identity model
 
@@ -194,12 +210,13 @@ Qualification commands:
 
 1. `python3 scripts/generate_context_compiler_module_docs.py --check`
 2. `cargo fmt --all -- --check`
-3. `cargo test -p codex-hepta-context-compiler`
-4. `cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings`
-5. `cargo deny check`
-6. `bazel test //codex-rs/hepta-context-compiler:all`
-7. `python3 scripts/hepta-readiness.py verify`
-8. `python3 scripts/hepta-docs.py verify`
+3. `cargo test --locked -p codex-hepta-context-compiler`
+4. `cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings`
+5. `cargo deny --locked check bans licenses sources`
+6. `cargo deny --locked check advisories (recorded non-blocking repository audit)`
+7. `bazel test //codex-rs/hepta-context-compiler:all`
+8. `python3 scripts/hepta-readiness.py verify`
+9. `python3 scripts/hepta-docs.py verify`
 
 The workflow writes a JSON receipt that is bound to `GITHUB_SHA`, records every command and exit
 status, hashes the generated truth set, and uploads the receipt even on failure. Documentation must
@@ -208,7 +225,9 @@ command succeeded.
 
 ## 10. Known open product items
 
-- Supply a qualified host tokenizer implementation for each provider/model profile.
-- Bind the host-generated final request coverage and tokenization attestation into the live provider-policy ABI.
-- Make ContextDeliveryPreparationV2 and ContextDeliveryReceiptV2 the sole Agentd serving and durable terminal path.
-- Produce an immutable successful qualification receipt for the exact branch head.
+- Move admission issuance and current revocation snapshots to a construction-closed registry authority owner.
+- Select and independently qualify the concrete provider/model tokenizer executable and artifacts.
+- Run prepare_delivery_from_successor_v2 from the exact-body pre-transport callback, not only before staging.
+- Make ContextDeliveryReceiptV2 the sole durable terminal accounting path and reconcile Indeterminate attempts.
+- Feature-gate the V1 runtime path after strict-path product qualification.
+- Produce exact-head, synthetic-merge, target-host benchmark and independent security-review evidence.
