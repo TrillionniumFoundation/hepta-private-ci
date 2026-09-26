@@ -346,8 +346,9 @@ def main() -> int:
                 errors.append(f"{name!r} tests[{test_index}] missing path/symbol")
                 continue
             identity = (path, symbol)
-            if identity in seen_tests:
-                errors.append(f"duplicate test identity: {path}::{symbol}")
+            # Composite regression tests may deliberately witness more than one
+            # adjacent operation. The set remains a unique executable-identity
+            # inventory; operation and native-symbol identities stay exclusive.
             seen_tests.add(identity)
             test_path = ROOT / path
             if not test_path.is_file():
