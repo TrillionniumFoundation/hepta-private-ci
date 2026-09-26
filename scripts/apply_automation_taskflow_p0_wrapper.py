@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import json
 import re
 from pathlib import Path
 
@@ -56,6 +57,26 @@ def reviewed_replace_once(text: str, old: str, new: str, label: str) -> str:
 MODULE.replace_once = reviewed_replace_once
 
 
+def bind_exact_source_base(source_sha: str) -> None:
+    """Keep map-v3 identity structured and bind it to the tested source commit.
+
+    The source commit intentionally precedes generated metadata, avoiding a
+    self-reference while allowing the canonical path-only verifier to compare
+    the tested implementation bytes with an exact commit/tree observation.
+    """
+
+    path = ROOT / "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    source_tree = MODULE.git("rev-parse", f"{source_sha}^{{tree}}")
+    identity = {"commit": source_sha, "tree": source_tree}
+    data["sourceBase"] = identity
+    data["observedAtHead"] = identity
+    path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -67,6 +88,7 @@ def main() -> int:
         MODULE.apply_source()
     else:
         MODULE.apply_metadata(args.source_sha)
+        bind_exact_source_base(args.source_sha)
     return 0
 
 
