@@ -54,6 +54,7 @@ jobs:
           if [ "$rc" -eq 0 ]; then python3 scripts/context_compiler_consolidate_once.py; rc=$?; fi
           if [ "$rc" -eq 0 ]; then python3 scripts/generate_context_compiler_module_docs.py --write; rc=$?; fi
           if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo fmt --all); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo metadata --format-version 1 >/dev/null); rc=$?; fi
           if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo test --locked -p codex-hepta-context-compiler); rc=$?; fi
           if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo check --locked -p codex-api -p codex-core -p codex-extension-api); rc=$?; fi
           if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings); rc=$?; fi
