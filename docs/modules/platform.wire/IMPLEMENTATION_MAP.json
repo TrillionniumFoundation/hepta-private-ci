@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c3cd5c9b97580bd64a58be380517a4f04f501810",
-    "tree": "c7bdb4ef9db27ac971e7a9ed31322e08f4a46267"
+    "commit": "84df0b3c9d9713688e5efd969548773bff44f333",
+    "tree": "9dd92ca69bf5aad7bf8b8d9d9be640917d353de7"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.wire",
@@ -66,7 +66,7 @@
       "operation": "negotiate",
       "nativeSymbol": "negotiate",
       "sourcePath": "codex-rs/hepta-wire/src/version.rs",
-      "state": "source_implemented",
+      "state": "source_implemented_effective_capabilities",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/version_tests.rs",
@@ -80,9 +80,9 @@
     },
     {
       "operation": "session_decode",
-      "nativeSymbol": "NegotiatedStreamingDecoder",
+      "nativeSymbol": "WireSessionDecoder",
       "sourcePath": "codex-rs/hepta-wire/src/session.rs",
-      "state": "source_implemented_source_composed",
+      "state": "source_implemented_registry_and_session_bound",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/session_tests.rs",
@@ -95,9 +95,9 @@
     },
     {
       "operation": "schema_admission",
-      "nativeSymbol": "SchemaRegistry",
-      "sourcePath": "codex-rs/hepta-wire/src/schema.rs",
-      "state": "source_implemented_framework",
+      "nativeSymbol": "FrozenSchemaRegistry",
+      "sourcePath": "codex-rs/hepta-wire/src/registry.rs",
+      "state": "source_implemented_frozen_policy_snapshot",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/schema_tests.rs",
@@ -114,7 +114,7 @@
       "operation": "stream_decode",
       "nativeSymbol": "StreamingDecoder",
       "sourcePath": "codex-rs/hepta-wire/src/stream.rs",
-      "state": "source_implemented",
+      "state": "source_implemented_byte_and_frame_work_bounded",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/stream_tests.rs",
@@ -146,8 +146,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and named product callers.",
-    "Bind HPTN negotiation and encoded HPTA frames to the selected authenticated production transport/session.",
+    "Obtain current exact-head and deterministic synthetic-merge receipts after the final source/map commit.",
+    "Compose the authenticated WireSession/HPTM record posture into each selected production transport and qualify the named target host.",
     "Register and qualify each additional product-domain schema codec before admitting it."
   ],
   "externalEvidenceGates": [
@@ -233,7 +233,7 @@
     },
     {
       "path": "codex-rs/hepta-wire",
-      "object": "9faa7a5f6adf081636adb10be87c21d960a08f44"
+      "object": "3e8cf0b36230ed4717fc6a6e704674d15446ae48"
     },
     {
       "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs",
@@ -260,8 +260,24 @@
       "object": "dc760e52d315ddd17ee5237db064e511f5f32775"
     },
     {
+      "path": "codex-rs/hepta-wire/src/frame.rs",
+      "object": "32545befa5ef426a4b2a639a8a4827f53a88198a"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/frame_header.rs",
+      "object": "aa4cf1a92cdf62ca905b7578f4ae8a636fdc59d9"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/lib.rs",
+      "object": "3088ec64e6312000e281951810431bd679734d5a"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/property_tests.rs",
       "object": "4ee69dfc4846e38b533a6767e3c734657d019b7c"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/registry.rs",
+      "object": "95c15170333c56acfefd385f490167522593ec0a"
     },
     {
       "path": "codex-rs/hepta-wire/src/schema.rs",
@@ -272,20 +288,24 @@
       "object": "a317246b9a4487ae1aaee45debfa7c79553d4c31"
     },
     {
+      "path": "codex-rs/hepta-wire/src/secure_session.rs",
+      "object": "542c5e1dc0f18022fb2939c3256f58e29ccce952"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/session.rs",
-      "object": "85ec40132bc6dc5fa5422eb44a589bb39dcf6591"
+      "object": "fc4c7c84e2306d0febd8c753aba8010277eb93a5"
     },
     {
       "path": "codex-rs/hepta-wire/src/session_tests.rs",
-      "object": "aa32e1b14ea94594b7eaf6bbf0abd857fc3c1a20"
+      "object": "4901bd0df8ccb948221677e6746c953e33f21fbd"
     },
     {
       "path": "codex-rs/hepta-wire/src/stream.rs",
-      "object": "e4aeae9be7e06f7eb39e5ac3671d3696097e10cf"
+      "object": "01f524ccb7dd6bd7a107ba43f6e08d6e2489b43d"
     },
     {
       "path": "codex-rs/hepta-wire/src/stream_tests.rs",
-      "object": "576a53cce04034ccab08f124700b3c6db4b597fc"
+      "object": "80aec09d95143b7e551c415f048dccbdd6eeeb40"
     },
     {
       "path": "codex-rs/hepta-wire/src/version.rs",
