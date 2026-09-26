@@ -4,19 +4,16 @@ use std::io::Read;
 
 use crate::DecodeFrameError;
 use crate::DecodedEnvelope;
-use crate::MAX_WIRE_PAYLOAD_BYTES;
+use crate::FrameHeader;
+use crate::FrameHeaderParseError;
+use crate::FrameHeaderValidationError;
+use crate::MAX_WIRE_FRAME_BYTES;
+use crate::WIRE_HEADER_BYTES;
 use crate::WireVersion;
 use crate::decode_frame;
 
-pub const WIRE_HEADER_BYTES: usize = 54;
-pub const MAX_WIRE_FRAME_BYTES: usize = WIRE_HEADER_BYTES + 128 + 128 + MAX_WIRE_PAYLOAD_BYTES;
 pub const MAX_BUFFERED_WIRE_FRAMES: usize = 2;
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct FrameHeader {
-    version: WireVersion,
-    frame_length: usize,
-}
+pub const MAX_WIRE_FRAMES_PER_FEED: usize = 1_024;
 
 /// The completed prefix produced by one incremental feed, plus an optional
 /// terminal protocol/resource error observed later in the same chunk.
@@ -47,25 +44,21 @@ impl StreamDecodeBatch {
 
 /// Bounded incremental decoder for byte-stream transports.
 ///
-/// Only enough bytes to complete the fixed header are copied before that
-/// header is validated. A valid header authorizes buffering only the declared,
-/// bounded frame body. Completed frames use ownership transfer rather than
-/// front-draining a shared `Vec`, so a batch of small frames does not repeatedly
-/// shift the unread suffix.
+/// Only enough bytes to complete the canonical fixed header are copied before
+/// that header is validated. A valid header authorizes buffering only the
+/// declared, bounded frame body. Completed frames use ownership transfer rather
+/// than front-draining a shared `Vec`.
 ///
-/// The decoder is deliberately transport-neutral: deadlines, authentication,
-/// disconnect handling and connection limits remain the owning transport's
-/// responsibility.
+/// Two independent budgets apply to every feed: retained/borrowed bytes and
+/// completed frame work. The latter prevents a coalesced chunk of tiny frames
+/// from turning a byte-safe decoder into an unbounded CPU and allocation loop.
 #[derive(Debug)]
 pub struct StreamingDecoder {
     buffer: Vec<u8>,
     negotiated_version: Option<WireVersion>,
     expected_frame_length: Option<usize>,
-    // Historical public configuration is expressed in maximum-frame units.
-    // Header-first decoding retains at most one partial frame; this budget
-    // additionally bounds the bytes exposed by one feed so the returned frame
-    // batch and per-call work cannot grow without a transport-owned limit.
     max_feed_bytes: usize,
+    max_frames_per_feed: usize,
     terminal_error: Option<StreamDecodeError>,
 }
 
@@ -82,11 +75,12 @@ impl StreamingDecoder {
             negotiated_version: None,
             expected_frame_length: None,
             max_feed_bytes: MAX_WIRE_FRAME_BYTES * MAX_BUFFERED_WIRE_FRAMES,
+            max_frames_per_feed: MAX_WIRE_FRAMES_PER_FEED,
             terminal_error: None,
         }
     }
 
-    /// Apply the session version before allocating or accepting any body bytes.
+    /// Apply the session version before allocating or accepting body bytes.
     pub(crate) fn for_negotiated_version(version: WireVersion) -> Self {
         Self {
             negotiated_version: Some(version),
@@ -94,22 +88,39 @@ impl StreamingDecoder {
         }
     }
 
-    /// Configure the per-feed budget in units of maximum-sized frames.
-    ///
-    /// The name is retained for API compatibility. Complete frames are moved
-    /// out immediately, so this bounds a partial frame plus one borrowed feed,
-    /// not long-lived retained buffer capacity.
+    /// Configure the per-feed byte budget in maximum-frame units while using
+    /// the production frame-work ceiling.
     pub fn with_max_buffered_frames(frames: usize) -> Result<Self, StreamDecodeError> {
-        if !(1..=MAX_BUFFERED_WIRE_FRAMES).contains(&frames) {
-            return Err(StreamDecodeError::InvalidBufferFrameLimit(frames));
+        Self::with_limits(frames, MAX_WIRE_FRAMES_PER_FEED)
+    }
+
+    /// Configure both independent per-feed resource ceilings.
+    pub fn with_limits(
+        buffered_frames: usize,
+        frames_per_feed: usize,
+    ) -> Result<Self, StreamDecodeError> {
+        if !(1..=MAX_BUFFERED_WIRE_FRAMES).contains(&buffered_frames) {
+            return Err(StreamDecodeError::InvalidBufferFrameLimit {
+                actual: buffered_frames,
+                minimum: 1,
+                maximum: MAX_BUFFERED_WIRE_FRAMES,
+            });
+        }
+        if !(1..=MAX_WIRE_FRAMES_PER_FEED).contains(&frames_per_feed) {
+            return Err(StreamDecodeError::InvalidWorkFrameLimit {
+                actual: frames_per_feed,
+                minimum: 1,
+                maximum: MAX_WIRE_FRAMES_PER_FEED,
+            });
         }
         Ok(Self {
             buffer: Vec::with_capacity(WIRE_HEADER_BYTES),
             negotiated_version: None,
             expected_frame_length: None,
             max_feed_bytes: MAX_WIRE_FRAME_BYTES
-                .checked_mul(frames)
-                .ok_or(StreamDecodeError::LengthOverflow)?,
+                .checked_mul(buffered_frames)
+                .ok_or(StreamDecodeError::LengthOverflow { byte_offset: 0 })?,
+            max_frames_per_feed: frames_per_feed,
             terminal_error: None,
         })
     }
@@ -126,10 +137,7 @@ impl StreamingDecoder {
         self.terminal_error.is_some()
     }
 
-    /// Reset connection-local state.
-    ///
-    /// Callers must use this only after the previous connection/session has
-    /// been discarded. It is not recovery for a partially trusted byte stream.
+    /// Reset connection-local state only after discarding the old session.
     pub fn clear(&mut self) {
         self.buffer.clear();
         self.buffer.shrink_to(WIRE_HEADER_BYTES);
@@ -139,11 +147,6 @@ impl StreamingDecoder {
 
     /// Feed a transport chunk and preserve both a valid decoded prefix and a
     /// later terminal error from the same chunk.
-    ///
-    /// The owning transport must split reads so the partial frame plus this
-    /// feed fits the configured byte budget. A feed that exceeds the budget is
-    /// rejected before any byte from that feed is consumed; accepted feeds are
-    /// invariant across every internal chunk boundary.
     pub fn push_batch(&mut self, chunk: &[u8]) -> StreamDecodeBatch {
         if let Some(error) = self.terminal_error.clone() {
             return StreamDecodeBatch {
@@ -155,7 +158,12 @@ impl StreamingDecoder {
         let attempted = match self.buffer.len().checked_add(chunk.len()) {
             Some(value) => value,
             None => {
-                return self.fail(Vec::new(), StreamDecodeError::LengthOverflow);
+                return self.fail(
+                    Vec::new(),
+                    StreamDecodeError::LengthOverflow {
+                        byte_offset: self.buffer.len(),
+                    },
+                );
             }
         };
         if attempted > self.max_feed_bytes {
@@ -164,6 +172,7 @@ impl StreamingDecoder {
                 StreamDecodeError::BufferLimit {
                     attempted,
                     maximum: self.max_feed_bytes,
+                    byte_offset: 0,
                 },
             );
         }
@@ -171,6 +180,17 @@ impl StreamingDecoder {
         let mut decoded = Vec::new();
         let mut offset = 0;
         while offset < chunk.len() {
+            if decoded.len() >= self.max_frames_per_feed {
+                return self.fail(
+                    decoded,
+                    StreamDecodeError::WorkFrameLimit {
+                        attempted: self.max_frames_per_feed.saturating_add(1),
+                        maximum: self.max_frames_per_feed,
+                        byte_offset: offset,
+                    },
+                );
+            }
+
             if self.expected_frame_length.is_none() {
                 let header_remaining = WIRE_HEADER_BYTES.saturating_sub(self.buffer.len());
                 if header_remaining > 0 {
@@ -183,24 +203,33 @@ impl StreamingDecoder {
                     break;
                 }
 
-                let header = match inspect_header(&self.buffer) {
+                let parsed = match FrameHeader::parse(&self.buffer) {
                     Ok(header) => header,
-                    Err(error) => return self.fail(decoded, error),
+                    Err(error) => {
+                        return self.fail(decoded, StreamDecodeError::HeaderParse(error));
+                    }
+                };
+                let header = match parsed.validate() {
+                    Ok(header) => header,
+                    Err(error) => {
+                        return self.fail(decoded, StreamDecodeError::HeaderValidation(error));
+                    }
                 };
                 if let Some(negotiated) = self.negotiated_version
-                    && header.version != negotiated
+                    && header.version() != negotiated
                 {
                     return self.fail(
                         decoded,
                         StreamDecodeError::NegotiatedVersionMismatch {
                             negotiated,
-                            observed: header.version,
+                            observed: header.version(),
+                            byte_offset: 4,
                         },
                     );
                 }
                 self.buffer
-                    .reserve_exact(header.frame_length.saturating_sub(self.buffer.len()));
-                self.expected_frame_length = Some(header.frame_length);
+                    .reserve_exact(header.frame_length().saturating_sub(self.buffer.len()));
+                self.expected_frame_length = Some(header.frame_length());
             }
 
             let Some(expected) = self.expected_frame_length else {
@@ -232,11 +261,6 @@ impl StreamingDecoder {
     }
 
     /// Compatibility wrapper for callers that consume only complete batches.
-    ///
-    /// If a chunk contains valid frames followed by a terminal error, this
-    /// method returns the valid prefix and records the error in the decoder.
-    /// The next call returns that terminal error. New code should use
-    /// `push_batch` so both facts are observed atomically.
     pub fn push(&mut self, chunk: &[u8]) -> Result<Vec<DecodedEnvelope>, StreamDecodeError> {
         let batch = self.push_batch(chunk);
         let (frames, terminal_error) = batch.into_parts();
@@ -264,20 +288,21 @@ impl StreamingDecoder {
     }
 }
 
-/// Read exactly one frame from a blocking byte stream.
-///
-/// Only the fixed 54-byte header is read before frame lengths and bounds are
-/// validated. The owned frame allocation happens only after that admission,
-/// so an attacker-controlled advertised length cannot trigger an unbounded
-/// pre-validation allocation inside this API. `std::net::TcpStream`,
-/// `std::os::unix::net::UnixStream`, files and pipes implement `Read`.
+/// Read exactly one frame from a blocking byte stream after canonical header
+/// parsing and structural validation.
 pub fn read_frame<R: Read>(reader: &mut R) -> Result<DecodedEnvelope, ReadFrameError> {
-    let mut header = [0_u8; WIRE_HEADER_BYTES];
-    reader.read_exact(&mut header).map_err(ReadFrameError::Io)?;
-    let inspected = inspect_header(&header).map_err(ReadFrameError::Protocol)?;
-    let mut frame = Vec::with_capacity(inspected.frame_length);
-    frame.extend_from_slice(&header);
-    frame.resize(inspected.frame_length, 0);
+    let mut header_bytes = [0_u8; WIRE_HEADER_BYTES];
+    reader
+        .read_exact(&mut header_bytes)
+        .map_err(ReadFrameError::Io)?;
+    let parsed = FrameHeader::parse(&header_bytes)
+        .map_err(|error| ReadFrameError::Protocol(StreamDecodeError::HeaderParse(error)))?;
+    let header = parsed
+        .validate()
+        .map_err(|error| ReadFrameError::Protocol(StreamDecodeError::HeaderValidation(error)))?;
+    let mut frame = Vec::with_capacity(header.frame_length());
+    frame.extend_from_slice(&header_bytes);
+    frame.resize(header.frame_length(), 0);
     reader
         .read_exact(&mut frame[WIRE_HEADER_BYTES..])
         .map_err(ReadFrameError::Io)?;
@@ -308,138 +333,107 @@ impl Error for ReadFrameError {
     }
 }
 
-fn inspect_header(header: &[u8]) -> Result<FrameHeader, StreamDecodeError> {
-    if header.len() < WIRE_HEADER_BYTES {
-        return Err(StreamDecodeError::TruncatedHeader);
-    }
-    if header[..4] != *b"HPTA" {
-        return Err(StreamDecodeError::Magic);
-    }
-    let raw_version = read_u16(header, 4)?;
-    let version = match raw_version {
-        1 => WireVersion::V1,
-        2 => WireVersion::V2,
-        other => return Err(StreamDecodeError::Version(other)),
-    };
-    let schema_length = usize::from(read_u16(header, 6)?);
-    let producer_length = usize::from(read_u16(header, 8)?);
-    if !(1..=128).contains(&schema_length) || !(1..=128).contains(&producer_length) {
-        return Err(StreamDecodeError::IdentityLength);
-    }
-    if read_u64(header, 10)? == 0 {
-        return Err(StreamDecodeError::Generation);
-    }
-    let payload_length =
-        usize::try_from(read_u32(header, 50)?).map_err(|_| StreamDecodeError::PayloadLength)?;
-    if payload_length == 0 || payload_length > MAX_WIRE_PAYLOAD_BYTES {
-        return Err(StreamDecodeError::PayloadLength);
-    }
-    let frame_length = WIRE_HEADER_BYTES
-        .checked_add(schema_length)
-        .and_then(|value| value.checked_add(producer_length))
-        .and_then(|value| value.checked_add(payload_length))
-        .ok_or(StreamDecodeError::LengthOverflow)?;
-    if frame_length > MAX_WIRE_FRAME_BYTES {
-        return Err(StreamDecodeError::PayloadLength);
-    }
-    Ok(FrameHeader {
-        version,
-        frame_length,
-    })
-}
-
-fn read_u16(bytes: &[u8], start: usize) -> Result<u16, StreamDecodeError> {
-    let end = start
-        .checked_add(2)
-        .ok_or(StreamDecodeError::TruncatedHeader)?;
-    let raw: [u8; 2] = bytes
-        .get(start..end)
-        .ok_or(StreamDecodeError::TruncatedHeader)?
-        .try_into()
-        .map_err(|_| StreamDecodeError::TruncatedHeader)?;
-    Ok(u16::from_be_bytes(raw))
-}
-
-fn read_u32(bytes: &[u8], start: usize) -> Result<u32, StreamDecodeError> {
-    let end = start
-        .checked_add(4)
-        .ok_or(StreamDecodeError::TruncatedHeader)?;
-    let raw: [u8; 4] = bytes
-        .get(start..end)
-        .ok_or(StreamDecodeError::TruncatedHeader)?
-        .try_into()
-        .map_err(|_| StreamDecodeError::TruncatedHeader)?;
-    Ok(u32::from_be_bytes(raw))
-}
-
-fn read_u64(bytes: &[u8], start: usize) -> Result<u64, StreamDecodeError> {
-    let end = start
-        .checked_add(8)
-        .ok_or(StreamDecodeError::TruncatedHeader)?;
-    let raw: [u8; 8] = bytes
-        .get(start..end)
-        .ok_or(StreamDecodeError::TruncatedHeader)?
-        .try_into()
-        .map_err(|_| StreamDecodeError::TruncatedHeader)?;
-    Ok(u64::from_be_bytes(raw))
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StreamDecodeError {
-    InvalidBufferFrameLimit(usize),
+    InvalidBufferFrameLimit {
+        actual: usize,
+        minimum: usize,
+        maximum: usize,
+    },
+    InvalidWorkFrameLimit {
+        actual: usize,
+        minimum: usize,
+        maximum: usize,
+    },
     BufferLimit {
         attempted: usize,
         maximum: usize,
+        byte_offset: usize,
     },
-    TruncatedHeader,
-    Magic,
-    Version(u16),
+    WorkFrameLimit {
+        attempted: usize,
+        maximum: usize,
+        byte_offset: usize,
+    },
+    HeaderParse(FrameHeaderParseError),
+    HeaderValidation(FrameHeaderValidationError),
     NegotiatedVersionMismatch {
         negotiated: WireVersion,
         observed: WireVersion,
+        byte_offset: usize,
     },
-    IdentityLength,
-    Generation,
-    PayloadLength,
-    LengthOverflow,
+    LengthOverflow {
+        byte_offset: usize,
+    },
     Frame(DecodeFrameError),
+}
+
+impl StreamDecodeError {
+    pub const fn byte_offset(&self) -> Option<usize> {
+        match self {
+            Self::BufferLimit { byte_offset, .. }
+            | Self::WorkFrameLimit { byte_offset, .. }
+            | Self::NegotiatedVersionMismatch { byte_offset, .. }
+            | Self::LengthOverflow { byte_offset } => Some(*byte_offset),
+            Self::HeaderParse(error) => Some(error.byte_offset()),
+            Self::HeaderValidation(error) => Some(error.byte_offset()),
+            Self::InvalidBufferFrameLimit { .. }
+            | Self::InvalidWorkFrameLimit { .. }
+            | Self::Frame(_) => None,
+        }
+    }
 }
 
 impl fmt::Display for StreamDecodeError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::InvalidBufferFrameLimit(frames) => {
-                write!(
-                    formatter,
-                    "wire stream frame buffer limit must be 1..=2, found {frames}"
-                )
-            }
-            Self::BufferLimit { attempted, maximum } => write!(
+            Self::InvalidBufferFrameLimit {
+                actual,
+                minimum,
+                maximum,
+            } => write!(
                 formatter,
-                "wire stream buffer would grow to {attempted} bytes, maximum is {maximum}"
+                "wire stream byte-frame limit is {actual}, expected {minimum}..={maximum}"
             ),
-            Self::TruncatedHeader => formatter.write_str("wire stream header is truncated"),
-            Self::Magic => formatter.write_str("wire stream magic mismatch"),
-            Self::Version(version) => {
-                write!(formatter, "unsupported wire stream version {version}")
-            }
+            Self::InvalidWorkFrameLimit {
+                actual,
+                minimum,
+                maximum,
+            } => write!(
+                formatter,
+                "wire stream work-frame limit is {actual}, expected {minimum}..={maximum}"
+            ),
+            Self::BufferLimit {
+                attempted,
+                maximum,
+                byte_offset,
+            } => write!(
+                formatter,
+                "wire stream feed at byte {byte_offset} would expose {attempted} bytes, maximum is {maximum}"
+            ),
+            Self::WorkFrameLimit {
+                attempted,
+                maximum,
+                byte_offset,
+            } => write!(
+                formatter,
+                "wire stream feed at byte {byte_offset} would decode frame {attempted}, maximum is {maximum}"
+            ),
+            Self::HeaderParse(error) => error.fmt(formatter),
+            Self::HeaderValidation(error) => error.fmt(formatter),
             Self::NegotiatedVersionMismatch {
                 negotiated,
                 observed,
+                byte_offset,
             } => write!(
                 formatter,
-                "wire header version {} does not match negotiated version {}",
+                "wire header version at byte {byte_offset} is {}, negotiated version is {}",
                 observed.as_u16(),
                 negotiated.as_u16()
             ),
-            Self::IdentityLength => {
-                formatter.write_str("wire stream identity length is outside bounds")
+            Self::LengthOverflow { byte_offset } => {
+                write!(formatter, "wire stream length overflow at byte {byte_offset}")
             }
-            Self::Generation => formatter.write_str("wire stream generation must be non-zero"),
-            Self::PayloadLength => {
-                formatter.write_str("wire stream payload length is outside bounds")
-            }
-            Self::LengthOverflow => formatter.write_str("wire stream length overflow"),
             Self::Frame(error) => error.fmt(formatter),
         }
     }
@@ -448,6 +442,8 @@ impl fmt::Display for StreamDecodeError {
 impl Error for StreamDecodeError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
+            Self::HeaderParse(error) => Some(error),
+            Self::HeaderValidation(error) => Some(error),
             Self::Frame(error) => Some(error),
             _ => None,
         }
