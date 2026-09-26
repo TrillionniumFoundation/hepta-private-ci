@@ -7,10 +7,25 @@ root = Path(".")
 
 path = root / "scripts/hepta-lane-e-closure.py"
 text = path.read_text(encoding="utf-8")
-count = text.count("\x08")
-if count != 6:
-    raise SystemExit(f"expected six corrupted regex boundaries, found {count}")
+positions = [index for index, value in enumerate(text) if value == "\x08"]
+if len(positions) != 14:
+    raise SystemExit(
+        f"expected fourteen corrupted regex boundaries, found {len(positions)}"
+    )
+# ASCII backspace has no valid role in this source verifier. Guard every repair
+# as a word-boundary corruption: at least one neighbour must be a regex word
+# character, so an unrelated control byte can never be silently rewritten.
+for position in positions:
+    before = text[position - 1] if position else ""
+    after = text[position + 1] if position + 1 < len(text) else ""
+    if not (before.isalnum() or before == "_" or after.isalnum() or after == "_"):
+        raise SystemExit(
+            f"unexpected non-boundary backspace at byte offset {position}: "
+            f"{before!r} <BS> {after!r}"
+        )
 text = text.replace("\x08", r"\b")
+if "\x08" in text:
+    raise SystemExit("backspace remained after regex-boundary repair")
 path.write_text(text, encoding="utf-8")
 
 path = root / "codex-rs/hepta-intelligence-eval/Cargo.toml"
