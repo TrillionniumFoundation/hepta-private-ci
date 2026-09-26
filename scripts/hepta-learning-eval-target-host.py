@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Verify externally issued target-host evidence for learning.eval.
 
-The verifier checks structure, candidate identity, time ordering, evidence
-completeness and actor separation. It never creates evidence and never upgrades a
-claim from repository source or CI facts alone.
+The verifier checks structure, candidate identity, time ordering, storage
+qualification, evidence completeness and actor separation. It never creates
+external evidence and never upgrades a claim from repository or CI facts alone.
 """
 
 from __future__ import annotations
@@ -18,6 +18,21 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 HEX32 = re.compile(r"[0-9a-f]{64}")
 SHA1 = re.compile(r"[0-9a-f]{40}")
+ROLE_NAMES = (
+    "generator",
+    "evaluator",
+    "observer",
+    "semanticReviewer",
+    "operator",
+    "selector",
+    "release",
+)
+ROLE_DIMENSIONS = (
+    "principalId",
+    "credentialChainDigest",
+    "signingKeyDigest",
+    "controllerDigest",
+)
 
 
 class EvidenceError(ValueError):
@@ -26,7 +41,7 @@ class EvidenceError(ValueError):
 
 def load(path: Path) -> dict[str, Any]:
     def unique(items):
-        result = {}
+        result: dict[str, Any] = {}
         for key, value in items:
             if key in result:
                 raise EvidenceError(f"duplicate JSON key: {key}")
@@ -40,7 +55,11 @@ def load(path: Path) -> dict[str, Any]:
 
 
 def digest(value: Any, name: str) -> str:
-    if not isinstance(value, str) or HEX32.fullmatch(value) is None or value == "0" * 64:
+    if (
+        not isinstance(value, str)
+        or HEX32.fullmatch(value) is None
+        or value == "0" * 64
+    ):
         raise EvidenceError(f"{name} must be a nonzero lowercase SHA-256 digest")
     return value
 
@@ -95,9 +114,10 @@ def validate_candidate(candidate: dict[str, Any], require_current: bool) -> None
     digest(candidate.get("cargoLockDigest"), "candidate.cargoLockDigest")
     digest(candidate.get("productionContractDigest"), "candidate.productionContractDigest")
     digest(candidate.get("currentStatusDigest"), "candidate.currentStatusDigest")
-    if require_current:
-        if git("rev-parse", "HEAD") != sha or git("rev-parse", "HEAD^{tree}") != tree:
-            raise EvidenceError("manifest is not bound to the current candidate")
+    if require_current and (
+        git("rev-parse", "HEAD") != sha or git("rev-parse", "HEAD^{tree}") != tree
+    ):
+        raise EvidenceError("manifest is not bound to the current candidate")
 
 
 def validate_windows(longitudinal: dict[str, Any]) -> None:
@@ -113,13 +133,23 @@ def validate_windows(longitudinal: dict[str, Any]) -> None:
         seen_ids.add(window_id)
         start = positive_int(row.get("startMicros"), f"windows[{index}].startMicros")
         end = positive_int(row.get("endMicros"), f"windows[{index}].endMicros")
-        observed = positive_int(row.get("observedAtMicros"), f"windows[{index}].observedAtMicros")
+        observed = positive_int(
+            row.get("observedAtMicros"), f"windows[{index}].observedAtMicros"
+        )
         if not start < end <= observed:
             raise EvidenceError("future-window time ordering is invalid")
         positive_int(row.get("observedCount"), f"windows[{index}].observedCount")
-        source_cut = digest(row.get("sourceCutDigest"), f"windows[{index}].sourceCutDigest")
-        digest(row.get("outcomeEvidenceDigest"), f"windows[{index}].outcomeEvidenceDigest")
-        digest(row.get("observerAttestationDigest"), f"windows[{index}].observerAttestationDigest")
+        source_cut = digest(
+            row.get("sourceCutDigest"), f"windows[{index}].sourceCutDigest"
+        )
+        digest(
+            row.get("outcomeEvidenceDigest"),
+            f"windows[{index}].outcomeEvidenceDigest",
+        )
+        digest(
+            row.get("observerAttestationDigest"),
+            f"windows[{index}].observerAttestationDigest",
+        )
         if source_cut in seen_cuts:
             raise EvidenceError("future windows must bind distinct source cuts")
         seen_cuts.add(source_cut)
@@ -145,12 +175,56 @@ def validate_windows(longitudinal: dict[str, Any]) -> None:
         digest(longitudinal.get(field), f"longitudinal.{field}")
 
 
+def validate_roles(acceptance: dict[str, Any]) -> None:
+    roles = object_(acceptance.get("roles"), "acceptance.roles")
+    if set(roles) != set(ROLE_NAMES):
+        missing = sorted(set(ROLE_NAMES) - set(roles))
+        extra = sorted(set(roles) - set(ROLE_NAMES))
+        raise EvidenceError(f"acceptance.roles closed-world mismatch missing={missing} extra={extra}")
+
+    parsed: dict[str, dict[str, str]] = {}
+    for role_name in ROLE_NAMES:
+        raw = object_(roles.get(role_name), f"acceptance.roles.{role_name}")
+        parsed[role_name] = {
+            "principalId": identity(
+                raw.get("principalId"), f"acceptance.roles.{role_name}.principalId"
+            ),
+            "credentialChainDigest": digest(
+                raw.get("credentialChainDigest"),
+                f"acceptance.roles.{role_name}.credentialChainDigest",
+            ),
+            "signingKeyDigest": digest(
+                raw.get("signingKeyDigest"),
+                f"acceptance.roles.{role_name}.signingKeyDigest",
+            ),
+            "controllerDigest": digest(
+                raw.get("controllerDigest"),
+                f"acceptance.roles.{role_name}.controllerDigest",
+            ),
+            "attestationDigest": digest(
+                raw.get("attestationDigest"),
+                f"acceptance.roles.{role_name}.attestationDigest",
+            ),
+        }
+
+    for dimension in ROLE_DIMENSIONS:
+        values = [parsed[name][dimension] for name in ROLE_NAMES]
+        if len(set(values)) != len(values):
+            raise EvidenceError(
+                f"external evidence roles are not pairwise distinct by {dimension}"
+            )
+
+
 def validate_manifest(value: dict[str, Any], require_current: bool) -> dict[str, Any]:
     if value.get("schema") != "hepta.learning-eval.target-host-evidence.v1":
         raise EvidenceError("unexpected target-host evidence schema")
     validate_candidate(object_(value.get("candidate"), "candidate"), require_current)
 
     host = object_(value.get("host"), "host")
+    identity(host.get("hostId"), "host.hostId")
+    topology = host.get("topology")
+    if topology not in {"single_host", "cross_host"}:
+        raise EvidenceError("host.topology must be single_host or cross_host")
     for field in (
         "hostProfileDigest",
         "osKernelDigest",
@@ -159,7 +233,6 @@ def validate_manifest(value: dict[str, Any], require_current: bool) -> dict[str,
         "resourceMeasurementDigest",
     ):
         digest(host.get(field), f"host.{field}")
-    identity(host.get("hostId"), "host.hostId")
 
     trust = object_(value.get("trust"), "trust")
     for field in (
@@ -188,29 +261,24 @@ def validate_manifest(value: dict[str, Any], require_current: bool) -> dict[str,
         "rollbackRestoreRejected",
         "crashRecoveryQualified",
     )
-    storage_flags = {field: boolean(storage.get(field), f"storage.{field}") for field in required_storage}
+    storage_flags = {
+        field: boolean(storage.get(field), f"storage.{field}")
+        for field in required_storage
+    }
     cross_host = boolean(storage.get("crossHostQualified"), "storage.crossHostQualified")
-    if cross_host:
-        digest(storage.get("crossHostQualificationDigest"), "storage.crossHostQualificationDigest")
+    if topology == "cross_host":
+        if cross_host:
+            digest(
+                storage.get("crossHostQualificationDigest"),
+                "storage.crossHostQualificationDigest",
+            )
+    elif cross_host:
+        raise EvidenceError("single-host evidence cannot claim cross-host qualification")
 
-    longitudinal = object_(value.get("longitudinal"), "longitudinal")
-    validate_windows(longitudinal)
+    validate_windows(object_(value.get("longitudinal"), "longitudinal"))
 
     acceptance = object_(value.get("acceptance"), "acceptance")
-    roles = {
-        field: identity(acceptance.get(field), f"acceptance.{field}")
-        for field in (
-            "generatorPrincipal",
-            "evaluatorPrincipal",
-            "observerPrincipal",
-            "semanticReviewerPrincipal",
-            "operatorPrincipal",
-            "selectorPrincipal",
-            "releasePrincipal",
-        )
-    }
-    if len(set(roles.values())) != len(roles):
-        raise EvidenceError("external evidence roles must be pairwise distinct")
+    validate_roles(acceptance)
     for field in (
         "semanticAcceptanceDigest",
         "operatorAcceptanceDigest",
@@ -222,26 +290,40 @@ def validate_manifest(value: dict[str, Any], require_current: bool) -> dict[str,
         digest(acceptance.get(field), f"acceptance.{field}")
 
     claims = object_(value.get("claims"), "claims")
-    target_host = boolean(claims.get("targetHostQualified"), "claims.targetHostQualified")
-    independent = boolean(claims.get("independentAcceptance"), "claims.independentAcceptance")
-    production = boolean(claims.get("productionQualified"), "claims.productionQualified")
-    activation = boolean(claims.get("activationAuthorized"), "claims.activationAuthorized")
+    target_host = boolean(
+        claims.get("targetHostQualified"), "claims.targetHostQualified"
+    )
+    independent = boolean(
+        claims.get("independentAcceptance"), "claims.independentAcceptance"
+    )
+    production = boolean(
+        claims.get("productionQualified"), "claims.productionQualified"
+    )
+    activation = boolean(
+        claims.get("activationAuthorized"), "claims.activationAuthorized"
+    )
     release = boolean(claims.get("releaseAuthorized"), "claims.releaseAuthorized")
 
-    if target_host and (not all(storage_flags.values()) or not cross_host):
+    topology_qualified = topology == "single_host" or cross_host
+    if target_host and (not all(storage_flags.values()) or not topology_qualified):
         raise EvidenceError("target-host claim exceeds storage qualification")
     if independent and not target_host:
         raise EvidenceError("independent acceptance requires target-host qualification")
     if production and not (target_host and independent):
-        raise EvidenceError("production qualification requires target-host and independent acceptance")
+        raise EvidenceError(
+            "production qualification requires target-host and independent acceptance"
+        )
     if activation and not production:
         raise EvidenceError("activation authorization requires production qualification")
     if release and not (production and activation):
-        raise EvidenceError("release authorization requires production qualification and activation")
+        raise EvidenceError(
+            "release authorization requires production qualification and activation"
+        )
 
     return {
         "schema": "hepta.learning-eval.target-host-verification.v1",
         "candidateCommit": value["candidate"]["commit"],
+        "topology": topology,
         "targetHostQualified": target_host,
         "independentAcceptance": independent,
         "productionQualified": production,
@@ -251,17 +333,42 @@ def validate_manifest(value: dict[str, Any], require_current: bool) -> dict[str,
 
 
 def self_test() -> None:
-    bad = {
+    incomplete = {
         "schema": "hepta.learning-eval.target-host-evidence.v1",
         "candidate": {},
     }
     try:
-        validate_manifest(bad, False)
+        validate_manifest(incomplete, False)
     except EvidenceError:
         pass
     else:
         raise SystemExit("target-host verifier self-test accepted incomplete evidence")
-    print(json.dumps({"status": "ok", "test": "reject_incomplete_evidence"}))
+
+    duplicate_roles = {
+        name: {
+            "principalId": "same-principal",
+            "credentialChainDigest": "1" * 64,
+            "signingKeyDigest": "2" * 64,
+            "controllerDigest": "3" * 64,
+            "attestationDigest": f"{index + 4:x}" * 64,
+        }
+        for index, name in enumerate(ROLE_NAMES)
+    }
+    try:
+        validate_roles({"roles": duplicate_roles})
+    except EvidenceError:
+        pass
+    else:
+        raise SystemExit("target-host verifier self-test accepted colliding roles")
+    print(
+        json.dumps(
+            {
+                "status": "ok",
+                "tests": ["reject_incomplete_evidence", "reject_role_collision"],
+            },
+            sort_keys=True,
+        )
+    )
 
 
 def main() -> None:
@@ -277,7 +384,12 @@ def main() -> None:
         return
     try:
         result = validate_manifest(load(args.manifest), args.require_current_candidate)
-    except (EvidenceError, OSError, json.JSONDecodeError, subprocess.CalledProcessError) as error:
+    except (
+        EvidenceError,
+        OSError,
+        json.JSONDecodeError,
+        subprocess.CalledProcessError,
+    ) as error:
         raise SystemExit(str(error)) from error
     print(json.dumps(result, sort_keys=True))
 
