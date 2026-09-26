@@ -1,3 +1,4 @@
+# bootstrap-trigger: trusted-rog-r2-20260927
 name: Hepta objective closure self-hosted bootstrap
 
 on:
@@ -18,7 +19,7 @@ jobs:
   bootstrap:
     runs-on:
       group: trillionnium-private-web
-      labels: rog
+      labels: [self-hosted, linux, x64, rog]
     timeout-minutes: 15
     env:
       TARGET_BRANCH: work/objective-compiler-convergence-20260925
@@ -61,7 +62,7 @@ jobs:
               ),
               (
                   "    runs-on: ubuntu-24.04-arm\n",
-                  "    runs-on:\n      group: trillionnium-private-web\n      labels: rog\n",
+                  "    runs-on:\n      group: trillionnium-private-web\n      labels: [self-hosted, linux, x64, rog]\n",
               ),
               (
                   '          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"\n',
