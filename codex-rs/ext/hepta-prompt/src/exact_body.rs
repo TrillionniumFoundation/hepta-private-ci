@@ -86,17 +86,6 @@ impl PromptRuntimeExactBodyObserver {
         attempt: PromptRuntimeExactAttemptV2,
     ) -> Result<(), PromptRuntimeHostError> {
         attempt.validate()?;
-        if attempt.thread_id != self.attachment.compilation_id.as_str()
-            && attempt.model != self.attachment.model
-        {
-            // Thread identity is not expected to equal compilation identity; the
-            // compound condition deliberately rejects only a simultaneous model
-            // mismatch while preserving opaque thread identifiers.
-            return Err(PromptRuntimeHostError::new(
-                "prompt_runtime_exact_attempt_scope_mismatch",
-                "attempt model does not match the staged attachment",
-            ));
-        }
         if attempt.model != self.attachment.model {
             return Err(PromptRuntimeHostError::new(
                 "prompt_runtime_exact_attempt_scope_mismatch",
@@ -116,6 +105,13 @@ impl PromptRuntimeExactBodyObserver {
                     "another physical attempt remains unresolved",
                 ),
             ),
+        }
+    }
+
+    pub(crate) fn cancel_attempt(&self, attempt: &PromptRuntimeExactAttemptV2) {
+        let mut phase = self.phase.lock().unwrap_or_else(PoisonError::into_inner);
+        if matches!(&*phase, ExactBodyPhase::Bound(existing) if existing == attempt) {
+            *phase = ExactBodyPhase::Empty;
         }
     }
 
