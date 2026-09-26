@@ -1,0 +1,225 @@
+name: learning.plasticity exact head
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-runtime/**"
+      - "tools/hepta-engineering-control/control_engineering_v2/mutation_grammar.py"
+      - "tools/hepta-engineering-control/test_mutation_grammar.py"
+      - "docs/modules/learning.plasticity/**"
+      - "scripts/test_learning_plasticity_grammar_contract.py"
+      - "scripts/hepta-learning-plasticity-status.py"
+      - ".github/workflows/hepta-learning-plasticity-exact-head.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-runtime/**"
+      - "tools/hepta-engineering-control/control_engineering_v2/mutation_grammar.py"
+      - "tools/hepta-engineering-control/test_mutation_grammar.py"
+      - "docs/modules/learning.plasticity/**"
+      - "scripts/test_learning_plasticity_grammar_contract.py"
+      - "scripts/hepta-learning-plasticity-status.py"
+      - ".github/workflows/hepta-learning-plasticity-exact-head.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-plasticity-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    name: exact-head source, product, Agentd and canary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD^{tree} | tee "$RUNNER_TEMP/source-tree.txt"
+
+      - name: Verify control-engineering grammar projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/test_learning_plasticity_grammar_contract.py
+          python3 -m unittest tools/hepta-engineering-control/test_mutation_grammar.py
+
+      - name: Verify canonical documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-docs.py verify
+
+      - name: Verify formatting and compile exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            -p codex-hepta-runtime \
+            --all-targets
+
+      - name: Run focused unit and product tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
+
+      - name: Run strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            -p codex-hepta-runtime \
+            --all-targets -- -D warnings
+
+      - name: Run Agentd process reconstruction E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-agentd --test plasticity_process_e2e
+
+      - name: Run Lane F deterministic vertical
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
+          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
+          cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
+          cargo metadata --format-version 1 \
+            --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
+          python3 qualification/lane-f-shadow/verify_lock.py \
+            "$RUNNER_TEMP/lane-f-seed.lock" \
+            qualification/lane-f-shadow/Cargo.lock
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml \
+            --all-targets -- -D warnings
+          rm qualification/lane-f-shadow/Cargo.lock
+          trap - EXIT
+
+      - name: Run live structural-canary fault and recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-runtime \
+            authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics \
+            -- --exact
+
+      - name: Generate expiring exact-head status
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-plasticity-status.py \
+            --output "$RUNNER_TEMP/learning-plasticity-exact-head.md" \
+            --workflow-receipt "learning.plasticity exact head:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}" \
+            --test-receipt "exact-head:${SOURCE_SHA}:passed" \
+            --test-receipt "agentd-process-e2e:${SOURCE_SHA}:passed" \
+            --test-receipt "lane-f:${SOURCE_SHA}:passed" \
+            --test-receipt "live-structural-canary:${SOURCE_SHA}:passed" \
+            --evidence-ttl-seconds 86400
+
+      - name: Retain exact-head status
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-plasticity-exact-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/learning-plasticity-exact-head.md
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Verify clean tree after qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  synthetic-merge:
+    name: deterministic synthetic merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Build deterministic merge candidate
+        id: merge
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
+          export GIT_AUTHOR_NAME="Hepta learning.plasticity CI"
+          export GIT_AUTHOR_EMAIL="hepta-learning-plasticity-ci@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          SHA="$(printf 'Synthetic learning.plasticity merge for PR %s\n' "$PR_NUMBER" | \
+            git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          git checkout --detach "$SHA"
+          printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Verify synthetic candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
+          python3 scripts/test_learning_plasticity_grammar_contract.py
+          python3 scripts/hepta-docs.py verify
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            -p codex-hepta-runtime \
+            --all-targets
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
