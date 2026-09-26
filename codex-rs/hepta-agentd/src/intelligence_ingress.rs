@@ -217,12 +217,27 @@ impl AgentdIntelligenceInvocationV1 {
         record: &RunStartRecordV1,
     ) -> Result<(), AgentdError> {
         let snapshot = &record.snapshot;
+        let current_generation = identity
+            .spawn_generation
+            .checked_add(1)
+            .ok_or_else(|| AgentdError::GenerationFenced("Agent generation overflow".to_string()))?;
+        let expected_fence = crate::lane_b_runtime::objective_run_fence_digest(
+            identity.agent_id.as_str(),
+            identity.spawn_generation,
+            current_generation,
+        )
+        .map_err(|error| {
+            AgentdError::GenerationFenced(format!(
+                "canonical intelligence run epoch is invalid: {error:?}"
+            ))
+        })?;
         if self.request.run_id != snapshot.run_id
             || self.request.snapshot.objective_digest() != snapshot.objective_digest
             || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
             || self.request.snapshot.body_generation().get() != snapshot.generation
             || self.request.legal_candidates.state_digest != snapshot.objective_digest
-            || snapshot.generation != identity.spawn_generation
+            || snapshot.generation != current_generation
+            || snapshot.fence_digest.to_string() != expected_fence
             || self.request.snapshot.configuration_digest() != Self::configuration_digest(record)
             || self.inputs.neural_tick.body_digest != record.runtime_body_digest
             || self.inputs.prompt_request.registry_snapshot_digest
