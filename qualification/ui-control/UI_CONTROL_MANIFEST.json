@@ -20,6 +20,10 @@
   "status": {
     "clientCore": "substantially_implemented",
     "browserComposition": "repository_shell_implemented",
+    "dependencyLock": "exact_npm_lock_committed_qualification_pending",
+    "sessionLifecycle": "identity_permission_revision_and_shutdown_fenced",
+    "terminalEvidence": "authenticated_backend_observation_projection_implemented",
+    "localRecovery": "bounded_best_effort_storage_without_authority_claim",
     "authentication": "same_origin_session_adapter_implemented_deployment_unbound",
     "transport": "same_origin_http_adapter_implemented_deployment_unbound",
     "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
@@ -43,7 +47,7 @@
     {
       "id": "read_view",
       "symbol": "readView()",
-      "semantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale."
+      "semantics": "Projects a coherent generation/revision snapshot, authenticated operator identity, pending operations, and backend-observed terminal evidence while explicitly marking absent snapshots stale."
     },
     {
       "id": "submit_request",
@@ -64,11 +68,15 @@
     "Accepted-but-timeout is indeterminate and must be recovered by operation id before retry.",
     "The backend operation-id unique constraint is the final idempotency authority.",
     "Same generation and revision with a different semantic digest is snapshot drift and is rejected.",
+    "Session identity cannot change during refresh; permission revision cannot regress or conceal permission drift.",
+    "Revoke, close, and stopped refresh paths remove local control authority even when transport cleanup fails.",
+    "Local recovery storage failure is visible but cannot wedge or authorize a control request.",
     "Control actions are disabled while the displayed view is stale or the session lacks the required permission."
   ],
   "verification": {
     "node": "22",
     "commands": [
+      "npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund",
       "npm run lint --prefix apps/hepta-control-ui",
       "npm test --prefix apps/hepta-control-ui",
       "npm run test:contract --prefix apps/hepta-control-ui",
