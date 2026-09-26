@@ -4,6 +4,7 @@
 from pathlib import Path
 
 REMEDIATOR = Path(".github/scripts/kernel_authority_remediate.py")
+PROGRESS = Path("docs/lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md")
 SELF = Path(__file__)
 
 
@@ -173,6 +174,18 @@ def main() -> None:
         2,
         "generated dispatch serialization regression",
     )
+
+    progress = PROGRESS.read_text(encoding="utf-8")
+    heading = "# `kernel.authority` current implementation\n\n"
+    status = "Completion status: `source-hardened-execution-pending`\n\n"
+    if status not in progress:
+        progress = replace_once(
+            progress,
+            heading,
+            heading + status,
+            "kernel.authority progress completion status",
+        )
+        PROGRESS.write_text(progress, encoding="utf-8")
 
     REMEDIATOR.write_text(content, encoding="utf-8")
     SELF.unlink()
