@@ -1,0 +1,79 @@
+name: context-compiler-v3-bootstrap
+
+on:
+  push:
+    branches:
+      - context-compiler-v2-product-closure
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-v3-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    if: ${{ contains(github.event.head_commit.message, '[run-v3-check]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt,clippy
+
+      - name: Apply V3 source and Core migrations
+        run: |
+          python3 scripts/apply_context_compiler_v3_source.py
+          python3 scripts/apply_context_compiler_v3_core.py
+
+      - name: Format the Rust workspace
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Refresh the lockfile for the newly composed workspace
+        working-directory: codex-rs
+        run: cargo update --workspace
+
+      - name: Run focused source tests
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-core
+
+      - name: Check Extension API
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-extension-api --all-targets
+
+      - name: Run focused strict Clippy
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-extension-api
+          -p codex-core
+          --all-targets --all-features -- -D warnings
+
+      - name: Commit verified source closure
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          rm scripts/apply_context_compiler_v3_source.py
+          rm scripts/apply_context_compiler_v3_core.py
+          git config user.name "hepta-closure-bot"
+          git config user.email "hepta-closure-bot@users.noreply.github.com"
+          git add --all
+          git diff --cached --check
+          git commit -m "feat(context.compiler): establish V3 source and final-use core [v3-source-applied]"
+          git push origin "HEAD:${BRANCH}"
