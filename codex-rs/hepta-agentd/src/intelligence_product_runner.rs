@@ -77,38 +77,41 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let candidate_ids = request
-            .legal_candidates
-            .candidates
-            .iter()
-            .map(|candidate| candidate.candidate_id.clone())
-            .collect::<Vec<_>>();
-        let intuition_ids = inputs
+        let run_identity = inputs
+            .run_identity
+            .take()
+            .ok_or(AgentdIntelligenceProductError::MissingRunIdentity)?;
+        run_identity
+            .validate_process_binding(&composition.agent_id, composition.supervisor_generation)
+            .map_err(|_| AgentdIntelligenceProductError::RunIdentityMismatch)?;
+        run_identity
+            .validate_request(&request)
+            .map_err(|_| AgentdIntelligenceProductError::RunIdentityMismatch)?;
+
+        let candidate_ids = canonical_candidate_ids_v1(&request.legal_candidates)
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let mut intuition_ids = inputs
             .intuition_request
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
+        intuition_ids.sort();
         if candidate_ids != intuition_ids {
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
-        // Freeze the identity of the existing owner, never a new coordinator
-        // or a caller-selected body/model generation. Agentd validates this
-        // fence again at the actual admission and attachment boundary.
-        let generation = composition.agentd_generation;
-        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
+        let request_for_validation = request.clone();
+        let total_timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
-        let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
-        let deadline_ms = started_ms
-            .checked_add(timeout_ms.max(1))
-            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        let remaining_ms = run_identity
+            .deadline_ms
+            .checked_sub(started_ms)
+            .filter(|remaining| *remaining != 0)
+            .ok_or(AgentdIntelligenceProductError::RunIdentityMismatch)?;
+        let remaining_micros = remaining_ms.saturating_mul(1_000);
+        let timeout_micros = total_timeout_micros.min(remaining_micros);
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
         let evaluation_session = match inputs.signed_evaluation.take() {
@@ -148,6 +151,8 @@ impl AgentdIntelligenceProductRunnerV1 {
             })?
             .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
             .map_err(AgentdIntelligenceProductError::Canonical)?;
+        validate_canonical_outcome_v1(&request_for_validation, &outcome)
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
@@ -160,21 +165,18 @@ impl AgentdIntelligenceProductRunnerV1 {
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
+                bytes.extend_from_slice(run_identity.request_digest.as_array());
                 let dispatch_proposal_digest = Digest32::of_bytes(&bytes);
-                let mut body = b"hepta.agentd.intelligence-body.v1\0".to_vec();
-                body.extend_from_slice(snapshot.digest().as_array());
-                body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
-                let body_digest = Digest32::of_bytes(&body);
                 let run_snapshot = crate::AgentRunSnapshot {
-                    run_id: envelope.run_id.to_string(),
-                    request_digest: envelope.trace_digest.to_string(),
-                    objective_digest: envelope.objective_digest.to_string(),
-                    body_digest: body_digest.to_string(),
-                    artifact_set_digest: snapshot.digest().to_string(),
-                    authority_epoch: snapshot.authority_epoch(),
-                    generation,
-                    fence_digest,
-                    deadline_ms,
+                    run_id: run_identity.run_id.to_string(),
+                    request_digest: run_identity.request_digest.to_string(),
+                    objective_digest: run_identity.objective_digest.to_string(),
+                    body_digest: run_identity.body_digest.to_string(),
+                    artifact_set_digest: run_identity.artifact_set_digest.to_string(),
+                    authority_epoch: run_identity.authority_epoch,
+                    generation: run_identity.generation,
+                    fence_digest: run_identity.fence_digest.to_string(),
+                    deadline_ms: run_identity.deadline_ms,
                 };
                 let context_attachment = crate::AgentContextAttachment {
                     run_id: run_snapshot.run_id.clone(),
@@ -221,7 +223,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
                 let snapshot = prepared.run_snapshot();
                 let admitted = coordinator
-                    .start_run(
+                    .start_bound_run(
                         wall_clock_ms()?,
                         crate::RunSnapshot {
                             run_id: snapshot.run_id,
