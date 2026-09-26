@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import net from "node:net";
-import { unlink } from "node:fs/promises";
+import { lstat, unlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { Transform } from "node:stream";
 
@@ -114,9 +114,9 @@ class ByteLimitTransform extends Transform {
 
   _transform(chunk, _encoding, callback) {
     this.#total += chunk.length;
-    this.#onBytes(chunk.length);
-    if (this.#total > this.#maximum) {
-      this.#onExceeded(this.#total);
+    const aggregate = this.#onBytes(chunk.length);
+    if (this.#total > this.#maximum || aggregate > this.#maximum) {
+      this.#onExceeded(Math.max(this.#total, aggregate));
       const error = new Error("egress byte budget exceeded");
       error.code = "BROWSER_EGRESS_BYTE_BUDGET_EXCEEDED";
       callback(error);
@@ -129,6 +129,7 @@ class ByteLimitTransform extends Transform {
 export class EffectScopedEgressBroker {
   #socketPath;
   #innerSocketPath;
+  #manageInner;
   #profileGrantDigest;
   #allowedOrigins;
   #allowPrivateNetworkForTests;
@@ -144,6 +145,7 @@ export class EffectScopedEgressBroker {
 
   constructor({
     socketPath,
+    upstreamSocketPath,
     grantDigest,
     allowedOrigins,
     allowPrivateNetworkForTests = false,
@@ -154,11 +156,24 @@ export class EffectScopedEgressBroker {
     if (typeof socketPath !== "string" || socketPath.length === 0) {
       throw new TypeError("effect egress socketPath must be a non-empty string");
     }
+    if (
+      upstreamSocketPath !== undefined &&
+      (typeof upstreamSocketPath !== "string" || upstreamSocketPath.length === 0)
+    ) {
+      throw new TypeError(
+        "effect egress upstreamSocketPath must be a non-empty string",
+      );
+    }
     this.#socketPath = socketPath;
-    this.#innerSocketPath = join(
-      dirname(socketPath),
-      ".hepta-egress-policy.sock",
-    );
+    this.#manageInner = upstreamSocketPath === undefined;
+    this.#innerSocketPath =
+      upstreamSocketPath ??
+      join(dirname(socketPath), ".hepta-egress-policy.sock");
+    if (this.#innerSocketPath === this.#socketPath) {
+      throw new TypeError(
+        "effect egress public and policy socket paths must differ",
+      );
+    }
     this.#profileGrantDigest = digest(grantDigest, "grantDigest");
     if (!Array.isArray(allowedOrigins) || allowedOrigins.length > 128) {
       throw new TypeError("allowedOrigins must be a bounded array");
@@ -196,26 +211,35 @@ export class EffectScopedEgressBroker {
   }
 
   async start() {
-    if (this.#server !== null || this.#inner !== null) {
+    if (this.#server !== null) {
       throw new TypeError("effect egress broker is already started");
     }
-    await Promise.all([
-      unlink(this.#socketPath).catch((error) => {
+    await unlink(this.#socketPath).catch((error) => {
+      if (error?.code !== "ENOENT") throw error;
+    });
+
+    let inner = null;
+    if (this.#manageInner) {
+      await unlink(this.#innerSocketPath).catch((error) => {
         if (error?.code !== "ENOENT") throw error;
-      }),
-      unlink(this.#innerSocketPath).catch((error) => {
-        if (error?.code !== "ENOENT") throw error;
-      }),
-    ]);
-    const options = {
-      socketPath: this.#innerSocketPath,
-      grantDigest: this.#profileGrantDigest,
-      allowedOrigins: this.#allowedOrigins,
-      allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
-    };
-    if (this.#resolver !== undefined) options.resolver = this.#resolver;
-    const inner = new GrantScopedEgressBroker(options);
-    await inner.start();
+      });
+      const options = {
+        socketPath: this.#innerSocketPath,
+        grantDigest: this.#profileGrantDigest,
+        allowedOrigins: this.#allowedOrigins,
+        allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
+      };
+      if (this.#resolver !== undefined) options.resolver = this.#resolver;
+      inner = new GrantScopedEgressBroker(options);
+      await inner.start();
+    } else {
+      const metadata = await lstat(this.#innerSocketPath);
+      if (!metadata.isSocket() || metadata.isSymbolicLink()) {
+        throw new TypeError(
+          "effect egress policy endpoint must be a non-symlink Unix socket",
+        );
+      }
+    }
 
     const server = net.createServer((client) => {
       this.#sockets.add(client);
@@ -233,7 +257,7 @@ export class EffectScopedEgressBroker {
         });
       });
     } catch (error) {
-      await inner.close().catch(() => {});
+      await inner?.close().catch(() => {});
       throw error;
     }
     this.#inner = inner;
@@ -246,7 +270,7 @@ export class EffectScopedEgressBroker {
     destinationOrigin,
     deadlineMs,
   }) {
-    if (this.#server === null || this.#inner === null) {
+    if (this.#server === null) {
       throw new TypeError("effect egress broker is not started");
     }
     const next = Object.freeze({
@@ -279,13 +303,14 @@ export class EffectScopedEgressBroker {
       }
       throw new TypeError("another browser effect owns the egress gate");
     }
-    // Mutable counters remain private; all semantic identity is frozen above.
     this.#active = { ...next };
   }
 
   completeOperation(operationId, { status = "completed" } = {}) {
     const id = stableId(operationId, "operationId");
-    const prior = this.#receipts.find((receipt) => receipt.operationId === id);
+    const prior = [...this.#receipts]
+      .reverse()
+      .find((receipt) => receipt.operationId === id);
     if (this.#active === null) {
       if (prior) return prior;
       throw new TypeError("effect egress operation is not active");
@@ -358,8 +383,12 @@ export class EffectScopedEgressBroker {
       throw new Error("browser effect network grant has expired");
     }
     const initial = await this.#readHeader(client);
+    if (this.#active !== active) {
+      throw new Error("browser effect egress ownership changed during admission");
+    }
+    const headerEnd = initial.indexOf("\r\n\r\n");
     const origin = requestOriginFromHeader(
-      initial.subarray(0, initial.indexOf("\r\n\r\n") + 4).toString("latin1"),
+      initial.subarray(0, headerEnd + 4).toString("latin1"),
     );
     if (origin !== active.destinationOrigin) {
       throw new Error(
@@ -393,6 +422,10 @@ export class EffectScopedEgressBroker {
       upstream.once("connect", resolve);
       upstream.once("error", reject);
     });
+    if (this.#active !== active) {
+      upstream.destroy();
+      throw new Error("browser effect egress ownership changed before forwarding");
+    }
 
     const exceeded = () => {
       active.boundedAbort = true;
@@ -403,6 +436,7 @@ export class EffectScopedEgressBroker {
       maximum: this.#maxRequestBytes,
       onBytes: (bytes) => {
         active.requestBytes += bytes;
+        return active.requestBytes;
       },
       onExceeded: exceeded,
     });
@@ -410,6 +444,7 @@ export class EffectScopedEgressBroker {
       maximum: this.#maxResponseBytes,
       onBytes: (bytes) => {
         active.responseBytes += bytes;
+        return active.responseBytes;
       },
       onExceeded: exceeded,
     });
@@ -430,6 +465,7 @@ export class EffectScopedEgressBroker {
     return new Promise((resolve, reject) => {
       let buffer = Buffer.alloc(0);
       let settled = false;
+      let timer;
       const cleanup = () => {
         clearTimeout(timer);
         client.off("data", onData);
@@ -459,7 +495,7 @@ export class EffectScopedEgressBroker {
       const onError = (error) => finish(error);
       const onClose = () =>
         finish(new Error("egress proxy connection closed before request header"));
-      const timer = setTimeout(
+      timer = setTimeout(
         () => finish(new Error("egress proxy request header timed out")),
         HEADER_TIMEOUT_MS,
       );
