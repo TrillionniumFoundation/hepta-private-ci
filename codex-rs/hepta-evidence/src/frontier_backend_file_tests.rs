@@ -10,6 +10,7 @@ use codex_hepta_contracts::Sha256Digest;
 use tempfile::TempDir;
 
 use super::LockedFileEvidenceFrontierBackend;
+use super::checked_journal_length_after_append;
 use crate::EVIDENCE_DATABASE_LINEAGE;
 use crate::EVIDENCE_FRONTIER_BACKEND_IDENTITY_FILENAME;
 use crate::EVIDENCE_FRONTIER_BACKEND_JOURNAL_DIRECTORY;
@@ -24,6 +25,8 @@ use crate::EvidenceRecoverySnapshotV1;
 use crate::evidence_recovery_ledger_root_v2;
 use crate::frontier_backend::EVIDENCE_FRONTIER_BACKEND_IDENTITY_SCHEMA_VERSION;
 use crate::frontier_backend::EVIDENCE_FRONTIER_BACKEND_STORAGE_CLASS;
+use crate::frontier_backend::EVIDENCE_FRONTIER_MAX_AUDIT_RECORDS;
+use crate::frontier_backend::EVIDENCE_FRONTIER_MAX_JOURNAL_BYTES;
 
 struct Fixture {
     _external: TempDir,
@@ -118,6 +121,24 @@ fn frontier(
             signature_hex: "11".repeat(64),
         }],
     }
+}
+
+#[test]
+fn append_capacity_is_rejected_before_a_write_starts() {
+    assert_eq!(
+        checked_journal_length_after_append(7, 0, 5).expect("bounded append"),
+        12
+    );
+    assert!(matches!(
+        checked_journal_length_after_append(EVIDENCE_FRONTIER_MAX_JOURNAL_BYTES, 0, 1),
+        Err(EvidenceFrontierBackendError::Invalid(message))
+            if message.contains("byte capacity")
+    ));
+    assert!(matches!(
+        checked_journal_length_after_append(0, EVIDENCE_FRONTIER_MAX_AUDIT_RECORDS, 1),
+        Err(EvidenceFrontierBackendError::Invalid(message))
+            if message.contains("record capacity")
+    ));
 }
 
 #[test]
@@ -229,6 +250,33 @@ fn locked_backend_rejects_torn_audit_tails() {
 }
 
 #[test]
+fn locked_backend_rejects_empty_audit_records() {
+    let fixture = Fixture::new();
+    let mut backend = fixture.open();
+    backend
+        .compare_and_swap(
+            "store:kernel-evidence",
+            None,
+            &frontier(1, fixture.identity_sha256.clone()),
+        )
+        .expect("publish first frontier");
+    let journal = backend
+        .journal_path("store:kernel-evidence")
+        .expect("journal path");
+    OpenOptions::new()
+        .append(true)
+        .open(journal)
+        .and_then(|mut file| file.write_all(b"\n"))
+        .expect("append empty audit record");
+
+    assert!(matches!(
+        backend.get_latest("store:kernel-evidence"),
+        Err(EvidenceFrontierBackendError::Corrupt(message))
+            if message.contains("empty record")
+    ));
+}
+
+#[test]
 fn locked_backend_detects_identity_drift() {
     let fixture = Fixture::new();
     let mut backend = fixture.open();
@@ -254,6 +302,26 @@ fn locked_backend_detects_identity_drift() {
         backend.verify_backend_identity(),
         Err(EvidenceFrontierBackendError::Invalid(message))
             if message.contains("changed after bootstrap")
+    ));
+}
+
+#[test]
+fn locked_backend_rejects_replaced_journal_directory() {
+    let fixture = Fixture::new();
+    let mut backend = fixture.open();
+    let journals = fixture
+        .backend_root
+        .join(EVIDENCE_FRONTIER_BACKEND_JOURNAL_DIRECTORY);
+    let retired = fixture.backend_root.join("frontiers-retired");
+    std::fs::rename(&journals, &retired).expect("retire pinned journal directory");
+    std::fs::create_dir(&journals).expect("replace journal directory");
+    std::fs::set_permissions(&journals, std::fs::Permissions::from_mode(0o700))
+        .expect("protect replacement journal directory");
+
+    assert!(matches!(
+        backend.get_latest("store:kernel-evidence"),
+        Err(EvidenceFrontierBackendError::Invalid(message))
+            if message.contains("directory identity changed")
     ));
 }
 

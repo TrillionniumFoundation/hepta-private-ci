@@ -143,3 +143,40 @@ fn v2_frontier_rejects_a_ledger_root_or_source_identity_mismatch() {
     wrong_source.source_commit = "not-a-git-id".to_string();
     assert!(wrong_source.validate_structure().is_err());
 }
+
+#[test]
+fn v2_frontier_deterministic_mutation_corpus_never_silently_preserves_identity() {
+    let original = frontier();
+    original.validate_structure().expect("valid frontier");
+    let encoded = serde_json::to_vec(&original).expect("serialize frontier");
+    let original_digest =
+        evidence_recovery_frontier_v2_sha256(&original).expect("hash original frontier");
+    let mut structurally_valid_mutations = 0_u64;
+
+    for seed in 0_u64..2048 {
+        let mut mutated = encoded.clone();
+        let index = seed
+            .wrapping_mul(1_103_515_245)
+            .wrapping_add(12_345) as usize
+            % mutated.len();
+        mutated[index] ^= u8::try_from(seed % 251 + 1).expect("bounded mutation byte");
+        let Ok(candidate) = serde_json::from_slice::<EvidenceRecoveryFrontierV2>(&mutated) else {
+            continue;
+        };
+        if candidate.validate_structure().is_err() {
+            continue;
+        }
+        structurally_valid_mutations += 1;
+        assert_ne!(candidate, original);
+        assert_ne!(
+            evidence_recovery_frontier_v2_sha256(&candidate)
+                .expect("hash structurally valid mutation"),
+            original_digest
+        );
+    }
+
+    assert!(
+        structurally_valid_mutations >= 32,
+        "mutation corpus did not exercise enough structurally valid variants"
+    );
+}

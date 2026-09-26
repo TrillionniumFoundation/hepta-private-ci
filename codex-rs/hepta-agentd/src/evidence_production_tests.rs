@@ -5,6 +5,8 @@ use codex_hepta_evidence::EvidenceRecoveryFrontierSignatureV2;
 use codex_hepta_evidence::EvidenceRecoveryFrontierV2;
 use codex_hepta_evidence::EvidenceRecoverySnapshotV1;
 use codex_hepta_evidence::evidence_recovery_ledger_root_v2;
+use serde_json::Map;
+use serde_json::Value;
 use serde_json::json;
 
 use super::EvidenceBackupPublicationReceiptV1;
@@ -12,15 +14,55 @@ use super::qualification_receipt_set_sha256;
 use super::validate_backup_publication;
 use super::validate_qualification_receipts;
 
+const QUALIFICATION_CHECKS: [&str; 5] = [
+    "agentd-product-test",
+    "docs",
+    "evidence-tests",
+    "implementation-maps",
+    "lane-a-truth",
+];
+
+fn check_record(name: &str) -> Value {
+    json!({
+        "path": format!("{name}.json"),
+        "present": true,
+        "sha256": "c".repeat(64),
+        "bytes": 128,
+        "status": "passed",
+        "exitCode": 0,
+        "commandExitCode": 0,
+        "log": {
+            "path": format!("{name}.log"),
+            "present": true,
+            "sha256": "d".repeat(64),
+            "bytes": 0
+        },
+        "error": null,
+        "passed": true
+    })
+}
+
+fn check_map() -> Map<String, Value> {
+    QUALIFICATION_CHECKS
+        .into_iter()
+        .map(|name| (name.to_string(), check_record(name)))
+        .collect()
+}
+
 fn receipt(kind: &str, commit: &str, tree: &str) -> Vec<u8> {
-    let (flag, candidate) = if kind == "kernel_evidence_exact_source" {
+    let base = "1".repeat(40);
+    let (flag, job, candidate) = if kind == "kernel_evidence_exact_source" {
         (
             "exactSourceQualified",
+            "source-head",
             json!({
                 "asOfCommit": commit,
                 "asOfTree": tree,
                 "sourceCommit": commit,
-                "parents": ["1".repeat(40)],
+                "baseCommit": base,
+                "testedCommit": commit,
+                "parents": ["2".repeat(40)],
+                "lane": "source-head",
                 "dirty": false,
                 "identityErrors": []
             }),
@@ -28,11 +70,15 @@ fn receipt(kind: &str, commit: &str, tree: &str) -> Vec<u8> {
     } else {
         (
             "mergeCandidateQualified",
+            "merge-candidate",
             json!({
                 "asOfCommit": "d".repeat(40),
                 "asOfTree": "e".repeat(40),
                 "sourceCommit": commit,
-                "parents": ["1".repeat(40), commit],
+                "baseCommit": base,
+                "testedCommit": "d".repeat(40),
+                "parents": [base, commit],
+                "lane": "base-merge",
                 "dirty": false,
                 "identityErrors": []
             }),
@@ -45,19 +91,29 @@ fn receipt(kind: &str, commit: &str, tree: &str) -> Vec<u8> {
         "qualified": true,
         "exactSourceQualified": false,
         "mergeCandidateQualified": false,
+        "independentAcceptance": false,
+        "externalFrontierActive": false,
+        "backupRestoreDrilled": false,
+        "canaryAccepted": false,
+        "releaseApproved": false,
         "candidate": candidate,
-        "workflow": {"workflowRunId": "12345"},
-        "checks": {
-            "evidence-tests": {"passed": true},
-            "agentd-product-test": {"passed": true},
-            "lane-a-truth": {"passed": true},
-            "docs": {"passed": true},
-            "implementation-maps": {"passed": true}
+        "workflow": {
+            "repository": "example/repo",
+            "workflow": "blocking-ci",
+            "workflowRunId": "12345",
+            "workflowRunAttempt": "1",
+            "job": job,
+            "event": "pull_request"
         },
+        "checks": check_map(),
         "artifact": {
             "id": 9,
             "url": "https://github.com/example/repo/actions/runs/12345/artifacts/9",
             "sha256": "f".repeat(64)
+        },
+        "authority": {
+            "selfIssuedReleaseAuthority": false,
+            "note": "qualification only"
         }
     });
     value[flag] = json!(true);
@@ -123,7 +179,7 @@ fn failed_dirty_or_unretained_qualification_receipts_are_rejected() {
     let exact = receipt("kernel_evidence_exact_source", &commit, &tree);
     let merge = receipt("kernel_evidence_synthetic_merge", &commit, &tree);
 
-    let mut failed: serde_json::Value = serde_json::from_slice(&exact).unwrap();
+    let mut failed: Value = serde_json::from_slice(&exact).unwrap();
     failed["checks"]["docs"]["passed"] = json!(false);
     assert!(
         validate_qualification_receipts(
@@ -133,7 +189,7 @@ fn failed_dirty_or_unretained_qualification_receipts_are_rejected() {
         .is_err()
     );
 
-    let mut dirty: serde_json::Value = serde_json::from_slice(&exact).unwrap();
+    let mut dirty: Value = serde_json::from_slice(&exact).unwrap();
     dirty["candidate"]["dirty"] = json!(true);
     assert!(
         validate_qualification_receipts(
@@ -143,12 +199,130 @@ fn failed_dirty_or_unretained_qualification_receipts_are_rejected() {
         .is_err()
     );
 
-    let mut no_artifact: serde_json::Value = serde_json::from_slice(&exact).unwrap();
-    no_artifact["artifact"] = serde_json::Value::Null;
+    let mut no_artifact: Value = serde_json::from_slice(&exact).unwrap();
+    no_artifact["artifact"] = Value::Null;
     assert!(
         validate_qualification_receipts(
             &serde_json::to_vec(&no_artifact).unwrap(),
             &merge,
+        )
+        .is_err()
+    );
+
+    let mut self_promoted: Value = serde_json::from_slice(&exact).unwrap();
+    self_promoted["releaseApproved"] = json!(true);
+    assert!(
+        validate_qualification_receipts(
+            &serde_json::to_vec(&self_promoted).unwrap(),
+            &merge,
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn qualification_receipts_require_the_closed_world_check_inventory() {
+    let commit = "a".repeat(40);
+    let tree = "b".repeat(40);
+    let exact = receipt("kernel_evidence_exact_source", &commit, &tree);
+    let merge = receipt("kernel_evidence_synthetic_merge", &commit, &tree);
+
+    let mut missing: Value = serde_json::from_slice(&exact).unwrap();
+    missing["checks"].as_object_mut().unwrap().remove("docs");
+    assert!(
+        validate_qualification_receipts(
+            &serde_json::to_vec(&missing).unwrap(),
+            &merge,
+        )
+        .is_err()
+    );
+
+    let mut extra: Value = serde_json::from_slice(&exact).unwrap();
+    extra["checks"]["unreviewed-extra"] = check_record("unreviewed-extra");
+    assert!(
+        validate_qualification_receipts(
+            &serde_json::to_vec(&extra).unwrap(),
+            &merge,
+        )
+        .is_err()
+    );
+
+    let mut forged_shape: Value = serde_json::from_slice(&exact).unwrap();
+    forged_shape["checks"]["docs"]["commandExitCode"] = json!(1);
+    assert!(
+        validate_qualification_receipts(
+            &serde_json::to_vec(&forged_shape).unwrap(),
+            &merge,
+        )
+        .is_err()
+    );
+
+    let mut no_log: Value = serde_json::from_slice(&exact).unwrap();
+    no_log["checks"]["docs"]["log"] = Value::Null;
+    assert!(
+        validate_qualification_receipts(
+            &serde_json::to_vec(&no_log).unwrap(),
+            &merge,
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn qualification_receipts_must_share_one_workflow_identity() {
+    let commit = "a".repeat(40);
+    let tree = "b".repeat(40);
+    let exact = receipt("kernel_evidence_exact_source", &commit, &tree);
+    let merge = receipt("kernel_evidence_synthetic_merge", &commit, &tree);
+
+    let mut other_run: Value = serde_json::from_slice(&merge).unwrap();
+    other_run["workflow"]["workflowRunId"] = json!("12346");
+    other_run["artifact"]["url"] =
+        json!("https://github.com/example/repo/actions/runs/12346/artifacts/9");
+    assert!(
+        validate_qualification_receipts(
+            &exact,
+            &serde_json::to_vec(&other_run).unwrap(),
+        )
+        .is_err()
+    );
+
+    let mut other_attempt: Value = serde_json::from_slice(&merge).unwrap();
+    other_attempt["workflow"]["workflowRunAttempt"] = json!("2");
+    assert!(
+        validate_qualification_receipts(
+            &exact,
+            &serde_json::to_vec(&other_attempt).unwrap(),
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn qualification_artifact_and_merge_parent_identity_are_exact() {
+    let commit = "a".repeat(40);
+    let tree = "b".repeat(40);
+    let exact = receipt("kernel_evidence_exact_source", &commit, &tree);
+    let merge = receipt("kernel_evidence_synthetic_merge", &commit, &tree);
+
+    let mut wrong_url: Value = serde_json::from_slice(&exact).unwrap();
+    wrong_url["artifact"]["url"] =
+        json!("https://github.com/example/repo/actions/runs/12345/artifacts/10");
+    assert!(
+        validate_qualification_receipts(
+            &serde_json::to_vec(&wrong_url).unwrap(),
+            &merge,
+        )
+        .is_err()
+    );
+
+    let mut reversed: Value = serde_json::from_slice(&merge).unwrap();
+    reversed["candidate"]["parents"] =
+        json!([commit, "1".repeat(40)]);
+    assert!(
+        validate_qualification_receipts(
+            &exact,
+            &serde_json::to_vec(&reversed).unwrap(),
         )
         .is_err()
     );

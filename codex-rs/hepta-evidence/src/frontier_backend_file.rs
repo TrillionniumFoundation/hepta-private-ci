@@ -68,6 +68,10 @@ pub struct LockedFileEvidenceFrontierBackend {
     root: PathBuf,
     journals: PathBuf,
     owner_uid: u32,
+    root_device: u64,
+    root_inode: u64,
+    journals_device: u64,
+    journals_inode: u64,
     identity: EvidenceFrontierBackendIdentityV1,
     identity_sha256: Sha256Digest,
     poisoned: bool,
@@ -109,7 +113,8 @@ impl LockedFileEvidenceFrontierBackend {
             let owner_uid = root_metadata.uid();
             let journals = root.join(EVIDENCE_FRONTIER_BACKEND_JOURNAL_DIRECTORY);
             let journals = journals.canonicalize().map_err(unavailable)?;
-            private_directory_metadata(&journals, Some(&root), Some(owner_uid))?;
+            let journals_metadata =
+                private_directory_metadata(&journals, Some(&root), Some(owner_uid))?;
 
             let identity_path = root.join(EVIDENCE_FRONTIER_BACKEND_IDENTITY_FILENAME);
             let identity_bytes = read_private_regular_file(
@@ -135,6 +140,10 @@ impl LockedFileEvidenceFrontierBackend {
                 root,
                 journals,
                 owner_uid,
+                root_device: root_metadata.dev(),
+                root_inode: root_metadata.ino(),
+                journals_device: journals_metadata.dev(),
+                journals_inode: journals_metadata.ino(),
                 identity,
                 identity_sha256,
                 poisoned: false,
@@ -309,11 +318,38 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
             ));
         }
 
+        let current_length = file.metadata().map_err(unavailable)?.len();
+        let expected_length = checked_journal_length_after_append(
+            current_length,
+            records.len(),
+            encoded.len(),
+        )?;
+        let directory = open_pinned_directory(
+            &self.journals,
+            self.owner_uid,
+            self.journals_device,
+            self.journals_inode,
+        )?;
+        let end = file.seek(SeekFrom::End(0)).map_err(unavailable)?;
+        if end != current_length {
+            return Err(EvidenceFrontierBackendError::Corrupt(
+                "frontier audit journal length changed under the exclusive lock".to_string(),
+            ));
+        }
+
         let write_result = file
-            .seek(SeekFrom::End(0))
-            .and_then(|_| file.write_all(&encoded))
+            .write_all(&encoded)
             .and_then(|()| file.sync_all())
-            .and_then(|()| File::open(&self.journals)?.sync_all());
+            .and_then(|()| {
+                if file.metadata()?.len() != expected_length {
+                    Err(io::Error::other(
+                        "frontier audit journal did not reach the expected durable length",
+                    ))
+                } else {
+                    Ok(())
+                }
+            })
+            .and_then(|()| directory.sync_all());
         if let Err(error) = write_result {
             self.poisoned = true;
             return Err(EvidenceFrontierBackendError::Indeterminate(
@@ -357,9 +393,20 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
             use std::os::unix::fs::MetadataExt;
 
             let root_metadata = private_directory_metadata(&self.root, None, None)?;
-            if root_metadata.uid() != self.owner_uid {
+            let journals_metadata = private_directory_metadata(
+                &self.journals,
+                Some(&self.root),
+                Some(self.owner_uid),
+            )?;
+            if root_metadata.uid() != self.owner_uid
+                || root_metadata.dev() != self.root_device
+                || root_metadata.ino() != self.root_inode
+                || journals_metadata.dev() != self.journals_device
+                || journals_metadata.ino() != self.journals_inode
+            {
                 return Err(EvidenceFrontierBackendError::Invalid(
-                    "external frontier backend owner changed after bootstrap".to_string(),
+                    "external frontier backend directory identity changed after bootstrap"
+                        .to_string(),
                 ));
             }
             let bytes = read_private_regular_file(
@@ -392,6 +439,34 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
             Err(EvidenceFrontierBackendError::Unsupported)
         }
     }
+}
+
+fn checked_journal_length_after_append(
+    current_length: u64,
+    current_records: usize,
+    append_bytes: usize,
+) -> Result<u64, EvidenceFrontierBackendError> {
+    if current_records >= EVIDENCE_FRONTIER_MAX_AUDIT_RECORDS {
+        return Err(EvidenceFrontierBackendError::Invalid(
+            "frontier audit journal reached the bounded record capacity".to_string(),
+        ));
+    }
+    let append_bytes = u64::try_from(append_bytes).map_err(|_| {
+        EvidenceFrontierBackendError::Invalid(
+            "frontier audit record length exceeds the numeric domain".to_string(),
+        )
+    })?;
+    let expected_length = current_length.checked_add(append_bytes).ok_or_else(|| {
+        EvidenceFrontierBackendError::Invalid(
+            "frontier audit journal length exceeds the numeric domain".to_string(),
+        )
+    })?;
+    if expected_length > EVIDENCE_FRONTIER_MAX_JOURNAL_BYTES {
+        return Err(EvidenceFrontierBackendError::Invalid(
+            "frontier audit journal reached the bounded byte capacity".to_string(),
+        ));
+    }
+    Ok(expected_length)
 }
 
 fn read_records_from_locked(
@@ -429,9 +504,11 @@ fn read_records_from_locked(
     let mut records = Vec::new();
     let mut previous_generation = None;
     let mut previous_record_sha256: Option<Sha256Digest> = None;
-    for line in bytes.split(|byte| *byte == b'\n') {
+    for line in bytes[..bytes.len() - 1].split(|byte| *byte == b'\n') {
         if line.is_empty() {
-            continue;
+            return Err(EvidenceFrontierBackendError::Corrupt(
+                "frontier audit journal contains an empty record".to_string(),
+            ));
         }
         if line.len() > EVIDENCE_FRONTIER_MAX_AUDIT_RECORD_BYTES
             || records.len() >= EVIDENCE_FRONTIER_MAX_AUDIT_RECORDS
@@ -529,6 +606,7 @@ fn private_directory_metadata(
     expected_uid: Option<u32>,
 ) -> Result<std::fs::Metadata, EvidenceFrontierBackendError> {
     use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
 
     let canonical = path.canonicalize().map_err(unavailable)?;
     if canonical != path
@@ -538,7 +616,12 @@ fn private_directory_metadata(
             "frontier backend directory is not a canonical direct child".to_string(),
         ));
     }
-    let metadata = std::fs::metadata(path).map_err(unavailable)?;
+    let directory = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_DIRECTORY | libc::O_NOFOLLOW)
+        .open(path)
+        .map_err(unavailable)?;
+    let metadata = directory.metadata().map_err(unavailable)?;
     if !metadata.is_dir()
         || metadata.mode() & 0o077 != 0
         || expected_uid.is_some_and(|uid| metadata.uid() != uid)
@@ -558,6 +641,7 @@ fn read_private_regular_file(
     maximum: u64,
 ) -> Result<Vec<u8>, EvidenceFrontierBackendError> {
     use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
 
     let link_metadata = std::fs::symlink_metadata(path).map_err(unavailable)?;
     if link_metadata.file_type().is_symlink() || path.parent() != Some(expected_parent) {
@@ -565,7 +649,11 @@ fn read_private_regular_file(
             "frontier backend file is not a direct regular file".to_string(),
         ));
     }
-    let mut file = File::open(path).map_err(unavailable)?;
+    let mut file = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+        .open(path)
+        .map_err(unavailable)?;
     let before = file.metadata().map_err(unavailable)?;
     if !before.is_file()
         || before.uid() != expected_uid
@@ -602,6 +690,8 @@ fn open_existing_journal(
     expected_parent: &Path,
     expected_uid: u32,
 ) -> Result<Option<File>, EvidenceFrontierBackendError> {
+    use std::os::unix::fs::OpenOptionsExt;
+
     match std::fs::symlink_metadata(path) {
         Ok(metadata) => {
             if metadata.file_type().is_symlink() || path.parent() != Some(expected_parent) {
@@ -615,6 +705,7 @@ fn open_existing_journal(
     }
     let file = OpenOptions::new()
         .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
         .open(path)
         .map_err(unavailable)?;
     validate_journal_metadata(&file, expected_uid)?;
@@ -643,6 +734,7 @@ fn open_writable_journal(
         .write(true)
         .create_new(true)
         .mode(0o600)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
         .open(path)
     {
         Ok(file) => file,
@@ -656,6 +748,7 @@ fn open_writable_journal(
             OpenOptions::new()
                 .read(true)
                 .write(true)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
                 .open(path)
                 .map_err(unavailable)?
         }
@@ -670,6 +763,45 @@ fn open_writable_journal(
     _path: &Path,
     _expected_parent: &Path,
     _expected_uid: u32,
+) -> Result<File, EvidenceFrontierBackendError> {
+    Err(EvidenceFrontierBackendError::Unsupported)
+}
+
+#[cfg(unix)]
+fn open_pinned_directory(
+    path: &Path,
+    expected_uid: u32,
+    expected_device: u64,
+    expected_inode: u64,
+) -> Result<File, EvidenceFrontierBackendError> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+
+    let directory = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_DIRECTORY | libc::O_NOFOLLOW)
+        .open(path)
+        .map_err(unavailable)?;
+    let metadata = directory.metadata().map_err(unavailable)?;
+    if !metadata.is_dir()
+        || metadata.uid() != expected_uid
+        || metadata.mode() & 0o077 != 0
+        || metadata.dev() != expected_device
+        || metadata.ino() != expected_inode
+    {
+        return Err(EvidenceFrontierBackendError::Invalid(
+            "frontier backend directory identity changed after bootstrap".to_string(),
+        ));
+    }
+    Ok(directory)
+}
+
+#[cfg(not(unix))]
+fn open_pinned_directory(
+    _path: &Path,
+    _expected_uid: u32,
+    _expected_device: u64,
+    _expected_inode: u64,
 ) -> Result<File, EvidenceFrontierBackendError> {
     Err(EvidenceFrontierBackendError::Unsupported)
 }
