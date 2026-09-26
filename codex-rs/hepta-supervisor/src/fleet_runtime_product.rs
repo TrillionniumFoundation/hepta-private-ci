@@ -5,13 +5,16 @@
 //! capacity from the selected host, and reconciles lease expiry. It never
 //! starts a second fleet writer or treats an observation as allocation authority.
 
+use codex_hepta_fleet::CapacityObservationError;
+use codex_hepta_fleet::DurableFleetError;
 use codex_hepta_fleet::DurableFleetOwner;
+use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::LinuxProcfsCapacityObserverV1;
 use codex_hepta_fleet::SystemFleetClock;
-use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_paths::HeptaFleetRoot;
 use sha2::Digest;
 use sha2::Sha256;
+use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -38,69 +41,83 @@ pub(crate) async fn run_supervisord_product(
 ) -> Result<(), SupervisorError> {
     let registry = FleetRegistry::open_existing(fleet_root.clone())?;
     let state_root = registry.layout().state_root().to_path_buf();
-    initialize_owner(&state_root)?;
 
-    let identity = LocalFleetIdentityV1::discover().ok();
-    if let Some(identity) = identity.as_ref() {
-        let _ = refresh_capacity(&state_root, identity);
-    }
+    #[cfg(target_os = "linux")]
+    let identity = Some(LocalFleetIdentityV1::discover()?);
+    #[cfg(not(target_os = "linux"))]
+    let identity: Option<LocalFleetIdentityV1> = None;
 
-    let maintenance_state_root = state_root.clone();
-    let maintenance_identity = identity.clone();
-    let maintenance_cancellation = cancellation.clone();
-    let maintenance = tokio::spawn(async move {
-        let mut interval = tokio::time::interval(CAPACITY_REFRESH_INTERVAL);
-        interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
-        interval.tick().await;
-        loop {
-            tokio::select! {
-                _ = maintenance_cancellation.cancelled() => return,
-                _ = interval.tick() => {
-                    let state_root = maintenance_state_root.clone();
-                    let identity = maintenance_identity.clone();
-                    let _ = tokio::task::spawn_blocking(move || {
-                        initialize_owner(&state_root)?;
-                        if let Some(identity) = identity.as_ref() {
-                            let _ = refresh_capacity(&state_root, identity);
-                        }
-                        Ok::<(), SupervisorError>(())
-                    }).await;
+    perform_maintenance(&state_root, identity.as_ref())?;
+
+    let supervisor_cancellation = cancellation.clone();
+    let mut supervisor = Box::pin(async move {
+        match verifier {
+            Some(verifier) => {
+                run_supervisord_with_grant_verifier(
+                    fleet_root,
+                    supervisor_cancellation,
+                    verifier,
+                )
+                .await
+            }
+            None => run_supervisord(fleet_root, supervisor_cancellation).await,
+        }
+    });
+    let mut interval = tokio::time::interval(CAPACITY_REFRESH_INTERVAL);
+    interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
+    // The first interval tick is immediate; initial maintenance already ran.
+    interval.tick().await;
+
+    loop {
+        tokio::select! {
+            result = &mut supervisor => {
+                cancellation.cancel();
+                return result;
+            }
+            _ = interval.tick() => {
+                let maintenance_root = state_root.clone();
+                let maintenance_identity = identity.clone();
+                let maintenance = tokio::task::spawn_blocking(move || {
+                    perform_maintenance(&maintenance_root, maintenance_identity.as_ref())
+                })
+                .await
+                .map_err(|error| {
+                    SupervisorError::Invalid(format!(
+                        "runtime.fleet maintenance task failed: {error}"
+                    ))
+                })?;
+                if let Err(error) = maintenance {
+                    cancellation.cancel();
+                    let _ = supervisor.await;
+                    return Err(error);
                 }
             }
         }
-    });
-
-    let result = match verifier {
-        Some(verifier) => {
-            run_supervisord_with_grant_verifier(fleet_root, cancellation.clone(), verifier).await
-        }
-        None => run_supervisord(fleet_root, cancellation.clone()).await,
-    };
-    cancellation.cancel();
-    let _ = maintenance.await;
-    result
+    }
 }
 
-fn initialize_owner(state_root: &std::path::Path) -> Result<(), SupervisorError> {
-    let clock = Arc::new(SystemFleetClock);
-    let mut owner = DurableFleetOwner::open_supervisor_state_root(state_root, clock)
-        .map_err(|error| SupervisorError::Invalid(format!("open runtime.fleet owner: {error}")))?;
-    let now_ms = unix_ms()?;
-    owner
-        .reconcile_expired(&format!("supervisor-expiry-{now_ms}"))
-        .map_err(|error| {
-            SupervisorError::Invalid(format!("reconcile runtime.fleet expiry: {error}"))
-        })?;
-    Ok(())
-}
-
-fn refresh_capacity(
-    state_root: &std::path::Path,
-    identity: &LocalFleetIdentityV1,
+fn perform_maintenance(
+    state_root: &Path,
+    identity: Option<&LocalFleetIdentityV1>,
 ) -> Result<(), SupervisorError> {
     let clock = Arc::new(SystemFleetClock);
     let mut owner = DurableFleetOwner::open_supervisor_state_root(state_root, clock)
         .map_err(|error| SupervisorError::Invalid(format!("open runtime.fleet owner: {error}")))?;
+    let now_ms = unix_ms()?;
+    if owner
+        .metrics()
+        .map_err(map_owner_error)?
+        .fleet_expired_uncollected_grants
+        > 0
+    {
+        owner
+            .reconcile_expired(&format!("supervisor-expiry-{now_ms}"))
+            .map_err(map_owner_error)?;
+    }
+
+    let Some(identity) = identity else {
+        return Ok(());
+    };
     let observer = LinuxProcfsCapacityObserverV1::for_current_host(
         identity.host_id.clone(),
         identity.failure_domain_id.clone(),
@@ -111,13 +128,21 @@ fn refresh_capacity(
     .map_err(|error| {
         SupervisorError::Invalid(format!("configure runtime.fleet capacity observer: {error}"))
     })?;
-    let now_ms = unix_ms()?;
-    owner
-        .refresh_capacity(&format!("supervisor-capacity-{now_ms}"), &observer)
-        .map_err(|error| {
-            SupervisorError::Invalid(format!("refresh runtime.fleet capacity: {error}"))
-        })?;
-    Ok(())
+    match owner.refresh_capacity(&format!("supervisor-capacity-{now_ms}"), &observer) {
+        Ok(_) => Ok(()),
+        // Pressure is an observed unavailable state, not fabricated zero
+        // capacity. Do not refresh the prior observation; it expires within one
+        // TTL and new allocation then fails closed while lifecycle supervision
+        // remains available.
+        Err(DurableFleetError::Capacity(
+            CapacityObservationError::PressureLimitExceeded { .. },
+        )) => Ok(()),
+        Err(error) => Err(map_owner_error(error)),
+    }
+}
+
+fn map_owner_error(error: DurableFleetError) -> SupervisorError {
+    SupervisorError::Invalid(format!("runtime.fleet owner operation failed: {error}"))
 }
 
 #[derive(Clone, Debug)]
@@ -163,8 +188,8 @@ impl LocalFleetIdentityV1 {
     fn discover_linux() -> Result<Self, SupervisorError> {
         let machine_id = read_bounded("/etc/machine-id", 4_096)?;
         let boot_id = read_bounded("/proc/sys/kernel/random/boot_id", 4_096)?;
-        let machine_digest = Sha256::digest(machine_id.trim_ascii());
-        let boot_digest = Sha256::digest(boot_id.trim_ascii());
+        let machine_digest = Sha256::digest(machine_id.as_slice().trim_ascii());
+        let boot_digest = Sha256::digest(boot_id.as_slice().trim_ascii());
         let host_id = format!("host-{}", hex_prefix(&machine_digest, 16));
         let failure_domain_id = format!("local-{}", hex_prefix(&machine_digest, 16));
         let mut generation_bytes = [0_u8; 8];
@@ -193,7 +218,9 @@ fn read_bounded(path: &str, maximum: usize) -> Result<Vec<u8>, SupervisorError> 
             "runtime.fleet identity source is not a regular file: {path}"
         )));
     }
-    if metadata.len() > maximum as u64 {
+    let maximum_u64 = u64::try_from(maximum)
+        .map_err(|_| SupervisorError::Invalid("identity bound exceeds u64".to_string()))?;
+    if metadata.len() > maximum_u64 {
         return Err(SupervisorError::Invalid(format!(
             "runtime.fleet identity source exceeds {maximum} bytes: {path}"
         )));
