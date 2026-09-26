@@ -10,6 +10,14 @@ name = "codex_hepta_cognitive_store"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+# The default surface contains semantic contracts and read-only durable types.
+# The raw mutable SQLite owner is deliberately absent unless the one named
+# product host or an explicit qualification build opts in.
+default = []
+agentd-production-host = []
+qualification-cognitive-write = ["agentd-production-host"]
+
 [lints]
 workspace = true
 
