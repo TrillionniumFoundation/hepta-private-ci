@@ -224,7 +224,7 @@ fn legacy_v2_journal_migrates_on_first_persisted_change() {
     journal.upsert(prepared()).unwrap();
     drop(journal);
     let state: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(state["schema"], "hepta.native-operation-journal.v3");
+    assert_eq!(state["schema"], "hepta.native-operation-journal.v4");
     assert_eq!(state["retired_operation_digests"], serde_json::json!([]));
 }
 
@@ -241,4 +241,61 @@ fn invoking_cannot_regress_to_prepared() {
     journal.upsert(invoking.clone()).unwrap();
     assert!(journal.upsert(record).is_err());
     assert_eq!(journal.find(&invoking.key), Some(&invoking));
+}
+
+#[test]
+fn valid_json_content_corruption_is_detected_without_falling_back() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    journal.upsert(prepared()).unwrap();
+    journal.upsert(terminal()).unwrap();
+    drop(journal);
+    let backup = root.path().join("operations.json.previous");
+    let checkpoint = std::fs::read(&backup).unwrap();
+    let mut state: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    state["operations"][0]["payload_digest"] = "9".repeat(64).into();
+    let corrupted = serde_json::to_vec(&state).unwrap();
+    std::fs::write(&path, &corrupted).unwrap();
+    assert!(OperationJournal::open(&path).is_err());
+    assert_eq!(std::fs::read(&path).unwrap(), corrupted);
+    assert_eq!(std::fs::read(&backup).unwrap(), checkpoint);
+}
+
+#[test]
+fn missing_primary_never_replays_the_older_prepared_checkpoint() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    journal.upsert(prepared()).unwrap();
+    journal.upsert(terminal()).unwrap();
+    drop(journal);
+    std::fs::remove_file(&path).unwrap();
+    assert!(OperationJournal::open(&path).is_err());
+    assert!(!path.exists());
+}
+
+#[test]
+fn corruption_while_owned_is_not_overwritten_by_a_new_transition() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    journal.upsert(prepared()).unwrap();
+    std::fs::write(&path, b"truncated").unwrap();
+    assert!(journal.upsert(terminal()).is_err());
+    assert!(journal.ensure_healthy().is_err());
+    assert_eq!(std::fs::read(&path).unwrap(), b"truncated");
+}
+
+#[test]
+fn exact_duplicate_does_not_create_a_new_checkpoint() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    let record = prepared();
+    journal.upsert(record.clone()).unwrap();
+    let before = std::fs::read(&path).unwrap();
+    journal.upsert(record).unwrap();
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert!(!root.path().join("operations.json.previous").exists());
 }

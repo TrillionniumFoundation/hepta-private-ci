@@ -3,6 +3,7 @@
 pub mod backend;
 pub mod error;
 pub mod journal;
+mod journal_storage;
 pub mod model;
 pub mod platform;
 pub mod private_state;

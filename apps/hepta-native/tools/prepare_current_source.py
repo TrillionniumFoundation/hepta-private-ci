@@ -261,165 +261,18 @@ def sync_metadata():
     tree = git("rev-parse", f"{source}^{{tree}}")
     path = ROOT / "docs/modules/ui.native/IMPLEMENTATION_MAP.json"
     data = json.loads(path.read_text(encoding="utf-8"))
-    app_test = (
-        "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
-    )
-    owner_test = (
-        "cargo test --manifest-path codex-rs/Cargo.toml --locked "
-        "-p codex-hepta-native-gateway -p codex-hepta-contracts "
-        "-p codex-hepta-private-state --all-targets --all-features"
-    )
-    entries = {
-        "connect_runtime": {
-            "file": "runtime.rs",
-            "symbol": "pub fn connect_runtime(",
-            "delegates": [
-                (
-                    "apps/hepta-native/src/security.rs",
-                    "SignedEndpointManifestV1::verify",
-                ),
-                (
-                    "apps/hepta-native/src/session_store.rs",
-                    "GatewayCredentialStore::load",
-                ),
-                ("apps/hepta-native/src/backend.rs", "LoopbackGatewayBackend::connect"),
-                ("codex-rs/hepta-native-gateway/src/lib.rs", "run_native_gateway"),
-            ],
-            "tests": [
-                ("apps/hepta-native/tests/runtime.rs", "rust_integration", app_test),
-                ("apps/hepta-native/tests/backend.rs", "rust_integration", app_test),
-                ("codex-rs/hepta-native-gateway/src/lib.rs", "rust_unit", owner_test),
-            ],
-        },
-        "render_runtime_view": {
-            "file": "runtime.rs",
-            "symbol": "pub fn refresh_runtime_view(",
-            "delegates": [
-                (
-                    "apps/hepta-native/src/backend.rs",
-                    "LoopbackGatewayBackend::runtime_status",
-                ),
-                ("codex-rs/hepta-native-gateway/src/lib.rs", "route_request"),
-                ("apps/hepta-native/src/ui.rs", "HeptaNativeApp::refresh"),
-            ],
-            "tests": [
-                ("apps/hepta-native/tests/backend.rs", "rust_integration", app_test),
-                ("apps/hepta-native/tests/runtime.rs", "rust_integration", app_test),
-                ("codex-rs/hepta-native-gateway/src/lib.rs", "rust_unit", owner_test),
-            ],
-        },
-        "request_platform_capability": {
-            "file": "runtime.rs",
-            "symbol": "pub fn request_platform_capability(",
-            "delegates": [
-                ("apps/hepta-native/src/journal.rs", "OperationJournal::upsert"),
-                (
-                    "apps/hepta-native/src/security.rs",
-                    "KernelFinalUseGate::with_platform_use",
-                ),
-                (
-                    "codex-rs/hepta-contracts/src/final_use.rs",
-                    "FinalUseAuthority::with_verified_effect",
-                ),
-                ("apps/hepta-native/src/platform.rs", "PlatformAdapter::invoke"),
-            ],
-            "tests": [
-                ("apps/hepta-native/tests/runtime.rs", "rust_integration", app_test),
-                (
-                    "apps/hepta-native/tests/security_updater.rs",
-                    "rust_integration",
-                    app_test,
-                ),
-                (
-                    "codex-rs/hepta-contracts/src/final_use_tests.rs",
-                    "rust_unit",
-                    owner_test,
-                ),
-                (
-                    "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
-                    "rust_integration",
-                    owner_test,
-                ),
-            ],
-        },
-        "apply_shell_update": {
-            "file": "updater.rs",
-            "symbol": "pub fn verify_and_stage(",
-            "delegates": [
-                ("apps/hepta-native/src/ui.rs", "HeptaNativeApp::stage_update"),
-                ("apps/hepta-native/src/bin/hepta-native-updater.rs", "main"),
-                ("apps/hepta-native/src/private_state.rs", "PrivateStateRoot::verify"),
-            ],
-            "tests": [
-                (
-                    "apps/hepta-native/tests/security_updater.rs",
-                    "rust_integration",
-                    app_test,
-                ),
-                (
-                    "apps/hepta-native/tests/private_state.rs",
-                    "rust_integration",
-                    app_test,
-                ),
-                ("codex-rs/hepta-private-state/src/lib.rs", "rust_unit", owner_test),
-            ],
-        },
-    }
+    # The reviewed implementation map owns operation descriptions. Refresh
+    # identities without regenerating claims or declaring open gaps closed.
     data["sourceBase"] = {"commit": source, "tree": tree}
-    data["sourceMaturity"] = "native_product_candidate"
-    data["repositoryControlledGaps"] = [
-        "Execute and retain current exact-head and deterministic synthetic-merge app, gateway, authority and package receipts on Linux, macOS and Windows.",
-        "Execute each generated unsigned package through its packaged binary smoke and retain measured build, package, smoke and artifact-size observations.",
-    ]
-    data["externalEvidenceGates"] = [
-        "Apple Developer ID custody and notarization, Windows Authenticode/AppUserModelID, and Linux distribution signing or repository ownership",
-        "physical keyboard, screen-reader, Chinese IME, focus-restoration and multi-monitor DPI acceptance from installed artifacts",
-        "target-host startup, RSS, interaction and long-running resource acceptance",
-        "independent release-channel selection, operator acceptance, promotion and release authority",
-    ]
-    data["productCallers"] = [
-        {
-            "sourcePath": "apps/hepta-native/src/main.rs",
-            "nativeSymbol": "fn run(",
-            "role": "desktop_product_bootstrap",
-        }
-    ]
-    for op in data["operations"]:
-        entry = entries[op["designOperation"]]
-        symbol = entry["symbol"]
-        source_path = f"apps/hepta-native/src/{entry['file']}"
-        op["ownerEntrypoint"].update(
-            path=source_path, symbol=symbol, buildTarget="hepta-native"
-        )
-        op["nativeSymbol"] = symbol
-        op["sourcePath"] = source_path
-        op["sourcePathExists"] = True
-        op["delegatedCallees"] = [
-            {"path": path, "symbol": callee} for path, callee in entry["delegates"]
-        ]
-        op["tests"] = [
-            {"path": path, "kind": kind, "command": command}
-            for path, kind, command in entry["tests"]
-        ]
-    data["claimBoundary"]["nativeSourceMappingComplete"] = True
-    data["claimBoundary"]["repositoryControlledDocumentationGapsClosed"] = True
-    data["claimBoundary"]["repositoryControlledMappingGapsClosed"] = True
-    data["claimBoundary"]["repositoryControlledSourceBoundaryGapsClosed"] = True
+    for item in data.get("sourceObjects", []):
+        item["object"] = git("rev-parse", f"{source}:{item['path']}")
     for key in [
-        "productExecutionComplete",
-        "deploymentQualificationComplete",
-        "independentAcceptanceComplete",
-        "productionImplementation",
-        "productExecutionProved",
-        "independentAcceptance",
-        "activation",
-        "release",
+        "productExecutionComplete", "deploymentQualificationComplete",
+        "independentAcceptanceComplete", "productionImplementation",
+        "productExecutionProved", "independentAcceptance", "activation", "release",
     ]:
         data["claimBoundary"][key] = False
     data["productionImplementation"] = False
-    data["productCallerState"] = (
-        "source_composed_authenticated_gateway_execution_pending"
-    )
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     path = ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
     bindings = json.loads(path.read_text(encoding="utf-8"))

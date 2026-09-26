@@ -2,9 +2,6 @@ use std::collections::HashSet;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read as _;
-use std::io::Write as _;
-
-use atomic_write_file::AtomicWriteFile;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -23,6 +20,7 @@ use crate::private_state::PrivateStateRoot;
 
 const JOURNAL_SCHEMA_V2: &str = "hepta.native-operation-journal.v2";
 const JOURNAL_SCHEMA_V3: &str = "hepta.native-operation-journal.v3";
+const JOURNAL_SCHEMA_V4: &str = "hepta.native-operation-journal.v4";
 const MAX_JOURNAL_BYTES: u64 = 8 * 1024 * 1024;
 const MAX_OPERATION_RECORDS: usize = 4096;
 const MAX_RETIRED_OPERATION_DIGESTS: usize = 32 * 1024;
@@ -107,6 +105,29 @@ struct JournalFile {
     operations: Vec<OperationRecord>,
     #[serde(default)]
     retired_operation_digests: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    checksum: Option<String>,
+}
+
+impl JournalFile {
+    fn checksum(&self) -> Result<String, ShellError> {
+        // Detect accidental corruption, NOT a MAC or rollback-prevention authority.
+        Ok(sha256_hex(serde_json::to_vec(&(
+            JOURNAL_SCHEMA_V4,
+            &self.operations,
+            &self.retired_operation_digests,
+        ))?))
+    }
+
+    fn verify_integrity(&self) -> Result<(), ShellError> {
+        match self.schema.as_str() {
+            JOURNAL_SCHEMA_V4 if self.checksum.as_ref() == Some(&self.checksum()?) => Ok(()),
+            JOURNAL_SCHEMA_V2 | JOURNAL_SCHEMA_V3 if self.checksum.is_none() => Ok(()),
+            _ => Err(ShellError::State(
+                "journal checksum/schema failed; preserve evidence and reconcile, never restore an older snapshot automatically".to_owned(),
+            )),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -156,6 +177,11 @@ impl OperationJournal {
             ))
         })?;
         if !path.exists() {
+            if std::fs::symlink_metadata(crate::journal_storage::previous_path(&path)).is_ok() {
+                return Err(ShellError::State(
+                    "journal is missing but a prior snapshot exists; recovery requires authority reconciliation, not replay".to_owned(),
+                ));
+            }
             return Ok(Self {
                 path,
                 operations: Vec::new(),
@@ -173,7 +199,7 @@ impl OperationJournal {
             )));
         }
         let mut bytes = Vec::new();
-        File::open(&path)?
+        crate::file_input::open_regular_file(&path)?
             .take(MAX_JOURNAL_BYTES + 1)
             .read_to_end(&mut bytes)?;
         if bytes.len() as u64 > MAX_JOURNAL_BYTES {
@@ -182,11 +208,7 @@ impl OperationJournal {
             ));
         }
         let mut state: JournalFile = serde_json::from_slice(&bytes)?;
-        if state.schema != JOURNAL_SCHEMA_V2 && state.schema != JOURNAL_SCHEMA_V3 {
-            return Err(ShellError::State(
-                "operation journal schema is not supported".to_owned(),
-            ));
-        }
+        state.verify_integrity()?;
         if state.schema == JOURNAL_SCHEMA_V2 && !state.retired_operation_digests.is_empty() {
             return Err(ShellError::State(
                 "legacy journal cannot contain a retirement frontier".to_owned(),
@@ -307,7 +329,10 @@ impl OperationJournal {
                     "operation identity was reused with changed semantics".to_owned(),
                 ));
             }
-            if existing.phase == OperationPhase::Terminal && existing != &record {
+            if existing == &record {
+                return Ok(());
+            }
+            if existing.phase == OperationPhase::Terminal {
                 return Err(ShellError::State(
                     "terminal operation observation is immutable".to_owned(),
                 ));
@@ -387,11 +412,13 @@ impl OperationJournal {
         retired_operation_digests: &[String],
     ) -> Result<(), ShellError> {
         self.private_root.verify()?;
-        let state = JournalFile {
-            schema: JOURNAL_SCHEMA_V3.to_owned(),
+        let mut state = JournalFile {
+            schema: JOURNAL_SCHEMA_V4.to_owned(),
             operations: operations.to_vec(),
             retired_operation_digests: retired_operation_digests.to_vec(),
+            checksum: None,
         };
+        state.checksum = Some(state.checksum()?);
         let bytes = serde_json::to_vec(&state)?;
         if bytes.len() as u64 > MAX_JOURNAL_BYTES {
             return Err(ShellError::State(format!(
@@ -401,12 +428,29 @@ impl OperationJournal {
         if let Some(parent) = self.path.parent() {
             std::fs::create_dir_all(parent)?;
         }
-        let mut file = AtomicWriteFile::open(&self.path)?;
-        file.write_all(&bytes)?;
-        file.sync_all()?;
-        file.commit()?;
+        if self.path.exists() {
+            ensure_private_state_file(&self.path, true)?;
+            let mut previous = Vec::new();
+            crate::file_input::open_regular_file(&self.path)?
+                .take(MAX_JOURNAL_BYTES + 1)
+                .read_to_end(&mut previous)?;
+            if previous.len() as u64 > MAX_JOURNAL_BYTES {
+                return Err(ShellError::State(
+                    "prior journal exceeded byte limit".to_owned(),
+                ));
+            }
+            let prior: JournalFile = serde_json::from_slice(&previous)?;
+            prior.verify_integrity()?;
+            let backup = crate::journal_storage::previous_path(&self.path);
+            if backup.exists() {
+                ensure_private_state_file(&backup, true)?;
+            }
+            // A forensic checkpoint only: automatic fallback can resurrect an effect.
+            crate::journal_storage::write(&backup, &previous)?;
+            ensure_private_state_file(&backup, false)?;
+        }
+        crate::journal_storage::write(&self.path, &bytes)?;
         ensure_private_state_file(&self.path, false)?;
-        sync_parent_directory(&self.path)?;
         Ok(())
     }
 }
@@ -445,19 +489,6 @@ fn phase_transition_allowed(from: OperationPhase, to: OperationPhase) -> bool {
         }
         OperationPhase::Terminal => to == OperationPhase::Terminal,
     }
-}
-
-#[cfg(unix)]
-fn sync_parent_directory(path: &Path) -> Result<(), ShellError> {
-    if let Some(parent) = path.parent() {
-        File::open(parent)?.sync_all()?;
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
-    Ok(())
 }
 
 fn ensure_private_state_file(path: &Path, _preexisting: bool) -> Result<(), ShellError> {
