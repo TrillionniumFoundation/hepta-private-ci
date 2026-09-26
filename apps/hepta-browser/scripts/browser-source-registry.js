@@ -141,8 +141,8 @@ const markers = {
     worker.includes("dispatch_boundary") &&
     driver.includes("dispatch_boundary"),
   pageRevisionRevalidation:
-    worker.includes("navigationEpoch") &&
-    worker.includes("actionableSurfaceDigest"),
+    worker.includes("navigation_epoch") &&
+    worker.includes("last_action_surface_digest"),
   semanticObservation:
     worker.includes("visibleText") &&
     worker.includes("forms") &&
