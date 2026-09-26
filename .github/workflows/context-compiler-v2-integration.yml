@@ -32,14 +32,20 @@ jobs:
           python3 scripts/_context_compiler_observation_patch.py
           python3 scripts/_context_compiler_agentd_patch.py
           python3 scripts/_context_compiler_framing_policy_patch.py
+          python3 scripts/_context_compiler_crash_safety_patch.py
 
       - name: Format sources
         working-directory: codex-rs
         run: cargo fmt --all
 
-      - name: Test compiler core
+      - name: Test closure crates
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-context-compiler
+        run: >-
+          cargo test
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-hepta-prompt-extension
+          -p codex-hepta-agentd
 
       - name: Check composed product path
         working-directory: codex-rs
