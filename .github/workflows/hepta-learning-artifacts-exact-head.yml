@@ -17,8 +17,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-  attestations: write
 
 concurrency:
   group: learning-artifacts-exact-head-${{ github.event.pull_request.number || inputs.source_sha || github.ref }}
@@ -264,12 +262,6 @@ jobs:
           path: .hepta-evidence/learning-artifacts/${{ matrix.mode }}.json
           if-no-files-found: error
           retention-days: 30
-
-      - name: Attest exact-source receipt
-        if: github.event_name == 'push' && matrix.mode == 'exact-source' && steps.receipt.outcome == 'success'
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
-        with:
-          subject-path: .hepta-evidence/learning-artifacts/exact-source.json
 
   required:
     name: learning.artifacts exact-head required
