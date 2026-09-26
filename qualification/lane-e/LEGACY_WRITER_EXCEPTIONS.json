@@ -1,114 +1,83 @@
 {
-  "schema": "hepta.lane-e-legacy-writer-exceptions.v1",
+  "schema": "hepta.lane-e-legacy-writer-exceptions.v2",
   "authorityDelta": "none",
+  "reviewedSource": "25d664addcd7c44873dc0001c5adce91c6fe4687",
+  "auditScope": "Source review of RunStart recovery matches and explicitly gated V1 compatibility methods; not production qualification or an external audit signature.",
+  "reviewedBlobs": {
+    "codex-rs/hepta-agentd/Cargo.toml": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+    "codex-rs/hepta-agentd/src/objective_ingress.rs": "ec6440803a0f1284bbc1ef98b5121075fe74dbd4",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs": "1781996175ec7f16f44b9f58ac3e2c2bd41358af",
+    "codex-rs/hepta-agentd/src/intelligence_product_runner.rs": "1e83821238aef2b5f478a958e32151c2091acdc8"
+  },
   "exceptions": [
     {
       "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
       "finding": "legacy durable journal trait",
       "classification": "read_only_runstart_bridge",
       "owner": "runtime.agentd",
-      "rationale": "The Objective owner publishes and recovers RunStart through the pre-existing typed intelligence owner bridge. It does not construct Decision, Outcome, Credit, or Revocation writes.",
-      "requiredMarkers": [
-        "prepare_intelligence_run_v1",
-        "LedgerEvent::RunStart",
-        "fn event_record_id"
-      ],
-      "forbiddenMarkers": [
-        "append_qualification("
-      ]
+      "rationale": "The typed RunStart bridge retains ledger ownership. The trait is used for records and anchors; this file does not append legacy V1 learning events.",
+      "requiredMarkers": ["prepare_intelligence_run_v1", "LedgerEvent::RunStart", "fn event_record_id"],
+      "forbiddenMarkers": ["append_qualification("]
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
       "finding": "raw V1 Decision append",
       "classification": "read_only_runstart_bridge",
       "owner": "runtime.agentd",
-      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
-      "requiredMarkers": [
-        "match event",
-        "LedgerEvent::RunStart",
-        "fn event_record_id"
-      ],
-      "forbiddenMarkers": [
-        "append_qualification("
-      ]
+      "rationale": "Occurrence is an exhaustive event_record_id read/recovery match, not a constructor or append. Exact file blob is pinned.",
+      "requiredMarkers": ["match event", "LedgerEvent::Decision(value) => &value.record_id"],
+      "forbiddenMarkers": ["append_qualification("]
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
       "finding": "raw V1 Outcome append",
       "classification": "read_only_runstart_bridge",
       "owner": "runtime.agentd",
-      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
-      "requiredMarkers": [
-        "match event",
-        "LedgerEvent::RunStart",
-        "fn event_record_id"
-      ],
-      "forbiddenMarkers": [
-        "append_qualification("
-      ]
+      "rationale": "Occurrence is an exhaustive event_record_id read/recovery match, not a constructor or append. Exact file blob is pinned.",
+      "requiredMarkers": ["match event", "LedgerEvent::Outcome(value) => &value.record_id"],
+      "forbiddenMarkers": ["append_qualification("]
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
       "finding": "raw V1 Credit append",
       "classification": "read_only_runstart_bridge",
       "owner": "runtime.agentd",
-      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
-      "requiredMarkers": [
-        "match event",
-        "LedgerEvent::RunStart",
-        "fn event_record_id"
-      ],
-      "forbiddenMarkers": [
-        "append_qualification("
-      ]
+      "rationale": "Occurrence is an exhaustive event_record_id read/recovery match, not a constructor or append. Exact file blob is pinned.",
+      "requiredMarkers": ["match event", "LedgerEvent::Credit(value) => &value.record_id"],
+      "forbiddenMarkers": ["append_qualification("]
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
       "finding": "raw V1 Revocation append",
       "classification": "read_only_runstart_bridge",
       "owner": "runtime.agentd",
-      "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
-      "requiredMarkers": [
-        "match event",
-        "LedgerEvent::RunStart",
-        "fn event_record_id"
-      ],
-      "forbiddenMarkers": [
-        "append_qualification("
-      ]
+      "rationale": "Occurrence is an exhaustive event_record_id read/recovery match, not a constructor or append. Exact file blob is pinned.",
+      "requiredMarkers": ["match event", "LedgerEvent::Revocation(value) => &value.record_id"],
+      "forbiddenMarkers": ["append_qualification("]
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "finding": "legacy durable journal trait",
       "classification": "qualification_feature_only",
       "owner": "runtime.agentd",
-      "rationale": "Compatibility imports compile only under qualification-legacy-learning-write, which is not a default or product feature.",
-      "requiredMarkers": [
-        "#[cfg(feature = \"qualification-legacy-learning-write\")]",
-        "DurableLearningJournal"
-      ]
+      "rationale": "The import is directly cfg-gated by the non-default qualification feature. Both source and feature graph are pinned.",
+      "requiredMarkers": ["#[cfg(feature = \"qualification-legacy-learning-write\")]\nuse codex_hepta_learning_ledger::DurableLearningJournal;"]
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
       "finding": "raw V1 Decision append",
       "classification": "qualification_feature_only",
       "owner": "runtime.agentd",
-      "rationale": "The raw V1 constructor is confined to the explicit qualification compatibility feature.",
-      "requiredMarkers": [
-        "#[cfg(feature = \"qualification-legacy-learning-write\")]",
-        "pub fn append_decision"
-      ]
+      "rationale": "append_decision and append_event are directly cfg-gated. The source blob and transitive default-feature graph are audited together.",
+      "requiredMarkers": ["#[cfg(feature = \"qualification-legacy-learning-write\")]\n    pub fn append_decision", "fn append_event"]
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
       "finding": "raw V1 Outcome append",
       "classification": "qualification_feature_only",
       "owner": "runtime.agentd",
-      "rationale": "The raw V1 constructor is confined to the explicit qualification compatibility feature.",
-      "requiredMarkers": [
-        "#[cfg(feature = \"qualification-legacy-learning-write\")]",
-        "pub fn append_outcome"
-      ]
+      "rationale": "append_outcome and append_event are directly cfg-gated. The source blob and transitive default-feature graph are audited together.",
+      "requiredMarkers": ["#[cfg(feature = \"qualification-legacy-learning-write\")]\n    #[allow(clippy::too_many_arguments)]\n    pub fn append_outcome", "fn append_event"]
     }
   ]
 }
