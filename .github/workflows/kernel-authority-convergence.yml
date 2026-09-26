@@ -25,7 +25,7 @@ jobs:
   # BEGIN ONE-SHOT KERNEL AUTHORITY REMEDIATION
   bootstrap-remediation:
     name: One-shot kernel.authority remediation
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'work/kernel-authority-convergence-20260925'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'work/kernel-authority-convergence-20260925')
     permissions:
       contents: write
     runs-on: macos-15
@@ -119,6 +119,98 @@ jobs:
               raise SystemExit('expected old and generated product formatting commands')
           index = content.rfind(needle)
           content = content[:index] + replacement + content[index + len(needle):]
+
+          unsafe_test = '''    #[test]
+    fn dispatch_boundary_serializes_revocation_until_local_entry_returns() {
+        let (registry, _directory) = fixture().unwrap();
+        registry.put_lease(lease(), 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        std::thread::spawn(move || {
+            entered_rx.recv().unwrap();
+            let result = registry.revoke("lease-one", 1, [8; 32]);
+            let _ = revoked_tx.send(result);
+        });
+
+        let expected = binding();
+        let result = verifier
+            .with_dispatch_boundary(token, &expected, || {
+                entered_tx.send(()).unwrap();
+                assert!(
+                    revoked_rx.recv_timeout(Duration::from_millis(100)).is_err(),
+                    "revocation crossed the local dispatch linearization fence"
+                );
+                11
+            })
+            .unwrap();
+        assert_eq!(result, 11);
+        assert!(
+            revoked_rx
+                .recv_timeout(Duration::from_secs(2))
+                .expect("revocation did not complete after local dispatch boundary")
+                .is_ok()
+        );
+    }
+'''
+          safe_test = '''    #[test]
+    fn dispatch_boundary_serializes_revocation_until_local_entry_returns() {
+        let (registry, _directory) = fixture().unwrap();
+        registry.put_lease(lease(), 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (attempted_tx, attempted_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        let revoker = std::thread::spawn(move || {
+            if entered_rx.recv().is_err() {
+                return;
+            }
+            let _ = attempted_tx.send(());
+            let result = registry.revoke("lease-one", 1, [8; 32]);
+            let _ = revoked_tx.send(result);
+        });
+
+        let expected = binding();
+        let dispatch = std::thread::spawn(move || {
+            verifier.with_dispatch_boundary(token, &expected, || {
+                let entered = entered_tx.send(()).is_ok();
+                let released = release_rx.recv_timeout(Duration::from_secs(2)).is_ok();
+                (entered, released, 11)
+            })
+        });
+        attempted_rx
+            .recv_timeout(Duration::from_secs(2))
+            .expect("revocation worker did not reach the authority boundary");
+        assert!(
+            revoked_rx.recv_timeout(Duration::from_millis(100)).is_err(),
+            "revocation crossed the local dispatch linearization fence"
+        );
+        release_tx
+            .send(())
+            .expect("dispatch worker did not retain the release channel");
+        let (entered, released, result) = dispatch
+            .join()
+            .expect("dispatch worker panicked")
+            .expect("dispatch boundary rejected a current lease");
+        assert!(entered, "dispatch worker did not signal entry");
+        assert!(released, "dispatch worker did not observe release");
+        assert_eq!(result, 11);
+        assert!(
+            revoked_rx
+                .recv_timeout(Duration::from_secs(2))
+                .expect("revocation did not complete after local dispatch boundary")
+                .is_ok()
+        );
+        revoker.join().expect("revocation worker panicked");
+    }
+'''
+          if content.count(unsafe_test) != 2:
+              raise SystemExit('expected predecessor and generated unsafe dispatch test')
+          index = content.rfind(unsafe_test)
+          content = content[:index] + safe_test + content[index + len(unsafe_test):]
 
           path.write_text(content, encoding='utf-8')
           PY
