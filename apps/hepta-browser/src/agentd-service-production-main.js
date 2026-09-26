@@ -22,6 +22,7 @@ const POLICY_KEYS = [
   "cgroupCpuQuotaMicros",
   "cgroupMemoryMaxBytes",
   "cgroupPidsMax",
+  "cgroupRoot",
   "schema",
   "seccompProfilePath",
   "seccompProfileSha256",
@@ -82,6 +83,13 @@ function positiveInteger(value, name) {
   return value;
 }
 
+function absolutePath(value, name) {
+  if (typeof value !== "string" || !isAbsolute(value)) {
+    throw new TypeError(`${name} must be an absolute path`);
+  }
+  return resolve(value);
+}
+
 async function readIsolationPolicy(profileRoot) {
   const policyPath = join(dirname(profileRoot), "isolation-policy.json");
   const canonicalParent = await realpath(dirname(policyPath));
@@ -115,9 +123,6 @@ async function readIsolationPolicy(profileRoot) {
     if (policy.schema !== POLICY_SCHEMA) {
       throw new TypeError("Browser isolation policy schema is unsupported");
     }
-    if (!isAbsolute(policy.seccompProfilePath)) {
-      throw new TypeError("seccompProfilePath must be absolute");
-    }
     if (
       typeof policy.seccompProfileSha256 !== "string" ||
       !/^[0-9a-f]{64}$/.test(policy.seccompProfileSha256) ||
@@ -126,7 +131,11 @@ async function readIsolationPolicy(profileRoot) {
       throw new TypeError("seccompProfileSha256 must be a non-zero digest");
     }
     return Object.freeze({
-      seccompProfilePath: resolve(policy.seccompProfilePath),
+      cgroupRoot: absolutePath(policy.cgroupRoot, "cgroupRoot"),
+      seccompProfilePath: absolutePath(
+        policy.seccompProfilePath,
+        "seccompProfilePath",
+      ),
       seccompProfileDigest: policy.seccompProfileSha256,
       cgroupMemoryMaxBytes: positiveInteger(
         policy.cgroupMemoryMaxBytes,
@@ -157,7 +166,6 @@ const channel = new AgentdBrowserChannel({ input: process.stdin, output: process
 const authority = new ParentFinalUseAuthority(channel);
 const maxProfiles = optionalPositiveInteger("HEPTA_BROWSER_MAX_PROFILES", 16);
 const reconciliationRoot = process.env.HEPTA_BROWSER_RECONCILIATION_ROOT;
-const cgroupRoot = requiredAbsolutePath("HEPTA_BROWSER_CGROUP_ROOT");
 const driver = new PooledSubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
   workerDigest: requiredDigest("HEPTA_BROWSER_WORKER_SHA256"),
@@ -200,7 +208,6 @@ const driver = new PooledSubprocessBrowserDriver({
     maxCpuSeconds: optionalPositiveInteger("HEPTA_BROWSER_MAX_CPU_SECONDS", 300),
     maxOpenFiles: optionalPositiveInteger("HEPTA_BROWSER_MAX_OPEN_FILES", 4096),
     maxProcesses: optionalPositiveInteger("HEPTA_BROWSER_MAX_PROCESSES", 256),
-    cgroupRoot,
     ...policy,
   }),
 });
