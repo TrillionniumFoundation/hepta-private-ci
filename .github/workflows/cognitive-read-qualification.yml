@@ -1,0 +1,308 @@
+name: Cognitive read qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/cognitive.read/**"
+      - "qualification/cognitive-read/**"
+      - "scripts/emit-cognitive-read-qualification.py"
+      - "scripts/verify-cognitive-read-constants.py"
+      - "scripts/verify-cognitive-read-map.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/scripts/verify_cargo_workspace_manifests.py"
+      - ".github/workflows/cognitive-read-qualification.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/cognitive.read/**"
+      - "qualification/cognitive-read/**"
+      - "scripts/emit-cognitive-read-qualification.py"
+      - "scripts/verify-cognitive-read-constants.py"
+      - "scripts/verify-cognitive-read-map.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/scripts/verify_cargo_workspace_manifests.py"
+      - ".github/workflows/cognitive-read-qualification.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-read-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUST_MIN_STACK: "8388608"
+
+jobs:
+  exact-head:
+    name: Exact-head cognitive.read qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Prepare CI tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Run exact-head suite and record every command
+        id: qualification
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$GITHUB_WORKSPACE/.hepta-evidence/cognitive-read-source"
+          mkdir -p "$evidence"
+          failed=0
+
+          run_logged() {
+            local label="$1"
+            shift
+            printf '%q ' "$@" > "$evidence/$label.command.txt"
+            printf '\n' >> "$evidence/$label.command.txt"
+            set +e
+            "$@" 2>&1 | tee "$evidence/$label.log"
+            local code="${PIPESTATUS[0]}"
+            set -e
+            printf '%s\n' "$code" > "$evidence/$label.exit-code"
+            if [[ "$code" -ne 0 ]]; then
+              failed=1
+            fi
+          }
+
+          run_benchmark() {
+            printf '%s\n' \
+              'cargo run --locked -p codex-hepta-cognitive-read --example cognitive_read_bench --quiet' \
+              > "$evidence/benchmark.command.txt"
+            set +e
+            cargo run --locked -p codex-hepta-cognitive-read \
+              --example cognitive_read_bench --quiet \
+              > "$evidence/benchmark.json" 2> "$evidence/benchmark.stderr.log"
+            local code="$?"
+            set -e
+            cat "$evidence/benchmark.stderr.log"
+            printf '%s\n' "$code" > "$evidence/benchmark.exit-code"
+            if [[ "$code" -ne 0 ]]; then
+              failed=1
+            fi
+          }
+
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          run_logged workspace-manifest \
+            python3 .github/scripts/verify_cargo_workspace_manifests.py
+          run_logged contract-limits \
+            python3 scripts/verify-cognitive-read-constants.py
+          run_logged implementation-map \
+            python3 scripts/verify-cognitive-read-map.py --expected-sha "$EXPECTED_SHA"
+          run_logged core-tests \
+            cargo test --locked -p codex-hepta-cognitive-read --lib
+          run_benchmark
+          run_logged product-read-replay \
+            cargo test --locked -p codex-hepta-agentd \
+              --test cognitive_product_e2e \
+              real_agentd_local_memory_review_is_read_only_and_replayable -- \
+              --exact --test-threads=1
+          run_logged product-write-smoke \
+            cargo test --locked -p codex-hepta-agentd \
+              --features qualification-cognitive-write \
+              --test cognitive_product_e2e \
+              real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends -- \
+              --exact --test-threads=1
+          run_logged qualification-receipt \
+            python3 scripts/emit-cognitive-read-qualification.py \
+              --kind source-head \
+              --expected-sha "$EXPECTED_SHA" \
+              --evidence-dir .hepta-evidence/cognitive-read-source \
+              --output .hepta-evidence/cognitive-read-source/qualification-receipt.json
+
+          (
+            cd "$evidence"
+            find . -type f ! -name SHA256SUMS -print0 \
+              | sort -z \
+              | xargs -0 sha256sum
+          ) > "$evidence/SHA256SUMS"
+
+          bundle="$RUNNER_TEMP/cognitive-read-source-$EXPECTED_SHA.tar"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 \
+            --numeric-owner -cf "$bundle" \
+            -C "$GITHUB_WORKSPACE" .hepta-evidence/cognitive-read-source
+          sha256sum "$bundle" > "$bundle.sha256"
+
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+          echo "bundle=$bundle" >> "$GITHUB_OUTPUT"
+          echo "bundle_sha=$bundle.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Retain immutable exact-head evidence
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-source-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.qualification.outputs.bundle }}
+            ${{ steps.qualification.outputs.bundle_sha }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish artifact digests
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## cognitive.read exact-head evidence'
+            echo
+            echo '- commit: `${{ github.event.pull_request.head.sha || github.sha }}`'
+            echo '- GitHub artifact digest: `${{ steps.upload.outputs['artifact-digest'] }}`'
+            echo '- deterministic bundle digest:'
+            echo '```text'
+            cat '${{ steps.qualification.outputs.bundle_sha }}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce exact-head qualification result
+        if: always()
+        shell: bash
+        run: test '${{ steps.qualification.outputs.failed }}' = '0'
+
+  merge-candidate:
+    name: Synthetic-merge cognitive.read qualification
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Cognitive Read CI
+          author-email: cognitive-read-ci@users.noreply.github.com
+          message: Cognitive read synthetic merge
+
+      - name: Prepare CI tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Run merge-candidate suite and record every command
+        id: qualification
+        env:
+          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$GITHUB_WORKSPACE/.hepta-evidence/cognitive-read-merge"
+          mkdir -p "$evidence"
+          failed=0
+
+          run_logged() {
+            local label="$1"
+            shift
+            printf '%q ' "$@" > "$evidence/$label.command.txt"
+            printf '\n' >> "$evidence/$label.command.txt"
+            set +e
+            "$@" 2>&1 | tee "$evidence/$label.log"
+            local code="${PIPESTATUS[0]}"
+            set -e
+            printf '%s\n' "$code" > "$evidence/$label.exit-code"
+            if [[ "$code" -ne 0 ]]; then
+              failed=1
+            fi
+          }
+
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          run_logged workspace-manifest \
+            python3 .github/scripts/verify_cargo_workspace_manifests.py
+          run_logged contract-limits \
+            python3 scripts/verify-cognitive-read-constants.py
+          run_logged implementation-map \
+            python3 scripts/verify-cognitive-read-map.py --expected-sha "$EXPECTED_SHA"
+          run_logged core-tests \
+            cargo test --locked -p codex-hepta-cognitive-read --lib
+          run_logged qualification-receipt \
+            python3 scripts/emit-cognitive-read-qualification.py \
+              --kind merge-candidate \
+              --expected-sha "$EXPECTED_SHA" \
+              --evidence-dir .hepta-evidence/cognitive-read-merge \
+              --output .hepta-evidence/cognitive-read-merge/qualification-receipt.json
+
+          (
+            cd "$evidence"
+            find . -type f ! -name SHA256SUMS -print0 \
+              | sort -z \
+              | xargs -0 sha256sum
+          ) > "$evidence/SHA256SUMS"
+
+          bundle="$RUNNER_TEMP/cognitive-read-merge-$EXPECTED_SHA.tar"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 \
+            --numeric-owner -cf "$bundle" \
+            -C "$GITHUB_WORKSPACE" .hepta-evidence/cognitive-read-merge
+          sha256sum "$bundle" > "$bundle.sha256"
+
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+          echo "bundle=$bundle" >> "$GITHUB_OUTPUT"
+          echo "bundle_sha=$bundle.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Retain immutable merge-candidate evidence
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-merge-${{ steps.synthetic.outputs.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.qualification.outputs.bundle }}
+            ${{ steps.qualification.outputs.bundle_sha }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish artifact digests
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## cognitive.read synthetic-merge evidence'
+            echo
+            echo '- commit: `${{ steps.synthetic.outputs.sha }}`'
+            echo '- GitHub artifact digest: `${{ steps.upload.outputs['artifact-digest'] }}`'
+            echo '- deterministic bundle digest:'
+            echo '```text'
+            cat '${{ steps.qualification.outputs.bundle_sha }}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce merge-candidate qualification result
+        if: always()
+        shell: bash
+        run: test '${{ steps.qualification.outputs.failed }}' = '0'

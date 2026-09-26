@@ -17,7 +17,7 @@ concurrency:
 jobs:
   materialize:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -28,6 +28,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git config user.name 'hepta-ci-convergence'
           git config user.email 'hepta-ci-convergence@users.noreply.github.com'
           python3 - <<'PY'
@@ -119,6 +120,13 @@ jobs:
                   operation['tests'] = reliability_tests
 
           extra_paths = {
+              '.github/actions/hepta-synthetic-merge/action.yml',
+              '.github/actions/setup-ci/action.yml',
+              '.github/scripts/verify_cargo_workspace_manifests.py',
+              '.github/workflows/cognitive-read-qualification.yml',
+              'codex-rs/Cargo.lock',
+              'codex-rs/Cargo.toml',
+              'codex-rs/hepta-agentd/BUILD.bazel',
               'codex-rs/hepta-agentd/Cargo.toml',
               'codex-rs/hepta-agentd/src/app_runtime.rs',
               'codex-rs/hepta-agentd/src/cognitive_context.rs',
@@ -127,8 +135,11 @@ jobs:
               'codex-rs/hepta-agentd/src/runtime.rs',
               'codex-rs/hepta-agentd/src/runtime_tests.rs',
               'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs',
+              'codex-rs/hepta-cognitive-read/BUILD.bazel',
               'codex-rs/hepta-cognitive-read/Cargo.toml',
               'codex-rs/hepta-cognitive-read/examples/cognitive_read_bench.rs',
+              'codex-rs/hepta-cognitive-read/src/authoritative.rs',
+              'codex-rs/hepta-cognitive-read/src/authoritative_tests.rs',
               'codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs',
               'codex-rs/hepta-cognitive-read/src/fuzz_tests.rs',
               'codex-rs/hepta-cognitive-read/src/golden_vectors.rs',
@@ -139,8 +150,13 @@ jobs:
               'codex-rs/hepta-cognitive-read/src/property_tests.rs',
               'codex-rs/hepta-cognitive-read/src/transient.rs',
               'docs/modules/cognitive.read/CONTRACT_LIMITS.md',
+              'docs/modules/cognitive.read/OPERATIONS.md',
               'docs/modules/cognitive.read/TECHNICAL.md',
+              'qualification/cognitive-read/golden/cognitive_read_vectors.json',
+              'scripts/emit-cognitive-read-qualification.py',
+              'scripts/hepta-implementation-maps.py',
               'scripts/verify-cognitive-read-constants.py',
+              'scripts/verify-cognitive-read-map.py',
           }
           objects = {
               entry['path']: entry
@@ -173,6 +189,9 @@ jobs:
           git rm .github/workflows/cognitive-read-map-materialize.yml
           git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
           git commit -m 'docs(cognitive.read): bind exact converged source map'
+          candidate="$(git rev-parse HEAD)"
           python3 scripts/verify-cognitive-read-constants.py
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$candidate"
           git diff --check HEAD~2..HEAD
+          test -z "$(git status --porcelain)"
           git push origin "HEAD:${GITHUB_REF_NAME}"
