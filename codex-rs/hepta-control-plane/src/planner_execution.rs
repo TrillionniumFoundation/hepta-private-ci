@@ -199,7 +199,8 @@ impl ControlRuntimeExecutionConsumerV1 {
         store: &mut PlannerStoreV1,
         receipt: &EffectTerminalReceiptV1,
     ) -> Result<ProductExecutionRecordV1, ProductExecutionErrorV1> {
-        if receipt.operation_identity_digest.is_zero() || receipt.observed_outcome_digest.is_zero() {
+        if receipt.operation_identity_digest.is_zero() || receipt.observed_outcome_digest.is_zero()
+        {
             return Err(ProductExecutionErrorV1::EmptyDigest("terminal receipt"));
         }
         let record = self.require_phase_mut(
@@ -356,11 +357,14 @@ mod tests {
     #[test]
     fn decision_authorization_dispatch_terminal_and_reconciliation_are_durable() {
         let directory = tempfile::tempdir().expect("tempdir");
-        let mut store = PlannerStoreV1::open(directory.path().join("planner.store")).expect("store");
+        let mut store =
+            PlannerStoreV1::open(directory.path().join("planner.store")).expect("store");
         let mut consumer = ControlRuntimeExecutionConsumerV1::new();
         let envelope = envelope();
         let identity = envelope.operation_identity_digest;
-        consumer.commit_decision(&mut store, &envelope).expect("decision");
+        consumer
+            .commit_decision(&mut store, &envelope)
+            .expect("decision");
         let request = request();
         consumer
             .record_authority_request(&mut store, identity, &request)

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.control-runtime-maturity.v1",
+  "module": "control.runtime",
+  "claimBoundary": "source candidate only",
+  "readOnlyAgentdCaller": "source_composed_candidate",
+  "globalPlannerCaller": "not_composed",
+  "productionWriter": "durable_store_source_candidate_not_composed",
+  "independentAuthorityConsumer": "source_contract_candidate_not_composed",
+  "effectExecutor": "not_composed",
+  "activation": false,
+  "independentAcceptance": false,
+  "release": false,
+  "subsystems": {
+    "planner": {
+      "source": "candidate_implemented",
+      "namedCaller": "agentd_read_only_context_adapter",
+      "productionGlobalCaller": "not_established"
+    },
+    "organHost": {
+      "source": "read_only_candidate_implemented",
+      "productionComposition": "not_established"
+    },
+    "embodimentReference": {
+      "source": "synthetic_reference_implemented",
+      "hardwareActivation": "not_established"
+    },
+    "plannerStore": {
+      "source": "candidate_implemented",
+      "productComposition": "not_established"
+    },
+    "executionClosure": {
+      "source": "authority_separated_candidate_implemented",
+      "namedConsumer": "ControlRuntimeExecutionConsumerV1",
+      "externalAuthorityAndExecutorComposition": "not_established"
+    }
+  },
+  "requiredEvidence": [
+    "source-head regression",
+    "synthetic-merge regression",
+    "control NDU caller regression",
+    "strict clippy",
+    "formatting",
+    "package tests",
+    "named-host qualification",
+    "independent semantic review",
+    "canary and rollback rehearsal"
+  ]
+}

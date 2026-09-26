@@ -540,7 +540,9 @@ pub enum PlannerError {
     InvalidTime(&'static str),
     LimitExceeded(&'static str),
     DuplicateOwner(String),
+    UnexpectedOwner(String),
     DuplicateCandidate(String),
+    DuplicatePayloadDigest(String),
     DuplicateResourceAxis(String),
     MixedObjective,
     MixedBodyGeneration,
@@ -568,8 +570,20 @@ impl fmt::Display for PlannerError {
             Self::InvalidTime(field) => write!(formatter, "invalid planner time: {field}"),
             Self::LimitExceeded(field) => write!(formatter, "planner limit exceeded: {field}"),
             Self::DuplicateOwner(owner) => write!(formatter, "duplicate owner summary: {owner}"),
+            Self::UnexpectedOwner(owner) => {
+                write!(
+                    formatter,
+                    "owner summary is outside the required owner set: {owner}"
+                )
+            }
             Self::DuplicateCandidate(candidate) => {
                 write!(formatter, "duplicate plan candidate: {candidate}")
+            }
+            Self::DuplicatePayloadDigest(candidate) => {
+                write!(
+                    formatter,
+                    "candidate {candidate} repeats a final payload digest"
+                )
             }
             Self::DuplicateResourceAxis(axis) => {
                 write!(formatter, "duplicate planner resource axis: {axis}")
@@ -659,6 +673,13 @@ pub fn collect_snapshot(
         if window[0].owner_id == window[1].owner_id {
             return Err(PlannerError::DuplicateOwner(window[0].owner_id.to_string()));
         }
+    }
+    let required_owners: BTreeSet<_> = request.required_owner_ids.iter().cloned().collect();
+    if let Some(summary) = owner_summaries
+        .iter()
+        .find(|summary| !required_owners.contains(&summary.owner_id))
+    {
+        return Err(PlannerError::UnexpectedOwner(summary.owner_id.to_string()));
     }
 
     let mut stale_owner_ids = Vec::new();
@@ -1085,7 +1106,15 @@ fn validate_candidates(
         candidate.required_owner_ids.sort();
         reject_duplicate_ids(&candidate.required_owner_ids, PlannerError::DuplicateOwner)?;
         candidate.final_payload_digests.sort();
-        candidate.final_payload_digests.dedup();
+        if candidate
+            .final_payload_digests
+            .windows(2)
+            .any(|window| window[0] == window[1])
+        {
+            return Err(PlannerError::DuplicatePayloadDigest(
+                candidate.candidate_id.to_string(),
+            ));
+        }
         candidate.resource_costs.sort();
         for window in candidate.resource_costs.windows(2) {
             if window[0].axis == window[1].axis {

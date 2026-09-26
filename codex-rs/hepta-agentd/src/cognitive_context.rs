@@ -14,6 +14,7 @@ use codex_hepta_cognitive_store::DurableCognitiveStoreError as CognitiveStoreErr
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_control_plane::ObservedContextV1;
+use codex_hepta_control_plane::VerifiedContextRecordV1;
 use codex_hepta_control_plane::plan_observed_context;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
@@ -35,6 +36,8 @@ use crate::CognitiveContextSnapshot;
 
 const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
+const CONTEXT_PLAN_OBSERVED_AT_MICROS: u64 = 1;
+const CONTEXT_PLAN_EXPIRES_AT_MICROS: u64 = 1_000_001;
 
 /// Only storage failures may invalidate the canonical SQLite owner. A revoked
 /// or unavailable optional ranker closes the ranked read, not other store ports.
@@ -358,13 +361,15 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     response.read_digest = selected_read_binding.to_string();
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let now_micros = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-            .as_micros(),
-    )
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    let verified_records = verified_context_records(&response.items)?;
+    let request_binding = context_request_binding(
+        owner,
+        body_generation,
+        request_id,
+        query,
+        expected_retrieval_context_digest,
+        downstream_policy_digest,
+    );
     let plan = plan_observed_context(ObservedContextV1 {
         owner_id: StableId::new(owner.as_str())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
@@ -372,21 +377,30 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
         source_snapshot_digest: selected_read.snapshot_digest(),
         read_digest: selected_read_binding,
-        verified_item_count: response.items.len() as u32,
+        request_binding_digest: request_binding,
+        verified_records: &verified_records,
         encoded_context: &encoded_context,
         maximum_context_bytes: MAX_CONTEXT_JSON_BYTES as u32,
-        observed_at_micros: now_micros,
-        expires_at_micros: now_micros.checked_add(1_000_000).ok_or_else(|| {
-            CognitiveStoreError::Invalid("context plan expiry overflow".to_string())
-        })?,
+        observed_at_micros: CONTEXT_PLAN_OBSERVED_AT_MICROS,
+        expires_at_micros: CONTEXT_PLAN_EXPIRES_AT_MICROS,
     })
     .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    let receipt_digest = plan.evaluation.plan.receipt_digest();
+    let final_use_binding = context_plan_final_use_binding(
+        plan.context_digest,
+        receipt_digest,
+        request_binding,
+        selected_read_binding,
+        plan.read_allowed,
+    );
     if !plan.read_allowed {
         response.items.clear();
     }
     response.plan = Some(CognitiveContextPlan {
         evaluated_context_digest: plan.context_digest.to_string(),
-        plan_receipt_digest: plan.evaluation.plan.receipt_digest().to_string(),
+        plan_receipt_digest: receipt_digest.to_string(),
+        request_binding_digest: request_binding.to_string(),
+        final_use_binding_digest: final_use_binding.to_string(),
         read_allowed: plan.read_allowed,
     });
     if serde_json::to_vec(&response)
@@ -537,22 +551,22 @@ pub(crate) async fn revalidate_with_retrieval_context(
         )
         .into());
     }
-    if plan.read_allowed {
-        let pre_plan = CognitiveContextSnapshot {
-            snapshot_digest: snapshot_digest.to_string(),
-            read_digest: read_digest.to_string(),
-            omitted_records,
-            items: items.to_vec(),
-            plan: None,
-        };
-        let encoded = serde_json::to_vec(&pre_plan)
-            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-        if Digest32::of_bytes(&encoded).to_string() != plan.evaluated_context_digest {
-            return Err(CognitiveStoreError::Conflict(
-                "cognitive context ordered payload changed before final use".to_string(),
-            )
-            .into());
-        }
+    let pre_plan = CognitiveContextSnapshot {
+        snapshot_digest: snapshot_digest.to_string(),
+        read_digest: read_digest.to_string(),
+        omitted_records,
+        items: items.to_vec(),
+        plan: None,
+    };
+    let encoded = serde_json::to_vec(&pre_plan)
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    if plan.read_allowed
+        && Digest32::of_bytes(&encoded).to_string() != plan.evaluated_context_digest
+    {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive context ordered payload changed before final use".to_string(),
+        )
+        .into());
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
@@ -618,6 +632,62 @@ pub(crate) async fn revalidate_with_retrieval_context(
         }
     }
 
+    let evaluated_context_digest: Digest32 =
+        plan.evaluated_context_digest.parse().map_err(|error| {
+            CognitiveStoreError::Invalid(format!("invalid evaluated context digest: {error}"))
+        })?;
+    let plan_receipt_digest: Digest32 = plan.plan_receipt_digest.parse().map_err(|error| {
+        CognitiveStoreError::Invalid(format!("invalid plan receipt digest: {error}"))
+    })?;
+    let request_binding_digest: Digest32 =
+        plan.request_binding_digest.parse().map_err(|error| {
+            CognitiveStoreError::Invalid(format!("invalid request binding digest: {error}"))
+        })?;
+    let expected_final_use_binding: Digest32 =
+        plan.final_use_binding_digest.parse().map_err(|error| {
+            CognitiveStoreError::Invalid(format!("invalid final-use binding digest: {error}"))
+        })?;
+    let actual_final_use_binding = context_plan_final_use_binding(
+        evaluated_context_digest,
+        plan_receipt_digest,
+        request_binding_digest,
+        current_read_binding,
+        plan.read_allowed,
+    );
+    if actual_final_use_binding != expected_final_use_binding {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive context plan receipt binding changed before final use".to_string(),
+        )
+        .into());
+    }
+    if plan.read_allowed {
+        let verified_records = verified_context_records(items)?;
+        let replay = plan_observed_context(ObservedContextV1 {
+            owner_id: StableId::new(owner.as_str())
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+            body_generation: Generation::new(body_generation)
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+            source_snapshot_digest: expected_snapshot,
+            read_digest: current_read_binding,
+            request_binding_digest,
+            verified_records: &verified_records,
+            encoded_context: &encoded,
+            maximum_context_bytes: MAX_CONTEXT_JSON_BYTES as u32,
+            observed_at_micros: CONTEXT_PLAN_OBSERVED_AT_MICROS,
+            expires_at_micros: CONTEXT_PLAN_EXPIRES_AT_MICROS,
+        })
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+        if !replay.read_allowed
+            || replay.context_digest != evaluated_context_digest
+            || replay.evaluation.plan.receipt_digest() != plan_receipt_digest
+        {
+            return Err(CognitiveStoreError::Conflict(
+                "cognitive context planner receipt does not replay at final use".to_string(),
+            )
+            .into());
+        }
+    }
+
     // Ranking is part of the selected context semantics. A registry/model
     // revocation after response publication must close final use even when the
     // underlying memory rows remain unchanged.
@@ -636,6 +706,66 @@ pub(crate) async fn revalidate_with_retrieval_context(
             CognitiveStoreError::Invalid(format!("invalid context item count: {error}"))
         })?,
     })
+}
+
+fn verified_context_records(
+    items: &[CognitiveContextItem],
+) -> Result<Vec<VerifiedContextRecordV1>, CognitiveContextError> {
+    items
+        .iter()
+        .map(|item| {
+            Ok(VerifiedContextRecordV1 {
+                record_id: StableId::new(item.memory_id.as_str())
+                    .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+                revision: codex_hepta_types::Revision::new(item.revision)
+                    .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+                content_digest: item.content_sha256.parse().map_err(|error| {
+                    CognitiveStoreError::Invalid(format!(
+                        "invalid cognitive content digest: {error}"
+                    ))
+                })?,
+            })
+        })
+        .collect()
+}
+
+fn context_request_binding(
+    owner: &AgentId,
+    body_generation: u64,
+    request_id: Option<u64>,
+    query: &str,
+    retrieval_context_digest: Option<Digest32>,
+    ranker_policy_digest: Option<Digest32>,
+) -> Digest32 {
+    let mut bytes = b"hepta.agentd.cognitive-context-request.v1\0".to_vec();
+    bytes.extend_from_slice(owner.as_str().as_bytes());
+    bytes.extend_from_slice(&body_generation.to_be_bytes());
+    bytes.push(u8::from(request_id.is_some()));
+    bytes.extend_from_slice(&request_id.unwrap_or_default().to_be_bytes());
+    bytes.extend_from_slice(Digest32::of_bytes(query.as_bytes()).as_array());
+    bytes.extend_from_slice(
+        retrieval_context_digest
+            .unwrap_or(Digest32::ZERO)
+            .as_array(),
+    );
+    bytes.extend_from_slice(ranker_policy_digest.unwrap_or(Digest32::ZERO).as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn context_plan_final_use_binding(
+    evaluated_context_digest: Digest32,
+    plan_receipt_digest: Digest32,
+    request_binding_digest: Digest32,
+    read_binding_digest: Digest32,
+    read_allowed: bool,
+) -> Digest32 {
+    let mut bytes = b"hepta.agentd.cognitive-context-final-use.v1\0".to_vec();
+    bytes.extend_from_slice(evaluated_context_digest.as_array());
+    bytes.extend_from_slice(plan_receipt_digest.as_array());
+    bytes.extend_from_slice(request_binding_digest.as_array());
+    bytes.extend_from_slice(read_binding_digest.as_array());
+    bytes.push(u8::from(read_allowed));
+    Digest32::of_bytes(&bytes)
 }
 
 /// Bind the selected exact-ID receipt to the complete durable owner cut.

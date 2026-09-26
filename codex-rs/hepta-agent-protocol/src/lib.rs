@@ -800,6 +800,8 @@ pub struct CognitiveContextPlan {
     /// Binds the evaluated context with `plan: null`, before any abstention.
     pub evaluated_context_digest: String,
     pub plan_receipt_digest: String,
+    pub request_binding_digest: String,
+    pub final_use_binding_digest: String,
     pub read_allowed: bool,
 }
 

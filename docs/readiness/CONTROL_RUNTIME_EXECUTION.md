@@ -323,3 +323,21 @@ global revocation frontier. Existing host authorization and generation checks
 remain required before and after the read. Context bytes exclude the planning
 metadata to avoid a self-referential digest; the host separately bounds the final
 response envelope. Neither helper grants effects or proves long-term improvement.
+
+
+## Production-closure source candidate
+
+The request-local Agentd adapter now derives utility count from canonical
+record-id/revision/content-digest bindings. Its request binding covers caller,
+body generation, request identity, query digest, retrieval context and applied
+ranker policy. Planning uses a request-local monotonic logical clock rather than
+Unix wall time. Final use always validates a binding that includes the exact plan
+receipt digest; an allowed read additionally replays the planner against the
+current owner cut and exact record bindings.
+
+The repository also contains a durable `PlannerStoreV1` and the named
+`ControlRuntimeExecutionConsumerV1` source candidate. These close the source-level
+sequence from durable decision through independent authorization, dispatch,
+terminal receipt and reconciliation. They do not establish an activated product
+writer, external authority service, effect executor, independent acceptance,
+canary, promotion or release.

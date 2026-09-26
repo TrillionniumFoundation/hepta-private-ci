@@ -245,14 +245,19 @@ impl PlannerStoreV1 {
         file.read_to_end(&mut bytes)?;
         let scan = scan_store(&bytes)?;
         if scan.complete_bytes < bytes.len() {
-            file.set_len(u64::try_from(scan.complete_bytes).map_err(|_| PlannerStoreError::LengthOverflow)?)?;
+            file.set_len(
+                u64::try_from(scan.complete_bytes)
+                    .map_err(|_| PlannerStoreError::LengthOverflow)?,
+            )?;
             file.sync_all()?;
         }
         file.seek(SeekFrom::End(0))?;
-        let next_sequence = scan
-            .records
-            .last()
-            .map_or(Ok(1), |record| record.sequence.checked_add(1).ok_or(PlannerStoreError::LengthOverflow))?;
+        let next_sequence = scan.records.last().map_or(Ok(1), |record| {
+            record
+                .sequence
+                .checked_add(1)
+                .ok_or(PlannerStoreError::LengthOverflow)
+        })?;
         Ok(Self {
             path,
             lock_path,
@@ -355,10 +360,12 @@ impl PlannerStoreV1 {
         self.file = OpenOptions::new().read(true).write(true).open(&self.path)?;
         self.file.seek(SeekFrom::End(0))?;
         self.records = retained;
-        self.next_sequence = self
-            .records
-            .last()
-            .map_or(Ok(1), |record| record.sequence.checked_add(1).ok_or(PlannerStoreError::LengthOverflow))?;
+        self.next_sequence = self.records.last().map_or(Ok(1), |record| {
+            record
+                .sequence
+                .checked_add(1)
+                .ok_or(PlannerStoreError::LengthOverflow)
+        })?;
         Ok(())
     }
 
@@ -473,7 +480,9 @@ fn scan_store(bytes: &[u8]) -> Result<StoreScan, PlannerStoreError> {
         let payload = bytes[cursor..end].to_vec();
         let expected_sequence = records
             .last()
-            .map_or(sequence, |record: &PlannerStoreRecordV1| record.sequence + 1);
+            .map_or(sequence, |record: &PlannerStoreRecordV1| {
+                record.sequence + 1
+            });
         if sequence == 0 || sequence != expected_sequence {
             return Err(PlannerStoreError::CorruptSequence);
         }
@@ -666,7 +675,9 @@ mod tests {
             store
                 .append(PlannerStoreRecordKindV1::TerminalReceipt, b"terminal")
                 .expect("terminal");
-            store.append_checkpoint(b"signed-anchor").expect("checkpoint");
+            store
+                .append_checkpoint(b"signed-anchor")
+                .expect("checkpoint");
             store.backup(&backup).expect("backup");
             store.compact(2).expect("compact");
             assert_eq!(store.records().len(), 2);
@@ -696,7 +707,9 @@ mod tests {
         drop(store);
         let mut reopened = PlannerStoreV1::open(&path).expect("recover partial tail");
         assert!(reopened.records().is_empty());
-        reopened.append_decision(&envelope()).expect("append after recovery");
+        reopened
+            .append_decision(&envelope())
+            .expect("append after recovery");
     }
 
     #[test]

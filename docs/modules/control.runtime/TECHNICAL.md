@@ -340,3 +340,24 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 - `codex-rs/hepta-control-plane`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. As-built subsystem maturity and production closure
+
+`docs/modules/control.runtime/MATURITY.json` is the machine-readable as-built
+maturity source. The module is split operationally into planner, read-only organ
+host, embodiment reference, durable planner store and authority-separated
+execution closure. Agentd's bounded cognitive-context caller is a source-composed
+read-only candidate. The global planner caller, external authority service,
+effect executor, activated production writer, independent acceptance, canary,
+promotion and release remain unestablished.
+
+`PlannerStoreV1` stores the complete canonical decision envelope, not only its
+digest. It uses a versioned file header, exclusive writer lock, bounded framed
+records, payload and frame checksums, file and directory synchronization,
+partial-tail recovery, atomic compaction/backup/restore, deterministic legacy
+migration and externally supplied checkpoint receipts. `ControlRuntimeExecutionConsumerV1`
+requires a durable decision before an authority request, consumes a separately
+issued current-state authorization, records dispatch and terminal outcomes, and
+requires explicit reconciliation of indeterminate effects. Neither type issues
+a capability or activates an effect boundary by itself.

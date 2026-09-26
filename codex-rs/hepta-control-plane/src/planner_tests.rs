@@ -452,3 +452,29 @@ fn resource_profile_and_snapshot_policy_are_mandatory_and_digest_bound() {
         PlannerError::PreparedPlanMismatch
     );
 }
+
+#[test]
+fn extra_owner_summary_is_rejected_instead_of_poisoning_required_snapshot() {
+    let mut request = snapshot_request();
+    let required = request.required_owner_ids[0].clone();
+    let mut summaries = vec![owner_summary(required)];
+    summaries.push(owner_summary(
+        StableId::new("unexpected-owner").expect("owner"),
+    ));
+    assert!(matches!(
+        collect_snapshot(request, summaries),
+        Err(PlannerError::UnexpectedOwner(owner)) if owner == "unexpected-owner"
+    ));
+}
+
+#[test]
+fn duplicate_final_payload_digest_is_rejected_not_silently_normalized() {
+    let snapshot = coherent_snapshot();
+    let mut request = planning_request();
+    let payload = Digest32::of_bytes(b"duplicate-payload");
+    request.candidates[0].final_payload_digests = vec![payload, payload];
+    assert!(matches!(
+        prepare_plan(&snapshot, request),
+        Err(PlannerError::DuplicatePayloadDigest(_))
+    ));
+}

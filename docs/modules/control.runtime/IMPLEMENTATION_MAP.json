@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "read_only_source_composed_candidate",
+  "productionWriterState": "durable_store_source_candidate_not_product_composed",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -213,9 +213,9 @@
     "nativePlanningKernel": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
-    "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "productionCaller": "read_only_candidate_only",
+    "productionWriter": "source_candidate_not_composed",
+    "exactHeadQualification": "required_after_this_change",
     "independentAcceptanceState": "not_established",
     "activationState": "not_established",
     "releaseState": "not_established"
@@ -251,5 +251,30 @@
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "globalPlannerCallerState": "not_composed",
+  "subsystemMaturity": {
+    "planner": {
+      "source": "candidate_implemented",
+      "namedCaller": "agentd_read_only_context_adapter",
+      "productionGlobalCaller": "not_established"
+    },
+    "organHost": {
+      "source": "read_only_candidate_implemented",
+      "productionComposition": "not_established"
+    },
+    "embodimentReference": {
+      "source": "synthetic_reference_implemented",
+      "hardwareActivation": "not_established"
+    },
+    "plannerStore": {
+      "source": "candidate_implemented",
+      "productComposition": "not_established"
+    },
+    "executionClosure": {
+      "source": "authority_separated_candidate_implemented",
+      "namedConsumer": "ControlRuntimeExecutionConsumerV1",
+      "externalAuthorityAndExecutorComposition": "not_established"
+    }
+  }
 }
