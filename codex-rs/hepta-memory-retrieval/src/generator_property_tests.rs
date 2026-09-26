@@ -96,9 +96,8 @@ fn batch(count: usize) -> RetrievalGeneratorBatchV1 {
 #[test]
 fn property_receipt_count_matches_candidates_at_all_representative_bounds() {
     for count in [0_usize, 1, 2, 7, 16, 31, 32, 127, 255, 511, 512] {
-        let batch = batch(count);
-        batch.validate().expect("matching receipt");
-        let input = GeneratedCandidateInputV1::new(vec![batch]).expect("generated input");
+        let input = GeneratedCandidateInputV1::new(vec![batch(count)])
+            .expect("matching receipt");
         assert_eq!(
             input.flattened_candidates().expect("flattened").len(),
             count
@@ -114,8 +113,8 @@ fn property_receipt_count_matches_candidates_at_all_representative_bounds() {
 #[test]
 fn property_any_receipt_count_drift_fails_closed() {
     for count in [0_usize, 1, 2, 31, 32, 255, 511] {
-        let mut batch = batch(count);
-        batch.receipt = RetrievalGeneratorReceiptV1::new(
+        let mut candidate_batch = batch(count);
+        candidate_batch.receipt = RetrievalGeneratorReceiptV1::new(
             RetrievalGeneratorOwnerV1::CognitiveLexical,
             snapshot_key().vector_digest,
             digest(&format!("owner-generation:mismatch:{count}")),
@@ -124,7 +123,7 @@ fn property_any_receipt_count_drift_fails_closed() {
         )
         .expect("structurally valid receipt");
         assert_eq!(
-            batch.validate(),
+            GeneratedCandidateInputV1::new(vec![candidate_batch]),
             Err(GeneratorErrorV1::CandidateCountMismatch)
         );
     }
