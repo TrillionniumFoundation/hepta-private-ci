@@ -134,6 +134,7 @@ struct Ports {
     calls: Vec<CanonicalStageV1>,
     abstain: bool,
     wrong_owner: Option<CanonicalStageV1>,
+    selected_candidate: StableId,
 }
 
 impl Ports {
@@ -142,6 +143,7 @@ impl Ports {
             calls: Vec::new(),
             abstain: false,
             wrong_owner: None,
+            selected_candidate: id("action:one"),
         }
     }
 
@@ -210,7 +212,7 @@ impl CanonicalOwnerPortsV1 for Ports {
             CanonicalPortDecisionV1::Abstained
         } else {
             CanonicalPortDecisionV1::Selected {
-                candidate_id: id("action:one"),
+                candidate_id: self.selected_candidate.clone(),
                 propensity: ProbabilityQ32::ONE,
             }
         };
@@ -333,5 +335,18 @@ fn legal_candidate_set_rejects_replay_identity_with_duplicate_semantics() {
     assert_eq!(
         build_legal_candidates(value).expect_err("duplicate must reject"),
         CanonicalIntelligenceError::DuplicateCandidate(id("action:one"))
+    );
+}
+
+#[test]
+fn malicious_intuition_cannot_select_outside_the_legal_candidate_set() {
+    let request = request();
+    let mut oracle = Oracle::new(&request.snapshot);
+    let mut ports = Ports::new();
+    ports.selected_candidate = id("action:not-legal");
+    assert_eq!(
+        prepare_intelligence_run(request, &mut ports, &mut oracle)
+            .expect_err("out-of-set selection must fail closed"),
+        CanonicalIntelligenceError::SelectedCandidateNotLegal(id("action:not-legal"))
     );
 }

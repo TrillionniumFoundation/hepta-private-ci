@@ -489,7 +489,8 @@ fn parse_id(value: &str) -> Result<StableId, AgentdIntelligenceLearningErrorV1> 
 }
 
 fn parse_digest(value: &str) -> Result<Digest32, AgentdIntelligenceLearningErrorV1> {
-    let value = Digest32::from_str(value).map_err(|_| AgentdIntelligenceLearningErrorV1::Binding)?;
+    let value =
+        Digest32::from_str(value).map_err(|_| AgentdIntelligenceLearningErrorV1::Binding)?;
     if value.is_zero() {
         return Err(AgentdIntelligenceLearningErrorV1::Binding);
     }
@@ -541,7 +542,11 @@ impl From<&ProductionDecisionV2> for DecisionWireV1 {
             run_snapshot_digest: value.run_snapshot_digest.to_string(),
             objective_digest: value.objective_digest.to_string(),
             policy_digest: value.policy_digest.to_string(),
-            candidate_ids: value.candidate_ids.iter().map(ToString::to_string).collect(),
+            candidate_ids: value
+                .candidate_ids
+                .iter()
+                .map(ToString::to_string)
+                .collect(),
             selected_candidate_id: value.selected_candidate_id.to_string(),
             selected_propensity: value.selected_propensity.raw(),
             completeness: CompletenessWireV1::from(&value.completeness),
@@ -772,7 +777,10 @@ impl From<&AuthenticatedOutcomeV1> for OutcomeWireV1 {
                 OutcomeTerminalityV1::Terminal => "terminal",
             }
             .to_string(),
-            censoring_reason: value.watermark.censoring_reason.map(|value| value.to_string()),
+            censoring_reason: value
+                .watermark
+                .censoring_reason
+                .map(|value| value.to_string()),
             correction_predecessor: value
                 .watermark
                 .correction_predecessor
@@ -797,9 +805,7 @@ impl TryFrom<OutcomeWireV1> for AuthenticatedOutcomeV1 {
             support_digest: parse_digest(&value.support_digest)?,
             watermark: OutcomeWatermarkV1 {
                 latest_observable_at: value.latest_observable_at,
-                expected_delay_profile_digest: parse_digest(
-                    &value.expected_delay_profile_digest,
-                )?,
+                expected_delay_profile_digest: parse_digest(&value.expected_delay_profile_digest)?,
                 terminality: match value.terminality.as_str() {
                     "pending" => OutcomeTerminalityV1::Pending,
                     "censored" => OutcomeTerminalityV1::Censored,

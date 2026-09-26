@@ -93,6 +93,7 @@ pub struct AgentdConfig {
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    canonical_intelligence_profile: Option<crate::AgentdCanonicalIntelligenceProfileV1>,
 }
 
 impl AgentdConfig {
@@ -215,6 +216,7 @@ impl AgentdConfig {
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
+            canonical_intelligence_profile: None,
         })
     }
 
@@ -532,6 +534,30 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Attach the all-or-none product profile. A complete profile is the only
+    /// configuration that can advertise `intelligence.canonical_v1`.
+    pub fn with_canonical_intelligence_profile(
+        mut self,
+        profile: crate::AgentdCanonicalIntelligenceProfileV1,
+    ) -> Result<Self, AgentdError> {
+        if self.canonical_intelligence_profile.is_some()
+            || self.intelligence_product_runner.is_some()
+            || self.intelligence_invocation_provider.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence profile conflicts with a partial configuration".to_string(),
+            ));
+        }
+        self.canonical_intelligence_profile = Some(profile);
+        Ok(self)
+    }
+
+    pub(crate) fn take_canonical_intelligence_profile(
+        &mut self,
+    ) -> Option<crate::AgentdCanonicalIntelligenceProfileV1> {
+        self.canonical_intelligence_profile.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

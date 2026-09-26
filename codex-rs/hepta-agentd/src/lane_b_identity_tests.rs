@@ -64,7 +64,9 @@ fn runtime_generation_binding_is_monotonic() {
         ..composition()
     })
     .expect("compose starting generation");
-    coordinator.bind_agentd_generation(42).expect("enter Running");
+    coordinator
+        .bind_agentd_generation(42)
+        .expect("enter Running");
     assert_eq!(coordinator.composition().agentd_generation, 42);
     assert_eq!(
         coordinator.bind_agentd_generation(41),

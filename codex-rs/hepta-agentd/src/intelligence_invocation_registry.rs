@@ -119,9 +119,7 @@ impl RegisteredAgentdIntelligenceInvocationProviderV1 {
     }
 }
 
-impl AgentdIntelligenceInvocationProviderV1
-    for RegisteredAgentdIntelligenceInvocationProviderV1
-{
+impl AgentdIntelligenceInvocationProviderV1 for RegisteredAgentdIntelligenceInvocationProviderV1 {
     fn build(
         &self,
         identity: &AgentdIdentity,

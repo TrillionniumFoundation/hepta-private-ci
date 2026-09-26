@@ -77,38 +77,44 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let candidate_ids = request
+        let mut candidate_ids = request
             .legal_candidates
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
-        let intuition_ids = inputs
+        let mut intuition_ids = inputs
             .intuition_request
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
+        candidate_ids.sort();
+        intuition_ids.sort();
         if candidate_ids != intuition_ids {
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
-        // Freeze the identity of the existing owner, never a new coordinator
-        // or a caller-selected body/model generation. Agentd validates this
-        // fence again at the actual admission and attachment boundary.
-        let generation = composition.agentd_generation;
-        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
+        // Inherit the exact durable ObjectiveStart identity. The cognition
+        // worker may not synthesize request/body/artifact/deadline identities.
+        let run_start = inputs.run_start.clone();
         let snapshot = request.snapshot.clone();
+        if run_start.generation != composition.agentd_generation
+            || run_start.fence_digest.to_string() != composition.expected_run_fence_digest()
+            || run_start.run_start_binding_digest != snapshot.configuration_digest()
+            || run_start.generation != snapshot.body_generation().get()
+        {
+            return Err(AgentdIntelligenceProductError::Run(
+                crate::AgentRunError::InvalidCompositionIdentity("durable intelligence run-start"),
+            ));
+        }
         let timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
-        let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
-        let deadline_ms = started_ms
-            .checked_add(timeout_ms.max(1))
-            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        if run_start.deadline_ms <= started_ms {
+            return Err(AgentdIntelligenceProductError::Run(
+                crate::AgentRunError::InvalidDeadline,
+            ));
+        }
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
         let evaluation_session = match inputs.signed_evaluation.take() {
@@ -159,22 +165,19 @@ impl AgentdIntelligenceProductRunnerV1 {
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
+                bytes.extend_from_slice(run_start.run_start_binding_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
                 let dispatch_proposal_digest = Digest32::of_bytes(&bytes);
-                let mut body = b"hepta.agentd.intelligence-body.v1\0".to_vec();
-                body.extend_from_slice(snapshot.digest().as_array());
-                body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
-                let body_digest = Digest32::of_bytes(&body);
                 let run_snapshot = crate::AgentRunSnapshot {
                     run_id: envelope.run_id.to_string(),
-                    request_digest: envelope.trace_digest.to_string(),
+                    request_digest: run_start.request_digest.to_string(),
                     objective_digest: envelope.objective_digest.to_string(),
-                    body_digest: body_digest.to_string(),
-                    artifact_set_digest: snapshot.digest().to_string(),
+                    body_digest: run_start.runtime_body_digest.to_string(),
+                    artifact_set_digest: run_start.artifact_set_digest.to_string(),
                     authority_epoch: snapshot.authority_epoch(),
-                    generation,
-                    fence_digest,
-                    deadline_ms,
+                    generation: run_start.generation,
+                    fence_digest: run_start.fence_digest.to_string(),
+                    deadline_ms: run_start.deadline_ms,
                 };
                 let context_attachment = crate::AgentContextAttachment {
                     run_id: run_snapshot.run_id.clone(),

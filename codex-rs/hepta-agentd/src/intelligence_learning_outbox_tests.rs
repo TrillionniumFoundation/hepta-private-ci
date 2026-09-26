@@ -57,7 +57,10 @@ fn prepared_intent_survives_reopen_and_exact_retry_is_idempotent() {
     let final_view = IntelligenceLearningOutboxV1::open(path).expect("terminal reopen");
     assert_eq!(final_view.backlog(), 0);
     assert_eq!(
-        final_view.record(&first.intent_id).expect("terminal row").state,
+        final_view
+            .record(&first.intent_id)
+            .expect("terminal row")
+            .state,
         IntelligenceLearningOutboxStateV1::Acknowledged
     );
 }
@@ -100,7 +103,10 @@ fn indeterminate_append_reconciles_only_to_an_explicit_terminal_state() {
             digest("reconciled-receipt"),
         )
         .expect("reconciled");
-    assert_eq!(acknowledged.state, IntelligenceLearningOutboxStateV1::Acknowledged);
+    assert_eq!(
+        acknowledged.state,
+        IntelligenceLearningOutboxStateV1::Acknowledged
+    );
     assert!(matches!(
         outbox.transition(
             &value.intent_id,

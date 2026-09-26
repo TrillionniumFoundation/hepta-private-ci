@@ -35,6 +35,12 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
         std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    pub(crate) intelligence_learning:
+        std::sync::OnceLock<Arc<crate::AgentdIntelligenceLearningHostV1>>,
+    pub(crate) intelligence_observability:
+        std::sync::OnceLock<Arc<crate::AgentdIntelligenceObservabilityV1>>,
+    pub(crate) intelligence_outcomes:
+        std::sync::OnceLock<Arc<crate::RegisteredAgentdIntelligenceOutcomeProviderV1>>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -130,6 +136,9 @@ impl AgentdState {
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
+            intelligence_learning: std::sync::OnceLock::new(),
+            intelligence_observability: std::sync::OnceLock::new(),
+            intelligence_outcomes: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
@@ -353,39 +362,52 @@ impl AgentdState {
             )));
         }
 
-        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if runtime.current_generation != record.lifecycle.generation
-            || runtime.lifecycle != record.lifecycle.lifecycle
+        let mut lifecycle_change = None;
+        let mut begin_drain = false;
         {
-            runtime.current_generation = record.lifecycle.generation;
-            runtime.lifecycle = record.lifecycle.lifecycle;
-            if runtime.lifecycle != AgentLifecycle::Running {
-                runtime.admission_open = false;
-            }
-            if matches!(
-                runtime.lifecycle,
-                AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
-            ) {
-                runtime.app_server_ready = false;
-                runtime.required_ports_ready = false;
-            }
-            if runtime.lifecycle == AgentLifecycle::Running
-                && runtime.app_server_ready
-                && runtime.critical_stores_ready
-                && runtime.revocation_ready
-                && runtime.required_ports_ready
-                && !runtime.fenced
+            let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.current_generation != record.lifecycle.generation
+                || runtime.lifecycle != record.lifecycle.lifecycle
             {
-                runtime.admission_open = true;
+                runtime.current_generation = record.lifecycle.generation;
+                runtime.lifecycle = record.lifecycle.lifecycle;
+                if runtime.lifecycle != AgentLifecycle::Running {
+                    runtime.admission_open = false;
+                }
+                if matches!(
+                    runtime.lifecycle,
+                    AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
+                ) {
+                    runtime.app_server_ready = false;
+                    runtime.required_ports_ready = false;
+                }
+                if runtime.lifecycle == AgentLifecycle::Running
+                    && runtime.app_server_ready
+                    && runtime.critical_stores_ready
+                    && runtime.revocation_ready
+                    && runtime.required_ports_ready
+                    && !runtime.fenced
+                {
+                    runtime.admission_open = true;
+                }
+                lifecycle_change = Some((runtime.lifecycle, runtime.current_generation));
+                begin_drain = runtime.lifecycle == AgentLifecycle::Draining;
             }
+        }
+        if let Some((lifecycle, generation)) = lifecycle_change {
+            self.runs
+                .lock()
+                .map_err(poisoned_state)?
+                .bind_agentd_generation(generation)
+                .map_err(run_error)?;
             self.events
                 .lock()
                 .map_err(poisoned_state)?
                 .push(AgentdEventKind::Lifecycle {
-                    lifecycle: record.lifecycle.lifecycle,
-                    generation: record.lifecycle.generation,
+                    lifecycle,
+                    generation,
                 });
-            if runtime.lifecycle == AgentLifecycle::Draining {
+            if begin_drain {
                 self.runs
                     .lock()
                     .map_err(poisoned_state)?
@@ -567,7 +589,11 @@ impl AgentdState {
             && !runtime.fenced)
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
-        self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
+        self.intelligence_product.get().is_some()
+            && self.intelligence_invocation.get().is_some()
+            && self.intelligence_learning.get().is_some()
+            && self.intelligence_observability.get().is_some()
+            && self.intelligence_outcomes.get().is_some()
     }
 
     /// Prepare the exact durable Objective through the configured canonical
@@ -798,11 +824,11 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    crate::lane_b_runtime::run_fence_digest(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
 }
 
 fn unix_now_ms() -> Result<u64, AgentdError> {

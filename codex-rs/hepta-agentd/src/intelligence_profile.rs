@@ -32,9 +32,7 @@ impl AgentdCanonicalIntelligenceProfileV1 {
         observability: Arc<AgentdIntelligenceObservabilityV1>,
         outcomes: Arc<RegisteredAgentdIntelligenceOutcomeProviderV1>,
     ) -> Result<Self, AgentdError> {
-        if profile_digest.is_zero()
-            || observability.capability_profile_digest() != profile_digest
-        {
+        if profile_digest.is_zero() || observability.capability_profile_digest() != profile_digest {
             return Err(AgentdError::Invalid(
                 "canonical intelligence profile identity is invalid".to_string(),
             ));

@@ -281,6 +281,40 @@ impl LedgerWriter {
         }
     }
 
+    /// Verify the complete active intelligence Decision identity before an
+    /// Outcome append. This closes run/episode-only substitution: snapshot,
+    /// selected candidate and decision support must all match the active fact.
+    pub fn verify_active_intelligence_decision_binding(
+        &self,
+        record_id: &StableId,
+        episode_id: &StableId,
+        run_snapshot_digest: Digest32,
+        selected_candidate_id: &StableId,
+        decision_digest: Digest32,
+    ) -> Result<(), ProductionLedgerError> {
+        let ledger = self.backend.core()?;
+        if ledger
+            .active_record_by_id(record_id)?
+            .is_some_and(|record| {
+                matches!(
+                    &record.event,
+                    LedgerEvent::AuthenticatedDecisionV2(value)
+                        if &value.record_id == record_id
+                            && &value.episode_id == episode_id
+                            && value.run_snapshot_digest == run_snapshot_digest
+                            && &value.selected_candidate_id == selected_candidate_id
+                            && value.support_digest == decision_digest
+                )
+            })
+        {
+            Ok(())
+        } else {
+            Err(ProductionLedgerError::Binding(
+                "active intelligence decision binding",
+            ))
+        }
+    }
+
     pub fn witness_frontier(&self) -> Result<LedgerWitnessFrontier, ProductionLedgerError> {
         self.witness.frontier().map_err(Into::into)
     }

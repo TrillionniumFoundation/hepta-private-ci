@@ -491,6 +491,8 @@ pub enum CanonicalIntelligenceError {
     EmptyDigest(&'static str),
     AuthorityWidening,
     UnexpectedDecision,
+    SelectedCandidateNotLegal(StableId),
+    InvalidSelectedPropensity,
     Arithmetic,
 }
 
@@ -560,9 +562,10 @@ pub fn build_legal_candidates(
 
 pub fn decide_boundary(
     run_id: &StableId,
-    candidate_set_digest: Digest32,
+    candidate_set: &LegalActionCandidateSetV1,
     intuition: &CanonicalPortReceiptV1,
 ) -> Result<AdvisoryDecisionReceiptV1, CanonicalIntelligenceError> {
+    let candidate_set_digest = candidate_set.candidate_set_digest;
     if intuition.stage != CanonicalStageV1::IntuitionDecided {
         return Err(CanonicalIntelligenceError::StageMismatch);
     }
@@ -579,10 +582,24 @@ pub fn decide_boundary(
         CanonicalPortDecisionV1::Selected {
             candidate_id,
             propensity,
-        } => AdvisoryDecisionV1::Selected {
-            candidate_id: candidate_id.clone(),
-            propensity: *propensity,
-        },
+        } => {
+            if propensity.raw() == 0 {
+                return Err(CanonicalIntelligenceError::InvalidSelectedPropensity);
+            }
+            if !candidate_set
+                .candidates
+                .iter()
+                .any(|candidate| &candidate.candidate_id == candidate_id)
+            {
+                return Err(CanonicalIntelligenceError::SelectedCandidateNotLegal(
+                    candidate_id.clone(),
+                ));
+            }
+            AdvisoryDecisionV1::Selected {
+                candidate_id: candidate_id.clone(),
+                propensity: *propensity,
+            }
+        }
         CanonicalPortDecisionV1::Abstained => AdvisoryDecisionV1::Abstained,
         CanonicalPortDecisionV1::SlowPath => AdvisoryDecisionV1::SlowPath,
         CanonicalPortDecisionV1::Continue => {
@@ -709,7 +726,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         CanonicalStageV1::IntuitionDecided,
         |ports: &mut P, input| ports.decide_intuition(input)
     );
-    let decision = decide_boundary(&request.run_id, legal.candidate_set_digest, &intuition)?;
+    let decision = decide_boundary(&request.run_id, &legal, &intuition)?;
 
     match decision.decision {
         AdvisoryDecisionV1::Abstained | AdvisoryDecisionV1::SlowPath => {

@@ -10,9 +10,9 @@ use std::sync::Mutex;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use crate::AgentdIntelligenceOutcomeAppendV1;
-use crate::AgentdIntelligenceObservabilityV1;
 use crate::AgentdIntelligenceLearningErrorV1;
+use crate::AgentdIntelligenceObservabilityV1;
+use crate::AgentdIntelligenceOutcomeAppendV1;
 
 pub const MAX_PENDING_INTELLIGENCE_OUTCOMES: usize = 256;
 

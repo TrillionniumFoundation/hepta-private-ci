@@ -44,12 +44,12 @@ pub enum IntelligenceLearningOutboxStateV1 {
 impl IntelligenceLearningOutboxStateV1 {
     #[must_use]
     pub const fn terminal(self) -> bool {
-        matches!(Self::Acknowledged | Self::Rejected | Self::Revoked, self)
+        matches!(self, Self::Acknowledged | Self::Rejected | Self::Revoked)
     }
 
     #[must_use]
     pub const fn reconcileable(self) -> bool {
-        matches!(Self::Prepared | Self::Indeterminate, self)
+        matches!(self, Self::Prepared | Self::Indeterminate)
     }
 }
 
@@ -164,7 +164,9 @@ impl IntelligenceLearningOutboxV1 {
         if !path.is_absolute() {
             return Err(IntelligenceLearningOutboxError::RelativePath);
         }
-        let parent = path.parent().ok_or(IntelligenceLearningOutboxError::RelativePath)?;
+        let parent = path
+            .parent()
+            .ok_or(IntelligenceLearningOutboxError::RelativePath)?;
         std::fs::create_dir_all(parent)?;
         let existed = path.exists();
         let writer = open_private_append(&path)?;
@@ -215,10 +217,7 @@ impl IntelligenceLearningOutboxV1 {
     }
 
     #[must_use]
-    pub fn record(
-        &self,
-        intent_id: &StableId,
-    ) -> Option<IntelligenceLearningOutboxRecordV1> {
+    pub fn record(&self, intent_id: &StableId) -> Option<IntelligenceLearningOutboxRecordV1> {
         self.records.get(intent_id).cloned()
     }
 
@@ -274,9 +273,7 @@ impl IntelligenceLearningOutboxV1 {
             .get(intent_id)
             .cloned()
             .ok_or(IntelligenceLearningOutboxError::Missing)?;
-        if existing.state == state
-            && existing.terminal_evidence_digest == Some(evidence_digest)
-        {
+        if existing.state == state && existing.terminal_evidence_digest == Some(evidence_digest) {
             return Ok(existing);
         }
         if existing.revision != expected_revision {
@@ -326,8 +323,8 @@ impl IntelligenceLearningOutboxV1 {
             return Err(IntelligenceLearningOutboxError::Capacity);
         }
         encoded.push(b'\n');
-        let encoded_len = u64::try_from(encoded.len())
-            .map_err(|_| IntelligenceLearningOutboxError::Capacity)?;
+        let encoded_len =
+            u64::try_from(encoded.len()).map_err(|_| IntelligenceLearningOutboxError::Capacity)?;
         if self
             .bytes
             .checked_add(encoded_len)
@@ -335,7 +332,11 @@ impl IntelligenceLearningOutboxV1 {
         {
             return Err(IntelligenceLearningOutboxError::Capacity);
         }
-        if let Err(error) = self.writer.write_all(&encoded).and_then(|()| self.writer.sync_data()) {
+        if let Err(error) = self
+            .writer
+            .write_all(&encoded)
+            .and_then(|()| self.writer.sync_data())
+        {
             self.writer_fenced = true;
             return Err(IntelligenceLearningOutboxError::Io(error));
         }

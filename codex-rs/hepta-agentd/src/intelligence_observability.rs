@@ -149,8 +149,7 @@ impl AgentdIntelligenceObservabilityV1 {
     }
 
     pub fn reject_currentness(&self, reason: &str) {
-        self.currentness_rejections
-            .fetch_add(1, Ordering::Relaxed);
+        self.currentness_rejections.fetch_add(1, Ordering::Relaxed);
         let Ok(mut reasons) = self.rejection_reasons.lock() else {
             return;
         };
@@ -167,9 +166,7 @@ impl AgentdIntelligenceObservabilityV1 {
     pub fn snapshot(&self) -> AgentdIntelligenceObservabilitySnapshotV1 {
         AgentdIntelligenceObservabilitySnapshotV1 {
             capability_profile_digest: self.capability_profile_digest,
-            authority_manifest_revision: self
-                .authority_manifest_revision
-                .load(Ordering::Relaxed),
+            authority_manifest_revision: self.authority_manifest_revision.load(Ordering::Relaxed),
             active_workers: self.active_workers.load(Ordering::Relaxed),
             late_workers: self.late_workers.load(Ordering::Relaxed),
             worker_saturation: self.worker_saturation.load(Ordering::Relaxed),

@@ -79,6 +79,7 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let intelligence_profile = config.take_canonical_intelligence_profile();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -114,6 +115,27 @@ pub async fn run(
     if let Some(provider) = intelligence_invocation {
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
+        })?;
+    }
+    if let Some(profile) = intelligence_profile {
+        let (runner, provider, learning, observability, outcomes) = profile.into_parts();
+        state.intelligence_product.set(runner).map_err(|_| {
+            AgentdError::Invalid("intelligence product runner already attached".to_string())
+        })?;
+        state.intelligence_invocation.set(provider).map_err(|_| {
+            AgentdError::Invalid("intelligence invocation provider already attached".to_string())
+        })?;
+        state.intelligence_learning.set(learning).map_err(|_| {
+            AgentdError::Invalid("intelligence learning host already attached".to_string())
+        })?;
+        state
+            .intelligence_observability
+            .set(observability)
+            .map_err(|_| {
+                AgentdError::Invalid("intelligence observability already attached".to_string())
+            })?;
+        state.intelligence_outcomes.set(outcomes).map_err(|_| {
+            AgentdError::Invalid("intelligence outcome provider already attached".to_string())
         })?;
     }
     if let Some(current) = retrieval_context {

@@ -213,6 +213,7 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
 }
 
 pub struct AgentdIntelligenceOwnerInputsV1 {
+    pub run_start: crate::AgentdIntelligenceRunStartBindingV1,
     pub objective_envelope: ObjectiveSourceEnvelopeV1,
     pub objective_profile: ObjectiveAdmissionProfileV1,
     pub objective_context: ObjectiveAdmissionContextV1,

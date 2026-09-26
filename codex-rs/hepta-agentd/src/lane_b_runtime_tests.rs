@@ -11,6 +11,10 @@ fn digest(byte: char) -> String {
     byte.to_string().repeat(64)
 }
 
+fn expected_fence() -> String {
+    composition().expected_run_fence_digest()
+}
+
 fn composition() -> RuntimeComposition {
     RuntimeComposition {
         agent_id: "agent.1".to_string(),
@@ -31,7 +35,7 @@ fn snapshot() -> RunSnapshot {
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
         generation: 3,
-        fence_digest: digest('9'),
+        fence_digest: expected_fence(),
         deadline_ms: 10_000,
     }
 }
@@ -45,7 +49,7 @@ fn attachment() -> ContextAttachment {
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
         generation: 3,
-        fence_digest: digest('9'),
+        fence_digest: expected_fence(),
         deadline_ms: 10_000,
         context_digest: digest('7'),
         compilation_receipt_digest: digest('8'),
@@ -63,7 +67,7 @@ fn assert_receipt(
     assert_eq!(receipt.phase, phase);
     assert_eq!(receipt.authority_epoch, 7);
     assert_eq!(receipt.generation, 3);
-    assert_eq!(receipt.fence_digest, digest('9'));
+    assert_eq!(receipt.fence_digest, expected_fence());
     assert_eq!(receipt.deadline_ms, 10_000);
     assert_eq!(receipt.cancel_reason.as_deref(), cancel_reason);
 }
@@ -437,7 +441,7 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
             artifact_set_digest: d("artifacts"),
             authority_epoch: 7,
             generation: 3,
-            fence_digest: d("fence"),
+            fence_digest: expected_fence().parse().expect("canonical run fence"),
         },
         runtime_body_digest: d("body"),
         objective_semantic_bytes: vec![1],
@@ -499,7 +503,7 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
             artifact_set_digest: d("artifacts"),
             authority_epoch: 7,
             generation: 3,
-            fence_digest: d("fence"),
+            fence_digest: expected_fence().parse().expect("canonical run fence"),
         },
         runtime_body_digest: d("body"),
         objective_semantic_bytes: vec![1],

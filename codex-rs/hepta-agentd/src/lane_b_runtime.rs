@@ -1,5 +1,8 @@
 use std::collections::BTreeMap;
 
+use sha2::Digest as _;
+use sha2::Sha256;
+
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
@@ -46,6 +49,32 @@ pub struct RuntimeComposition {
     pub configuration_digest: String,
     pub ports_digest: String,
     pub max_active_runs: usize,
+}
+
+impl RuntimeComposition {
+    #[must_use]
+    pub fn expected_run_fence_digest(&self) -> String {
+        run_fence_digest(
+            &self.agent_id,
+            self.supervisor_generation,
+            self.agentd_generation,
+        )
+    }
+}
+
+/// The only run-fence construction in Agentd. `supervisor_generation` is the
+/// immutable process-launch generation; `agentd_generation` is the current
+/// Fleet lifecycle generation served by that process.
+pub(crate) fn run_fence_digest(
+    agent_id: &str,
+    supervisor_generation: u64,
+    agentd_generation: u64,
+) -> String {
+    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    bytes.extend_from_slice(agent_id.as_bytes());
+    bytes.extend_from_slice(&supervisor_generation.to_be_bytes());
+    bytes.extend_from_slice(&agentd_generation.to_be_bytes());
+    format!("{:x}", Sha256::digest(&bytes))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -128,6 +157,7 @@ pub enum AgentRunError {
     TerminalObservationRequired,
     ArithmeticOverflow,
     InvalidRunStart(&'static str),
+    InvalidCompositionIdentity(&'static str),
 }
 
 #[derive(Clone, Debug)]
@@ -179,6 +209,19 @@ impl AgentRunCoordinator {
         &self.composition
     }
 
+    /// Advance to the exact Fleet lifecycle generation served by this process.
+    /// The launch generation stays immutable and remains part of every fence.
+    pub fn bind_agentd_generation(&mut self, generation: u64) -> Result<(), AgentRunError> {
+        if generation == 0
+            || generation < self.composition.supervisor_generation
+            || generation < self.composition.agentd_generation
+        {
+            return Err(AgentRunError::InvalidGeneration);
+        }
+        self.composition.agentd_generation = generation;
+        Ok(())
+    }
+
     pub fn admissions_open(&self) -> bool {
         self.accepting_runs
     }
@@ -198,6 +241,14 @@ impl AgentRunCoordinator {
                 return Ok(receipt(current, /*idempotent*/ true));
             }
             return Err(AgentRunError::Conflict);
+        }
+        if snapshot.generation != self.composition.agentd_generation {
+            return Err(AgentRunError::InvalidCompositionIdentity(
+                "agentd generation",
+            ));
+        }
+        if snapshot.fence_digest != self.composition.expected_run_fence_digest() {
+            return Err(AgentRunError::InvalidCompositionIdentity("run fence"));
         }
         if !self.accepting_runs {
             return Err(AgentRunError::AdmissionClosed);
@@ -743,3 +794,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
 #[cfg(test)]
 #[path = "lane_b_runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "lane_b_identity_tests.rs"]
+mod identity_tests;
