@@ -38,3 +38,5 @@ jobs:
         env:
           CARGO_TERM_COLOR: always
         run: python3 .github/scripts/kernel_authority_remediate.py
+
+# A second committed revision intentionally triggers this one-shot workflow.
