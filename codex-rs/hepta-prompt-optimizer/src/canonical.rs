@@ -6,19 +6,29 @@
 
 #[path = "canonical_raw.rs"]
 mod raw;
-#[path = "canonical_types.rs"]
-mod types;
+#[path = "canonical_error.rs"]
+mod error;
+#[path = "canonical_enumeration.rs"]
+mod enumeration;
+#[path = "canonical_pricing.rs"]
+mod pricing;
 #[path = "canonical_selection.rs"]
 mod selection;
+#[path = "canonical_selection_support.rs"]
+mod selection_support;
+#[path = "canonical_solver.rs"]
+mod solver;
 #[path = "canonical_exercise.rs"]
 mod exercise;
 #[path = "canonical_codec.rs"]
 mod codec;
 
 pub use codec::*;
-pub use exercise::exercise_v1;
-pub use selection::select_portfolio_v1;
-pub use types::*;
+pub use enumeration::*;
+pub use error::*;
+pub use exercise::*;
+pub use pricing::*;
+pub use selection::*;
 
 pub use raw::MAX_CANONICAL_INTERACTION_EDGES;
 pub use raw::MAX_CANONICAL_PROMPT_FACTORS;
