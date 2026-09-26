@@ -8,6 +8,7 @@ on:
       - scripts/apply-intelligence-control-product-closure.py
       - scripts/apply-intelligence-control-product-closure-tests.py
       - scripts/apply-intelligence-control-product-closure-learning.py
+      - scripts/apply-intelligence-control-product-closure-fixes.py
       - .github/workflows/apply-intelligence-closure.yml
       - codex-rs/hepta-agentd/src/intelligence_invocation_registry.rs
       - codex-rs/hepta-agentd/src/intelligence_learning_host.rs
@@ -44,6 +45,7 @@ jobs:
           python3 scripts/apply-intelligence-control-product-closure.py
           python3 scripts/apply-intelligence-control-product-closure-tests.py
           python3 scripts/apply-intelligence-control-product-closure-learning.py
+          python3 scripts/apply-intelligence-control-product-closure-fixes.py
 
       - name: Format and verify source hygiene
         shell: bash
@@ -61,6 +63,7 @@ jobs:
           rm scripts/apply-intelligence-control-product-closure.py
           rm scripts/apply-intelligence-control-product-closure-tests.py
           rm scripts/apply-intelligence-control-product-closure-learning.py
+          rm scripts/apply-intelligence-control-product-closure-fixes.py
           rm .github/workflows/apply-intelligence-closure.yml
           git add -A
           git config user.name "hepta-ci-bot"
