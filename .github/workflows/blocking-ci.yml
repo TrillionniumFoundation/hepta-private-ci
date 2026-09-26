@@ -66,6 +66,12 @@ jobs:
             exit 1
           fi
 
+  hepta-supervisor:
+    name: Hepta supervisor
+    # This reusable gate resolves applicability itself, so failures in another
+    # owner's scope/setup never prevent supervisor diagnostics from running.
+    uses: ./.github/workflows/hepta-supervisor-qualification.yml
+
   hepta-contract-gate:
     name: Hepta contract gate
     needs: scope
@@ -216,6 +222,7 @@ jobs:
     if: ${{ always() }}
     needs:
       - scope
+      - hepta-supervisor
       - hepta-contract-gate
       - bazel
       - blob-size-policy
