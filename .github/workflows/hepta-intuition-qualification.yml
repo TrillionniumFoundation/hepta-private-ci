@@ -97,9 +97,7 @@ jobs:
         run: |
           cargo test --locked -p codex-hepta-agentd --lib intuition_policy
           cargo test --locked -p codex-hepta-agentd --test intuition_policy_product
-          if test -f hepta-agentd/tests/intuition_policy_product_v3.rs; then
-            cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
-          fi
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
       - name: Capture exact command record and source-host profile
         shell: bash
         run: |
@@ -124,6 +122,7 @@ jobs:
               "cargo test --locked -p codex-hepta-intelligence",
               "cargo test --locked -p codex-hepta-agentd --lib intuition_policy",
               "cargo test --locked -p codex-hepta-agentd --test intuition_policy_product",
+              "cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3",
               "cargo run --locked --release -p codex-hepta-intuition --example fast_gate",
               "cargo run --locked --release -p codex-hepta-intelligence --example intuition_authenticated_fast_gate"
             ]
@@ -208,9 +207,7 @@ jobs:
           cargo test --locked -p codex-hepta-intelligence
           cargo test --locked -p codex-hepta-agentd --lib intuition_policy
           cargo test --locked -p codex-hepta-agentd --test intuition_policy_product
-          if test -f hepta-agentd/tests/intuition_policy_product_v3.rs; then
-            cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
-          fi
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
       - name: Gate kernel fast policy on merge candidate
         run: cargo run --locked --release -p codex-hepta-intuition --example fast_gate
       - name: Gate authenticated end-to-end fast policy on merge candidate
