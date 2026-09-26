@@ -1,390 +1,102 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-
 import {
-  buildOperationIntent,
+  UI_CONTROL_ERROR_CODES,
+  UiControlError,
   buildLocalOperationProposalFromCanonicalJson,
+  buildOperationIntent,
+  canonicalJson,
+  digestCanonical,
+  digestOperationIntent,
+  parseCanonicalJson,
   projectRuntime,
   projectRuntimeFromLocalCanonicalJson,
-} from "../src/control.js";
+} from "../src/index.js";
+import { DIGEST_A, DIGEST_B } from "./helpers.js";
 
-const digest = "ab".repeat(32);
-const runtimeSchema = "hepta.ui-control.local-runtime-observation.v1";
-const operationSchema =
-  "hepta.ui-control.local-operation-proposal-input.v1";
+const runtime = {
+  generation: 2,
+  revision: 3,
+  modules: [
+    { id: "z.module", status: "ready", revision: 1, semanticDigest: DIGEST_A },
+    { id: "a.module", status: "degraded", revision: 2, semanticDigest: DIGEST_B },
+  ],
+};
 
-function canonicalJson(value) {
-  const entries = Object.entries(value).sort(([left], [right]) =>
-    left < right ? -1 : left > right ? 1 : 0,
-  );
-  return JSON.stringify(Object.fromEntries(entries));
-}
-
-test("runtime projection exposes only registered safe fields", () => {
-  const projection = projectRuntime({
-    moduleId: "runtime.agentd",
-    status: "ready",
-    revision: 7,
-    digest,
-    secret: "must-not-leak",
-    providerPayload: { token: "must-not-leak" },
-  });
-
-  assert.deepEqual(projection, {
-    moduleId: "runtime.agentd",
-    status: "ready",
-    revision: 7,
-    digest,
-    ready: true,
-    authorityGranted: false,
-    directStoreWrite: false,
-  });
-  assert.equal(Object.isFrozen(projection), true);
-  assert.equal("secret" in projection, false);
-  assert.equal("providerPayload" in projection, false);
+test("runtime projection is canonical, sorted, and deeply immutable", () => {
+  const projected = projectRuntime(runtime);
+  assert.deepEqual(projected.modules.map(module => module.id), ["a.module", "z.module"]);
+  assert.equal(Object.isFrozen(projected), true);
+  assert.equal(Object.isFrozen(projected.modules), true);
+  assert.equal(Object.isFrozen(projected.modules[0]), true);
+  assert.throws(() => projected.modules.push(runtime.modules[0]), TypeError);
 });
 
-test("operation intent cannot issue authority or write a store", () => {
+test("canonical JSON rejects unsafe integers, prototype keys, bidi, and non-canonical source", () => {
+  assert.throws(
+    () => canonicalJson({ value: Number.MAX_SAFE_INTEGER + 1 }),
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT,
+  );
+  const dangerous = Object.create(null);
+  Object.defineProperty(dangerous, "__proto__", { value: "x", enumerable: true });
+  assert.throws(() => canonicalJson(dangerous), /forbidden object key/);
+  assert.throws(() => canonicalJson({ label: "safe\u202eevil" }), /bidi/);
+  assert.throws(() => parseCanonicalJson('{"b":1,"a":2}'), /canonical JSON/);
+  assert.deepEqual(parseCanonicalJson('{"a":2,"b":1}'), { a: 2, b: 1 });
+});
+
+test("digest domains separate otherwise identical values", async () => {
+  const one = await digestCanonical("hepta.ui-control.one.v1", { a: 1 });
+  const two = await digestCanonical("hepta.ui-control.two.v1", { a: 1 });
+  assert.match(one, /^[0-9a-f]{64}$/);
+  assert.notEqual(one, two);
+});
+
+test("operation digest binds action, target, generation, revision, and reason", async () => {
   const intent = buildOperationIntent({
-    operationId: "operation:1",
-    subjectId: "module:1",
-    action: "request_quarantine",
-    expectedRevision: 3,
+    action: "request_reconcile",
+    targetId: "runtime.agentd",
+    generation: 7,
+    displayedRevision: 11,
+    reason: "Recover the degraded worker.",
   });
-
-  assert.equal(intent.authorityGranted, false);
-  assert.equal(intent.directStoreWrite, false);
-  assert.equal(intent.kind, "OperationIntentV1");
-});
-
-test("unknown actions fail closed", () => {
-  assert.throws(
-    () =>
-      buildOperationIntent({
-        operationId: "operation:1",
-        subjectId: "module:1",
-        action: "merge_and_release",
-        expectedRevision: 3,
-      }),
-    /registered operator request/,
-  );
-});
-
-test("invalid digest is rejected", () => {
-  assert.throws(
-    () =>
-      projectRuntime({
-        moduleId: "runtime.agentd",
-        status: "ready",
-        revision: 7,
-        digest: "not-a-digest",
-      }),
-    /64 lowercase hexadecimal/,
-  );
-});
-
-test("legacy V1 projection continues to ignore additional presentation data", () => {
-  const projection = projectRuntime({
-    moduleId: "runtime.agentd",
-    status: "ready",
-    revision: 7,
+  const digest = await digestOperationIntent(intent);
+  assert.match(digest, /^[0-9a-f]{64}$/);
+  assert.notEqual(
     digest,
-    providerPayload: { token: "must-not-leak" },
-  });
-  assert.equal(projection.status, "ready");
-  assert.equal("providerPayload" in projection, false);
-});
-
-test("canonical runtime projection rejects ambiguous encodings", () => {
-  const encoded = canonicalJson({
-    schema: runtimeSchema,
-    moduleId: "runtime.agentd",
-    status: "ready",
-    revision: 7,
-    digest,
-  });
-  const projection = projectRuntimeFromLocalCanonicalJson(encoded);
-  assert.equal(projection.status, "ready");
-  assert.equal(projection.ready, true);
-  assert.equal(Object.isFrozen(projection), true);
-
-  assert.throws(
-    () => projectRuntimeFromLocalCanonicalJson(`${encoded} `),
-    /canonical JSON form/,
-  );
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson(
-        encoded.replace(
-          '"status":"ready"',
-          '"status":"degraded","status":"ready"',
-        ),
-      ),
-    /canonical JSON form/,
-  );
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson(
-        canonicalJson({
-          schema: runtimeSchema,
-          moduleId: "runtime.agentd",
-          status: "ready",
-          revision: 7,
-          digest,
-          authorityGranted: true,
-        }),
-      ),
-    /missing, unknown, or unordered fields/,
-  );
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson(
-        JSON.stringify({
-          schema: runtimeSchema,
-          status: "ready",
-          moduleId: "runtime.agentd",
-          revision: 7,
-          digest,
-        }),
-      ),
-    /missing, unknown, or unordered fields/,
-  );
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson(
-        canonicalJson({
-          schema: runtimeSchema,
-          moduleId: "runtime.agentd",
-          status: "ready",
-          revision: 7,
-          digest: "0".repeat(64),
-        }),
-      ),
-    /non-zero/,
+    await digestOperationIntent({ ...intent, displayedRevision: 12 }),
   );
 });
 
-test("canonical JSON ingress is byte bounded before object validation", () => {
-  assert.throws(
-    () => projectRuntimeFromLocalCanonicalJson(" ".repeat(4097)),
-    /bounded canonical JSON/,
+test("local canonical JSON fixture paths preserve strict boundaries", () => {
+  const text = canonicalJson(runtime);
+  const projected = projectRuntimeFromLocalCanonicalJson(text);
+  assert.equal(projected.generation, 2);
+  const proposal = buildLocalOperationProposalFromCanonicalJson(
+    canonicalJson({
+      action: "request_reconcile",
+      displayedRevision: 3,
+      generation: 2,
+      reason: "Qualification fixture.",
+      targetId: "runtime.agentd",
+    }),
   );
-  assert.throws(
-    () => projectRuntimeFromLocalCanonicalJson(`"${"é".repeat(2048)}"`),
-    /canonical JSON byte limit/,
-  );
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson({
-        get status() {
-          throw new Error("trap");
-        },
-      }),
-    /bounded canonical JSON/,
-  );
+  assert.equal(proposal.targetId, "runtime.agentd");
 });
 
-test("canonical operation input produces only a local authority-free proposal", () => {
-  const encoded = canonicalJson({
-    schema: operationSchema,
-    operationId: "operation:1",
-    subjectId: "runtime.agentd",
-    action: "request_retry",
-    expectedRevision: Number.MAX_SAFE_INTEGER,
-  });
-  const proposal = buildLocalOperationProposalFromCanonicalJson(encoded);
-  assert.deepEqual(proposal, {
-    localSchema: "hepta.ui-control.local-operation-proposal.v1",
-    operationId: "operation:1",
-    subjectId: "runtime.agentd",
-    action: "request_retry",
-    expectedRevision: Number.MAX_SAFE_INTEGER,
-    authorityGranted: false,
-    directStoreWrite: false,
-  });
-  assert.equal("kind" in proposal, false);
-  assert.equal(Object.isFrozen(proposal), true);
-
+test("duplicate module ids and unknown operation actions are rejected", () => {
   assert.throws(
-    () =>
-      buildLocalOperationProposalFromCanonicalJson(
-        canonicalJson({
-          schema: operationSchema,
-          operationId: "x".repeat(129),
-          subjectId: "runtime.agentd",
-          action: "request_retry",
-          expectedRevision: 1,
-        }),
-      ),
-    /bounded stable identifier/,
+    () => projectRuntime({ ...runtime, modules: [runtime.modules[0], runtime.modules[0]] }),
+    /duplicate module id/,
   );
   assert.throws(
-    () =>
-      buildLocalOperationProposalFromCanonicalJson(
-        canonicalJson({
-          schema: operationSchema,
-          operationId: "operation:1",
-          subjectId: "runtime.agentd",
-          action: "request_retry",
-          expectedRevision: Number.MAX_SAFE_INTEGER + 1,
-        }),
-      ),
-    /positive safe integer/,
-  );
-});
-
-test("local schema versions and enum values fail closed", () => {
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson(
-        canonicalJson({
-          schema: "hepta.ui-control.local-runtime-observation.v2",
-          moduleId: "runtime.agentd",
-          status: "ready",
-          revision: 1,
-          digest,
-        }),
-      ),
-    /schema is unsupported/,
-  );
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson(
-        canonicalJson({
-          schema: runtimeSchema,
-          moduleId: "runtime.agentd",
-          status: "invented",
-          revision: 1,
-          digest,
-        }),
-      ),
-    /registered runtime state/,
-  );
-  assert.throws(
-    () =>
-      buildLocalOperationProposalFromCanonicalJson(
-        canonicalJson({
-          schema: "hepta.ui-control.local-operation-proposal-input.v2",
-          operationId: "operation:1",
-          subjectId: "runtime.agentd",
-          action: "request_retry",
-          expectedRevision: 1,
-        }),
-      ),
-    /schema is unsupported/,
-  );
-  assert.throws(
-    () =>
-      buildLocalOperationProposalFromCanonicalJson(
-        canonicalJson({
-          schema: operationSchema,
-          operationId: "operation:1",
-          subjectId: "runtime.agentd",
-          action: "release",
-          expectedRevision: 1,
-        }),
-      ),
-    /registered operator request/,
-  );
-});
-
-test("both local entrypoints enforce closed fields and canonical encoding", () => {
-  const runtime = {
-    schema: runtimeSchema,
-    moduleId: "runtime.agentd",
-    status: "ready",
-    revision: 1,
-    digest,
-  };
-  const operation = {
-    schema: operationSchema,
-    operationId: "operation:1",
-    subjectId: "runtime.agentd",
-    action: "request_retry",
-    expectedRevision: 1,
-  };
-  for (const [call, value, missing] of [
-    [projectRuntimeFromLocalCanonicalJson, runtime, "digest"],
-    [buildLocalOperationProposalFromCanonicalJson, operation, "action"],
-  ]) {
-    const absent = { ...value };
-    delete absent[missing];
-    assert.throws(() => call(canonicalJson(absent)), /missing, unknown/);
-    assert.throws(
-      () => call(canonicalJson({ ...value, unknown: true })),
-      /missing, unknown/,
-    );
-    assert.throws(
-      () => call(` ${canonicalJson(value)}`),
-      /canonical JSON form/,
-    );
-    assert.throws(
-      () => call(canonicalJson(value).replace('"schema"', '"\\u0073chema"')),
-      /canonical JSON form/,
-    );
-  }
-});
-
-test("local entrypoints reject hostile proxies without invoking traps", () => {
-  for (const call of [
-    projectRuntimeFromLocalCanonicalJson,
-    buildLocalOperationProposalFromCanonicalJson,
-  ]) {
-    let traps = 0;
-    const hostile = new Proxy(
-      {},
-      {
-        get() {
-          traps += 1;
-          throw new Error("unexpected get");
-        },
-        ownKeys() {
-          traps += 1;
-          throw new Error("unexpected ownKeys");
-        },
-      },
-    );
-    assert.throws(() => call(hostile), /bounded canonical JSON/);
-    assert.equal(traps, 0);
-  }
-});
-
-test("local input byte and identity boundaries are exact", () => {
-  const exactBytes = `"${"é".repeat(2047)}"`;
-  assert.equal(Buffer.byteLength(exactBytes), 4096);
-  assert.throws(
-    () => projectRuntimeFromLocalCanonicalJson(exactBytes),
-    /must be an object/,
-  );
-  assert.throws(
-    () => projectRuntimeFromLocalCanonicalJson(`${exactBytes}a`),
-    /canonical JSON byte limit/,
-  );
-
-  const operation = {
-    schema: operationSchema,
-    operationId: "x".repeat(128),
-    subjectId: "runtime.agentd",
-    action: "request_retry",
-    expectedRevision: 1,
-  };
-  assert.equal(
-    buildLocalOperationProposalFromCanonicalJson(canonicalJson(operation))
-      .operationId.length,
-    128,
-  );
-  assert.throws(
-    () =>
-      buildLocalOperationProposalFromCanonicalJson(
-        canonicalJson({ ...operation, operationId: "x".repeat(129) }),
-      ),
-    /bounded stable identifier/,
-  );
-  assert.throws(
-    () =>
-      buildLocalOperationProposalFromCanonicalJson(
-        canonicalJson({ ...operation, expectedRevision: 0 }),
-      ),
-    /positive safe integer/,
+    () => buildOperationIntent({
+      action: "execute_now",
+      targetId: "runtime.agentd",
+      generation: 1,
+      displayedRevision: 1,
+      reason: "No.",
+    }),
+    /not registered/,
   );
 });

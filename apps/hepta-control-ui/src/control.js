@@ -1,4 +1,18 @@
-const RUNTIME_STATUSES = new Set([
+import {
+  assertCanonicalText,
+  assertSafeInteger,
+  assertSha256,
+  assertStableIdentifier,
+  canonicalJson,
+  digestCanonical,
+  parseCanonicalJson,
+} from "./canonical.js";
+import {
+  UI_CONTROL_ERROR_CODES,
+  uiControlError,
+} from "./errors.js";
+
+export const RUNTIME_STATUSES = Object.freeze([
   "ready",
   "degraded",
   "quarantined",
@@ -6,188 +20,150 @@ const RUNTIME_STATUSES = new Set([
   "unavailable",
 ]);
 
-const OPERATION_ACTIONS = new Set([
+export const OPERATION_ACTIONS = Object.freeze([
+  "request_start",
   "request_quarantine",
   "request_reconcile",
   "request_retry",
   "request_rollback",
+  "request_stop",
 ]);
 
-const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
-const DIGEST = /^[0-9a-f]{64}$/;
-const ZERO_DIGEST = "0".repeat(64);
-const MAX_CANONICAL_INPUT_BYTES = 4096;
-const UTF8 = new TextEncoder();
-const LOCAL_RUNTIME_OBSERVATION_SCHEMA =
-  "hepta.ui-control.local-runtime-observation.v1";
-const LOCAL_RUNTIME_PROJECTION_SCHEMA =
-  "hepta.ui-control.local-runtime-projection.v1";
-const LOCAL_OPERATION_PROPOSAL_INPUT_SCHEMA =
-  "hepta.ui-control.local-operation-proposal-input.v1";
-const LOCAL_OPERATION_PROPOSAL_SCHEMA =
-  "hepta.ui-control.local-operation-proposal.v1";
+const STATUS_SET = new Set(RUNTIME_STATUSES);
+const ACTION_SET = new Set(OPERATION_ACTIONS);
+const MAX_MODULES = 1000;
 
-function requireRecord(value, name) {
+function invalid(message, details) {
+  return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, {
+    details,
+  });
+}
+
+function assertPlainObject(value, label) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError(`${name} must be an object`);
+    throw invalid(`${label} must be an object`, { label });
   }
-}
-
-function requireStableId(value, name) {
-  if (typeof value !== "string" || !STABLE_ID.test(value)) {
-    throw new TypeError(`${name} must be a bounded stable identifier`);
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw invalid(`${label} must be a plain object`, { label });
   }
   return value;
 }
 
-function requireRevision(value) {
-  if (!Number.isSafeInteger(value) || value < 1) {
-    throw new TypeError("revision must be a positive safe integer");
+function exactKeys(value, expected, label) {
+  const keys = Object.keys(value).sort();
+  const wanted = [...expected].sort();
+  if (keys.length !== wanted.length || keys.some((key, index) => key !== wanted[index])) {
+    throw invalid(`${label} has unknown or missing fields`, {
+      label,
+      keys,
+      expected: wanted,
+    });
   }
-  return value;
 }
 
-function requireDigest(value) {
-  if (typeof value !== "string" || !DIGEST.test(value)) {
-    throw new TypeError("digest must contain 64 lowercase hexadecimal characters");
+function normalizeModule(module, index) {
+  assertPlainObject(module, `modules[${index}]`);
+  exactKeys(module, ["id", "status", "revision", "semanticDigest"], `modules[${index}]`);
+  const id = assertStableIdentifier(module.id, `modules[${index}].id`);
+  if (!STATUS_SET.has(module.status)) {
+    throw invalid(`modules[${index}].status is not registered`, {
+      status: module.status,
+    });
   }
-  return value;
-}
-
-function requireNonzeroDigest(value) {
-  const digest = requireDigest(value);
-  if (digest === ZERO_DIGEST) {
-    throw new TypeError("digest must be non-zero");
-  }
-  return digest;
-}
-
-function parseCanonicalInput(encoded, expectedKeys, name) {
-  if (
-    typeof encoded !== "string" ||
-    encoded.length === 0 ||
-    encoded.length > MAX_CANONICAL_INPUT_BYTES
-  ) {
-    throw new TypeError(`${name} must be bounded canonical JSON`);
-  }
-  const byteLength = UTF8.encode(encoded).byteLength;
-  if (byteLength > MAX_CANONICAL_INPUT_BYTES) {
-    throw new TypeError(`${name} exceeds the canonical JSON byte limit`);
-  }
-  let value;
-  try {
-    value = JSON.parse(encoded);
-  } catch {
-    throw new TypeError(`${name} must be valid canonical JSON`);
-  }
-  requireRecord(value, name);
-  const canonicalKeys = [...expectedKeys].sort();
-  const keys = Object.keys(value);
-  if (
-    keys.length !== canonicalKeys.length ||
-    keys.some((key, index) => key !== canonicalKeys[index])
-  ) {
-    throw new TypeError(`${name} contains missing, unknown, or unordered fields`);
-  }
-  const snapshot = Object.fromEntries(
-    canonicalKeys.map((key) => [key, value[key]]),
+  const revision = assertSafeInteger(module.revision, `modules[${index}].revision`, {
+    min: 1,
+  });
+  const semanticDigest = assertSha256(
+    module.semanticDigest,
+    `modules[${index}].semanticDigest`,
   );
-  if (JSON.stringify(snapshot) !== encoded) {
-    throw new TypeError(`${name} is not in canonical JSON form`);
-  }
-  return Object.freeze(snapshot);
+  return Object.freeze({ id, status: module.status, revision, semanticDigest });
 }
 
-export function projectRuntime(observation) {
-  requireRecord(observation, "observation");
-  const moduleId = requireStableId(observation.moduleId, "moduleId");
-  if (!RUNTIME_STATUSES.has(observation.status)) {
-    throw new TypeError("status is not a registered runtime state");
+export function projectRuntime(runtime) {
+  assertPlainObject(runtime, "runtime");
+  exactKeys(runtime, ["generation", "revision", "modules"], "runtime");
+  const generation = assertSafeInteger(runtime.generation, "runtime.generation", { min: 1 });
+  const revision = assertSafeInteger(runtime.revision, "runtime.revision", { min: 1 });
+  if (!Array.isArray(runtime.modules) || runtime.modules.length > MAX_MODULES) {
+    throw invalid(`runtime.modules must be an array of at most ${MAX_MODULES} entries`);
   }
-  const revision = requireRevision(observation.revision);
-  const digest = requireDigest(observation.digest);
-
-  return Object.freeze({
-    moduleId,
-    status: observation.status,
-    revision,
-    digest,
-    ready: observation.status === "ready",
-    authorityGranted: false,
-    directStoreWrite: false,
-  });
-}
-
-export function buildOperationIntent(input) {
-  requireRecord(input, "input");
-  const operationId = requireStableId(input.operationId, "operationId");
-  const subjectId = requireStableId(input.subjectId, "subjectId");
-  if (!OPERATION_ACTIONS.has(input.action)) {
-    throw new TypeError("action is not a registered operator request");
-  }
-  const expectedRevision = requireRevision(input.expectedRevision);
-
-  return Object.freeze({
-    kind: "OperationIntentV1",
-    operationId,
-    subjectId,
-    action: input.action,
-    expectedRevision,
-    authorityGranted: false,
-    directStoreWrite: false,
-  });
-}
-
-/**
- * Parse a bounded, package-local JSON fixture before shadow projection.
- * This is not a module ingress or a registered cross-module contract.
- *
- * @internal
- */
-export function projectRuntimeFromLocalCanonicalJson(encoded) {
-  const observation = parseCanonicalInput(
-    encoded,
-    ["schema", "moduleId", "status", "revision", "digest"],
-    "local runtime observation",
+  const seen = new Set();
+  const modules = runtime.modules.map(normalizeModule).sort((left, right) =>
+    left.id.localeCompare(right.id),
   );
-  if (observation.schema !== LOCAL_RUNTIME_OBSERVATION_SCHEMA) {
-    throw new TypeError("local runtime observation schema is unsupported");
+  for (const module of modules) {
+    if (seen.has(module.id)) {
+      throw invalid("runtime.modules contains a duplicate module id", { moduleId: module.id });
+    }
+    seen.add(module.id);
   }
-  requireNonzeroDigest(observation.digest);
+  const projection = Object.freeze({ generation, revision, modules: Object.freeze(modules) });
+  canonicalJson(projection);
+  return projection;
+}
+
+export async function digestRuntimeProjection(runtime) {
+  return digestCanonical("hepta.ui-control.runtime-projection.v1", projectRuntime(runtime));
+}
+
+export function buildOperationIntent({
+  action,
+  targetId,
+  generation,
+  displayedRevision,
+  reason,
+}) {
+  if (!ACTION_SET.has(action)) {
+    throw invalid("operation action is not registered", { action });
+  }
+  const target = assertStableIdentifier(targetId, "targetId");
+  const frozenGeneration = assertSafeInteger(generation, "generation", { min: 1 });
+  const frozenRevision = assertSafeInteger(displayedRevision, "displayedRevision", { min: 1 });
+  const canonicalReason = assertCanonicalText(reason, "reason", { maxBytes: 1024 });
   return Object.freeze({
-    localSchema: LOCAL_RUNTIME_PROJECTION_SCHEMA,
-    ...projectRuntime(observation),
+    action,
+    targetId: target,
+    generation: frozenGeneration,
+    displayedRevision: frozenRevision,
+    reason: canonicalReason,
   });
 }
 
-/**
- * Build an authority-free, package-local shadow proposal from bounded JSON.
- * The result is not `OperationIntentV1` and must not cross a module boundary.
- *
- * @internal
- */
-export function buildLocalOperationProposalFromCanonicalJson(encoded) {
-  const input = parseCanonicalInput(
-    encoded,
-    ["schema", "operationId", "subjectId", "action", "expectedRevision"],
-    "local operation proposal",
-  );
-  if (input.schema !== LOCAL_OPERATION_PROPOSAL_INPUT_SCHEMA) {
-    throw new TypeError("local operation proposal schema is unsupported");
-  }
-  const operationId = requireStableId(input.operationId, "operationId");
-  const subjectId = requireStableId(input.subjectId, "subjectId");
-  if (!OPERATION_ACTIONS.has(input.action)) {
-    throw new TypeError("action is not a registered operator request");
-  }
-  const expectedRevision = requireRevision(input.expectedRevision);
-  return Object.freeze({
-    localSchema: LOCAL_OPERATION_PROPOSAL_SCHEMA,
-    operationId,
-    subjectId,
-    action: input.action,
-    expectedRevision,
-    authorityGranted: false,
-    directStoreWrite: false,
+export async function digestOperationIntent(intent) {
+  return digestCanonical("hepta.ui-control.operation-intent.v1", intent, {
+    maxEncodedBytes: 16 * 1024,
   });
+}
+
+export function projectRuntimeFromLocalCanonicalJson(text) {
+  return projectRuntime(
+    parseCanonicalJson(text, {
+      label: "runtime fixture",
+      maxDepth: 8,
+      maxEntries: 4096,
+      maxArrayLength: MAX_MODULES,
+      maxStringBytes: 4096,
+      maxEncodedBytes: 1024 * 1024,
+    }),
+  );
+}
+
+export function buildLocalOperationProposalFromCanonicalJson(text) {
+  const value = parseCanonicalJson(text, {
+    label: "operation fixture",
+    maxDepth: 4,
+    maxEntries: 16,
+    maxArrayLength: 8,
+    maxStringBytes: 4096,
+    maxEncodedBytes: 16 * 1024,
+  });
+  assertPlainObject(value, "operation fixture");
+  exactKeys(
+    value,
+    ["action", "targetId", "generation", "displayedRevision", "reason"],
+    "operation fixture",
+  );
+  return buildOperationIntent(value);
 }

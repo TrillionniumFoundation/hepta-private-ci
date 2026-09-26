@@ -1,8 +1,48 @@
 {
   "name": "@hepta/control-ui",
+  "version": "0.2.0",
   "private": true,
+  "description": "Authority-free Hepta runtime control client core and browser console shell",
   "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./core": {
+      "types": "./src/core.d.ts",
+      "import": "./src/core.js"
+    },
+    "./browser": {
+      "types": "./src/browser.d.ts",
+      "import": "./src/browser-app.js"
+    },
+    "./transport/http": {
+      "types": "./src/http-transport.d.ts",
+      "import": "./src/http-transport.js"
+    }
+  },
+  "files": [
+    "src/",
+    "web/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
-    "test": "node --test"
+    "build": "node tools/build.mjs",
+    "check": "npm run lint && npm test && npm run test:contract && npm run build",
+    "lint": "node tools/lint.mjs",
+    "test": "node --test test/control.test.js test/runtime-client.test.js test/http-transport.test.js",
+    "test:contract": "node --test test/api-surface.test.js test/package-boundary.test.js",
+    "test:e2e": "playwright test --config=playwright.config.mjs",
+    "receipt": "node tools/write-receipt.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0"
   }
 }
