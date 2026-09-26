@@ -2,12 +2,12 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "a1dd370cdaf65ee4f312502495d214d8b0eb54c7",
+    "tree": "7d64fbd2d7c137396a74705d6d63e64bb61aa6e1"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
-  "sourceMaturity": "native_durable_channel_runtime",
+  "sourceMaturity": "native_durable_channel_runtime_authorized_dispatch_converging",
   "declaredRoots": [
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
@@ -16,8 +16,20 @@
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
   ],
-  "stateOwnerDisposition": "Owns Matrix ingress projection, sync frontier, dispatch ledger, outbox, and transaction identities.",
-  "terminalObserverDisposition": "A homeserver event observation settles send terminality; App Server turn completion and HTTP acceptance cannot substitute.",
+  "stateOwnerDisposition": "MatrixDurableStore is the sole writer for ingress projection, sync frontier, outbox, dispatch ledger, append-only observations, authority claims and transaction identities.",
+  "terminalObserverDisposition": "A matching authenticated homeserver /sync event settles send terminality in the same owner transaction as checkpoint advancement; SDK/HTTP acceptance cannot substitute.",
+  "productCallers": [
+    {
+      "role": "lifecycle_product_caller",
+      "sourcePath": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "nativeSymbol": "pub(crate) fn start_matrix_companion("
+    },
+    {
+      "role": "runtime_product_composition",
+      "sourcePath": "codex-rs/hepta-matrixd/src/runner.rs",
+      "nativeSymbol": "pub async fn run("
+    }
+  ],
   "operations": [
     {
       "designOperation": "admit_event",
@@ -28,15 +40,21 @@
         "symbol": "pub async fn process_event(",
         "buildTarget": "codex-hepta-matrixd"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "runtime_recovery_caller",
+          "path": "codex-rs/hepta-matrixd/src/runner.rs",
+          "symbol": ".recover_pending(INBOX_RECOVERY_LIMIT"
+        }
+      ],
       "tests": [
         {
-          "path": "codex-rs/hepta-matrixd/src/tests.rs",
-          "kind": "runtime_ingress",
+          "path": "codex-rs/hepta-matrixd/src/runtime/tests.rs",
+          "kind": "runtime_ingress_recovery",
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Deduplicates enrolled-room events and advances the durable sync frontier with correction/redaction handling.",
+      "sourceSemantics": "Consumes the already durable enrolled-room projection, preserves event idempotency and bridges pending events into the exact Agent App Server binding.",
       "operation": "admit_event",
       "nativeSymbol": "pub async fn process_event(",
       "sourcePath": "codex-rs/hepta-matrixd/src/runtime.rs",
@@ -46,56 +64,81 @@
       "designOperation": "prepare_send",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn prepare_send(",
-        "buildTarget": "codex-hepta-matrixd::send_observer"
+        "role": "durable_dispatch_owner_entrypoint",
+        "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+        "symbol": "pub async fn prepare_outbox_dispatch(",
+        "buildTarget": "codex-hepta-matrix-store"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "send_identity",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "role": "authorized_sender_callsite",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
+          "symbol": "prepare_outbox_dispatch(&record, now_ms)"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "authority_identity_crash_and_retry",
+          "command": "just test -p codex-hepta-matrix-sdk"
+        }
+      ],
+      "sourceSemantics": "Binds one immutable operation and stable Matrix transaction to room/generation/payload, then appends per-attempt authority and transport observations before physical dispatch.",
       "operation": "prepare_send",
-      "nativeSymbol": "pub fn prepare_send(",
-      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "nativeSymbol": "pub async fn prepare_outbox_dispatch(",
+      "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
       "sourcePathExists": true
     },
     {
       "designOperation": "observe_send",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn observe_send(",
-        "buildTarget": "codex-hepta-matrixd::send_observer"
+        "role": "durable_terminal_observer",
+        "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+        "symbol": "pub(crate) async fn observe_outbound_event_tx(",
+        "buildTarget": "codex-hepta-matrix-store"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "acknowledgement_and_reconciliation",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "role": "sync_atomic_reconciliation_callsite",
+          "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+          "symbol": "observe_outbound_event_tx("
+        },
+        {
+          "role": "redaction_atomic_reconciliation_callsite",
+          "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+          "symbol": "apply_dispatch_redaction_tx("
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "ack_loss_and_terminal_reconciliation",
+          "command": "just test -p codex-hepta-matrix-sdk"
+        },
+        {
+          "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+          "kind": "real_homeserver_source_fixture",
+          "command": "feature-selected target-host qualification"
+        }
+      ],
+      "sourceSemantics": "Commits trusted homeserver send/redaction observations, outbox settlement and sync checkpoint atomically; unknown transport outcomes remain reconcilable under the same transaction identity.",
       "operation": "observe_send",
-      "nativeSymbol": "pub fn observe_send(",
-      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "nativeSymbol": "pub(crate) async fn observe_outbound_event_tx(",
+      "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
+    "Add an explicit random claim token in addition to the durable attempt fence and release proven pre-entry claims during shutdown.",
+    "Persist the complete verified-use witness/head digest and finish classified Matrix error, retry_after_ms and jitter handling.",
+    "Produce current exact-head and deterministic synthetic-merge focused receipts after every source change."
   ],
   "externalEvidenceGates": [
-    "real enrolled homeserver/user/device/encryption identity",
-    "live sync and send transport callsites",
-    "rate-limit/reconnect/redaction/restore target qualification"
+    "real enrolled homeserver/user/device identity and protected final-use clock/frontier composition",
+    "live encrypted-room session/device rotation qualification",
+    "rate-limit, reconnect, redaction, authenticated backup restore and sustained-capacity target qualification",
+    "independent security/operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -115,8 +158,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_unqualified",
+  "productionWriterState": "durable_store_established_unqualified",
   "owner": "channels-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/channel.matrix/TECHNICAL.md",
