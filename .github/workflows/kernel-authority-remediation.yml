@@ -1,0 +1,40 @@
+name: Kernel authority remediation
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - .github/workflows/kernel-authority-remediation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-authority-remediation
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/kernel-authority-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Apply, validate, commit, rebind and push
+        env:
+          CARGO_TERM_COLOR: always
+        run: python3 .github/scripts/kernel_authority_remediate.py
