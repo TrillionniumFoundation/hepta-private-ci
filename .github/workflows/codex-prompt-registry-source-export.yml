@@ -24,8 +24,10 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/apply-prompt-registry-v4-remediation.py
-          if [[ -f scripts/apply-prompt-runtime-closure.py ]]; then
-            python3 scripts/apply-prompt-runtime-closure.py
+          python3 scripts/apply-prompt-runtime-closure.py
+          python3 scripts/apply-prompt-publisher-closure.py
+          if [[ -f scripts/apply-prompt-registry-operations.py ]]; then
+            python3 scripts/apply-prompt-registry-operations.py
           fi
           git diff --check
       - name: Commit applied source migration
