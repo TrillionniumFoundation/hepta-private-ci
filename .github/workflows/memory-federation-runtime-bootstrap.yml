@@ -17,7 +17,9 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: [self-hosted, linux, x64]
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
     timeout-minutes: 30
     steps:
       - name: Check out exact feature head
