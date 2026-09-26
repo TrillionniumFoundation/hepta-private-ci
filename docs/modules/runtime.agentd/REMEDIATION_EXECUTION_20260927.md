@@ -3,8 +3,11 @@
 ## Scope and evidence boundary
 
 This change extends PR #1025 on `work/runtime-agentd-remediation-20260926`.
-Its observed parent is `6f9bc0d754ec2c9e6ee40ccd76172629eeda6735`; the PR's
-integration target remains `integrate/agentd-product-sweep-20260829`, not `main`.
+Its observed parent is `6f9bc0d754ec2c9e6ee40ccd76172629eeda6735`. A fresh PR
+read after the implementation commit confirmed the integration target as
+`work/product-convergence-20260923`, not `main`. This supersedes the earlier
+inconsistent metadata naming `integrate/agentd-product-sweep-20260829`. The
+workflow covers both integration branch names; this change does not retarget PRs.
 No production activation, branch-protection bypass, force update, or merge is
 performed by this change. Resolve the commit containing this record for the
 candidate SHA; do not treat the parent SHA as evidence for the new candidate.
