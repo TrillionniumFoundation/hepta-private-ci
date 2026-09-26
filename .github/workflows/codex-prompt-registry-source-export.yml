@@ -10,7 +10,8 @@ permissions:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
     steps:
       - name: Check out exact branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -24,10 +25,12 @@ jobs:
             codex-rs/hepta-prompt-registry
             codex-rs/hepta-prompt-optimizer
             codex-rs/hepta-agentd
+            codex-rs/hepta-intelligence
             codex-rs/hepta-prompt
             codex-rs/hepta-codex-adapter
             codex-rs/hepta-types
             docs/modules/prompt.registry
+            qualification/module-execution-dossiers/detail/prompt.registry.md
             .github/workflows
             scripts
             codex-rs/Cargo.toml
