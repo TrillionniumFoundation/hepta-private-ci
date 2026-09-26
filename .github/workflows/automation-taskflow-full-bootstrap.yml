@@ -43,7 +43,8 @@ jobs:
           python3 -m py_compile \
             scripts/apply_automation_taskflow_p0.py \
             scripts/apply_automation_taskflow_runtime.py \
-            scripts/apply_automation_taskflow_neural_runtime.py
+            scripts/apply_automation_taskflow_neural_runtime.py \
+            scripts/apply_automation_taskflow_qualification.py
 
       - name: Stage 1 - schema v19 and product-effect closure
         shell: bash
@@ -98,22 +99,27 @@ jobs:
             qualification/lane-b/IMPLEMENTATION_TRUTH.json
           git commit -m "docs(automation): bind bounded runtime truth [automation-full-generated]"
 
-      - name: Stage 3 - durable Neural Circuit vertical slice
+      - name: Stage 3 - durable Neural Circuit and adversarial qualification
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/apply_automation_taskflow_neural_runtime.py source
+          python3 scripts/apply_automation_taskflow_qualification.py source
           (cd codex-rs && cargo fmt -p codex-hepta-automation)
           git diff --check
           git add \
             codex-rs/hepta-automation/src \
             codex-rs/hepta-automation/tests/neural_circuit_runtime.rs \
+            codex-rs/hepta-automation/tests/runtime_crash_points.rs \
+            codex-rs/hepta-automation/tests/runtime_reliability.rs \
+            codex-rs/hepta-automation/tests/runtime_state_machine_fuzz.rs \
             docs/modules/automation.taskflow/TECHNICAL.md \
             qualification/module-execution-dossiers/detail/automation.taskflow.md
-          git commit -m "automation.taskflow: add durable Neural Circuit runtime slice [automation-full-generated]"
+          git commit -m "automation.taskflow: add durable Neural Circuit and crash qualification [automation-full-generated]"
           SOURCE_SHA="$(git rev-parse HEAD)"
           printf 'FINAL_SOURCE_SHA=%s\n' "$SOURCE_SHA" >> "$GITHUB_ENV"
           python3 scripts/apply_automation_taskflow_neural_runtime.py metadata --source-sha "$SOURCE_SHA"
+          python3 scripts/apply_automation_taskflow_qualification.py metadata --source-sha "$SOURCE_SHA"
           python3 scripts/hepta-lane-b-truth.py generate
           git diff --check
           git add \
@@ -121,7 +127,7 @@ jobs:
             qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
             qualification/lane-b/TEST_TRACEABILITY.json \
             qualification/lane-b/IMPLEMENTATION_TRUTH.json
-          git commit -m "docs(automation): bind Neural Circuit runtime truth [automation-full-generated]"
+          git commit -m "docs(automation): bind Neural Circuit and adversarial truth [automation-full-generated]"
 
       - name: Verify schema, callers and generated truth
         shell: bash
@@ -153,6 +159,8 @@ jobs:
           cargo test -p codex-hepta-operations
           cargo test -p codex-hepta-automation --test durable_causal_chain
           cargo test -p codex-hepta-automation --test runtime_reliability
+          cargo test -p codex-hepta-automation --test runtime_crash_points
+          cargo test -p codex-hepta-automation --test runtime_state_machine_fuzz
           cargo test -p codex-hepta-automation --test neural_circuit_runtime
           cargo test -p codex-hepta-automation
           cargo test -p codex-hepta-automation --features taskflow-structural-qualification
@@ -182,6 +190,8 @@ jobs:
                   "separateRecoveryAdmissionBudgets": True,
                   "failureDisposition": True,
                   "backlogAgeAndFairness": True,
+                  "crashPointMatrix": True,
+                  "propertyStateMachineCases": 20000,
                   "minimalNeuralCircuitRuntime": True,
                   "v1CompatibilityPreserved": True,
                   "secondScheduler": False,
