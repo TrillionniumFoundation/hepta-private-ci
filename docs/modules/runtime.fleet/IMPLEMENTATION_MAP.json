@@ -5,101 +5,309 @@
     "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
     "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
+  "implementationSourceCommit": "fa64eb9620d8a94e24ee68fb645b995a338b885a",
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
-  "sourceMaturity": "native_ledger_and_allocator",
+  "sourceMaturity": "durable_owner_source_with_supervisor_maintenance_composition",
   "declaredRoots": [
     "codex-rs/hepta-fleet"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-fleet"
   ],
-  "stateOwnerDisposition": "Owns coherent host enrollment and allocation-lease records; consumers enforce grants locally.",
-  "terminalObserverDisposition": "Current-fence reconciliation records the observed holder disposition; pure allocation arithmetic cannot self-attest use.",
+  "stateOwnerDisposition": "The existing hepta-supervisord fleet root owns the durable registry and immutable allocation generations. No second fleet writer is introduced.",
+  "terminalObserverDisposition": "Capacity is observed from selected-host operating-system sources; final physical use still requires a concrete Agent or worker caller that consumes a current allocation and revocation-bound witness.",
+  "maintenanceCallerState": "source_composed_in_hepta_supervisord",
+  "effectCallerState": "not_composed",
+  "durableDatasets": [
+    "fleet_hosts",
+    "fleet_capacity_observations",
+    "fleet_grants",
+    "fleet_resource_totals",
+    "fleet_revocation_frontier",
+    "fleet_revocation_acks",
+    "workspace_reservations",
+    "fleet_operation_receipts"
+  ],
   "operations": [
     {
-      "designOperation": "admit_host",
+      "designOperation": "register_agent",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-        "symbol": "pub fn admit_host(",
-        "buildTarget": "codex-hepta-fleet::lease_ledger"
+        "path": "codex-rs/hepta-fleet/src/registry.rs",
+        "symbol": "pub fn register(",
+        "buildTarget": "codex-hepta-fleet::registry"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "native_unit",
-          "command": "just test -p codex-hepta-fleet --lib"
+          "path": "codex-rs/hepta-fleet/src/registry_coordination.rs",
+          "symbol": "RegistryMutationGuard::acquire"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/registry_coordination.rs",
+          "symbol": "persist_workspace_reservations"
         }
       ],
-      "sourceSemantics": "Admits an explicitly enrolled host with generation, capacity, epoch, and failure-domain identity.",
-      "operation": "admit_host",
-      "nativeSymbol": "pub fn admit_host(",
-      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/registry_coordination_tests.rs",
+          "kind": "concurrency_and_crash_boundary",
+          "command": "cargo test -p codex-hepta-fleet --lib registry::coordination_tests"
+        }
+      ],
+      "sourceSemantics": "Serializes workspace validation and publication across processes, persists a canonical reservation index, and reports post-rename ambiguity as an indeterminate commit.",
+      "operation": "register_agent",
+      "nativeSymbol": "pub fn register(",
+      "sourcePath": "codex-rs/hepta-fleet/src/registry.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "observe_capacity",
+      "mappingClass": "owner_native_with_host_observer",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+        "symbol": "pub fn refresh_capacity",
+        "buildTarget": "codex-hepta-fleet::durable_owner"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-fleet/src/capacity_observer.rs",
+          "symbol": "LinuxProcfsCapacityObserverV1::observe"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_command_port.rs",
+          "symbol": "refresh_capacity_idempotent"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/capacity_observer_tests.rs",
+          "kind": "procfs_capacity_and_pressure",
+          "command": "cargo test -p codex-hepta-fleet --lib capacity_observer"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_command_port.rs",
+          "kind": "durable_id_first_retry",
+          "command": "cargo test -p codex-hepta-fleet --lib durable_command_port"
+        }
+      ],
+      "sourceSemantics": "Persists a bounded trusted host observation and exact resource totals in one new durable generation. A retry resolves the stable operation ID before observing time or the host again.",
+      "operation": "observe_capacity",
+      "nativeSymbol": "pub fn refresh_capacity",
+      "sourcePath": "codex-rs/hepta-fleet/src/durable_owner.rs",
       "sourcePathExists": true
     },
     {
       "designOperation": "allocate",
-      "mappingClass": "owner_native",
+      "mappingClass": "authority_bound_durable_owner",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-        "symbol": "pub fn issue(",
-        "buildTarget": "codex-hepta-fleet::lease_ledger"
+        "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+        "symbol": "pub fn issue_with_authority",
+        "buildTarget": "codex-hepta-fleet::durable_owner"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "conservation_and_fencing",
-          "command": "just test -p codex-hepta-fleet --lib"
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "symbol": "FleetAuthorityPort::issue_with_witness"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/lease_ledger_v3.rs",
+          "symbol": "LeaseLedger::issue"
         }
       ],
-      "sourceSemantics": "Issues bounded allocation leases only after capacity, floors, freshness, and generation checks.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_owner_tests.rs",
+          "kind": "authority_witness_atomicity_and_restart",
+          "command": "cargo test -p codex-hepta-fleet --lib durable_owner"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
+          "kind": "capacity_churn_fencing_and_compaction",
+          "command": "cargo test -p codex-hepta-fleet --lib lease_ledger"
+        }
+      ],
+      "sourceSemantics": "Revalidates the exact live authority lease and host observation, checks canonical resources and capacity, then publishes grant, totals, authority witness and operation receipt in one immutable generation.",
       "operation": "allocate",
-      "nativeSymbol": "pub fn issue(",
-      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "nativeSymbol": "pub fn issue_with_authority",
+      "sourcePath": "codex-rs/hepta-fleet/src/durable_owner.rs",
       "sourcePathExists": true
     },
     {
       "designOperation": "renew_or_revoke",
-      "mappingClass": "owner_native",
+      "mappingClass": "durable_owner",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-        "symbol": "pub fn renew_or_revoke(",
-        "buildTarget": "codex-hepta-fleet::lease_ledger"
+        "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+        "symbol": "pub fn renew_or_revoke",
+        "buildTarget": "codex-hepta-fleet::durable_owner"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-fleet/src/lease_ledger_v3.rs",
+          "symbol": "LeaseLedger::renew_or_revoke"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
+          "kind": "lease_generation_and_capacity_release",
+          "command": "cargo test -p codex-hepta-fleet --lib lease_ledger"
+        }
+      ],
+      "sourceSemantics": "Renews or revokes a current lease under exact lease generation, authority epoch and semantic digest, releasing capacity exactly once on terminal transition.",
+      "operation": "renew_or_revoke",
+      "nativeSymbol": "pub fn renew_or_revoke",
+      "sourcePath": "codex-rs/hepta-fleet/src/durable_owner.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "reconcile_expired",
+      "mappingClass": "durable_owner",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/durable_command_port.rs",
+        "symbol": "reconcile_expired_idempotent",
+        "buildTarget": "codex-hepta-fleet::durable_command_port"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+          "symbol": "DurableFleetOwner::reconcile_expired"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_owner_tests.rs",
+          "kind": "expiry_recovery_and_capacity_release",
+          "command": "cargo test -p codex-hepta-fleet --lib durable_owner"
+        }
+      ],
+      "sourceSemantics": "Resolves the durable operation ID before reading owner time, retires expired grants and publishes released resource totals atomically.",
+      "operation": "reconcile_expired",
+      "nativeSymbol": "reconcile_expired_idempotent",
+      "sourcePath": "codex-rs/hepta-fleet/src/durable_command_port.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "map_resources",
+      "mappingClass": "deterministic_policy_mapping",
+      "ownerEntrypoint": {
+        "role": "mapping_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/resource_mapping.rs",
+        "symbol": "map_logical_to_physical_v1",
+        "buildTarget": "codex-hepta-fleet::resource_mapping"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "lease_recovery",
-          "command": "just test -p codex-hepta-fleet --lib"
+          "path": "codex-rs/hepta-fleet/src/resource_mapping.rs",
+          "kind": "digest_binding_and_overflow",
+          "command": "cargo test -p codex-hepta-fleet --lib resource_mapping"
         }
       ],
-      "sourceSemantics": "Renews, revokes, or quarantines a lease under current epoch and holder reconciliation.",
-      "operation": "renew_or_revoke",
-      "nativeSymbol": "pub fn renew_or_revoke(",
-      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "sourceSemantics": "Converts canonical logical counts through a reviewed versioned policy using checked exact arithmetic and returns policy, logical and physical digests.",
+      "operation": "map_resources",
+      "nativeSymbol": "map_logical_to_physical_v1",
+      "sourcePath": "codex-rs/hepta-fleet/src/resource_mapping.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "verify_final_use",
+      "mappingClass": "revocation_bound_read_verify",
+      "ownerEntrypoint": {
+        "role": "final_use_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/final_use.rs",
+        "symbol": "verify_final_use_with_revocation",
+        "buildTarget": "codex-hepta-fleet::final_use"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-fleet/src/revocation_snapshot.rs",
+          "symbol": "FleetRevocationSnapshotV1::restore"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_owner.rs",
+          "symbol": "DurableFleetOwner::verify_final_use"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/final_use.rs",
+          "kind": "missing_snapshot_fail_closed",
+          "command": "cargo test -p codex-hepta-fleet --lib final_use"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
+          "kind": "catch_up_quarantine_and_stale_feed",
+          "command": "cargo test -p codex-hepta-fleet --lib revocation_control"
+        }
+      ],
+      "sourceSemantics": "Requires a fresh converged signed revocation snapshot, Ready node state, current lease and host fences, and an unchanged snapshot digest across grant verification.",
+      "operation": "verify_final_use",
+      "nativeSymbol": "verify_final_use_with_revocation",
+      "sourcePath": "codex-rs/hepta-fleet/src/final_use.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "supervisor_maintenance",
+      "mappingClass": "named_product_caller",
+      "ownerEntrypoint": {
+        "role": "product_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/fleet_runtime_product.rs",
+        "symbol": "run_supervisord_product",
+        "buildTarget": "codex-hepta-supervisor::hepta-supervisord"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_command_port.rs",
+          "symbol": "refresh_capacity_idempotent"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/durable_command_port.rs",
+          "symbol": "reconcile_expired_idempotent"
+        }
+      ],
+      "tests": [
+        {
+          "path": ".github/workflows/runtime-fleet-focused.yml",
+          "kind": "product_binary_compile_and_strict_clippy",
+          "command": "cargo check -p codex-hepta-supervisor --bin hepta-supervisord"
+        }
+      ],
+      "sourceSemantics": "The existing supervisor opens the durable owner, observes Linux capacity and pressure, reconciles expiry and treats maintenance failure as a product error. It does not yet bind Agent or worker physical use to an allocation witness.",
+      "operation": "supervisor_maintenance",
+      "nativeSymbol": "run_supervisord_product",
+      "sourcePath": "codex-rs/hepta-supervisor/src/fleet_runtime_product.rs",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer."
+    "Bind a concrete Agent or worker start/use boundary to the real allocation ID and RevocationBoundGrantUseWitnessV1 immediately before physical use.",
+    "Compose independently pinned authority and revocation trust roots at that concrete product boundary without storing them in fleet state.",
+    "Attach accepted exact-candidate selected-host and multi-node partition/revocation evidence.",
+    "Define external audit retention beyond the bounded in-process grant-history and operation-receipt windows."
   ],
   "externalEvidenceGates": [
-    "real enrolled host capacity observation",
-    "non-test local grant enforcement",
-    "partition and lease-expiry target qualification"
+    "selected Linux host capacity and pressure observation bound to the exact candidate",
+    "authenticated multi-node revocation fanout and partition qualification",
+    "concrete non-test Agent or worker final-use enforcement",
+    "independent operator acceptance"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
     "repositoryControlledSourceBoundaryGapsClosed": false,
+    "durableOwnerSourceImplemented": true,
+    "supervisorMaintenanceCallerSourceComposed": true,
+    "authorityIssueSourceImplemented": true,
+    "revocationBoundFinalUseSourceImplemented": true,
+    "concreteEffectCallerSourceComposed": false,
+    "selectedHostQualificationComplete": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -118,6 +326,8 @@
   "owner": "fleet-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
+  "currentImplementationGuide": "docs/modules/runtime.fleet/DURABLE_OWNER.md",
+  "operationsRunbook": "docs/modules/runtime.fleet/OPERATIONS.md",
   "sourceRoot": [
     "codex-rs/hepta-fleet"
   ]
