@@ -1,0 +1,51 @@
+name: control.runtime source export
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/control-runtime-source-export.yml"
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "docs/modules/control.runtime/**"
+      - "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-source-export-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact PR source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind and archive exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          git archive --format=tar.gz \
+            --output="${RUNNER_TEMP}/control-runtime-source.tar.gz" \
+            HEAD
+          sha256sum "${RUNNER_TEMP}/control-runtime-source.tar.gz" \
+            > "${RUNNER_TEMP}/control-runtime-source.tar.gz.sha256"
+
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-source-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/control-runtime-source.tar.gz
+            ${{ runner.temp }}/control-runtime-source.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
