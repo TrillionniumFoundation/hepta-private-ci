@@ -86,6 +86,24 @@
           "symbol": "current_artifact_and_independent_evidence_compose_to_deny_all_admission"
         }
       ]
+    },
+    {
+      "operation": "projection_store_process_kill_matrix_v1",
+      "nativeSymbol": "codex_hepta_ndu::process_kill_matrix_reopens_at_every_persistence_cut",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "qualification_only_real_process_kill_and_errno_matrix",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+          "symbol": "process_kill_matrix_reopens_at_every_persistence_cut"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+          "symbol": "disk_full_and_read_only_filesystem_fail_before_commit"
+        }
+      ]
     }
   ]
 }

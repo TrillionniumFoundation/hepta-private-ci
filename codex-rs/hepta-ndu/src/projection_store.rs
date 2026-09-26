@@ -439,3 +439,7 @@ fn persist_image(
 #[cfg(test)]
 #[path = "projection_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "projection_store_process_kill_tests.rs"]
+mod process_kill_tests;
