@@ -1,7 +1,7 @@
 {
-  "schema": "hepta.control-runtime-maturity.v1",
+  "schema": "hepta.control-runtime-maturity.v2",
   "module": "control.runtime",
-  "claimBoundary": "source candidate only",
+  "claimBoundary": "source and qualification candidates only; no activation or release claim",
   "readOnlyAgentdCaller": "source_composed_candidate",
   "globalPlannerCaller": "not_composed",
   "productionWriter": "durable_store_source_candidate_not_composed",
@@ -14,25 +14,64 @@
     "planner": {
       "source": "candidate_implemented",
       "namedCaller": "agentd_read_only_context_adapter",
-      "productionGlobalCaller": "not_established"
+      "productionGlobalCaller": "not_established",
+      "maturity": "read_only_source_composed_candidate"
     },
     "organHost": {
       "source": "read_only_candidate_implemented",
-      "productionComposition": "not_established"
+      "productionComposition": "not_established",
+      "maturity": "framework_source_candidate"
     },
     "embodimentReference": {
       "source": "synthetic_reference_implemented",
-      "hardwareActivation": "not_established"
+      "hardwareActivation": "not_established",
+      "maturity": "synthetic_reference_only"
     },
     "plannerStore": {
       "source": "candidate_implemented",
-      "productComposition": "not_established"
+      "productComposition": "not_established",
+      "maturity": "durable_source_candidate",
+      "completeCanonicalDecisionEnvelope": true,
+      "signedOrExternallyAnchoredCheckpointSource": true
     },
     "executionClosure": {
       "source": "authority_separated_candidate_implemented",
       "namedConsumer": "ControlRuntimeExecutionConsumerV1",
-      "externalAuthorityAndExecutorComposition": "not_established"
+      "externalAuthorityAndExecutorComposition": "not_established",
+      "terminalOutcomeAndReconciliationSource": true,
+      "maturity": "source_contract_candidate"
     }
+  },
+  "requestIntegrity": {
+    "canonicalAuthenticatedReadReceipt": "source_candidate",
+    "planReceiptFinalUseRevalidation": "p0_patch_candidate",
+    "requestIdQueryRetrievalAndRankerBinding": "p0_patch_candidate",
+    "monotonicTtl": "p0_patch_candidate",
+    "unexpectedOwnerRejected": "source_candidate",
+    "duplicatePayloadRejected": "source_candidate"
+  },
+  "qualification": {
+    "sourceBranch": "control-runtime-production-closure-v1",
+    "p0PatchHead": "c8687df215508b04de39c40732855ff9ba76e501",
+    "p0ArmRun": 36251866131,
+    "p0MacosRun": 36251866197,
+    "p0State": "queued_not_evidence",
+    "sourceHeadRegression": "not_established_on_current_exact_head",
+    "syntheticMergeRegression": "not_established_on_current_exact_head",
+    "controlNduCallerRegression": "not_established_on_current_exact_head",
+    "strictClippy": "not_established_on_current_exact_head",
+    "formatting": "not_established_on_current_exact_head",
+    "packageTests": "not_established_on_current_exact_head",
+    "namedHostQualification": "not_established_on_current_exact_head"
+  },
+  "acceptance": {
+    "candidateBranch": "control-runtime-acceptance-v1",
+    "pullRequest": 1023,
+    "matrix": "docs/modules/control.runtime/ACCEPTANCE_MATRIX.json",
+    "independentSemanticReview": "requested_not_accepted",
+    "requestedReviewer": "ProfHepta",
+    "productionCanary": false,
+    "productionRollbackRehearsal": false
   },
   "requiredEvidence": [
     "source-head regression",
@@ -43,6 +82,7 @@
     "package tests",
     "named-host qualification",
     "independent semantic review",
-    "canary and rollback rehearsal"
+    "production canary",
+    "production rollback rehearsal"
   ]
 }
