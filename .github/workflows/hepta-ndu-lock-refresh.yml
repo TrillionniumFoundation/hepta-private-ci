@@ -39,8 +39,11 @@ jobs:
           OUT="${RUNNER_TEMP}/ndu-lock-refresh"
           mkdir -p "$OUT"
           cp codex-rs/Cargo.lock "$OUT/Cargo.lock.before"
+          SHA=$(git rev-parse HEAD)
+          TREE=$(git rev-parse HEAD^{tree})
           set +e
           python3 scripts/hepta-ndu-implementation-map-closed-world.py \
+            --expected-sha "$SHA" --expected-tree "$TREE" \
             > "$OUT/closed-world-map.log" 2>&1
           MAP_CODE=$?
           set -e
