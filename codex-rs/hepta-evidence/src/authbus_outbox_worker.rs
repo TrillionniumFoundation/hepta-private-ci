@@ -1,4 +1,5 @@
-use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::AuthenticatedMessage;
+use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_types::Digest32;
 use sqlx::Sqlite;
 use sqlx::Transaction;
@@ -14,16 +15,17 @@ use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
 
 impl HeptaEvidenceStore {
-    /// Claim a queued message or recover an expired lease. The supplied issuer
-    /// is a fresh trusted-host snapshot, not a registration stored in the queue.
-    /// Claiming never retries an indeterminate provider effect.
+    /// Claim a queued message or recover an expired lease. The authority host
+    /// resolves the issuer from its persistent registry after the queue write
+    /// lock is held. Claiming never retries an indeterminate provider effect.
     pub async fn claim_authbus_delivery(
         &self,
-        issuer: &IssuerRegistration,
+        authority: &AuthBusAuthorityHost,
         request: AuthBusClaimRequest<'_>,
     ) -> Result<AuthBusDelivery, AuthBusOutboxError> {
         validate_duration(request.lease_ms)?;
-        let (mut tx, record, now) = current(self, request.delivery_id, issuer, true).await?;
+        let (mut tx, record, now, _authenticated) =
+            current(self, request.delivery_id, authority, true).await?;
         if &record.message.claims.subject_id != request.subject_id
             || record.message.claims.scope_digest != request.scope_digest
         {
@@ -67,15 +69,16 @@ impl HeptaEvidenceStore {
     }
 
     /// Renew with a new fence. Even the previous token of this worker becomes
-    /// stale. A failed/ambiguous response is recovered by waiting for expiry.
+    /// stale. A failed or ambiguous response is recovered by waiting for expiry.
     pub async fn renew_authbus_delivery(
         &self,
-        issuer: &IssuerRegistration,
+        authority: &AuthBusAuthorityHost,
         lease: &AuthBusLease,
         lease_ms: i64,
     ) -> Result<AuthBusLease, AuthBusOutboxError> {
         validate_duration(lease_ms)?;
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now, _authenticated) =
+            current(self, lease.delivery_id, authority, false).await?;
         require_lease(&record, lease, now)?;
         let until = lease_end(&record, now, lease_ms)?;
         sqlx::query(
@@ -97,11 +100,11 @@ impl HeptaEvidenceStore {
         })
     }
 
-    /// Release ownership for another *message delivery*. This is not permission
+    /// Release ownership for another message delivery. This is not permission
     /// to repeat a provider/network/filesystem effect with an unknown outcome.
     pub async fn retry_authbus_delivery(
         &self,
-        issuer: &IssuerRegistration,
+        authority: &AuthBusAuthorityHost,
         lease: &AuthBusLease,
         delay_ms: i64,
     ) -> Result<(), AuthBusOutboxError> {
@@ -110,7 +113,8 @@ impl HeptaEvidenceStore {
                 "retry delay must be 0..=60000 ms",
             ));
         }
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now, _authenticated) =
+            current(self, lease.delivery_id, authority, false).await?;
         require_lease(&record, lease, now)?;
         let available = now
             .checked_add(delay_ms)
@@ -136,15 +140,15 @@ impl HeptaEvidenceStore {
     }
 
     /// Stop this delivery after a consumer rejection or unresolved outcome.
-    /// A fresh trusted issuer and the current unexpired lease are required.
-    /// Quarantine is terminal without acknowledgement; it neither proves an
-    /// effect occurred nor changes any other delivery for this issuer.
+    /// Fresh registry-backed authentication and the current unexpired lease are
+    /// required. Quarantine is terminal without acknowledgement.
     pub async fn quarantine_authbus_delivery(
         &self,
-        issuer: &IssuerRegistration,
+        authority: &AuthBusAuthorityHost,
         lease: &AuthBusLease,
     ) -> Result<(), AuthBusOutboxError> {
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now, _authenticated) =
+            current(self, lease.delivery_id, authority, false).await?;
         require_lease(&record, lease, now)?;
         terminalize(&mut tx, lease.delivery_id, "quarantined", now).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
@@ -156,7 +160,7 @@ impl HeptaEvidenceStore {
     /// a crash between them permits delivery of the same ID under a new lease.
     pub async fn ack_authbus_delivery(
         &self,
-        issuer: &IssuerRegistration,
+        authority: &AuthBusAuthorityHost,
         lease: &AuthBusLease,
         acknowledgement: Digest32,
     ) -> Result<(), AuthBusOutboxError> {
@@ -165,7 +169,8 @@ impl HeptaEvidenceStore {
                 "empty acknowledgement digest",
             ));
         }
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, false).await?;
+        let (mut tx, record, now, _authenticated) =
+            current(self, lease.delivery_id, authority, false).await?;
         require_lease(&record, lease, now)?;
         sqlx::query(
             "UPDATE authbus_outbox SET state = 'acked', fence = fence + 1,
@@ -219,13 +224,22 @@ fn require_lease(
 }
 
 // Time and authentication are refreshed after the write lock for every worker
-// transition, including ack. Clock rollback fails closed until time catches up.
+// transition, including ack. The returned authenticated value keeps the issuer
+// registry fence alive through the caller's commit.
 async fn current(
     store: &HeptaEvidenceStore,
     id: Digest32,
-    issuer: &IssuerRegistration,
+    authority: &AuthBusAuthorityHost,
     require_checkpoint_clear: bool,
-) -> Result<(Transaction<'static, Sqlite>, OutboxRecord, i64), AuthBusOutboxError> {
+) -> Result<
+    (
+        Transaction<'static, Sqlite>,
+        OutboxRecord,
+        i64,
+        AuthenticatedMessage,
+    ),
+    AuthBusOutboxError,
+> {
     let mut tx = store
         .pool
         .begin_with("BEGIN IMMEDIATE")
@@ -247,12 +261,14 @@ async fn current(
     if now < record.updated_at_ms {
         return Err(AuthBusOutboxError::StaleLease);
     }
-    let result = record.message.authenticate(
-        issuer,
-        record.message.claims.scope_digest,
-        Digest32::of_bytes(&record.payload),
-        clock(now)?,
-    );
+    let result = authority
+        .authenticate_message(
+            &record.message,
+            record.message.claims.scope_digest,
+            Digest32::of_bytes(&record.payload),
+            clock(now)?,
+        )
+        .await;
     match result {
         Ok(authenticated) => {
             if authenticated.receipt().envelope_digest != id {
@@ -260,12 +276,16 @@ async fn current(
                     EvidenceError::Corrupt("AuthBus envelope identity mismatch".into()).into(),
                 );
             }
+            Ok((tx, record, now, authenticated))
         }
         Err(error) => {
             use codex_hepta_authbus::Error;
             if matches!(
                 error,
-                Error::Expired | Error::Revoked | Error::InvalidSignature
+                Error::Expired
+                    | Error::Revoked
+                    | Error::InvalidSignature
+                    | Error::IssuerMismatch
             ) {
                 let state = if error == Error::Expired {
                     "expired"
@@ -275,10 +295,9 @@ async fn current(
                 terminalize(&mut tx, id, state, now).await?;
                 tx.commit().await.map_err(classify_sqlx_error)?;
             }
-            return Err(AuthBusAdmissionError::from(error).into());
+            Err(AuthBusAdmissionError::from(error).into())
         }
     }
-    Ok((tx, record, now))
 }
 
 async fn terminalize(
