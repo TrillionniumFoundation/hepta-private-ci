@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   converge:
-    if: github.event.head_commit.message == 'chore(cognitive.read): launch full convergence'
+    if: endsWith(github.event.head_commit.message, 'launch full convergence')
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
@@ -98,6 +98,7 @@ jobs:
           set -euo pipefail
           rm -f \
             .github/workflows/cognitive-read-full-convergence-bootstrap.yml \
+            .github/workflows/cognitive-read-bootstrap-parser-repair.yml \
             scripts/.cognitive-read-full-convergence.b64.* \
             scripts/.cognitive-read-full-convergence.py \
             scripts/.cognitive-read-phase1.py \
