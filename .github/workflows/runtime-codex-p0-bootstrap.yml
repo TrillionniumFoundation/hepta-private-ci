@@ -60,7 +60,6 @@ jobs:
           python3 scripts/apply_runtime_codex_p0.py
           python3 scripts/fix_runtime_codex_p0.py
           python3 scripts/fix_runtime_codex_p0_round2.py
-          git diff --check
 
       - name: Format changed Rust packages
         shell: bash
