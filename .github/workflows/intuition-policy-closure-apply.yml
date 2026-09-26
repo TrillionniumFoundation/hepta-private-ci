@@ -17,8 +17,8 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 60
     steps:
       - name: Check out closure branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -26,6 +26,7 @@ jobs:
           ref: intuition-policy/full-closure-20260927
           fetch-depth: 0
           persist-credentials: true
+          clean: true
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
