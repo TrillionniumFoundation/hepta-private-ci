@@ -15,6 +15,7 @@ mod allocation_digest;
 mod allocation_model;
 mod allocation_validation;
 mod capacity_observer;
+#[allow(unused_imports)]
 mod durable_owner;
 mod error;
 mod final_use;
