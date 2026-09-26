@@ -37,19 +37,12 @@ pub use legacy::RetrievalChannelWeightV1;
 pub use legacy::RetrievalPolicyV1;
 pub use legacy::adapt_generation_bound_recall_to_canonical_shadow_v1;
 
-/// Proposition-relative evidence direction.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum ContradictionPolarityV1 {
     Supports,
     Opposes,
 }
 
-/// Typed interpretation of the backward-compatible contradiction group field.
-///
-/// The digest identifies one proposition. Polarity is explicit and is never
-/// inferred from the number of records sharing that digest. This prevents two
-/// same-side evidence records from being treated as contradictory merely
-/// because they belong to the same proposition group.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct ContradictionEvidenceV1 {
     pub proposition_digest: Digest32,
@@ -100,10 +93,6 @@ const fn polarity_for_channel(channel: RetrievalChannelV1) -> ContradictionPolar
     }
 }
 
-/// Builds the decision union after removing candidates from explicitly
-/// zero-weight channels. The filter happens before record/channel merging so a
-/// zero-weight contradiction digest cannot lose its provenance and later be
-/// reinterpreted through a positive-weight channel on the same record.
 pub fn build_candidate_union(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
@@ -120,7 +109,7 @@ pub fn build_candidate_union(
         .filter(|candidate| {
             weights
                 .get(&candidate.channel)
-                .is_none_or(|weight| *weight > FixedQ32::ZERO)
+                .map_or(true, |weight| *weight > FixedQ32::ZERO)
         })
         .collect();
     legacy::build_candidate_union(cue, policy, candidates)
@@ -176,7 +165,7 @@ pub fn recall(
             )
         } else {
             let omitted_count =
-                u32::try_from(admitted.entries.len().saturating_sub(selections.len()))
+                u32::try_from(union.entries.len().saturating_sub(selections.len()))
                     .unwrap_or(u32::MAX);
             (RecallDispositionV1::Recalled, selections, omitted_count)
         }
