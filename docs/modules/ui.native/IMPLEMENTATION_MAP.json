@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "955e8cdb4a8943c4c15defacd83b5dc19fa1bfb5",
-    "tree": "85dbe08406cf58c90ef8a25b9e382ab9f2aa23fb"
+    "commit": "da98ecdc291728be2b54650a7ab61ae1c186674e",
+    "tree": "4502efb59831b4a80614d5bc434c8c4e24fc2323"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -59,6 +59,11 @@
           "path": "codex-rs/hepta-native-gateway/src/lib.rs",
           "kind": "rust_unit",
           "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features"
+        },
+        {
+          "path": "apps/hepta-native/tests/remediation_regressions.rs",
+          "kind": "rust_integration",
+          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Validates signed endpoint/session identity, uses the OS-keyring bearer for the bounded authenticated loopback gateway, and reconciles durable pending operations.",
@@ -105,6 +110,11 @@
           "path": "codex-rs/hepta-native-gateway/src/lib.rs",
           "kind": "rust_unit",
           "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features"
+        },
+        {
+          "path": "apps/hepta-native/tests/remediation_regressions.rs",
+          "kind": "rust_integration",
+          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Consumes backend runtime observations and validates session/view monotonicity; fixture observations are not physical product evidence.",
@@ -160,6 +170,11 @@
           "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
           "kind": "rust_integration",
           "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features"
+        },
+        {
+          "path": "apps/hepta-native/tests/remediation_regressions.rs",
+          "kind": "rust_integration",
+          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Binds owned payload and session identity, durably journals dispatch, consumes current kernel final-use authority and preserves uncertain effects without replay.",
@@ -217,7 +232,9 @@
   ],
   "repositoryControlledGaps": [
     "Execute and retain current exact-head and deterministic synthetic-merge app, gateway, authority and package receipts on Linux, macOS and Windows.",
-    "Execute each generated unsigned package through its packaged binary smoke and retain measured build, package, smoke and artifact-size observations."
+    "Execute each generated unsigned package through its packaged binary smoke and retain measured build, package, smoke and artifact-size observations.",
+    "Complete full view/content/endpoint grant-binding and canonical resource replacement-race review; no effect receipt trust claim is inferred from CI hashes.",
+    "Review all updater crash boundaries and post-restart/rollback health against installed artifacts; complete platform minimum-version, installer and release provenance requirements."
   ],
   "externalEvidenceGates": [
     "Apple Developer ID custody and notarization, Windows Authenticode/AppUserModelID, and Linux distribution signing or repository ownership",
@@ -229,7 +246,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -261,7 +278,7 @@
   "sourceObjects": [
     {
       "path": "apps/hepta-native",
-      "object": "29d83ba9ee78e3cd1c2e08cf3af829796e6628f9"
+      "object": "a63d9af714fd430ec68aa23c91d06978ec9f11c9"
     },
     {
       "path": "apps/hepta-native/src/backend.rs",
@@ -289,7 +306,7 @@
     },
     {
       "path": "apps/hepta-native/src/runtime.rs",
-      "object": "8bf44a147ec84902ea83f7cff63af9b04bff93a0"
+      "object": "f739f435a4346c796a6b08d7f04c4f48b6e5ac30"
     },
     {
       "path": "apps/hepta-native/src/security.rs",
@@ -346,6 +363,10 @@
     {
       "path": "docs/modules/ui.native/TECHNICAL.md",
       "object": "0fa3937e4becd3edb65ad79b0c79e2a34c47417b"
+    },
+    {
+      "path": "apps/hepta-native/tests/remediation_regressions.rs",
+      "object": "24105140c8812b0bbb7249df4c395b2565811f73"
     }
   ]
 }
