@@ -1,0 +1,32 @@
+name: Hepta KG offline test tools
+on:
+  push:
+    branches: [ops/kg-offline-inputs-20260927]
+    paths: [.github/workflows/hepta-kg-test-tools.yml]
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - name: Fetch the existing checksum-pinned test entry points
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/kg-test-tools"
+          cd "$RUNNER_TEMP/kg-test-tools"
+          curl --fail --location --max-time 120 --output just.tar.gz \
+            https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz
+          curl --fail --location --max-time 120 --output nextest.tar.gz \
+            https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+          printf '%s\n' \
+            'c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59  just.tar.gz' \
+            'b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036  nextest.tar.gz' > SHA256SUMS
+          sha256sum --check SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-offline-test-tools-${{ github.run_id }}
+          path: ${{ runner.temp }}/kg-test-tools
+          if-no-files-found: error
+          retention-days: 7
