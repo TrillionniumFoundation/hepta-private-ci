@@ -26,8 +26,8 @@ env:
 jobs:
   apply-and-qualify:
     name: Apply source closure and preserve diagnostics
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+    runs-on: macos-15
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -39,12 +39,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .github/authbus-production-closure/part-* \
-            | base64 --decode \
-            | gzip --decompress \
-            > /tmp/authbus-production-closure.py
-          test "$(sha256sum /tmp/authbus-production-closure.py | cut -d' ' -f1)" = "$APPLY_SHA256"
-          python3 -m py_compile /tmp/authbus-production-closure.py
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          parts = b"".join(path.read_bytes() for path in sorted(Path(".github/authbus-production-closure").glob("part-*")))
+          payload = gzip.decompress(base64.b64decode(parts))
+          expected = "5cbb479a1799bcc174eed43df46d337e0355e3c641b28001cf206a914634d2db"
+          actual = hashlib.sha256(payload).hexdigest()
+          if actual != expected:
+              raise SystemExit(f"closure generator digest mismatch: {actual}")
+          target = Path(".github/authbus-production-closure-apply.py")
+          target.write_bytes(payload)
+          PY
+          python3 -m py_compile .github/authbus-production-closure-apply.py
 
       - name: Apply trust, owner, lifecycle, test and inventory changes
         id: apply
@@ -52,12 +62,21 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          python3 /tmp/authbus-production-closure.py 2>&1 | tee /tmp/authbus-apply.log
+          python3 .github/authbus-production-closure-apply.py 2>&1 | tee /tmp/authbus-apply.log
+          status=${PIPESTATUS[0]}
+          rm -f .github/authbus-production-closure-apply.py
+          exit "$status"
+
+      - name: Remove transient generator after failed apply
+        if: always()
+        shell: bash
+        run: rm -f .github/authbus-production-closure-apply.py
 
       - name: Format generated Rust
         id: fmt
         continue-on-error: true
         shell: bash
+        working-directory: codex-rs
         run: |
           set -o pipefail
           cargo fmt --all 2>&1 | tee /tmp/authbus-fmt.log
@@ -66,6 +85,7 @@ jobs:
         id: authbus_tests
         continue-on-error: true
         shell: bash
+        working-directory: codex-rs
         run: |
           set -o pipefail
           cargo test -p codex-hepta-authbus --all-targets 2>&1 | tee /tmp/authbus-tests.log
@@ -74,6 +94,7 @@ jobs:
         id: evidence_tests
         continue-on-error: true
         shell: bash
+        working-directory: codex-rs
         run: |
           set -o pipefail
           cargo test -p codex-hepta-evidence --lib authbus 2>&1 | tee /tmp/authbus-evidence.log
@@ -82,6 +103,7 @@ jobs:
         id: bao_tests
         continue-on-error: true
         shell: bash
+        working-directory: codex-rs
         run: |
           set -o pipefail
           cargo test -p codex-hepta-bao-adapter --lib authbus 2>&1 | tee /tmp/authbus-bao.log
@@ -90,6 +112,7 @@ jobs:
         id: agentd_check
         continue-on-error: true
         shell: bash
+        working-directory: codex-rs
         run: |
           set -o pipefail
           cargo check -p codex-hepta-agentd 2>&1 | tee /tmp/authbus-agentd.log
@@ -106,6 +129,7 @@ jobs:
         id: clippy
         continue-on-error: true
         shell: bash
+        working-directory: codex-rs
         run: |
           set -o pipefail
           cargo clippy -p codex-hepta-authbus --all-targets -- -D warnings 2>&1 | tee /tmp/authbus-clippy.log
@@ -131,6 +155,7 @@ jobs:
             echo "- workflow run: $GITHUB_RUN_ID"
             echo "- workflow attempt: $GITHUB_RUN_ATTEMPT"
             echo "- trigger SHA: $GITHUB_SHA"
+            echo "- tested worktree tree: $(git write-tree)"
             echo "- generator SHA-256: $APPLY_SHA256"
             echo "- runner: $RUNNER_OS / $RUNNER_ARCH"
             echo
@@ -161,7 +186,7 @@ jobs:
               echo
               echo '```text'
               if test -f "$file"; then
-                tail -n 160 "$file"
+                tail -n 200 "$file"
               else
                 echo "log unavailable"
               fi
@@ -179,6 +204,8 @@ jobs:
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m "fix(authbus): close trust and owner boundaries"
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase "origin/$GITHUB_REF_NAME"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
