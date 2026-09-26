@@ -1,12 +1,21 @@
-//! Durable and reference operation, outbox and reconciliation semantics.
+//! Canonical operation identity plus bounded reference and standalone durable semantics.
 //!
-//! `OperationLedger` and `Outbox` remain deterministic in-memory reference
-//! models. `DurableOperationStore` is the production-oriented SQLite owner: it
-//! atomically co-commits operation intent and source outbox state, fences claims,
-//! fails closed after unknown effects, and requires independent terminal
-//! reconciliation. Destination owners can use `DestinationDedupeStore` against
-//! their own migrated SQLite pool so dedupe and domain mutation share one
-//! transaction.
+//! `OperationIntentV1` is the canonical cross-owner semantic identity. The
+//! in-memory reference models `OperationLedger` and `Outbox` provide deterministic
+//! oracles and do not provide durable storage.
+//!
+//! `DurableOperationStore` is the standalone durable qualification owner. It is
+//! used for fault-matrix, recovery and migration qualification where one isolated
+//! SQLite database owns both the source ledger and source outbox. It is not the
+//! Agentd product owner and must never dual-write one logical operation with the
+//! CognitiveStore-backed production path.
+//!
+//! The Agentd product owner is CognitiveStore through
+//! `hepta_memory::ProductionDurableWriter`; that owner atomically binds canonical
+//! `OperationIntentV1`, local event/outbox state, final-use dispatch claims and
+//! destination terminal observations. `DestinationDedupeStore` remains a reusable
+//! destination-owner helper for stores whose domain mutation and dedupe proof can
+//! share one transaction.
 
 #![forbid(unsafe_code)]
 
@@ -19,6 +28,7 @@ mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
+mod sqlite;
 
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;
@@ -38,6 +48,11 @@ pub use durable_model::MAX_DURABLE_LEASE_MS;
 pub use durable_model::MAX_DURABLE_OUTBOX_ATTEMPTS;
 pub use durable_model::MAX_DURABLE_PENDING_OPERATIONS;
 pub use durable_model::OperationBacklogMetrics;
+/// Standalone-store record shape used only by `DurableOperationStore`.
+///
+/// Product callers must construct canonical [`OperationIntentV1`] and enter the
+/// CognitiveStore-backed `ProductionDurableWriter`; no implicit conversion or
+/// dual-write bridge exists.
 pub use durable_model::OperationIntentV1 as DurableOperationIntentV1;
 pub use durable_model::OutboxStatusV1;
 pub use durable_model::PrepareDisposition;

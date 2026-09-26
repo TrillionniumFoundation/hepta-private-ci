@@ -17,10 +17,10 @@ use codex_hepta_operations::DestinationOperationIdentity;
 use codex_hepta_operations::DurableOperationError;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 const ROOT_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_ROOT";
 const MODE_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_MODE";
@@ -39,11 +39,15 @@ fn operation(payload: &[u8]) -> DestinationOperationIdentity {
 }
 
 async fn pool(path: &Path) -> SqlitePool {
-    SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(path))
+    let canonical_path = path.canonicalize().expect("canonical owner database");
+    let parent = canonical_path.parent().expect("owner database parent");
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(parent.to_path_buf()).expect("absolute SQLite home"),
+    );
+    sqlite
+        .open_durable_evidence_pool(&canonical_path)
         .await
-        .expect("open existing owner database")
+        .expect("open existing owner database through repository SQLite shim")
 }
 
 async fn stage_effect(

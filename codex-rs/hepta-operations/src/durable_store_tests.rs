@@ -9,8 +9,6 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
@@ -265,7 +263,7 @@ async fn acknowledgement_loss_stays_indeterminate_until_terminal_observer() {
             &operation.destination,
             &stable_id("worker:one"),
             generation(1),
-            Duration::from_secs(1),
+            Duration::from_secs(30),
         )
         .await
         .expect("claim")
@@ -416,6 +414,118 @@ async fn newer_generation_adopts_unsettled_dispatch_and_fences_predecessor() {
 
 #[cfg(unix)]
 #[tokio::test]
+async fn newer_generation_handoff_before_effect_entry_keeps_old_effect_count_zero() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let operation = intent(b"handoff-before-entry");
+    let store = DurableOperationStore::open(&path).await.expect("open");
+    store.prepare_intent(&operation).await.expect("prepare");
+    let stale_claim = store
+        .claim_next(
+            &operation.destination,
+            &stable_id("worker:old-generation"),
+            generation(1),
+            Duration::from_secs(30),
+        )
+        .await
+        .expect("claim")
+        .expect("row");
+    let (authority, signed, _authority_dir) = authority_fixture(&stale_claim.intent, 31);
+    let authorized = store
+        .authorize_dispatch(&authority, &signed, &stale_claim)
+        .await
+        .expect("authorize");
+
+    let adopted = store
+        .adopt_unsettled_generation(&operation.scope_id, &operation.operation_id, generation(2))
+        .await
+        .expect("handoff");
+    assert_eq!(adopted.state, DurableOperationState::Indeterminate);
+
+    let effect_count = std::cell::Cell::new(0_u32);
+    let result = store
+        .execute_authorized(authorized, |_| {
+            effect_count.set(effect_count.get() + 1);
+            DispatchEffect::Dispatched {
+                value: (),
+                dispatch_digest: Digest32::of_bytes(b"must-not-dispatch"),
+                acknowledgement_digest: None,
+            }
+        })
+        .await;
+    assert!(matches!(result, Err(DurableOperationError::StaleLease)));
+    assert_eq!(
+        effect_count.get(),
+        0,
+        "a predecessor generation must not cross the physical effect entry"
+    );
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn revocation_before_effect_entry_keeps_effect_count_zero_and_requeues() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let operation = intent(b"revoked-before-entry");
+    let store = DurableOperationStore::open(&path).await.expect("open");
+    store.prepare_intent(&operation).await.expect("prepare");
+    let claim = store
+        .claim_next(
+            &operation.destination,
+            &stable_id("worker:revoked"),
+            generation(1),
+            Duration::from_secs(30),
+        )
+        .await
+        .expect("claim")
+        .expect("row");
+    let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, 32);
+    let authorized = store
+        .authorize_dispatch(&authority, &signed, &claim)
+        .await
+        .expect("authorize");
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .expect("revoke before entry");
+
+    let effect_count = std::cell::Cell::new(0_u32);
+    let result = store
+        .execute_authorized(authorized, |_| {
+            effect_count.set(effect_count.get() + 1);
+            DispatchEffect::Dispatched {
+                value: (),
+                dispatch_digest: Digest32::of_bytes(b"must-not-dispatch"),
+                acknowledgement_digest: None,
+            }
+        })
+        .await;
+    assert!(matches!(result, Err(DurableOperationError::Authority(_))));
+    assert_eq!(effect_count.get(), 0);
+    let record = store
+        .operation(&operation.scope_id, &operation.operation_id)
+        .await
+        .expect("lookup")
+        .expect("operation");
+    assert_eq!(record.state, DurableOperationState::Prepared);
+    let outbox = store
+        .outbox_status(
+            &operation.destination,
+            &operation.scope_id,
+            &operation.operation_id,
+        )
+        .await
+        .expect("outbox")
+        .expect("row");
+    assert_eq!(outbox.state, DurableOutboxState::Queued);
+    assert!(outbox.fence > claim.fence);
+}
+
+#[cfg(unix)]
+#[tokio::test]
 async fn proven_not_dispatched_requeues_with_a_new_fence() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
@@ -427,7 +537,7 @@ async fn proven_not_dispatched_requeues_with_a_new_fence() {
             &operation.destination,
             &stable_id("worker:one"),
             generation(1),
-            Duration::from_secs(1),
+            Duration::from_secs(30),
         )
         .await
         .expect("claim")
@@ -590,11 +700,9 @@ async fn migration_checksum_tamper_fails_reopen() {
     let path = directory.path().join("operations.sqlite3");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.close().await;
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(&path))
+    let pool = crate::sqlite::open_durable_pool(&path)
         .await
-        .expect("raw open");
+        .expect("raw open through repository SQLite shim");
     sqlx::query("UPDATE _sqlx_migrations SET checksum = X'00' WHERE version = 1")
         .execute(&pool)
         .await
@@ -612,11 +720,9 @@ async fn future_migration_lineage_blocks_old_binary_reopen() {
     let path = directory.path().join("operations.sqlite3");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.close().await;
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(&path))
+    let pool = crate::sqlite::open_durable_pool(&path)
         .await
-        .expect("raw open");
+        .expect("raw open through repository SQLite shim");
     sqlx::query(
         "INSERT INTO _sqlx_migrations
          (version, description, success, checksum, execution_time)

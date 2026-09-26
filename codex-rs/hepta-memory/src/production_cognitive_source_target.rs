@@ -30,6 +30,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 pub const COGNITIVE_SOURCE_DESTINATION_V1: &str = "cognitive.store.source-ledger";
 pub const COGNITIVE_SOURCE_TOPIC_V1: &str = "hepta.cognitive.source.append.v1";
@@ -91,6 +93,7 @@ pub enum CognitiveSourceTerminalObservation {
     Applied { receipt: String },
     NotApplied,
     Quarantined { reason: String },
+    Indeterminate { reason: String },
     Unavailable { reason: String },
 }
 
@@ -215,6 +218,93 @@ impl CognitiveSourceOutboxTarget {
         format!("{}:{}", id.source_id.as_str(), id.revision)
     }
 
+    fn decode_terminal_proof(
+        request: &ProductionDispatchRequest,
+        semantic_sha256: &str,
+        disposition: &str,
+        evidence: String,
+    ) -> CognitiveSourceTerminalObservation {
+        if semantic_sha256 != request.operation_semantic_sha256.as_str() {
+            return CognitiveSourceTerminalObservation::Quarantined {
+                reason: "destination terminal identity exists with different semantics".to_string(),
+            };
+        }
+        match disposition {
+            "applied" => CognitiveSourceTerminalObservation::Applied { receipt: evidence },
+            "not_applied" => CognitiveSourceTerminalObservation::NotApplied,
+            "quarantined" => CognitiveSourceTerminalObservation::Quarantined { reason: evidence },
+            _ => CognitiveSourceTerminalObservation::Unavailable {
+                reason: format!("invalid destination terminal disposition {disposition:?}"),
+            },
+        }
+    }
+
+    async fn terminal_proof(
+        &self,
+        request: &ProductionDispatchRequest,
+    ) -> Result<Option<CognitiveSourceTerminalObservation>, sqlx::Error> {
+        let row: Option<(String, String, String)> = sqlx::query_as(
+            "SELECT semantic_sha256, disposition, evidence
+             FROM cognitive_operation_destination_terminal
+             WHERE destination_id = ? AND operation_id = ?",
+        )
+        .bind(COGNITIVE_SOURCE_DESTINATION_V1)
+        .bind(&request.occurrence_key)
+        .fetch_optional(&self.store.pool)
+        .await?;
+        Ok(row.map(|(semantic, disposition, evidence)| {
+            Self::decode_terminal_proof(request, &semantic, &disposition, evidence)
+        }))
+    }
+
+    async fn terminal_proof_tx(
+        transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        request: &ProductionDispatchRequest,
+    ) -> Result<Option<CognitiveSourceTerminalObservation>, sqlx::Error> {
+        let row: Option<(String, String, String)> = sqlx::query_as(
+            "SELECT semantic_sha256, disposition, evidence
+             FROM cognitive_operation_destination_terminal
+             WHERE destination_id = ? AND operation_id = ?",
+        )
+        .bind(COGNITIVE_SOURCE_DESTINATION_V1)
+        .bind(&request.occurrence_key)
+        .fetch_optional(&mut **transaction)
+        .await?;
+        Ok(row.map(|(semantic, disposition, evidence)| {
+            Self::decode_terminal_proof(request, &semantic, &disposition, evidence)
+        }))
+    }
+
+    async fn insert_terminal_proof_tx(
+        transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        request: &ProductionDispatchRequest,
+        disposition: &str,
+        evidence: &str,
+    ) -> Result<(), String> {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|error| error.to_string())?
+            .as_millis();
+        let recorded_at =
+            i64::try_from(now).map_err(|_| "terminal proof clock overflow".to_string())?;
+        sqlx::query(
+            "INSERT INTO cognitive_operation_destination_terminal (
+                destination_id, operation_id, semantic_sha256, disposition,
+                evidence, recorded_at_unix_ms
+             ) VALUES (?, ?, ?, ?, ?, ?)",
+        )
+        .bind(COGNITIVE_SOURCE_DESTINATION_V1)
+        .bind(&request.occurrence_key)
+        .bind(request.operation_semantic_sha256.as_str())
+        .bind(disposition)
+        .bind(evidence)
+        .bind(recorded_at)
+        .execute(&mut **transaction)
+        .await
+        .map_err(|error| error.to_string())?;
+        Ok(())
+    }
+
     async fn exact_count(
         &self,
         draft: &SourceDraft,
@@ -253,6 +343,15 @@ impl CognitiveSourceOutboxTarget {
                 reason: error.to_string(),
             };
         }
+        match self.terminal_proof(request).await {
+            Ok(Some(observation)) => return observation,
+            Ok(None) => {}
+            Err(error) => {
+                return CognitiveSourceTerminalObservation::Unavailable {
+                    reason: error.to_string(),
+                };
+            }
+        }
         let source_id = SourceEventId::for_event(
             self.store.owner_agent_id(),
             &draft.scope,
@@ -280,7 +379,9 @@ impl CognitiveSourceOutboxTarget {
         .fetch_one(&self.store.pool)
         .await;
         match same_identity {
-            Ok(0) => CognitiveSourceTerminalObservation::NotApplied,
+            Ok(0) => CognitiveSourceTerminalObservation::Indeterminate {
+                reason: "destination has no terminal proof for this operation".to_string(),
+            },
             Ok(_) => CognitiveSourceTerminalObservation::Quarantined {
                 reason: "destination source identity exists with different semantics".to_string(),
             },
@@ -311,6 +412,39 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
                     reason: error.to_string(),
                 };
             }
+            match Self::terminal_proof_tx(&mut transaction, &request).await {
+                Ok(Some(observation)) => {
+                    let outcome = match observation {
+                        CognitiveSourceTerminalObservation::Applied { receipt } => {
+                            ProductionTargetOutcome::Committed { receipt }
+                        }
+                        CognitiveSourceTerminalObservation::NotApplied => {
+                            ProductionTargetOutcome::NotApplied {
+                                reason: "destination terminal proof records NotApplied".to_string(),
+                            }
+                        }
+                        CognitiveSourceTerminalObservation::Quarantined { reason } => {
+                            ProductionTargetOutcome::Rejected { reason }
+                        }
+                        CognitiveSourceTerminalObservation::Indeterminate { reason }
+                        | CognitiveSourceTerminalObservation::Unavailable { reason } => {
+                            ProductionTargetOutcome::Indeterminate { reason }
+                        }
+                    };
+                    if let Err(error) = transaction.commit().await {
+                        return ProductionTargetOutcome::Indeterminate {
+                            reason: error.to_string(),
+                        };
+                    }
+                    return outcome;
+                }
+                Ok(None) => {}
+                Err(error) => {
+                    return ProductionTargetOutcome::Indeterminate {
+                        reason: error.to_string(),
+                    };
+                }
+            }
 
             let source_id = SourceEventId::for_event(
                 self.store.owner_agent_id(),
@@ -338,14 +472,23 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
             .await;
             match exact {
                 Ok(1) => {
+                    let receipt = Self::receipt(&SourceRevisionId::new(source_id));
+                    if let Err(reason) = Self::insert_terminal_proof_tx(
+                        &mut transaction,
+                        &request,
+                        "applied",
+                        &receipt,
+                    )
+                    .await
+                    {
+                        return ProductionTargetOutcome::Indeterminate { reason };
+                    }
                     if let Err(error) = transaction.commit().await {
                         return ProductionTargetOutcome::Indeterminate {
                             reason: error.to_string(),
                         };
                     }
-                    return ProductionTargetOutcome::Committed {
-                        receipt: Self::receipt(&SourceRevisionId::new(source_id)),
-                    };
+                    return ProductionTargetOutcome::Committed { receipt };
                 }
                 Ok(_) => {}
                 Err(error) => {
@@ -381,11 +524,25 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
             // expectation while holding the same BEGIN IMMEDIATE transaction
             // that will publish the destination row.
             if expected_predecessor.is_some() {
-                return ProductionTargetOutcome::NotApplied {
-                    reason:
-                        "destination predecessor/CAS mismatch: source identity has no predecessor"
-                            .to_string(),
-                };
+                let reason =
+                    "destination predecessor/CAS mismatch: source identity has no predecessor"
+                        .to_string();
+                if let Err(error) = Self::insert_terminal_proof_tx(
+                    &mut transaction,
+                    &request,
+                    "not_applied",
+                    &reason,
+                )
+                .await
+                {
+                    return ProductionTargetOutcome::Indeterminate { reason: error };
+                }
+                if let Err(error) = transaction.commit().await {
+                    return ProductionTargetOutcome::Indeterminate {
+                        reason: error.to_string(),
+                    };
+                }
+                return ProductionTargetOutcome::NotApplied { reason };
             }
 
             let id = match self
@@ -403,14 +560,19 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
                     CognitiveStoreError::Corrupt(reason) | CognitiveStoreError::Unavailable(reason),
                 ) => return ProductionTargetOutcome::Indeterminate { reason },
             };
+            let receipt = Self::receipt(&id);
+            if let Err(reason) =
+                Self::insert_terminal_proof_tx(&mut transaction, &request, "applied", &receipt)
+                    .await
+            {
+                return ProductionTargetOutcome::Indeterminate { reason };
+            }
             if let Err(error) = transaction.commit().await {
                 return ProductionTargetOutcome::Indeterminate {
                     reason: error.to_string(),
                 };
             }
-            ProductionTargetOutcome::Committed {
-                receipt: Self::receipt(&id),
-            }
+            ProductionTargetOutcome::Committed { receipt }
         })
     }
 }
@@ -436,6 +598,9 @@ impl FinalUseProductionOutboxTarget for CognitiveSourceOutboxTarget {
                 }
                 CognitiveSourceTerminalObservation::Quarantined { reason } => {
                     ProductionTerminalObservation::Quarantined { reason }
+                }
+                CognitiveSourceTerminalObservation::Indeterminate { reason } => {
+                    ProductionTerminalObservation::Indeterminate { reason }
                 }
                 CognitiveSourceTerminalObservation::Unavailable { reason } => {
                     ProductionTerminalObservation::Unavailable { reason }

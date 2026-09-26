@@ -2,10 +2,13 @@
 
 ## Current executable contract
 
-The current candidate has two deliberately separate surfaces:
+The current candidate has three deliberately separated roles across two persistence surfaces:
 
-1. `codex-rs/hepta-operations` is the deterministic bounded reference oracle.
-2. The production-shaped durable owner reuses the existing per-Agent CognitiveStore SQLite owner in `codex-rs/hepta-memory`; it does not create a second operation database or execution spine.
+1. `OperationLedger` and `Outbox` in `codex-rs/hepta-operations` are deterministic bounded in-memory reference oracles.
+2. `DurableOperationStore` in the same crate is a standalone durability/fault-matrix qualification owner. It is not an Agentd product owner.
+3. The product durable owner reuses the existing per-Agent CognitiveStore SQLite owner in `codex-rs/hepta-memory` through `ProductionDurableWriter`.
+
+One logical operation selects exactly one persistence owner. There is no implicit conversion or dual-write bridge between `DurableOperationIntentV1` and the product path; migration must enter a canonical `OperationIntentV1` as an explicit new migration operation.
 
 The canonical authority-free contract is `OperationIntentV1`. Its semantic digest binds operation id, subject id, destination id, exact payload digest, scope digest, policy generation and optional expected predecessor. Exact semantic replay is idempotent; reusing an operation id with changed semantics conflicts.
 
@@ -17,10 +20,19 @@ The canonical authority-free contract is `OperationIntentV1`. Its semantic diges
 - `OperationLedger`: `codex-rs/hepta-operations/src/ledger.rs`;
 - `Outbox`: `codex-rs/hepta-operations/src/outbox.rs`.
 
-### Durable integrated owner
+### Standalone durable qualification owner
+
+- `DurableOperationStore`, its fenced source outbox and synchronous effect-entry qualification: `codex-rs/hepta-operations/src/durable_store.rs`;
+- repository SQLite-shim composition: `codex-rs/hepta-operations/src/sqlite.rs`;
+- standalone destination dedupe helper: `codex-rs/hepta-operations/src/destination_dedupe.rs`.
+
+This surface exists for recovery, migration and fault qualification. Product Agentd callers do not write it.
+
+### Durable integrated product owner
 
 - immutable operation schema: `codex-rs/hepta-memory/migrations/0011_kernel_operations.sql`;
 - durable dispatch-claim schema: `codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql`;
+- immutable destination terminal-proof schema: `codex-rs/hepta-memory/migrations/0016_kernel_operation_destination_terminal.sql`;
 - atomic operation/event/outbox publication and journal recovery: `codex-rs/hepta-memory/src/local_lease_outbox.rs`;
 - bounded durable claim lease/attempt/backoff/takeover: `codex-rs/hepta-memory/src/operation_claims.rs`;
 - production writer and final-use dispatch: `codex-rs/hepta-memory/src/production_writer.rs`;
@@ -37,9 +49,9 @@ The durable claim path has bounded attempts, lease expiry, renewal, retry eligib
 
 SQLite is required to be WAL with `synchronous=FULL`. Source tests cover atomic rollback across operation/event/outbox fault cuts, deterministic `SQLITE_FULL`, reopen integrity and pre-mutation capacity rejection. These are source test identities; they are not target-host power-loss evidence.
 
-`ProductionDispatchRequest` carries operation subject, destination, scope digest, policy generation, complete `OperationIntentV1` semantic digest, optional expected predecessor, exact payload digest and operation idempotency identity. `ProductionFinalUseOutboxDispatcher` consumes `kernel.authority` final-use authority immediately before target entry. The legacy direct dispatcher is crate-private and is not a product API.
+`ProductionDispatchRequest` carries operation subject, destination, scope digest, policy generation, complete `OperationIntentV1` semantic digest, optional expected predecessor, exact payload digest and operation idempotency identity. `ProductionFinalUseOutboxDispatcher` consumes `kernel.authority` with `with_verified_use_async`; the active-effect fence spans the actual target future instead of only future construction. Revocation before entry yields zero target entries. Revocation after entry reports `DispatchInProgress` until the effect completes or is cancelled. The legacy direct dispatcher is crate-private and is not a product API.
 
-`CognitiveSourceOutboxTarget` reconstructs `OperationIntentV1`, verifies its semantic digest, begins a destination-owned `BEGIN IMMEDIATE` transaction, checks predecessor/CAS inside that transaction, and returns deterministic `NotApplied` for a mismatch. Queue or transport acknowledgement never proves terminal success. Lost acknowledgement is reconciled through the destination-owned observer without redispatch.
+`CognitiveSourceOutboxTarget` reconstructs `OperationIntentV1`, verifies its semantic digest, begins a destination-owned `BEGIN IMMEDIATE` transaction, and checks predecessor/CAS inside that transaction. Success commits an immutable `Applied` proof with the source row; a deterministic mismatch commits an immutable operation-bound `NotApplied` proof. The observer never converts temporary row absence into failure: without a terminal proof it returns `Indeterminate`, so a concurrent late commit cannot be terminalized as rejected. Queue or transport acknowledgement never proves terminal success. Lost acknowledgement is reconciled through the destination-owned proof without redispatch.
 
 Current-main `automation.taskflow` is a second producer-owned `OperationIntentV1` / final-use consumer with its own durable effect-dispatch lineage. It is not folded into the CognitiveStore transaction and does not make `kernel.operations` the owner of Automation facts.
 
@@ -77,10 +89,12 @@ Current source test identities cover:
 - deterministic `SQLITE_FULL` rollback and clean reopen;
 - durable claim attempt/expiry/renewal/takeover semantics;
 - destination semantic-digest reconstruction;
-- predecessor mismatch -> deterministic `NotApplied`;
-- final-use binding mismatch before target entry;
+- predecessor mismatch -> immutable destination-owned `NotApplied` proof;
+- target absence without proof remains indeterminate during a late commit;
+- final-use binding mismatch or revocation before target entry -> zero target entries;
+- revocation during an entered async effect -> `DispatchInProgress` until completion;
 - lost acknowledgement -> indeterminate -> observer-only terminal reconciliation;
-- concurrent dispatch exclusion and owner-generation handoff;
+- concurrent dispatch exclusion and owner-generation handoff, including zero old-generation callback entries when handoff wins first;
 - tamper/corruption fail-closed reopening;
 - Automation final-use provider-at-most-once and durable recovery;
 - Agentd lifecycle composition and reconciler cancellation.
