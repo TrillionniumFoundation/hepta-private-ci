@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "uid": "auth-authbus-authority",
+  "title": "auth.authbus authority",
+  "owner": "authbus-authority",
+  "default_time_range": "6h",
+  "variables": [
+    {"name": "environment", "label": "Environment", "metric_label": "environment"},
+    {"name": "authority_instance_id", "label": "Authority instance", "metric_label": "authority_instance_id"},
+    {"name": "source_sha", "label": "Source SHA", "metric_label": "source_sha"}
+  ],
+  "rows": [
+    {
+      "title": "Security and ownership",
+      "panels": [
+        {
+          "title": "Owner fence held",
+          "type": "stat",
+          "query": "max(hepta_authbus_owner_lock_held{environment=\"$environment\",authority_instance_id=\"$authority_instance_id\"})",
+          "success_condition": "value == 1"
+        },
+        {
+          "title": "Owner collisions",
+          "type": "stat",
+          "query": "sum(increase(hepta_authbus_owner_lock_total{environment=\"$environment\",result=\"collision\"}[6h]))",
+          "success_condition": "value == 0"
+        },
+        {
+          "title": "Issuer verification failures",
+          "type": "timeseries",
+          "query": "sum by (purpose,reason) (rate(hepta_authbus_issuer_verification_total{environment=\"$environment\",result=\"failure\"}[5m]))"
+        },
+        {
+          "title": "Closed-world API inventory",
+          "type": "stat",
+          "query": "min(hepta_authbus_api_inventory_pass{environment=\"$environment\",source_sha=\"$source_sha\"})",
+          "success_condition": "value == 1"
+        }
+      ]
+    },
+    {
+      "title": "Checkpoint and recovery",
+      "panels": [
+        {
+          "title": "Database vs witness generation",
+          "type": "timeseries",
+          "query": "max by (side) (hepta_authbus_checkpoint_generation{environment=\"$environment\",authority_instance_id=\"$authority_instance_id\"})"
+        },
+        {
+          "title": "Checkpoint dirty age",
+          "type": "timeseries",
+          "query": "max(hepta_authbus_checkpoint_dirty_age_seconds{environment=\"$environment\",authority_instance_id=\"$authority_instance_id\"})",
+          "warning": 5,
+          "critical": 30
+        },
+        {
+          "title": "Checkpoint publish failures",
+          "type": "timeseries",
+          "query": "sum by (phase,reason) (rate(hepta_authbus_checkpoint_publish_total{environment=\"$environment\",result=\"failure\"}[5m]))"
+        },
+        {
+          "title": "Recovery required",
+          "type": "stat",
+          "query": "max by (reason) (hepta_authbus_recovery_required{environment=\"$environment\"})",
+          "success_condition": "value == 0"
+        },
+        {
+          "title": "Recovery backlog",
+          "type": "timeseries",
+          "query": "max by (class) (hepta_authbus_recovery_backlog{environment=\"$environment\"})"
+        }
+      ]
+    },
+    {
+      "title": "Reservation and quota lifecycle",
+      "panels": [
+        {
+          "title": "Active reservations",
+          "type": "timeseries",
+          "query": "sum by (state) (hepta_authbus_reservation_active{environment=\"$environment\"})"
+        },
+        {
+          "title": "Oldest reservation age",
+          "type": "timeseries",
+          "query": "max by (state) (hepta_authbus_reservation_oldest_age_seconds{environment=\"$environment\"})"
+        },
+        {
+          "title": "Expired sweep backlog",
+          "type": "timeseries",
+          "query": "max(hepta_authbus_reservation_sweep_backlog{environment=\"$environment\"})"
+        },
+        {
+          "title": "Sweep outcomes",
+          "type": "timeseries",
+          "query": "sum by (outcome) (rate(hepta_authbus_reservation_sweep_items_total{environment=\"$environment\"}[5m]))"
+        },
+        {
+          "title": "Quota components",
+          "type": "timeseries",
+          "query": "sum by (component) (hepta_authbus_quota_amount{environment=\"$environment\"})"
+        }
+      ]
+    },
+    {
+      "title": "Trusted time and decisions",
+      "panels": [
+        {
+          "title": "Trusted-time age",
+          "type": "timeseries",
+          "query": "max(hepta_authbus_trusted_time_age_seconds{environment=\"$environment\"})"
+        },
+        {
+          "title": "Trusted-time failures",
+          "type": "timeseries",
+          "query": "sum by (reason) (rate(hepta_authbus_trusted_time_total{environment=\"$environment\",result=\"failure\"}[5m]))"
+        },
+        {
+          "title": "Authorization result rate",
+          "type": "timeseries",
+          "query": "sum by (result,reason) (rate(hepta_authbus_authorization_total{environment=\"$environment\"}[5m]))"
+        },
+        {
+          "title": "Authorization p99",
+          "type": "timeseries",
+          "query": "histogram_quantile(0.99, sum by (le) (rate(hepta_authbus_authorization_duration_seconds_bucket{environment=\"$environment\"}[5m])))"
+        },
+        {
+          "title": "Settlement failures",
+          "type": "timeseries",
+          "query": "sum by (reason) (rate(hepta_authbus_settlement_total{environment=\"$environment\",result=\"failure\"}[5m]))"
+        }
+      ]
+    },
+    {
+      "title": "Maintenance, storage and outbox",
+      "panels": [
+        {
+          "title": "Maintenance result",
+          "type": "timeseries",
+          "query": "sum by (result,failed_phase) (rate(hepta_authbus_maintenance_tick_total{environment=\"$environment\"}[5m]))"
+        },
+        {
+          "title": "Seconds since maintenance success",
+          "type": "stat",
+          "query": "time() - max(hepta_authbus_maintenance_last_success_unixtime{environment=\"$environment\"})",
+          "warning": 60,
+          "critical": 150
+        },
+        {
+          "title": "SQLite operation p99",
+          "type": "timeseries",
+          "query": "histogram_quantile(0.99, sum by (le,operation) (rate(hepta_authbus_sqlite_operation_duration_seconds_bucket{environment=\"$environment\"}[5m])))"
+        },
+        {
+          "title": "Database/WAL/SHM bytes",
+          "type": "timeseries",
+          "query": "sum by (file) (hepta_authbus_database_bytes{environment=\"$environment\"})"
+        },
+        {
+          "title": "Outbox active",
+          "type": "timeseries",
+          "query": "sum by (state) (hepta_authbus_outbox_active{environment=\"$environment\"})"
+        },
+        {
+          "title": "Outbox oldest age",
+          "type": "timeseries",
+          "query": "max by (state) (hepta_authbus_outbox_oldest_age_seconds{environment=\"$environment\"})"
+        }
+      ]
+    }
+  ]
+}
