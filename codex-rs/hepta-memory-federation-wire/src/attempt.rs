@@ -29,14 +29,8 @@ impl AttemptIdentity {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum AttemptState {
     Pending,
-    Cancelled {
-        cancellation_id: StableId,
-        observed_unix_ms: u64,
-    },
-    Terminal {
-        terminal_digest: Digest32,
-        observed_unix_ms: u64,
-    },
+    Cancelled { cancellation_id: StableId },
+    Terminal { terminal_digest: Digest32 },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -113,16 +107,12 @@ impl FederationAttemptRegistryV1 {
         }
         match &entry.state {
             AttemptState::Pending => {
-                entry.state = AttemptState::Terminal {
-                    terminal_digest,
-                    observed_unix_ms,
-                };
+                entry.state = AttemptState::Terminal { terminal_digest };
                 Ok(())
             }
             AttemptState::Cancelled { .. } => Err(AttemptRegistryError::Cancelled),
             AttemptState::Terminal {
                 terminal_digest: current,
-                ..
             } if current == &terminal_digest => Ok(()),
             AttemptState::Terminal { .. } => Err(AttemptRegistryError::ConflictingTerminal),
         }
@@ -138,23 +128,25 @@ impl FederationAttemptRegistryV1 {
             return Err(AttemptRegistryError::ZeroObservationTime);
         }
         let identity = AttemptIdentity::new(&request.query_id, request.query_binding_digest);
+        if self
+            .attempts
+            .get(&identity)
+            .is_some_and(|entry| observed_unix_ms >= entry.expires_unix_ms)
+        {
+            self.attempts.remove(&identity);
+        }
         let disposition = match self.attempts.get_mut(&identity) {
             None => FederationCancellationDispositionV1::UnknownAttempt,
-            Some(entry) if observed_unix_ms >= entry.expires_unix_ms => {
-                self.attempts.remove(&identity);
-                FederationCancellationDispositionV1::UnknownAttempt
-            }
             Some(entry) => match &entry.state {
                 AttemptState::Pending => {
                     entry.state = AttemptState::Cancelled {
                         cancellation_id: request.cancellation_id.clone(),
-                        observed_unix_ms,
                     };
                     FederationCancellationDispositionV1::ObservedBeforeTerminal
                 }
-                AttemptState::Cancelled {
-                    cancellation_id, ..
-                } if cancellation_id == &request.cancellation_id => {
+                AttemptState::Cancelled { cancellation_id }
+                    if cancellation_id == &request.cancellation_id =>
+                {
                     FederationCancellationDispositionV1::ObservedBeforeTerminal
                 }
                 AttemptState::Cancelled { .. } => {
