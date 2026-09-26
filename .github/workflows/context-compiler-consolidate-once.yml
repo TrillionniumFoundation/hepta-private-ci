@@ -28,26 +28,64 @@ jobs:
           components: clippy,rustfmt
 
       - name: Consolidate exact-body gate and qualification truth
+        id: consolidate
+        continue-on-error: true
         shell: bash
+        env:
+          LOG_DIR: ${{ runner.temp }}/context-compiler-consolidation
         run: |
-          set -euo pipefail
+          mkdir -p "$LOG_DIR"
+          exec > >(tee "$LOG_DIR/consolidation.log") 2>&1
+          set -uo pipefail
+          set +e
+
           git config user.name "hepta-context-compiler-bot"
           git config user.email "hepta-context-compiler-bot@users.noreply.github.com"
           git fetch origin codex/context-compiler-provider-proof-chain-v2
-          git checkout origin/codex/context-compiler-provider-proof-chain-v2 -- \
-            codex-rs/codex-api/src/dispatch_metadata.rs \
-            codex-rs/codex-api/src/endpoint/responses.rs \
-            codex-rs/core/src/model_provider_policy/attempt_owner.rs \
-            codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs
-          python3 scripts/context_compiler_consolidate_once.py
-          python3 scripts/generate_context_compiler_module_docs.py --write
-          cd codex-rs
-          cargo fmt --all
-          cargo test --locked -p codex-hepta-context-compiler
-          cargo check --locked -p codex-api -p codex-core -p codex-extension-api
-          cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
-          cd ..
-          git diff --check
-          git add -A
-          git commit -m "context.compiler: bind exact encoded body at provider policy boundary"
-          git push origin HEAD:codex/context-compiler-v2-full-closure-20260927
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            git checkout origin/codex/context-compiler-provider-proof-chain-v2 -- \
+              codex-rs/codex-api/src/dispatch_metadata.rs \
+              codex-rs/codex-api/src/endpoint/responses.rs \
+              codex-rs/core/src/model_provider_policy/attempt_owner.rs \
+              codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then python3 scripts/context_compiler_consolidate_once.py; rc=$?; fi
+          if [ "$rc" -eq 0 ]; then python3 scripts/generate_context_compiler_module_docs.py --write; rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo fmt --all); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo test --locked -p codex-hepta-context-compiler); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo check --locked -p codex-api -p codex-core -p codex-extension-api); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then git diff --check; rc=$?; fi
+          if [ "$rc" -eq 0 ]; then
+            git add -A
+            git commit -m "context.compiler: bind exact encoded body at provider policy boundary"
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            git push origin HEAD:codex/context-compiler-v2-full-closure-20260927
+            rc=$?
+          fi
+          echo "$rc" > "$LOG_DIR/exit-code.txt"
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+
+      - name: Upload consolidation evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: context-compiler-consolidation-${{ github.sha }}
+          path: ${{ runner.temp }}/context-compiler-consolidation
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce consolidation result
+        if: always()
+        shell: bash
+        env:
+          EXIT_CODE: ${{ steps.consolidate.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          test -n "$EXIT_CODE"
+          test "$EXIT_CODE" = "0"
