@@ -1,0 +1,54 @@
+name: Neuron runtime source synthesis (read-only)
+
+on:
+  push:
+    branches:
+      - work/neuron-runtime-recovery-20260925
+    paths:
+      - scripts/ci/synthesize-neuron-product.py
+      - .github/workflows/neuron-runtime-source-synthesis.yml
+      - codex-rs/hepta-agentd/src/intelligence_product.rs
+      - codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+      - codex-rs/hepta-agentd/src/neuron_product.rs
+      - codex-rs/hepta-agentd/src/neuron_runtime.rs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthesize-and-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Generate additive durable-Neuron product path
+        run: python3 scripts/ci/synthesize-neuron-product.py
+      - name: Format generated Rust sources
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-agentd
+      - name: Check generated Agentd candidate
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-agentd --all-targets --all-features
+      - name: Run focused durable-Neuron tests
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-neuron
+          cargo test -p codex-hepta-agentd neuron --all-features
+      - name: Reject unrelated generated changes
+        run: |
+          git diff --check
+          changed="$(git diff --name-only)"
+          printf '%s\n' "$changed"
+          test "$(printf '%s\n' "$changed" | sed '/^$/d' | grep -Ev '^(codex-rs/hepta-agentd/src/intelligence_product.rs|codex-rs/hepta-agentd/src/intelligence_product_runner.rs)$' | wc -l)" -eq 0
+      - name: Upload reviewed generated sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: neuron-runtime-generated-source
+          if-no-files-found: error
+          retention-days: 3
+          path: |
+            codex-rs/hepta-agentd/src/intelligence_product.rs
+            codex-rs/hepta-agentd/src/intelligence_product_runner.rs
