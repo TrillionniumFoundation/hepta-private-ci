@@ -256,10 +256,9 @@ fn split_digest_properties_hold_under_deterministic_mutation_fuzzing() {
         let mut scoring_only = base.clone();
         scoring_only.candidates[0].utility = FixedQ32::from_raw(state as i64);
         scoring_only.candidates[0].calibrated_confidence = probability;
-        scoring_only.candidates[0].ood_score = ProbabilityQ32::from_raw(
-            ProbabilityQ32::ONE.raw().saturating_sub(probability.raw()),
-        )
-        .expect("bounded inverse probability");
+        scoring_only.candidates[0].ood_score =
+            ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw().saturating_sub(probability.raw()))
+                .expect("bounded inverse probability");
         assert_eq!(
             base_identity,
             canonical_candidate_identity_digest_v2(&scoring_only.candidates)
@@ -304,7 +303,10 @@ fn production_contract_matches_cross_language_golden_vectors() {
     ];
     assert_eq!(observed, expected);
     for digest in expected {
-        assert!(vectors.contains(digest), "golden vector file omitted {digest}");
+        assert!(
+            vectors.contains(digest),
+            "golden vector file omitted {digest}"
+        );
     }
 }
 

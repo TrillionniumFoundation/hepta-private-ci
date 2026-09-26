@@ -318,8 +318,7 @@ fn open_rw(path: &Path) -> File {
 
 #[test]
 fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
-    let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde")
-        .expect("agent id");
+    let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent id");
     let (request, profile) = request_and_profile();
     let (scoring, assignment) = commitments(&request, &profile);
     let (activated, verifier, keys, principals) = trust_material();
@@ -331,8 +330,7 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
     File::create(&witness_path).expect("witness file");
     let binding = digest("binding:intuition-product-v3");
     let ledger = DurableLedger::create(open_rw(&ledger_path), binding, 64).expect("ledger");
-    let witness =
-        LedgerWitnessStore::create(open_rw(&witness_path), binding).expect("witness");
+    let witness = LedgerWitnessStore::create(open_rw(&witness_path), binding).expect("witness");
     let ledger_directory = File::open(directory.path()).expect("ledger parent");
     let witness_directory = File::open(directory.path()).expect("witness parent");
     let writer = LedgerWriter::from_durable(
@@ -491,7 +489,10 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
     let first_append = first.learning.as_ref().expect("first append receipt");
     let replay_append = replay.learning.as_ref().expect("replay append receipt");
     assert_eq!(first_append.disposition, AppendDisposition::Appended);
-    assert_eq!(replay_append.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(
+        replay_append.disposition,
+        AppendDisposition::IdempotentReplay
+    );
     assert_eq!(first_append.event_digest, replay_append.event_digest);
     assert_eq!(first_append.chain_digest, replay_append.chain_digest);
     assert_eq!(first_append.sequence, replay_append.sequence);
