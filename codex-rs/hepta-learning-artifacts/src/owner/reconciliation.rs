@@ -411,10 +411,10 @@ mod tests {
             )
             .expect("record");
         let reopened = LearningArtifactAuditJournalV1::open(&control_root).expect("reopen");
-        assert_eq!(
+        assert!(matches!(
             reopened.require_fresh(&verified),
             Err(LearningArtifactAuditError::Replay)
-        );
+        ));
         fs::remove_dir_all(control_root).expect("cleanup");
     }
 }
