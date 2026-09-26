@@ -13,9 +13,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::AgentdError;
-use crate::AgentdIntelligenceProductOutcomeV1;
 use crate::AgentdIntuitionDecisionReceiptV2;
-use crate::AgentdIntuitionProductInvocationV1;
+use crate::intelligence_ingress::AgentdIntuitionProductInvocationV1;
+use crate::intelligence_product::PreparedAgentdIntelligenceRunV1;
 use crate::state::AgentdState;
 
 #[allow(clippy::too_many_arguments)]
@@ -25,7 +25,7 @@ pub(crate) fn authenticate_canonical_intuition(
     request: CalibratedDecisionRequestV1,
     episode_id: StableId,
     run_snapshot_digest: Digest32,
-    prepared: &AgentdIntelligenceProductOutcomeV1,
+    canonical: &PreparedAgentdIntelligenceRunV1,
     now: u64,
 ) -> Result<Option<AgentdIntuitionDecisionReceiptV2>, AgentdError> {
     let host_configured = state.intuition_policy.get().is_some();
@@ -44,11 +44,6 @@ pub(crate) fn authenticate_canonical_intuition(
                     .to_string(),
             ));
         }
-    };
-    let AgentdIntelligenceProductOutcomeV1::Ready(canonical) = prepared else {
-        return Err(AgentdError::Protocol(
-            "authenticated intuition gate received a non-ready canonical outcome".to_string(),
-        ));
     };
 
     let AgentdIntuitionProductInvocationV1 {
