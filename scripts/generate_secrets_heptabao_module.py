@@ -3,12 +3,15 @@
 
 The manifest is the semantic source of truth. Exact candidate identities remain
 external CI attestations so committed documentation never requires a hash of the
-commit that contains itself.
+commit that contains itself. `--write` explicitly rebinds the implementation map
+to the checked-out predecessor; ordinary verification preserves that anchor.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,6 +29,12 @@ def load(path: Path) -> object:
 
 def dump(value: object) -> str:
     return json.dumps(value, indent=2, sort_keys=False) + "\n"
+
+
+def git(*args: str) -> str:
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_NO_REPLACE_OBJECTS="1")
+    return subprocess.check_output(["git", *args], cwd=ROOT, env=env, text=True).strip()
 
 
 def validate(manifest: dict) -> None:
@@ -104,12 +113,45 @@ def anchor_projection(m: dict) -> dict:
     }
 
 
-def implementation_projection(m: dict, existing: dict) -> dict:
+def operation_tests(name: str) -> list[str]:
+    if name == "reservation_by_operation":
+        return ["codex-rs/hepta-authbus/src/operation_lookup_tests.rs"]
+    if name in {"durable_consumption_transitions", "consume_kv_v2_with_authbus", "reconcile_consumption"}:
+        return [
+            "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+            "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        ]
+    if name == "lease_lifecycle_reference":
+        return ["codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"]
+    return ["codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"]
+
+
+def implementation_projection(m: dict, existing: dict, *, rebind: bool) -> dict:
     result = dict(existing)
+    if rebind:
+        identity = {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+        result["sourceBase"] = identity
+        result["observedAtHead"] = identity
+    observed = set(result.get("observedSourcePaths", []))
+    observed.update(
+        {
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+            "codex-rs/hepta-authbus",
+            "codex-rs/hepta-bao-adapter",
+            "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
+            "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+            "docs/modules/secrets.heptabao/TECHNICAL.md",
+            "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+            "scripts/generate_secrets_heptabao_module.py",
+            "codex-rs/hepta-bao-adapter/qa/evidence/dynamic-contract-probe-20260925.json",
+            "external/HeptaBao",
+        }
+    )
     result.update(
         {
-            "schema": "hepta.module-implementation-map.v4",
-            "schemaVersion": 4,
+            "schema": "hepta.module-implementation-map.v3",
+            "schemaVersion": 3,
             "module": m["module"],
             "owner": m["owner"],
             "deputy": m["deputy"],
@@ -119,6 +161,8 @@ def implementation_projection(m: dict, existing: dict) -> dict:
             "productCallerState": "registered_host_source_composed_not_activated",
             "productionWriterState": "sqlite_owner_pending_json_reference_only",
             "canonicalManifest": str(MANIFEST.relative_to(ROOT)),
+            "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+            "observedSourcePaths": sorted(observed),
             "operations": [
                 {
                     "operation": row["operation"],
@@ -126,11 +170,7 @@ def implementation_projection(m: dict, existing: dict) -> dict:
                     "sourcePath": row["path"],
                     "state": row["class"],
                     "authority": "kernel.final_use" if "consume" in row["operation"] else "none",
-                    "tests": [
-                        "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs"
-                        if "consumption" in row["operation"] or "authbus" in row["operation"]
-                        else "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
-                    ],
+                    "tests": operation_tests(row["operation"]),
                     "sourcePathExists": True,
                     "designOperation": row["operation"],
                     "mappingClass": "owner_native",
@@ -159,7 +199,7 @@ def implementation_projection(m: dict, existing: dict) -> dict:
     return result
 
 
-def projections(m: dict) -> dict[Path, object]:
+def projections(m: dict, *, rebind: bool) -> dict[Path, object]:
     truth = load(TRUTH)
     entries = truth.get("modules", [])
     replaced = False
@@ -173,7 +213,7 @@ def projections(m: dict) -> dict[Path, object]:
     existing_map = load(MAP)
     return {
         TRUTH: truth,
-        MAP: implementation_projection(m, existing_map),
+        MAP: implementation_projection(m, existing_map, rebind=rebind),
         CAPABILITIES: capability_projection(m),
         NONCLAIMS: nonclaim_projection(m),
         ANCHORS: anchor_projection(m),
@@ -186,7 +226,7 @@ def main() -> int:
     args = parser.parse_args()
     manifest = load(MANIFEST)
     validate(manifest)
-    outputs = projections(manifest)
+    outputs = projections(manifest, rebind=args.write)
     failures = []
     for path, value in outputs.items():
         expected = dump(value)
