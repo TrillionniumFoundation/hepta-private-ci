@@ -22,6 +22,7 @@ mod source_envelope_json_dto;
 mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
+mod validated_admission;
 
 pub use admission_profile_json::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
 pub use admission_profile_json::ObjectiveAdmissionProfileJsonError;
@@ -104,6 +105,14 @@ pub use source_envelope_v1::ObjectiveSourcePredicateV1;
 pub use source_envelope_v1::ObjectiveSourceTrustV1;
 pub use source_envelope_v1::ObjectiveStructuredIntentV1;
 pub use source_envelope_validation::ObjectiveStructureError;
+pub use validated_admission::ObjectiveAdmissionProofV1;
+pub use validated_admission::ProofBearingObjectiveCompileV1;
+pub use validated_admission::ValidatedAdmissionProfileV1;
+pub use validated_admission::ValidatedObjectiveAdmissionV1;
+pub use validated_admission::admit_validated_objective_v1;
+pub use validated_admission::compile_authoritative_objective_v1;
+pub use validated_admission::compile_validated_objective_v1;
+pub use validated_admission::preflight_validate_objective_v1;
 
 #[cfg(feature = "qualification-legacy-compile")]
 /// Qualification-only compatibility entrypoint for pre-admitted legacy fixtures.
