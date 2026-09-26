@@ -1,0 +1,93 @@
+name: runtime.fleet selected-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact committed candidate to qualify
+        required: true
+        type: string
+      host_profile:
+        description: Reviewed selected-host profile identifier
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-fleet-target-host-${{ inputs.host_profile }}
+  cancel-in-progress: false
+
+jobs:
+  selected-host:
+    name: runtime.fleet selected Linux host
+    runs-on: [self-hosted, linux, x64, hepta-fleet-target]
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify candidate and physical host inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ inputs.candidate_sha }}"
+          test -r /etc/machine-id
+          test -r /proc/sys/kernel/random/boot_id
+          test -r /proc/meminfo
+          test -r /proc/pressure/memory
+          git diff --check
+
+      - name: Run exact source qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test -p codex-hepta-fleet --all-targets
+          cargo test -p codex-hepta-supervisor --lib
+          cargo check -p codex-hepta-supervisor --bin hepta-supervisord
+          cargo clippy -p codex-hepta-fleet --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-supervisor --lib --bin hepta-supervisord -- -D warnings
+
+      - name: Observe and reopen physical capacity
+        working-directory: codex-rs
+        shell: bash
+        env:
+          PROFILE: ${{ inputs.host_profile }}
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/runtime-fleet-target-evidence"
+          state="$RUNNER_TEMP/runtime-fleet-target-state"
+          mkdir -p "$evidence" "$state"
+          machine="$(sha256sum /etc/machine-id | awk '{print substr($1,1,16)}')"
+          boot="$(sha256sum /proc/sys/kernel/random/boot_id | awk '{print substr($1,1,15)}')"
+          generation="$((16#$boot))"
+          if [ "$generation" -eq 0 ]; then generation=1; fi
+          cargo run -p codex-hepta-fleet --bin hepta-fleet-target-probe -- \
+            --state-root "$state" \
+            --host-id "target-$machine" \
+            --failure-domain-id "$PROFILE" \
+            --host-generation "$generation" \
+            | tee "$evidence/target-host.json"
+          cargo run -p codex-hepta-fleet --bin hepta-fleet-status -- \
+            --state-root "$state" \
+            --fail-on-alert \
+            | tee "$evidence/operator-status.json"
+          printf '{"candidate":"%s","profile":"%s","runner":"%s"}\n' \
+            "$(git rev-parse HEAD)" "$PROFILE" "$RUNNER_NAME" \
+            > "$evidence/command-record.json"
+
+      - name: Retain selected-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-fleet-target-${{ inputs.host_profile }}-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/runtime-fleet-target-evidence
+          if-no-files-found: error
+          retention-days: 30
