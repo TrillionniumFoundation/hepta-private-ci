@@ -186,25 +186,19 @@ impl FleetRegistry {
                 Err(error.into())
             };
         }
-        if let Err(error) = fail_after_register_rename()
-            .and_then(|()| sync_directory(self.layout.agents_root()))
+        if let Err(error) =
+            fail_after_register_rename().and_then(|()| sync_directory(self.layout.agents_root()))
         {
-            return Err(indeterminate(
-                "register_agent",
-                agent_id.to_string(),
-                error,
-            ));
+            return Err(indeterminate("register_agent", agent_id.to_string(), error));
         }
-        let record = self.load_agent(&agent_id).map_err(|error| {
-            indeterminate("register_agent", agent_id.to_string(), error)
-        })?;
-        let committed = self.load().map_err(|error| {
-            indeterminate("register_agent", agent_id.to_string(), error)
-        })?;
+        let record = self
+            .load_agent(&agent_id)
+            .map_err(|error| indeterminate("register_agent", agent_id.to_string(), error))?;
+        let committed = self
+            .load()
+            .map_err(|error| indeterminate("register_agent", agent_id.to_string(), error))?;
         self.persist_workspace_reservations(&committed)
-            .map_err(|error| {
-                indeterminate("register_agent", agent_id.to_string(), error)
-            })?;
+            .map_err(|error| indeterminate("register_agent", agent_id.to_string(), error))?;
         Ok(record)
     }
 
@@ -381,8 +375,7 @@ fn publish_lifecycle(
     };
     let _ = std::fs::remove_file(temp_path);
     if matches!(outcome, PublishOutcome::Published)
-        && let Err(error) =
-            fail_after_lifecycle_link().and_then(|()| sync_directory(run_root))
+        && let Err(error) = fail_after_lifecycle_link().and_then(|()| sync_directory(run_root))
     {
         return Err(indeterminate(
             "lifecycle_transition",

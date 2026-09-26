@@ -134,11 +134,9 @@ mod tests {
         let directory = tempfile::tempdir().expect("tempdir");
         let state_root = directory.path().join("state");
         std::fs::create_dir(&state_root).expect("state root");
-        let owner = DurableFleetOwner::open_supervisor_state_root(
-            &state_root,
-            Arc::new(SystemFleetClock),
-        )
-        .expect("owner");
+        let owner =
+            DurableFleetOwner::open_supervisor_state_root(&state_root, Arc::new(SystemFleetClock))
+                .expect("owner");
 
         // Trust objects are deliberately not manufactured here: absence of the
         // durable snapshot is checked before they can authorize any use.

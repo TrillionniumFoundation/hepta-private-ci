@@ -6,12 +6,12 @@
 //! pinned trust roots, and verifies all grant/host/generation/digest fences
 //! immediately before process spawn.
 
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseRevocationConvergenceVerifier;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
 use codex_hepta_contracts::FinalUseRevocationNodeTrust;
 use codex_hepta_contracts::FinalUseTrustKey;
 use codex_hepta_contracts::SystemAuthorityClock;
-use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::DurableFleetOwner;
 use codex_hepta_fleet::RevocationBoundGrantUseWitnessV1;
 use codex_hepta_fleet::SystemFleetClock;
@@ -58,8 +58,8 @@ impl FleetStartTrustProfileV1 {
         if bytes.is_empty() || bytes.len() > MAX_TRUST_PROFILE_BYTES {
             return Err(FleetStartAdmissionError::InvalidTrustProfile);
         }
-        let profile: Self =
-            serde_json::from_slice(bytes).map_err(|_| FleetStartAdmissionError::InvalidTrustProfile)?;
+        let profile: Self = serde_json::from_slice(bytes)
+            .map_err(|_| FleetStartAdmissionError::InvalidTrustProfile)?;
         profile.validate()?;
         Ok(profile)
     }

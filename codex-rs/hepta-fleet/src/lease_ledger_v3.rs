@@ -236,6 +236,9 @@ mod refresh_tests {
             ledger.admit_host(host(250, 1_200, 500)),
             Err(Error::CapacityExceeded)
         );
-        assert_eq!(ledger.snapshot().hosts["host-one"].capacity.cpu_millis, 1_000);
+        assert_eq!(
+            ledger.snapshot().hosts["host-one"].capacity.cpu_millis,
+            1_000
+        );
     }
 }

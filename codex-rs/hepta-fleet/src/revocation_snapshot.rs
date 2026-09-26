@@ -97,8 +97,8 @@ impl FleetRevocationSnapshotV1 {
 
     pub fn semantic_digest(&self) -> Result<String, FleetRevocationSnapshotError> {
         self.validate_shape()?;
-        let encoded = serde_json::to_vec(self)
-            .map_err(|_| FleetRevocationSnapshotError::Encoding)?;
+        let encoded =
+            serde_json::to_vec(self).map_err(|_| FleetRevocationSnapshotError::Encoding)?;
         let mut digest = Sha256::new();
         digest.update(b"hepta.runtime.fleet.revocation-snapshot.v1\0");
         digest.update(encoded);

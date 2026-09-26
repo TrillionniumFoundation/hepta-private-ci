@@ -120,11 +120,7 @@ impl Default for ResourceVectorV1 {
 }
 
 impl ResourceVectorV1 {
-    pub const fn physical(
-        cpu_millis: u64,
-        memory_bytes: u64,
-        accelerator_millis: u64,
-    ) -> Self {
+    pub const fn physical(cpu_millis: u64, memory_bytes: u64, accelerator_millis: u64) -> Self {
         Self {
             schema_version: RESOURCE_VECTOR_SCHEMA_VERSION,
             supported_axes: ResourceAxisV1::CpuMillis.bit()

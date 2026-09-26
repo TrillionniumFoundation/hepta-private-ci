@@ -92,8 +92,8 @@ fn concurrent_overlapping_registration_has_one_winner() -> Result<(), FleetRegis
 }
 
 #[test]
-fn registration_failure_after_rename_is_recoverably_indeterminate()
--> Result<(), FleetRegistryError> {
+fn registration_failure_after_rename_is_recoverably_indeterminate() -> Result<(), FleetRegistryError>
+{
     let fixture = Fixture::new()?;
     let manifest = fixture.manifest(FIRST_AGENT_ID, &fixture.parent_workspace)?;
     let agent_id = manifest.agent_id.clone();
@@ -119,8 +119,7 @@ fn registration_failure_after_rename_is_recoverably_indeterminate()
 }
 
 #[test]
-fn lifecycle_failure_after_link_is_recoverably_indeterminate()
--> Result<(), FleetRegistryError> {
+fn lifecycle_failure_after_link_is_recoverably_indeterminate() -> Result<(), FleetRegistryError> {
     let fixture = Fixture::new()?;
     let record = fixture
         .registry
@@ -128,11 +127,7 @@ fn lifecycle_failure_after_link_is_recoverably_indeterminate()
     set_registry_test_failpoint(RegistryTestFailpoint::AfterLifecycleLink);
     let error = fixture
         .registry
-        .compare_and_transition(
-            &record.manifest.agent_id,
-            0,
-            AgentLifecycle::Starting,
-        )
+        .compare_and_transition(&record.manifest.agent_id, 0, AgentLifecycle::Starting)
         .expect_err("post-link failure must be indeterminate");
     assert!(matches!(
         error,
@@ -153,13 +148,17 @@ fn lifecycle_failure_after_link_is_recoverably_indeterminate()
 }
 
 #[test]
-fn open_existing_removes_crash_staging_and_rebuilds_reservations()
--> Result<(), FleetRegistryError> {
+fn open_existing_removes_crash_staging_and_rebuilds_reservations() -> Result<(), FleetRegistryError>
+{
     let fixture = Fixture::new()?;
     fixture
         .registry
         .register(fixture.manifest(FIRST_AGENT_ID, &fixture.parent_workspace)?)?;
-    let staging = fixture.registry.layout().agents_root().join(".staging-crashed");
+    let staging = fixture
+        .registry
+        .layout()
+        .agents_root()
+        .join(".staging-crashed");
     std::fs::create_dir(&staging)?;
 
     let reopened = FleetRegistry::open_existing(fixture.root)?;

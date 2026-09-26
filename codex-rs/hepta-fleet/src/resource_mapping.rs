@@ -29,13 +29,9 @@ pub struct LogicalToPhysicalCoefficientV1 {
 
 impl LogicalToPhysicalCoefficientV1 {
     fn validate(self) -> Result<(), ResourceMappingError> {
-        ResourceVectorV1::physical(
-            self.cpu_millis,
-            self.memory_bytes,
-            self.accelerator_millis,
-        )
-        .validate()
-        .map_err(ResourceMappingError::Resource)
+        ResourceVectorV1::physical(self.cpu_millis, self.memory_bytes, self.accelerator_millis)
+            .validate()
+            .map_err(ResourceMappingError::Resource)
     }
 }
 
@@ -52,9 +48,7 @@ pub struct ResourceMappingPolicyV1 {
 impl ResourceMappingPolicyV1 {
     pub fn validate(&self) -> Result<(), ResourceMappingError> {
         if self.schema_version != RESOURCE_MAPPING_POLICY_SCHEMA_VERSION {
-            return Err(ResourceMappingError::UnsupportedSchema(
-                self.schema_version,
-            ));
+            return Err(ResourceMappingError::UnsupportedSchema(self.schema_version));
         }
         if self.policy_id.is_empty()
             || self.policy_id.len() > 128
@@ -134,22 +128,13 @@ pub fn map_logical_to_physical_v1(
     let policy_sha256 = policy.semantic_digest()?;
     let mut physical = ResourceVectorV1::physical(0, logical.memory_bytes, 0);
     physical = physical
-        .checked_add(scale(
-            policy.per_concurrent_turn,
-            logical.concurrent_turns,
-        )?)
+        .checked_add(scale(policy.per_concurrent_turn, logical.concurrent_turns)?)
         .map_err(ResourceMappingError::Resource)?;
     physical = physical
-        .checked_add(scale(
-            policy.per_tool_process,
-            logical.tool_processes,
-        )?)
+        .checked_add(scale(policy.per_tool_process, logical.tool_processes)?)
         .map_err(ResourceMappingError::Resource)?;
     physical = physical
-        .checked_add(scale(
-            policy.per_turn_queue_slot,
-            logical.turn_queue_slots,
-        )?)
+        .checked_add(scale(policy.per_turn_queue_slot, logical.turn_queue_slots)?)
         .map_err(ResourceMappingError::Resource)?;
     let physical_resource_sha256 = physical
         .semantic_digest()

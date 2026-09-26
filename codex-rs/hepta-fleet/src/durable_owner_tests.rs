@@ -126,8 +126,7 @@ fn issue_is_atomic_with_witness_and_survives_reopen() {
         .expect("permissions");
     let clock = Arc::new(ManualClock::new(2_000));
     let mut owner =
-        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
-            .expect("owner");
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone()).expect("owner");
     owner
         .refresh_capacity("capacity-one", &FixedObserver)
         .expect("capacity");
@@ -135,39 +134,20 @@ fn issue_is_atomic_with_witness_and_survives_reopen() {
     let grant = grant(9_000);
     let port = authority_port(&directory, "authority-one", clock.clone(), &grant);
     let issued = owner
-        .issue_with_authority(
-            "operation-one",
-            &port,
-            "fleet-issue-one",
-            1,
-            grant.clone(),
-        )
+        .issue_with_authority("operation-one", &port, "fleet-issue-one", 1, grant.clone())
         .expect("issue");
     assert_eq!(issued.lease.outcome, LeaseOutcome::Issued);
     assert_eq!(issued.generation, 2);
 
     drop(owner);
     let mut reopened =
-        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
-            .expect("reopen");
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone()).expect("reopen");
     let witness = reopened
-        .verify_final_use(
-            "allocation-one",
-            1,
-            "host-one",
-            1,
-            &grant.semantic_digest,
-        )
+        .verify_final_use("allocation-one", 1, "host-one", 1, &grant.semantic_digest)
         .expect("final use");
     assert_eq!(witness.allocation_id, "allocation-one");
     let duplicate = reopened
-        .issue_with_authority(
-            "operation-one",
-            &port,
-            "fleet-issue-one",
-            1,
-            grant,
-        )
+        .issue_with_authority("operation-one", &port, "fleet-issue-one", 1, grant)
         .expect("idempotent duplicate");
     assert_eq!(duplicate.generation, issued.generation);
 }
@@ -180,21 +160,14 @@ fn expiry_reconciliation_releases_durable_capacity() {
     std::fs::create_dir(&state_root).expect("state root");
     let clock = Arc::new(ManualClock::new(2_000));
     let mut owner =
-        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
-            .expect("owner");
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone()).expect("owner");
     owner
         .refresh_capacity("capacity-one", &FixedObserver)
         .expect("capacity");
     let expiring = grant(2_500);
     let port = authority_port(&directory, "authority-expiry", clock.clone(), &expiring);
     owner
-        .issue_with_authority(
-            "issue-expiring",
-            &port,
-            "fleet-issue-one",
-            1,
-            expiring,
-        )
+        .issue_with_authority("issue-expiring", &port, "fleet-issue-one", 1, expiring)
         .expect("issue expiring grant");
 
     clock.set(2_500);
@@ -202,7 +175,10 @@ fn expiry_reconciliation_releases_durable_capacity() {
         .reconcile_expired("expiry-one")
         .expect("reconcile expiry");
     assert_eq!(
-        owner.metrics().expect("operational metrics").fleet_active_grants,
+        owner
+            .metrics()
+            .expect("operational metrics")
+            .fleet_active_grants,
         0
     );
 }
@@ -214,8 +190,7 @@ fn post_link_failure_is_indeterminate_and_recoverable_by_operation_id() {
     std::fs::create_dir(&state_root).expect("state root");
     let clock = Arc::new(ManualClock::new(2_000));
     let mut owner =
-        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
-            .expect("owner");
+        DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone()).expect("owner");
     fail_next_commit_after_state_link();
     let error = owner
         .refresh_capacity("capacity-indeterminate", &FixedObserver)

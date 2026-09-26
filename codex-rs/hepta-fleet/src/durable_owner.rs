@@ -11,8 +11,8 @@ use crate::FleetAuthorityPort;
 use crate::FleetCapacityObserverV1;
 use crate::FleetClock;
 use crate::FleetClockError;
-use crate::FleetRevocationSnapshotV1;
 use crate::FleetRevocationSnapshotError;
+use crate::FleetRevocationSnapshotV1;
 use crate::GrantUseWitnessV1;
 use crate::HostObservation;
 use crate::LeaseDisposition;
@@ -227,19 +227,14 @@ impl DurableFleetOwner {
         let now_ms = self.clock.now_unix_ms()?;
         let observation = observer.observe(now_ms)?;
         observation.validate()?;
-        let digest = operation_digest(
-            b"capacity-observation",
-            &(operation_id, &observation),
-        )?;
+        let digest = operation_digest(b"capacity-observation", &(operation_id, &observation))?;
         let _guard = OwnerLock::acquire(&self.root.join(DURABLE_FLEET_LOCK))?;
         self.reload()?;
         if let Some(receipt) = self.existing_operation(operation_id, &digest)? {
             return self.mutation_receipt(receipt);
         }
-        let mut ledger = LeaseLedger::from_snapshot(
-            Arc::clone(&self.clock),
-            self.state.fleet_grants.clone(),
-        )?;
+        let mut ledger =
+            LeaseLedger::from_snapshot(Arc::clone(&self.clock), self.state.fleet_grants.clone())?;
         let host = observation.host_observation()?;
         ledger.admit_host(host)?;
         let mut candidate = self.state.clone();
@@ -279,28 +274,17 @@ impl DurableFleetOwner {
     ) -> Result<DurableFleetIssueReceiptV1, DurableFleetError> {
         let digest = operation_digest(
             b"issue",
-            &(
-                operation_id,
-                lease_id,
-                expected_lease_revision,
-                &grant,
-            ),
+            &(operation_id, lease_id, expected_lease_revision, &grant),
         )?;
         let _guard = OwnerLock::acquire(&self.root.join(DURABLE_FLEET_LOCK))?;
         self.reload()?;
         if let Some(operation) = self.existing_operation(operation_id, &digest)? {
             return issue_receipt_from_operation(&self.state, operation);
         }
-        let mut ledger = LeaseLedger::from_snapshot(
-            Arc::clone(&self.clock),
-            self.state.fleet_grants.clone(),
-        )?;
-        let issue = authority.issue_with_witness(
-            &mut ledger,
-            lease_id,
-            expected_lease_revision,
-            grant,
-        );
+        let mut ledger =
+            LeaseLedger::from_snapshot(Arc::clone(&self.clock), self.state.fleet_grants.clone())?;
+        let issue =
+            authority.issue_with_witness(&mut ledger, lease_id, expected_lease_revision, grant);
         let (lease, witness) = match issue {
             Ok(value) => value,
             Err(error) => {
@@ -378,10 +362,8 @@ impl DurableFleetOwner {
         if let Some(receipt) = self.existing_operation(operation_id, &digest)? {
             return self.mutation_receipt(receipt);
         }
-        let mut ledger = LeaseLedger::from_snapshot(
-            Arc::clone(&self.clock),
-            self.state.fleet_grants.clone(),
-        )?;
+        let mut ledger =
+            LeaseLedger::from_snapshot(Arc::clone(&self.clock), self.state.fleet_grants.clone())?;
         let lease = ledger.renew_or_revoke(
             allocation_id,
             expected_lease_generation,
@@ -449,10 +431,8 @@ impl DurableFleetOwner {
         if let Some(receipt) = self.existing_operation(operation_id, &digest)? {
             return self.mutation_receipt(receipt);
         }
-        let mut ledger = LeaseLedger::from_snapshot(
-            Arc::clone(&self.clock),
-            self.state.fleet_grants.clone(),
-        )?;
+        let mut ledger =
+            LeaseLedger::from_snapshot(Arc::clone(&self.clock), self.state.fleet_grants.clone())?;
         ledger.collect_expired()?;
         let mut candidate = self.state.clone();
         candidate.fleet_grants = ledger.snapshot();
@@ -508,10 +488,8 @@ impl DurableFleetOwner {
     ) -> Result<GrantUseWitnessV1, DurableFleetError> {
         let _guard = OwnerLock::acquire(&self.root.join(DURABLE_FLEET_LOCK))?;
         self.reload()?;
-        let ledger = LeaseLedger::from_snapshot(
-            Arc::clone(&self.clock),
-            self.state.fleet_grants.clone(),
-        )?;
+        let ledger =
+            LeaseLedger::from_snapshot(Arc::clone(&self.clock), self.state.fleet_grants.clone())?;
         FleetAuthorityPort::verify_final_use(
             &ledger,
             allocation_id,
@@ -527,10 +505,8 @@ impl DurableFleetOwner {
         let _guard = OwnerLock::acquire(&self.root.join(DURABLE_FLEET_LOCK))?;
         self.reload()?;
         let now_ms = self.clock.now_unix_ms()?;
-        let ledger = LeaseLedger::from_snapshot(
-            Arc::clone(&self.clock),
-            self.state.fleet_grants.clone(),
-        )?;
+        let ledger =
+            LeaseLedger::from_snapshot(Arc::clone(&self.clock), self.state.fleet_grants.clone())?;
         let ledger_metrics = ledger.metrics()?;
         let observed_capacity = self
             .state
@@ -577,8 +553,7 @@ impl DurableFleetOwner {
     }
 
     pub fn note_indeterminate_commit(&mut self) {
-        self.counters.indeterminate_commits =
-            self.counters.indeterminate_commits.saturating_add(1);
+        self.counters.indeterminate_commits = self.counters.indeterminate_commits.saturating_add(1);
     }
 
     fn reload(&mut self) -> Result<(), DurableFleetError> {
@@ -780,10 +755,7 @@ fn issue_receipt_from_operation(
     })
 }
 
-fn operation_digest<T: Serialize>(
-    domain: &[u8],
-    value: &T,
-) -> Result<String, DurableFleetError> {
+fn operation_digest<T: Serialize>(domain: &[u8], value: &T) -> Result<String, DurableFleetError> {
     let encoded = serde_json::to_vec(value)?;
     let mut digest = Sha256::new();
     digest.update(b"hepta.runtime.fleet.operation.v1\0");
@@ -804,7 +776,10 @@ fn state_digest(state: &DurableFleetStateV1) -> Result<String, DurableFleetError
 }
 
 fn state_anchor_digest() -> String {
-    format!("{:x}", Sha256::digest(b"hepta.runtime.fleet.state-anchor.v1"))
+    format!(
+        "{:x}",
+        Sha256::digest(b"hepta.runtime.fleet.state-anchor.v1")
+    )
 }
 
 fn operation_anchor_digest() -> String {

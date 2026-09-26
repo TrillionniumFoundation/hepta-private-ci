@@ -52,12 +52,8 @@ pub(crate) async fn run_supervisord_product(
     let mut supervisor = Box::pin(async move {
         match verifier {
             Some(verifier) => {
-                run_supervisord_with_grant_verifier(
-                    fleet_root,
-                    supervisor_cancellation,
-                    verifier,
-                )
-                .await
+                run_supervisord_with_grant_verifier(fleet_root, supervisor_cancellation, verifier)
+                    .await
             }
             None => run_supervisord(fleet_root, supervisor_cancellation).await,
         }
@@ -125,7 +121,9 @@ fn perform_maintenance(
         MAX_MEMORY_PRESSURE_BASIS_POINTS,
     )
     .map_err(|error| {
-        SupervisorError::Invalid(format!("configure runtime.fleet capacity observer: {error}"))
+        SupervisorError::Invalid(format!(
+            "configure runtime.fleet capacity observer: {error}"
+        ))
     })?;
     match owner.refresh_capacity(&format!("supervisor-capacity-{now_ms}"), &observer) {
         Ok(_) => Ok(()),
@@ -133,9 +131,9 @@ fn perform_maintenance(
         // capacity. Do not refresh the prior observation; it expires within one
         // TTL and new allocation then fails closed while lifecycle supervision
         // remains available.
-        Err(DurableFleetError::Capacity(
-            CapacityObservationError::PressureLimitExceeded { .. },
-        )) => Ok(()),
+        Err(DurableFleetError::Capacity(CapacityObservationError::PressureLimitExceeded {
+            ..
+        })) => Ok(()),
         Err(error) => Err(map_owner_error(error)),
     }
 }
@@ -161,9 +159,7 @@ impl LocalFleetIdentityV1 {
         match configured {
             (Some(host_id), Some(failure_domain_id), Some(generation)) => {
                 let host_generation = generation.parse::<u64>().map_err(|error| {
-                    SupervisorError::Invalid(format!(
-                        "{HOST_GENERATION_ENV} is invalid: {error}"
-                    ))
+                    SupervisorError::Invalid(format!("{HOST_GENERATION_ENV} is invalid: {error}"))
                 })?;
                 if host_generation == 0 {
                     return Err(SupervisorError::Invalid(format!(

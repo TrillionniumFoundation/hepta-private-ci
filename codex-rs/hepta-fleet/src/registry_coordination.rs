@@ -99,8 +99,8 @@ pub(super) fn load_workspace_reservations(
             path.display()
         )));
     }
-    let index: WorkspaceReservationIndexV1 =
-        serde_json::from_slice(&std::fs::read(&path)?).map_err(|error| {
+    let index: WorkspaceReservationIndexV1 = serde_json::from_slice(&std::fs::read(&path)?)
+        .map_err(|error| {
             FleetRegistryError::Corrupt(format!(
                 "decode workspace reservation index {}: {error}",
                 path.display()
@@ -161,9 +161,10 @@ fn validate_entries(entries: &[WorkspaceReservationEntryV1]) -> Result<(), Fleet
 fn reservation_digest(
     entries: &[WorkspaceReservationEntryV1],
 ) -> Result<String, FleetRegistryError> {
-    let encoded = serde_json::to_vec(&(WORKSPACE_RESERVATIONS_SCHEMA_VERSION, entries)).map_err(
-        |error| FleetRegistryError::Invalid(format!("encode workspace reservations: {error}")),
-    )?;
+    let encoded =
+        serde_json::to_vec(&(WORKSPACE_RESERVATIONS_SCHEMA_VERSION, entries)).map_err(|error| {
+            FleetRegistryError::Invalid(format!("encode workspace reservations: {error}"))
+        })?;
     let mut digest = Sha256::new();
     digest.update(b"hepta.runtime.fleet.workspace-reservations.v1\0");
     digest.update(encoded);
@@ -225,10 +226,7 @@ fn open_lock_file(path: &Path) -> Result<File, FleetRegistryError> {
         .truncate(false)
         .mode(OWNER_READ_WRITE_MODE)
         .open(path)?;
-    std::fs::set_permissions(
-        path,
-        std::fs::Permissions::from_mode(OWNER_READ_WRITE_MODE),
-    )?;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(OWNER_READ_WRITE_MODE))?;
     Ok(file)
 }
 

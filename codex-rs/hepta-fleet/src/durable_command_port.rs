@@ -149,25 +149,17 @@ mod tests {
         std::fs::create_dir(&state_root).expect("state root");
         let clock = Arc::new(ManualClock(AtomicU64::new(1_000)));
         let observer = ClockObserver(Arc::clone(&clock));
-        let mut owner = DurableFleetOwner::open_supervisor_state_root(
-            &state_root,
-            clock.clone(),
-        )
-        .expect("owner");
-        let first = refresh_capacity_idempotent(
-            &mut owner,
-            "capacity-operation",
-            &observer,
-        )
-        .expect("first refresh");
+        let mut owner = DurableFleetOwner::open_supervisor_state_root(&state_root, clock.clone())
+            .expect("owner");
+        let first = refresh_capacity_idempotent(&mut owner, "capacity-operation", &observer)
+            .expect("first refresh");
         clock.set(2_000);
-        let retry = refresh_capacity_idempotent(
-            &mut owner,
-            "capacity-operation",
-            &observer,
-        )
-        .expect("idempotent retry");
+        let retry = refresh_capacity_idempotent(&mut owner, "capacity-operation", &observer)
+            .expect("idempotent retry");
         assert_eq!(retry.generation, first.generation);
-        assert_eq!(retry.operation.operation_digest, first.operation.operation_digest);
+        assert_eq!(
+            retry.operation.operation_digest,
+            first.operation.operation_digest
+        );
     }
 }

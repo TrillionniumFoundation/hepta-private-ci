@@ -414,9 +414,7 @@ impl LeaseLedger {
         }
         match disposition {
             LeaseDisposition::Revoke => self.revoke(current, now_ms),
-            LeaseDisposition::Renew { expires_at_ms } => {
-                self.renew(current, expires_at_ms, now_ms)
-            }
+            LeaseDisposition::Renew { expires_at_ms } => self.renew(current, expires_at_ms, now_ms),
         }
     }
 
@@ -548,11 +546,7 @@ impl LeaseLedger {
         Ok(result)
     }
 
-    fn revoke(
-        &mut self,
-        current: AllocationGrant,
-        now_ms: u64,
-    ) -> Result<LeaseReceipt, Error> {
+    fn revoke(&mut self, current: AllocationGrant, now_ms: u64) -> Result<LeaseReceipt, Error> {
         let mut grant = self
             .active_grants
             .remove(&current.allocation_id)
@@ -605,11 +599,7 @@ impl LeaseLedger {
                 .ok_or(Error::CorruptSnapshot)?;
             self.remove_expiry(&grant);
             self.release_resources(&grant)?;
-            self.archive(
-                grant,
-                GrantTerminalReason::HostGenerationReplaced,
-                now_ms,
-            )?;
+            self.archive(grant, GrantTerminalReason::HostGenerationReplaced, now_ms)?;
         }
         Ok(())
     }
@@ -637,13 +627,13 @@ impl LeaseLedger {
     }
 
     fn remove_expiry(&mut self, grant: &AllocationGrant) {
-        let remove_deadline = self
-            .expiry_index
-            .get_mut(&grant.expires_at_ms)
-            .is_some_and(|entries| {
-                entries.remove(&grant.allocation_id);
-                entries.is_empty()
-            });
+        let remove_deadline =
+            self.expiry_index
+                .get_mut(&grant.expires_at_ms)
+                .is_some_and(|entries| {
+                    entries.remove(&grant.allocation_id);
+                    entries.is_empty()
+                });
         if remove_deadline {
             self.expiry_index.remove(&grant.expires_at_ms);
         }
@@ -670,10 +660,12 @@ impl LeaseLedger {
             .iter()
             .rev()
             .find(|record| record.grant.allocation_id == allocation_id)
-            .map_or(Error::AllocationNotFound, |record| match record.terminal_reason {
-                GrantTerminalReason::Revoked => Error::Revoked,
-                GrantTerminalReason::Expired | GrantTerminalReason::HostGenerationReplaced => {
-                    Error::StaleLease
+            .map_or(Error::AllocationNotFound, |record| {
+                match record.terminal_reason {
+                    GrantTerminalReason::Revoked => Error::Revoked,
+                    GrantTerminalReason::Expired | GrantTerminalReason::HostGenerationReplaced => {
+                        Error::StaleLease
+                    }
                 }
             })
     }
@@ -782,7 +774,10 @@ fn receipt(grant: &AllocationGrant, outcome: LeaseOutcome) -> LeaseReceipt {
 }
 
 fn empty_history_digest() -> String {
-    format!("{:x}", Sha256::digest(b"hepta.runtime.fleet.empty-history.v1"))
+    format!(
+        "{:x}",
+        Sha256::digest(b"hepta.runtime.fleet.empty-history.v1")
+    )
 }
 
 #[cfg(test)]

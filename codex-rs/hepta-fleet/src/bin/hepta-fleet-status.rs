@@ -127,9 +127,7 @@ fn require_existing_state(state_root: &Path) -> Result<(), Box<dyn std::error::E
 fn is_generation_file(name: &str) -> bool {
     name.strip_prefix(STATE_FILE_PREFIX)
         .and_then(|value| value.strip_suffix(STATE_FILE_SUFFIX))
-        .is_some_and(|value| {
-            value.len() == 20 && value.bytes().all(|byte| byte.is_ascii_digit())
-        })
+        .is_some_and(|value| value.len() == 20 && value.bytes().all(|byte| byte.is_ascii_digit()))
 }
 
 fn counters(value: FleetResultCountersV1) -> Value {
@@ -210,8 +208,8 @@ fn alerts(
             if maximum == 0 {
                 continue;
             }
-            let basis_points = u128::from(reserved.amount(axis)).saturating_mul(10_000)
-                / u128::from(maximum);
+            let basis_points =
+                u128::from(reserved.amount(axis)).saturating_mul(10_000) / u128::from(maximum);
             if basis_points >= 9_000 {
                 alerts.push(json!({
                     "severity": if basis_points >= 10_000 { "critical" } else { "warning" },
@@ -228,13 +226,7 @@ fn alerts(
     alerts
 }
 
-fn push_nonzero(
-    alerts: &mut Vec<Value>,
-    severity: &str,
-    code: &str,
-    value: u64,
-    action: &str,
-) {
+fn push_nonzero(alerts: &mut Vec<Value>, severity: &str, code: &str, value: u64, action: &str) {
     if value > 0 {
         alerts.push(json!({
             "severity": severity,

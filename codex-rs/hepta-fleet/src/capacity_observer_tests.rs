@@ -7,8 +7,7 @@ fn procfs_observer_reads_real_shapes_and_enforces_pressure() {
     let directory = tempfile::tempdir().expect("tempdir");
     let meminfo = directory.path().join("meminfo");
     let pressure = directory.path().join("pressure");
-    std::fs::write(&meminfo, "MemTotal: 8192 kB\nMemAvailable: 4096 kB\n")
-        .expect("meminfo");
+    std::fs::write(&meminfo, "MemTotal: 8192 kB\nMemAvailable: 4096 kB\n").expect("meminfo");
     std::fs::write(
         &pressure,
         "some avg10=0.12 avg60=0.00 avg300=0.00 total=1\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
