@@ -32,10 +32,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
 
-      - name: Install pinned Rust toolchain
+      - name: Install repository-pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          toolchain: 1.95.0
           components: rustfmt, clippy
 
       - name: Verify exact source identity
