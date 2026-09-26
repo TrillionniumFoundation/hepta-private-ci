@@ -35,6 +35,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Prepare native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
       - name: Apply the reviewed integration patch
         run: |
           python3 qualification/memory-federation/bootstrap_v3.py
