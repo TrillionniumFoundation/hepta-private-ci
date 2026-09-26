@@ -11,6 +11,7 @@ on:
       - "scripts/_memory_federation_closure_2.py"
       - "scripts/_memory_federation_closure_3.py"
       - "scripts/_memory_federation_closure_4.py"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -44,14 +45,35 @@ jobs:
           git config user.name "Hepta Memory Federation Bot"
           git config user.email "hepta-memory-federation-bot@users.noreply.github.com"
 
-      - name: Apply reviewed closure codemods
+      - name: Apply retrieval visibility closure
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           python3 scripts/_memory_federation_closure_0.py
+          git diff --stat
+
+      - name: Apply host profile and V1 isolation closure
+        run: |
+          set -euxo pipefail
           python3 scripts/_memory_federation_closure_1.py
+          git diff --stat
+
+      - name: Apply bounded runtime closure
+        run: |
+          set -euxo pipefail
           python3 scripts/_memory_federation_closure_2.py
+          git diff --stat
+
+      - name: Apply crate export closure
+        run: |
+          set -euxo pipefail
           python3 scripts/_memory_federation_closure_3.py
+          git diff --stat
+
+      - name: Apply authenticated cross-host closure
+        run: |
+          set -euxo pipefail
           python3 scripts/_memory_federation_closure_4.py
+          git diff --stat
 
       - name: Format closure sources
         working-directory: codex-rs
