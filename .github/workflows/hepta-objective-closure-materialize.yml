@@ -1,0 +1,164 @@
+name: Hepta objective compiler closure materializer
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-convergence-20260925
+    paths:
+      - .github/workflows/hepta-objective-closure-materialize.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-objective-closure-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: work/objective-compiler-convergence-20260925
+      TRIGGER_SHA: ${{ github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact source and branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TRIGGER_SHA}"
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          git fetch origin "${TARGET_BRANCH}"
+          test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1 || true
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          fi
+
+      - name: Apply durable proof and explicit-preflight migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-objective-materialize-closure.py
+          python3 scripts/hepta-objective-current-state.py sync
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-objective \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          git diff --check
+
+      - name: Validate source migration before commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/hepta-objective-current-state.py \
+            scripts/hepta-objective-materialize-closure.py
+          python3 scripts/hepta-objective-current-state.py verify
+          python3 -m unittest -v \
+            scripts.test_hepta_objective_contracts \
+            scripts.test_hepta_objective_target_measure
+          (
+            cd codex-rs
+            cargo test --locked -p codex-hepta-objective -- --nocapture
+            cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
+            cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
+            cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
+            cargo test --locked -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
+            cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
+          )
+
+      - name: Commit source closure and remove one-shot materializer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-qualification
+          git config user.email qualification@invalid
+          git rm \
+            .github/workflows/hepta-objective-closure-materialize.yml \
+            scripts/hepta-objective-materialize-closure.py
+          git add -A
+          git diff --cached --check
+          git commit -m "objective.compiler: persist proof-bound admission and explicit preflight"
+
+      - name: Rebind exact-head provenance and generated status
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler
+          python3 scripts/hepta-objective-current-state.py sync
+          git add \
+            docs/modules/objective.compiler/CURRENT_STATE.json \
+            docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
+            docs/modules/objective.compiler/TECHNICAL.md \
+            qualification/module-execution-dossiers/detail/objective.compiler.md
+          git diff --cached --check
+          git commit -m "objective.compiler: rebind exact-head provenance and generated status"
+
+      - name: Qualify exact generated candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          QUALIFIED_SHA="$(git rev-parse HEAD)"
+          QUALIFIED_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module objective.compiler \
+            --expected-sha "${QUALIFIED_SHA}" \
+            --expected-tree "${QUALIFIED_TREE}"
+          python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-target-measure.py --self-test
+          python3 scripts/hepta-lane-d-semantic-conformance.py self-test
+          python3 scripts/hepta-lane-d-semantic-conformance.py verify
+          python3 scripts/verify_cargo_lock.py
+          (
+            cd codex-rs
+            cargo test --locked --no-run \
+              -p codex-hepta-objective \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-intelligence \
+              -p codex-hepta-agentd
+            cargo clippy --locked \
+              -p codex-hepta-objective \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-intelligence \
+              -p codex-hepta-agentd \
+              --all-targets --no-deps -- -D warnings
+            cargo fmt \
+              --package codex-hepta-objective \
+              --package codex-hepta-learning-ledger \
+              --package codex-hepta-intelligence \
+              --package codex-hepta-agentd -- --check
+          )
+          git diff --check
+          test -z "$(git status --porcelain)"
+          printf 'QUALIFIED_SHA=%s\nQUALIFIED_TREE=%s\n' \
+            "${QUALIFIED_SHA}" "${QUALIFIED_TREE}"
+
+      - name: Push only if the remote branch is unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${TARGET_BRANCH}"
+          test "$(git rev-parse "origin/${TARGET_BRANCH}")" = "${TRIGGER_SHA}"
+          git push origin "HEAD:${TARGET_BRANCH}"
