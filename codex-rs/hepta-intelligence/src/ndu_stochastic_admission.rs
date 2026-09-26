@@ -6,7 +6,10 @@ use codex_hepta_intelligence_eval::NduConvergenceDecisionV1;
 use codex_hepta_intelligence_eval::NduWellPosednessCertificateV1;
 use codex_hepta_intelligence_eval::NduWellPosednessDecisionV1;
 use codex_hepta_learning_artifacts::ArtifactAdmissionError;
+use codex_hepta_learning_artifacts::ArtifactClosureError;
 use codex_hepta_learning_artifacts::ArtifactKind;
+use codex_hepta_learning_artifacts::ArtifactLifecycleJournalError;
+use codex_hepta_learning_artifacts::ArtifactLifecycleStateV1;
 use codex_hepta_learning_artifacts::PinnedCandidateLoadError;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
@@ -63,6 +66,13 @@ pub enum NduStochasticAdmissionError {
     SolverMismatch,
     ProducerMismatch,
     TrustMismatch,
+    WithdrawalSnapshot(ArtifactClosureError),
+    LifecycleSnapshot(ArtifactLifecycleJournalError),
+    WithdrawalHeadMismatch,
+    ArtifactWithdrawn,
+    ArtifactRevoked,
+    ArtifactNotSelected(ArtifactLifecycleStateV1),
+    SelectionMismatch(&'static str),
 }
 
 impl fmt::Display for NduStochasticAdmissionError {
@@ -314,6 +324,9 @@ fn require_digest(value: Digest32, field: &'static str) -> Result<(), NduStochas
         Ok(())
     }
 }
+
+#[path = "ndu_stochastic_lifecycle.rs"]
+mod lifecycle;
 
 #[cfg(all(test, unix))]
 #[path = "ndu_stochastic_admission_tests.rs"]

@@ -64,6 +64,28 @@
           "symbol": "update_must_match_the_authenticated_snapshot_revision_and_edge"
         }
       ]
+    },
+    {
+      "operation": "admit_with_artifact_lifecycle_v2",
+      "nativeSymbol": "codex_hepta_intelligence::NduStochasticAdmissionRequestV1::admit_with_artifact_lifecycle_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_current_withdrawn_revoked_selection_composition_v2",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+          "symbol": "withdrawal_snapshot_distinguishes_current_and_withdrawn_artifacts"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+          "symbol": "selected_lifecycle_is_bound_and_revocation_wins"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "current_artifact_and_independent_evidence_compose_to_deny_all_admission"
+        }
+      ]
     }
   ]
 }
