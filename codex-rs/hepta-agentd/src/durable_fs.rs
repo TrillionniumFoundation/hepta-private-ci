@@ -5,6 +5,9 @@
 //! checks reduce pathname substitution risk; deployment evidence must still
 //! prove that files advertised as independent occupy independent rollback domains.
 
+#[path = "self_iteration_coordinator.rs"]
+pub(crate) mod self_iteration_coordinator;
+
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
@@ -182,9 +185,8 @@ mod tests {
         let directory = tempfile::tempdir().expect("tempdir");
         let canonical = directory.path().canonicalize().expect("canonical");
         let path = canonical.join("journal");
-        let (file, created, was_created) = open_or_create_rw_nofollow(&path, "journal")
-            .map(|(file, identity, created)| (file, identity, created))
-            .expect("create");
+        let (file, created, was_created) =
+            open_or_create_rw_nofollow(&path, "journal").expect("create");
         assert!(was_created);
         drop(file);
         let (_, reopened, was_created) =
