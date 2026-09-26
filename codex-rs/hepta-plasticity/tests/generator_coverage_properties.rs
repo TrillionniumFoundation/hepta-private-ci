@@ -1,5 +1,6 @@
 use codex_hepta_plasticity::GeneratorCoverageMissingParameterV1;
 use codex_hepta_plasticity::GeneratorCoverageMissingReasonV1;
+use codex_hepta_plasticity::GeneratorCoverageReceiptV1;
 use codex_hepta_plasticity::GeneratorCoverageTerminalV1;
 use codex_hepta_plasticity::LayerNormDenominatorV2;
 use codex_hepta_plasticity::ParameterGeneratorProfileV3;
@@ -120,19 +121,17 @@ fn every_bound_receipt_field_rejects_single_field_substitution() {
     )
     .expect("coverage");
 
-    let mutations: Vec<Box<dyn Fn(&mut codex_hepta_plasticity::GeneratorCoverageReceiptV1)>> = vec![
-        Box::new(|value| value.selected_artifact_digest = digest(b"other-artifact")),
-        Box::new(|value| value.window.window_digest = digest(b"other-window")),
-        Box::new(|value| value.mutation_grammar_digest = digest(b"other-grammar")),
-        Box::new(|value| value.owner_frontier_digest = digest(b"other-frontier")),
-        Box::new(|value| {
-            value.expected_learnable_parameter_set_digest = digest(b"other-expected")
-        }),
-        Box::new(|value| value.actual_signal_set_digest = digest(b"other-signals")),
-        Box::new(|value| value.missing_parameter_set_digest = digest(b"other-missing")),
-        Box::new(|value| value.scale_policy_digest = digest(b"other-scales")),
-        Box::new(|value| value.terminal = GeneratorCoverageTerminalV1::ZeroEligibleSignals),
-        Box::new(|value| value.coverage_digest = digest(b"other-coverage")),
+    let mutations: [fn(&mut GeneratorCoverageReceiptV1); 10] = [
+        |value| value.selected_artifact_digest = digest(b"other-artifact"),
+        |value| value.window.window_digest = digest(b"other-window"),
+        |value| value.mutation_grammar_digest = digest(b"other-grammar"),
+        |value| value.owner_frontier_digest = digest(b"other-frontier"),
+        |value| value.expected_learnable_parameter_set_digest = digest(b"other-expected"),
+        |value| value.actual_signal_set_digest = digest(b"other-signals"),
+        |value| value.missing_parameter_set_digest = digest(b"other-missing"),
+        |value| value.scale_policy_digest = digest(b"other-scales"),
+        |value| value.terminal = GeneratorCoverageTerminalV1::ZeroEligibleSignals,
+        |value| value.coverage_digest = digest(b"other-coverage"),
     ];
     for mutate in mutations {
         let mut changed = receipt.clone();
@@ -143,17 +142,15 @@ fn every_bound_receipt_field_rejects_single_field_substitution() {
 
 #[test]
 fn missing_parameter_reason_and_evidence_are_both_digest_bound() {
-    let profile = profile(false);
+    let mut single_signal_profile = profile(false);
+    single_signal_profile.signals = vec![signal("parameter:a", 1)];
     let missing = GeneratorCoverageMissingParameterV1 {
         parameter_id: id("parameter:b"),
         reason: GeneratorCoverageMissingReasonV1::MissingEligibility,
         reason_evidence_digest: digest(b"missing-evidence"),
     };
     let receipt = build_generator_coverage_receipt_v1(
-        &ParameterGeneratorProfileV3 {
-            signals: vec![signal("parameter:a", 1)],
-            ..profile.clone()
-        },
+        &single_signal_profile,
         vec![id("parameter:a"), id("parameter:b")],
         vec![missing],
         digest(b"owner-frontier"),
@@ -162,9 +159,9 @@ fn missing_parameter_reason_and_evidence_are_both_digest_bound() {
 
     let mut reason = receipt.clone();
     reason.missing_parameters[0].reason = GeneratorCoverageMissingReasonV1::PolicyDisabled;
-    assert!(verify_generator_coverage_receipt_v1(&profile, &reason).is_err());
+    assert!(verify_generator_coverage_receipt_v1(&single_signal_profile, &reason).is_err());
 
     let mut evidence = receipt;
     evidence.missing_parameters[0].reason_evidence_digest = digest(b"other-evidence");
-    assert!(verify_generator_coverage_receipt_v1(&profile, &evidence).is_err());
+    assert!(verify_generator_coverage_receipt_v1(&single_signal_profile, &evidence).is_err());
 }

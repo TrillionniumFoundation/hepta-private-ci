@@ -9,6 +9,7 @@ cargo-fuzz = true
 
 [dependencies]
 codex-hepta-plasticity = { path = ".." }
+codex-hepta-types = { path = "../../hepta-types" }
 libfuzzer-sys = "0.4"
 
 [[bin]]
