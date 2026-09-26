@@ -40,6 +40,7 @@ export function createControlConsole({
 
   const elements = {
     connection: requiredElement(document, "connection-state"),
+    session: requiredElement(document, "session-state"),
     identity: requiredElement(document, "identity-state"),
     generation: requiredElement(document, "generation-state"),
     revision: requiredElement(document, "revision-state"),
@@ -54,6 +55,7 @@ export function createControlConsole({
     reconcile: requiredElement(document, "request-reconcile"),
     stop: requiredElement(document, "request-stop"),
     pending: requiredElement(document, "pending-list"),
+    completed: requiredElement(document, "completed-list"),
     dialog: requiredElement(document, "confirm-operation"),
     dialogTitle: requiredElement(document, "confirm-title"),
     dialogSummary: requiredElement(document, "confirm-summary"),
@@ -78,29 +80,73 @@ export function createControlConsole({
     announce(elements.error.textContent);
   }
 
+  function appendError(error) {
+    const code = error instanceof UiControlError ? error.code : "UI_CONTROL_UNEXPECTED";
+    const message = `${code}: ${error?.message ?? String(error)}`;
+    if (elements.error.hidden || elements.error.textContent.length === 0) {
+      showError(error);
+      return;
+    }
+    elements.error.textContent = `${elements.error.textContent} ${message}`;
+    announce(elements.error.textContent);
+  }
+
   function clearError() {
     elements.error.hidden = true;
     elements.error.textContent = "";
   }
 
+  function reportStorageFailure(cause, operation) {
+    appendError(
+      new UiControlError(
+        UI_CONTROL_ERROR_CODES.STORAGE,
+        `Local recovery state could not be ${operation}; server-side operation authority is unchanged.`,
+        {
+          retryable: true,
+          details: { operation },
+          cause,
+        },
+      ),
+    );
+  }
+
   function persistRecovery() {
-    if (!storage) return;
-    const state = client.exportRecoveryState();
-    if (state.operations.length === 0) {
-      storage.removeItem(RECOVERY_STORAGE_KEY);
-    } else {
-      storage.setItem(RECOVERY_STORAGE_KEY, JSON.stringify(state));
+    if (!storage) return false;
+    try {
+      const state = client.exportRecoveryState();
+      if (state.operations.length === 0) {
+        storage.removeItem(RECOVERY_STORAGE_KEY);
+      } else {
+        storage.setItem(RECOVERY_STORAGE_KEY, JSON.stringify(state));
+      }
+      return true;
+    } catch (error) {
+      reportStorageFailure(error, "persisted");
+      return false;
     }
   }
 
   function restoreRecovery() {
-    if (!storage) return;
-    const value = storage.getItem(RECOVERY_STORAGE_KEY);
-    if (!value) return;
+    if (!storage) return false;
+    let value;
+    try {
+      value = storage.getItem(RECOVERY_STORAGE_KEY);
+    } catch (error) {
+      reportStorageFailure(error, "read");
+      return false;
+    }
+    if (!value) return true;
     try {
       client.restoreRecoveryState(JSON.parse(value));
-    } catch {
-      storage.removeItem(RECOVERY_STORAGE_KEY);
+      return true;
+    } catch (error) {
+      try {
+        storage.removeItem(RECOVERY_STORAGE_KEY);
+      } catch {
+        // The original typed storage error below is the actionable signal.
+      }
+      reportStorageFailure(error, "restored");
+      return false;
     }
   }
 
@@ -148,6 +194,7 @@ export function createControlConsole({
         operation.auditTraceId ?? "audit pending",
         `generation ${operation.generation}`,
         `revision ${operation.displayedRevision}`,
+        `digest ${operation.semanticDigest}`,
       ].join(" · ");
       item.append(label);
       if (operation.state === "indeterminate") {
@@ -175,10 +222,34 @@ export function createControlConsole({
     }
   }
 
+  function renderCompleted(view) {
+    elements.completed.replaceChildren();
+    if (view.completed.length === 0) {
+      const item = document.createElement("li");
+      item.textContent = "No terminal operations observed in this session.";
+      elements.completed.append(item);
+      return;
+    }
+    for (const operation of view.completed) {
+      const item = document.createElement("li");
+      item.textContent = [
+        operation.operationId,
+        operation.terminalStatus ?? "terminal",
+        operation.auditTraceId ?? "audit unavailable",
+        `generation ${operation.generation}`,
+        `revision ${operation.displayedRevision}`,
+        `digest ${operation.semanticDigest}`,
+        operation.outcomeDigest ? `outcome ${operation.outcomeDigest}` : "outcome unavailable",
+      ].join(" · ");
+      elements.completed.append(item);
+    }
+  }
+
   function render() {
     const view = client.readView();
     elements.connection.textContent = view.connected ? "Connected" : "Disconnected";
-    elements.identity.textContent = view.sessionId ?? "—";
+    elements.session.textContent = view.sessionId ?? "—";
+    elements.identity.textContent = view.identityId ?? "—";
     elements.generation.textContent = view.snapshot?.generation ?? "—";
     elements.revision.textContent = view.snapshot?.revision ?? "—";
     elements.stale.hidden = !view.stale;
@@ -187,6 +258,7 @@ export function createControlConsole({
       : "";
     renderModules(view);
     renderPending(view);
+    renderCompleted(view);
 
     const hasTarget = elements.target.options.length > 0;
     const disabled = destroyed || inFlight || view.stale || !view.connected || !hasTarget;
@@ -239,6 +311,7 @@ export function createControlConsole({
       `Target: ${targetId}`,
       `Generation: ${view.snapshot.generation}`,
       `Revision: ${view.snapshot.revision}`,
+      `Snapshot digest: ${view.snapshot.semanticDigest}`,
       `Operation ID: ${pendingAction.operationId}`,
       `Reason: ${reason}`,
     ].join(". ");
@@ -340,8 +413,8 @@ export function createControlConsole({
 
   return Object.freeze({
     async start({ signal } = {}) {
-      restoreRecovery();
       clearError();
+      restoreRecovery();
       try {
         await sessionProvider.start({ signal });
         await refresh({ propagate: true });
@@ -366,8 +439,11 @@ export function createControlConsole({
       unsubscribe();
       sessionProvider.stop();
       persistRecovery();
-      await client.close();
-      render();
+      try {
+        await client.close();
+      } finally {
+        render();
+      }
     },
   });
 }
