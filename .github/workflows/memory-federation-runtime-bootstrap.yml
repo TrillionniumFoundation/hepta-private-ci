@@ -38,12 +38,18 @@ jobs:
 
           path = Path("scripts/apply_memory_federation_runtime_closure.py")
           text = path.read_text(encoding="utf-8")
-          needle = "    updated, count = re.subn(pattern, replacement, text, flags=re.MULTILINE | re.DOTALL)"
-          replacement = r'''    pattern = pattern.replace("\\\\", "\\")
+          regex_needle = "    updated, count = re.subn(pattern, replacement, text, flags=re.MULTILINE | re.DOTALL)"
+          regex_replacement = r'''    pattern = pattern.replace("\\\\", "\\")
               updated, count = re.subn(pattern, replacement, text, flags=re.MULTILINE | re.DOTALL)'''
-          if text.count(needle) != 1:
+          if text.count(regex_needle) != 1:
               raise SystemExit("unexpected replace_re helper shape")
-          path.write_text(text.replace(needle, replacement), encoding="utf-8")
+          text = text.replace(regex_needle, regex_replacement)
+
+          lane_count = "    expected=2,\n"
+          if text.count(lane_count) != 1:
+              raise SystemExit("unexpected legacy-test insertion count shape")
+          text = text.replace(lane_count, "    expected=1,\n")
+          path.write_text(text, encoding="utf-8")
           PY
           python3 -m py_compile \
             scripts/apply_memory_federation_runtime_closure.py \
