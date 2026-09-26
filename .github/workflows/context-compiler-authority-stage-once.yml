@@ -1,0 +1,46 @@
+name: context-compiler-authority-stage-once
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-authority-staging-20260927
+    paths:
+      - .github/workflows/context-compiler-authority-stage-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout authority staging branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/context-compiler-authority-staging-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Apply and verify authority owner
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-context-compiler-bot"
+          git config user.email "hepta-context-compiler-bot@users.noreply.github.com"
+          python3 scripts/apply_context_authority_staging.py
+          cd codex-rs
+          cargo fmt --all
+          cargo metadata --format-version 1 >/dev/null
+          cargo test --locked -p codex-hepta-prompt-registry
+          cargo clippy --locked -p codex-hepta-prompt-registry --all-targets -- -D warnings
+          cd ..
+          git diff --check
+          git add -A
+          git commit -m "feat(context.compiler): add registry-owned context authority"
+          git push origin HEAD:codex/context-compiler-authority-staging-20260927
