@@ -1,0 +1,106 @@
+name: Platform wire target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Exact branch, tag, or commit to qualify
+        required: true
+        type: string
+      runner_label:
+        description: GitHub runner label for the selected target host
+        required: true
+        default: hepta-target-host
+        type: string
+      host_profile:
+        description: Registered target-host profile identifier
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-target-host-${{ inputs.host_profile }}-${{ inputs.source_ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: Qualify platform.wire on selected target host
+    runs-on: ${{ inputs.runner_label }}
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_ref }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Install scoped native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Verify source and generated lifecycle document
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Run target-host native qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-wire
+          just test --locked -p codex-hepta-context-compiler \
+            -p codex-hepta-codex-adapter --lib -E 'test(wire::tests)'
+          just test --locked -p codex-hepta-shadow-qualification \
+            --test cross_runtime_wire_session
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire -p codex-hepta-codex-adapter \
+            --all-targets --no-deps -- -D warnings
+
+      - name: Write target-host receipt
+        env:
+          HOST_PROFILE: ${{ inputs.host_profile }}
+          RUNNER_LABEL: ${{ inputs.runner_label }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          source_sha="$(git rev-parse HEAD)"
+          python3 - "$source_sha" "$HOST_PROFILE" "$RUNNER_LABEL" \
+            "$RUNNER_OS" "$RUNNER_ARCH" > .hepta-evidence/platform-wire-target-host.json <<'PY'
+          import json
+          import sys
+
+          source_sha, profile, label, runner_os, runner_arch = sys.argv[1:]
+          print(json.dumps({
+              "schema": "hepta.platform-wire.receipt.v1",
+              "kind": "platform-wire-target-host",
+              "source_sha": source_sha,
+              "tested_sha": source_sha,
+              "status": "passed",
+              "host_profile": profile,
+              "runner_label": label,
+              "runner_os": runner_os,
+              "runner_arch": runner_arch,
+          }, sort_keys=True, indent=2))
+          PY
+          python3 scripts/platform_wire_status.py render \
+            --target-host .hepta-evidence/platform-wire-target-host.json \
+            --format json \
+            --output .hepta-evidence/platform-wire-target-host-status.json
+
+      - name: Retain target-host evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-target-host-${{ inputs.host_profile }}-${{ github.run_id }}
+          path: .hepta-evidence/platform-wire-target-host*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 180
