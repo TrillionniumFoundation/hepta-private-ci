@@ -143,6 +143,7 @@ pub use prompt_pipeline::prepare_prompt_delivery_v1;
 
 mod pipeline_v2;
 mod prompt_delivery;
+mod provider_bound_prompt;
 
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
@@ -152,6 +153,12 @@ pub use prompt_delivery::PromptRegistryCompilationErrorV2;
 pub use prompt_delivery::PromptRegistryCompilationRequestV2;
 pub use prompt_delivery::PromptRegistryCompiledContextV2;
 pub use prompt_delivery::compile_prompt_registry_v2;
+pub use provider_bound_prompt::PreparedProviderBoundPromptV2;
+pub use provider_bound_prompt::ProviderBoundPromptErrorV2;
+pub use provider_bound_prompt::ProviderBoundPromptPrepareRequestV2;
+pub use provider_bound_prompt::ProviderRequestBuilderV2;
+pub use provider_bound_prompt::ProviderRequestMaterializationV2;
+pub use provider_bound_prompt::prepare_provider_bound_prompt_v2;
 
 mod pipeline;
 
