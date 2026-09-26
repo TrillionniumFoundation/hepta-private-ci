@@ -1353,7 +1353,7 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-#[cfg(not(feature = "production-cognitive-write"))]
+#[cfg(not(feature = "qualification-cognitive-write"))]
 async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() -> Result<()> {
     const UNAVAILABLE_CALL: &str = "unavailable-recall";
     const QUERY: &str = "unavailable runtime probe";
@@ -1429,7 +1429,7 @@ async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() ->
 /// than a read-only build: an unavailable cognitive store must stop before App
 /// Server can serve a turn. The qualification witness feature is deliberately
 /// irrelevant to this gate.
-#[cfg(feature = "production-cognitive-write")]
+#[cfg(feature = "qualification-cognitive-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()> {
     let mut fleet = FleetHarness::new()?;
