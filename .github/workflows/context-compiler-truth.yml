@@ -1,0 +1,40 @@
+name: context.compiler truth
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/hepta-intelligence/src/prompt_*.rs"
+      - "codex-rs/hepta-agentd/src/prompt_runtime*.rs"
+      - "codex-rs/ext/hepta-prompt/**"
+      - "docs/modules/context.compiler/**"
+      - "qualification/module-execution-dossiers/detail/context.compiler.md"
+      - "scripts/verify-context-compiler-truth.py"
+      - ".github/workflows/context-compiler-truth.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/hepta-intelligence/src/prompt_*.rs"
+      - "codex-rs/hepta-agentd/src/prompt_runtime*.rs"
+      - "codex-rs/ext/hepta-prompt/**"
+      - "docs/modules/context.compiler/**"
+      - "qualification/module-execution-dossiers/detail/context.compiler.md"
+      - "scripts/verify-context-compiler-truth.py"
+      - ".github/workflows/context-compiler-truth.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  truth:
+    name: context.compiler source truth
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify source, caller and proof-boundary truth
+        run: python3 scripts/verify-context-compiler-truth.py
