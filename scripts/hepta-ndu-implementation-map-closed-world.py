@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Fail closed when the utility.ndu implementation map drifts from source.
+"""Fail closed when the utility.ndu implementation maps drift from source.
 
-The repository-wide implementation-map verifier owns SHA/tree/blob freshness.
-This module-specific validator adds the closed-world guarantees that are easy
-to lose during symbol renames: unique operations, real native/test symbols,
-and explicit map coverage for every tracked Rust source file under sourceRoot.
+The repository-wide implementation-map verifier owns SHA/tree/blob freshness
+for the primary map. This module validator treats the primary map and its
+explicit extension as one closed world: unique operations, real native/test
+symbols, and explicit coverage for every tracked Rust source below sourceRoot.
 """
 
 from __future__ import annotations
@@ -13,11 +13,11 @@ import json
 from pathlib import Path
 import re
 import subprocess
-import sys
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-MAP = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+PRIMARY = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+EXTENSION = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
 
 
 class DuplicateKey(ValueError):
@@ -33,8 +33,8 @@ def object_no_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return value
 
 
-def load_map() -> dict[str, Any]:
-    return json.loads(MAP.read_text(), object_pairs_hook=object_no_duplicates)
+def load(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(), object_pairs_hook=object_no_duplicates)
 
 
 def all_strings(value: Any) -> set[str]:
@@ -79,17 +79,25 @@ def symbol_exists(path: Path, symbol: str) -> bool:
 def main() -> int:
     errors: list[str] = []
     try:
-        mapping = load_map()
+        primary = load(PRIMARY)
+        extension = load(EXTENSION)
     except (OSError, json.JSONDecodeError, DuplicateKey) as error:
         print(json.dumps({"passed": False, "errors": [str(error)]}, indent=2))
         return 1
 
-    if mapping.get("module") != "utility.ndu":
-        errors.append("map module is not utility.ndu")
-    operations = mapping.get("operations")
-    if not isinstance(operations, list) or not operations:
-        errors.append("operations must be a non-empty list")
-        operations = []
+    for name, mapping in (("primary", primary), ("extension", extension)):
+        if mapping.get("module") != "utility.ndu":
+            errors.append(f"{name} map module is not utility.ndu")
+    if extension.get("extends") != "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json":
+        errors.append("extension map does not name the canonical primary map")
+
+    operations: list[Any] = []
+    for name, mapping in (("primary", primary), ("extension", extension)):
+        mapped = mapping.get("operations")
+        if not isinstance(mapped, list) or not mapped:
+            errors.append(f"{name} operations must be a non-empty list")
+        else:
+            operations.extend(mapped)
 
     seen_operations: set[str] = set()
     seen_native: set[str] = set()
@@ -146,11 +154,11 @@ def main() -> int:
             elif not symbol_exists(test_path, symbol):
                 errors.append(f"mapped test symbol missing: {path}::{symbol}")
 
-    roots = mapping.get("sourceRoot")
+    roots = primary.get("sourceRoot")
     if not isinstance(roots, list) or not roots:
         errors.append("sourceRoot must be a non-empty list")
         roots = []
-    strings = all_strings(mapping)
+    strings = all_strings(primary) | all_strings(extension)
     tracked: set[str] = set()
     for root in roots:
         if not isinstance(root, str):
@@ -161,16 +169,16 @@ def main() -> int:
             errors.append(f"sourceRoot missing: {root}")
             continue
         tracked.update(tracked_files(root))
-    unmentioned = sorted(path for path in tracked if path not in strings)
-    for path in unmentioned:
+    for path in sorted(path for path in tracked if path not in strings):
         errors.append(f"tracked Rust source is outside the closed map: {path}")
 
     result = {
-        "schema": "hepta.ndu.closed-world-map-validation.v1",
-        "module": mapping.get("module"),
+        "schema": "hepta.ndu.closed-world-map-validation.v2",
+        "module": primary.get("module"),
         "operationCount": len(seen_operations),
         "testIdentityCount": len(seen_tests),
         "trackedRustSourceCount": len(tracked),
+        "maps": [str(PRIMARY.relative_to(ROOT)), str(EXTENSION.relative_to(ROOT))],
         "passed": not errors,
         "errors": errors,
     }
