@@ -29,6 +29,7 @@ use crate::authbus_checkpoint::ReplayCheckpointFile;
 use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
+use crate::authbus_trust::shared_authority;
 
 pub(crate) struct TextIngress {
     pub evidence: HeptaEvidenceStore,
@@ -42,10 +43,10 @@ pub(crate) struct TextIngress {
 impl TextIngress {
     pub async fn open(
         identity: &AgentdIdentity,
-        authority: Arc<AuthBusAuthorityHost>,
         trust_file: PathBuf,
         checkpoint_file: PathBuf,
     ) -> Result<Self, AgentdError> {
+        let authority = shared_authority(identity).await?;
         TextTrust::load(&trust_file, identity)?
             .reconcile(&authority)
             .await?;
