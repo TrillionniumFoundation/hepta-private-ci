@@ -16,11 +16,14 @@ SOURCE_PATHS = (
     "codex-rs/hepta-infer-worker-host/Cargo.toml",
     "codex-rs/hepta-infer-worker-host/src/lib.rs",
     "codex-rs/hepta-infer-worker-host/src/profiles.rs",
+    "codex-rs/hepta-infer-worker-host/src/local_model.rs",
+    "codex-rs/hepta-infer-worker-host/src/local_model_tests.rs",
     "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
     "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
     "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
     "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
     "docs/modules/inference.worker/TECHNICAL.md",
+    "docs/modules/inference.worker/PROFILE_BOUNDARIES.md",
 )
 REQUIRED_STATUS_FIELDS = (
     "source_head",
@@ -104,13 +107,31 @@ def verify() -> None:
     library = (ROOT / "codex-rs/hepta-infer-worker-host/src/lib.rs").read_text(
         encoding="utf-8"
     )
-    if "experimental-local-model = []" not in cargo:
+    local_model = (ROOT / "codex-rs/hepta-infer-worker-host/src/local_model.rs").read_text(
+        encoding="utf-8"
+    )
+    if "experimental-local-model =" not in cargo:
         fail("experimental-local-model feature is missing")
-    gate = '#[cfg(any(test, feature = "experimental-local-model"))]'
-    if gate not in library or "pub mod model_worker;" not in library:
-        fail("legacy local model module is not feature gated")
+    if '#[cfg(feature = "experimental-local-model")]' not in library:
+        fail("LocalModelWorker is not feature gated")
+    if "pub mod local_model;" not in library:
+        fail("sealed local-model implementation is not exported by its feature")
+    if "pub mod model_worker;" in library:
+        fail("legacy fake-driver model_worker must not be a product API")
+    if "#[cfg(test)]\nmod model_worker;" not in library:
+        fail("legacy state-machine tests lost their test-only boundary")
     if "pub mod profiles;" not in library:
         fail("public profile truth module is missing")
+    for symbol in (
+        "pub struct VerifiedResourceGrant",
+        "pub struct VerifiedModelManifest",
+        "pub struct AttestedModelHandle",
+        "pub struct TrustedDeadline",
+        "pub struct ResourceManager",
+        "pub trait LocalModelDriver",
+    ):
+        if symbol not in local_model:
+            fail(f"local-model implementation is missing {symbol}")
 
 
 def git(*args: str) -> str:

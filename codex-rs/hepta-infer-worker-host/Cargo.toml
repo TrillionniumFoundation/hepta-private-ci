@@ -7,10 +7,9 @@ publish = false
 
 [features]
 default = []
-# The local model state machine is deliberately excluded from the default
-# product surface until signed resource grants, durable recovery and target
-# hardware qualification are present.
-experimental-local-model = []
+# The local model profile is deliberately excluded from the default product
+# surface until target hardware and independent acceptance are present.
+experimental-local-model = ["dep:ed25519-dalek"]
 
 [lib]
 name = "codex_hepta_infer_worker_host"
@@ -28,6 +27,7 @@ codex-hepta-agentd = { workspace = true }
 codex-hepta-codex-adapter = { path = "../hepta-codex-adapter" }
 codex-hepta-contracts = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
+ed25519-dalek = { workspace = true, optional = true }
 libc = { workspace = true }
 rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }

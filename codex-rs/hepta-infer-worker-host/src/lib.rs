@@ -2,7 +2,7 @@
 //!
 //! [`native_app_server`] is the hosted App Server production-candidate profile.
 //! The legacy receipt functions in this crate are validation-only and never prove
-//! provider execution. The local model state machine is hidden behind the
+//! provider execution. The local model profile is hidden behind the
 //! `experimental-local-model` feature and cannot be used as product evidence.
 //! No profile issues grants, mutates fleet state, infers success from queue
 //! acceptance, promotes artifacts or authorizes release.
@@ -13,10 +13,15 @@ pub mod final_use_authorizer;
 pub mod native_app_server;
 pub mod profiles;
 
-/// Experimental local-model state machine. It is excluded from the default
-/// product API and must not be treated as proof of real weights or device use.
-#[cfg(any(test, feature = "experimental-local-model"))]
-pub mod model_worker;
+/// Signed, resource-accounted local execution. This remains explicitly
+/// experimental and is excluded from the default product surface.
+#[cfg(feature = "experimental-local-model")]
+pub mod local_model;
+
+/// Pre-existing fake-driver state-machine tests remain available to the crate
+/// test harness, but the module is not exported to product callers.
+#[cfg(test)]
+mod model_worker;
 
 use std::error::Error as StdError;
 use std::fmt;
