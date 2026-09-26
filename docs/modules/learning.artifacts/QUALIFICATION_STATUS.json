@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.learning-artifacts.qualification-status.v1",
+  "schemaVersion": 1,
+  "module": "learning.artifacts",
+  "aggregateStatusProhibited": true,
+  "evidencePolicy": "Exact-source and ordered-parent-merge status is carried only by candidate-bound qualification receipts. This file is not execution evidence.",
+  "dimensions": {
+    "sourceImplementation": "implemented",
+    "productReadPath": "composed",
+    "writerService": "composed",
+    "productionTransport": "host_configuration_required",
+    "actionAuthorization": "host_configuration_required",
+    "exactHeadQualification": "candidate_receipt_required",
+    "orderedParentMergeQualification": "candidate_receipt_required",
+    "targetHostDirectoryDurability": "qualified_unix_profile_required",
+    "powerLossQualification": "target_host_evidence_required",
+    "activation": "inactive",
+    "independentAcceptance": "pending",
+    "promotion": "not_granted",
+    "release": "not_granted"
+  },
+  "forbiddenAggregateLabels": [
+    "COMPLETE",
+    "PRODUCTION_COMPLETE",
+    "RELEASE_READY"
+  ]
+}
