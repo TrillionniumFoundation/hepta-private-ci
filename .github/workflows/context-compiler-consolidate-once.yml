@@ -41,17 +41,8 @@ jobs:
 
           git config user.name "hepta-context-compiler-bot"
           git config user.email "hepta-context-compiler-bot@users.noreply.github.com"
-          git fetch origin codex/context-compiler-provider-proof-chain-v2
+          python3 scripts/context_compiler_consolidate_once.py
           rc=$?
-          if [ "$rc" -eq 0 ]; then
-            git checkout origin/codex/context-compiler-provider-proof-chain-v2 -- \
-              codex-rs/codex-api/src/dispatch_metadata.rs \
-              codex-rs/codex-api/src/endpoint/responses.rs \
-              codex-rs/core/src/model_provider_policy/attempt_owner.rs \
-              codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs
-            rc=$?
-          fi
-          if [ "$rc" -eq 0 ]; then python3 scripts/context_compiler_consolidate_once.py; rc=$?; fi
           if [ "$rc" -eq 0 ]; then python3 scripts/generate_context_compiler_module_docs.py --write; rc=$?; fi
           if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo fmt --all); rc=$?; fi
           if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo metadata --format-version 1 >/dev/null); rc=$?; fi
@@ -61,7 +52,8 @@ jobs:
           if [ "$rc" -eq 0 ]; then git diff --check; rc=$?; fi
           if [ "$rc" -eq 0 ]; then
             git add -A
-            git commit -m "context.compiler: bind exact encoded body at provider policy boundary"
+            git reset -- .github/workflows || true
+            git commit -m "context.compiler: qualify exact encoded provider body path"
             rc=$?
           fi
           if [ "$rc" -eq 0 ]; then
