@@ -192,7 +192,7 @@ pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
 }
 
 pub fn encode_wire_v1<T: CognitiveContractV1>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
-    let payload_bytes = encode_payload_canonical_v1(value)?;
+    encode_payload_canonical_v1(value)?;
     let envelope = CognitiveWireEnvelopeRefV1 {
         schema: T::SCHEMA_ID,
         schema_version: COGNITIVE_WIRE_VERSION_V1,
