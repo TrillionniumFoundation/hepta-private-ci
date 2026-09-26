@@ -21,7 +21,15 @@ def main() -> int:
     for name in ("source-receipt", "native-receipt"):
         command = commands.add_parser(name)
         command.add_argument("--output", type=Path, required=True)
-        command.add_argument("--expected-sha")
+        command.add_argument("--expected-sha", required=True)
+        command.add_argument(
+            "--candidate-kind",
+            choices=sorted(CANDIDATE_KINDS),  # noqa: F405
+            required=True,
+        )
+        command.add_argument("--source-sha", required=True)
+        command.add_argument("--base-sha")
+        command.add_argument("--pr-number", type=int)
     args = parser.parse_args()
     try:
         # This is deliberately invoked for every command, including receipt
@@ -37,6 +45,10 @@ def main() -> int:
                 args.output,
                 args.expected_sha,
                 native=args.command == "native-receipt",
+                candidate_kind=args.candidate_kind,
+                source_sha=args.source_sha,
+                base_sha=args.base_sha,
+                pull_request_number=args.pr_number,
             )
     except (VerificationError, PublicApiInventoryError) as error:  # noqa: F405
         print(f"lane-a-foundation verification failed: {error}", file=sys.stderr)

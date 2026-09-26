@@ -27,6 +27,13 @@
     "RuntimeTopologyCandidateV1.deltas": "set semantics represented as a strictly increasing StableId sequence; non-canonical order rejects",
     "RuntimeTopologyDeltaV1.related_module_ids": "set semantics represented as a strictly increasing StableId sequence; duplicate, self or non-canonical order rejects"
   },
+  "candidateEvidence": {
+    "sourceHead": "candidate identity kind source-head; source SHA equals candidate SHA",
+    "syntheticMerge": "candidate identity kind synthetic-merge; exact source and base SHAs are direct parents of the candidate",
+    "interchangeability": "forbidden",
+    "failureDiagnostics": "retained as non-authoritative candidate diagnostics",
+    "authoritativeReceipts": "emitted only after truth, native and consumer outcomes pass and then independently pair-verified"
+  },
   "evidenceAnchors": [
     "codex-rs/hepta-types/src/lib.rs",
     "codex-rs/hepta-types/src/topology.rs",
@@ -41,12 +48,17 @@
     "codex-rs/hepta-types/tests/manifest_protocol_consumer.rs",
     "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
     "scripts/platform_types_public_api.py",
-    "scripts/run_platform_types_consumer_qualification.sh"
+    "scripts/lane_a_candidate_evidence.py",
+    "scripts/lane_a_foundation_lib.py",
+    "scripts/verify_lane_a_foundation.py",
+    "scripts/run_platform_types_consumer_qualification.sh",
+    ".github/workflows/lane-a-foundation.yml"
   ],
   "nonClaims": [
     "No manifest contract executes randomness, inventories a host, drives a sensor or grants authority.",
     "No JSON serialization byte sequence is used as a semantic digest.",
     "No source-tree receipt may qualify a synthetic merge, and no synthetic-merge receipt may qualify a source tree.",
+    "Failure diagnostics are not qualification receipts.",
     "Production activation, deployment qualification, operator acceptance and release are not claimed."
   ]
 }

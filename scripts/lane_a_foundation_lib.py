@@ -5,12 +5,16 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import subprocess
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
 from lane_a_foundation_core import *  # noqa: F403
+
+CANDIDATE_KINDS = frozenset({"source-head", "synthetic-merge"})
+SHA1 = re.compile(r"[0-9a-f]{40}")
 
 
 def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
@@ -175,37 +179,123 @@ def exact_source(expected: str | None) -> tuple[str, str]:
     return source, git_value("rev-parse", "HEAD^{tree}")
 
 
-def write_receipt(output: Path, expected: str | None, native: bool) -> None:
+def _exact_commit(value: str | None, name: str) -> str:
+    if not isinstance(value, str) or SHA1.fullmatch(value) is None:
+        raise VerificationError(f"{name} must be an exact 40-character Git commit id")
+    if git_value("cat-file", "-t", value) != "commit":
+        raise VerificationError(f"{name} does not identify a commit")
+    return value
+
+
+def candidate_identity(
+    candidate_kind: str,
+    candidate_sha: str,
+    candidate_tree: str,
+    *,
+    source_sha: str | None,
+    base_sha: str | None = None,
+    pull_request_number: int | None = None,
+) -> dict[str, Any]:
+    """Return an exact, non-interchangeable Lane A candidate identity."""
+    if candidate_kind not in CANDIDATE_KINDS:
+        raise VerificationError(f"unsupported candidate kind: {candidate_kind!r}")
+    candidate_sha = _exact_commit(candidate_sha, "candidate SHA")
+    if SHA1.fullmatch(candidate_tree) is None:
+        raise VerificationError("candidate tree must be an exact 40-character Git tree id")
+    if git_value("rev-parse", f"{candidate_sha}^{{tree}}") != candidate_tree:
+        raise VerificationError("candidate SHA/tree mismatch")
+    source_sha = _exact_commit(source_sha, "source SHA")
+
+    identity: dict[str, Any] = {
+        "schema": "hepta.lane-a.candidate-identity.v1",
+        "kind": candidate_kind,
+        "candidateSha": candidate_sha,
+        "candidateTree": candidate_tree,
+        "sourceSha": source_sha,
+    }
+    if candidate_kind == "source-head":
+        if source_sha != candidate_sha:
+            raise VerificationError("source-head source SHA must equal candidate SHA")
+        if base_sha is not None or pull_request_number is not None:
+            raise VerificationError(
+                "source-head identity cannot carry merge base or pull-request number"
+            )
+        return identity
+
+    base_sha = _exact_commit(base_sha, "base SHA")
+    if not isinstance(pull_request_number, int) or pull_request_number <= 0:
+        raise VerificationError(
+            "synthetic-merge identity requires a positive pull-request number"
+        )
+    parents = git_value("rev-list", "--parents", "-n", "1", candidate_sha).split()[1:]
+    if source_sha not in parents or base_sha not in parents:
+        raise VerificationError(
+            "synthetic-merge candidate must directly parent both source and base SHAs"
+        )
+    identity.update(
+        {
+            "baseSha": base_sha,
+            "pullRequestNumber": pull_request_number,
+        }
+    )
+    return identity
+
+
+def write_receipt(
+    output: Path,
+    expected: str | None,
+    native: bool,
+    *,
+    candidate_kind: str,
+    source_sha: str,
+    base_sha: str | None = None,
+    pull_request_number: int | None = None,
+) -> None:
     matrix = read_json(MATRIX_PATH)
     binding = validate_matrix(matrix)
     source, tree = exact_source(expected)
     if (source, tree) != (binding["sourceSha"], binding["sourceTree"]):
         raise VerificationError("checkout changed while producing source receipt")
+    identity = candidate_identity(
+        candidate_kind,
+        source,
+        tree,
+        source_sha=source_sha,
+        base_sha=base_sha,
+        pull_request_number=pull_request_number,
+    )
+    common: dict[str, Any] = {
+        "lane": "LANE-A-FOUNDATION",
+        "candidateKind": candidate_kind,
+        "candidateIdentity": identity,
+        "candidateSha": source,
+        "candidateTree": tree,
+        # Compatibility fields identify the exact checked-out candidate. The
+        # originating PR source is candidateIdentity.sourceSha.
+        "sourceSha": source,
+        "sourceTree": tree,
+        "githubRunId": os.environ.get("GITHUB_RUN_ID"),
+        "githubRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+        "productionActivation": "not_claimed",
+        "externalAcceptance": "not_claimed",
+    }
     if native:
         receipt: dict[str, Any] = {
+            **common,
             "schemaVersion": 1,
-            "lane": "LANE-A-FOUNDATION",
             "receiptClass": "native-qualification",
-            "sourceSha": source,
-            "sourceTree": tree,
             "packages": PACKAGES,
             "cargoVersion": command_value("cargo", "--version"),
             "rustcVersion": command_value("rustc", "--version"),
             "status": "passed_in_current_job",
-            "githubRunId": os.environ.get("GITHUB_RUN_ID"),
-            "githubRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-            "productionActivation": "not_claimed",
-            "externalAcceptance": "not_claimed",
         }
     else:
         capabilities = read_json(CAPABILITY_MAP_PATH)
         bindings = read_json(NATIVE_BINDINGS_PATH)
         receipt = {
+            **common,
             "schemaVersion": 2,
-            "lane": "LANE-A-FOUNDATION",
             "receiptClass": "source-truth",
-            "sourceSha": source,
-            "sourceTree": tree,
             "matrixSha256": hashlib.sha256(canonical(matrix)).hexdigest(),
             "capabilityMapSha256": hashlib.sha256(canonical(capabilities)).hexdigest(),
             "nativeBindingsSha256": hashlib.sha256(canonical(bindings)).hexdigest(),
@@ -224,8 +314,6 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
             "currentImplementationTruth": "source_and_test_anchored",
             "nativeQualification": "separate_exact_candidate_receipt_required",
             "targetArchitectureImplementation": "partial",
-            "productionActivation": "not_claimed",
-            "externalAcceptance": "not_claimed",
         }
     receipt["nativeSourceObservations"] = binding["observations"]
     receipt["nativeSourceObservationSha256"] = hashlib.sha256(
@@ -237,8 +325,24 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
     )
 
 
-def write_source_receipt(output: Path, expected: str | None) -> None:
-    write_receipt(output, expected, native=False)
+def write_source_receipt(
+    output: Path,
+    expected: str | None,
+    *,
+    candidate_kind: str = "source-head",
+    source_sha: str | None = None,
+    base_sha: str | None = None,
+    pull_request_number: int | None = None,
+) -> None:
+    write_receipt(
+        output,
+        expected,
+        native=False,
+        candidate_kind=candidate_kind,
+        source_sha=source_sha or expected or exact_source(None)[0],
+        base_sha=base_sha,
+        pull_request_number=pull_request_number,
+    )
 
 
 def self_test() -> None:
@@ -271,3 +375,24 @@ def self_test() -> None:
             pass
         else:
             raise VerificationError("self-test accepted invalid capability evidence")
+
+    current, tree = exact_source(None)
+    identity = candidate_identity(
+        "source-head", current, tree, source_sha=current
+    )
+    if identity["kind"] != "source-head" or identity["sourceSha"] != current:
+        raise VerificationError("source-head identity self-test failed")
+    for invalid in (
+        lambda: candidate_identity(
+            "source-head", current, tree, source_sha=current, base_sha=current
+        ),
+        lambda: candidate_identity(
+            "synthetic-merge", current, tree, source_sha=current
+        ),
+    ):
+        try:
+            invalid()
+        except VerificationError:
+            pass
+        else:
+            raise VerificationError("self-test accepted interchangeable candidate identity")
