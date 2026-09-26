@@ -22,7 +22,12 @@ on:
       - scripts/hepta-objective-target-measure.py
       - scripts/test_hepta_objective_target_measure.py
       - scripts/hepta-implementation-maps.py
+      - scripts/hepta-objective-current-state.py
+      - scripts/hepta-objective-materialize-closure.py
+      - scripts/hepta-objective-evidence-materialize.py
+      - scripts/hepta-objective-release-gate.py
       - .github/workflows/hepta-objective-admission.yml
+      - .github/workflows/hepta-objective-closure-materialize.yml
 
 permissions:
   contents: read
@@ -117,3 +122,217 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+  # BEGIN TEMP_OBJECTIVE_CLOSURE_ARTIFACT_JOB
+  materialize_closure_artifact:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.ref == 'work/objective-compiler-convergence-20260925'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact source without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1 || true
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          fi
+
+      - name: Make the one-shot migration re-entrant
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/hepta-objective-materialize-closure.py")
+          text = path.read_text(encoding="utf-8")
+          old = '''def replace_once(path: str, old: str, new: str) -> None:
+              text = read(path)
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, observed {count}: {old!r}")
+              write(path, text.replace(old, new, 1))
+          '''
+          new = '''def replace_once(path: str, old: str, new: str) -> None:
+              text = read(path)
+              count = text.count(old)
+              if count == 1:
+                  write(path, text.replace(old, new, 1))
+                  return
+              if count == 0 and path == ".github/workflows/hepta-objective-admission.yml":
+                  if old == "          python3 scripts/hepta-implementation-maps.py verify\\n":
+                      marker = "          python3 scripts/hepta-objective-target-measure.py --self-test\\n"
+                      state_check = "          python3 scripts/hepta-objective-current-state.py verify\\n"
+                      if state_check not in text:
+                          if marker not in text:
+                              raise SystemExit(f"{path}: target-host recorder marker is absent")
+                          write(path, text.replace(marker, state_check + marker, 1))
+                      return
+                  if old == "      - scripts/hepta-implementation-maps.py\\n":
+                      state_path = "      - scripts/hepta-objective-current-state.py\\n"
+                      if state_path not in text:
+                          write(path, text.replace(old, old + state_path, 1))
+                      return
+              if count == 0 and new in text:
+                  return
+              raise SystemExit(f"{path}: expected one replacement, observed {count}: {old!r}")
+          '''
+          if old not in text:
+              raise SystemExit("replace_once helper shape changed")
+          text = text.replace(old, new, 1)
+
+          old_count = '''def replace_count(path: str, old: str, new: str, expected: int) -> None:
+              text = read(path)
+              count = text.count(old)
+              if count != expected:
+                  raise SystemExit(
+                      f"{path}: expected {expected} replacements, observed {count}: {old!r}"
+                  )
+              write(path, text.replace(old, new))
+          '''
+          new_count = '''def replace_count(path: str, old: str, new: str, expected: int) -> None:
+              text = read(path)
+              count = text.count(old)
+              if count == expected:
+                  write(path, text.replace(old, new))
+                  return
+              if count == 0 and text.count(new) == expected:
+                  return
+              raise SystemExit(
+                  f"{path}: expected {expected} replacements, observed {count}: {old!r}"
+              )
+          '''
+          if old_count not in text:
+              raise SystemExit("replace_count helper shape changed")
+          path.write_text(text.replace(old_count, new_count, 1), encoding="utf-8")
+          PY
+
+      - name: Materialize proof, golden-vector, and fault-evidence source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-objective-materialize-closure.py
+          python3 scripts/hepta-objective-evidence-materialize.py
+          python3 scripts/hepta-objective-current-state.py sync
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-objective \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          HEPTA_OBJECTIVE_GOLDEN_OUTPUT="codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt" \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-intelligence \
+              update_objective_end_to_end_golden_vector_v1 -- \
+              --ignored --nocapture
+          test -s codex-rs/hepta-intelligence/tests/fixtures/objective_end_to_end_v1.txt
+
+      - name: Remove temporary migration surfaces from the candidate package
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm \
+            .github/workflows/hepta-objective-closure-materialize.yml \
+            scripts/hepta-objective-materialize-closure.py \
+            scripts/hepta-objective-evidence-materialize.py
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/hepta-objective-admission.yml')
+          text = path.read_text(encoding='utf-8')
+          marker = '  # BEGIN TEMP_OBJECTIVE_CLOSURE_ARTIFACT_JOB\n'
+          if text.count(marker) != 1:
+              raise SystemExit('temporary artifact job marker is absent or duplicated')
+          path.write_text(text.split(marker, 1)[0].rstrip() + '\n', encoding='utf-8')
+          PY
+          git add -A
+          git diff --cached --check
+
+      - name: Validate materialized source before packaging
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/hepta-objective-current-state.py \
+            scripts/hepta-objective-release-gate.py
+          python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-release-gate.py verify-source
+          python3 -m unittest -v \
+            scripts.test_hepta_objective_contracts \
+            scripts.test_hepta_objective_target_measure \
+            scripts.test_hepta_objective_release_gate
+          (
+            cd codex-rs
+            cargo test --locked -p codex-hepta-objective -- --nocapture
+            cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
+            cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
+            cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
+            cargo test --locked -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
+            cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
+            cargo test --locked --no-run \
+              -p codex-hepta-objective \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-intelligence \
+              -p codex-hepta-agentd
+            cargo clippy --locked \
+              -p codex-hepta-objective \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-intelligence \
+              -p codex-hepta-agentd \
+              --all-targets --no-deps -- -D warnings
+            cargo fmt \
+              --package codex-hepta-objective \
+              --package codex-hepta-learning-ledger \
+              --package codex-hepta-intelligence \
+              --package codex-hepta-agentd -- --check
+          )
+          git diff --cached --check
+
+      - name: Package exact staged tree delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE="$RUNNER_TEMP/objective-closure-package"
+          mkdir -p "$PACKAGE/files"
+          git diff --cached --name-only --diff-filter=ACMRTUXB -z | \
+            while IFS= read -r -d '' path; do
+              mkdir -p "$PACKAGE/files/$(dirname "$path")"
+              cp -a "$path" "$PACKAGE/files/$path"
+            done
+          git diff --cached --name-only --diff-filter=D > "$PACKAGE/deleted-paths.txt"
+          git diff --cached --name-only --diff-filter=ACMRTUXB > "$PACKAGE/updated-paths.txt"
+          git diff --cached --binary > "$PACKAGE/tree-delta.patch"
+          git diff --cached --name-only --diff-filter=ACMRTUXB -z | \
+            xargs -0 -r git ls-files -s > "$PACKAGE/index-modes.txt"
+          printf '%s\n' "${SOURCE_SHA}" > "$PACKAGE/parent-sha.txt"
+          git rev-parse HEAD^{tree} > "$PACKAGE/parent-tree.txt"
+          find "$PACKAGE" -type f -print0 | sort -z | xargs -0 sha256sum > "$PACKAGE/SHA256SUMS"
+          test -s "$PACKAGE/updated-paths.txt"
+          cat "$PACKAGE/updated-paths.txt"
+          cat "$PACKAGE/deleted-paths.txt"
+
+      - name: Upload exact closure tree delta
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-compiler-closure-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/objective-closure-package
+          if-no-files-found: error
+          retention-days: 7
+  # END TEMP_OBJECTIVE_CLOSURE_ARTIFACT_JOB
