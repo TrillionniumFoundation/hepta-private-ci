@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.learning-artifacts.traceability.v1",
+  "schemaVersion": 1,
+  "module": "learning.artifacts",
+  "exactHeadWorkflow": ".github/workflows/hepta-learning-artifacts-exact-head.yml",
+  "authorityDelta": "none",
+  "cases": [
+    {
+      "id": "LA-HOST-01",
+      "requirement": "Every reference-host mutation is authenticated, action-authorized, epoch-bounded and bound to the exact request digest.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs", "symbol": "LearningArtifactHostAccessVerifierV1::verify"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs", "function": "signed_command_is_action_and_request_bound"},
+        {"path": "codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs", "function": "host_keys_must_be_separate_from_owner_keys"}
+      ],
+      "workflowStep": "Security and independent-selection regression"
+    },
+    {
+      "id": "LA-HOST-02",
+      "requirement": "A command accepted once remains fenced after process restart and payload drift conflicts.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/owner/reconciliation.rs", "symbol": "LearningArtifactAuditJournalV1"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/owner/reconciliation.rs", "function": "audit_reopen_preserves_replay_fence"}
+      ],
+      "workflowStep": "Security and independent-selection regression"
+    },
+    {
+      "id": "LA-DUR-01",
+      "requirement": "Create, replace and remove synchronize the containing directory before success on qualified Unix targets.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/durability.rs", "symbol": "sync_parent_directory"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/durability.rs", "function": "create_replace_remove_syncs_directory_entries"}
+      ],
+      "workflowStep": "Create-only write atomicity"
+    },
+    {
+      "id": "LA-DUR-02",
+      "requirement": "An injected durability failure is surfaced exactly once and cannot be reported as successful persistence.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/owner_storage.rs", "symbol": "FaultInjectingArtifactOwnerDurabilityV1"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/owner_storage.rs", "function": "fault_injector_fails_exactly_one_selected_effect"}
+      ],
+      "workflowStep": "Create-only write atomicity"
+    },
+    {
+      "id": "LA-REC-01",
+      "requirement": "Every durable publication phase reopens after a killed process at the exact recoverable phase.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs", "symbol": "LearningArtifactOwnerHost::open"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs", "function": "owner_host_process_kill_reopen_matrix"}
+      ],
+      "workflowStep": "Owner process-kill recovery regression"
+    },
+    {
+      "id": "LA-PUB-01",
+      "requirement": "Publication cannot acknowledge before payload, registry and current-head witness durability.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/publication.rs", "symbol": "ArtifactPublicationTransactionV1"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/publication.rs", "function": "art_07_publication_requires_ordered_durable_phases_before_ack"}
+      ],
+      "workflowStep": "Publication boundary sequence"
+    },
+    {
+      "id": "LA-SVC-01",
+      "requirement": "The named owner service publishes, returns an idempotent terminal retry and reopens from the authenticated current head.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs", "symbol": "LearningArtifactOwnerService::publish"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs", "function": "named_owner_service_publishes_retries_and_reopens_from_current_head"}
+      ],
+      "workflowStep": "Named owner service E2E"
+    },
+    {
+      "id": "LA-READ-01",
+      "requirement": "A cached artifact is revalidated against an authenticated current view and cannot revive from a restored old backup.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/pinned.rs", "symbol": "RevalidatingCandidate::with_current"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs", "function": "cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup"},
+        {"path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs", "function": "independent_current_head_anchor_rejects_restored_old_backup"}
+      ],
+      "workflowStep": "Read boundary and revoked-cache regression"
+    },
+    {
+      "id": "LA-SEL-01",
+      "requirement": "Selection requires an independently authenticated selector and cannot be self-issued by the generator.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/selection.rs", "symbol": "ArtifactSelectionVerifierV1::verify"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/selection.rs", "function": "art_12_selection_rejects_self_selection_and_revoked_selector"}
+      ],
+      "workflowStep": "Security and independent-selection regression"
+    },
+    {
+      "id": "LA-PROP-01",
+      "requirement": "Exact duplicates are idempotent, identity drift conflicts and revoked dependencies never reactivate across bounded state spaces.",
+      "source": {"path": "codex-rs/hepta-learning-artifacts/src/registry.rs", "symbol": "ArtifactRegistry::append"},
+      "tests": [
+        {"path": "codex-rs/hepta-learning-artifacts/src/invariant_tests.rs", "function": "property_exact_duplicate_has_one_successful_mutation"},
+        {"path": "codex-rs/hepta-learning-artifacts/src/invariant_tests.rs", "function": "property_revoked_dependency_never_reactivates"},
+        {"path": "codex-rs/hepta-learning-artifacts/src/invariant_tests.rs", "function": "property_identity_drift_is_never_idempotent"}
+      ],
+      "workflowStep": "Exhaustive small-state properties"
+    }
+  ]
+}

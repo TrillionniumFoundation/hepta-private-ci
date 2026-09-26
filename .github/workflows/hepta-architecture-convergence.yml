@@ -23,6 +23,49 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
+  learning_artifacts_scope:
+    name: learning.artifacts required scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      required: ${{ steps.scope.outputs.required }}
+    steps:
+      - name: Check out exact source for scope selection
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select learning.artifacts qualification
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=false
+          if [ "$EVENT_NAME" != pull_request ]; then
+            required=true
+          elif ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            required=true
+          else
+            git diff --name-only "$BASE_SHA" "$SOURCE_SHA" > "$RUNNER_TEMP/learning-artifacts-paths.txt"
+            if grep -Eq '^(CALLERS\.toml|codex-rs/Cargo\.(toml|lock)|codex-rs/hepta-learning-artifacts/|codex-rs/hepta-agentd/src/cognitive_ranker\.rs|docs/modules/learning\.artifacts/|docs/lane-e/|qualification/lane-e/|qualification/module-execution-dossiers/detail/learning\.artifacts\.md|scripts/hepta-lane-e-closure\.py|scripts/hepta_lane_e_closure_core\.py|scripts/hepta-learning-artifacts-[^/]+\.py|\.github/workflows/hepta-learning-artifacts-exact-head\.yml|\.github/workflows/hepta-lane-e-gap-closure\.yml|\.github/workflows/hepta-architecture-convergence\.yml)$' "$RUNNER_TEMP/learning-artifacts-paths.txt"; then
+              required=true
+            fi
+          fi
+          printf 'required=%s\n' "$required" >> "$GITHUB_OUTPUT"
+          printf 'learning.artifacts qualification required=%s\n' "$required"
+
+  learning_artifacts:
+    name: Architecture learning.artifacts exact-head
+    needs: learning_artifacts_scope
+    if: needs.learning_artifacts_scope.outputs.required == 'true'
+    uses: ./.github/workflows/hepta-learning-artifacts-exact-head.yml
+    with:
+      source_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      base_sha: ${{ github.event.pull_request.base.sha || '' }}
+
   qualification:
     name: Architecture convergence (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
@@ -275,13 +318,27 @@ jobs:
   required:
     name: Architecture required
     if: ${{ always() }}
-    needs: qualification
+    needs:
+      - qualification
+      - learning_artifacts_scope
+      - learning_artifacts
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require both exact-candidate lanes
+      - name: Require all applicable exact-candidate lanes
         env:
-          RESULT: ${{ needs.qualification.result }}
+          ARCHITECTURE_RESULT: ${{ needs.qualification.result }}
+          ARTIFACT_SCOPE_RESULT: ${{ needs.learning_artifacts_scope.result }}
+          ARTIFACT_REQUIRED: ${{ needs.learning_artifacts_scope.outputs.required }}
+          ARTIFACT_RESULT: ${{ needs.learning_artifacts.result }}
+        shell: bash
         run: |
-          test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          set -euo pipefail
+          test "$ARCHITECTURE_RESULT" = success
+          test "$ARTIFACT_SCOPE_RESULT" = success
+          if [ "$ARTIFACT_REQUIRED" = true ]; then
+            test "$ARTIFACT_RESULT" = success
+          else
+            test "$ARTIFACT_RESULT" = skipped
+          fi
+          echo "All applicable exact-candidate lanes succeeded; learning.artifacts receipts are fail-closed and source-bound."

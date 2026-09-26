@@ -1,0 +1,290 @@
+name: learning.artifacts exact-head qualification
+
+on:
+  push:
+    branches:
+      - main
+  workflow_call:
+    inputs:
+      source_sha:
+        description: Exact source commit to qualify
+        required: true
+        type: string
+      base_sha:
+        description: Ordered first parent for the synthetic merge lane
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-artifacts-exact-head-${{ github.event.pull_request.number || inputs.source_sha || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+  BASE_SHA: ${{ inputs.base_sha || github.event.before }}
+
+jobs:
+  qualify:
+    name: learning.artifacts qualification (${{ matrix.mode }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        mode:
+          - exact-source
+          - ordered-parent-merge
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Bind exact source candidate
+        if: matrix.mode == 'exact-source'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          {
+            printf 'CANDIDATE_SHA=%s\n' "${SOURCE_SHA}"
+            printf 'CANDIDATE_TREE=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'RECEIPT_BASE_SHA=%s\n' ""
+          } >> "${GITHUB_ENV}"
+
+      - name: Materialize ordered-parent merge candidate
+        if: matrix.mode == 'ordered-parent-merge'
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
+          if [[ -z "${BASE_SHA}" ]] || [[ "${BASE_SHA}" = 0000000000000000000000000000000000000000 ]] || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            BASE_SHA="$(git rev-parse "${SOURCE_COMMIT}^1")"
+          fi
+          git checkout --detach "${BASE_SHA}"
+          git -c user.name=hepta-learning-artifacts-ci \
+            -c user.email=hepta-learning-artifacts-ci@users.noreply.github.com \
+            merge --no-commit --no-ff "${SOURCE_COMMIT}"
+          MERGE_TREE="$(git write-tree)"
+          MERGE_COMMIT="$(printf '%s\n' 'learning.artifacts synthetic merge qualification' | \
+            git -c user.name=hepta-learning-artifacts-ci \
+              -c user.email=hepta-learning-artifacts-ci@users.noreply.github.com \
+              commit-tree "${MERGE_TREE}" -p "${BASE_SHA}" -p "${SOURCE_COMMIT}")"
+          test "$(git rev-parse "${MERGE_COMMIT}^1")" = "${BASE_SHA}"
+          test "$(git rev-parse "${MERGE_COMMIT}^2")" = "${SOURCE_COMMIT}"
+          git checkout --detach "${MERGE_COMMIT}"
+          {
+            printf 'CANDIDATE_SHA=%s\n' "${MERGE_COMMIT}"
+            printf 'CANDIDATE_TREE=%s\n' "${MERGE_TREE}"
+            printf 'RECEIPT_BASE_SHA=%s\n' "${BASE_SHA}"
+          } >> "${GITHUB_ENV}"
+
+      - name: Closed-world candidate verification
+        id: closed_world
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
+          test "$(git rev-parse HEAD^{tree})" = "${CANDIDATE_TREE}"
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-learning-artifacts-status.py
+
+      - name: Requirement traceability closure
+        id: traceability
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-artifacts
+          python3 scripts/hepta-learning-artifacts-traceability.py | \
+            tee ".hepta-evidence/learning-artifacts/${{ matrix.mode }}-traceability.json"
+
+      - name: Build all learning.artifacts targets
+        id: build
+        if: always()
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-learning-artifacts --all-targets
+
+      - name: Strict learning.artifacts Clippy
+        id: strict_clippy
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+
+      - name: Owner process-kill recovery regression
+        id: owner_regression
+        if: always()
+        working-directory: codex-rs
+        run: >-
+          just test --locked -p codex-hepta-learning-artifacts
+          owner_host_process_kill_reopen_matrix --test-threads=1
+
+      - name: Security and independent-selection regression
+        id: security
+        if: always()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-learning-artifacts \
+            art_12_selection_rejects_self_selection_and_revoked_selector --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            signed_command_is_action_and_request_bound --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            host_keys_must_be_separate_from_owner_keys --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            audit_reopen_preserves_replay_fence --test-threads=1
+
+      - name: Exhaustive small-state properties
+        id: property
+        if: always()
+        working-directory: codex-rs
+        run: >-
+          just test --locked -p codex-hepta-learning-artifacts
+          property_ --test-threads=1
+
+      - name: Publication boundary sequence
+        id: boundary_sequence
+        if: always()
+        working-directory: codex-rs
+        run: >-
+          just test --locked -p codex-hepta-learning-artifacts
+          art_07_publication_requires_ordered_durable_phases_before_ack
+          --test-threads=1
+
+      - name: Named owner service E2E
+        id: service_e2e
+        if: always()
+        working-directory: codex-rs
+        run: >-
+          just test --locked -p codex-hepta-learning-artifacts
+          named_owner_service_publishes_retries_and_reopens_from_current_head
+          --test-threads=1
+
+      - name: Read boundary and revoked-cache regression
+        id: read_boundary
+        if: always()
+        working-directory: codex-rs
+        run: >-
+          just test --locked -p codex-hepta-learning-artifacts
+          cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup
+          --test-threads=1
+
+      - name: Create-only write atomicity
+        id: write_atomicity
+        if: always()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-learning-artifacts \
+            concurrent_creation_has_exactly_one_winner --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            bytes_appearing_after_atomic_creation_are_indeterminate --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            create_replace_remove_syncs_directory_entries --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            fault_injector_fails_exactly_one_selected_effect --test-threads=1
+
+      - name: Snapshot and old-backup fallback rejection
+        id: snapshot_fallback
+        if: always()
+        working-directory: codex-rs
+        run: >-
+          just test --locked -p codex-hepta-learning-artifacts
+          independent_current_head_anchor_rejects_restored_old_backup
+          --test-threads=1
+
+      - name: Format and clean candidate
+        id: format
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-learning-artifacts -- --check
+          git diff --check
+          git diff --exit-code
+          test "$(git rev-parse HEAD^{tree})" = "${CANDIDATE_TREE}"
+
+      - name: Emit fail-closed qualification receipt
+        id: receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-artifacts
+          python3 scripts/hepta-learning-artifacts-receipt.py emit \
+            --mode "${{ matrix.mode }}" \
+            --source-sha "${SOURCE_SHA}" \
+            --source-tree "$(git rev-parse "${SOURCE_SHA}^{tree}")" \
+            --base-sha "${RECEIPT_BASE_SHA}" \
+            --candidate-sha "${CANDIDATE_SHA}" \
+            --candidate-tree "${CANDIDATE_TREE}" \
+            --check "closed_world=${{ steps.closed_world.outcome }}" \
+            --check "traceability=${{ steps.traceability.outcome }}" \
+            --check "build=${{ steps.build.outcome }}" \
+            --check "strict_clippy=${{ steps.strict_clippy.outcome }}" \
+            --check "owner_regression=${{ steps.owner_regression.outcome }}" \
+            --check "security=${{ steps.security.outcome }}" \
+            --check "property=${{ steps.property.outcome }}" \
+            --check "boundary_sequence=${{ steps.boundary_sequence.outcome }}" \
+            --check "service_e2e=${{ steps.service_e2e.outcome }}" \
+            --check "read_boundary=${{ steps.read_boundary.outcome }}" \
+            --check "write_atomicity=${{ steps.write_atomicity.outcome }}" \
+            --check "snapshot_fallback=${{ steps.snapshot_fallback.outcome }}" \
+            --check "format=${{ steps.format.outcome }}" \
+            --source-object "codex-rs/hepta-learning-artifacts=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/lib.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/lib.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/owner=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/owner/reference_host.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner/reference_host.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/owner_host.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner_host.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/owner_service.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner_service.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/durability.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/durability.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/storage.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/storage.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/stable.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/stable.rs")" \
+            --source-object "qualification/learning.artifacts/TRACEABILITY.json=$(git rev-parse "${SOURCE_SHA}:qualification/learning.artifacts/TRACEABILITY.json")" \
+            --source-object "scripts/hepta-learning-artifacts-traceability.py=$(git rev-parse "${SOURCE_SHA}:scripts/hepta-learning-artifacts-traceability.py")" \
+            --output ".hepta-evidence/learning-artifacts/${{ matrix.mode }}.json"
+          python3 scripts/hepta-learning-artifacts-receipt.py verify \
+            ".hepta-evidence/learning-artifacts/${{ matrix.mode }}.json"
+
+      - name: Retain candidate-bound receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-artifacts-${{ matrix.mode }}-${{ env.SOURCE_SHA }}
+          path: |
+            .hepta-evidence/learning-artifacts/${{ matrix.mode }}.json
+            .hepta-evidence/learning-artifacts/${{ matrix.mode }}-traceability.json
+          if-no-files-found: error
+          retention-days: 30
+
+  required:
+    name: learning.artifacts exact-head required
+    if: always()
+    needs:
+      - qualify
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require exact-source and ordered-parent receipts
+        shell: bash
+        run: test '${{ needs.qualify.result }}' = 'success'
