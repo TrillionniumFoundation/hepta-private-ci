@@ -23,6 +23,8 @@ const REGISTRY_MUTATION_LOCK: &str = ".registry-mutation.lock";
 const WORKSPACE_RESERVATIONS_FILE: &str = "workspace-reservations-v1.json";
 const WORKSPACE_RESERVATIONS_SCHEMA_VERSION: u32 = 1;
 const MAX_WORKSPACE_RESERVATIONS: usize = 4_096;
+#[cfg(unix)]
+const OWNER_READ_WRITE_MODE: u32 = libc::S_IRUSR | libc::S_IWUSR;
 static RESERVATION_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 pub(super) struct RegistryMutationGuard {
@@ -221,9 +223,12 @@ fn open_lock_file(path: &Path) -> Result<File, FleetRegistryError> {
         .write(true)
         .create(true)
         .truncate(false)
-        .mode(0o600)
+        .mode(OWNER_READ_WRITE_MODE)
         .open(path)?;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+    std::fs::set_permissions(
+        path,
+        std::fs::Permissions::from_mode(OWNER_READ_WRITE_MODE),
+    )?;
     Ok(file)
 }
 
