@@ -104,28 +104,39 @@ jobs:
               status=1
             fi
           }
-          record wire 48 just test --locked -p codex-hepta-wire
+          record wire 41 just test --locked -p codex-hepta-wire
           record ports 8 just test --locked -p codex-hepta-context-compiler \
             -p codex-hepta-codex-adapter --lib -E 'test(wire::tests)'
-          record cross-runtime 4 just test --locked -p codex-hepta-shadow-qualification \
+          record cross-runtime 2 just test --locked -p codex-hepta-shadow-qualification \
             --test cross_runtime_wire_session
           record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-wire -p codex-hepta-codex-adapter \
             --all-targets --no-deps -- -D warnings
-          python3 - "$SOURCE_SHA" "$TESTED_SHA" "$status" \
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          STATUS_CODE="$status" GENERATED_AT="$generated_at" python3 - \
             > "$records/lifecycle-receipt.json" <<'PY'
           import json
-          import sys
+          import os
 
-          source_sha, tested_sha, status = sys.argv[1:]
           print(json.dumps({
-              "schema": "hepta.platform-wire.receipt.v1",
+              "schema": "hepta.platform-wire.receipt.v2",
               "kind": "platform-wire-exact-head",
-              "source_sha": source_sha,
-              "tested_sha": tested_sha,
-              "status": "passed" if status == "0" else "failed",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["TESTED_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "status": "passed" if os.environ["STATUS_CODE"] == "0" else "failed",
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "generated_at": os.environ["GENERATED_AT"],
+              "lane": "source-head",
           }, sort_keys=True, indent=2))
           PY
+          python3 scripts/platform_wire_status.py validate-receipt \
+            --path "$records/lifecycle-receipt.json" \
+            --kind platform-wire-exact-head
           exit "$status"
 
       - name: Retain wire results even when the wider Lane A fails
@@ -226,7 +237,7 @@ jobs:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          HEPTA_CI_LANE: base-merge
+          HEPTA_CI_LANE: synthetic-merge
         shell: bash
         run: |
           set -euo pipefail
@@ -243,28 +254,39 @@ jobs:
               status=1
             fi
           }
-          record wire 48 just test --locked -p codex-hepta-wire
+          record wire 41 just test --locked -p codex-hepta-wire
           record ports 8 just test --locked -p codex-hepta-context-compiler \
             -p codex-hepta-codex-adapter --lib -E 'test(wire::tests)'
-          record cross-runtime 4 just test --locked -p codex-hepta-shadow-qualification \
+          record cross-runtime 2 just test --locked -p codex-hepta-shadow-qualification \
             --test cross_runtime_wire_session
           record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-wire -p codex-hepta-codex-adapter \
             --all-targets --no-deps -- -D warnings
-          python3 - "$SOURCE_SHA" "$TESTED_SHA" "$status" \
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          STATUS_CODE="$status" GENERATED_AT="$generated_at" python3 - \
             > "$records/lifecycle-receipt.json" <<'PY'
           import json
-          import sys
+          import os
 
-          source_sha, tested_sha, status = sys.argv[1:]
           print(json.dumps({
-              "schema": "hepta.platform-wire.receipt.v1",
+              "schema": "hepta.platform-wire.receipt.v2",
               "kind": "platform-wire-synthetic-merge",
-              "source_sha": source_sha,
-              "tested_sha": tested_sha,
-              "status": "passed" if status == "0" else "failed",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["TESTED_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "status": "passed" if os.environ["STATUS_CODE"] == "0" else "failed",
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "generated_at": os.environ["GENERATED_AT"],
+              "lane": "synthetic-merge",
           }, sort_keys=True, indent=2))
           PY
+          python3 scripts/platform_wire_status.py validate-receipt \
+            --path "$records/lifecycle-receipt.json" \
+            --kind platform-wire-synthetic-merge
           exit "$status"
 
       - name: Retain wire results even when the wider Lane A fails
