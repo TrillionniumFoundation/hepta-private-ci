@@ -1,0 +1,22 @@
+[package]
+name = "hepta-plasticity-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+codex-hepta-plasticity = { path = ".." }
+codex-hepta-types = { path = "../../hepta-types" }
+libfuzzer-sys = "0.4"
+
+[[bin]]
+name = "decode_registries"
+path = "fuzz_targets/decode_registries.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]

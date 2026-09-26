@@ -70,8 +70,13 @@ pub use objective_run::ObjectiveRunError;
 pub use objective_run::PublishedObjectiveRunV1;
 pub use objective_run::compile_and_publish_objective_run_v1;
 
+mod plasticity_coverage_product;
 mod plasticity_product;
 
+pub use plasticity_coverage_product::CoveredParameterPlasticityProductErrorV1;
+pub use plasticity_coverage_product::CoveredParameterPlasticityProductReceiptV1;
+pub use plasticity_coverage_product::CoveredParameterPlasticityProductRequestV1;
+pub use plasticity_coverage_product::propose_covered_parameter_plasticity_v1;
 pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
 pub use plasticity_product::AnchoredPlasticityWriterV1;
 pub use plasticity_product::CandidateEvaluationAdmissionV1;
