@@ -1,6 +1,5 @@
 //! Connection ownership tests, not proof of termination of external effects.
 use super::*;
-use pretty_assertions::assert_eq;
 use tokio::sync::oneshot;
 
 #[tokio::test]

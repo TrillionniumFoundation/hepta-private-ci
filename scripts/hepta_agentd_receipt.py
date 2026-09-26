@@ -76,8 +76,8 @@ def fingerprint(path: Path) -> dict:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
         after = os.fstat(stream.fileno())
-        identity = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
-        if identity(before) != identity(after):
+        observed = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+        if any(getattr(before, key) != getattr(after, key) for key in observed):
             raise ValueError("fixture changed while hashing")
     return {"path": str(path.absolute()), "sha256": digest.hexdigest(), "bytes": before.st_size}
 
@@ -123,10 +123,12 @@ def main() -> int:
         try:
             captured_bytes = (args.directory / "fixture.json").read_bytes()
             before = json.loads(captured_bytes)
+            if not isinstance(before, dict):
+                raise ValueError("fixture capture must be an object")
             after = {"context": context(), "fixture": fingerprint(args.binary)}
             record.update(after)
             record["capture_sha256"] = hashlib.sha256(captured_bytes).hexdigest()
-            if before.get("schema_version") != 1 or before.get("status") != "captured":
+            if type(before.get("schema_version")) is not int or before["schema_version"] != 1 or before.get("status") != "captured":
                 errors.append("invalid fixture capture")
             if any(before.get(key) != after[key] for key in after):
                 errors.append("source, runner or fixture changed during qualification")

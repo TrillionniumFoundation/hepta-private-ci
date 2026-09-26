@@ -152,6 +152,23 @@ class ReceiptTests(unittest.TestCase):
             self.assertEqual(plan["native_execution_required"], expected)
             self.assertEqual(plan["requires_source_head_success"], not expected)
 
+    def test_malformed_capture_retains_failed_receipt(self):
+        self.capture()
+        for malformed in (None, [], "captured", {"schema_version": True, "status": "captured"}):
+            with self.subTest(capture=malformed):
+                (self.output / "fixture.json").write_text(json.dumps(malformed))
+                result = self.run_receipt("finish")
+                self.assertNotEqual(result.returncode, 0)
+                receipt = self.output / "qualification.json"
+                self.assertEqual(json.loads(receipt.read_text())["status"], "failed")
+                receipt.unlink()
+
+    def test_malformed_steps_retains_failed_receipt(self):
+        self.capture()
+        self.steps = []
+        self.assertNotEqual(self.run_receipt("finish").returncode, 0)
+        self.assertEqual(json.loads((self.output / "qualification.json").read_text())["status"], "failed")
+
     def test_no_step_object_rejects(self):
         for malformed in (None, [], "success"):
             with self.assertRaises(ValueError):

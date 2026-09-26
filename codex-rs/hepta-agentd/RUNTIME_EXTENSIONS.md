@@ -102,18 +102,18 @@ is not protocol compatibility.
 
 ## Running-service regressions
 
-From the repository root:
+From `codex-rs` (the repository toolchain directory):
 
 ```sh
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
-  -p codex-hepta-agentd --lib runtime_tasks::service_generations -- --nocapture
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
-  -p codex-hepta-agentd --lib automation::service_tests -- --nocapture
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
-  -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
+just test --locked --retries 0 --no-fail-fast \
+  -p codex-hepta-agentd --lib runtime_tasks::service_generations
+just test --locked --retries 0 --no-fail-fast \
+  -p codex-hepta-agentd --lib automation::service_tests
+just test --locked --retries 0 --no-fail-fast \
+  -p codex-hepta-agentd --test optional_module_restart forty_first_service
+just test --locked --retries 0 --no-fail-fast \
   -p codex-hepta-automation --test operation_timer_fence
-cargo test --locked --manifest-path codex-rs/Cargo.toml \
+just test --locked --retries 0 --no-fail-fast \
   -p codex-hepta-agentd runtime_executable
 ```
 
@@ -154,3 +154,126 @@ working canonical product profile. This check does not construct owner inputs,
 install evaluation trust, select a model or establish a complete learning loop.
 `incomplete_intelligence_composition_is_rejected_before_startup` covers the four
 presence combinations; owner and run identity validation still happens afterward.
+
+## Control drain and exact qualification (2026-09-27 candidate)
+
+The control server owns all accepted connection tasks in one `JoinSet`. It stops
+accepting before waiting for acknowledgement within the current two-second
+`FRAME_IO_TIMEOUT` grace. Completed request errors do not kill healthy sibling
+connections. A task panic or exhausted grace fails the drain; remaining tasks are
+aborted and joined before the server returns. The timeout is deliberately not
+reported as success. It does not commit an `Indeterminate` run record, interrupt
+a physical Codex turn, release a durable reservation, or prove a child process
+exited. Those are still the respective coordinator and execution-owner duties.
+The enclosing daemon must preserve this failure in its shutdown receipt.
+
+Error frames obtain `current_generation` from the existing Fleet-backed state,
+never from the request. Failure to refresh that state closes the connection
+without inventing an epoch. Spawn generation identifies the process; current
+lifecycle generation may legitimately advance by one for Running and by two for
+Draining. Do not reject every `current_generation > spawn_generation` response.
+These checks are not a substitute for socket peer credentials.
+
+The Agentd process workflow now requests independent native execution for both
+source and prospective-merge lanes on Linux and macOS, even for identical trees.
+`--require-native` is an opt-in of the existing candidate planner, not a second
+qualification planner. Test commands disable retries and fail-fast. Required
+suites are separate steps so a failed owner suite cannot silently suppress E2E
+or strict lint. An unavailable build remains a real prerequisite failure, never
+an allowed skip. The aggregate must reject any missing, skipped, cancelled or
+failed required job and step.
+
+`hepta_agentd_receipt.py` captures the exact App Server fixture before testing and
+compares it afterward. The receipt binds source/base/tested SHA, tested tree,
+runner OS/architecture, run ID/attempt, fixture path, byte count and SHA-256,
+and required step outcomes/conclusions. Both outcomes and conclusions must pass;
+`continue-on-error` cannot turn a failure into qualifying evidence. Receipts are
+created outside the checkout without overwriting prior evidence. A failed or
+missing capture cannot produce a passing final receipt. The workflow retains
+failure evidence as well as success evidence.
+
+Scope limitation: this is CI self-recorded evidence of the App Server fixture
+and workflow steps, not a signed attestation of every spawned Agentd/worker/test
+binary, a count of every executed test, a target-host deployment receipt, or
+independent security acceptance. Capture all participating executable and
+configuration digests before making a deployment provenance claim.
+
+The new focused regressions can be run with:
+
+```sh
+# Repository root: real temporary-Git/subprocess receipt tests, not daemon E2E.
+python3 -m unittest -v scripts.test_hepta_agentd_receipt
+
+# codex-rs: native async control tests. A command is not a passing receipt.
+just test --locked --retries 0 --no-fail-fast -p codex-hepta-agentd --lib \
+  control::shutdown_tests --test-threads=1
+```
+
+## Operator qualification and recovery protocol
+
+This is a proposed acceptance protocol, not an assertion that target-host tests,
+telemetry, deployment identity or the canonical execution chain already exist.
+The deployer and an independent reviewer must name the target and approve its
+load profile before executing it. Do not activate on the strength of this text.
+
+| Gate | Required observation | Current evidence rule |
+| --- | --- | --- |
+| Exact source | Required CI and architecture checks, native Linux/macOS source and merge jobs, unchanged source, matching digests | Retain run IDs and attempts; an old head or skipped job does not qualify a new head |
+| Dispatch/recovery | Formal ingress reaches physical start, interrupt and terminal observation; crash at every durable boundary; no redispatch of an uncertain effect | Direct coordinator/driver fixtures do not prove the canonical path |
+| Authority | Current revocation/epoch/generation/digest checks linearized with durable admission; no forgeable public admission handle | Caller convention and a boolean checked flag are insufficient |
+| Ownership | One fenced writer across kill/restart and successor handoff, including Neuron lifetime | Joined async futures alone do not prove process or writer termination |
+| Capacity | Declared concurrency, socket pressure, sustained load and soak on the named host, bounded RSS/FD/task growth and measured latency | CI echo services are not a production capacity result |
+| Faults | Disk full, corrupt state, rename/fsync failure, stale generation and worker death retain uncertainty and deny unsafe replay | Never inject faults into the only production state copy |
+| Acceptance | Independent review and deployment provenance with explicit release/activation decision | CI receipts always leave production activation false |
+
+### Incident handling
+
+On acknowledgement timeout, task panic, `Indeterminate`, or failed drain, stop new
+admission through the existing supervisor-controlled lifecycle. Preserve the
+original operation/run identity, spawn/current generation, revision, executable
+and configuration digests, and owner evidence. Query the durable execution/effect
+owner using that same identity. Do not issue a fresh ID, remove a tombstone, reset
+an epoch, or infer “not applied” from a closed socket. An unknown outcome remains
+unknown until the owner supplies an authoritative terminal or negative receipt.
+
+On corrupt or unavailable Fleet/owner state, fail closed. Preserve a forensic
+copy and identify a validated checkpoint through the existing owner recovery
+protocol. Do not edit journal/SQLite rows or substitute a cached generation just
+to restore readiness. Validate recovery on an isolated copy before switching the
+live service. Recovery must preserve dedupe identities and revocation floors.
+
+On overload, distinguish a bounded admission rejection from accepted work whose
+acknowledgement was lost. Reduce offered load; preserve the original accepted
+identity for reconciliation. Do not respond by unbounding connection/task limits
+or by enabling production mutation features without their authority owner.
+
+### SLO, alerts and rollback acceptance
+
+Before deployment, record a concrete workload envelope and numeric budgets for
+control p95/p99 latency, dispatch and terminal latency, cancellation acknowledgement,
+drain completion, RSS, open descriptors and queue depth. These must be measured
+on the target; no universal latency SLO is claimed here. A proposed soak profile
+is 24 hours at the declared capacity with repeated drain/restart under load.
+
+Correctness budgets are zero duplicate external dispatches, zero stale-writer
+acceptances, zero fabricated terminal successes and zero successful forced-drain
+receipts. Page immediately on any such violation, corrupted owner state or lost
+identity binding. Alert on sustained capacity exhaustion, rising indeterminate
+backlog or exhausted drain budget. Metric names, exporters and alert rules still
+require implementation and a tested delivery path; this document is not that
+instrumentation. Keep run IDs and digests in access-controlled logs, not metric
+labels; do not log prompts, credentials or authority key material.
+
+Rollback requires closing admission, reconciling accepted work, fencing the old
+writer, verifying the predecessor binary/configuration and schema compatibility,
+and using the existing explicit owner handoff. Preserve unresolved effects and
+revocation floors. Binary rollback is not permission to roll back durable state
+or replay requests. Validate readiness and read-only inspection before reopening
+admission. Abort rollback when compatibility or ownership cannot be established.
+
+Record independent reviewer, target identity, exact commits/digests, fault/load
+profile, observed results and rollback evidence outside mutable build output.
+A proposed promotion criterion is three consecutive complete main-branch native
+runs without retries or allowed skipped lanes, followed by independent target-host
+acceptance. Neither this candidate nor its CI recorder grants merge, release or
+activation authority.
