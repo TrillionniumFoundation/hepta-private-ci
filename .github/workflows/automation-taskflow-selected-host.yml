@@ -34,6 +34,11 @@ jobs:
     runs-on: [self-hosted, hepta-automation-selected-host]
     environment: automation-taskflow-selected-host
     timeout-minutes: 120
+    env:
+      PROVIDER_IDENTITY_SHA256: ${{ vars.AUTOMATION_PROVIDER_IDENTITY_SHA256 }}
+      TERMINAL_OBSERVER_IDENTITY_SHA256: ${{ vars.AUTOMATION_TERMINAL_OBSERVER_IDENTITY_SHA256 }}
+      FINAL_USE_TRUST_SHA256: ${{ vars.AUTOMATION_FINAL_USE_TRUST_SHA256 }}
+      REVOCATION_HEAD_SHA256: ${{ vars.AUTOMATION_REVOCATION_HEAD_SHA256 }}
     steps:
       - name: Check out exact immutable candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -42,13 +47,17 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Verify exact source and clean tree
+      - name: Verify exact source and protected deployment identities
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
         shell: bash
         run: |
           set -euo pipefail
           [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PROVIDER_IDENTITY_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$TERMINAL_OBSERVER_IDENTITY_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$FINAL_USE_TRUST_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$REVOCATION_HEAD_SHA256" =~ ^[0-9a-f]{64}$ ]]
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -79,12 +88,14 @@ jobs:
           printf 'sha256=%s\n' "$observed" >> "$GITHUB_OUTPUT"
           printf 'release=%s\n' "$release" >> "$GITHUB_OUTPUT"
 
-      - name: Verify schema and source truth
+      - name: Verify schema, source truth and acceptance verifier
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/automation_taskflow_contract.py self-test
-          python3 -m unittest -v scripts/test_automation_taskflow_contract.py
+          python3 -m unittest -v \
+            scripts/test_automation_taskflow_contract.py \
+            scripts/test_verify_automation_taskflow_acceptance.py
           python3 scripts/hepta-implementation-maps.py verify \
             --expected-sha "$(git rev-parse HEAD)" \
             --expected-tree "$(git rev-parse HEAD^{tree})"
@@ -126,6 +137,7 @@ jobs:
           import json
           import os
           import platform
+          import re
           import sqlite3
           import subprocess
           from pathlib import Path
@@ -133,11 +145,22 @@ jobs:
           def git(*args: str) -> str:
               return subprocess.check_output(["git", *args], text=True).strip()
 
+          identity_fields = {
+              "providerIdentitySha256": os.environ["PROVIDER_IDENTITY_SHA256"],
+              "terminalObserverIdentitySha256": os.environ["TERMINAL_OBSERVER_IDENTITY_SHA256"],
+              "finalUseTrustSha256": os.environ["FINAL_USE_TRUST_SHA256"],
+              "revocationHeadSha256": os.environ["REVOCATION_HEAD_SHA256"],
+          }
+          for label, value in identity_fields.items():
+              if re.fullmatch(r"[0-9a-f]{64}", value) is None:
+                  raise SystemExit(f"{label} is not an exact SHA-256 digest")
+
           receipt = {
               "schema": "hepta.automation-taskflow.selected-host-receipt.v1",
               "commit": git("rev-parse", "HEAD"),
               "tree": git("rev-parse", "HEAD^{tree}"),
               "targetProfile": os.environ["TARGET_PROFILE"],
+              **identity_fields,
               "host": {
                   "node": platform.node(),
                   "system": platform.system(),
@@ -170,6 +193,7 @@ jobs:
               ],
               "independentAcceptance": False,
               "activation": False,
+              "promotion": False,
               "release": False,
           }
           path = Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-selected-host-receipt.json"

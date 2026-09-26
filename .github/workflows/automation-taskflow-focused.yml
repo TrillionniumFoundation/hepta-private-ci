@@ -3,10 +3,12 @@ name: automation-taskflow-focused
 on:
   pull_request:
     paths:
+      - CALLERS.toml
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-agentd/src/automation*
       - codex-rs/hepta-agentd/src/state_control.rs
       - codex-rs/hepta-agentd/src/runtime.rs
+      - codex-rs/hepta-agentd/Cargo.toml
       - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
@@ -17,16 +19,22 @@ on:
       - qualification/lane-b/LANE_B_NATIVE_CLOSURE.md
       - scripts/automation_taskflow_contract.py
       - scripts/test_automation_taskflow_contract.py
+      - scripts/verify_automation_taskflow_acceptance.py
+      - scripts/test_verify_automation_taskflow_acceptance.py
       - codex-rs/Cargo.lock
       - .github/workflows/automation-taskflow-focused.yml
+      - .github/workflows/automation-taskflow-selected-host.yml
+      - .github/workflows/automation-taskflow-independent-acceptance.yml
       - .github/workflows/blocking-ci.yml
   push:
     branches: [main]
     paths:
+      - CALLERS.toml
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-agentd/src/automation*
       - codex-rs/hepta-agentd/src/state_control.rs
       - codex-rs/hepta-agentd/src/runtime.rs
+      - codex-rs/hepta-agentd/Cargo.toml
       - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
@@ -37,8 +45,12 @@ on:
       - qualification/lane-b/LANE_B_NATIVE_CLOSURE.md
       - scripts/automation_taskflow_contract.py
       - scripts/test_automation_taskflow_contract.py
+      - scripts/verify_automation_taskflow_acceptance.py
+      - scripts/test_verify_automation_taskflow_acceptance.py
       - codex-rs/Cargo.lock
       - .github/workflows/automation-taskflow-focused.yml
+      - .github/workflows/automation-taskflow-selected-host.yml
+      - .github/workflows/automation-taskflow-independent-acceptance.yml
       - .github/workflows/blocking-ci.yml
   workflow_call:
   workflow_dispatch:
@@ -71,12 +83,14 @@ jobs:
         with:
           components: clippy,rustfmt
 
-      - name: Verify schema, documentation and product-call truth
+      - name: Verify schema, documentation, acceptance and product-call truth
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/automation_taskflow_contract.py self-test
-          python3 -m unittest -v scripts/test_automation_taskflow_contract.py
+          python3 -m unittest -v \
+            scripts/test_automation_taskflow_contract.py \
+            scripts/test_verify_automation_taskflow_acceptance.py
           git diff --check
 
       - name: Verify Rust formatting
@@ -142,6 +156,7 @@ jobs:
               "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
               "commands": [
                   "python3 scripts/automation_taskflow_contract.py self-test",
+                  "python3 -m unittest scripts/test_verify_automation_taskflow_acceptance.py",
                   "cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check",
                   "cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets",
                   "cargo clippy -p codex-hepta-automation -p codex-hepta-agentd --all-targets --all-features -- -D warnings",

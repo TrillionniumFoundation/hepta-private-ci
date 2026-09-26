@@ -84,6 +84,7 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "docs/modules/automation.taskflow/MIGRATION_V19_RUNBOOK.md",
         "docs/modules/automation.taskflow/SLO.md",
         "docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md",
+        "docs/modules/automation.taskflow/INDEPENDENT_ACCEPTANCE.md",
         "qualification/module-execution-dossiers/detail/automation.taskflow.md",
         "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md",
         "docs/readiness/LANE_B_NATIVE_HOST.md",
@@ -142,11 +143,46 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
     effect_host = text(root, "codex-rs/hepta-agentd/src/automation_effect_host.rs")
     for marker in [
         "AgentdAutomationEffectHost",
-        "execute_authorized_taskflow_effect",
+        "ProviderEffectTaskFlowDriver::new",
+        "execute_authorized_taskflow_effect_async",
         "FinalUseAuthority::open_state_dir",
         "HttpProviderEffectAdapter",
     ]:
         need(marker in effect_host, f"product effect host is missing {marker}")
+
+    callers = text(root, "CALLERS.toml")
+    for marker in [
+        'id = "automation_taskflow_provider_effect_bridge"',
+        'product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]',
+        'caller_markers = ["ProviderEffectTaskFlowDriver::new"',
+    ]:
+        need(marker in callers, f"closed product caller inventory is missing {marker}")
+
+    acceptance_verifier = text(
+        root, "scripts/verify_automation_taskflow_acceptance.py"
+    )
+    for marker in [
+        "canonical_payload_bytes",
+        "verify_ed25519_signature",
+        "implementation and acceptance principals must be distinct",
+        "selectedHostReceiptSha256",
+        '"release": False',
+    ]:
+        need(
+            marker in acceptance_verifier,
+            f"independent acceptance verifier is missing {marker}",
+        )
+
+    acceptance_doc = text(
+        root, "docs/modules/automation.taskflow/INDEPENDENT_ACCEPTANCE.md"
+    )
+    for marker in [
+        "Ed25519",
+        "automation-taskflow-independent-acceptance",
+        "independentAcceptance = true",
+        "release = false",
+    ]:
+        need(marker in acceptance_doc, f"acceptance guide is missing {marker}")
 
     implementation = data(
         root, "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"
@@ -183,9 +219,38 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "branches: [main]",
         "cargo clippy",
         "automation_taskflow_contract.py",
+        "test_verify_automation_taskflow_acceptance.py",
         "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
     ]:
         need(marker in workflow, f"focused workflow is missing {marker}")
+
+    selected_host = text(
+        root, ".github/workflows/automation-taskflow-selected-host.yml"
+    )
+    for marker in [
+        "hepta-automation-selected-host",
+        "expected_tzdb_sha256",
+        "multi_scheduler_race",
+        "runtime_crash_points",
+        "PROVIDER_IDENTITY_SHA256",
+        "automation-taskflow-selected-host-receipt.json",
+    ]:
+        need(marker in selected_host, f"selected-host workflow is missing {marker}")
+
+    acceptance_workflow = text(
+        root, ".github/workflows/automation-taskflow-independent-acceptance.yml"
+    )
+    for marker in [
+        "automation-taskflow-independent-acceptance",
+        "AUTOMATION_ACCEPTANCE_PUBLIC_KEY_PEM",
+        "gh run download",
+        "verify_automation_taskflow_acceptance.py",
+        "acceptance-public-key.pem",
+    ]:
+        need(
+            marker in acceptance_workflow,
+            f"independent acceptance workflow is missing {marker}",
+        )
 
     blocking = text(root, ".github/workflows/blocking-ci.yml")
     need(
@@ -203,6 +268,8 @@ def verify(root: Path = ROOT) -> dict[str, Any]:
         "migrationVersions": observed_versions,
         "documentationFiles": len(documentation),
         "repositoryControlledClosure": True,
+        "selectedHostVerifierPresent": True,
+        "independentAcceptanceVerifierPresent": True,
         "externalReleaseGatesRemainFalse": True,
     }
 
