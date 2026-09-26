@@ -1,5 +1,8 @@
-use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::IssuerLifecycleState;
+use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::VerifiedIssuerHandle;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use sqlx::Sqlite;
@@ -15,13 +18,14 @@ use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
 
 impl HeptaEvidenceStore {
-    /// Atomically authenticate, consume replay sequence and enqueue a message.
-    /// This REPLACES direct admission for durable delivery; a previously admitted
-    /// receipt cannot be upgraded. An exact retained duplicate returns its state.
-    /// After terminal pruning a consumed sequence returns Replay, never requeues.
+    /// Atomically resolve the claimed issuer from the persistent AuthBus
+    /// registry, authenticate, consume replay sequence and enqueue a message.
+    /// This replaces direct admission for durable delivery. An exact retained
+    /// duplicate returns its state. After terminal pruning a consumed sequence
+    /// returns Replay and can never be requeued.
     pub async fn enqueue_authbus_message(
         &self,
-        issuer: &IssuerRegistration,
+        authority: &AuthBusAuthorityHost,
         message: &SignedMessage,
         expected_subject: &StableId,
         expected_scope: Digest32,
@@ -39,13 +43,14 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         let now = now_millis()?;
-        let authenticated = message
-            .authenticate(
-                issuer,
+        let authenticated = authority
+            .authenticate_message(
+                message,
                 expected_scope,
                 Digest32::of_bytes(payload),
                 clock(now)?,
             )
+            .await
             .map_err(AuthBusAdmissionError::from)?;
         let delivery_id = authenticated.receipt().envelope_digest;
         if let Some(existing) = load(&mut tx, delivery_id).await? {
@@ -61,14 +66,19 @@ impl HeptaEvidenceStore {
             tx.commit().await.map_err(classify_sqlx_error)?;
             return Ok(existing.status);
         }
-        let c = &message.claims;
+        let claims = &message.claims;
         let reused: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM authbus_outbox WHERE issuer_id = ? AND key_epoch = ? AND message_id = ?)")
-            .bind(c.issuer_id.as_str()).bind(c.key_epoch.get().to_be_bytes().as_slice())
-            .bind(c.message_id.as_str()).fetch_one(&mut *tx).await.map_err(classify_sqlx_error)?;
+            "SELECT EXISTS(SELECT 1 FROM authbus_outbox WHERE issuer_id = ? AND key_epoch = ? AND message_id = ?)",
+        )
+        .bind(claims.issuer_id.as_str())
+        .bind(claims.key_epoch.get().to_be_bytes().as_slice())
+        .bind(claims.message_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
         if reused {
             return Err(EvidenceError::IdempotencyConflict {
-                record_id: c.message_id.to_string(),
+                record_id: claims.message_id.to_string(),
             }
             .into());
         }
@@ -78,7 +88,7 @@ impl HeptaEvidenceStore {
             "SELECT COUNT(*) FROM authbus_outbox
              WHERE issuer_id = ? AND state IN ('queued', 'leased')",
         )
-        .bind(c.issuer_id.as_str())
+        .bind(claims.issuer_id.as_str())
         .fetch_one(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
@@ -102,14 +112,14 @@ impl HeptaEvidenceStore {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', 0, 0, ?, ?, ?)",
         )
         .bind(delivery_id.as_array().as_slice())
-        .bind(c.issuer_id.as_str())
-        .bind(c.key_epoch.get().to_be_bytes().as_slice())
-        .bind(c.message_id.as_str())
-        .bind(c.subject_id.as_str())
-        .bind(c.scope_digest.as_array().as_slice())
-        .bind(c.payload_digest.as_array().as_slice())
-        .bind(c.sequence.to_be_bytes().as_slice())
-        .bind(c.expires_at_ms.to_be_bytes().as_slice())
+        .bind(claims.issuer_id.as_str())
+        .bind(claims.key_epoch.get().to_be_bytes().as_slice())
+        .bind(claims.message_id.as_str())
+        .bind(claims.subject_id.as_str())
+        .bind(claims.scope_digest.as_array().as_slice())
+        .bind(claims.payload_digest.as_array().as_slice())
+        .bind(claims.sequence.to_be_bytes().as_slice())
+        .bind(claims.expires_at_ms.to_be_bytes().as_slice())
         .bind(message.signature.as_slice())
         .bind(payload)
         .bind(now)
@@ -122,6 +132,8 @@ impl HeptaEvidenceStore {
             .await?
             .ok_or(AuthBusOutboxError::NotFound)?
             .status;
+        // `authenticated` intentionally remains alive through COMMIT so issuer
+        // rotation/revocation cannot race signature verification and enqueue.
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(status)
     }
@@ -141,7 +153,6 @@ impl HeptaEvidenceStore {
     }
 
     /// Bounded route-specific recovery scan, including abandoned expired leases.
-    /// The host resolves each message's current issuer before claiming its ID.
     pub async fn pending_authbus_deliveries(
         &self,
         subject: &StableId,
@@ -151,28 +162,36 @@ impl HeptaEvidenceStore {
         pending(self, subject, scope, /*issuer*/ None, limit).await
     }
 
-    /// Filter by issuer and epoch before applying the bounded recovery limit.
-    /// This selects records only: it neither authenticates them nor revokes
-    /// messages belonging to another issuer or epoch. Claims still require a
-    /// fresh trusted registration.
+    /// Filter by a host-resolved issuer and epoch before applying the bounded
+    /// recovery limit. Selection does not authenticate a delivery or grant a
+    /// lease; the claim path performs fresh registry-backed verification.
     pub async fn pending_authbus_deliveries_for_issuer(
         &self,
         subject: &StableId,
         scope: Digest32,
-        issuer: &IssuerRegistration,
+        issuer: &VerifiedIssuerHandle,
         limit: u32,
     ) -> Result<Vec<AuthBusDeliveryStatus>, AuthBusOutboxError> {
+        if issuer.purpose() != IssuerPurpose::Message {
+            return Err(AuthBusOutboxError::InvalidRequest(
+                "issuer is not registered for messages",
+            ));
+        }
         pending(self, subject, scope, Some(issuer), limit).await
     }
 
-    /// Explicitly retire active messages for a host-confirmed revoked issuer
-    /// epoch. This does not infer revocation from an untrusted message or epoch.
+    /// Explicitly retire active messages for a registry-confirmed revoked
+    /// Message issuer epoch. A caller cannot manufacture this capability.
     pub async fn quarantine_authbus_issuer(
         &self,
-        issuer: &IssuerRegistration,
+        issuer: &VerifiedIssuerHandle,
     ) -> Result<u64, AuthBusOutboxError> {
-        if !issuer.revoked {
-            return Err(AuthBusOutboxError::InvalidRequest("issuer is not revoked"));
+        if issuer.purpose() != IssuerPurpose::Message
+            || issuer.state() != IssuerLifecycleState::Revoked
+        {
+            return Err(AuthBusOutboxError::InvalidRequest(
+                "issuer is not a revoked message issuer",
+            ));
         }
         let mut tx = self
             .pool
@@ -188,8 +207,8 @@ impl HeptaEvidenceStore {
         )
         .bind(now)
         .bind(now)
-        .bind(issuer.issuer_id.as_str())
-        .bind(issuer.key_epoch.get().to_be_bytes().as_slice())
+        .bind(issuer.issuer_id().as_str())
+        .bind(issuer.key_epoch().get().to_be_bytes().as_slice())
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?
@@ -204,7 +223,7 @@ async fn pending(
     store: &HeptaEvidenceStore,
     subject: &StableId,
     scope: Digest32,
-    issuer: Option<&IssuerRegistration>,
+    issuer: Option<&VerifiedIssuerHandle>,
     limit: u32,
 ) -> Result<Vec<AuthBusDeliveryStatus>, AuthBusOutboxError> {
     if limit == 0 || limit > 128 {
@@ -222,8 +241,8 @@ async fn pending(
     }
     let now = now_millis()?;
     maintain(&mut tx, now).await?;
-    let issuer_id = issuer.map(|issuer| issuer.issuer_id.as_str());
-    let key_epoch = issuer.map(|issuer| issuer.key_epoch.get().to_be_bytes());
+    let issuer_id = issuer.map(|issuer| issuer.issuer_id().as_str());
+    let key_epoch = issuer.map(|issuer| issuer.key_epoch().get().to_be_bytes());
     let rows = sqlx::query(
         "SELECT * FROM authbus_outbox WHERE subject_id = ? AND scope_digest = ?
         AND (? IS NULL OR (issuer_id = ? AND key_epoch = ?))
@@ -246,7 +265,7 @@ async fn pending(
     let statuses = rows
         .into_iter()
         .map(OutboxRecord::decode)
-        .map(|r| r.map(|r| r.status))
+        .map(|result| result.map(|record| record.status))
         .collect::<Result<_, _>>()?;
     tx.commit().await.map_err(classify_sqlx_error)?;
     Ok(statuses)
