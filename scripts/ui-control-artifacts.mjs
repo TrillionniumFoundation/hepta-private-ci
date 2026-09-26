@@ -47,7 +47,7 @@ ${statusRows}
 
 ${manifest.publicApi.map(value => `- ${q(value)}`).join("\n")}
 
-The package exposes explicit ${q("exports")} for the root/core, browser controller, and HTTP transport. Imports under ${q("@hepta/control-ui/src/*")} are deliberately blocked. The browser build uses the same source modules as Node tests and does not need a framework runtime or unsafe HTML injection.
+The package exposes explicit ${q("exports")} for the root/core, browser controller, and HTTP transport. Imports under ${q("@hepta/control-client-core/src/*")} are deliberately blocked. The browser build uses the same source modules as Node tests and does not need a framework runtime or unsafe HTML injection.
 
 ## 4. State model
 
