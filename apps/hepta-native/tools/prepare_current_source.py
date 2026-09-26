@@ -8,6 +8,7 @@ create implementation, alter owner authority, or turn test sources into passes.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -16,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/hepta-native"
 BASE = "7ddbfac88525196e7a4b31387ceae194958275f5"
 BRANCH = "work/ui-native-current-source-20260925"
+WRITE_BRANCHES = {BRANCH, "work/ui-native-remediation-20260927", "work/ui-native-closure-20260927"}
 INTEGRATION_ROOTS = (
     ROOT / "codex-rs/hepta-native-gateway",
     ROOT / "codex-rs/hepta-private-state",
@@ -37,6 +39,13 @@ INTEGRATION_FILES = (
     ROOT / "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
     ROOT / "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
     ROOT / ".github/workflows/hepta-ui-native-current-source.yml",
+    ROOT / ".github/workflows/hepta-ui-native-remediation.yml",
+    ROOT / ".github/workflows/hepta-ui-native-remediation-format.yml",
+    ROOT / "scripts/hepta_ui_native_evidence.py",
+    ROOT / "scripts/test_hepta_ui_native_evidence.py",
+    ROOT / "scripts/hepta_ui_native_aggregate.py",
+    ROOT / "scripts/test_hepta_ui_native_aggregate.py",
+    ROOT / "scripts/test_hepta_ui_native_source.py",
 )
 SOURCE_LOG_PATHS = tuple(
     path.relative_to(ROOT).as_posix() for path in INTEGRATION_FILES
@@ -44,6 +53,7 @@ SOURCE_LOG_PATHS = tuple(
     "apps/hepta-native",
     "codex-rs/hepta-native-gateway",
     "codex-rs/hepta-private-state",
+    ":(exclude)apps/hepta-native/CURRENT_SOURCE.json",
 )
 
 
@@ -64,11 +74,14 @@ def committed_blob(path):
 
 
 def require_branch():
+    write_branch = os.environ.get("HEPTA_UI_NATIVE_WRITE_BRANCH", BRANCH)
+    if write_branch not in WRITE_BRANCHES:
+        raise RuntimeError("unregistered native metadata write branch")
     branch = git("branch", "--show-current")
-    if branch == BRANCH:
+    if branch == write_branch:
         return
     if not branch and subprocess.run(
-        ["git", "merge-base", "--is-ancestor", f"refs/remotes/origin/{BRANCH}", "HEAD"],
+        ["git", "merge-base", "--is-ancestor", f"refs/remotes/origin/{write_branch}", "HEAD"],
         cwd=ROOT, check=False,
     ).returncode == 0:
         return
@@ -95,39 +108,28 @@ def prepare():
 
 def fingerprint(write):
     path = APP / "CURRENT_SOURCE.json"
-    names = {
-        p
-        for p in APP.rglob("*")
-        if p.is_file()
-        and not any(
-            part in {"target", "__pycache__"} for part in p.relative_to(APP).parts
-        )
-        and p.name != "CURRENT_SOURCE.json"
-    }
-    for integration_root in INTEGRATION_ROOTS:
-        if not integration_root.is_dir():
-            raise RuntimeError(
-                f"missing integration source root: {integration_root.relative_to(ROOT)}"
-            )
-        names.update(
-            p
-            for p in integration_root.rglob("*")
-            if p.is_file()
-            and not any(
-                part in {"target", "__pycache__"}
-                for part in p.relative_to(integration_root).parts
-            )
-        )
+    # Inventory committed paths, not incidental caches or generated/untracked files.
+    tracked = subprocess.check_output(
+        ["git", "ls-files", "-z", "--", "apps/hepta-native",
+         "codex-rs/hepta-native-gateway", "codex-rs/hepta-private-state"], cwd=ROOT
+    )
+    names = {ROOT / name.decode("utf-8") for name in tracked.split(b"\0") if name}
+    names.discard(path)
     for integration_file in INTEGRATION_FILES:
         if not integration_file.is_file():
             raise RuntimeError(
                 f"missing integration source file: {integration_file.relative_to(ROOT)}"
             )
         names.add(integration_file)
-    observed = {
-        p.relative_to(ROOT).as_posix(): hashlib.sha256(committed_blob(p)).hexdigest()
-        for p in sorted(names)
-    }
+    observed = {}
+    for source_path in sorted(names):
+        relative = source_path.relative_to(ROOT).as_posix()
+        if source_path.is_symlink() or not source_path.is_file():
+            raise RuntimeError(f"native source is missing or a symlink: {relative}")
+        committed = committed_blob(source_path)
+        if source_path.read_bytes() != committed:
+            raise RuntimeError(f"native source differs from committed bytes: {relative}")
+        observed[relative] = hashlib.sha256(committed).hexdigest()
     if write:
         require_branch()
         path.write_text(
@@ -148,7 +150,12 @@ def fingerprint(write):
             encoding="utf-8",
         )
     else:
-        expected = json.loads(path.read_text(encoding="utf-8"))["files"]
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        if (manifest.get("schema") != "hepta.ui.native.current-source.v2"
+                or manifest.get("productionQualified") is not False
+                or manifest.get("releaseAuthorized") is not False):
+            raise RuntimeError("native source manifest is not a non-promoting v2 identity")
+        expected = manifest["files"]
         if observed != expected:
             changed = sorted(
                 set(observed) ^ set(expected)
