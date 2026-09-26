@@ -8,6 +8,7 @@ use std::io::Read;
 use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
 use codex_hepta_evidence::EvidenceIssuerTrustBindingV1;
 use codex_hepta_types::Generation;
@@ -39,12 +40,14 @@ pub(crate) struct EvidenceTrust {
     schema_version: u32,
     agent_id: String,
     issuers: Vec<EvidenceIssuerTrust>,
+    #[serde(skip)]
+    registry_sha256: Option<Sha256Digest>,
 }
 
 impl EvidenceTrust {
     pub(crate) fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
         let bytes = read_owner_file(path, identity)?;
-        let trust: Self = serde_json::from_slice(&bytes)?;
+        let mut trust: Self = serde_json::from_slice(&bytes)?;
         if trust.schema_version != 1
             || trust.agent_id != identity.agent_id.as_str()
             || trust.issuers.is_empty()
@@ -75,7 +78,14 @@ impl EvidenceTrust {
                 }
             }
         }
+        trust.registry_sha256 = Some(Sha256Digest::for_bytes(&bytes));
         Ok(trust)
+    }
+
+    pub(crate) fn registry_sha256(&self) -> Result<&Sha256Digest, AgentdError> {
+        self.registry_sha256
+            .as_ref()
+            .ok_or_else(|| invalid("evidence trust registry digest was not retained"))
     }
 
     pub(crate) fn verification_bindings(
