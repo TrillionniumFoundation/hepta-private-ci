@@ -150,7 +150,9 @@ function derive() {
       worker.includes("dispatch_boundary") && driver.includes("dispatch_boundary"),
     semanticObservation: worker.includes("hepta.browser.semantic-observation.v1"),
     grantScopedEgress:
-      egress.includes("effectGrantDigest") && egress.includes("destinationOrigin"),
+      egress.includes("GrantScopedEgressBroker") &&
+      egress.includes("grantDigest") &&
+      egress.includes("allowedOrigins"),
     committedServoLock:
       read("apps/hepta-browser/servo-worker/Cargo.lock").length > 0,
     profileAffineWorkerPool: driver.includes("PooledSubprocessBrowserDriver"),
