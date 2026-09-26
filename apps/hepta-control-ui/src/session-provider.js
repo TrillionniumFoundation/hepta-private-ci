@@ -4,6 +4,8 @@ import {
   uiControlError,
 } from "./errors.js";
 
+const MAX_TIMER_DELAY_MS = 2_147_000_000;
+
 export class SessionProvider {
   #client;
   #manifest;
@@ -11,6 +13,9 @@ export class SessionProvider {
   #refreshSkewMs;
   #timer = null;
   #listeners = new Set();
+  #active = false;
+  #epoch = 0;
+  #refreshPromise = null;
 
   constructor({ client, endpointManifest, clock = () => Date.now(), refreshSkewMs = 60_000 }) {
     if (!client || typeof client.connect !== "function" || typeof client.refreshSession !== "function") {
@@ -32,26 +37,73 @@ export class SessionProvider {
   }
 
   async start({ signal } = {}) {
+    this.#active = true;
+    const epoch = ++this.#epoch;
+    this.#clearTimer();
     await this.#client.connect(this.#manifest, { signal });
+    if (!this.#active || epoch !== this.#epoch) {
+      try {
+        await this.#client.close({ signal });
+      } catch {
+        // The provider is already stopped; RuntimeClient closes local authority
+        // before attempting the transport close.
+      }
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.ABORTED,
+        "session provider stopped while connection was being established",
+        { retryable: true, details: { requestDispatched: true } },
+      );
+    }
     this.#emit("connected");
-    this.#schedule();
+    this.#schedule(epoch);
     return this.#client.readView();
   }
 
   async refresh({ signal } = {}) {
+    if (!this.#active) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.NOT_CONNECTED,
+        "session provider is stopped",
+        { retryable: true },
+      );
+    }
+    if (this.#refreshPromise) return this.#refreshPromise;
+    const epoch = this.#epoch;
+    const refreshPromise = this.#refreshOnce(epoch, signal);
+    this.#refreshPromise = refreshPromise;
+    try {
+      return await refreshPromise;
+    } finally {
+      if (this.#refreshPromise === refreshPromise) this.#refreshPromise = null;
+    }
+  }
+
+  async #refreshOnce(epoch, signal) {
     try {
       await this.#client.refreshSession({ signal });
+      if (!this.#active || epoch !== this.#epoch) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.ABORTED,
+          "session provider stopped while refresh was in flight",
+          { retryable: true, details: { requestDispatched: true } },
+        );
+      }
       this.#emit("refreshed");
-      this.#schedule();
+      this.#schedule(epoch);
       return this.#client.readView();
     } catch (error) {
       if (
         error instanceof UiControlError &&
         [
           UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
+          UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
           UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
+          UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
         ].includes(error.code)
       ) {
+        this.#active = false;
+        ++this.#epoch;
+        this.#clearTimer();
         this.#emit("revoked", error);
       }
       throw error;
@@ -59,22 +111,39 @@ export class SessionProvider {
   }
 
   async revoke({ signal } = {}) {
+    this.#active = false;
+    ++this.#epoch;
     this.#clearTimer();
-    await this.#client.revokeSession({ signal });
-    this.#emit("revoked");
+    try {
+      await this.#client.revokeSession({ signal });
+    } finally {
+      this.#emit("revoked");
+    }
   }
 
   stop() {
+    this.#active = false;
+    ++this.#epoch;
     this.#clearTimer();
   }
 
-  #schedule() {
+  #schedule(epoch = this.#epoch) {
     this.#clearTimer();
+    if (!this.#active || epoch !== this.#epoch) return;
     const view = this.#client.readView();
     if (!view.connected || !view.expiresAt) return;
-    const delay = Math.max(0, view.expiresAt - this.#clock() - this.#refreshSkewMs);
+    const desiredDelay = Math.max(0, view.expiresAt - this.#clock() - this.#refreshSkewMs);
+    const delay = Math.min(desiredDelay, MAX_TIMER_DELAY_MS);
     this.#timer = setTimeout(() => {
-      this.refresh().catch(error => this.#emit("refresh-failed", error));
+      this.#timer = null;
+      if (!this.#active || epoch !== this.#epoch) return;
+      if (desiredDelay > MAX_TIMER_DELAY_MS) {
+        this.#schedule(epoch);
+        return;
+      }
+      this.refresh().catch(error => {
+        if (this.#active && epoch === this.#epoch) this.#emit("refresh-failed", error);
+      });
     }, delay);
   }
 
@@ -91,13 +160,13 @@ export class SessionProvider {
       try {
         listener(event);
       } catch (cause) {
-        queueMicrotask(() => {
-          throw uiControlError(
-            UI_CONTROL_ERROR_CODES.INVALID_INPUT,
-            "session listener failed",
-            { cause },
-          );
-        });
+        const failure = uiControlError(
+          UI_CONTROL_ERROR_CODES.INVALID_INPUT,
+          "session listener failed",
+          { cause },
+        );
+        if (typeof globalThis.reportError === "function") globalThis.reportError(failure);
+        else globalThis.console?.error?.(failure);
       }
     }
   }
