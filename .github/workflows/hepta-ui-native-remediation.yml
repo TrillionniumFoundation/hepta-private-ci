@@ -1,0 +1,57 @@
+name: ui.native remediation qualification
+
+on:
+  push:
+    branches: [work/ui-native-remediation-20260927]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-remediation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source:
+    name: bind and retain exact source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export credential-free committed source and identity
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/ui-native-source"
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/ui-native-source/source.tar.gz"
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, subprocess
+          from pathlib import Path
+          out = Path(os.environ['RUNNER_TEMP']) / 'ui-native-source'
+          archive = out / 'source.tar.gz'
+          receipt = {
+              'schema': 'hepta.ui.native.source-snapshot.v1',
+              'sourceSha': os.environ['EXPECTED_SHA'],
+              'treeSha': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'archiveSha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
+              'workflowSha': os.environ.get('GITHUB_WORKFLOW_SHA', ''),
+              'runId': os.environ['GITHUB_RUN_ID'],
+              'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'qualificationPassed': False,
+              'releaseAuthorized': False,
+          }
+          (out / 'source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-source-${{ github.sha }}
+          path: ${{ runner.temp }}/ui-native-source
+          if-no-files-found: error
+          retention-days: 3
