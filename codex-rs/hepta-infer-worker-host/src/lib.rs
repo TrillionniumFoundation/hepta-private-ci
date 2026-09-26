@@ -13,6 +13,7 @@ pub mod model_worker;
 pub mod final_use_authorizer;
 pub mod native_app_server;
 pub mod runtime_codex_attempt;
+pub mod runtime_codex_quarantine;
 
 use std::error::Error as StdError;
 use std::fmt;
