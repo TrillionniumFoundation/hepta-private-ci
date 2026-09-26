@@ -1,0 +1,49 @@
+name: Memory retrieval qualification docs bootstrap
+
+on:
+  push:
+    branches:
+      - work/memory-retrieval-qualification-docs-20260927
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-retrieval-qualification-docs-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  apply-and-verify:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact docs branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/memory-retrieval-qualification-docs-20260927
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply workflow and guide changes
+        run: python3 scripts/apply_memory_retrieval_qualification_docs.py
+      - name: Verify governance and receipt parsers
+        run: python3 -m unittest -v scripts.tests.test_verify_memory_retrieval_review scripts.tests.test_verify_memory_retrieval_benchmark
+      - name: Refresh generated module projections
+        run: python3 scripts/hepta-module-docs.py refresh-derived
+      - name: Verify documents and implementation maps
+        run: |
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          git diff --check
+      - name: Commit verified qualification and production references
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/apply_memory_retrieval_qualification_docs.py
+          rm .github/workflows/memory-retrieval-qualification-docs-bootstrap.yml
+          git add -A
+          git diff --cached --check
+          git config user.name "Hepta qualification bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "docs(memory.retrieval): enforce qualification and production references"
+          git push origin HEAD:work/memory-retrieval-qualification-docs-20260927
