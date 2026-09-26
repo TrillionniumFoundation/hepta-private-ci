@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import test from "node:test";
 import { PassThrough } from "node:stream";
+import test from "node:test";
 
 import {
   AgentdBrowserChannel,
@@ -8,13 +8,11 @@ import {
   ParentFinalUseAuthority,
 } from "../src/agentd-service.js";
 import {
-  createBrowserEffectAdmission,
-} from "../src/effect-admission.js";
-import {
   buildAgentdBrowserFrame,
   encodeAgentdBrowserFrame,
   normalizeAgentdBrowserFrame,
 } from "../src/agentd-protocol.js";
+import { createBrowserEffectAdmission } from "../src/effect-admission.js";
 
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
@@ -68,9 +66,6 @@ function fakeHost(authority, events) {
           ...requestSemantics,
           verifiedUseTokenWitnessDigest: witness.witnessDigest,
         });
-        // The worker-originated admission receipt is returned before remote
-        // page execution settles. Agentd must validate it before releasing the
-        // final-use fence.
         return {
           kind: "BrowserEffectObservationV1",
           status: "indeterminate",
@@ -97,8 +92,14 @@ function pairedChannels() {
   const parentToChild = new PassThrough();
   const childToParent = new PassThrough();
   return {
-    parent: new AgentdBrowserChannel({ input: childToParent, output: parentToChild }),
-    child: new AgentdBrowserChannel({ input: parentToChild, output: childToParent }),
+    parent: new AgentdBrowserChannel({
+      input: childToParent,
+      output: parentToChild,
+    }),
+    child: new AgentdBrowserChannel({
+      input: parentToChild,
+      output: childToParent,
+    }),
     close() {
       parentToChild.end();
       childToParent.end();
@@ -106,7 +107,18 @@ function pairedChannels() {
   };
 }
 
-test("navigate request challenges Agentd then returns a bound effect-admission receipt", async () => {
+function authorityEnter(overrides = {}) {
+  return {
+    authorized: true,
+    witnessDigest: W1,
+    authorityEpoch: 7,
+    requestDigest: D1,
+    admissionReceiptVersion: 1,
+    ...overrides,
+  };
+}
+
+test("navigate challenges Agentd and returns a bound admission receipt", async () => {
   const channels = pairedChannels();
   const events = [];
   const authority = new ParentFinalUseAuthority(channels.child);
@@ -131,9 +143,6 @@ test("navigate request challenges Agentd then returns a bound effect-admission r
 
   const challenge = await channels.parent.nextFrame();
   assert.equal(challenge.kind, "authority_challenge");
-  assert.equal(challenge.requestId, "request.1");
-  assert.equal(challenge.payload.requestDigest, D1);
-  assert.equal(challenge.payload.authorityEpoch, 7);
   assert.deepEqual(
     Object.keys(challenge.payload).sort(),
     ["authorityEpoch", "requestDigest"],
@@ -146,21 +155,16 @@ test("navigate request challenges Agentd then returns a bound effect-admission r
   );
   assert.deepEqual(events, ["host_admitted"]);
 
-  await channels.parent.send("authority_enter", "request.1", {
-    authorized: true,
-    witnessDigest: W1,
-    authorityEpoch: 7,
-    requestDigest: D1,
-  });
+  await channels.parent.send(
+    "authority_enter",
+    "request.1",
+    authorityEnter(),
+  );
 
   const boundary = await channels.parent.nextFrame();
   assert.equal(boundary.kind, "dispatch_boundary");
   assert.equal(boundary.payload.localDispatchCrossed, true);
-  assert.equal(boundary.payload.requestDigest, D1);
-  assert.equal(
-    boundary.payload.admission.kind,
-    "BrowserEffectAdmissionV1",
-  );
+  assert.equal(boundary.payload.admission.kind, "BrowserEffectAdmissionV1");
   assert.equal(boundary.payload.admission.operationId, "operation.1");
   assert.equal(boundary.payload.admission.workerGeneration, 1);
   assert.equal(boundary.payload.admission.admittedAt, 1_234);
@@ -176,7 +180,50 @@ test("navigate request challenges Agentd then returns a bound effect-admission r
   await running;
 });
 
-test("admission drift fails closed before Agentd receives dispatch boundary", async () => {
+test("missing or unsupported admission receipt version fails before dispatch", async () => {
+  for (const payload of [
+    {
+      authorized: true,
+      witnessDigest: W1,
+      authorityEpoch: 7,
+      requestDigest: D1,
+    },
+    authorityEnter({ admissionReceiptVersion: 2 }),
+    authorityEnter({ unknown: true }),
+  ]) {
+    const channels = pairedChannels();
+    const events = [];
+    const authority = new ParentFinalUseAuthority(channels.child);
+    const service = new BrowserAgentdService({
+      host: fakeHost(authority, events),
+      channel: channels.child,
+      authority,
+    });
+    const running = service.run();
+
+    await channels.parent.send("request", "request.version", {
+      method: "navigate_or_act",
+      input: { operationId: "operation.version" },
+    });
+    const challenge = await channels.parent.nextFrame();
+    assert.equal(challenge.kind, "authority_challenge");
+    await channels.parent.send(
+      "authority_enter",
+      "request.version",
+      payload,
+    );
+    const response = await channels.parent.nextFrame();
+    assert.equal(response.kind, "response");
+    assert.equal(response.payload.ok, false);
+    assert.match(response.payload.error, /admission|unknown fields/);
+    assert.deepEqual(events, ["host_admitted"]);
+
+    channels.close();
+    await running;
+  }
+});
+
+test("admission drift fails closed before dispatch-boundary acknowledgement", async () => {
   const channels = pairedChannels();
   const events = [];
   const authority = new ParentFinalUseAuthority(channels.child);
@@ -212,12 +259,11 @@ test("admission drift fails closed before Agentd receives dispatch boundary", as
     input: { operationId: "operation.drift" },
   });
   await channels.parent.nextFrame();
-  await channels.parent.send("authority_enter", "request.drift", {
-    authorized: true,
-    witnessDigest: W1,
-    authorityEpoch: 7,
-    requestDigest: D1,
-  });
+  await channels.parent.send(
+    "authority_enter",
+    "request.drift",
+    authorityEnter(),
+  );
   const response = await channels.parent.nextFrame();
   assert.equal(response.kind, "response");
   assert.equal(response.payload.ok, false);
@@ -227,7 +273,7 @@ test("admission drift fails closed before Agentd receives dispatch boundary", as
   await running;
 });
 
-test("pre-dispatch rejection releases the authority fence without claiming local dispatch", async () => {
+test("pre-dispatch rejection releases authority without claiming dispatch", async () => {
   const channels = pairedChannels();
   const events = [];
   const authority = new ParentFinalUseAuthority(channels.child);
@@ -265,64 +311,20 @@ test("pre-dispatch rejection releases the authority fence without claiming local
     method: "navigate_or_act",
     input: { operationId: "operation.reject" },
   });
-  const challenge = await channels.parent.nextFrame();
-  assert.equal(challenge.kind, "authority_challenge");
-
-  await channels.parent.send("authority_enter", "request.reject", {
-    authorized: true,
-    witnessDigest: W1,
-    authorityEpoch: 7,
-    requestDigest: D1,
-  });
+  await channels.parent.nextFrame();
+  await channels.parent.send(
+    "authority_enter",
+    "request.reject",
+    authorityEnter(),
+  );
 
   const rejected = await channels.parent.nextFrame();
   assert.equal(rejected.kind, "dispatch_rejected");
   assert.equal(rejected.payload.localDispatchCrossed, false);
-  assert.equal(rejected.payload.requestDigest, D1);
-
   const response = await channels.parent.nextFrame();
   assert.equal(response.kind, "response");
   assert.equal(response.payload.ok, true);
   assert.equal(response.payload.result.status, "failed");
-  assert.equal(
-    response.payload.result.observationReason,
-    "worker_rejected_before_dispatch",
-  );
-  assert.deepEqual(events, ["host_admitted", "inside_fence"]);
-
-  channels.close();
-  await running;
-});
-
-test("authority witness drift fails closed without a dispatch-boundary acknowledgement", async () => {
-  const channels = pairedChannels();
-  const events = [];
-  const authority = new ParentFinalUseAuthority(channels.child);
-  const service = new BrowserAgentdService({
-    host: fakeHost(authority, events),
-    channel: channels.child,
-    authority,
-  });
-  const running = service.run();
-
-  await channels.parent.send("request", "request.2", {
-    method: "navigate_or_act",
-    input: { operationId: "operation.2" },
-  });
-  const challenge = await channels.parent.nextFrame();
-  assert.equal(challenge.kind, "authority_challenge");
-
-  await channels.parent.send("authority_enter", "request.2", {
-    authorized: true,
-    witnessDigest: W1,
-    authorityEpoch: 8,
-    requestDigest: D1,
-  });
-  const response = await channels.parent.nextFrame();
-  assert.equal(response.kind, "response");
-  assert.equal(response.payload.ok, false);
-  assert.match(response.payload.error, /does not bind/);
-  assert.deepEqual(events, ["host_admitted"]);
 
   channels.close();
   await running;

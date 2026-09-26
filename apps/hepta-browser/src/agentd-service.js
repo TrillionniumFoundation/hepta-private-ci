@@ -1,7 +1,7 @@
 import {
   AgentdBrowserFrameDecoder,
-  encodeAgentdBrowserFrame,
   buildAgentdBrowserFrame,
+  encodeAgentdBrowserFrame,
 } from "./agentd-protocol.js";
 import {
   browserEffectPageRevision,
@@ -10,7 +10,7 @@ import {
 import { canonicalDigest } from "./runtime-contract.js";
 
 const MAX_QUEUED_AGENTD_FRAMES = 64;
-
+const ADMISSION_RECEIPT_VERSION = 1;
 const SERVICE_METHODS = new Set([
   "open_profile",
   "admit_effect_grant",
@@ -33,8 +33,22 @@ function requireRecord(value, name) {
   return value;
 }
 
+function exactKeys(value, expected, name) {
+  const keys = Object.keys(requireRecord(value, name)).sort();
+  const wanted = [...expected].sort();
+  if (
+    keys.length !== wanted.length ||
+    keys.some((key, index) => key !== wanted[index])
+  ) {
+    throw new TypeError(`${name} contains missing or unknown fields`);
+  }
+}
+
 function boundedError(error) {
-  return String(error?.message ?? error ?? "browser service error").slice(0, 512);
+  return String(error?.message ?? error ?? "browser service error").slice(
+    0,
+    512,
+  );
 }
 
 function digest(value, name) {
@@ -95,9 +109,9 @@ export class AgentdBrowserChannel {
     if (this.#queue.length) return this.#queue.shift();
     if (this.#failed) throw this.#failed;
     if (this.#ended) return null;
-    return new Promise((resolve, reject) =>
-      this.#waiters.push({ resolve, reject }),
-    );
+    return new Promise((resolve, reject) => {
+      this.#waiters.push({ resolve, reject });
+    });
   }
 
   send(kind, requestId, payload) {
@@ -210,9 +224,6 @@ export class ParentFinalUseAuthority {
       request.authorityEpoch,
       "authorityEpoch",
     );
-    // Final-use authority consumes immutable identity, not the live action
-    // body. Avoid duplicating typed action data (notably type.text) into the
-    // authority control plane.
     await this.#channel.send("authority_challenge", requestId, {
       requestDigest,
       authorityEpoch,
@@ -228,9 +239,25 @@ export class ParentFinalUseAuthority {
       );
     }
     const payload = requireRecord(enter.payload, "authority enter payload");
+    exactKeys(
+      payload,
+      [
+        "authorized",
+        "witnessDigest",
+        "authorityEpoch",
+        "requestDigest",
+        "admissionReceiptVersion",
+      ],
+      "authority enter payload",
+    );
     if (payload.authorized !== true) {
       throw new TypeError(
         "Agentd final-use authority denied browser dispatch",
+      );
+    }
+    if (payload.admissionReceiptVersion !== ADMISSION_RECEIPT_VERSION) {
+      throw new TypeError(
+        "Agentd final-use authority used an unsupported admission receipt version",
       );
     }
     const witness = Object.freeze({
@@ -250,6 +277,7 @@ export class ParentFinalUseAuthority {
         "Agentd final-use witness does not bind the Browser request",
       );
     }
+
     let result;
     try {
       result = requireRecord(
@@ -334,6 +362,7 @@ export class BrowserAgentdService {
         frame.payload,
         "Browser service request payload",
       );
+      exactKeys(payload, ["method", "input"], "Browser service request payload");
       if (!SERVICE_METHODS.has(payload.method)) {
         throw new TypeError("Browser service method is not registered");
       }
