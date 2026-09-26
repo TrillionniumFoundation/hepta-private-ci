@@ -13,12 +13,12 @@ permissions:
 
 concurrency:
   group: memory-federation-runtime-bootstrap-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - name: Check out exact feature head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -26,6 +26,23 @@ jobs:
           ref: feat/memory-federation-production-closure-20260926
           fetch-depth: 0
           persist-credentials: true
+
+      - name: Normalize generated regex literals
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/apply_memory_federation_runtime_closure.py")
+          text = path.read_text(encoding="utf-8")
+          needle = "    updated, count = re.subn(pattern, replacement, text, flags=re.MULTILINE | re.DOTALL)"
+          replacement = r'''    pattern = pattern.replace("\\\\", "\\")
+              updated, count = re.subn(pattern, replacement, text, flags=re.MULTILINE | re.DOTALL)'''
+          if text.count(needle) != 1:
+              raise SystemExit("unexpected replace_re helper shape")
+          path.write_text(text.replace(needle, replacement), encoding="utf-8")
+          PY
+          python3 -m py_compile scripts/apply_memory_federation_runtime_closure.py
 
       - name: Apply runtime closure patch
         id: apply-runtime
@@ -60,7 +77,7 @@ jobs:
         working-directory: codex-rs
         run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-memory-extension
 
-      - name: Validate patch shape
+      - name: Validate generated source shape
         if: steps.apply-runtime.outcome == 'success'
         run: |
           set -euo pipefail
@@ -69,7 +86,7 @@ jobs:
           git status --short
           test -n "$(git status --porcelain)"
 
-      - name: Commit generated source
+      - name: Commit generated runtime source
         if: steps.apply-runtime.outcome == 'success'
         run: |
           set -euo pipefail
@@ -88,4 +105,26 @@ jobs:
           - move V1 receipt compatibility behind an opt-in feature
 
           Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
+
+      - name: Rebind memory federation implementation map
+        if: steps.apply-runtime.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
+          git diff --check
+          git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(memory.federation): rebind runtime closure source
+
+            Preserve execution, independent-acceptance, activation, and release claims as false until exact-head and deterministic-merge receipts pass.
+
+            Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
+          fi
+          python3 scripts/hepta-implementation-maps.py verify
+          test -z "$(git status --porcelain)"
+
+      - name: Push generated closure commits
+        if: steps.apply-runtime.outcome == 'success'
+        run: |
+          set -euo pipefail
           git push origin HEAD:feat/memory-federation-production-closure-20260926
