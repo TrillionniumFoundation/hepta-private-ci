@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "9f26f24a6d52146d92997302db91e063e6c8e2d7",
+    "tree": "356dd6f0eda36aa44f3baa5f2fbde79a2b5c8ba3"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -329,23 +329,23 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
-      "object": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
+      "object": "398bab763e8e0ed65c2a3bab9c0a00c267087a30"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+      "object": "33110ec61db2483e30065ce4a27419fb5fedc328"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
-      "object": "4ca370fcc2760aa21f9abd3582cbf34532083fe8"
+      "object": "62c59ca6085e6afd959b3113e2877d0f761dd07a"
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+      "object": "2f9b46ba7b47e364c1535d1799efd84b754c37fb"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
-      "object": "6ace80385bed98c5306a00b63898214887e435bb"
+      "object": "75c1418a4f2e8e2ae126dfaa9de9bc1b94db4644"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
@@ -397,7 +397,27 @@
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
-      "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
+      "object": "2901f5e0a6f3496f069da01422c0d8eb1b5469a6"
+    },
+    {
+      "path": "docs/modules/cognitive.store/cognitive-store-qualification.generated.yml",
+      "object": "e01babe531b43ef9147970936495ddea23f7b45a"
+    },
+    {
+      "path": "scripts/cognitive_store_architecture.py",
+      "object": "c256cc99ac0ab8eac3f6e7325b94692d50c2248d"
+    },
+    {
+      "path": "scripts/cognitive_store_qualification_manifest.py",
+      "object": "dfc24b5a8b56599d373daa4fb85b50229eb10e69"
+    },
+    {
+      "path": "tools/cognitive-store-host-bootstrap/bootstrap.py",
+      "object": "e07885f2dd3e57ed21023b97eb8cbafbac91fc92"
+    },
+    {
+      "path": "tools/cognitive-store-host-bootstrap/test_bootstrap.py",
+      "object": "091fb53d9f81aabbf5c8446fe8d94bf3fff764bc"
     }
   ],
   "productWriteFacade": {
