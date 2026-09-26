@@ -6,7 +6,7 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod authority_port;
-#[path = "lease_ledger_v2.rs"]
+#[path = "lease_ledger_v3.rs"]
 pub mod lease_ledger;
 pub mod revocation_control;
 
