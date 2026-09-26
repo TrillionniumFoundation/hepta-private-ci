@@ -146,8 +146,11 @@ jobs:
             --source "$SOURCE_SHA" \
             --tested "$(git rev-parse HEAD)" \
             --base "$BASE_SHA" \
-            --lane "${{ matrix.lane }}" \
-            --github-output "$GITHUB_OUTPUT"
+            --lane "${{ matrix.lane }}"
+          # This qualification intentionally executes both exact source and the
+          # actual GitHub merge candidate. Tree equality may share immutable
+          # metadata checks elsewhere, but it is not a process-execution receipt.
+          echo 'run_native=true' >> "$GITHUB_OUTPUT"
           set +e
           git diff --quiet "$BASE_SHA" HEAD -- codex-rs/hepta-learning-ledger/ codex-rs/hepta-types/ codex-rs/Cargo.toml codex-rs/Cargo.lock .github/workflows/hepta-converged-learning.yml
           ledger_diff=$?
@@ -209,12 +212,24 @@ jobs:
           out="$RUNNER_TEMP/hepta-long-horizon-measurement"
           mkdir -p "$out"
           { git rev-parse HEAD HEAD^{tree}; rustc --version; uname -sm; } > "$out/environment.txt"
-          cargo build --locked --release -p codex-hepta-learning-ledger --example long_horizon_scale
-          sha256sum target/release/examples/long_horizon_scale > "$out/binary.sha256"
-          # The existing executable records 100/1k/10k/100k milestones,
-          # real checkpoint recovery and historical dedupe at each milestone.
-          # Timings remain observations, not invented target-host thresholds.
-          timeout 600s target/release/examples/long_horizon_scale 100000 "$RUNNER_TEMP/hepta-long-horizon-data" | tee "$out/measurements.jsonl"
+          cargo build --locked --release -p codex-hepta-learning-ledger --example target_host_qualification
+          binary=target/release/examples/target_host_qualification
+          sha256sum "$binary" > "$out/binary.sha256"
+          # Run the real segmented writer/recovery harness at increasing retained
+          # histories. Each run measures append, rotation, indexed lookup, exact
+          # reopen and historical idempotent retry against durable files.
+          : > "$out/measurements.jsonl"
+          for records in 100 1000 10000 100000; do
+            data="$RUNNER_TEMP/hepta-long-horizon-data-$records"
+            mkdir -p "$data"
+            HEPTA_TARGET_HOST_ID="github-arm-${{ matrix.lane }}-$records" \
+            HEPTA_LEDGER_RECORDS="$records" \
+            HEPTA_LEDGER_SEGMENT_RECORDS=128 \
+            HEPTA_LEDGER_QUAL_ROOT="$data" \
+              timeout 600s "$binary" | python3 -c \
+                'import json,sys; print(json.dumps(json.load(sys.stdin), sort_keys=True))' \
+                | tee -a "$out/measurements.jsonl"
+          done
       - name: Retain real-file measurements
         if: always() && steps.ledger_measure.outcome != 'skipped'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
