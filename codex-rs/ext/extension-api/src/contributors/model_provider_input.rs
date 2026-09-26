@@ -11,12 +11,15 @@ use super::ModelProviderTransport;
 /// Schema shared by one physical-send input context and its proposal.
 pub const EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION: u32 = 1;
 
-/// Absolute host ceiling for one ephemeral input proposal.
+/// Absolute host ceiling for an ordinary quoted reference proposal.
 pub const EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES: u32 = 999;
 
-/// Absolute host ceiling for the proposal's conservative token claim.
+/// Absolute host ceiling for an ordinary quoted reference token claim.
 pub const EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS: u32 = 999;
 
+/// Absolute safety ceiling for the source-bound context.compiler developer slot.
+const CONTEXT_COMPILER_INPUT_MAX_CONTENT_BYTES: u32 = 16 * 1024 * 1024;
+const CONTEXT_COMPILER_INPUT_MAX_CONTENT_TOKENS: u32 = 1_000_000;
 const MAX_SOURCE_BYTES: usize = 64;
 
 /// Stable, non-secret identity for one ephemeral model-input source.
@@ -101,6 +104,7 @@ pub struct EphemeralModelInputProposal {
     content_sha256: ModelProviderSha256Digest,
     content: String,
     claimed_token_count: u32,
+    developer_policy: bool,
     final_use_guard: Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
 }
 
@@ -117,6 +121,72 @@ impl EphemeralModelInputProposal {
         content: impl Into<String>,
         claimed_token_count: u32,
     ) -> Result<Self, ModelProviderPolicyError> {
+        Self::new_bounded(
+            source,
+            attempt_id,
+            base_logical_request_sha256,
+            thread_id,
+            turn_id,
+            source_binding_sha256,
+            content_sha256,
+            content,
+            claimed_token_count,
+            false,
+            EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES,
+            EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS,
+        )
+    }
+
+    /// Constructs the sole trusted ephemeral slot accepted from
+    /// `context.compiler`: exact developer-policy bytes already serialized and
+    /// tokenized against the bound provider/model profile.
+    ///
+    /// Core still verifies the source identity, exact content digest, scope,
+    /// final-use guard and physical provider-policy lease. This constructor
+    /// grants no model or provider authority.
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_developer_policy(
+        source: EphemeralModelInputSource,
+        attempt_id: impl Into<String>,
+        base_logical_request_sha256: ModelProviderSha256Digest,
+        thread_id: impl Into<String>,
+        turn_id: impl Into<String>,
+        source_binding_sha256: ModelProviderSha256Digest,
+        content_sha256: ModelProviderSha256Digest,
+        content: impl Into<String>,
+        claimed_token_count: u32,
+    ) -> Result<Self, ModelProviderPolicyError> {
+        Self::new_bounded(
+            source,
+            attempt_id,
+            base_logical_request_sha256,
+            thread_id,
+            turn_id,
+            source_binding_sha256,
+            content_sha256,
+            content,
+            claimed_token_count,
+            true,
+            CONTEXT_COMPILER_INPUT_MAX_CONTENT_BYTES,
+            CONTEXT_COMPILER_INPUT_MAX_CONTENT_TOKENS,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn new_bounded(
+        source: EphemeralModelInputSource,
+        attempt_id: impl Into<String>,
+        base_logical_request_sha256: ModelProviderSha256Digest,
+        thread_id: impl Into<String>,
+        turn_id: impl Into<String>,
+        source_binding_sha256: ModelProviderSha256Digest,
+        content_sha256: ModelProviderSha256Digest,
+        content: impl Into<String>,
+        claimed_token_count: u32,
+        developer_policy: bool,
+        max_content_bytes: u32,
+        max_content_tokens: u32,
+    ) -> Result<Self, ModelProviderPolicyError> {
         let attempt_id = attempt_id.into();
         let thread_id = thread_id.into();
         let turn_id = turn_id.into();
@@ -125,9 +195,10 @@ impl EphemeralModelInputProposal {
             || thread_id.trim().is_empty()
             || turn_id.trim().is_empty()
             || content.is_empty()
-            || content.len() > EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES as usize
+            || content.as_bytes().contains(&0)
+            || content.len() > max_content_bytes as usize
             || claimed_token_count == 0
-            || claimed_token_count > EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS
+            || claimed_token_count > max_content_tokens
         {
             return Err(invalid_proposal());
         }
@@ -142,6 +213,7 @@ impl EphemeralModelInputProposal {
             content_sha256,
             content,
             claimed_token_count,
+            developer_policy,
             final_use_guard: None,
         })
     }
@@ -180,6 +252,12 @@ impl EphemeralModelInputProposal {
 
     pub fn claimed_token_count(&self) -> u32 {
         self.claimed_token_count
+    }
+
+    /// Returns whether Core must render this proposal into the exclusive
+    /// source-bound developer-policy slot rather than the quoted evidence slot.
+    pub fn is_developer_policy(&self) -> bool {
+        self.developer_policy
     }
 
     /// Binds a host-trusted one-shot final-use guard to this exact proposal.
@@ -237,6 +315,6 @@ fn invalid_source() -> ModelProviderPolicyError {
 fn invalid_proposal() -> ModelProviderPolicyError {
     ModelProviderPolicyError::new(
         "ephemeral_model_input_proposal_invalid",
-        "ephemeral model input requires non-empty scope, bounded content, and a bounded token claim",
+        "ephemeral model input requires non-empty scope, bounded NUL-free content, and a bounded token claim",
     )
 }

@@ -7,6 +7,7 @@ mod lifecycle;
 
 mod memory;
 
+#[path = "ephemeral_input_v2.rs"]
 mod ephemeral_input;
 
 // Registered before the HTTP/WS callsites so cancellation ownership can be
