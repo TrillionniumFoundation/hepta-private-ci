@@ -27,6 +27,10 @@ use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 
+#[path = "cognitive_ranker_cache.rs"]
+mod candidate_cache;
+use candidate_cache::with_exclusive_candidate;
+
 /// The artifact authority, not the model or a caller-supplied receipt,
 /// determines currentness. Implementations must return an opaque view issued
 /// only after signed CURRENT verification and exact snapshot binding.
@@ -268,22 +272,15 @@ impl PinnedCognitiveRanker {
     }
 
     fn with_current<T>(&self, consume: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
-        let mut cache = self
-            .cache
-            .lock()
-            .map_err(|_| "ranker lock poisoned".to_string())?;
-        let Some(mut candidate) = cache.take() else {
-            return Err("ranker unavailable; explicit reload required".to_string());
-        };
-        // Keep the cache absent on witness errors, panics and failed refreshes.
-        // The provider cannot inject a bare file/receipt: the artifact authority
-        // must first issue an opaque verified CURRENT view.
-        let current = self.current.current()?;
-        let result = candidate
-            .with_current(current, |_| consume())
-            .map_err(|error| error.to_string())??;
-        *cache = Some(candidate);
-        Ok(result)
+        with_exclusive_candidate(&self.cache, |candidate| {
+            // The provider cannot inject a bare file/receipt: the artifact
+            // authority must first issue an opaque verified CURRENT view.
+            // Both owner I/O and immutable model lookups run outside the mutex.
+            let current = self.current.current()?;
+            candidate
+                .with_current(current, |_| consume())
+                .map_err(|error| error.to_string())?
+        })
     }
 
     pub(crate) fn revalidate(&self) -> Result<(), String> {
