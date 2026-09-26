@@ -1,0 +1,216 @@
+name: Hepta learning.plasticity qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-intelligence/src/plasticity_product.rs"
+      - "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      - "codex-rs/hepta-intelligence/src/topology_product.rs"
+      - "codex-rs/hepta-intelligence/src/topology_canary_product.rs"
+      - "codex-rs/hepta-agentd/src/plasticity_*.rs"
+      - "codex-rs/hepta-agentd/src/topology_plasticity_host.rs"
+      - "codex-rs/hepta-agentd/src/control_engineering_self_iteration.rs"
+      - "codex-rs/hepta-agentd/tests/plasticity_*.rs"
+      - "codex-rs/hepta-runtime/src/organs_tests.rs"
+      - "docs/modules/learning.plasticity/**"
+      - "docs/readiness/PROTOCOLS.json"
+      - "qualification/lane-f-shadow/**"
+      - "scripts/hepta-learning-plasticity-status.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/hepta-learning-plasticity-qualification.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-intelligence/src/plasticity_product.rs"
+      - "codex-rs/hepta-intelligence/src/topology_product.rs"
+      - "codex-rs/hepta-agentd/src/plasticity_*.rs"
+      - "codex-rs/hepta-agentd/src/topology_plasticity_host.rs"
+      - "codex-rs/hepta-agentd/src/control_engineering_self_iteration.rs"
+      - "codex-rs/hepta-agentd/tests/plasticity_*.rs"
+      - "codex-rs/hepta-runtime/src/organs_tests.rs"
+      - "docs/modules/learning.plasticity/**"
+      - "qualification/lane-f-shadow/**"
+      - "scripts/hepta-learning-plasticity-status.py"
+      - ".github/workflows/hepta-learning-plasticity-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-plasticity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    name: learning.plasticity exact-head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact source and clean tree
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Verify documents and implementation maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+
+      - name: Format, test and lint governed plasticity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test plasticity_grammar_contract
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test plasticity_process_e2e
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics
+          cargo clippy --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-plasticity -p codex-hepta-agentd -p codex-hepta-runtime \
+            --all-targets -- -D warnings
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Test standalone Lane F profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
+          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
+          cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
+          cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
+          python3 qualification/lane-f-shadow/verify_lock.py \
+            "$RUNNER_TEMP/lane-f-seed.lock" \
+            qualification/lane-f-shadow/Cargo.lock
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          rm qualification/lane-f-shadow/Cargo.lock
+          trap - EXIT
+
+      - name: Build command receipt and exact-head status
+        env:
+          RECEIPT: ${{ runner.temp }}/learning-plasticity-command-receipt.json
+          STATUS_JSON: ${{ runner.temp }}/learning-plasticity-exact-head-status.json
+          STATUS_MD: ${{ runner.temp }}/learning-plasticity-exact-head-status.md
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess
+          sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          names = [
+              "document verification",
+              "implementation-map verification",
+              "workspace format",
+              "plasticity tests",
+              "Agentd grammar contract",
+              "Agentd process E2E",
+              "Agentd lifetime E2E",
+              "live runtime structural canary",
+              "strict clippy",
+              "Lane F exact-head profile",
+          ]
+          value = {
+              "schema": "hepta.learning-plasticity-command-receipt.v1",
+              "sourceSha": sha,
+              "sourceTree": tree,
+              "commands": [{"name": name, "conclusion": "success"} for name in names],
+          }
+          with open(os.environ["RECEIPT"], "w", encoding="utf-8") as stream:
+              json.dump(value, stream, indent=2)
+              stream.write("\n")
+          PY
+          python3 scripts/hepta-learning-plasticity-status.py \
+            --receipt "$RECEIPT" \
+            --json "$STATUS_JSON" \
+            --markdown "$STATUS_MD" \
+            --workflow-name "${{ github.workflow }}" \
+            --workflow-run-id "${{ github.run_id }}" \
+            --workflow-run-attempt "${{ github.run_attempt }}"
+
+      - name: Retain exact-head qualification artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-plasticity-exact-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/learning-plasticity-command-receipt.json
+            ${{ runner.temp }}/learning-plasticity-exact-head-status.json
+            ${{ runner.temp }}/learning-plasticity-exact-head-status.md
+          if-no-files-found: error
+          retention-days: 30
+
+  synthetic-merge:
+    name: learning.plasticity deterministic synthetic merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Build deterministic merge commit
+        id: merge
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
+          export GIT_AUTHOR_NAME="Hepta learning.plasticity CI"
+          export GIT_AUTHOR_EMAIL="hepta-learning-plasticity-ci@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          SHA="$(printf 'Synthetic learning.plasticity merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          git checkout --detach "$SHA"
+          printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Verify merge candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test plasticity_grammar_contract
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test plasticity_process_e2e
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics
+          cargo clippy --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-plasticity -p codex-hepta-agentd -p codex-hepta-runtime \
+            --all-targets -- -D warnings
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
