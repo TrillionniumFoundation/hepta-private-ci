@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "verify:registry": "node scripts/generate-source-registry.mjs --check"
   }
 }
