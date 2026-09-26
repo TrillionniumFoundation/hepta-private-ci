@@ -95,7 +95,7 @@ concurrency:
 jobs:
   qualify:
     name: NDU ${{ matrix.lane }} / ${{ matrix.suite }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -157,7 +157,7 @@ jobs:
     name: NDU (${{ matrix.lane }})
     if: always()
     needs: qualify
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         lane: [source-head, synthetic-merge]
