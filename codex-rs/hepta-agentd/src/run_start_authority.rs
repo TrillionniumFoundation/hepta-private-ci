@@ -8,9 +8,11 @@
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
 
+use crate::AgentdClient;
 use crate::AgentdError;
 use crate::AgentdIntelligenceAdmittedOutcomeV1;
 use crate::AgentdState;
+use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RunReceipt;
 use crate::authbus_ingress;
 use crate::objective_runtime::authentication_is_current;
@@ -81,12 +83,48 @@ impl VerifiedRunStartV1<'_> {
             .start_canonical_intelligence(verified.record)
             .await?
         {
-            Some(outcome) => Ok(VerifiedRunAdmissionV1::Canonical(outcome)),
+            Some(outcome) => {
+                if let AgentdIntelligenceAdmittedOutcomeV1::Ready {
+                    prepared,
+                    run_receipt,
+                } = &outcome
+                {
+                    if let Err(error) = ProcessRuntimeCodexExecutorV1::schedule_canonical_run(
+                        verified.agentd.identity(),
+                        verified.record,
+                        prepared,
+                        run_receipt,
+                    ) {
+                        cancel_rejected_canonical_run(verified.agentd, run_receipt).await?;
+                        return Err(error);
+                    }
+                }
+                Ok(VerifiedRunAdmissionV1::Canonical(outcome))
+            }
             None => verified
                 .admit_compatibility()
                 .map(VerifiedRunAdmissionV1::Compatibility),
         }
     }
+}
+
+async fn cancel_rejected_canonical_run(
+    agentd: &AgentdState,
+    receipt: &RunReceipt,
+) -> Result<(), AgentdError> {
+    let client = AgentdClient::new(
+        agentd.identity().control_socket.clone(),
+        agentd.identity().agent_id.clone(),
+        agentd.identity().spawn_generation,
+    )?;
+    client
+        .run_cancel(
+            receipt.run_id.clone(),
+            receipt.revision,
+            "runtime_codex_schedule_rejected".to_string(),
+        )
+        .await?;
+    Ok(())
 }
 
 pub(crate) fn verify_current_run_start<'a>(
