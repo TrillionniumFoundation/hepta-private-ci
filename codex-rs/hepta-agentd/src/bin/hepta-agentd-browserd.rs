@@ -6,10 +6,13 @@
 //! worker pool, durable journal and monotonic revocation watcher remain owned for
 //! the lifetime of this process.
 
+use std::collections::BTreeMap;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
 use std::path::PathBuf;
+use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_agentd::BrowserFinalUseInvocation;
 use codex_hepta_agentd::BrowserServoCall;
@@ -21,6 +24,7 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::Value;
+use serde_json::json;
 
 const MAX_REQUEST_BYTES: usize = 1_048_576;
 const MAX_RESPONSE_BYTES: usize = 1_048_576;
@@ -50,6 +54,18 @@ impl BrowserdMethod {
             Self::CloseProfile => BrowserServoMethod::CloseProfile,
         }
     }
+
+    fn wire_name(self) -> &'static str {
+        match self {
+            Self::OpenProfile => "open_profile",
+            Self::AdmitEffectGrant => "admit_effect_grant",
+            Self::ObservePage => "observe_page",
+            Self::NavigateOrAct => "navigate_or_act",
+            Self::ReconcileOperation => "reconcile_operation",
+            Self::ReconcilePersistedOperation => "reconcile_persisted_operation",
+            Self::CloseProfile => "close_profile",
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -71,6 +87,58 @@ struct BrowserdResponse {
     result: Option<Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     error: Option<String>,
+}
+
+#[derive(Default)]
+struct BrowserdMetrics {
+    total: u64,
+    failed: u64,
+    max_latency_micros: u64,
+    methods: BTreeMap<&'static str, u64>,
+}
+
+impl BrowserdMetrics {
+    fn observe(&mut self, method: &'static str, ok: bool, elapsed: Duration) {
+        self.total = self.total.saturating_add(1);
+        if !ok {
+            self.failed = self.failed.saturating_add(1);
+        }
+        let elapsed_micros = u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX);
+        self.max_latency_micros = self.max_latency_micros.max(elapsed_micros);
+        let count = self.methods.entry(method).or_default();
+        *count = count.saturating_add(1);
+    }
+
+    fn emit_request(
+        &self,
+        request_id: u64,
+        method: &'static str,
+        ok: bool,
+        elapsed: Duration,
+    ) {
+        let elapsed_micros = u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX);
+        let event = json!({
+            "schema": "hepta.browser.service-metric.v1",
+            "event": "request_completed",
+            "requestId": request_id,
+            "method": method,
+            "ok": ok,
+            "elapsedMicros": elapsed_micros,
+        });
+        eprintln!("{event}");
+    }
+
+    fn emit_summary(&self) {
+        let event = json!({
+            "schema": "hepta.browser.service-metric.v1",
+            "event": "owner_shutdown",
+            "requestCount": self.total,
+            "failureCount": self.failed,
+            "maxLatencyMicros": self.max_latency_micros,
+            "methodCounts": self.methods,
+        });
+        eprintln!("{event}");
+    }
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -96,6 +164,7 @@ fn serve(
     mut input: impl BufRead,
     mut output: impl Write,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let mut metrics = BrowserdMetrics::default();
     loop {
         let mut line = Vec::new();
         let count = input
@@ -103,6 +172,7 @@ fn serve(
             .take((MAX_REQUEST_BYTES + 1) as u64)
             .read_until(b'\n', &mut line)?;
         if count == 0 {
+            metrics.emit_summary();
             return Ok(());
         }
         if line.len() > MAX_REQUEST_BYTES || !line.ends_with(b"\n") {
@@ -114,7 +184,14 @@ fn serve(
         }
 
         let request: BrowserdRequest = serde_json::from_slice(&line)?;
+        let request_id = request.request_id;
+        let method = request.method.wire_name();
+        let started = Instant::now();
         let response = dispatch(owner, request);
+        let elapsed = started.elapsed();
+        metrics.observe(method, response.ok, elapsed);
+        metrics.emit_request(request_id, method, response.ok, elapsed);
+
         let mut bytes = serde_json::to_vec(&response)?;
         if bytes.len() + 1 > MAX_RESPONSE_BYTES {
             return Err("Browserd response exceeded the hard byte bound".into());
