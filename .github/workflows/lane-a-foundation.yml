@@ -226,7 +226,7 @@ jobs:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           TESTED_SHA: ${{ steps.merge.outputs.sha }}
-          HEPTA_CI_LANE: synthetic-merge
+          HEPTA_CI_LANE: base-merge
         shell: bash
         run: |
           set -euo pipefail
