@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Repair persisted completeness observation
+      - name: Repair exact persisted Decision and Outcome observation
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
@@ -40,9 +40,14 @@ jobs:
           source = Path("codex-rs/hepta-agentd/src/intelligence_learning.rs").read_text()
           normalized = " ".join(source.split())
           required = (
+              "use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;",
               "use codex_hepta_learning_ledger::validate_candidate_set_completeness;",
               "validate_candidate_set_completeness(&completeness)",
               "value.candidate_completeness_digest == completeness_digest",
+              "value.authentication_digest == authentication_digest",
+              "value.observer_credential_chain_digest == expected.observer.credential_chain_digest",
+              "value.terminality == terminality",
+              "fn learning_evidence_digest_v1(",
               "observe_applied_payload(&writer, &payload)",
               "self.grants.signed_grant(&binding)?",
               "claim_final_use(&self.authority, &signed, &binding)",
@@ -53,6 +58,7 @@ jobs:
               raise SystemExit(f"recovery repair missing required source anchors: {missing}")
           forbidden = (
               "value.completeness == completeness",
+              "LedgerEvent::AuthenticatedOutcomeV2(value) if value == &expected",
               "classify_apply(apply_payload(&mut writer, &payload))",
           )
           present = [item for item in forbidden if item in normalized]
@@ -79,5 +85,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add codex-rs/hepta-agentd/src/intelligence_learning.rs
-          git commit -m 'fix(intelligence): match persisted decision completeness digest'
+          git commit -m 'fix(intelligence): match exact persisted learning events'
           git push origin HEAD:codex/intelligence-control-product-closure-20260926
