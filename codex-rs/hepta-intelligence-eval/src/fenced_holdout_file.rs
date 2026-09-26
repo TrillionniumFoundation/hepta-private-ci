@@ -56,6 +56,47 @@ impl fmt::Display for LockedFileCasErrorV1 {
 }
 impl StdError for LockedFileCasErrorV1 {}
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct LockedFileCasCapacityV1 {
+    pub bytes_used: u64,
+    pub bytes_limit: u64,
+    pub bytes_remaining: u64,
+    pub record_count: u64,
+    pub record_limit: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct LockedFileCasCompactionReceiptV1 {
+    pub binding: Digest32,
+    pub before_bytes: u64,
+    pub after_bytes: u64,
+    pub record_count: u64,
+    pub fence_generation: u64,
+    pub state_digest: Digest32,
+    pub receipt_digest: Digest32,
+}
+
+impl LockedFileCasCompactionReceiptV1 {
+    pub fn validate_integrity(&self) -> Result<(), LockedFileCasErrorV1> {
+        if self.binding.is_zero()
+            || self.after_bytes < HEADER as u64
+            || self.after_bytes > self.before_bytes
+            || self.receipt_digest.is_zero()
+            || self.receipt_digest != compaction_receipt_digest(self)
+        {
+            return Err(LockedFileCasErrorV1::Corrupt);
+        }
+        if self.fence_generation == 0 {
+            if self.record_count != 0 || !self.state_digest.is_zero() {
+                return Err(LockedFileCasErrorV1::Corrupt);
+            }
+        } else if self.state_digest.is_zero() {
+            return Err(LockedFileCasErrorV1::Corrupt);
+        }
+        Ok(())
+    }
+}
+
 pub struct LockedFileFinalHoldoutCasStoreV1 {
     file: File,
     binding: Digest32,
@@ -162,6 +203,114 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     #[must_use]
     pub fn anchor(&self) -> Option<FinalHoldoutCasAnchorV1> {
         self.state.as_ref().map(record_anchor)
+    }
+
+    #[must_use]
+    pub const fn byte_len(&self) -> u64 {
+        self.length
+    }
+
+    #[must_use]
+    pub fn capacity(&self) -> LockedFileCasCapacityV1 {
+        let record_count = self
+            .state
+            .as_ref()
+            .map_or(0, |record| record.journal.records.len() as u64);
+        LockedFileCasCapacityV1 {
+            bytes_used: self.length,
+            bytes_limit: MAX_BYTES,
+            bytes_remaining: MAX_BYTES.saturating_sub(self.length),
+            record_count,
+            record_limit: MAX_RECORDS as u64,
+        }
+    }
+
+    /// Rewrite the current authoritative state into a new empty file.
+    ///
+    /// Compaction never mutates or truncates the source file. It drops obsolete
+    /// historical fence transitions, preserves every final-holdout plan record,
+    /// replays them through the normal CAS path and proves the final state digest
+    /// and anchor are identical before returning the compacted store.
+    pub fn compact_into(
+        &mut self,
+        target: File,
+    ) -> Result<(Self, LockedFileCasCompactionReceiptV1), LockedFileCasErrorV1> {
+        if self.poisoned {
+            return Err(LockedFileCasErrorV1::Indeterminate);
+        }
+        if self
+            .file
+            .metadata()
+            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?
+            .len()
+            != self.length
+        {
+            self.poisoned = true;
+            return Err(LockedFileCasErrorV1::Indeterminate);
+        }
+        let before_bytes = self.length;
+        let source_state = self.state.clone();
+        let mut compacted = Self::create(target, self.binding)?;
+
+        if let Some(source) = source_state.as_ref() {
+            let mut journal = FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+                .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+            let initial = FinalHoldoutCasRecordV1::new(
+                self.binding,
+                source.fence.clone(),
+                journal.snapshot(),
+            )
+            .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+            compacted
+                .compare_and_swap(self.binding, None, &initial)
+                .map_err(map_store_error)?;
+            let mut current_digest = initial.state_digest;
+            for source_record in &source.journal.records {
+                let receipt = journal
+                    .consume(journal.head_digest(), &source_record.plan)
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                if receipt != source_record.receipt {
+                    return Err(LockedFileCasErrorV1::Corrupt);
+                }
+                let next = FinalHoldoutCasRecordV1::new(
+                    self.binding,
+                    source.fence.clone(),
+                    journal.snapshot(),
+                )
+                .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                compacted
+                    .compare_and_swap(self.binding, Some(current_digest), &next)
+                    .map_err(map_store_error)?;
+                current_digest = next.state_digest;
+            }
+            let compacted_state = compacted
+                .load(self.binding)
+                .map_err(map_store_error)?
+                .ok_or(LockedFileCasErrorV1::Corrupt)?;
+            if &compacted_state != source || compacted.anchor() != self.anchor() {
+                return Err(LockedFileCasErrorV1::Corrupt);
+            }
+        }
+
+        let record_count = source_state
+            .as_ref()
+            .map_or(0, |record| record.journal.records.len() as u64);
+        let fence_generation = source_state.as_ref().map_or(0, |record| record.fence.generation);
+        let state_digest = source_state
+            .as_ref()
+            .map_or(Digest32::ZERO, |record| record.state_digest);
+        let mut receipt = LockedFileCasCompactionReceiptV1 {
+            binding: self.binding,
+            before_bytes,
+            after_bytes: compacted.length,
+            record_count,
+            fence_generation,
+            state_digest,
+            receipt_digest: Digest32::ZERO,
+        };
+        receipt.receipt_digest = compaction_receipt_digest(&receipt);
+        receipt.validate_integrity()?;
+        Ok((compacted, receipt))
     }
 }
 
@@ -426,6 +575,26 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
+fn compaction_receipt_digest(receipt: &LockedFileCasCompactionReceiptV1) -> Digest32 {
+    let mut bytes = b"hepta.learning-eval.holdout-compaction.v1".to_vec();
+    bytes.extend_from_slice(receipt.binding.as_array());
+    bytes.extend_from_slice(&receipt.before_bytes.to_be_bytes());
+    bytes.extend_from_slice(&receipt.after_bytes.to_be_bytes());
+    bytes.extend_from_slice(&receipt.record_count.to_be_bytes());
+    bytes.extend_from_slice(&receipt.fence_generation.to_be_bytes());
+    bytes.extend_from_slice(receipt.state_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn map_store_error(error: FinalHoldoutCasStoreError) -> LockedFileCasErrorV1 {
+    match error {
+        FinalHoldoutCasStoreError::Conflict | FinalHoldoutCasStoreError::Rejected => {
+            LockedFileCasErrorV1::Corrupt
+        }
+        FinalHoldoutCasStoreError::Indeterminate => LockedFileCasErrorV1::Indeterminate,
+    }
+}
+
 fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
@@ -441,6 +610,81 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
 
 fn io_error(error: io::Error) -> LockedFileCasErrorV1 {
     LockedFileCasErrorV1::Io(error.kind())
+}
+
+#[cfg(test)]
+mod compaction_tests {
+    use super::*;
+    use tempfile::NamedTempFile;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("valid test id")
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    #[test]
+    fn compaction_drops_obsolete_fences_and_preserves_final_anchor() {
+        let source_file = NamedTempFile::new().expect("source file");
+        let target_file = NamedTempFile::new().expect("target file");
+        let binding = digest("compaction-binding");
+        let mut source = LockedFileFinalHoldoutCasStoreV1::create(
+            source_file.reopen().expect("open source"),
+            binding,
+        )
+        .expect("create source");
+        let journal = FinalHoldoutJournalV1::with_record_limit(8).expect("journal");
+        let first = FinalHoldoutCasRecordV1::new(
+            binding,
+            HoldoutWriterFenceV1 {
+                owner_id: id("owner-a"),
+                generation: 1,
+                lease_digest: digest("lease-a"),
+            },
+            journal.snapshot(),
+        )
+        .expect("first record");
+        source
+            .compare_and_swap(binding, None, &first)
+            .expect("first fence");
+        let second = FinalHoldoutCasRecordV1::new(
+            binding,
+            HoldoutWriterFenceV1 {
+                owner_id: id("owner-b"),
+                generation: 2,
+                lease_digest: digest("lease-b"),
+            },
+            journal.snapshot(),
+        )
+        .expect("second record");
+        source
+            .compare_and_swap(binding, Some(first.state_digest), &second)
+            .expect("takeover fence");
+        let source_anchor = source.anchor().expect("source anchor");
+        let before = source.byte_len();
+
+        let (compacted, receipt) = source
+            .compact_into(target_file.reopen().expect("open target"))
+            .expect("compact");
+        assert!(receipt.after_bytes < receipt.before_bytes);
+        assert_eq!(receipt.before_bytes, before);
+        assert_eq!(compacted.anchor(), Some(source_anchor));
+        assert_eq!(receipt.state_digest, source_anchor.state_digest);
+        receipt.validate_integrity().expect("receipt integrity");
+        let compacted_len = compacted.byte_len();
+        drop(compacted);
+
+        let recovered = LockedFileFinalHoldoutCasStoreV1::recover(
+            target_file.reopen().expect("reopen target"),
+            binding,
+            Some(source_anchor),
+        )
+        .expect("recover compacted");
+        assert_eq!(recovered.byte_len(), compacted_len);
+        assert_eq!(recovered.anchor(), Some(source_anchor));
+    }
 }
 
 #[cfg(test)]

@@ -1,0 +1,54 @@
+{
+  "claims": {
+    "activation": false,
+    "independentAcceptance": false,
+    "productionImplementation": false,
+    "release": false,
+    "targetHostQualified": false
+  },
+  "externalEvidenceGates": [
+    "real future-calendar observations and independent outcome provenance",
+    "retention, change-point, statistical power, subgroup and privacy evidence",
+    "unlearning and backup non-resurrection evidence",
+    "independent semantic and operator acceptance",
+    "selection, canary, promotion and release authority"
+  ],
+  "module": "learning.eval",
+  "qualification": {
+    "coverageThresholdPct": 85,
+    "crossHostFilesystem": "requires_external_linearizability_and_fsync_qualification",
+    "exactHead": "requires_passing_commit_addressed_ci_artifact",
+    "orderedParentSyntheticMerge": "requires_passing_commit_addressed_ci_artifact",
+    "targetHost": "requires_authenticated_external_host_evidence"
+  },
+  "schema": "hepta.learning-eval.current-status.v1",
+  "sourceFacts": {
+    "callers": [
+      {
+        "authority": "deny_all",
+        "kind": "consumer_bound_admission",
+        "nativeSymbol": "AgentdEvaluationSessionV1::evaluate",
+        "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs"
+      },
+      {
+        "authority": "deny_all",
+        "kind": "consumer_bound_admission",
+        "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
+        "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs"
+      },
+      {
+        "authority": "deny_all",
+        "kind": "sealed_product_qualification_consumer",
+        "nativeSymbol": "run_evaluated_shadow_v1",
+        "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
+      }
+    ],
+    "consumerBoundAdmission": true,
+    "durableEvaluationAttemptJournal": true,
+    "externalLowLevelDecisionCallers": [],
+    "idempotentPublicationReconciliation": true,
+    "lowLevelDecisionPrimitivesCratePrivate": true,
+    "verifiedHoldoutCompaction": true
+  },
+  "statusSemantics": "Generated source truth only; CI and external evidence gates are not self-issued by this document."
+}
