@@ -36,7 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           base64 --decode scripts/apply-intuition-policy-closure.py.gz.b64 | gzip --decompress > /tmp/apply-intuition-policy-closure.py
-          test "$(sha256sum /tmp/apply-intuition-policy-closure.py | cut -d' ' -f1)" = "7df2a43697f4f95157dc14efde67e749335c646f5d9e0248ce9ebbc14ae7a40e"
+          test "$(sha256sum /tmp/apply-intuition-policy-closure.py | cut -d' ' -f1)" = "4ea4908db24250bba84a543db914753ab694e442dca390fbeec85d27750d5ab1"
           python3 -m py_compile /tmp/apply-intuition-policy-closure.py
       - name: Apply guarded source edits
         run: python3 /tmp/apply-intuition-policy-closure.py
