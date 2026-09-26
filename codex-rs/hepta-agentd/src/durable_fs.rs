@@ -7,6 +7,8 @@
 
 #[path = "self_iteration_coordinator.rs"]
 pub(crate) mod self_iteration_coordinator;
+#[path = "self_iteration_service.rs"]
+pub(crate) mod self_iteration_service;
 
 use std::fs::File;
 use std::fs::OpenOptions;
