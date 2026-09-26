@@ -18,8 +18,8 @@ concurrency:
 
 jobs:
   apply:
-    # This architecture-neutral one-shot job only writes source and metadata;
-    # formal qualification remains on the exact-head and synthetic-merge lanes.
+    # Architecture-neutral source generation only. Rust formatting, compilation,
+    # tests, and qualification remain in the exact-head and synthetic-merge lanes.
     runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
@@ -29,12 +29,6 @@ jobs:
           ref: feat/memory-federation-production-closure-20260926
           fetch-depth: 0
           persist-credentials: true
-
-      - name: Install pinned Rustfmt
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-        with:
-          toolchain: 1.95.0
-          components: rustfmt
 
       - name: Normalize closure generator
         run: |
@@ -61,13 +55,25 @@ jobs:
           python3 scripts/apply_memory_federation_runtime_closure.py
           python3 scripts/postprocess_memory_federation_runtime_closure.py
 
-      - name: Format and validate generated source
+      - name: Validate generated source shape
         run: |
           set -euo pipefail
-          cd codex-rs
-          cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-memory-extension
-          cd ..
           python3 -m py_compile scripts/memory_federation_attestation.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          required = {
+              "codex-rs/hepta-memory-federation/src/legacy_v1.rs": "#![allow(deprecated)]",
+              "codex-rs/hepta-memory/src/cognitive_runtime.rs": "buffer_unordered(host_profile.attempt_concurrency())",
+              "codex-rs/hepta-memory/src/cognitive_runtime_identity.rs": "MemoryFederationHostProfile",
+              "codex-rs/hepta-agentd/src/runtime.rs": "HEPTA_MEMORY_FEDERATION_TOTAL_BUDGET_MS",
+              "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": "partial_peers",
+          }
+          for name, marker in required.items():
+              text = Path(name).read_text(encoding="utf-8")
+              if marker not in text:
+                  raise SystemExit(f"generated source missing {marker!r} in {name}")
+          PY
           git diff --check
           test -n "$(git status --porcelain)"
 
