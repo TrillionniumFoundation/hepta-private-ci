@@ -60,6 +60,19 @@ if scoped_literal_match not in stage2:
         raise RuntimeError("stage 2 response literal matcher anchor missing")
     stage2 = stage2.replace(strict_literal_match, scoped_literal_match, 1)
 
+colon_call = '''    "RemoteFederatedResponseV2",
+    "completeness:",
+    "omitted_items,",
+)'''
+shorthand_call = '''    "RemoteFederatedResponseV2",
+    "completeness,",
+    "omitted_items,",
+)'''
+if shorthand_call not in stage2:
+    if colon_call not in stage2:
+        raise RuntimeError("stage 2 response completeness anchor missing")
+    stage2 = stage2.replace(colon_call, shorthand_call, 1)
+
 stage2_path.write_text(stage2, encoding="utf-8")
 
 print("stage 0 applied")
