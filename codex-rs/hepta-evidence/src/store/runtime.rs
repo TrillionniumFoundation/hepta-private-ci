@@ -88,6 +88,9 @@ mod tests {
         .await;
         assert_rejected(&runtime, "UPDATE _sqlx_migrations SET success = 0").await;
         assert_rejected(&runtime, "PRAGMA foreign_keys = OFF").await;
+        assert_rejected(&runtime, "PRAGMA user_version = 2").await;
+        assert_rejected(&runtime, "PRAGMA incremental_vacuum").await;
+        assert_rejected(&runtime, "PRAGMA optimize").await;
         assert_rejected(&runtime, "ATTACH DATABASE ':memory:' AS escaped").await;
 
         let trigger_result = sqlx::query(

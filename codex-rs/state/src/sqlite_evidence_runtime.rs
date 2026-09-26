@@ -172,39 +172,89 @@ fn is_control_plane_table(table: *const c_char) -> bool {
         || c_argument_eq(table, "sqlite_temp_master")
 }
 
-fn authorize_runtime_pragma(name: *const c_char, value: *const c_char) -> c_int {
-    if value.is_null() || is_bounded_read_or_checkpoint_pragma(name) {
-        libsqlite3_sys::SQLITE_OK
-    } else {
-        libsqlite3_sys::SQLITE_DENY
-    }
-}
+fn authorize_runtime_pragma(name: *const c_char, argument: *const c_char) -> c_int {
+    use libsqlite3_sys::SQLITE_DENY;
+    use libsqlite3_sys::SQLITE_OK;
 
-fn is_bounded_read_or_checkpoint_pragma(name: *const c_char) -> bool {
-    [
-        "quick_check",
-        "integrity_check",
+    if c_argument_eq(name, "quick_check") || c_argument_eq(name, "integrity_check") {
+        return if argument.is_null() || c_argument_is_positive_decimal(argument) {
+            SQLITE_OK
+        } else {
+            SQLITE_DENY
+        };
+    }
+    if [
         "foreign_key_check",
         "table_info",
         "table_xinfo",
         "index_list",
         "index_info",
         "index_xinfo",
-        "database_list",
-        "compile_options",
-        "wal_checkpoint",
     ]
     .iter()
     .any(|expected| c_argument_eq(name, expected))
+    {
+        // These PRAGMAs only inspect schema or constraint state. Their optional
+        // first argument names a table or index and cannot alter the database.
+        return SQLITE_OK;
+    }
+    if [
+        "database_list",
+        "compile_options",
+        "data_version",
+        "schema_version",
+        "user_version",
+        "foreign_keys",
+        "defer_foreign_keys",
+        "journal_mode",
+        "synchronous",
+        "trusted_schema",
+        "query_only",
+    ]
+    .iter()
+    .any(|expected| c_argument_eq(name, expected))
+    {
+        // Read forms have no argument. Assignment forms are denied even where
+        // SQLite would otherwise accept them as connection-local changes.
+        return if argument.is_null() {
+            SQLITE_OK
+        } else {
+            SQLITE_DENY
+        };
+    }
+    if c_argument_eq(name, "wal_checkpoint") {
+        return if argument.is_null()
+            || ["PASSIVE", "FULL", "RESTART", "TRUNCATE", "NOOP"]
+                .iter()
+                .any(|mode| c_argument_eq(argument, mode))
+        {
+            SQLITE_OK
+        } else {
+            SQLITE_DENY
+        };
+    }
+    // A default-deny policy matters here: several mutating PRAGMAs, including
+    // incremental_vacuum and optimize, can be invoked without an assignment.
+    SQLITE_DENY
+}
+
+fn c_argument_is_positive_decimal(argument: *const c_char) -> bool {
+    let Some(bytes) = c_argument_bytes(argument) else {
+        return false;
+    };
+    !bytes.is_empty() && bytes.iter().all(u8::is_ascii_digit) && bytes != b"0"
 }
 
 fn c_argument_eq(argument: *const c_char, expected: &str) -> bool {
+    c_argument_bytes(argument)
+        .is_some_and(|bytes| bytes.eq_ignore_ascii_case(expected.as_bytes()))
+}
+
+fn c_argument_bytes<'a>(argument: *const c_char) -> Option<&'a [u8]> {
     if argument.is_null() {
-        return false;
+        return None;
     }
     // SAFETY: SQLite guarantees authorizer string arguments, when non-null,
     // remain valid NUL-terminated strings for the duration of the callback.
-    unsafe { CStr::from_ptr(argument) }
-        .to_bytes()
-        .eq_ignore_ascii_case(expected.as_bytes())
+    Some(unsafe { CStr::from_ptr(argument) }.to_bytes())
 }
