@@ -1,0 +1,33 @@
+name: Context compiler worktree export
+
+on:
+  push:
+    branches:
+      - work/context-compiler-v2-closure-20260927
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Package worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar \
+            --exclude='.git' \
+            --exclude='target' \
+            --exclude='node_modules' \
+            -czf /tmp/hepta-context-compiler-worktree.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-context-compiler-worktree
+          path: /tmp/hepta-context-compiler-worktree.tar.gz
+          if-no-files-found: error
+          retention-days: 1
