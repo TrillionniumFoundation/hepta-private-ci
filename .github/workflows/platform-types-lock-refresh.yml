@@ -7,56 +7,95 @@ on:
       - ".github/workflows/platform-types-lock-refresh.yml"
       - "codex-rs/Cargo.lock"
       - "codex-rs/Cargo.toml"
-      - "codex-rs/hepta-types/Cargo.toml"
+      - "codex-rs/**/Cargo.toml"
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: platform-types-lock-refresh-${{ github.event.pull_request.number }}
+  group: platform-types-lock-refresh-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  PLATFORM_TYPES_MSRV: "1.95.0"
 
 jobs:
   refresh:
-    name: Refresh exact platform.types lock edge
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    name: Refresh exact platform.types Cargo lock
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
-      - shell: bash
+
+      - name: Generate and validate authoritative lock
+        id: refresh
+        shell: bash
         env:
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
           set -euo pipefail
           repo_root="$(git rev-parse --show-toplevel)"
-          git config user.name "Hepta platform.types lock bot"
-          git config user.email "hepta-platform-types-ci@users.noreply.github.com"
+          evidence="$repo_root/.hepta-evidence/platform-types-lock-refresh"
+          mkdir -p "$evidence"
+          exec > >(tee "$evidence/run.log") 2>&1
 
-          (
-            cd "$repo_root/codex-rs"
-            cargo check -p codex-hepta-types --tests
-          )
+          rustup toolchain install "$PLATFORM_TYPES_MSRV" --profile minimal
+          cargo "+$PLATFORM_TYPES_MSRV" --version | tee "$evidence/cargo-version.txt"
+          rustc "+$PLATFORM_TYPES_MSRV" --version --verbose | tee "$evidence/rustc-version.txt"
+
+          cargo "+$PLATFORM_TYPES_MSRV" generate-lockfile \
+            --manifest-path "$repo_root/codex-rs/Cargo.toml"
 
           unexpected="$(
             git -C "$repo_root" status --porcelain --untracked-files=no |
               cut -c4- |
-              grep -Ev '^(Cargo\.lock|codex-rs/Cargo\.lock)$' || true
+              grep -Ev '^codex-rs/Cargo\.lock$' || true
           )"
           if [[ -n "$unexpected" ]]; then
             printf 'lock refresh changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
             exit 1
           fi
 
+          cargo "+$PLATFORM_TYPES_MSRV" metadata \
+            --manifest-path "$repo_root/codex-rs/Cargo.toml" \
+            --locked --no-deps > "$evidence/metadata.json"
+          cargo "+$PLATFORM_TYPES_MSRV" check \
+            -p codex-hepta-types \
+            --manifest-path "$repo_root/codex-rs/Cargo.toml" \
+            --locked
+          cargo "+$PLATFORM_TYPES_MSRV" test \
+            -p codex-hepta-types \
+            --manifest-path "$repo_root/codex-rs/Cargo.toml" \
+            --locked
+
+          git -C "$repo_root" diff --stat -- codex-rs/Cargo.lock | tee "$evidence/lock-diff-stat.txt"
+          sha256sum "$repo_root/codex-rs/Cargo.lock" | tee "$evidence/cargo-lock.sha256"
+
           if git -C "$repo_root" diff --quiet -- codex-rs/Cargo.lock; then
-            echo "Cargo.lock is already current"
+            echo "Cargo.lock is already canonical"
             exit 0
           fi
 
+          git -C "$repo_root" config user.name "Hepta platform.types lock bot"
+          git -C "$repo_root" config user.email "hepta-platform-types-ci@users.noreply.github.com"
           git -C "$repo_root" add -- codex-rs/Cargo.lock
-          git -C "$repo_root" commit -m "platform.types: refresh Cargo lock for qualification"
+          git -C "$repo_root" commit -m "chore(platform.types): refresh authoritative Cargo.lock"
           git -C "$repo_root" push origin "HEAD:${HEAD_REF}"
+
+      - name: Preserve lock-refresh diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-lock-refresh-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            .hepta-evidence/platform-types-lock-refresh/
+            codex-rs/Cargo.lock
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
