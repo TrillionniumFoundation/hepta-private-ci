@@ -15,9 +15,14 @@ on:
       - codex-rs/hepta-supervisor/**
       - docs/modules/runtime.supervisor/**
       - qualification/module-execution-dossiers/detail/runtime.supervisor.md
+      - qualification/runtime-supervisor/**
       - scripts/hepta-implementation-maps.py
+      - scripts/hepta-supervisor-acceptance-bundle.py
       - scripts/hepta-supervisor-receipt-gate.py
       - scripts/hepta-supervisor-validation.py
+      - scripts/tests/test_hepta_supervisor_acceptance_bundle.py
+      - scripts/tests/test_hepta_supervisor_lock_boundaries.py
+      - scripts/tests/test_hepta_supervisor_receipt_gate.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_ci_v8.py
       - .github/workflows/runtime-supervisor-qualification.yml
@@ -37,9 +42,14 @@ on:
       - codex-rs/hepta-supervisor/**
       - docs/modules/runtime.supervisor/**
       - qualification/module-execution-dossiers/detail/runtime.supervisor.md
+      - qualification/runtime-supervisor/**
       - scripts/hepta-implementation-maps.py
+      - scripts/hepta-supervisor-acceptance-bundle.py
       - scripts/hepta-supervisor-receipt-gate.py
       - scripts/hepta-supervisor-validation.py
+      - scripts/tests/test_hepta_supervisor_acceptance_bundle.py
+      - scripts/tests/test_hepta_supervisor_lock_boundaries.py
+      - scripts/tests/test_hepta_supervisor_receipt_gate.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_ci_v8.py
       - .github/workflows/runtime-supervisor-qualification.yml
@@ -92,6 +102,14 @@ jobs:
           fi
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Test receipt, lock-boundary and acceptance-packet policy
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.tests.test_hepta_supervisor_receipt_gate \
+            scripts.tests.test_hepta_supervisor_lock_boundaries \
+            scripts.tests.test_hepta_supervisor_acceptance_bundle
 
       - name: Prepare Linux native process prerequisites
         if: runner.os == 'Linux'
