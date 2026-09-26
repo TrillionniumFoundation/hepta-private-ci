@@ -4,12 +4,14 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use super::capability_validation::LearningArtifactHostAccessPolicyV1;
 use super::bootstrap::persist_policy_anchor;
 use super::bootstrap::persist_schema_anchor;
+use super::capability_validation::LearningArtifactHostAccessError;
+use super::capability_validation::LearningArtifactHostAccessPolicyV1;
 use super::capability_validation::LearningArtifactHostAccessVerifierV1;
 use super::capability_validation::LearningArtifactHostActionV1;
 use super::capability_validation::SignedLearningArtifactHostCommandV1;
+use super::capability_validation::push_id;
 use super::reconciliation::LearningArtifactHostLifecycleV1;
 use super::reference_host::LearningArtifactReferenceHostError;
 use super::reference_host::LearningArtifactReferenceHostV1;
@@ -41,25 +43,25 @@ impl LearningArtifactReferenceHostV1 {
         &mut self,
         command: &SignedLearningArtifactHostCommandV1,
         next: LearningArtifactHostAccessPolicyV1,
-        now: u64,
+        host_now: u64,
     ) -> Result<(), LearningArtifactReferenceHostError> {
         let request_digest = digest_learning_artifact_access_policy_v1(&next);
         let verified = self.authorize(
             command,
             LearningArtifactHostActionV1::RotateAccessPolicy,
             request_digest,
-            now,
+            host_now,
         )?;
         if let Err(error) = self.require_ready() {
             let digest = error_digest(&error);
-            self.record_rejected(&verified, digest, now)?;
+            self.record_rejected(&verified, digest, host_now)?;
             return Err(error);
         }
         if next.policy_id != self.access.policy().policy_id
             || next.generation != self.access.policy().generation.saturating_add(1)
         {
             let error = LearningArtifactReferenceHostError::PolicyGeneration;
-            self.record_rejected(&verified, error_digest(&error), now)?;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         let next_verifier = match LearningArtifactHostAccessVerifierV1::new(
@@ -68,22 +70,22 @@ impl LearningArtifactReferenceHostV1 {
         ) {
             Ok(value) => value,
             Err(error) => {
-                self.record_rejected(&verified, error_digest(&error), now)?;
+                self.record_rejected(&verified, error_digest(&error), host_now)?;
                 return Err(error.into());
             }
         };
-        if let Err(error) = persist_policy_anchor(
+        if let Err(error = persist_policy_anchor(
             &self.control_root,
             &next,
             &self.durability,
         ) {
             self.lifecycle = LearningArtifactHostLifecycleV1::Faulted;
-            self.record_indeterminate(&verified, error_digest(&error), now)?;
+            self.record_indeterminate(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         let next_digest = next_verifier.policy_digest();
         self.access = next_verifier;
-        self.record_applied(&verified, next_digest, now)?;
+        self.record_applied(&verified, next_digest, host_now)?;
         self.metrics.policy_rotations = self.metrics.policy_rotations.saturating_add(1);
         Ok(())
     }
@@ -92,32 +94,38 @@ impl LearningArtifactReferenceHostV1 {
         &mut self,
         command: &SignedLearningArtifactHostCommandV1,
         request: LearningArtifactBackupRequestV1,
+        host_now: u64,
     ) -> Result<LearningArtifactBackupManifestV1, LearningArtifactReferenceHostError> {
         let request_digest = digest_learning_artifact_backup_request_v1(&request);
         let verified = self.authorize(
             command,
             LearningArtifactHostActionV1::PrepareBackup,
             request_digest,
-            request.requested_at,
+            host_now,
         )?;
+        if request.requested_at != host_now {
+            let error = LearningArtifactHostAccessError::CommandContext;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
+            return Err(error.into());
+        }
         if let Err(error) = self.require_ready() {
-            self.record_rejected(&verified, error_digest(&error), request.requested_at)?;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         if request.destination_witness_digest.is_zero() {
             let error = LearningArtifactReferenceHostError::BackupContext;
-            self.record_rejected(&verified, error_digest(&error), request.requested_at)?;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         if let Err(error) = self.durability.sync_publication(&self.root) {
             self.lifecycle = LearningArtifactHostLifecycleV1::Faulted;
-            self.record_indeterminate(&verified, error_digest(&error), request.requested_at)?;
+            self.record_indeterminate(&verified, error_digest(&error), host_now)?;
             return Err(error.into());
         }
-        let view = match self.service.current_registry_view(request.requested_at) {
+        let view = match self.service.current_registry_view(host_now) {
             Ok(value) => value,
             Err(error) => {
-                self.record_rejected(&verified, error_digest(&error), request.requested_at)?;
+                self.record_rejected(&verified, error_digest(&error), host_now)?;
                 return Err(error.into());
             }
         };
@@ -129,7 +137,7 @@ impl LearningArtifactReferenceHostV1 {
             withdrawal_receipt: self.withdrawal_receipt,
             access_policy_digest: self.access.policy_digest(),
             destination_witness_digest: request.destination_witness_digest,
-            prepared_at: request.requested_at,
+            prepared_at: host_now,
             manifest_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         };
@@ -150,14 +158,10 @@ impl LearningArtifactReferenceHostV1 {
             .and_then(|_| self.durability.sync_control_root(&self.control_root))
         {
             self.lifecycle = LearningArtifactHostLifecycleV1::Faulted;
-            self.record_indeterminate(&verified, error_digest(&error), request.requested_at)?;
+            self.record_indeterminate(&verified, error_digest(&error), host_now)?;
             return Err(error.into());
         }
-        self.record_applied(
-            &verified,
-            manifest.manifest_digest,
-            request.requested_at,
-        )?;
+        self.record_applied(&verified, manifest.manifest_digest, host_now)?;
         self.metrics.backup_manifests = self.metrics.backup_manifests.saturating_add(1);
         Ok(manifest)
     }
@@ -166,20 +170,26 @@ impl LearningArtifactReferenceHostV1 {
         &mut self,
         command: &SignedLearningArtifactHostCommandV1,
         request: &LearningArtifactShutdownRequestV1,
+        host_now: u64,
     ) -> Result<(), LearningArtifactReferenceHostError> {
         let request_digest = digest_learning_artifact_shutdown_request_v1(request);
         let verified = self.authorize(
             command,
             LearningArtifactHostActionV1::BeginShutdown,
             request_digest,
-            request.requested_at,
+            host_now,
         )?;
+        if request.requested_at != host_now {
+            let error = LearningArtifactHostAccessError::CommandContext;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
+            return Err(error.into());
+        }
         if let Err(error) = self.require_ready() {
-            self.record_rejected(&verified, error_digest(&error), request.requested_at)?;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         self.lifecycle = LearningArtifactHostLifecycleV1::Draining;
-        self.record_applied(&verified, request.reason_digest, request.requested_at)?;
+        self.record_applied(&verified, request.reason_digest, host_now)?;
         Ok(())
     }
 
@@ -187,22 +197,28 @@ impl LearningArtifactReferenceHostV1 {
         mut self,
         command: &SignedLearningArtifactHostCommandV1,
         request: LearningArtifactShutdownRequestV1,
+        host_now: u64,
     ) -> Result<LearningArtifactShutdownReceiptV1, LearningArtifactReferenceHostError> {
         let request_digest = digest_learning_artifact_shutdown_request_v1(&request);
         let verified = self.authorize(
             command,
             LearningArtifactHostActionV1::FinishShutdown,
             request_digest,
-            request.requested_at,
+            host_now,
         )?;
+        if request.requested_at != host_now {
+            let error = LearningArtifactHostAccessError::CommandContext;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
+            return Err(error.into());
+        }
         if self.lifecycle != LearningArtifactHostLifecycleV1::Draining {
             let error = LearningArtifactReferenceHostError::Draining;
-            self.record_rejected(&verified, error_digest(&error), request.requested_at)?;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         if let Err(error) = self.durability.sync_publication(&self.root) {
             self.lifecycle = LearningArtifactHostLifecycleV1::Faulted;
-            self.record_indeterminate(&verified, error_digest(&error), request.requested_at)?;
+            self.record_indeterminate(&verified, error_digest(&error), host_now)?;
             return Err(error.into());
         }
         let mut receipt = LearningArtifactShutdownReceiptV1 {
@@ -212,17 +228,18 @@ impl LearningArtifactReferenceHostV1 {
             withdrawal_head_digest: self.service.withdrawal_registry().head_digest(),
             access_policy_digest: self.access.policy_digest(),
             audit_head_digest: Digest32::ZERO,
-            stopped_at: request.requested_at,
+            stopped_at: host_now,
             authority: AuthorityPosture::DENY_ALL,
         };
         let mut bytes = b"hepta.learning-artifacts.host-shutdown-receipt.v1".to_vec();
+        push_id(&mut bytes, &receipt.shutdown_id);
         bytes.extend_from_slice(receipt.reason_digest.as_array());
         bytes.extend_from_slice(receipt.registry_head_digest.as_array());
         bytes.extend_from_slice(receipt.withdrawal_head_digest.as_array());
         bytes.extend_from_slice(receipt.access_policy_digest.as_array());
         bytes.extend_from_slice(&receipt.stopped_at.to_be_bytes());
         let receipt_digest = Digest32::of_bytes(&bytes);
-        self.record_applied(&verified, receipt_digest, request.requested_at)?;
+        self.record_applied(&verified, receipt_digest, host_now)?;
         receipt.audit_head_digest = self.audit.head_digest();
         let relative = PathBuf::from("shutdown").join(format!(
             "{}-{}.receipt",
@@ -243,17 +260,23 @@ impl LearningArtifactReferenceHostV1 {
         command: &SignedLearningArtifactHostCommandV1,
         request: LearningArtifactHostSchemaMigrationRequestV1,
         migration: &dyn LearningArtifactHostSchemaMigrationV1,
+        host_now: u64,
     ) -> Result<(), LearningArtifactReferenceHostError> {
         let request_digest = digest_learning_artifact_schema_migration_request_v1(&request);
         let verified = self.authorize(
             command,
             LearningArtifactHostActionV1::MigrateControlSchema,
             request_digest,
-            request.requested_at,
+            host_now,
         )?;
+        if request.requested_at != host_now {
+            let error = LearningArtifactHostAccessError::CommandContext;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
+            return Err(error.into());
+        }
         if self.lifecycle != LearningArtifactHostLifecycleV1::Draining {
             let error = LearningArtifactReferenceHostError::Draining;
-            self.record_rejected(&verified, error_digest(&error), request.requested_at)?;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         if request.from_version != self.schema_version
@@ -265,12 +288,12 @@ impl LearningArtifactReferenceHostV1 {
             || request.migration_digest.is_zero()
         {
             let error = LearningArtifactReferenceHostError::MigrationContext;
-            self.record_rejected(&verified, error_digest(&error), request.requested_at)?;
+            self.record_rejected(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         if let Err(error) = migration.apply(&self.control_root) {
             self.lifecycle = LearningArtifactHostLifecycleV1::Faulted;
-            self.record_indeterminate(&verified, error_digest(&error), request.requested_at)?;
+            self.record_indeterminate(&verified, error_digest(&error), host_now)?;
             return Err(error.into());
         }
         if let Err(error) = persist_schema_anchor(
@@ -279,11 +302,11 @@ impl LearningArtifactReferenceHostV1 {
             &self.durability,
         ) {
             self.lifecycle = LearningArtifactHostLifecycleV1::Faulted;
-            self.record_indeterminate(&verified, error_digest(&error), request.requested_at)?;
+            self.record_indeterminate(&verified, error_digest(&error), host_now)?;
             return Err(error);
         }
         self.schema_version = request.to_version;
-        self.record_applied(&verified, request.migration_digest, request.requested_at)?;
+        self.record_applied(&verified, request.migration_digest, host_now)?;
         self.metrics.schema_migrations = self.metrics.schema_migrations.saturating_add(1);
         Ok(())
     }
@@ -322,8 +345,16 @@ pub fn validate_learning_artifact_restore_manifest_v1(
 ) -> bool {
     manifest.verify_digest()
         && manifest.storage_binding == expected_storage_binding
+        && manifest.registry_receipt.binding == expected_storage_binding
+        && manifest.withdrawal_receipt.binding == expected_storage_binding
         && manifest.access_policy_digest == expected_policy_digest
         && manifest.schema_version > 0
         && manifest.schema_version <= maximum_supported_schema_version
+        && manifest.prepared_at > 0
+        && !manifest.registry_receipt.file_digest.is_zero()
+        && manifest.registry_receipt.encoded_bytes > 0
+        && !manifest.withdrawal_receipt.file_digest.is_zero()
+        && manifest.withdrawal_receipt.encoded_bytes > 0
         && !manifest.destination_witness_digest.is_zero()
+        && manifest.authority == AuthorityPosture::DENY_ALL
 }
