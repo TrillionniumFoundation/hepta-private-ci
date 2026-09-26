@@ -1,0 +1,83 @@
+name: ui.native remediation formatter
+
+on:
+  push:
+    branches: [work/ui-native-current-source-20260925]
+    paths:
+      - .github/workflows/hepta-ui-native-remediation-format.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-remediation-format-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  format-and-freeze:
+    name: format and freeze canonical source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/ui-native-current-source-20260925
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind intended candidate branch
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "work/ui-native-current-source-20260925"
+          test -z "$(git status --porcelain)"
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Apply pinned Rust formatting
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state
+      - name: Commit formatted source boundary
+        run: |
+          set -euo pipefail
+          git config user.name ui-native-remediation
+          git config user.email ui-native-remediation@users.noreply.github.com
+          git add -- \
+            apps/hepta-native \
+            codex-rs/hepta-native-gateway \
+            codex-rs/hepta-contracts \
+            codex-rs/hepta-private-state
+          if git diff --cached --quiet; then
+            echo "Pinned formatter produced no source changes."
+          else
+            git commit -m "style(ui.native): apply pinned Rust 1.95 formatting"
+          fi
+      - name: Refresh committed identity and implementation metadata
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py --sync-metadata
+          python3 apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
+          git add --all
+          if git diff --cached --quiet; then
+            echo "Identity metadata already matched the formatted source."
+          else
+            git commit -m "chore(ui.native): bind metadata to formatted source"
+          fi
+      - name: Verify frozen candidate before push
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py --prepare
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml -- --check
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state -- --check
+          test -z "$(git status --porcelain)"
+      - name: Push audited remediation commits
+        run: |
+          set -euo pipefail
+          git push origin HEAD:work/ui-native-current-source-20260925
