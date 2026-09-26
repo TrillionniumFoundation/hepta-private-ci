@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot source migration for the context.compiler V3 product path.
-
-The bootstrap workflow removes this script and itself after all focused Rust
-checks pass, leaving only the reviewed source/documentation changes.
-"""
+"""Apply the canonical context.compiler V3 source wiring once."""
 
 from __future__ import annotations
 
@@ -15,14 +11,13 @@ ROOT = Path(__file__).resolve().parents[1]
 def replace(path: str, old: str, new: str) -> None:
     target = ROOT / path
     text = target.read_text(encoding="utf-8")
-    if old not in text:
-        raise SystemExit(f"expected patch anchor missing in {path}: {old[:120]!r}")
-    if text.count(old) != 1:
-        raise SystemExit(f"patch anchor is not unique in {path}: {old[:120]!r}")
+    count = text.count(old)
+    if count != 1:
+        raise SystemExit(f"{path}: expected one patch anchor, found {count}: {old[:100]!r}")
     target.write_text(text.replace(old, new), encoding="utf-8")
 
 
-# Registry exports its construction-closed authority objects.
+# Registry exports construction-closed authority snapshots and typed successors.
 replace(
     "codex-rs/hepta-prompt-registry/src/lib.rs",
     "mod admission;\nmod delivery;",
@@ -40,8 +35,7 @@ replace(
     "pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;",
 )
 
-# Intelligence gets serde for the canonical serializer and contracts for the
-# provider receipt consumed by observe_prompt_delivery_v3.
+# Intelligence owns the canonical serializer and exact-tokenizer adapter seam.
 replace(
     "codex-rs/hepta-intelligence/Cargo.toml",
     "[lib]\nname = \"codex_hepta_intelligence\"\npath = \"src/lib.rs\"\ndoctest = false\n\n[lints]",
@@ -66,8 +60,6 @@ replace(
     "serde_json = { workspace = true }\n\n[dev-dependencies]\n",
 )
 
-# Keep legacy V1/V2 composition available only behind an explicit compatibility
-# feature. The V3 compiler is always present.
 replace(
     "codex-rs/hepta-intelligence/src/lib.rs",
     "mod prompt_pipeline;\n\npub use prompt_pipeline::PreparedPromptContextV1;",
@@ -77,7 +69,7 @@ replace(
     "#[cfg(feature = \"legacy-prompt-context-v1\")]\n"
     "pub use prompt_pipeline::PreparedPromptContextV1;",
 )
-legacy_exports = [
+for symbol in [
     "PreparedPromptDeliveryV1",
     "PromptContextCompileRequestV1",
     "PromptDeliveryPrepareRequestV1",
@@ -88,8 +80,7 @@ legacy_exports = [
     "compile_exercised_prompt_context_v1",
     "observe_prompt_delivery_v1",
     "prepare_prompt_delivery_v1",
-]
-for symbol in legacy_exports:
+]:
     replace(
         "codex-rs/hepta-intelligence/src/lib.rs",
         f"pub use prompt_pipeline::{symbol};",
@@ -103,13 +94,11 @@ replace(
     "#[cfg(feature = \"legacy-prompt-context-v1\")]\n"
     "mod prompt_delivery;",
 )
-legacy_delivery_exports = [
+for symbol in [
     "PromptRegistryCompilationErrorV2",
     "PromptRegistryCompilationRequestV2",
     "PromptRegistryCompiledContextV2",
-    "compile_prompt_registry_v2",
-]
-for symbol in legacy_delivery_exports:
+]:
     replace(
         "codex-rs/hepta-intelligence/src/lib.rs",
         f"pub use prompt_delivery::{symbol};",
@@ -134,7 +123,7 @@ replace(
     "mod pipeline;",
 )
 
-# Small correctness fixes made after the initial additive source landed.
+# Correct additive source details before compilation.
 replace(
     "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
     "use std::collections::BTreeMap;\nuse std::fmt;",
@@ -197,7 +186,3 @@ replace(
     "    bytes.extend_from_slice(output.portfolio_receipt_digest.as_array());\n"
     "    bytes.extend_from_slice(output.generation_vector_digest.as_array());\n",
 )
-
-# One-shot bootstrap files disappear only after all checks have succeeded.
-(ROOT / ".github/workflows/context-compiler-v3-bootstrap.yml").unlink()
-Path(__file__).unlink()
