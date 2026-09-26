@@ -19,16 +19,17 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 20
     steps:
-      - name: Check out exact branch head
+      - name: Check out exact triggering commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: codex/intelligence-control-product-closure-20260926
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
       - name: Apply restart replay fresh-authority rewrite
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           python3 -m py_compile scripts/codex-intelligence-learning-reconcile-rewrite.py
           python3 scripts/codex-intelligence-learning-reconcile-rewrite.py
           (cd codex-rs && cargo fmt --all)
