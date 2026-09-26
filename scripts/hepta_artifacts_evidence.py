@@ -14,7 +14,20 @@ import sys
 import time
 
 SCHEMA = "hepta.learning-artifacts.qualification.v1"
-REQUIRED = ("closed-world", "build", "clippy", "tests")
+REQUIRED = ("closed-world", "build", "clippy", "tests", "product-tests")
+MAX_LOG_BYTES = 32 * 1024 * 1024
+SOURCE_ROOTS = (
+    "codex-rs/hepta-learning-artifacts",
+    "codex-rs/hepta-shadow-qualification/tests",
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "qualification/lane-e/TEST_TRACEABILITY.json",
+    "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+    "scripts/hepta_artifacts_evidence.py",
+    "scripts/hepta-lane-e-closure.py",
+    "scripts/hepta_lane_e_source_checks.py",
+    "scripts/hepta_workflow_commands.py",
+    ".github/workflows/hepta-learning-artifacts-qualification.yml",
+)
 DENIED = ("productionImplementation", "activation", "independentAcceptance", "release")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 COMMANDS = {
@@ -22,6 +35,7 @@ COMMANDS = {
     "build": ["cargo", "check", "--locked", "-p", "codex-hepta-learning-artifacts", "--all-targets"],
     "clippy": ["cargo", "clippy", "--locked", "-p", "codex-hepta-learning-artifacts", "--all-targets", "--", "-D", "warnings"],
     "tests": ["cargo", "test", "--locked", "-p", "codex-hepta-learning-artifacts", "--lib", "--", "--test-threads=1"],
+    "product-tests": ["cargo", "test", "--locked", "-p", "codex-hepta-shadow-qualification", "--test", "durable_learning_roundtrip", "--", "--test-threads=1"],
 }
 CASE = re.compile(r"^test (\S+) \.\.\. (ok|FAILED|ignored)$", re.MULTILINE)
 
@@ -43,6 +57,25 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def source_inventory(root: Path, tree: str) -> dict:
+    blobs = {}
+    for line in git(root, "ls-tree", "-r", tree, "--", *SOURCE_ROOTS).splitlines():
+        meta, path = line.split("\t", 1)
+        mode, kind, sha = meta.split()
+        require(kind == "blob" and mode in ("100644", "100755"), "unexpected source object")
+        blobs[path] = sha
+    require(bool(blobs), "empty source inventory")
+    return blobs
+
+
+def bounded_log(path: Path) -> bytes:
+    require(not path.is_symlink(), "symlink log")
+    with path.open("rb") as source:
+        data = source.read(MAX_LOG_BYTES + 1)
+    require(len(data) <= MAX_LOG_BYTES, "oversize log")
+    return data
+
+
 def identity(root: Path, source: str, base: str, lane: str) -> dict:
     require(lane in ("source", "merge"), "unknown lane")
     require(bool(SHA.fullmatch(source)) and bool(SHA.fullmatch(base)), "full source/base SHA required")
@@ -51,14 +84,9 @@ def identity(root: Path, source: str, base: str, lane: str) -> dict:
     require(candidate == source if lane == "source" else parents == [base, source], "candidate/ordered-parent mismatch")
     require(not git(root, "status", "--porcelain", "--untracked-files=no"), "dirty tracked source")
     require(not git(root, "ls-files", "--others", "--exclude-standard", "--", "codex-rs/hepta-learning-artifacts"), "untracked crate source")
-    blobs = {}
-    for line in git(root, "ls-tree", "-r", "HEAD", "--", "codex-rs/hepta-learning-artifacts", "codex-rs/hepta-agentd/src/cognitive_ranker.rs", "qualification/lane-e/TEST_TRACEABILITY.json", "scripts/hepta_artifacts_evidence.py", ".github/workflows/hepta-learning-artifacts-qualification.yml").splitlines():
-        meta, path = line.split("\t", 1)
-        mode, kind, sha = meta.split()
-        require(kind == "blob" and mode in ("100644", "100755"), "unexpected source object")
+    blobs = source_inventory(root, "HEAD")
+    for path, sha in blobs.items():
         require(git(root, "hash-object", "--", path) == sha, "source blob mismatch: " + path)
-        blobs[path] = sha
-    require(bool(blobs), "empty source inventory")
     return {"sourceCommit": source, "baseCommit": base, "candidateCommit": candidate,
             "candidateTree": git(root, "rev-parse", "HEAD^{tree}"), "parents": parents,
             "lane": lane, "sourceBlobs": blobs}
@@ -77,7 +105,7 @@ def assess_test_output(log: str) -> dict:
     return {"passed": passed, "ignored": 0, "filtered": 0, "testNames": sorted(names)}
 
 
-def traceability(root: Path, tests: dict, blobs: dict, tree: str | None = None) -> list:
+def traceability(root: Path, tests: dict, blobs: dict, tree: str | None = None, product_tests: dict | None = None) -> list:
     trace_path = "qualification/lane-e/TEST_TRACEABILITY.json"
     trace = json.loads(git(root, "show", tree + ":" + trace_path) if tree else (root / trace_path).read_text())
     cases = [item for item in trace["cases"] if item["module"] == "learning.artifacts"]
@@ -87,12 +115,14 @@ def traceability(root: Path, tests: dict, blobs: dict, tree: str | None = None) 
         require(bool(item["tests"]), "requirement has no tests")
         for test in item["tests"]:
             path, function = test["source"], test["function"]
-            # Cross-crate mappings remain covered by the Lane E workflow, not relabelled here.
+            command = "tests" if path.startswith("codex-rs/hepta-learning-artifacts/") else "product-tests"
+            observed = tests if command == "tests" else product_tests
+            require(observed is not None, "missing cross-crate execution")
             require(path in blobs, "mapped test outside qualified source inventory: " + path)
-            matches = [name for name in tests["testNames"] if name.rsplit("::", 1)[-1] == function]
+            matches = [name for name in observed["testNames"] if name.rsplit("::", 1)[-1] == function]
             require(len(matches) == 1, "test not executed or ambiguous: " + function)
             result.append({"requirement": item["id"], "source": path, "blob": blobs[path],
-                           "symbol": function, "executedTest": matches[0], "command": "tests"})
+                           "symbol": function, "executedTest": matches[0], "command": command})
     return result
 
 
@@ -104,17 +134,26 @@ def execute(command: list[str], cwd: Path, log: Path, timeout: int = 2400) -> di
         process = subprocess.Popen(command, cwd=cwd, stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
         while process.poll() is None:
             timed_out = time.monotonic() - start > timeout
-            log_limit_exceeded = log.stat().st_size > 32 * 1024 * 1024
+            log_limit_exceeded = log.stat().st_size > MAX_LOG_BYTES
             if timed_out or log_limit_exceeded:
-                os.killpg(process.pid, signal.SIGKILL)
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
                 break
             time.sleep(0.1)
         code = process.wait()
 
-    data = log.read_bytes()
+    size = log.stat().st_size
+    log_limit_exceeded = log_limit_exceeded or size > MAX_LOG_BYTES
+    # Stream the digest even for a fast producer that exited before the poll.
+    hasher = hashlib.sha256()
+    with log.open("rb") as source:
+        for chunk in iter(lambda: source.read(64 * 1024), b""):
+            hasher.update(chunk)
     return {"argv": command, "exitCode": code, "timedOut": timed_out,
             "logLimitExceeded": log_limit_exceeded, "durationSeconds": round(time.monotonic() - start, 3), "log": log.name,
-            "logSha256": digest(data), "logBytes": len(data)}
+            "logSha256": hasher.hexdigest(), "logBytes": size}
 
 
 def run(root: Path, output: Path, source: str, base: str, lane: str) -> int:
@@ -133,18 +172,26 @@ def run(root: Path, output: Path, source: str, base: str, lane: str) -> int:
             results[name] = {"argv": argv, "exitCode": 127, "timedOut": False, "logLimitExceeded": False, "log": name + ".log", "logSha256": digest(data), "logBytes": len(data)}
         if results[name]["exitCode"] != 0 or results[name]["timedOut"] or results[name]["logLimitExceeded"]:
             problems.append(name + " did not succeed")
-    tests, trace = {}, []
+    tests, product_tests, trace = {}, {}, []
+    # Preserve executed native diagnostics even if metadata verification failed.
+    for name, target in (("tests", tests), ("product-tests", product_tests)):
+        try:
+            target.update(assess_test_output(bounded_log(output / (name + ".log")).decode()))
+        except (ValueError, OSError) as error:
+            problems.append(name + ": " + str(error))
     try:
-        closure = json.loads((output / "closed-world.log").read_text())
+        closure = json.loads(bounded_log(output / "closed-world.log").decode())
         require(closure.get("ok") is True and closure.get("findings") == [], "closed-world output is not affirmative")
-        tests = assess_test_output((output / "tests.log").read_text(errors="replace"))
-        trace = traceability(root, tests, binding["sourceBlobs"])
-        require(identity(root, source, base, lane) == binding, "source changed during qualification")
     except (ValueError, KeyError, OSError) as error:
+        problems.append(str(error))
+    try:
+        trace = traceability(root, tests, binding["sourceBlobs"], product_tests=product_tests)
+        require(identity(root, source, base, lane) == binding, "source changed during qualification")
+    except (ValueError, KeyError, OSError, subprocess.CalledProcessError) as error:
         problems.append(str(error))
     receipt = {"schema": SCHEMA, **binding, "runId": os.environ.get("GITHUB_RUN_ID", "local"),
                "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT", "local"), "job": os.environ.get("GITHUB_JOB", "local"),
-               "commands": results, "tests": tests, "traceability": trace,
+               "commands": results, "tests": tests, "productTests": product_tests, "traceability": trace,
                "qualified": not problems, "problems": problems,
                "claimBoundary": {key: False for key in DENIED}}
     (output / "qualification.json").write_bytes(canonical(receipt))
@@ -153,7 +200,7 @@ def run(root: Path, output: Path, source: str, base: str, lane: str) -> int:
 
 
 def verify_receipt(path: Path, source: str, base: str, run_id: str, attempt: str) -> dict:
-    value = json.loads(path.read_text())
+    value = json.loads(bounded_log(path).decode())
     require(value["schema"] == SCHEMA and value["qualified"] is True and value["problems"] == [], "unqualified receipt")
     require((value["sourceCommit"], value["baseCommit"], value["runId"], value["runAttempt"]) == (source, base, run_id, attempt), "receipt source/run binding mismatch")
     require(value["claimBoundary"] == {key: False for key in DENIED} and all(flag is False for flag in value["claimBoundary"].values()), "authority escalation")
@@ -167,15 +214,18 @@ def verify_receipt(path: Path, source: str, base: str, run_id: str, attempt: str
         require(result["argv"] == COMMANDS[name], "command substitution")
         require(result["log"] == name + ".log", "unsafe log path")
         require(not (path.parent / result["log"]).is_symlink(), "symlink log")
-        data = (path.parent / result["log"]).read_bytes()
+        data = bounded_log(path.parent / result["log"])
         require(digest(data) == result["logSha256"] and len(data) == result["logBytes"], "log binding mismatch")
-    closure = json.loads((path.parent / "closed-world.log").read_text())
+    closure = json.loads(bounded_log(path.parent / "closed-world.log").decode())
     require(closure.get("ok") is True and closure.get("findings") == [], "closed-world output is not affirmative")
-    require(assess_test_output((path.parent / "tests.log").read_text()) == value["tests"], "test receipt mismatch")
+    require(assess_test_output(bounded_log(path.parent / "tests.log").decode()) == value["tests"], "test receipt mismatch")
+    require(assess_test_output(bounded_log(path.parent / "product-tests.log").decode()) == value["productTests"], "product test receipt mismatch")
     require(bool(value["sourceBlobs"]) and all(SHA.fullmatch(sha) for sha in value["sourceBlobs"].values()), "invalid source inventory")
     require({row["requirement"] for row in value["traceability"]} == {f"ART-{i:02d}" for i in range(1, 13)}, "missing traceability")
     for row in value["traceability"]:
-        require(value["sourceBlobs"].get(row["source"]) == row["blob"] and row["executedTest"] in value["tests"]["testNames"] and row["command"] == "tests", "unexecuted traceability")
+        require(row["command"] in ("tests", "product-tests"), "invalid test command")
+        observed = value["tests"] if row["command"] == "tests" else value["productTests"]
+        require(value["sourceBlobs"].get(row["source"]) == row["blob"] and row["executedTest"] in observed["testNames"], "unexecuted traceability")
     return value
 
 
@@ -190,9 +240,8 @@ def aggregate(directory: Path, source: str, base: str, run_id: str, attempt: str
                  "merge": git(root, "merge-tree", "--write-tree", base, source)}
         for receipt in receipts:
             require(receipt["candidateTree"] == trees[receipt["lane"]], "candidate tree mismatch")
-            for path, blob in receipt["sourceBlobs"].items():
-                require(git(root, "rev-parse", trees[receipt["lane"]] + ":" + path) == blob, "receipt source blob differs from Git tree")
-            expected_trace = traceability(root, receipt["tests"], receipt["sourceBlobs"], trees[receipt["lane"]])
+            require(receipt["sourceBlobs"] == source_inventory(root, trees[receipt["lane"]]), "receipt source inventory differs from Git tree")
+            expected_trace = traceability(root, receipt["tests"], receipt["sourceBlobs"], trees[receipt["lane"]], receipt["productTests"])
             require(expected_trace == receipt["traceability"], "requirement/test mapping drift")
 
 

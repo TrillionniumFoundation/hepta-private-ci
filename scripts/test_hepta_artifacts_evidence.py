@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import hepta_artifacts_evidence as evidence
 
@@ -24,7 +25,7 @@ class EvidenceTests(unittest.TestCase):
         directory.mkdir(exist_ok=True)
         commands = {}
         for name in evidence.REQUIRED:
-            data = self.log.encode() if name == "tests" else b'{"ok":true,"findings":[]}\n'
+            data = self.log.encode() if name in ("tests", "product-tests") else b'{"ok":true,"findings":[]}\n'
             (directory / (name + ".log")).write_bytes(data)
             commands[name] = {"argv": evidence.COMMANDS[name], "exitCode": 0, "timedOut": False,
                               "logLimitExceeded": False, "log": name + ".log",
@@ -35,6 +36,7 @@ class EvidenceTests(unittest.TestCase):
                  "candidateTree": "d" * 40, "parents": [self.base, self.source],
                  "runId": "1", "runAttempt": "1", "job": "qualification", "lane": lane,
                  "commands": commands, "tests": evidence.assess_test_output(self.log),
+                 "productTests": evidence.assess_test_output(self.log),
                  "sourceBlobs": {"test.rs": "e" * 40},
                  "traceability": [{"requirement": f"ART-{i:02d}", "source": "test.rs", "blob": "e" * 40,
                                    "executedTest": "tests::identity", "command": "tests"} for i in range(1, 13)],
@@ -175,6 +177,60 @@ class EvidenceTests(unittest.TestCase):
         result = evidence.execute([os.sys.executable, "-c", "import time; time.sleep(10)"], self.root, self.root / "timeout.log", timeout=0)
         self.assertTrue(result["timedOut"])
         self.assertNotEqual(result["exitCode"], 0)
+
+    def test_cross_crate_trace_requires_its_own_executed_test(self):
+        native = "codex-rs/hepta-learning-artifacts/src/registry_tests.rs"
+        product = "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs"
+        directory = self.root / "qualification/lane-e"
+        directory.mkdir(parents=True)
+        cases = [{"id": f"ART-{i:02d}", "module": "learning.artifacts", "tests": [
+            {"source": native if i < 12 else product,
+             "function": "identity" if i < 12 else "reload"}
+        ]} for i in range(1, 13)]
+        (directory / "TEST_TRACEABILITY.json").write_text(json.dumps({"cases": cases}))
+        native_tests = {"testNames": ["tests::identity"]}
+        product_tests = {"testNames": ["tabular_reload::reload"]}
+        blobs = {native: "c" * 40, product: "d" * 40}
+        with self.assertRaisesRegex(ValueError, "cross-crate"):
+            evidence.traceability(self.root, native_tests, blobs)
+        rows = evidence.traceability(self.root, native_tests, blobs, product_tests=product_tests)
+        self.assertEqual(rows[-1]["command"], "product-tests")
+        self.assertEqual(rows[-1]["executedTest"], "tabular_reload::reload")
+        with self.assertRaisesRegex(ValueError, "not executed"):
+            evidence.traceability(self.root, native_tests, blobs, product_tests={"testNames": []})
+
+    def test_oversize_log_rejected_before_unbounded_read(self):
+        path = self.root / "oversize.log"
+        path.write_bytes(b"x" * 11)
+        with patch.object(evidence, "MAX_LOG_BYTES", 10):
+            with self.assertRaisesRegex(ValueError, "oversize"):
+                evidence.bounded_log(path)
+
+    def test_fast_large_output_is_negative_evidence(self):
+        with patch.object(evidence, "MAX_LOG_BYTES", 10):
+            result = evidence.execute([os.sys.executable, "-c", "print('x' * 100)"], self.root, self.root / "large.log")
+        self.assertTrue(result["logLimitExceeded"])
+
+    def test_symlink_receipt_rejected(self):
+        path, _ = self.receipt()
+        alias = self.root / "alias.json"
+        alias.symlink_to(path)
+        with self.assertRaisesRegex(ValueError, "symlink"):
+            self.verify(alias)
+
+    def test_product_test_claim_cannot_reuse_library_receipt(self):
+        path, value = self.receipt()
+        value["productTests"]["testNames"] = ["unexecuted::reload"]
+        path.write_bytes(evidence.canonical(value))
+        with self.assertRaisesRegex(ValueError, "product test"):
+            self.verify(path)
+
+    def test_wrong_producer_job_rejected(self):
+        path, value = self.receipt()
+        value["job"] = "unrelated-job"
+        path.write_bytes(evidence.canonical(value))
+        with self.assertRaisesRegex(ValueError, "producer job"):
+            self.verify(path)
 
 
 if __name__ == "__main__":
