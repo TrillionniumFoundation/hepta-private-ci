@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   apply-and-verify:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 90
     steps:
       - name: Checkout exact hardening branch
@@ -47,7 +47,7 @@ jobs:
       - name: Install focused test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0
 
       - name: Install DotSlash
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
