@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: read
+
 concurrency:
   group: kernel-authority-convergence-${{ github.ref }}
   cancel-in-progress: true
@@ -38,7 +39,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Retire bootstrap from the local candidate before remediation
+      - name: Retire bootstrap from the local candidate
         shell: bash
         run: |
           python3 - <<'PY'
@@ -64,157 +65,11 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt,clippy
 
-      - name: Rebase the guarded remediator onto the current branch
+      - name: Rebase guarded remediator
         shell: bash
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('.github/scripts/kernel_authority_remediate.py')
-          content = path.read_text(encoding='utf-8')
-
-          old = '''    scaffold_changes = set(
-              filter(
-                  None,
-                  output("git", "diff", "--name-only", f"{EXPECTED_HEAD}..HEAD").splitlines(),
-              )
-          )
-          expected_scaffold = {
-              ".github/scripts/kernel_authority_remediate.py",
-              ".github/workflows/kernel-authority-remediation.yml",
-          }
-          if scaffold_changes != expected_scaffold:
-              raise RuntimeError(
-                  f"branch drifted outside the one-shot scaffold: {sorted(scaffold_changes)}"
-              )
-'''
-          if content.count(old) != 1:
-              raise SystemExit('stale scaffold-drift guard is not exact')
-          content = content.replace(old, '', 1)
-
-          old = '''    run(
-                  "cargo",
-                  "fmt",
-                  "--manifest-path",
-                  "codex-rs/Cargo.toml",
-                  "-p",
-                  "codex-hepta-contracts",
-                  "-p",
-                  "codex-hepta-fleet",
-              )'''
-          new = '''    run(
-                  "cargo",
-                  "fmt",
-                  "--manifest-path",
-                  "codex-rs/Cargo.toml",
-                  "-p",
-                  "codex-hepta-contracts",
-              )'''
-          if content.count(old) != 1:
-              raise SystemExit('remediator formatting predecessor is not exact')
-          content = content.replace(old, new, 1)
-
-          needle = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry -p codex-hepta-fleet'
-          replacement = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry'
-          if content.count(needle) != 2:
-              raise SystemExit('expected old and generated product formatting commands')
-          index = content.rfind(needle)
-          content = content[:index] + replacement + content[index + len(needle):]
-
-          unsafe_test = '''    #[test]
-    fn dispatch_boundary_serializes_revocation_until_local_entry_returns() {
-        let (registry, _directory) = fixture().unwrap();
-        registry.put_lease(lease(), 0).unwrap();
-        let verifier = registry.verifier();
-        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
-        let (entered_tx, entered_rx) = mpsc::channel();
-        let (revoked_tx, revoked_rx) = mpsc::channel();
-        std::thread::spawn(move || {
-            entered_rx.recv().unwrap();
-            let result = registry.revoke("lease-one", 1, [8; 32]);
-            let _ = revoked_tx.send(result);
-        });
-
-        let expected = binding();
-        let result = verifier
-            .with_dispatch_boundary(token, &expected, || {
-                entered_tx.send(()).unwrap();
-                assert!(
-                    revoked_rx.recv_timeout(Duration::from_millis(100)).is_err(),
-                    "revocation crossed the local dispatch linearization fence"
-                );
-                11
-            })
-            .unwrap();
-        assert_eq!(result, 11);
-        assert!(
-            revoked_rx
-                .recv_timeout(Duration::from_secs(2))
-                .expect("revocation did not complete after local dispatch boundary")
-                .is_ok()
-        );
-    }
-'''
-          safe_test = '''    #[test]
-    fn dispatch_boundary_serializes_revocation_until_local_entry_returns() {
-        let (registry, _directory) = fixture().unwrap();
-        registry.put_lease(lease(), 0).unwrap();
-        let verifier = registry.verifier();
-        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
-        let (entered_tx, entered_rx) = mpsc::channel();
-        let (attempted_tx, attempted_rx) = mpsc::channel();
-        let (release_tx, release_rx) = mpsc::channel();
-        let (revoked_tx, revoked_rx) = mpsc::channel();
-        let revoker = std::thread::spawn(move || {
-            if entered_rx.recv().is_err() {
-                return;
-            }
-            let _ = attempted_tx.send(());
-            let result = registry.revoke("lease-one", 1, [8; 32]);
-            let _ = revoked_tx.send(result);
-        });
-
-        let expected = binding();
-        let dispatch = std::thread::spawn(move || {
-            verifier.with_dispatch_boundary(token, &expected, || {
-                let entered = entered_tx.send(()).is_ok();
-                let released = release_rx.recv_timeout(Duration::from_secs(2)).is_ok();
-                (entered, released, 11)
-            })
-        });
-        attempted_rx
-            .recv_timeout(Duration::from_secs(2))
-            .expect("revocation worker did not reach the authority boundary");
-        assert!(
-            revoked_rx.recv_timeout(Duration::from_millis(100)).is_err(),
-            "revocation crossed the local dispatch linearization fence"
-        );
-        release_tx
-            .send(())
-            .expect("dispatch worker did not retain the release channel");
-        let (entered, released, result) = dispatch
-            .join()
-            .expect("dispatch worker panicked")
-            .expect("dispatch boundary rejected a current lease");
-        assert!(entered, "dispatch worker did not signal entry");
-        assert!(released, "dispatch worker did not observe release");
-        assert_eq!(result, 11);
-        assert!(
-            revoked_rx
-                .recv_timeout(Duration::from_secs(2))
-                .expect("revocation did not complete after local dispatch boundary")
-                .is_ok()
-        );
-        revoker.join().expect("revocation worker panicked");
-    }
-'''
-          if content.count(unsafe_test) != 2:
-              raise SystemExit('expected predecessor and generated unsafe dispatch test')
-          index = content.rfind(unsafe_test)
-          content = content[:index] + safe_test + content[index + len(unsafe_test):]
-
-          path.write_text(content, encoding='utf-8')
-          PY
-          git add .github/scripts/kernel_authority_remediate.py
+          python3 .github/scripts/kernel_authority_bootstrap_patch.py
+          git add -A
           git commit -m 'ci(kernel-authority): rebase guarded remediator'
 
       - name: Apply, validate, commit, rebind and push
@@ -222,6 +77,7 @@ jobs:
           CARGO_TERM_COLOR: always
         run: python3 .github/scripts/kernel_authority_remediate.py
   # END ONE-SHOT KERNEL AUTHORITY REMEDIATION
+
   identity:
     runs-on: ubuntu-24.04
     outputs:
