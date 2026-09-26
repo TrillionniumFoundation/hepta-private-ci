@@ -1,0 +1,204 @@
+name: context-compiler-consolidate-once
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-v2-full-closure-20260927
+    paths:
+      - .github/workflows/context-compiler-consolidate-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  consolidate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout consolidation branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/context-compiler-v2-full-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Consolidate exact-body gate and qualification truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-context-compiler-bot"
+          git config user.email "hepta-context-compiler-bot@users.noreply.github.com"
+
+          git fetch origin codex/context-compiler-provider-proof-chain-v2
+          git checkout origin/codex/context-compiler-provider-proof-chain-v2 -- \
+            codex-rs/codex-api/src/dispatch_metadata.rs \
+            codex-rs/codex-api/src/endpoint/responses.rs \
+            codex-rs/core/src/model_provider_policy/attempt_owner.rs \
+            codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs
+
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from pathlib import Path
+
+          ROOT = Path.cwd()
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = ROOT / path
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}: {old[:100]!r}")
+              target.write_text(text.replace(old, new), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-context-compiler/src/v2.rs",
+              "    /// context.compiler does not reinterpret it as a raw preparation digest.\n\n    fn verify_delivery(",
+              "    /// context.compiler does not reinterpret it as a raw preparation digest.\n    fn verify_delivery(",
+          )
+          replace_once(
+              "codex-rs/hepta-context-compiler/src/v2.rs",
+              "\npub fn observe_delivery(\n",
+              "\n#[allow(clippy::too_many_arguments)]\npub fn observe_delivery(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-intelligence/src/provider_bound_prompt_tests.rs",
+              "        nonce: [41; 32],",
+              "        nonce: *digest(\"nonce:provider-bound:realization:1\").as_array(),",
+          )
+
+          qpath = ROOT / "scripts/context_compiler_qualification.py"
+          q = qpath.read_text(encoding="utf-8")
+          q = q.replace(
+              '                "test",\n                "-p",\n                "codex-hepta-context-compiler",',
+              '                "test",\n                "--locked",\n                "-p",\n                "codex-hepta-context-compiler",',
+              1,
+          )
+          q = q.replace(
+              '                "clippy",\n                "-p",\n                "codex-hepta-context-compiler",',
+              '                "clippy",\n                "--locked",\n                "-p",\n                "codex-hepta-context-compiler",',
+              1,
+          )
+          old_deny = '''        {
+            "name": "cargo-deny",
+            "cwd": CODEX_RS,
+            "argv": ["cargo", "deny", "check"],
+        },'''
+          new_deny = '''        {
+            "name": "cargo-deny-policy",
+            "cwd": CODEX_RS,
+            "argv": [
+                "cargo",
+                "deny",
+                "--locked",
+                "check",
+                "bans",
+                "licenses",
+                "sources",
+            ],
+        },
+        {
+            "name": "cargo-advisories",
+            "cwd": CODEX_RS,
+            "argv": ["cargo", "deny", "--locked", "check", "advisories"],
+            "required": False,
+        },'''
+          if old_deny not in q:
+              raise SystemExit("qualification cargo-deny anchor missing")
+          q = q.replace(old_deny, new_deny, 1)
+          q = q.replace(
+              '        "succeeded": exit_code == 0,\n        "logPath":',
+              '        "succeeded": exit_code == 0,\n        "required": bool(spec.get("required", True)),\n        "logPath":',
+              1,
+          )
+          q = q.replace(
+              '    commands_succeeded = all(result["succeeded"] for result in command_results)',
+              '    commands_succeeded = all(\n        result["succeeded"] or not result["required"] for result in command_results\n    )',
+              1,
+          )
+          qpath.write_text(q, encoding="utf-8")
+
+          manifest_path = ROOT / "docs/modules/context.compiler/MODULE_MANIFEST.json"
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          manifest["branch"] = "codex/context-compiler-v2-full-closure-20260927"
+          for root in [
+              "codex-rs/codex-api/src/dispatch_metadata.rs",
+              "codex-rs/codex-api/src/endpoint/responses.rs",
+              "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+              "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs",
+              "codex-rs/hepta-context-compiler/src/provider_bound.rs",
+              "codex-rs/hepta-context-compiler/src/provider_delivery.rs",
+              "codex-rs/hepta-intelligence/src/provider_bound_prompt.rs",
+              "codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs",
+          ]:
+              if root not in manifest["sourceRoots"]:
+                  manifest["sourceRoots"].append(root)
+          commands = manifest["qualification"]["commands"]
+          commands[:] = [
+              command.replace(
+                  "cargo test -p codex-hepta-context-compiler",
+                  "cargo test --locked -p codex-hepta-context-compiler",
+              ).replace(
+                  "cargo clippy -p codex-hepta-context-compiler",
+                  "cargo clippy --locked -p codex-hepta-context-compiler",
+              )
+              for command in commands
+              if command != "cargo deny check"
+          ]
+          commands.insert(4, "cargo deny --locked check bans licenses sources")
+          commands.insert(5, "cargo deny --locked check advisories (recorded non-blocking repository audit)")
+          manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+          workflow_path = ROOT / ".github/workflows/context-compiler-qualification.yml"
+          workflow = workflow_path.read_text(encoding="utf-8")
+          anchor = "      - codex-rs/core/src/model_provider_policy/**\n"
+          additions = (
+              anchor
+              + "      - codex-rs/codex-api/src/dispatch_metadata.rs\n"
+              + "      - codex-rs/codex-api/src/endpoint/responses.rs\n"
+              + "      - codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs\n"
+              + "      - codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs\n"
+              + "      - codex-rs/hepta-agentd/src/provider_bound_prompt_runtime_tests.rs\n"
+          )
+          if anchor not in workflow:
+              raise SystemExit("qualification workflow path anchor missing")
+          workflow_path.write_text(workflow.replace(anchor, additions, 1), encoding="utf-8")
+          PY
+
+          python3 scripts/generate_context_compiler_module_docs.py --write
+          (
+            cd codex-rs
+            cargo fmt --all
+            cargo test --locked -p codex-hepta-context-compiler
+            cargo check --locked -p codex-api -p codex-core -p codex-extension-api
+            cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
+          )
+
+          git diff --check
+          git add \
+            codex-rs/codex-api/src/dispatch_metadata.rs \
+            codex-rs/codex-api/src/endpoint/responses.rs \
+            codex-rs/core/src/model_provider_policy/attempt_owner.rs \
+            codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs \
+            codex-rs/hepta-context-compiler/src/v2.rs \
+            codex-rs/hepta-context-compiler/src/provider_bound.rs \
+            codex-rs/hepta-context-compiler/src/provider_bound_tests.rs \
+            codex-rs/hepta-context-compiler/src/provider_delivery.rs \
+            codex-rs/hepta-intelligence/src/provider_bound_prompt_tests.rs \
+            codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs \
+            codex-rs/hepta-agentd/src/provider_bound_prompt_runtime_tests.rs \
+            docs/modules/context.compiler/MODULE_MANIFEST.json \
+            docs/modules/context.compiler/TECHNICAL.md \
+            docs/modules/context.compiler/IMPLEMENTATION_MAP.json \
+            qualification/module-execution-dossiers/detail/context.compiler.md \
+            scripts/context_compiler_qualification.py \
+            .github/workflows/context-compiler-qualification.yml
+          git commit -m "context.compiler: bind exact encoded body at provider policy boundary"
+          git push origin HEAD:codex/context-compiler-v2-full-closure-20260927
