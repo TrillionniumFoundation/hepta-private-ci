@@ -1,0 +1,130 @@
+name: Temporary compact.engine durable owner materializer
+
+on:
+  push:
+    branches:
+      - fix/compact-engine-current-main-convergence-20260925
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compact-engine-durable-owner-materializer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize-durable-owner:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact materializer trigger
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Materialize, qualify, and publish durable owner
+        shell: bash
+        env:
+          EXPECTED_PARENT: eeb5cf6ce8f342f12bbfa5983f9d56f2a278918d
+          REVIEWED_OWNER_HEAD: bbf80bcc5706e4d77fa360fbd3430d66a6da42af
+          TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
+          WORKFLOW_PATH: .github/workflows/compact-engine-durable-owner-materializer.yml
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          mapfile -t trigger_paths < <(git diff --name-only HEAD^ HEAD)
+          test "${#trigger_paths[@]}" -eq 1
+          test "${trigger_paths[0]}" = "$WORKFLOW_PATH"
+          git cat-file -e "$REVIEWED_OWNER_HEAD^{commit}"
+
+          git show "$REVIEWED_OWNER_HEAD:codex-rs/hepta-memory/src/qualified_compact_store.rs" \
+            > codex-rs/hepta-memory/src/qualified_compact_store.rs
+          git show "$REVIEWED_OWNER_HEAD:codex-rs/hepta-memory/src/qualified_compact_store_tests.rs" \
+            > codex-rs/hepta-memory/src/qualified_compact_store_tests.rs
+          git show "$REVIEWED_OWNER_HEAD:codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql" \
+            > codex-rs/hepta-memory/migrations/0016_qualified_compact_checkpoints.sql
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+          owner = root / 'codex-rs/hepta-memory/src/qualified_compact_store.rs'
+          text = owner.read_text()
+          old_path = '../migrations/0011_qualified_compact_checkpoints.sql'
+          assert text.count(old_path) == 1
+          text = text.replace(old_path, '../migrations/0016_qualified_compact_checkpoints.sql')
+          text = text.replace('differs from migration 0011', 'differs from migration 0016')
+          owner.write_text(text)
+
+          cargo = root / 'codex-rs/hepta-memory/Cargo.toml'
+          text = cargo.read_text()
+          dependency = 'codex-hepta-compact-engine = { path = "../hepta-compact-engine" }\n'
+          if dependency not in text:
+              needle = 'codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }\n'
+              assert text.count(needle) == 1
+              text = text.replace(needle, needle + dependency)
+          cargo.write_text(text)
+
+          lib = root / 'codex-rs/hepta-memory/src/lib.rs'
+          text = lib.read_text()
+          module = 'mod qualified_compact_store;\n'
+          if module not in text:
+              needle = 'mod production_writer;\n'
+              assert text.count(needle) == 1
+              text = text.replace(needle, needle + module)
+          export_needle = 'pub use production_writer::ProductionWriterError;\n'
+          exports = (
+              export_needle
+              + 'pub use qualified_compact_store::QualifiedCompactCheckpointPublication;\n'
+              + 'pub use qualified_compact_store::QualifiedCompactPublicationDisposition;\n'
+              + 'pub use qualified_compact_store::QualifiedCompactRollbackCandidate;\n'
+              + 'pub use qualified_compact_store::QualifiedCompactSelection;\n'
+              + 'pub use qualified_compact_store::QualifiedCompactStoreError;\n'
+          )
+          if 'pub use qualified_compact_store::QualifiedCompactStoreError;' not in text:
+              assert text.count(export_needle) == 1
+              text = text.replace(export_needle, exports)
+          lib.write_text(text)
+
+          store = root / 'codex-rs/hepta-memory/src/cognitive_store.rs'
+          text = store.read_text()
+          call = '    crate::qualified_compact_store::verify_qualified_compact_store(pool, owner).await?;\n'
+          if call not in text:
+              needle = (
+                  '    crate::local_compact_executor::verify_local_compact_events(pool, owner).await?;\n'
+                  '    Ok(())\n'
+              )
+              assert text.count(needle) == 1
+              text = text.replace(
+                  needle,
+                  '    crate::local_compact_executor::verify_local_compact_events(pool, owner).await?;\n'
+                  + call
+                  + '    Ok(())\n',
+              )
+          store.write_text(text)
+          PY
+
+          rm "$WORKFLOW_PATH"
+
+          (cd codex-rs && cargo fmt --all)
+          (cd codex-rs && cargo check -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets)
+          (cd codex-rs && cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets)
+          (cd codex-rs && cargo test --locked -p codex-hepta-compact-engine -p codex-hepta-memory --lib)
+          (cd codex-rs && cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets -- -D warnings)
+          git diff --check
+
+          test ! -e "$WORKFLOW_PATH"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add codex-rs/hepta-compact-engine codex-rs/hepta-cognitive-types \
+            codex-rs/hepta-memory codex-rs/Cargo.lock
+          git add -u "$WORKFLOW_PATH"
+          git commit -s -m 'feat(compact.engine): restore durable checkpoint owner'
+          git push origin "HEAD:$TARGET_BRANCH"
