@@ -9,15 +9,21 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-deterministic-hardening-${{ github.ref }}
+  group: cognitive-read-deterministic-hardening-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
   apply:
-    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): rerun deterministic hardening' }}"
-    runs-on: ubuntu-24.04
+    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): rerun hardening on windows' }}"
+    runs-on: windows-latest
     timeout-minutes: 20
     steps:
+      - name: Force an LF checkout
+        shell: bash
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
@@ -30,10 +36,15 @@ jobs:
         run: |
           exec > >(tee "${RUNNER_TEMP}/cognitive-read-hardening.log") 2>&1
           set -euxo pipefail
-          python3 scripts/cognitive-read-agentd-hardening.py
-          python3 tests/test_cognitive_read_agentd_hardening.py
-          python3 scripts/verify-cognitive-read-constants.py
-          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          else
+            PYTHON=python
+          fi
+          "${PYTHON}" scripts/cognitive-read-agentd-hardening.py
+          "${PYTHON}" tests/test_cognitive_read_agentd_hardening.py
+          "${PYTHON}" scripts/verify-cognitive-read-constants.py
+          "${PYTHON}" .github/scripts/verify_cargo_workspace_manifests.py
           git diff --check
           git status --short
 
