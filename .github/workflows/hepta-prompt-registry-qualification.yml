@@ -1,0 +1,237 @@
+name: Hepta prompt.registry qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/ext/hepta-prompt/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "docs/modules/prompt.registry/**"
+      - "qualification/module-execution-dossiers/detail/prompt.registry.md"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/workflows/hepta-prompt-registry-qualification.yml"
+  push:
+    branches:
+      - main
+      - codex/prompt-registry-v4-production-closure-20260926
+    paths:
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/ext/hepta-prompt/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "docs/modules/prompt.registry/**"
+      - "qualification/module-execution-dossiers/detail/prompt.registry.md"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/workflows/hepta-prompt-registry-qualification.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-prompt-registry-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || 'a126987b84737dbc2ee2592442a314117bddb4a2' }}
+
+jobs:
+  qualification:
+    name: prompt.registry (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
+          author-name: Hepta prompt.registry CI
+          author-email: hepta-prompt-registry-ci@users.noreply.github.com
+          message: prompt.registry synthetic merge
+
+      - name: Bind tested candidate identity
+        id: identity
+        shell: bash
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          echo "tested_sha=$TESTED_SHA" >> "$GITHUB_OUTPUT"
+          echo "tested_tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Verify implementation-map closed-world truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Check prompt-owned formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-agentd \
+            --package codex-hepta-intelligence -- --check
+
+      - name: Prepare native test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Test durable prompt registry and schema migration
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-prompt-registry -- --nocapture --test-threads=1
+
+      - name: Test capability-bound optimizer and relation graph
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture --test-threads=1
+
+      - name: Test Agentd prompt product pipeline and final-use fencing
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd prompt_ -- --nocapture --test-threads=1
+
+      - name: Strict prompt-owned Clippy
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            --all-targets --no-deps -- -D warnings
+
+      - name: Install cargo-shear
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-shear@1.11.2
+          checksum: true
+          fallback: cargo-binstall
+
+      - name: Enforce closed-world Cargo source graph
+        working-directory: codex-rs
+        run: cargo shear --deny-warnings
+
+      - name: Emit exact qualification receipt
+        id: receipt
+        shell: bash
+        env:
+          TESTED_SHA: ${{ steps.identity.outputs.tested_sha }}
+          TESTED_TREE: ${{ steps.identity.outputs.tested_tree }}
+        run: |
+          set -euo pipefail
+          mkdir -p qualification-receipts
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          owned = [
+              "codex-rs/hepta-prompt-registry",
+              "codex-rs/hepta-prompt-optimizer",
+              "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+              "codex-rs/hepta-agentd/src/prompt_final_use.rs",
+              "codex-rs/hepta-agentd/src/prompt_final_use_store.rs",
+              "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+              "docs/modules/prompt.registry",
+              "qualification/module-execution-dossiers/detail/prompt.registry.md",
+              ".github/workflows/hepta-prompt-registry-qualification.yml",
+          ]
+          blobs = {}
+          for root in owned:
+              path = pathlib.Path(root)
+              files = [path] if path.is_file() else sorted(p for p in path.rglob("*") if p.is_file())
+              for file_path in files:
+                  blobs[file_path.as_posix()] = hashlib.sha256(file_path.read_bytes()).hexdigest()
+          receipt = {
+              "schema": "hepta.prompt-registry.qualification-receipt.v1",
+              "runId": os.environ["GITHUB_RUN_ID"],
+              "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "lane": os.environ["MATRIX_LANE"],
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "baseSha": os.environ["BASE_SHA"],
+              "testedSha": os.environ["TESTED_SHA"],
+              "testedTree": os.environ["TESTED_TREE"],
+              "sourceBlobs": blobs,
+              "productionReady": False,
+              "accepted": False,
+              "released": False,
+          }
+          target = pathlib.Path("qualification-receipts") / f"prompt-registry-{os.environ['MATRIX_LANE']}.json"
+          target.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          print(target)
+          PY
+        env:
+          MATRIX_LANE: ${{ matrix.lane }}
+
+      - name: Upload qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-qualification-${{ matrix.lane }}-${{ github.run_id }}
+          path: qualification-receipts/prompt-registry-${{ matrix.lane }}.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Preserve exact tracked source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
