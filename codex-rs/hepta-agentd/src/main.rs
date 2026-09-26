@@ -2,7 +2,11 @@ use std::path::PathBuf;
 
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
+use codex_hepta_agentd::EvidenceProductionAdmissionFiles;
+use codex_hepta_agentd::EvidenceRuntimeMode;
+use codex_hepta_agentd::EvidenceRuntimePolicy;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
+use codex_hepta_agentd::configure_evidence_runtime_policy;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -28,25 +32,31 @@ fn main() -> anyhow::Result<()> {
         let mut automation_effect_host = None;
         let mut evidence_recovery_frontier = None;
         let mut evidence_recovery_frontier_trust = None;
+        let mut evidence_mode = None;
+        let mut evidence_backend_identity = None;
+        let mut evidence_build_identity = None;
+        let mut evidence_qualification_status = None;
+        let mut evidence_backup_publication = None;
+        let mut evidence_local_rollback_domain = None;
         while let Some(flag) = args.next() {
-            let path = args
+            let value = args
                 .next()
-                .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
+                .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a value"))?;
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
-                authbus_trust = Some(path);
+                authbus_trust = Some(value);
             } else if flag == "--plasticity-bootstrap-descriptor" {
                 anyhow::ensure!(
                     plasticity_bootstrap_descriptor.is_none(),
                     "duplicate --plasticity-bootstrap-descriptor"
                 );
-                plasticity_bootstrap_descriptor = Some(path.into());
+                plasticity_bootstrap_descriptor = Some(value.into());
             } else if flag == "--plasticity-bootstrap-descriptor-digest" {
                 anyhow::ensure!(
                     plasticity_bootstrap_descriptor_digest.is_none(),
                     "duplicate --plasticity-bootstrap-descriptor-digest"
                 );
-                let value = path
+                let value = value
                     .into_string()
                     .map_err(|_| anyhow::anyhow!("plasticity descriptor digest must be UTF-8"))?;
                 plasticity_bootstrap_descriptor_digest =
@@ -58,14 +68,15 @@ fn main() -> anyhow::Result<()> {
                     intelligence_authority_file.is_none(),
                     "duplicate --intelligence-authority-file"
                 );
-                intelligence_authority_file = Some(PathBuf::from(path));
+                intelligence_authority_file = Some(PathBuf::from(value));
             } else if flag == "--intelligence-authority-signer" {
                 anyhow::ensure!(
                     intelligence_authority_signer.is_none(),
                     "duplicate --intelligence-authority-signer"
                 );
                 intelligence_authority_signer = Some(
-                    path.into_string()
+                    value
+                        .into_string()
                         .map_err(|_| anyhow::anyhow!("intelligence signer must be UTF-8"))?,
                 );
             } else if flag == "--intelligence-authority-verifying-key" {
@@ -73,40 +84,79 @@ fn main() -> anyhow::Result<()> {
                     intelligence_authority_verifying_key.is_none(),
                     "duplicate --intelligence-authority-verifying-key"
                 );
-                intelligence_authority_verifying_key = Some(parse_verifying_key_hex(path)?);
+                intelligence_authority_verifying_key = Some(parse_verifying_key_hex(value)?);
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
                     "duplicate --objective-profile-file"
                 );
-                objective_profile = Some(path);
+                objective_profile = Some(value);
             } else if flag == "--automation-effect-host-file" {
                 anyhow::ensure!(
                     automation_effect_host.is_none(),
                     "duplicate --automation-effect-host-file"
                 );
-                automation_effect_host = Some(path);
+                automation_effect_host = Some(value);
             } else if flag == "--authbus-checkpoint-file" {
                 anyhow::ensure!(
                     authbus_checkpoint.is_none(),
                     "duplicate --authbus-checkpoint-file"
                 );
-                authbus_checkpoint = Some(path);
+                authbus_checkpoint = Some(value);
             } else if flag == "--evidence-trust-file" {
                 anyhow::ensure!(evidence_trust.is_none(), "duplicate --evidence-trust-file");
-                evidence_trust = Some(path);
+                evidence_trust = Some(value);
             } else if flag == "--evidence-recovery-frontier-file" {
                 anyhow::ensure!(
                     evidence_recovery_frontier.is_none(),
                     "duplicate --evidence-recovery-frontier-file"
                 );
-                evidence_recovery_frontier = Some(path);
+                evidence_recovery_frontier = Some(value);
             } else if flag == "--evidence-recovery-frontier-trust-file" {
                 anyhow::ensure!(
                     evidence_recovery_frontier_trust.is_none(),
                     "duplicate --evidence-recovery-frontier-trust-file"
                 );
-                evidence_recovery_frontier_trust = Some(path);
+                evidence_recovery_frontier_trust = Some(value);
+            } else if flag == "--evidence-mode" {
+                anyhow::ensure!(evidence_mode.is_none(), "duplicate --evidence-mode");
+                evidence_mode = Some(
+                    value
+                        .into_string()
+                        .map_err(|_| anyhow::anyhow!("evidence mode must be UTF-8"))?,
+                );
+            } else if flag == "--evidence-frontier-backend-identity-file" {
+                anyhow::ensure!(
+                    evidence_backend_identity.is_none(),
+                    "duplicate --evidence-frontier-backend-identity-file"
+                );
+                evidence_backend_identity = Some(PathBuf::from(value));
+            } else if flag == "--evidence-build-identity-file" {
+                anyhow::ensure!(
+                    evidence_build_identity.is_none(),
+                    "duplicate --evidence-build-identity-file"
+                );
+                evidence_build_identity = Some(PathBuf::from(value));
+            } else if flag == "--evidence-qualification-status-file" {
+                anyhow::ensure!(
+                    evidence_qualification_status.is_none(),
+                    "duplicate --evidence-qualification-status-file"
+                );
+                evidence_qualification_status = Some(PathBuf::from(value));
+            } else if flag == "--evidence-backup-publication-file" {
+                anyhow::ensure!(
+                    evidence_backup_publication.is_none(),
+                    "duplicate --evidence-backup-publication-file"
+                );
+                evidence_backup_publication = Some(PathBuf::from(value));
+            } else if flag == "--evidence-local-rollback-domain" {
+                anyhow::ensure!(
+                    evidence_local_rollback_domain.is_none(),
+                    "duplicate --evidence-local-rollback-domain"
+                );
+                evidence_local_rollback_domain = Some(value.into_string().map_err(|_| {
+                    anyhow::anyhow!("evidence local rollback-domain id must be UTF-8")
+                })?);
             } else {
                 anyhow::bail!("unknown Agentd argument {flag:?}");
             }
@@ -148,6 +198,64 @@ fn main() -> anyhow::Result<()> {
         if let Some(path) = objective_profile {
             config = config.with_objective_profile_file(path.into());
         }
+
+        let parsed_evidence_mode = EvidenceRuntimeMode::parse(
+            evidence_mode.as_deref().unwrap_or("development"),
+        )?;
+        let has_production_inputs = evidence_backend_identity.is_some()
+            || evidence_build_identity.is_some()
+            || evidence_qualification_status.is_some()
+            || evidence_backup_publication.is_some()
+            || evidence_local_rollback_domain.is_some();
+        let evidence_policy = match parsed_evidence_mode {
+            EvidenceRuntimeMode::Development => {
+                anyhow::ensure!(
+                    !has_production_inputs,
+                    "kernel.evidence production admission inputs are forbidden in development mode"
+                );
+                EvidenceRuntimePolicy::development()
+            }
+            EvidenceRuntimeMode::Production => {
+                anyhow::ensure!(
+                    evidence_trust.is_some(),
+                    "kernel.evidence production mode requires --evidence-trust-file"
+                );
+                anyhow::ensure!(
+                    evidence_recovery_frontier.is_some()
+                        && evidence_recovery_frontier_trust.is_some(),
+                    "kernel.evidence production mode requires signed recovery-frontier files"
+                );
+                EvidenceRuntimePolicy::production(EvidenceProductionAdmissionFiles {
+                    backend_identity_file: evidence_backend_identity.ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "production mode requires --evidence-frontier-backend-identity-file"
+                        )
+                    })?,
+                    build_identity_file: evidence_build_identity.ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "production mode requires --evidence-build-identity-file"
+                        )
+                    })?,
+                    qualification_status_file: evidence_qualification_status.ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "production mode requires --evidence-qualification-status-file"
+                        )
+                    })?,
+                    backup_publication_file: evidence_backup_publication.ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "production mode requires --evidence-backup-publication-file"
+                        )
+                    })?,
+                    local_rollback_domain_id: evidence_local_rollback_domain.ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "production mode requires --evidence-local-rollback-domain"
+                        )
+                    })?,
+                })?
+            }
+        };
+        configure_evidence_runtime_policy(evidence_policy)?;
+
         if let Some(path) = evidence_trust {
             config = config.with_evidence_trust_file(path.into());
         }
