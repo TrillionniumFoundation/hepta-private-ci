@@ -8,6 +8,7 @@ import {
   ParentFinalUseAuthority,
 } from "./agentd-service.js";
 import { FileBrowserOperationJournal } from "./journal.js";
+import { OwnedMonotonicBrowserOperationJournal } from "./journal-owner.js";
 import { BrowserProfileHost } from "./runtime.js";
 import { createFilePersistedEffectReconciler } from "./persisted-reconciler.js";
 import {
@@ -107,9 +108,13 @@ const driver = new PooledSubprocessBrowserDriver({
     maxProcesses: optionalPositiveInteger("HEPTA_BROWSER_MAX_PROCESSES", 256),
   }),
 });
-const journal = new FileBrowserOperationJournal(
-  requiredAbsolutePath("HEPTA_BROWSER_JOURNAL_PATH"),
-);
+const journalPath = requiredAbsolutePath("HEPTA_BROWSER_JOURNAL_PATH");
+const journal = new OwnedMonotonicBrowserOperationJournal({
+  journal: new FileBrowserOperationJournal(journalPath),
+  lockPath: process.env.HEPTA_BROWSER_JOURNAL_OWNER_PATH === undefined
+    ? `${journalPath}.owner.lock`
+    : requiredAbsolutePath("HEPTA_BROWSER_JOURNAL_OWNER_PATH"),
+});
 const host = new BrowserProfileHost({
   driver,
   authority,
@@ -119,9 +124,29 @@ const host = new BrowserProfileHost({
 });
 const service = new BrowserAgentdService({ host, channel, authority });
 
+let serviceFailed = false;
 try {
+  // Acquire the cross-process single-writer fence before accepting any parent
+  // frame. Lazy acquisition remains in every journal method as a defense in
+  // depth, but the product service must fail before serving when ownership is
+  // unavailable.
+  await journal.acquire();
   await service.run();
 } catch (error) {
-  process.stderr.write(`hepta-browser Agentd service failed: ${String(error?.message ?? error)}\n`);
+  serviceFailed = true;
+  process.stderr.write(
+    `hepta-browser Agentd service failed: ${String(error?.message ?? error)}\n`,
+  );
   process.exitCode = 1;
+} finally {
+  try {
+    await journal.close();
+  } catch (error) {
+    if (!serviceFailed) {
+      process.stderr.write(
+        `hepta-browser journal owner release failed: ${String(error?.message ?? error)}\n`,
+      );
+      process.exitCode = 1;
+    }
+  }
 }
