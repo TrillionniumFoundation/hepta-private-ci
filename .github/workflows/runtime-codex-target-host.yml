@@ -1,0 +1,230 @@
+name: runtime.codex target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact qualified source commit to check out
+        required: true
+        type: string
+      agentd_socket:
+        description: Absolute Agentd control socket on the selected host
+        required: true
+        type: string
+      agent_id:
+        description: Exact owning Agent id
+        required: true
+        type: string
+      generation:
+        description: Exact Agent generation
+        required: true
+        type: string
+      model:
+        description: Exact production-candidate model id
+        required: true
+        type: string
+      authority_config:
+        description: Absolute protected final-use authority configuration
+        required: true
+        type: string
+      journal_root:
+        description: Absolute owner-private qualification journal directory
+        required: true
+        type: string
+      iterations:
+        description: Number of physical real-provider canary operations (3..20)
+        required: true
+        default: "5"
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: runtime-codex-target-host-${{ inputs.agent_id }}-${{ inputs.generation }}
+  cancel-in-progress: false
+
+jobs:
+  target-host:
+    name: runtime.codex target-host real-provider
+    runs-on: [self-hosted, linux, runtime-codex-target-host]
+    timeout-minutes: 120
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      AGENTD_SOCKET: ${{ inputs.agentd_socket }}
+      AGENT_ID: ${{ inputs.agent_id }}
+      AGENT_GENERATION: ${{ inputs.generation }}
+      MODEL: ${{ inputs.model }}
+      AUTHORITY_CONFIG: ${{ inputs.authority_config }}
+      JOURNAL_ROOT: ${{ inputs.journal_root }}
+      ITERATIONS: ${{ inputs.iterations }}
+      CARGO_INCREMENTAL: 0
+    steps:
+      - name: Check out exact protected candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Prepare repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+
+      - name: Fail closed unless the runner is independently provisioned
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          [[ "${AGENTD_SOCKET}" = /* ]]
+          [[ "${AUTHORITY_CONFIG}" = /* ]]
+          [[ "${JOURNAL_ROOT}" = /* ]]
+          [[ "${ITERATIONS}" =~ ^[0-9]+$ ]]
+          (( ITERATIONS >= 3 && ITERATIONS <= 20 ))
+          test -S "${AGENTD_SOCKET}"
+          test -f "${AUTHORITY_CONFIG}"
+          test -d "${JOURNAL_ROOT}"
+          test "${HEPTA_RUNTIME_CODEX_REAL_PROVIDER:-}" = "1"
+          test -f "${HEPTA_RUNTIME_CODEX_HOST_IDENTITY_EVIDENCE:?}"
+          test -f "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE:?}"
+          test -f "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE:?}"
+          test -x "${HEPTA_RUNTIME_CODEX_PROVIDER_AUDIT_EXPORTER:?}"
+          test -x /usr/bin/time
+          mkdir -p "${RUNNER_TEMP}/runtime-codex-target-host/runs"
+
+      - name: Build the named native caller
+        working-directory: codex-rs
+        run: cargo build --locked -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+
+      - name: Execute bounded real-provider canaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
+          BINARY="${CARGO_TARGET_DIR:-$(pwd)/codex-rs/target}/debug/hepta-infer-worker"
+          test -x "${BINARY}"
+          printf '%s  %s\n' "$(sha256sum "${BINARY}" | cut -d' ' -f1)" "${BINARY}" \
+            > "${EVIDENCE}/binary.sha256"
+          for iteration in $(seq 1 "${ITERATIONS}"); do
+            request_id="target-host:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:${iteration}"
+            journal="${JOURNAL_ROOT}/runtime-codex-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.journal"
+            log="${EVIDENCE}/runs/${iteration}.log"
+            resource="${EVIDENCE}/runs/${iteration}.time"
+            output="${EVIDENCE}/runs/${iteration}.json"
+            prompt="Return the exact phrase runtime codex target host canary ${iteration}."
+            printf '%s' "${prompt}" | /usr/bin/time -v -o "${resource}" \
+              "${BINARY}" \
+                --profile native-app-server \
+                --agentd-socket "${AGENTD_SOCKET}" \
+                --agent-id "${AGENT_ID}" \
+                --generation "${AGENT_GENERATION}" \
+                --model "${MODEL}" \
+                --journal "${journal}" \
+                --request-id "${request_id}" \
+                --maximum-in-flight 1 \
+                --final-use-authority-config "${AUTHORITY_CONFIG}" \
+                --timeout-ms 120000 \
+              > "${log}" 2>&1
+            tail -n 1 "${log}" > "${output}"
+            python3 - "${output}" "${request_id}" <<'PY'
+          import json, sys
+          path, request_id = sys.argv[1:]
+          value = json.load(open(path, encoding='utf-8'))
+          if value.get('terminal_observed') is not True:
+              raise SystemExit(f'{request_id}: terminal observation missing')
+          if not value.get('codex_terminal_correlation_digest'):
+              raise SystemExit(f'{request_id}: terminal correlation missing')
+          if value.get('boundary_status') not in ('Succeeded', 'succeeded'):
+              raise SystemExit(f'{request_id}: boundary did not succeed')
+          PY
+          done
+          "${HEPTA_RUNTIME_CODEX_PROVIDER_AUDIT_EXPORTER}" \
+            --run-id "${GITHUB_RUN_ID}" \
+            --attempt "${GITHUB_RUN_ATTEMPT}" \
+            --expected-requests "${ITERATIONS}" \
+            --output "${EVIDENCE}/provider-audit.json"
+
+      - name: Build target-host evidence manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
+          cp "${HEPTA_RUNTIME_CODEX_HOST_IDENTITY_EVIDENCE}" "${EVIDENCE}/host-identity.evidence"
+          cp "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE}" "${EVIDENCE}/issuer-custody.evidence"
+          cp "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE}" "${EVIDENCE}/anti-rollback.evidence"
+          python3 - "${EVIDENCE}" <<'PY'
+          import hashlib, json, math, os, platform, re, statistics, sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          root = Path(sys.argv[1])
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          def percentile(values, q):
+              values = sorted(values)
+              p = (len(values) - 1) * q
+              lo, hi = math.floor(p), math.ceil(p)
+              return values[lo] if lo == hi else values[lo] + (values[hi] - values[lo]) * (p - lo)
+          elapsed, rss, runs = [], [], []
+          for output in sorted((root / 'runs').glob('*.json'), key=lambda p: int(p.stem)):
+              index = output.stem
+              fields = {}
+              for line in (root / 'runs' / f'{index}.time').read_text(errors='replace').splitlines():
+                  if ': ' in line:
+                      key, value = line.strip().split(': ', 1)
+                      fields[key] = value
+              seconds = float(fields['Elapsed (wall clock) time (h:mm:ss or m:ss)'].split(':')[-1])
+              maximum_rss = int(fields.get('Maximum resident set size (kbytes)', '0'))
+              elapsed.append(seconds); rss.append(maximum_rss)
+              runs.append({'index': int(index), 'outputSha256': digest(output), 'logSha256': digest(root/'runs'/f'{index}.log'), 'resourceSha256': digest(root/'runs'/f'{index}.time')})
+          audit = json.loads((root/'provider-audit.json').read_text())
+          expected = int(os.environ['ITERATIONS'])
+          if audit.get('physicalRequestCount') != expected or audit.get('duplicateRequestCount') not in (0, None):
+              raise SystemExit('provider audit did not prove exactly one physical request per canary')
+          manifest = {
+              'schema': 'hepta.runtime-codex-target-host-qualification.v1',
+              'schemaVersion': 1,
+              'module': 'runtime.codex',
+              'generatedAt': datetime.now(timezone.utc).isoformat(),
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'sourceTree': os.popen('git rev-parse HEAD^{tree}').read().strip(),
+              'host': {'node': platform.node(), 'platform': platform.platform(), 'machine': platform.machine()},
+              'agentId': os.environ['AGENT_ID'],
+              'agentGeneration': int(os.environ['AGENT_GENERATION']),
+              'model': os.environ['MODEL'],
+              'iterations': expected,
+              'runs': runs,
+              'latencySeconds': {'p50': percentile(elapsed,.50), 'p95': percentile(elapsed,.95), 'p99': percentile(elapsed,.99), 'maximum': max(elapsed)},
+              'maximumResidentSetKiB': {'p50': percentile(rss,.50), 'p95': percentile(rss,.95), 'p99': percentile(rss,.99), 'maximum': max(rss)},
+              'providerAuditSha256': digest(root/'provider-audit.json'),
+              'hostIdentityEvidenceSha256': digest(root/'host-identity.evidence'),
+              'issuerCustodyEvidenceSha256': digest(root/'issuer-custody.evidence'),
+              'antiRollbackEvidenceSha256': digest(root/'anti-rollback.evidence'),
+              'claimBoundary': {'realProviderCanariesExecuted': True, 'independentAcceptance': False, 'activation': False, 'promotion': False, 'release': False}
+          }
+          encoded = (json.dumps(manifest, sort_keys=True, separators=(',', ':')) + '\n').encode()
+          (root/'manifest.json').write_bytes(encoded)
+          (root/'manifest.json.sha256').write_text(f"{hashlib.sha256(encoded).hexdigest()}  manifest.json\n")
+          PY
+          mkdir -p .hepta-evidence/runtime-codex/target-host
+          cp -R "${EVIDENCE}/." .hepta-evidence/runtime-codex/target-host/
+
+      - name: Retain target-host evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-target-host-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: .hepta-evidence/runtime-codex/target-host/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Attest target-host manifest provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/runtime-codex/target-host/manifest.json
