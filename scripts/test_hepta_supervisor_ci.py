@@ -1,0 +1,171 @@
+"""Negative tests for supervisor CI receipt validation, not Rust qualification."""
+
+from __future__ import annotations
+
+import copy
+import hashlib
+import os
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+
+from scripts.hepta_supervisor_ci import CONTEXT_ENV
+from scripts.hepta_supervisor_ci import CONTEXT_FIELDS
+from scripts.hepta_supervisor_ci import PLANS
+from scripts.hepta_supervisor_ci import context_from_env
+from scripts.hepta_supervisor_ci import read_regular
+from scripts.hepta_supervisor_ci import validate_record
+
+
+class ReceiptTests(unittest.TestCase):
+    def setUp(self):
+        self.context = dict(zip(CONTEXT_FIELDS, (
+            "a" * 40, "b" * 40, "a" * 40, "source-head", "17", "1",
+        ), strict=True))
+        self.identity = {
+            "commit": "a" * 40, "tree": "c" * 40,
+            "parents": ["b" * 40], "dirty": False,
+        }
+        self.log = b"fixture runner output"
+        self.record = {
+            "schema_version": 1, "status": "passed", **self.context,
+            "command": PLANS["products"][1].copy(),
+            "minimum_tests": 9,
+            "before": copy.deepcopy(self.identity),
+            "after": copy.deepcopy(self.identity),
+            "returncode": 0, "command_exit_code": 0, "exit_code": 0,
+            "timed_out": False, "output_limit_exceeded": False,
+            "observed_passed_tests": 9, "observed_failed_tests": 0,
+            "log_bytes": len(self.log),
+            "log_sha256": hashlib.sha256(self.log).hexdigest(),
+        }
+
+    def validate(self, data=None, counts=(9, 0), log=None, identity=None):
+        # Stub only the runner's summary parser: parsing itself is tested by
+        # hepta_ci_exec's existing suite; this suite tests the binding policy.
+        validate_record(
+            "products", self.record if data is None else data, self.context,
+            self.identity if identity is None else identity,
+            self.log if log is None else log, lambda _text: counts,
+        )
+
+    def test_accepts_exact_record(self):
+        self.validate()
+
+    def test_rejects_nonterminal_failed_and_skipped_records(self):
+        for status in (None, "running", "failed", "skipped", "rejected"):
+            with self.subTest(status=status), self.assertRaises(ValueError):
+                self.validate({**self.record, "status": status})
+
+    def test_rejects_missing_and_noninteger_exit_fields(self):
+        for field in ("returncode", "command_exit_code", "exit_code",
+                      "observed_failed_tests"):
+            for value in (None, False, True, "0", 1, -1):
+                with self.subTest(field=field, value=value):
+                    with self.assertRaises(ValueError):
+                        self.validate({**self.record, field: value})
+
+    def test_rejects_timeout_and_output_overflow(self):
+        for field in ("timed_out", "output_limit_exceeded"):
+            for value in (True, None, 0, "false"):
+                with self.subTest(field=field, value=value):
+                    with self.assertRaises(ValueError):
+                        self.validate({**self.record, field: value})
+
+    def test_rejects_cross_head_lane_run_and_attempt_substitution(self):
+        for field in CONTEXT_FIELDS:
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.validate({**self.record, field: "different"})
+
+    def test_rejects_weaker_command_and_test_minimum(self):
+        for update in (
+            {"command": ["true"]}, {"command": None},
+            {"minimum_tests": 0}, {"minimum_tests": True},
+        ):
+            with self.subTest(update=update), self.assertRaises(ValueError):
+                self.validate({**self.record, **update})
+
+    def test_rejects_mutated_and_dirty_source_identity(self):
+        for field in ("before", "after"):
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.validate({**self.record, field: {**self.identity, "tree": "d" * 40}})
+        dirty = {**self.identity, "dirty": True}
+        with self.assertRaises(ValueError):
+            self.validate({**self.record, "before": dirty, "after": dirty}, identity=dirty)
+
+    def test_rejects_truncated_or_substituted_log(self):
+        for log in (self.log[:-1], b"different runner bytes"):
+            with self.subTest(log=log), self.assertRaises(ValueError):
+                self.validate(log=log)
+
+    def test_rejects_fabricated_test_counts(self):
+        with self.assertRaises(ValueError):
+            self.validate(counts=(8, 0))
+        with self.assertRaises(ValueError):
+            self.validate({**self.record, "observed_passed_tests": 0}, counts=(0, 0))
+        with self.assertRaises(ValueError):
+            self.validate(counts=(9, 1))
+
+    def test_rejects_missing_schema_and_boolean_schema(self):
+        for value in (None, True, 2, "1"):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.validate({**self.record, "schema_version": value})
+
+    def test_exact_context_requires_run_identity(self):
+        env = dict(zip(CONTEXT_ENV, self.context.values(), strict=True))
+        with patch.dict(os.environ, env, clear=True):
+            self.assertEqual(context_from_env(), self.context)
+        for field in CONTEXT_ENV:
+            with self.subTest(field=field):
+                with patch.dict(os.environ, {**env, field: ""}, clear=True):
+                    with self.assertRaises(ValueError):
+                        context_from_env()
+
+    def test_rejects_invalid_sha_and_attempt_shapes(self):
+        env = dict(zip(CONTEXT_ENV, self.context.values(), strict=True))
+        for field, value in (
+            ("SOURCE_SHA", "A" * 40), ("TESTED_SHA", "a" * 39),
+            ("BASE_SHA", "main"), ("GITHUB_RUN_ATTEMPT", "0"),
+            ("GITHUB_RUN_ID", "-1"), ("HEPTA_CI_LANE", "skipped"),
+        ):
+            with self.subTest(field=field, value=value):
+                with patch.dict(os.environ, {**env, field: value}, clear=True):
+                    with self.assertRaises(ValueError):
+                        context_from_env()
+
+    def test_read_regular_is_bounded(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "log"
+            path.write_bytes(b"abcd")
+            self.assertEqual(read_regular(path, 4), b"abcd")
+            with self.assertRaises(ValueError):
+                read_regular(path, 3)
+            with self.assertRaises(ValueError):
+                read_regular(Path(root), 4)
+            with self.assertRaises(ValueError):
+                read_regular(Path(root) / "missing", 4)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX symlink fixture")
+    def test_read_regular_rejects_symlink(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "log"
+            path.write_bytes(b"abcd")
+            link = Path(root) / "link"
+            link.symlink_to(path)
+            with self.assertRaises(ValueError):
+                read_regular(link, 4)
+
+    def test_plans_preserve_default_and_production_lanes_without_retries(self):
+        self.assertEqual(set(PLANS), {"format", "default", "production", "products", "lint"})
+        self.assertNotIn("--features", PLANS["default"][1])
+        for name in ("default", "production", "products"):
+            command = PLANS[name][1]
+            self.assertIn("--locked", command)
+            self.assertEqual(command[command.index("--retries") + 1], "0")
+        self.assertIn("production-authority", PLANS["production"][1])
+        self.assertIn("authority_recovery", PLANS["products"][1])
+
+
+if __name__ == "__main__":
+    unittest.main()
