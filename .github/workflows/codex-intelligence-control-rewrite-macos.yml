@@ -1,0 +1,73 @@
+name: Codex intelligence-control exact rewrite macOS
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-product-closure-20260926
+    paths:
+      - .github/intelligence-control-rewrite-macos-trigger
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codex-intelligence-control-rewrite-macos
+  cancel-in-progress: false
+
+jobs:
+  rewrite:
+    runs-on: macos-14
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/intelligence-control-product-closure-20260926
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply asserted narrow rewrites and generated truth
+        run: |
+          set -euo pipefail
+          python3 scripts/codex-intelligence-control-rewrite.py
+          python3 scripts/codex-intelligence-status-rewrite.py
+          python3 scripts/hepta-intelligence-control-status.py --write-tracked
+          (cd codex-rs && cargo fmt --all)
+          git diff --check
+          python3 scripts/hepta-intelligence-control-status.py --check-tracked
+
+      - name: Verify exact patch allowlist
+        run: |
+          set -euo pipefail
+          allowed='^(codex-rs/hepta-agentd/src/(config|intelligence_learning|intelligence_product|intelligence_product_tests|lane_b_runtime|lib|objective_runtime|runtime|state)\.rs|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP|TEST_TRACEABILITY)\.json|docs/modules/intelligence\.control/TECHNICAL\.md|qualification/module-execution-dossiers/detail/intelligence\.control\.md|scripts/hepta-intelligence-control-status\.py)$'
+          unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'unexpected rewrite paths:\n%s\n' "$unexpected" >&2
+            exit 1
+          fi
+
+      - name: Commit exact rewrite
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add \
+            codex-rs/hepta-agentd/src/config.rs \
+            codex-rs/hepta-agentd/src/intelligence_learning.rs \
+            codex-rs/hepta-agentd/src/intelligence_product.rs \
+            codex-rs/hepta-agentd/src/intelligence_product_tests.rs \
+            codex-rs/hepta-agentd/src/lane_b_runtime.rs \
+            codex-rs/hepta-agentd/src/lib.rs \
+            codex-rs/hepta-agentd/src/objective_runtime.rs \
+            codex-rs/hepta-agentd/src/runtime.rs \
+            codex-rs/hepta-agentd/src/state.rs \
+            docs/modules/intelligence.control/IMPLEMENTATION_MAP.json \
+            docs/modules/intelligence.control/TEST_TRACEABILITY.json \
+            docs/modules/intelligence.control/TECHNICAL.md \
+            qualification/module-execution-dossiers/detail/intelligence.control.md \
+            scripts/hepta-intelligence-control-status.py
+          git commit -m 'feat(intelligence): apply exact product closure rewrites'
+          git push origin HEAD:codex/intelligence-control-product-closure-20260926
