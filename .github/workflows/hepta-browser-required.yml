@@ -1,0 +1,115 @@
+name: Hepta Browser required
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-contracts/**'
+      - '.github/workflows/hepta-browser-*.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-contracts/**'
+      - '.github/workflows/hepta-browser-*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-browser-required-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  SERVO_PIN: b5a1f5e6ec6f8685d40cd389802ced7abe4980f6
+  WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
+  WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
+
+jobs:
+  browser-required:
+    name: Browser required
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact clean source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Require reviewed committed Servo dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$WORKER_MANIFEST"
+          test -s "$WORKER_LOCK"
+          grep -F "$SERVO_PIN" "$WORKER_MANIFEST"
+          grep -F "$SERVO_PIN" "$WORKER_LOCK"
+          test "$(git ls-files --error-unmatch "$WORKER_LOCK")" = "$WORKER_LOCK"
+          git diff --exit-code -- "$WORKER_LOCK"
+          cargo metadata --locked --no-deps --format-version 1 \
+            --manifest-path "$WORKER_MANIFEST" >/dev/null
+
+      - name: Verify generated Browser source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/browser-source-registry.js --check \
+            > "$RUNNER_TEMP/browser-source-registry.json"
+
+      - name: Check every Browser JavaScript source
+        shell: bash
+        run: |
+          set -euo pipefail
+          find apps/hepta-browser/src apps/hepta-browser/scripts \
+            -type f -name '*.js' -print0 \
+            | sort -z \
+            | xargs -0 -n1 node --check
+
+      - name: Run the complete Browser owner suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/*.test.js
+
+      - name: Reject stale implementation descriptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -R -n -E \
+            'exactly three RPCs|three product RPCs|worker executable is absent|WebView execution remains unimplemented|unit tests use deterministic fake drivers' \
+            docs/modules/browser.servo \
+            qualification/module-execution-dossiers/detail/browser.servo.md \
+            apps/hepta-browser/README.md
+
+      - name: Verify source stayed read-only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
