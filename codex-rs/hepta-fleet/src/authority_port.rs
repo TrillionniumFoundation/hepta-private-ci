@@ -16,6 +16,7 @@ use std::fmt;
 
 use crate::lease_ledger::AllocationGrant;
 use crate::lease_ledger::Error as LeaseLedgerError;
+use crate::lease_ledger::GrantUseWitnessV1;
 use crate::lease_ledger::LeaseLedger;
 use crate::lease_ledger::LeaseReceipt;
 
@@ -39,10 +40,9 @@ impl FleetAuthorityPort {
         ledger: &mut LeaseLedger,
         lease_id: &str,
         expected_lease_revision: u64,
-        now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<LeaseReceipt, FleetAuthorityError> {
-        self.issue_with_witness(ledger, lease_id, expected_lease_revision, now_ms, grant)
+        self.issue_with_witness(ledger, lease_id, expected_lease_revision, grant)
             .map(|(receipt, _witness)| receipt)
     }
 
@@ -53,7 +53,6 @@ impl FleetAuthorityPort {
         ledger: &mut LeaseLedger,
         lease_id: &str,
         expected_lease_revision: u64,
-        now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {
         let binding = allocation_binding(&grant)?;
@@ -63,7 +62,7 @@ impl FleetAuthorityPort {
             .map_err(FleetAuthorityError::Authority)?;
         let (result, witness) =
             dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {
-                ledger.issue(now_ms, grant)
+                ledger.issue(grant)
             })
             .map_err(FleetAuthorityError::Authority)?;
         let receipt = result.map_err(FleetAuthorityError::Fleet)?;
@@ -75,14 +74,37 @@ impl FleetAuthorityPort {
     ) -> Result<AuthorityLeaseBinding, FleetAuthorityError> {
         allocation_binding(grant)
     }
+
+    pub fn verify_final_use(
+        ledger: &LeaseLedger,
+        allocation_id: &str,
+        expected_lease_generation: u64,
+        expected_host_id: &str,
+        expected_host_generation: u64,
+        semantic_digest: &str,
+    ) -> Result<GrantUseWitnessV1, FleetAuthorityError> {
+        ledger
+            .verify_use(
+                allocation_id,
+                expected_lease_generation,
+                expected_host_id,
+                expected_host_generation,
+                semantic_digest,
+            )
+            .map_err(FleetAuthorityError::Fleet)
+    }
 }
 
 fn allocation_binding(
     grant: &AllocationGrant,
 ) -> Result<AuthorityLeaseBinding, FleetAuthorityError> {
     let payload_sha256 = parse_sha256(&grant.semantic_digest)?;
+    let resource_digest = grant
+        .resources
+        .semantic_digest()
+        .map_err(|_| FleetAuthorityError::InvalidResourceVector)?;
     let mut scope = Sha256::new();
-    scope.update(b"hepta.kernel.authority.runtime-fleet.issue.v1\0");
+    scope.update(b"hepta.kernel.authority.runtime-fleet.issue.v2\0");
     hash_text(&mut scope, &grant.allocation_id);
     hash_text(&mut scope, &grant.request_id);
     hash_text(&mut scope, &grant.host_id);
@@ -91,9 +113,7 @@ fn allocation_binding(
     hash_u64(&mut scope, grant.authority_epoch);
     hash_u64(&mut scope, grant.lease_generation);
     hash_u64(&mut scope, grant.expires_at_ms);
-    hash_u64(&mut scope, grant.resources.cpu_millis);
-    hash_u64(&mut scope, grant.resources.memory_bytes);
-    hash_u64(&mut scope, grant.resources.accelerator_millis);
+    hash_text(&mut scope, &resource_digest);
     Ok(AuthorityLeaseBinding {
         principal_id: grant.principal_id.clone(),
         operation_class: "fleet.allocate".into(),
@@ -134,6 +154,7 @@ fn hex(value: u8) -> Result<u8, FleetAuthorityError> {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FleetAuthorityError {
     InvalidSemanticDigest,
+    InvalidResourceVector,
     Authority(AuthorityLeaseError),
     Fleet(LeaseLedgerError),
 }
@@ -149,8 +170,10 @@ impl std::error::Error for FleetAuthorityError {}
 #[cfg(all(test, unix))]
 mod tests {
     use super::*;
+    use crate::ResourceVectorV1;
+    use crate::lease_ledger::FleetClock;
+    use crate::lease_ledger::FleetClockError;
     use crate::lease_ledger::HostObservation;
-    use crate::lease_ledger::Resources;
     use codex_hepta_contracts::AuthorityClock;
     use codex_hepta_contracts::AuthorityTrustError;
     use codex_hepta_contracts::VerifiedUseAuthorityRefV1;
@@ -171,6 +194,12 @@ mod tests {
         }
     }
 
+    impl FleetClock for FixedClock {
+        fn now_unix_ms(&self) -> Result<u64, FleetClockError> {
+            Ok(self.0)
+        }
+    }
+
     fn grant() -> AllocationGrant {
         AllocationGrant {
             allocation_id: "allocation-one".into(),
@@ -182,18 +211,14 @@ mod tests {
             authority_epoch: 7,
             lease_generation: 1,
             expires_at_ms: 9_000,
-            resources: Resources {
-                cpu_millis: 100,
-                memory_bytes: 1024,
-                accelerator_millis: 0,
-            },
+            resources: ResourceVectorV1::physical(100, 1024, 0),
             semantic_digest: format!("{:x}", Sha256::digest(b"fleet-allocation-one")),
             revoked: false,
         }
     }
 
     fn ledger() -> LeaseLedger {
-        let mut ledger = LeaseLedger::new();
+        let mut ledger = LeaseLedger::with_clock(Arc::new(FixedClock(2_000)));
         ledger
             .admit_host(HostObservation {
                 host_id: "host-one".into(),
@@ -201,11 +226,7 @@ mod tests {
                 generation: 1,
                 observed_at_ms: 1_000,
                 valid_until_ms: 10_000,
-                capacity: Resources {
-                    cpu_millis: 1_000,
-                    memory_bytes: 1 << 20,
-                    accelerator_millis: 1_000,
-                },
+                capacity: ResourceVectorV1::physical(1_000, 1 << 20, 1_000),
             })
             .unwrap();
         ledger
@@ -241,7 +262,7 @@ mod tests {
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
         let (receipt, witness) = port
-            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
+            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, grant.clone())
             .unwrap();
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
@@ -258,7 +279,7 @@ mod tests {
 
         registry.revoke("fleet-issue-one", 1, [9; 32]).unwrap();
         assert_eq!(
-            port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
+            port.issue(&mut ledger, "fleet-issue-one", 2, grant)
                 .unwrap_err(),
             FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
         );

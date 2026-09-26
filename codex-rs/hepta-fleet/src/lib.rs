@@ -18,6 +18,7 @@ mod model;
 mod module_catalog;
 mod registry;
 mod release;
+mod resource;
 
 pub use allocation::calculate_local_allocation_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
@@ -64,6 +65,13 @@ pub use revocation_control::FleetRevocationCoordinator;
 pub use revocation_control::FleetRevocationError;
 pub use revocation_control::FleetRevocationStatus;
 pub use revocation_control::MAX_FLEET_REVOCATION_NODES;
+pub use resource::MAX_RESOURCE_AMOUNT;
+pub use resource::RESOURCE_VECTOR_SCHEMA_VERSION;
+pub use resource::ResourceAxisV1;
+pub use resource::ResourceRoundingV1;
+pub use resource::ResourceUnitV1;
+pub use resource::ResourceVectorError;
+pub use resource::ResourceVectorV1;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]
