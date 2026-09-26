@@ -9,6 +9,7 @@
 mod claim;
 mod dispatch;
 mod model;
+mod rand;
 mod store;
 
 pub use claim::MatrixAttemptFailureClass;

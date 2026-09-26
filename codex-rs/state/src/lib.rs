@@ -10,6 +10,7 @@ const _: () = assert!(
 );
 
 mod audit;
+mod capability_random;
 mod extract;
 pub mod log_db;
 mod migrations;
@@ -20,6 +21,7 @@ mod sqlite;
 mod sqlite_recovery;
 mod telemetry;
 
+pub use capability_random::random_capability_bytes;
 pub use model::CreatedProject;
 pub use model::LogEntry;
 pub use model::LogQuery;
@@ -75,7 +77,6 @@ pub use model::ThreadMetadataBuilder;
 pub use model::ThreadRelationFilter;
 pub use model::ThreadSection;
 pub use model::ThreadSectionAppearance;
-pub use model::ThreadSectionsPage;
 pub use model::ThreadsPage;
 pub use runtime::ExternalAgentConfigImportDetailsRecord;
 pub use runtime::ExternalAgentConfigImportFailureRecord;
