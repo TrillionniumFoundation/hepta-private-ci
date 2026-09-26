@@ -7,8 +7,13 @@ use codex_hepta_fleet::ResourceAxisV1;
 use codex_hepta_fleet::SystemFleetClock;
 use serde_json::Value;
 use serde_json::json;
+use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+
+const DURABLE_FLEET_DIRECTORY: &str = "fleet-allocation-v1";
+const STATE_FILE_PREFIX: &str = "generation-";
+const STATE_FILE_SUFFIX: &str = ".json";
 
 fn main() {
     if let Err(error) = run() {
@@ -19,6 +24,7 @@ fn main() {
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let options = Options::parse()?;
+    require_existing_state(&options.state_root)?;
     let mut owner = DurableFleetOwner::open_supervisor_state_root(
         &options.state_root,
         Arc::new(SystemFleetClock),
@@ -72,6 +78,58 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(2);
     }
     Ok(())
+}
+
+fn require_existing_state(state_root: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    let owner_root = state_root.join(DURABLE_FLEET_DIRECTORY);
+    let metadata = std::fs::symlink_metadata(&owner_root)?;
+    if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {
+        return Err(format!(
+            "durable fleet owner root is not a physical directory: {}",
+            owner_root.display()
+        )
+        .into());
+    }
+
+    let mut found_generation = false;
+    for entry in std::fs::read_dir(&owner_root)? {
+        let entry = entry?;
+        let file_name = entry.file_name();
+        let name = file_name.to_str().ok_or_else(|| {
+            format!(
+                "durable fleet state filename is not UTF-8: {}",
+                entry.path().display()
+            )
+        })?;
+        if !is_generation_file(name) {
+            continue;
+        }
+        let metadata = std::fs::symlink_metadata(entry.path())?;
+        if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
+            return Err(format!(
+                "durable fleet generation is not a regular file: {}",
+                entry.path().display()
+            )
+            .into());
+        }
+        found_generation = true;
+    }
+    if !found_generation {
+        return Err(format!(
+            "durable fleet owner has no committed generation: {}",
+            owner_root.display()
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn is_generation_file(name: &str) -> bool {
+    name.strip_prefix(STATE_FILE_PREFIX)
+        .and_then(|value| value.strip_suffix(STATE_FILE_SUFFIX))
+        .is_some_and(|value| {
+            value.len() == 20 && value.bytes().all(|byte| byte.is_ascii_digit())
+        })
 }
 
 fn counters(value: FleetResultCountersV1) -> Value {
