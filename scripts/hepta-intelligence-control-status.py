@@ -31,6 +31,7 @@ SOURCE_FILES = {
     "product": "codex-rs/hepta-agentd/src/intelligence_product.rs",
     "bound": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
     "learning": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+    "learning_runtime": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
     "telemetry": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
     "state": "codex-rs/hepta-agentd/src/state.rs",
     "runtime": "codex-rs/hepta-agentd/src/runtime.rs",
@@ -93,6 +94,10 @@ EXPECTED_SOURCE_FACTS = {
         "learning",
         "reconcile_unsettled",
     ),
+    "daemonLearningReconcilerPresent": (
+        "learning_runtime",
+        "run_intelligence_learning_runtime_v1",
+    ),
     "physicalTerminalBindingPresent": (
         "learning",
         "intelligence_physical_terminal_binding_digest_v1",
@@ -136,6 +141,7 @@ REQUIRED_TESTS = {
     "same_phase_idempotent_replay_does_not_reset_dwell",
     "operation_ids_are_kind_separated_and_stable",
     "evidence_payload_rejects_role_substitution",
+    "learning_runtime_policy_is_bounded",
 }
 
 TEST_PATTERN = re.compile(
@@ -298,6 +304,9 @@ def implementation_document(
             "restartReconciliationPresent": facts[
                 "restartReconciliationPresent"
             ],
+            "daemonLearningReconcilerPresent": facts[
+                "daemonLearningReconcilerPresent"
+            ],
             "physicalTerminalBindingPresent": facts[
                 "physicalTerminalBindingPresent"
             ],
@@ -449,9 +458,15 @@ def traceability_document(
                     "formalOutcomeWriterPresent",
                     "durableLearningOutboxPresent",
                     "restartReconciliationPresent",
+                    "daemonLearningReconcilerPresent",
                     "physicalTerminalBindingPresent",
                 ],
-                "tests": names("operation_ids", "evidence_payload", "decision_outcome"),
+                "tests": names(
+                    "operation_ids",
+                    "evidence_payload",
+                    "decision_outcome",
+                    "learning_runtime_policy",
+                ),
             },
             {
                 "requirement": "bounded_execution_observability",

@@ -64,10 +64,12 @@
         "formalOutcomeWriterPresent",
         "durableLearningOutboxPresent",
         "restartReconciliationPresent",
+        "daemonLearningReconcilerPresent",
         "physicalTerminalBindingPresent"
       ],
       "tests": [
         "evidence_payload_rejects_role_substitution",
+        "learning_runtime_policy_is_bounded",
         "operation_ids_are_kind_separated_and_stable",
         "real_owner_product_path_records_decision_outcome_and_reopens"
       ]
@@ -403,6 +405,12 @@
     {
       "name": "operation_ids_are_kind_separated_and_stable",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+      "qualificationOnly": false,
+      "ignored": false
+    },
+    {
+      "name": "learning_runtime_policy_is_bounded",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
       "qualificationOnly": false,
       "ignored": false
     },
@@ -2014,6 +2022,7 @@
     "formalOutcomeWriterPresent": true,
     "durableLearningOutboxPresent": true,
     "restartReconciliationPresent": true,
+    "daemonLearningReconcilerPresent": true,
     "physicalTerminalBindingPresent": true,
     "explicitLearningTerminalStatesPresent": true,
     "stageTelemetryPresent": true,

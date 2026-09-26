@@ -464,3 +464,7 @@ therefore does not compose or advertise canonical intelligence by default.
 Real-process provider/App Server E2E, target-host qualification, independent
 acceptance, activation and release remain false until their exact receipts are
 available.
+
+## 18. Daemon-owned product-learning reconciliation
+
+The optional product embedding can attach `AgentdIntelligenceLearningRuntimeConfigV1` after installing the complete canonical runner/provider profile. Agentd then owns one required, bounded reconciliation task for the sealed `AgentdIntelligenceLearningHostV1`: it waits for the current Running fence, observes/reconciles unsettled destination state, drains only the configured residual batch, and rechecks generation after durable work. No CLI default creates the host, ledger writer, final-use authority or signed-grant provider. This closes repository-owned daemon scheduling while preserving the separate real-process, target-host, independent-acceptance, activation and release gates.

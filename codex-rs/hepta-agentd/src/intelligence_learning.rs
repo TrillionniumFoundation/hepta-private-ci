@@ -39,6 +39,7 @@ use codex_hepta_learning_ledger::ProductionDecisionV2;
 use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::validate_candidate_set_completeness;
 use codex_hepta_operations::DispatchEffect;
 use codex_hepta_operations::DurableOperationError;
 use codex_hepta_operations::DurableOperationIntentV1;
@@ -496,6 +497,11 @@ impl AgentdIntelligenceLearningHostV1 {
         Ok(receipts)
     }
 
+    #[must_use]
+    pub const fn owner_generation(&self) -> Generation {
+        self.generation
+    }
+
     pub async fn backlog_metrics(
         &self,
     ) -> Result<OperationBacklogMetrics, AgentdIntelligenceLearningErrorV1> {
@@ -860,6 +866,9 @@ fn observe_applied_payload(
             let Ok(completeness) = payload.completeness.to_typed() else {
                 return false;
             };
+            let Ok(completeness_digest) = validate_candidate_set_completeness(&completeness) else {
+                return false;
+            };
             let Ok(candidate_ids) = payload
                 .candidate_ids
                 .iter()
@@ -879,7 +888,7 @@ fn observe_applied_payload(
                         && value.candidate_ids == candidate_ids
                         && value.selected_candidate_id == selected_candidate_id
                         && value.selected_propensity.raw() == payload.selected_propensity_raw
-                        && value.completeness == completeness
+                        && value.candidate_completeness_digest == completeness_digest
                         && value.support_digest == support_digest
             )
         }

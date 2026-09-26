@@ -82,7 +82,7 @@ mod tests {
     }
 
     #[test]
-    fn starting_draining_or_forged_fence_is_rejected_before_mutation() {
+    fn forged_generation_or_fence_is_rejected_before_mutation() {
         let mut coordinator =
             AgentRunCoordinator::compose_runtime(composition()).expect("composition");
 

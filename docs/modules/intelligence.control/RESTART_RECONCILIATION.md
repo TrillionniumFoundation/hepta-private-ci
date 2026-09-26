@@ -48,3 +48,9 @@ The default product profile and deterministic synthetic merge must prove:
 - unavailable authority leaves the operation indeterminate;
 - exact replay remains idempotent across Agentd restart;
 - tracked implementation and traceability artifacts are generated from the exact executed commit.
+
+## Daemon scheduling profile
+
+A product embedding may attach `AgentdIntelligenceLearningRuntimeConfigV1` only after the canonical runner and host-owned invocation provider are installed. The config must carry a learning host for the exact Running generation (`spawn + 1`), a 10 ms to one hour cadence, and a batch bound of 1 to 256. Agentd then starts one required `intelligence-learning-reconciler` task. Each iteration waits for the live Running admission fence, observes/reconciles unsettled rows first, drains only the remaining bounded batch from the prepared outbox, and rechecks generation after destination work. A generation mismatch fences the daemon; the successor adopts the unsettled operation and replays only the exact immutable payload.
+
+The ordinary CLI installs no learning host, writer, grant provider, or scheduler. Absence therefore means no product-learning mutation authority, not an implicit compatibility writer.
