@@ -17,7 +17,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_types::Digest32;
 
-use crate::CurrentMemoryRetrievalContext;
+use super::CurrentMemoryRetrievalContext;
 
 const PRODUCT_CONTEXT_DOMAIN: &[u8] = b"hepta.agentd.product-retrieval-context.v1";
 
@@ -297,6 +297,53 @@ impl CurrentMemoryRetrievalContext for ProductMemoryRetrievalContextV1 {
             .validate()
             .map_err(|error| ProductRetrievalContextErrorV1::InvalidContext(error.to_string()).to_string())?;
         Ok(context)
+    }
+
+    fn lifecycle_epoch(&self) -> Result<u64, String> {
+        self.snapshot()
+            .map(|snapshot| snapshot.epoch)
+            .map_err(|error| error.to_string())
+    }
+
+    fn lease_expires_unix_ms(&self) -> Result<u64, String> {
+        self.snapshot()
+            .map(|snapshot| snapshot.lease_expires_unix_ms)
+            .map_err(|error| error.to_string())
+    }
+
+    fn context_state_digest(&self) -> Result<Digest32, String> {
+        self.snapshot()
+            .map(|snapshot| snapshot.state_digest)
+            .map_err(|error| error.to_string())
+    }
+
+    fn revoked(&self) -> Result<bool, String> {
+        self.snapshot()
+            .map(|snapshot| snapshot.revoked)
+            .map_err(|error| error.to_string())
+    }
+
+    fn rotate_context(
+        &self,
+        expected_epoch: u64,
+        context: RetrievalExecutionContextV1,
+        lease_expires_unix_ms: u64,
+    ) -> Result<u64, String> {
+        self.rotate(expected_epoch, context, lease_expires_unix_ms)
+            .map_err(|error| error.to_string())
+    }
+
+    fn renew_context(
+        &self,
+        expected_epoch: u64,
+        lease_expires_unix_ms: u64,
+    ) -> Result<u64, String> {
+        self.renew(expected_epoch, lease_expires_unix_ms)
+            .map_err(|error| error.to_string())
+    }
+
+    fn revoke_context(&self, expected_epoch: u64) -> Result<u64, String> {
+        self.revoke(expected_epoch).map_err(|error| error.to_string())
     }
 }
 
