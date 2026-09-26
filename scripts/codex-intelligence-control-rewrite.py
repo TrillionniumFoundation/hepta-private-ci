@@ -104,6 +104,36 @@ def main() -> None:
         '        self.start_bound_run(\n            now_ms,\n            RunSnapshot {',
     )
 
+    lib = "codex-rs/hepta-agentd/src/lib.rs"
+    replace_once(
+        lib,
+        "mod intelligence_ingress;\nmod intelligence_product;",
+        "mod intelligence_ingress;\nmod intelligence_learning;\nmod intelligence_product;",
+    )
+    replace_once(
+        lib,
+        '''pub use intelligence_ingress::objective_run_fence_digest_v1;
+pub use intelligence_product::AgentdEvaluationBindingV1;''',
+        '''pub use intelligence_ingress::objective_run_fence_digest_v1;
+pub use intelligence_learning::AgentdIntelligenceDecisionAppendV1;
+pub use intelligence_learning::AgentdIntelligenceLearningDispositionV1;
+pub use intelligence_learning::AgentdIntelligenceLearningErrorV1;
+pub use intelligence_learning::AgentdIntelligenceLearningHostV1;
+pub use intelligence_learning::AgentdIntelligenceLearningReceiptV1;
+pub use intelligence_learning::AgentdIntelligenceOutcomeAppendV1;
+pub use intelligence_learning::append_intelligence_decision_v1;
+pub use intelligence_learning::append_intelligence_outcome_v1;
+pub use intelligence_learning::intelligence_physical_terminal_binding_digest_v1;
+pub use intelligence_learning::intelligence_run_snapshot_digest_v1;
+pub use intelligence_product::AgentdEvaluationBindingV1;''',
+    )
+
+    replace_once(
+        "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+        "use codex_hepta_operations::DurableOperationState;\n",
+        "",
+    )
+
 
 if __name__ == "__main__":
     main()
