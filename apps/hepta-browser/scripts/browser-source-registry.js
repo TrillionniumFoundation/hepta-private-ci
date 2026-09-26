@@ -48,7 +48,10 @@ const SOURCE_PATHS = Object.freeze([
   "apps/hepta-browser/src/runtime.js",
   "apps/hepta-browser/src/worker-driver.js",
   "apps/hepta-browser/src/worker-protocol.js",
+  "apps/hepta-browser/scripts/browser-source-registry.js",
   "apps/hepta-browser/scripts/service-closure-manifest.js",
+  "apps/hepta-browser/test/journal-durability.test.js",
+  "apps/hepta-browser/test/journal-monotonicity.test.js",
   "apps/hepta-browser/servo-worker/Cargo.toml",
   "apps/hepta-browser/servo-worker/Cargo.lock",
   "apps/hepta-browser/servo-worker/src/main.rs",
@@ -67,7 +70,9 @@ function read(path) {
 }
 
 function exactQuotedStrings(source) {
-  return [...source.matchAll(/"([a-z][a-z0-9_]*)"/g)].map((match) => match[1]);
+  return [...source.matchAll(/"([a-z][a-z0-9_]*)"/g)].map(
+    (match) => match[1],
+  );
 }
 
 function unique(values) {
@@ -102,6 +107,12 @@ function derive() {
   const actions = read("apps/hepta-browser/src/action.js");
   const worker = read("apps/hepta-browser/servo-worker/src/main.rs");
   const journal = read("apps/hepta-browser/src/journal.js");
+  const journalDurability = read(
+    "apps/hepta-browser/test/journal-durability.test.js",
+  );
+  const journalMonotonicity = read(
+    "apps/hepta-browser/test/journal-monotonicity.test.js",
+  );
   const driver = read("apps/hepta-browser/src/worker-driver.js");
   const egress = read("apps/hepta-browser/src/egress-broker.js");
   const agentdService = read(
@@ -117,7 +128,11 @@ function derive() {
   );
   if (!serviceBlock) throw new Error("SERVICE_METHODS registry was not found");
   const serviceMethods = unique(exactQuotedStrings(serviceBlock[1]));
-  assertExact(serviceMethods, RPCS.map(([wire]) => wire), "Browser RPC registry");
+  assertExact(
+    serviceMethods,
+    RPCS.map(([wire]) => wire),
+    "Browser RPC registry",
+  );
 
   const runtimeMethods = unique(
     [...runtime.matchAll(/async\s+([A-Za-z][A-Za-z0-9]*)\s*\(/g)].map(
@@ -140,15 +155,38 @@ function derive() {
   }
   for (const action of FUTURE_FAIL_CLOSED_ACTIONS) {
     if (!actions.includes(`case "${action}"`)) {
-      throw new Error(`future fail-closed action ${action} is absent from action.js`);
+      throw new Error(
+        `future fail-closed action ${action} is absent from action.js`,
+      );
     }
   }
 
   const invariants = {
     journalV2: journal.includes("hepta.browser.operation-journal.v2"),
+    journalSemanticIdentityImmutable:
+      journal.includes("assertSameSemantics") &&
+      journal.includes("reused with changed semantics"),
+    journalTerminalMonotonic:
+      journal.includes("cannot change or return to indeterminate") &&
+      journalMonotonicity.includes("terminal result cannot return"),
+    journalExactDuplicateNoOp:
+      journal.includes("A dispatch retry is always a no-op") &&
+      journalMonotonicity.includes("write no extra journal bytes"),
+    journalIoFailureFencing:
+      journal.includes("#fencedCause") &&
+      journalDurability.includes("fences queued writes"),
+    journalInterprocessOwnerLock:
+      journal.includes("hepta.browser.journal-owner-lock.v1") &&
+      journalDurability.includes("interprocess lock"),
+    journalSchemaMigration:
+      journal.includes("operation-journal.v1") &&
+      journalMonotonicity.includes("migrate to canonical v2"),
     workerAdmissionBoundary:
-      worker.includes("dispatch_boundary") && driver.includes("dispatch_boundary"),
-    semanticObservation: worker.includes("hepta.browser.semantic-observation.v1"),
+      worker.includes("dispatch_boundary") &&
+      driver.includes("dispatch_boundary"),
+    semanticObservation: worker.includes(
+      "hepta.browser.semantic-observation.v1",
+    ),
     grantScopedEgress:
       egress.includes("GrantScopedEgressBroker") &&
       egress.includes("grantDigest") &&
@@ -157,15 +195,17 @@ function derive() {
       read("apps/hepta-browser/servo-worker/Cargo.lock").length > 0,
     profileAffineWorkerPool: driver.includes("PooledSubprocessBrowserDriver"),
     boundedStderrDrain: driver.includes("child.stderr?.resume?.()"),
-    resourceLimits: driver.includes("prlimitPath") && driver.includes("maxProcesses"),
+    resourceLimits:
+      driver.includes("prlimitPath") && driver.includes("maxProcesses"),
     longRunningAgentdService:
       agentdService.includes("open_browser_servo_port_from_file") &&
       agentdService.includes("while let Some(bytes)"),
     serviceClosureManifest:
       closureGenerator.includes("hepta.browser.service-closure.v1") &&
       agentdService.includes("verify_service_closure"),
-    structuredOperationalMetrics:
-      agentdService.includes("hepta.browser.agentd-metric.v1"),
+    structuredOperationalMetrics: agentdService.includes(
+      "hepta.browser.agentd-metric.v1",
+    ),
     operatorRunbook:
       operations.includes("Mandatory fault drills") &&
       operations.includes("Servo pin and CVE refresh"),
