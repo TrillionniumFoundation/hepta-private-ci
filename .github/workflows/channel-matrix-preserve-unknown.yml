@@ -1,50 +1,86 @@
-name: channel.matrix final send closure
+name: channel.matrix exact candidate
 
 on:
   push:
-    branches:
-      - codex/channel-matrix-convergence-20260925
+    branches: [codex/channel-matrix-convergence-20260925]
+  pull_request:
     paths:
-      - .github/workflows/channel-matrix-preserve-unknown.yml
+      - 'codex-rs/hepta-matrix-*/**'
+      - 'codex-rs/hepta-matrixd/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'docs/modules/channel.matrix/**'
+      - 'scripts/*channel_matrix*'
+      - 'scripts/tests/test_channel_matrix*'
+      - '.github/workflows/channel-matrix-preserve-unknown.yml'
+  workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: channel-matrix-final-closure-${{ github.ref }}
-  cancel-in-progress: false
+  group: channel-matrix-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
-  BRANCH_NAME: codex/channel-matrix-convergence-20260925
-  CARGO_INCREMENTAL: "0"
-  CARGO_BUILD_JOBS: "2"
-  CARGO_PROFILE_TEST_DEBUG: "0"
-  CARGO_PROFILE_DEV_DEBUG: "0"
-  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+  PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
-  close:
-    if: github.actor != 'github-actions[bot]'
+  candidate:
+    name: Matrix ${{ matrix.lane }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
     steps:
-      - name: Check out exact branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          persist-credentials: true
-
-      - name: Bind trigger identity
+          persist-credentials: false
+      - name: Freeze source and deterministic merge candidate
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
-          git diff --quiet
-          git diff --cached --quiet
-          mkdir -p "$RUNNER_TEMP/channel-matrix-closure"
-
-      - name: Prepare native Matrix prerequisites
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/matrix-evidence"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$(git rev-parse origin/main)"
+          fi
+          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then
+            TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME='Matrix candidate builder'
+            export GIT_AUTHOR_EMAIL='matrix-candidate@users.noreply.github.com'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            TESTED_SHA="$(printf '%s\n' 'Deterministic Matrix qualification candidate' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$TESTED_SHA"
+          else
+            TESTED_SHA="$SOURCE_SHA"
+          fi
+          echo "TESTED_SHA=$TESTED_SHA" >> "$GITHUB_ENV"
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "$TESTED_SHA" \
+            --output "$RUNNER_TEMP/matrix-evidence/candidate.json"
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" \
+            --expected-sha "$TESTED_SHA" --lane "$HEPTA_CI_LANE" \
+            --output "$RUNNER_TEMP/matrix-evidence/source.json"
+      - name: Evidence verifier regression tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_evidence.py' -v
+      - name: Prepare native prerequisites
         shell: bash
         run: |
           set -euo pipefail
@@ -58,207 +94,67 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-      - name: Expose DotSlash
-        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
-
-      - name: Decode and apply bounded closure patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import base64
-          import gzip
-          from pathlib import Path
-
-          payload = gzip.decompress(
-              base64.b64decode(
-                  Path("scripts/channel_matrix_full_patch.py.gz.b64").read_bytes()
-              )
-          )
-          target = Path("scripts/channel_matrix_preserve_unknown_patch.py")
-          target.write_bytes(payload)
-          target.chmod(0o755)
-          PY
-          python3 scripts/channel_matrix_preserve_unknown_patch.py apply
-          git diff --check
-
-      - name: Refresh Cargo lock and format exact owners
-        shell: bash
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve existing V8 prerequisites
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_v8.py
-          cd codex-rs
-          cargo metadata --format-version 1 >"$RUNNER_TEMP/channel-matrix-closure/cargo-metadata.json"
-          cargo fmt \
-            --package codex-hepta-matrix-store \
-            --package codex-hepta-matrix-sdk \
-            --package codex-hepta-matrixd
-          cargo fmt \
-            --package codex-hepta-matrix-store \
-            --package codex-hepta-matrix-sdk \
-            --package codex-hepta-matrixd \
-            -- --check
-          cd ..
-          git diff --check
-
-      - name: Test durable state machine
-        working-directory: codex-rs
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Locked Matrix tests, including store and protocol
         shell: bash
-        env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/channel-matrix-target
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-matrix-store --test indeterminate_rejection \
-            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/matrix-store-test.log"
-
-      - name: Test SDK authorization and reconciliation
-        working-directory: codex-rs
-        shell: bash
-        env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/channel-matrix-target
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-matrix-sdk --test durable_transport \
-            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/matrix-sdk-test.log"
-
-      - name: Test matrixd owner and strict lint
-        working-directory: codex-rs
-        shell: bash
-        env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/channel-matrix-target
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-matrixd --lib \
-            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/matrixd-test.log"
-          cargo clippy --locked \
-            -p codex-hepta-matrix-store \
-            -p codex-hepta-matrix-sdk \
+          just test --locked -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store -p codex-hepta-matrix-sdk \
             -p codex-hepta-matrixd \
+            2>&1 | tee "$RUNNER_TEMP/matrix-evidence/focused-tests.log"
+      - name: Strict owner lint and formatting checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-matrix-protocol -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk -p codex-hepta-matrixd \
             --all-targets -- -D warnings \
-            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/clippy.log"
-
-      - name: Commit source and executable documentation
-        id: source
+            2>&1 | tee "$RUNNER_TEMP/matrix-evidence/clippy.log"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-matrix-protocol --package codex-hepta-matrix-store \
+            --package codex-hepta-matrix-sdk --package codex-hepta-matrixd -- --check
+      - name: Verify source was never patched by qualification
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "Hepta Matrix CI"
-          git config user.email "hepta-matrix-ci@users.noreply.github.com"
-          git add \
-            codex-rs/Cargo.lock \
-            codex-rs/hepta-matrix-sdk \
-            codex-rs/hepta-matrix-store \
-            codex-rs/hepta-matrixd/src/final_use.rs \
-            docs/modules/channel.matrix/*.md \
-            scripts/verify_channel_matrix_candidate.py
-          git diff --cached --check
-          git commit -s -m "channel.matrix: persist final-use entry evidence"
-          SOURCE_COMMIT="$(git rev-parse HEAD)"
-          echo "sha=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
-
-      - name: Bind implementation map to tested source and retire one-shot machinery
-        shell: bash
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" \
+            --expected-sha "$TESTED_SHA" --lane "$HEPTA_CI_LANE" \
+            --output "$RUNNER_TEMP/matrix-evidence/source-after.json"
+          cmp "$RUNNER_TEMP/matrix-evidence/source.json" "$RUNNER_TEMP/matrix-evidence/source-after.json"
+      - name: Record command outcome and artifact digests
+        if: always()
         env:
-          SOURCE_COMMIT: ${{ steps.source.outputs.sha }}
-        run: |
-          set -euo pipefail
-          python3 scripts/channel_matrix_preserve_unknown_patch.py refresh-map \
-            --source-commit "$SOURCE_COMMIT"
-          python3 scripts/hepta-module-docs.py refresh-derived
-          rm .github/workflows/channel-matrix-preserve-unknown.yml
-          rm scripts/channel_matrix_preserve_unknown_patch.py
-          rm scripts/channel_matrix_full_patch.py.gz.b64
-          git add -A
-          git diff --cached --check
-          git commit -s -m "docs(channel.matrix): bind durable send closure to source"
-
-      - name: Verify exact final candidate and construct receipt
-        shell: bash
-        run: |
-          set -euo pipefail
-          FINAL_COMMIT="$(git rev-parse HEAD)"
-          FINAL_TREE="$(git rev-parse 'HEAD^{tree}')"
-          python3 scripts/hepta-module-docs.py refresh-derived --check
-          python3 scripts/verify_channel_matrix_candidate.py \
-            --expected-sha "$FINAL_COMMIT" \
-            --output "$RUNNER_TEMP/channel-matrix-closure/exact-candidate.json"
-          git diff --quiet
-          git diff --cached --quiet
-          test -z "$(git status --porcelain --untracked-files=normal)"
-          SOURCE_COMMIT="${{ steps.source.outputs.sha }}" \
-          FINAL_COMMIT="$FINAL_COMMIT" \
-          FINAL_TREE="$FINAL_TREE" \
-          python3 - <<'PY'
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-
-          root = Path(os.environ["RUNNER_TEMP"]) / "channel-matrix-closure"
-          logs = {}
-          for item in sorted(root.glob("*.log")):
-              logs[item.name] = hashlib.sha256(item.read_bytes()).hexdigest()
-          qualification = {
-              "schema": "hepta.channel-matrix-closure-receipt.v1",
-              "source_commit": os.environ["SOURCE_COMMIT"],
-              "final_commit": os.environ["FINAL_COMMIT"],
-              "final_tree": os.environ["FINAL_TREE"],
-              "cargo_lock_sha256": hashlib.sha256(
-                  Path("codex-rs/Cargo.lock").read_bytes()
-              ).hexdigest(),
-              "migration_0008_sha256": hashlib.sha256(
-                  Path(
-                      "codex-rs/hepta-matrix-store/migrations/"
-                      "0008_matrix_authority_entry.sql"
-                  ).read_bytes()
-              ).hexdigest(),
-              "configuration": {
-                  "matrix_store_test": "indeterminate_rejection",
-                  "matrix_sdk_test": "durable_transport",
-                  "matrixd_test": "lib",
-                  "strict_clippy": True,
-              },
-              "log_sha256": logs,
-              "external_qualification": {
-                  "real_synapse_executed": False,
-                  "encrypted_room_rotation": False,
-                  "authenticated_backup_restore": False,
-                  "sustained_capacity": False,
-                  "independent_acceptance": False,
-              },
-          }
-          config_bytes = json.dumps(
-              qualification["configuration"], sort_keys=True, separators=(",", ":")
-          ).encode()
-          qualification["configuration_sha256"] = hashlib.sha256(config_bytes).hexdigest()
-          receipt = root / "closure-receipt.json"
-          receipt.write_text(json.dumps(qualification, indent=2) + "\n")
-          payloads = [receipt, root / "exact-candidate.json", *sorted(root.glob("*.log"))]
-          digest = hashlib.sha256()
-          for payload in payloads:
-              digest.update(payload.name.encode())
-              digest.update(b"\0")
-              digest.update(payload.read_bytes())
-              digest.update(b"\0")
-          (root / "artifact-payload.sha256").write_text(digest.hexdigest() + "\n")
-          PY
-
-      - name: Push reviewed branch without overwriting concurrent work
-        shell: bash
-        run: |
-          set -euo pipefail
-          git push \
-            --force-with-lease="refs/heads/$BRANCH_NAME:${{ github.sha }}" \
-            origin "HEAD:refs/heads/$BRANCH_NAME"
-
-      - name: Retain exact source, logs, and payload digest
+          JOB_STATUS: ${{ job.status }}
+        run: >-
+          python3 scripts/channel_matrix_evidence.py manifest
+          --directory "$RUNNER_TEMP/matrix-evidence"
+          --job-status "$JOB_STATUS"
+      - name: Retain exact-candidate evidence, including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: channel-matrix-final-closure-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/channel-matrix-closure
-          if-no-files-found: warn
-          retention-days: 30
+          name: channel-matrix-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+  required:
+    name: Matrix candidate required
+    needs: candidate
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require both non-skipped candidates
+        env:
+          RESULT: ${{ needs.candidate.result }}
+        run: test "$RESULT" = success
