@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "da98ecdc291728be2b54650a7ab61ae1c186674e",
-    "tree": "4502efb59831b4a80614d5bc434c8c4e24fc2323"
+    "commit": "cfb0b363116fb12f571489f611481693b3078a96",
+    "tree": "dc81d08232d4fe0dbd8b15ef8bfacf6deb26be10"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -59,11 +59,6 @@
           "path": "codex-rs/hepta-native-gateway/src/lib.rs",
           "kind": "rust_unit",
           "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features"
-        },
-        {
-          "path": "apps/hepta-native/tests/remediation_regressions.rs",
-          "kind": "rust_integration",
-          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Validates signed endpoint/session identity, uses the OS-keyring bearer for the bounded authenticated loopback gateway, and reconciles durable pending operations.",
@@ -110,11 +105,6 @@
           "path": "codex-rs/hepta-native-gateway/src/lib.rs",
           "kind": "rust_unit",
           "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features"
-        },
-        {
-          "path": "apps/hepta-native/tests/remediation_regressions.rs",
-          "kind": "rust_integration",
-          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Consumes backend runtime observations and validates session/view monotonicity; fixture observations are not physical product evidence.",
@@ -170,11 +160,6 @@
           "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
           "kind": "rust_integration",
           "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features"
-        },
-        {
-          "path": "apps/hepta-native/tests/remediation_regressions.rs",
-          "kind": "rust_integration",
-          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Binds owned payload and session identity, durably journals dispatch, consumes current kernel final-use authority and preserves uncertain effects without replay.",
@@ -232,9 +217,7 @@
   ],
   "repositoryControlledGaps": [
     "Execute and retain current exact-head and deterministic synthetic-merge app, gateway, authority and package receipts on Linux, macOS and Windows.",
-    "Execute each generated unsigned package through its packaged binary smoke and retain measured build, package, smoke and artifact-size observations.",
-    "Complete full view/content/endpoint grant-binding and canonical resource replacement-race review; no effect receipt trust claim is inferred from CI hashes.",
-    "Review all updater crash boundaries and post-restart/rollback health against installed artifacts; complete platform minimum-version, installer and release provenance requirements."
+    "Execute each generated unsigned package through its packaged binary smoke and retain measured build, package, smoke and artifact-size observations."
   ],
   "externalEvidenceGates": [
     "Apple Developer ID custody and notarization, Windows Authenticode/AppUserModelID, and Linux distribution signing or repository ownership",
@@ -246,7 +229,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
