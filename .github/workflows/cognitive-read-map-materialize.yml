@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   materialize:
-    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): harden source and materialize map' }}"
+    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): finalize exact source map' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -25,15 +25,18 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Close deterministic source-level lint drift
+      - name: Stage the final source observation
         shell: bash
         run: |
           set -euo pipefail
+          git config user.name 'hepta-ci-convergence'
+          git config user.email 'hepta-ci-convergence@users.noreply.github.com'
           python3 - <<'PY'
+          import json
           from pathlib import Path
 
-          path = Path('codex-rs/hepta-agentd/src/cognitive_context.rs')
-          text = path.read_text(encoding='utf-8')
+          context_path = Path('codex-rs/hepta-agentd/src/cognitive_context.rs')
+          context = context_path.read_text(encoding='utf-8')
           old = '''fn planned_context_encoded_len(
               response: &CognitiveContextSnapshot,
           ) -> Result<usize, CognitiveStoreError> {
@@ -80,13 +83,120 @@ jobs:
               Ok(maximum)
           }
           '''
-          if text.count(old) != 1:
+          if context.count(old) != 1:
               raise SystemExit('planned_context_encoded_len source shape drifted')
-          path.write_text(text.replace(old, new), encoding='utf-8')
+          context_path.write_text(context.replace(old, new), encoding='utf-8')
+
+          Path('codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs').write_text('''use super::*;
+
+const CONTRACT_LIMITS: &str =
+    include_str!("../../../docs/modules/cognitive.read/CONTRACT_LIMITS.md");
+const AGENT_PROTOCOL_SOURCE: &str = include_str!("../../hepta-agent-protocol/src/lib.rs");
+const AGENTD_CONTEXT_SOURCE: &str = include_str!("../../hepta-agentd/src/cognitive_context.rs");
+
+#[test]
+fn documented_limits_match_compiled_contracts() {
+    assert!(CONTRACT_LIMITS.contains("MAX_READ_IDS_V1 = 512"));
+    assert!(CONTRACT_LIMITS.contains("MAX_ENCODED_READ_RESULT_BYTES_V2 = 1048576"));
+    assert!(CONTRACT_LIMITS.contains("MAX_COGNITIVE_CONTEXT_BYTES = 8192"));
+    assert!(CONTRACT_LIMITS.contains("MAX_SELECTED_CONTEXT_RECORDS = 4"));
+    assert_eq!(MAX_READ_IDS_V1, 512);
+    assert_eq!(MAX_ENCODED_READ_RESULT_BYTES_V2, 1_048_576);
+    assert!(AGENT_PROTOCOL_SOURCE.contains(
+        "pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;"
+    ));
+    assert!(AGENTD_CONTEXT_SOURCE.contains(
+        "const MAX_SELECTED_CONTEXT_RECORDS: u16 = 4;"
+    ));
+}
+
+#[test]
+fn byte_and_authority_semantics_are_documented() {
+    for required in [
+        "payload_encoded_bytes",
+        "total_encoded_bytes",
+        "AuthorityPosture::DENY_ALL",
+        "activation=false",
+        "TransientSnapshotProjectionV1",
+        "cognitive.context.revalidate@1",
+    ] {
+        assert!(
+            CONTRACT_LIMITS.contains(required),
+            "missing cognitive.read contract marker: {required}"
+        );
+    }
+}
+''', encoding='utf-8')
+
+          map_path = Path('docs/modules/cognitive.read/IMPLEMENTATION_MAP.json')
+          row = json.loads(map_path.read_text(encoding='utf-8'))
+          anchor = {
+              'commit': 'a126987b84737dbc2ee2592442a314117bddb4a2',
+              'tree': 'a22fd0074c45ae6f3cef2092cd6e273bf9c26c30',
+          }
+          row['sourceBase'] = dict(anchor)
+          row['observedAtHead'] = dict(anchor)
+          observed = row.get('observedImplementationBase')
+          if isinstance(observed, dict):
+              observed['commit'] = anchor['commit']
+              observed['interpretation'] = (
+                  'reviewed main base for this convergence candidate; exact source objects '
+                  'and observedAtHead bind current candidate bytes without granting execution authority'
+              )
+
+          reliability_tests = [
+              'codex-rs/hepta-cognitive-read/src/ids_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/property_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/mutation_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/fuzz_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/golden_vectors.rs',
+              'codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs',
+          ]
+          for operation in row.get('operations', []):
+              if operation.get('operation') == 'read_ids_v1':
+                  operation['tests'] = reliability_tests
+
+          extra_paths = {
+              'codex-rs/hepta-agentd/Cargo.toml',
+              'codex-rs/hepta-agentd/src/app_runtime.rs',
+              'codex-rs/hepta-agentd/src/cognitive_context.rs',
+              'codex-rs/hepta-agentd/src/cognitive_context_metrics.rs',
+              'codex-rs/hepta-agentd/src/lib.rs',
+              'codex-rs/hepta-agentd/src/runtime.rs',
+              'codex-rs/hepta-agentd/src/runtime_tests.rs',
+              'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs',
+              'codex-rs/hepta-cognitive-read/Cargo.toml',
+              'codex-rs/hepta-cognitive-read/examples/cognitive_read_bench.rs',
+              'codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/fuzz_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/golden_vectors.rs',
+              'codex-rs/hepta-cognitive-read/src/ids.rs',
+              'codex-rs/hepta-cognitive-read/src/ids_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/lib.rs',
+              'codex-rs/hepta-cognitive-read/src/mutation_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/property_tests.rs',
+              'codex-rs/hepta-cognitive-read/src/transient.rs',
+              'docs/modules/cognitive.read/CONTRACT_LIMITS.md',
+              'docs/modules/cognitive.read/TECHNICAL.md',
+              'scripts/verify-cognitive-read-constants.py',
+          }
+          objects = {
+              entry['path']: entry
+              for entry in row.get('sourceObjects', [])
+              if isinstance(entry, dict) and isinstance(entry.get('path'), str)
+          }
+          for path in extra_paths:
+              objects.setdefault(path, {'path': path, 'object': '0' * 40})
+          row['sourceObjects'] = [objects[path] for path in sorted(objects)]
+          map_path.write_text(json.dumps(row, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
           PY
           git diff --check
+          git add codex-rs/hepta-agentd/src/cognitive_context.rs
+          git add codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit -m 'chore(cognitive.read): stage exact source observation'
 
-      - name: Rebind cognitive.read source navigation
+      - name: Generate the exact implementation map
         shell: bash
         run: |
           set -euo pipefail
@@ -95,14 +205,13 @@ jobs:
           git diff --check
           test -n "$(git status --porcelain -- docs/modules/cognitive.read/IMPLEMENTATION_MAP.json)"
 
-      - name: Commit generated source and map, then remove materializer
+      - name: Commit the generated map and remove the materializer
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'hepta-ci-convergence'
-          git config user.email 'hepta-ci-convergence@users.noreply.github.com'
           git rm .github/workflows/cognitive-read-map-materialize.yml
-          git add codex-rs/hepta-agentd/src/cognitive_context.rs
           git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
-          git commit -m 'fix(cognitive.read): close lint and bind exact source map'
+          git commit -m 'docs(cognitive.read): bind exact converged source map'
+          python3 scripts/verify-cognitive-read-constants.py
+          git diff --check HEAD~2..HEAD
           git push origin "HEAD:${GITHUB_REF_NAME}"
