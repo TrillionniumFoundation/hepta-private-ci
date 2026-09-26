@@ -48,7 +48,7 @@ jobs:
             test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
           fi
       - name: Test receipt verifier
-        run: python3 -m unittest discover -s scripts -p test_hepta_artifacts_evidence.py -v
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_artifacts_*.py' -v
       - name: Execute independent diagnostics and emit negative or positive receipt
         env:
           LANE: ${{ matrix.lane }}

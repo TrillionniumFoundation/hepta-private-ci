@@ -10,6 +10,9 @@ import argparse
 import json
 import re
 import sys
+import subprocess
+
+from hepta_artifacts_claims import validate as validate_artifact_claims
 
 import hepta_lane_e_source_checks as checks
 from hepta_workflow_commands import workflow_commands
@@ -96,6 +99,24 @@ def verify_workflow(findings: checks.Findings) -> None:
                      "temporary generated-file materializer must not remain in the candidate")
 
 
+def verify_artifact_map(findings: checks.Findings) -> None:
+    path = checks.ROOT / "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json"
+    value = checks.load_json(path, findings)
+
+    def resolve(relative: str) -> str:
+        try:
+            return subprocess.check_output(
+                ["git", "-C", str(checks.ROOT), "rev-parse", "HEAD:" + relative],
+                text=True,
+                stderr=subprocess.PIPE,
+            ).strip()
+        except subprocess.CalledProcessError as error:
+            raise ValueError("Git object lookup failed") from error
+
+    for error in validate_artifact_claims(value, resolve):
+        findings.add("artifact_source_claim", error)
+
+
 def verify() -> checks.Findings:
     findings = checks.Findings()
     matrix = checks.load_json(checks.MATRIX_PATH, findings)
@@ -106,6 +127,7 @@ def verify() -> checks.Findings:
     checks.verify_product_writer_exclusivity(findings)
     checks.verify_authority_posture(findings)
     verify_workflow(findings)
+    verify_artifact_map(findings)
     return findings
 
 
