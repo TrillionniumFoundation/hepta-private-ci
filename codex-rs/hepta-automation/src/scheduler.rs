@@ -8,6 +8,7 @@ use tokio::time::timeout;
 use crate::AutomationAdmission;
 use crate::AutomationError;
 use crate::AutomationQueueReceipt;
+use crate::AutomationRuntimePolicyV1;
 use crate::AutomationStore;
 use crate::AutomationTick;
 use crate::admission_receipt_digest;
@@ -28,6 +29,22 @@ pub trait AutomationTurnQueue: Send + Sync {
         &self,
         admission: AutomationAdmission,
     ) -> AutomationFuture<'_, AutomationQueueReceipt>;
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AutomationBatchStopReason {
+    Idle,
+    AdmissionBudgetExhausted,
+    DispatchUncertain,
+    RetryBudgetExhausted,
+}
+
+/// Results from one bounded Agentd admission cycle. The individual V1 ticks are
+/// retained so existing retry accounting and observability stay compatible.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AutomationBatchReport {
+    pub ticks: Vec<AutomationTick>,
+    pub stop_reason: AutomationBatchStopReason,
 }
 
 pub struct AutomationScheduler<Q> {
@@ -69,6 +86,65 @@ where
 
     pub fn store(&self) -> &AutomationStore {
         &self.store
+    }
+
+    /// Run a bounded sequence of the existing durable V1 admission operation.
+    ///
+    /// Provider contact remains serialized and every iteration refreshes the
+    /// clock supplied by the trusted host. This removes a fixed inter-occurrence
+    /// sleep without holding multiple unacknowledged provider calls or changing
+    /// the stable occurrence/client identity. Unknown dispatch stops the batch
+    /// immediately so the next cycle enters exact-identity reconciliation.
+    pub async fn tick_batch<C>(
+        &self,
+        policy: &AutomationRuntimePolicyV1,
+        mut now_ms: C,
+    ) -> Result<AutomationBatchReport, AutomationError>
+    where
+        C: FnMut() -> Result<u64, AutomationError>,
+    {
+        policy.validate()?;
+        let mut ticks = Vec::with_capacity(usize::from(policy.admission_budget_per_cycle));
+        let mut consecutive_retries = 0_u8;
+
+        for _ in 0..policy.admission_budget_per_cycle {
+            match self.tick(now_ms()?).await? {
+                AutomationTick::Idle => {
+                    return Ok(AutomationBatchReport {
+                        ticks,
+                        stop_reason: AutomationBatchStopReason::Idle,
+                    });
+                }
+                tick @ AutomationTick::Submitted { .. } => {
+                    consecutive_retries = 0;
+                    ticks.push(tick);
+                }
+                tick @ AutomationTick::RetryScheduled { .. } => {
+                    consecutive_retries = consecutive_retries.saturating_add(1);
+                    ticks.push(tick);
+                    if consecutive_retries
+                        >= policy.max_consecutive_pre_admission_failures
+                    {
+                        return Ok(AutomationBatchReport {
+                            ticks,
+                            stop_reason: AutomationBatchStopReason::RetryBudgetExhausted,
+                        });
+                    }
+                }
+                tick @ AutomationTick::DispatchUncertain { .. } => {
+                    ticks.push(tick);
+                    return Ok(AutomationBatchReport {
+                        ticks,
+                        stop_reason: AutomationBatchStopReason::DispatchUncertain,
+                    });
+                }
+            }
+        }
+
+        Ok(AutomationBatchReport {
+            ticks,
+            stop_reason: AutomationBatchStopReason::AdmissionBudgetExhausted,
+        })
     }
 
     /// Claims and admits at most one occurrence. Queue admission is deliberately

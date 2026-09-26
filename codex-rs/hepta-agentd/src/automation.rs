@@ -15,11 +15,14 @@ use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationAdmission;
 use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::AutomationFailureDisposition;
 use codex_hepta_automation::AutomationFuture;
 use codex_hepta_automation::AutomationQueueReceipt;
+use codex_hepta_automation::AutomationRuntimePolicyV1;
 use codex_hepta_automation::AutomationScheduler;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_automation::classify_automation_error;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio_util::sync::CancellationToken;
 
@@ -31,7 +34,6 @@ use crate::automation_recovery;
 const AUTOMATION_TICK_INTERVAL: Duration = Duration::from_millis(250);
 const AUTOMATION_LEASE_DURATION: Duration = Duration::from_secs(30);
 const AUTOMATION_DISPATCH_TIMEOUT: Duration = Duration::from_secs(5);
-const AUTOMATION_MAX_CONSECUTIVE_DISPATCH_RETRIES: u8 = 3;
 const APP_SERVER_COMMAND_CAPACITY: usize = 8;
 const APP_SERVER_EVENT_CAPACITY: usize = 16;
 
@@ -215,6 +217,10 @@ pub(crate) async fn run_automation_scheduler(
     identity: AgentdIdentity,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
+    let policy = AutomationRuntimePolicyV1::default();
+    if let Err(error) = policy.validate() {
+        return stop_after_automation_error(error, &state, &cancellation).await;
+    }
     let recovery_now_ms = match unix_time_ms() {
         Ok(now_ms) => now_ms,
         Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
@@ -239,18 +245,28 @@ pub(crate) async fn run_automation_scheduler(
         Ok(scheduler) => scheduler,
         Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
     };
-    run_scheduler_loop(scheduler, state, cancellation, AUTOMATION_TICK_INTERVAL).await
+    run_scheduler_loop(
+        scheduler,
+        state,
+        cancellation,
+        AUTOMATION_TICK_INTERVAL,
+        policy,
+    )
+    .await
 }
 
-/// Cancellation stops new ticks, never an admitted tick's acknowledgement.
-/// Existing dispatch timeouts and durable recovery bound an uncertain result.
+/// Cancellation stops new cycles, never an admitted tick's acknowledgement.
+/// Recovery and admission use separate bounded budgets. Every admission still
+/// commits its own stable intent before crossing the App Server seam.
 async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     scheduler: AutomationScheduler<Q>,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     tick_interval: Duration,
+    policy: AutomationRuntimePolicyV1,
 ) -> Result<(), AgentdError> {
     let mut retry_budget = DispatchRetryBudget::default();
+    let mut transient_budget = TransientSchedulerErrorBudget::default();
     loop {
         tokio::select! {
             biased;
@@ -271,41 +287,84 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if !ready {
             continue;
         }
-        let now_ms = match unix_time_ms() {
-            Ok(now_ms) => now_ms,
-            Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
-        };
 
-        // Reconcile one durable historical occurrence before admitting new
-        // work. This is bounded to one item/turn-page chain per tick and does
-        // not prevent an overlap-allowed scheduler from also making progress.
-        if let Err(error) =
-            automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
-                .await
-        {
-            return stop_after_recovery_error(error, &state, &cancellation).await;
+        // Historical reconciliation has an independent capacity budget so a
+        // backlog cannot monopolize admission and new work cannot starve
+        // unknown-result recovery.
+        for _ in 0..policy.recovery_budget_per_cycle {
+            if cancellation.is_cancelled() {
+                return Ok(());
+            }
+            let recovery_now_ms = match unix_time_ms() {
+                Ok(now_ms) => now_ms,
+                Err(error) => {
+                    return stop_after_automation_error(error, &state, &cancellation).await;
+                }
+            };
+            match automation_recovery::reconcile_one(
+                scheduler.store(),
+                &state,
+                state.identity(),
+                recovery_now_ms,
+            )
+            .await
+            {
+                Ok(true) => {}
+                Ok(false) => break,
+                Err(error) => {
+                    return stop_after_recovery_error(error, &state, &cancellation).await;
+                }
+            }
         }
 
         if cancellation.is_cancelled() {
             return Ok(());
         }
-        // Once admitted, the tick must record the queue outcome. Dropping this
-        // future on cancellation could lose an acknowledgement after dispatch.
-        match scheduler.tick(now_ms).await {
-            Ok(tick) => {
-                if handle_automation_tick(tick, &mut retry_budget, &state, &cancellation).await? {
-                    return Ok(());
+        // The batch is sequential and bounded. A fresh host clock is sampled
+        // for each durable occurrence so a slow provider cannot reuse stale
+        // lease timestamps across the entire cycle.
+        match scheduler.tick_batch(&policy, unix_time_ms).await {
+            Ok(report) => {
+                transient_budget.reset();
+                for tick in report.ticks {
+                    if handle_automation_tick_with_limit(
+                        tick,
+                        &mut retry_budget,
+                        policy.max_consecutive_pre_admission_failures,
+                        &state,
+                        &cancellation,
+                    )
+                    .await?
+                    {
+                        return Ok(());
+                    }
                 }
             }
-            Err(error) => {
-                return stop_after_automation_error(error, &state, &cancellation).await;
-            }
+            Err(error) => match classify_automation_error(&error) {
+                AutomationFailureDisposition::Fence | AutomationFailureDisposition::FailStop => {
+                    return stop_after_automation_error(error, &state, &cancellation).await;
+                }
+                AutomationFailureDisposition::Reconcile => {
+                    transient_budget.reset();
+                }
+                AutomationFailureDisposition::Retry | AutomationFailureDisposition::Isolate => {
+                    let consecutive = transient_budget.observe();
+                    if consecutive >= policy.max_consecutive_pre_admission_failures {
+                        return stop_after_automation_error(error, &state, &cancellation).await;
+                    }
+                    let delay = Duration::from_millis(policy.retry_delay_ms(consecutive));
+                    tokio::select! {
+                        _ = cancellation.cancelled() => return Ok(()),
+                        _ = tokio::time::sleep(delay) => {}
+                    }
+                }
+            },
         }
     }
 }
 
 /// Applies the scheduler's fail-stop policy to one tick. A durable unknown
-/// dispatch no longer kills the scheduler: the next tick first enters the
+/// dispatch no longer kills the scheduler: the next cycle first enters the
 /// exact-client-id reconciliation path above. Only repeated proven
 /// pre-admission failures exhaust the bounded retry budget.
 pub(crate) async fn handle_automation_tick(
@@ -314,7 +373,24 @@ pub(crate) async fn handle_automation_tick(
     state: &AgentdState,
     cancellation: &CancellationToken,
 ) -> Result<bool, AgentdError> {
-    let stop_error = if retry_budget.observe(&tick) {
+    handle_automation_tick_with_limit(
+        tick,
+        retry_budget,
+        AutomationRuntimePolicyV1::default().max_consecutive_pre_admission_failures,
+        state,
+        cancellation,
+    )
+    .await
+}
+
+async fn handle_automation_tick_with_limit(
+    tick: codex_hepta_automation::AutomationTick,
+    retry_budget: &mut DispatchRetryBudget,
+    max_consecutive_retries: u8,
+    state: &AgentdState,
+    cancellation: &CancellationToken,
+) -> Result<bool, AgentdError> {
+    let stop_error = if retry_budget.observe(&tick, max_consecutive_retries) {
         Some(AutomationError::Dispatch)
     } else {
         None
@@ -332,7 +408,11 @@ pub(crate) struct DispatchRetryBudget {
 }
 
 impl DispatchRetryBudget {
-    fn observe(&mut self, tick: &codex_hepta_automation::AutomationTick) -> bool {
+    fn observe(
+        &mut self,
+        tick: &codex_hepta_automation::AutomationTick,
+        max_consecutive_retries: u8,
+    ) -> bool {
         match tick {
             codex_hepta_automation::AutomationTick::RetryScheduled { .. } => {
                 self.consecutive_retries = self.consecutive_retries.saturating_add(1);
@@ -343,7 +423,23 @@ impl DispatchRetryBudget {
                 self.consecutive_retries = 0;
             }
         }
-        self.consecutive_retries >= AUTOMATION_MAX_CONSECUTIVE_DISPATCH_RETRIES
+        self.consecutive_retries >= max_consecutive_retries
+    }
+}
+
+#[derive(Default)]
+struct TransientSchedulerErrorBudget {
+    consecutive_failures: u8,
+}
+
+impl TransientSchedulerErrorBudget {
+    fn observe(&mut self) -> u8 {
+        self.consecutive_failures = self.consecutive_failures.saturating_add(1);
+        self.consecutive_failures
+    }
+
+    fn reset(&mut self) {
+        self.consecutive_failures = 0;
     }
 }
 
@@ -352,10 +448,13 @@ async fn stop_after_automation_error(
     state: &AgentdState,
     cancellation: &CancellationToken,
 ) -> Result<(), AgentdError> {
-    if error == AutomationError::AccessDenied {
+    if matches!(
+        error,
+        AutomationError::AccessDenied | AutomationError::TimerFenced
+    ) {
         state.mark_fenced();
         return Err(AgentdError::GenerationFenced(
-            "automation owner or generation boundary was violated".to_string(),
+            "automation owner, timer epoch or generation boundary was violated".to_string(),
         ));
     }
     state.mark_automation_unavailable()?;
@@ -442,14 +541,23 @@ mod tests {
         };
         let mut budget = DispatchRetryBudget::default();
 
-        assert!(!budget.observe(&retry));
-        assert!(!budget.observe(&retry));
-        assert!(budget.observe(&retry));
+        assert!(!budget.observe(&retry, 3));
+        assert!(!budget.observe(&retry, 3));
+        assert!(budget.observe(&retry, 3));
 
-        assert!(!budget.observe(&admitted));
-        assert!(!budget.observe(&retry));
-        assert!(!budget.observe(&AutomationTick::Idle));
-        assert!(!budget.observe(&retry));
+        assert!(!budget.observe(&admitted, 3));
+        assert!(!budget.observe(&retry, 3));
+        assert!(!budget.observe(&AutomationTick::Idle, 3));
+        assert!(!budget.observe(&retry, 3));
+    }
+
+    #[test]
+    fn transient_scheduler_error_budget_resets_after_progress() {
+        let mut budget = TransientSchedulerErrorBudget::default();
+        assert_eq!(budget.observe(), 1);
+        assert_eq!(budget.observe(), 2);
+        budget.reset();
+        assert_eq!(budget.observe(), 1);
     }
 
     #[test]
