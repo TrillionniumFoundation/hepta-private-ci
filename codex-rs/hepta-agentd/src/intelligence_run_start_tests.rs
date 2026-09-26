@@ -18,11 +18,15 @@ async fn durable_preparation() -> (
     let authority = directory.path().join("authority.json");
     let mut composition = product_test_coordinator().composition().clone();
     composition.agentd_generation = value.request.snapshot.body_generation().get();
-    composition.supervisor_generation = composition.agentd_generation;
-    let mut fence = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    fence.extend_from_slice(composition.agent_id.as_bytes());
-    fence.extend_from_slice(&composition.agentd_generation.to_be_bytes());
-    fence.extend_from_slice(&composition.agentd_generation.to_be_bytes());
+    composition.supervisor_generation = composition
+        .agentd_generation
+        .checked_sub(1)
+        .expect("Running generation has a process predecessor");
+    let fence_digest: Digest32 = composition
+        .objective_fence_digest()
+        .expect("canonical objective fence")
+        .parse()
+        .expect("typed objective fence");
     let file = std::fs::OpenOptions::new()
         .read(true)
         .write(true)
@@ -55,7 +59,7 @@ async fn durable_preparation() -> (
             artifact_set_digest: digest("selected-artifact-set"),
             authority_epoch: value.request.snapshot.authority_epoch(),
             generation: composition.agentd_generation,
-            fence_digest: Digest32::of_bytes(&fence),
+            fence_digest,
             expected_run_start_head: Digest32::ZERO,
         },
         &mut journal,
@@ -111,6 +115,9 @@ async fn canonical_admission_preserves_durable_identity_and_original_deadline() 
     prepared.bind_revalidated_run_start(&record, now).unwrap();
     let expected = crate::RunSnapshot::from_revalidated_run_start(&record).unwrap();
     assert_eq!(crate::RunSnapshot::from(prepared.run_snapshot()), expected);
+    assert_ne!(composition.supervisor_generation, expected.generation);
+    assert_eq!(composition.admission_generation().unwrap(), expected.generation);
+    assert_eq!(composition.objective_fence_digest().unwrap(), expected.fence_digest);
     let bound = prepared.clone();
     prepared.bind_revalidated_run_start(&record, now).unwrap();
     assert_eq!(prepared, bound, "binding the same record is idempotent");
