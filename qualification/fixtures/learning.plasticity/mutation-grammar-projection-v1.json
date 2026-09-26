@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.control-engineering.mutation-grammar.v1",
+  "manifestId": "grammar:plasticity:cross-module",
+  "selectedArtifactDigest": "dbdfaa574d01103434f1e19278cf17a439f55c517943aa2e899cadaccde5571a",
+  "window": {
+    "windowId": "window:plasticity:cross-module",
+    "windowDigest": "01d8836d0504890fb35cc3b37d29c7eb205bd2a2274c24361bcf66300a4b3314"
+  },
+  "rules": [
+    {
+      "parameterId": "parameter:b",
+      "layerId": "layer:b",
+      "surface": "learnable_parameter",
+      "minimumDeltaRawQ32": -200,
+      "maximumDeltaRawQ32": 200
+    },
+    {
+      "parameterId": "parameter:a",
+      "layerId": "layer:a",
+      "surface": "learnable_parameter",
+      "minimumDeltaRawQ32": -100,
+      "maximumDeltaRawQ32": 100
+    }
+  ],
+  "semanticDigest": "a1779cfe0dab1c966f8e7140ea4f3bf58076540a312bf87e94f9c4e62dcba6a8",
+  "expectedPlasticityPolicyId": "policy:cross-module",
+  "expectedPlasticityPolicyDigest": "6076c3207badb3291557f9f2d7fcaccf58aa2bd80e1c4d796096c2f36cbb3251"
+}
