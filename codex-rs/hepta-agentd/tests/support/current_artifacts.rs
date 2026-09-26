@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 //! Test-only keys around the real durable artifact owner and independent selector.
 use super::support::digest;
 use super::support::id;

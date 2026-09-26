@@ -82,7 +82,9 @@ class CommandDeadlineTests(unittest.TestCase):
             stat = Path(f"/proc/{child_pid}/stat")
             try:
                 state = stat.read_text().rsplit(")", 1)[1].split()[0]
-            except FileNotFoundError:
+            except (FileNotFoundError, ProcessLookupError):
+                # The process can disappear between resolving /proc and reading
+                # stat. Vanishing is the successful terminal condition here.
                 break
             if state == "Z":
                 break

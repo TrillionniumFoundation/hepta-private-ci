@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 use codex_hepta_agentd::AgentdIntuitionPolicyError;
 use codex_hepta_agentd::AgentdIntuitionPolicyHostV1;
 use codex_hepta_agentd::AgentdIntuitionPolicyPinsV1;

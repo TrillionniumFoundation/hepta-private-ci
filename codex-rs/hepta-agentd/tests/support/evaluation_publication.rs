@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 //! Synthetic evaluation data through the real runner, daemon, AuthBus and SQLite.
 use super::*;
 use codex_hepta_agentd::AgentdEvaluationEvidenceSinkV1;

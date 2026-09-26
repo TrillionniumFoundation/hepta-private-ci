@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 use super::current_artifacts::Artifacts;
 use super::*;
 

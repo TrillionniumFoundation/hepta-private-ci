@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 //! Separate-process recovery: only paths and independently retained pins cross
 //! the process boundary. No training candidate or model is passed to the child.
 use super::current_artifacts::Artifacts;

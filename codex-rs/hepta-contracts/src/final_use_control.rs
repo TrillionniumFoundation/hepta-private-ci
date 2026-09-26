@@ -684,16 +684,15 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
-    fn fixture() -> Result<
-        (
-            FinalUseAuthority,
-            SignedFinalUseGrant,
-            tempfile::TempDir,
-            SigningKey,
-            SigningKey,
-        ),
-        Box<dyn std::error::Error>,
-    > {
+    type Fixture = (
+        FinalUseAuthority,
+        SignedFinalUseGrant,
+        tempfile::TempDir,
+        SigningKey,
+        SigningKey,
+    );
+
+    fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
         let issuer = SigningKey::from_bytes(&[41; 32]);
         let approver = SigningKey::from_bytes(&[42; 32]);
         let distributor = SigningKey::from_bytes(&[43; 32]);

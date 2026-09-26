@@ -273,13 +273,15 @@ pub(super) fn decode_hex_array<const N: usize>(
             N * 2
         )));
     }
+    let bytes = value.as_bytes();
     let mut output = [0_u8; N];
-    for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
-        let high = hex_nibble(pair[0])
+    for (index, slot) in output.iter_mut().enumerate() {
+        let offset = index * 2;
+        let high = hex_nibble(bytes[offset])
             .ok_or_else(|| AgentdError::Invalid(format!("{label} contains non-hex data")))?;
-        let low = hex_nibble(pair[1])
+        let low = hex_nibble(bytes[offset + 1])
             .ok_or_else(|| AgentdError::Invalid(format!("{label} contains non-hex data")))?;
-        output[index] = (high << 4) | low;
+        *slot = (high << 4) | low;
     }
     Ok(output)
 }

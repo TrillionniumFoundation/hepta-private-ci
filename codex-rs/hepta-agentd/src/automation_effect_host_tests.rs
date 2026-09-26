@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;

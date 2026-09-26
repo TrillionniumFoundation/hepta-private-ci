@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 //! A valid signature on the V1 compatibility index cannot replace V2 lineage.
 use super::current_artifacts::Artifacts;
 use super::digest;

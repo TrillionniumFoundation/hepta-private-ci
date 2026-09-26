@@ -1202,12 +1202,13 @@ fn decode_effect_wire_hex(value: &str) -> Result<Vec<u8>, AgentdError> {
             "automation effect wire payload hex is empty, odd, or too large".to_string(),
         ));
     }
+    let bytes = value.as_bytes();
     let mut output = Vec::with_capacity(value.len() / 2);
-    for pair in value.as_bytes().chunks_exact(2) {
-        let high = control_hex_nibble(pair[0]).ok_or_else(|| {
+    for offset in (0..bytes.len()).step_by(2) {
+        let high = control_hex_nibble(bytes[offset]).ok_or_else(|| {
             AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
         })?;
-        let low = control_hex_nibble(pair[1]).ok_or_else(|| {
+        let low = control_hex_nibble(bytes[offset + 1]).ok_or_else(|| {
             AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
         })?;
         output.push((high << 4) | low);

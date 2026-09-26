@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 //! Qualification-only local keys and actual durable owners; no runtime authority.
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::Digest32;

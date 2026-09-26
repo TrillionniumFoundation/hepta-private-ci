@@ -616,46 +616,28 @@ impl AppServerModelDriver {
             Digest32::from_array(verified_use.claimed_revocation_head_sha256()).to_string();
         let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
 
-        let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(
-                    &turn_params.additional_context,
-                )?),
-                owner_context_digest,
-                codex_payload_digest: Some(payload_digest.to_string()),
-                codex_request_digest: Some(request_receipt.request_digest.to_string()),
-                app_server_version: Some(app_server_version.clone()),
-                protocol_id: Some(APP_SERVER_V2_PROTOCOL_ID.to_string()),
-                codex_source_admission_digest: Some(source_admission_digest.to_string()),
-                codex_home_digest: Some(codex_home_digest.to_string()),
-                codex_connection_id: Some(connection_id),
-                codex_session_id: Some(started.thread.session_id.clone()),
-                codex_deadline_ms: Some(adapter_intent.deadline_ms),
-                codex_authority_epoch: Some(authority_epoch),
-                codex_revocation_revision: Some(revocation_revision),
-                codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
-                codex_authority_witness_sha256: Some(authority_witness.clone()),
-            },
-        )?;
-        verify_persisted_dispatch_binding(
-            control,
-            request_id,
-            payload_digest,
-            request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
-        )?;
+        let expected_dispatch = NativeDispatch {
+            thread_id: started.thread.id.clone(),
+            model_provider: started.model_provider.clone(),
+            context_digest: control::digest(&serde_json::to_vec(&turn_params.additional_context)?),
+            owner_context_digest,
+            codex_payload_digest: Some(payload_digest.to_string()),
+            codex_request_digest: Some(request_receipt.request_digest.to_string()),
+            app_server_version: Some(app_server_version.clone()),
+            protocol_id: Some(APP_SERVER_V2_PROTOCOL_ID.to_string()),
+            codex_source_admission_digest: Some(source_admission_digest.to_string()),
+            codex_home_digest: Some(codex_home_digest.to_string()),
+            codex_connection_id: Some(connection_id),
+            codex_session_id: Some(started.thread.session_id.clone()),
+            codex_deadline_ms: Some(adapter_intent.deadline_ms),
+            codex_authority_epoch: Some(authority_epoch),
+            codex_revocation_revision: Some(revocation_revision),
+            codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
+            codex_authority_witness_sha256: Some(authority_witness.clone()),
+        };
+        let (_, pre_effect_abort) =
+            control.dispatch_native_with_pre_effect_abort(request_id, expected_dispatch.clone())?;
+        verify_persisted_dispatch_binding(control, request_id, &expected_dispatch)?;
 
         if let Some(binding) = intelligence {
             let dispatched = match owner
@@ -913,17 +895,16 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -1149,42 +1130,13 @@ async fn send_authorized_turn_start(
 fn verify_persisted_dispatch_binding(
     control: &DurableInferenceControl,
     request_id: &str,
-    payload_digest: Digest32,
-    request_digest: Digest32,
-    source_admission_digest: Digest32,
-    codex_home_digest: Digest32,
-    connection_id: u64,
-    session_id: &str,
-    deadline_ms: u64,
-    authority_epoch: u64,
-    revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
+    expected: &NativeDispatch,
 ) -> Result<()> {
-    let dispatch = control
+    let persisted = control
         .native_record(request_id)
         .and_then(|record| record.dispatch.as_ref())
         .ok_or("runtime.codex dispatch binding was not durably published")?;
-    let payload_digest = payload_digest.to_string();
-    let request_digest = request_digest.to_string();
-    let source_admission_digest = source_admission_digest.to_string();
-    let codex_home_digest = codex_home_digest.to_string();
-    let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
-        && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
-        && dispatch.codex_source_admission_digest.as_deref()
-            == Some(source_admission_digest.as_str())
-        && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
-        && dispatch.codex_connection_id == Some(connection_id)
-        && dispatch.codex_session_id.as_deref() == Some(session_id)
-        && dispatch.codex_deadline_ms == Some(deadline_ms)
-        && dispatch.codex_authority_epoch == Some(authority_epoch)
-        && dispatch.codex_revocation_revision == Some(revocation_revision)
-        && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
-        && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
-        && dispatch.app_server_version.as_deref() == Some(app_server_version)
-        && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
-    if !exact {
+    if persisted != expected {
         return Err("durable runtime.codex dispatch binding changed before physical send".into());
     }
     Ok(())

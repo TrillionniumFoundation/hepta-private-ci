@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 //! Product-qualification observations are synthetic test data, not field efficacy.
 //! The holdout CAS and evidence publication use real temporary files and fsync.
 use codex_hepta_intelligence_eval::*;

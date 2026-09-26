@@ -89,7 +89,7 @@ impl TempRoot {
         let nonce = NONCE.fetch_add(1, Ordering::Relaxed);
         let path =
             std::env::temp_dir().join(format!("hepta-ndu-{label}-{}-{nonce}", std::process::id()));
-        fs::create_dir(&path).expect("create temp NDU root");
+        must(fs::create_dir(&path));
         Self(path)
     }
 }

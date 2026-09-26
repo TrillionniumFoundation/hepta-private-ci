@@ -117,8 +117,10 @@ fn parse_sha256(value: &str) -> Result<[u8; 32], FleetAuthorityError> {
         return Err(FleetAuthorityError::InvalidSemanticDigest);
     }
     let mut digest = [0_u8; 32];
-    for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
-        digest[index] = (hex(pair[0])? << 4) | hex(pair[1])?;
+    let bytes = value.as_bytes();
+    for (index, slot) in digest.iter_mut().enumerate() {
+        let offset = index * 2;
+        *slot = (hex(bytes[offset])? << 4) | hex(bytes[offset + 1])?;
     }
     Ok(digest)
 }
@@ -147,6 +149,7 @@ impl fmt::Display for FleetAuthorityError {
 impl std::error::Error for FleetAuthorityError {}
 
 #[cfg(all(test, unix))]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
     use crate::lease_ledger::HostObservation;

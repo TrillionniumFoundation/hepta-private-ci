@@ -221,7 +221,7 @@ fn cross_agent_and_stale_generation_are_rejected_before_owner_reads() {
     let mut changed = identity.clone();
     changed.spawn_generation += 1;
     assert!(owners.provider.build(&changed, &record).is_err());
-    let mut changed = record.clone();
+    let mut changed = record;
     changed.snapshot.fence_digest = digest("foreign-run-fence");
     assert!(owners.provider.build(&identity, &changed).is_err());
     assert_eq!(
