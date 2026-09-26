@@ -191,7 +191,6 @@ impl AgentdPromptRuntimeOwner {
         }
 
         let mut effective_deadline_ms = requested_deadline_ms;
-        let mut fragments = Vec::with_capacity(compiled.selected_deliveries.len());
         for delivery in &compiled.selected_deliveries {
             if delivery.binding.role != PromptRoleV2::DeveloperInstruction {
                 return Err(AgentdPromptRuntimeError::UnsupportedPromptRole);
@@ -202,13 +201,13 @@ impl AgentdPromptRuntimeOwner {
                 }
                 effective_deadline_ms = effective_deadline_ms.min(expires_unix_ms);
             }
-            let text = std::str::from_utf8(&delivery.payload)
-                .map_err(|_| AgentdPromptRuntimeError::PayloadNotUtf8)?;
-            fragments.push(
-                PromptRuntimeDeveloperFragmentV1::new(text.to_owned())
-                    .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?,
-            );
         }
+        let canonical_bundle = std::str::from_utf8(&compiled.serialized_payload)
+            .map_err(|_| AgentdPromptRuntimeError::PayloadNotUtf8)?;
+        let fragments = vec![
+            PromptRuntimeDeveloperFragmentV1::new(canonical_bundle.to_owned())
+                .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?,
+        ];
 
         let attachment = PromptRuntimeAttachmentV1::new(
             compiled.compiled.receipt().compilation_id().clone(),

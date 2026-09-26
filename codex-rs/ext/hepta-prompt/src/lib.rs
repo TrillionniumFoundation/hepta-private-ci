@@ -42,8 +42,8 @@ use tokio::sync::Mutex;
 
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.runtime-codex.prompt-attachment.v1";
 const MAX_DEVELOPER_FRAGMENTS: usize = 128;
-const MAX_DEVELOPER_FRAGMENT_BYTES: usize = 64 * 1024;
-const MAX_DEVELOPER_TOTAL_BYTES: usize = 1024 * 1024;
+const MAX_DEVELOPER_FRAGMENT_BYTES: usize = 16 * 1024 * 1024;
+const MAX_DEVELOPER_TOTAL_BYTES: usize = 16 * 1024 * 1024;
 const MAX_MODEL_BYTES: usize = 256;
 
 /// One exact trusted developer-policy fragment prepared by the prompt owner.

@@ -13,9 +13,13 @@ use codex_hepta_context_compiler::CompiledContextV2;
 use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
+use codex_hepta_context_compiler::ContextRealizedItemV2;
+use codex_hepta_context_compiler::ContextRoleV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
+use codex_hepta_context_compiler::VerifiedAdmissionSnapshotV2;
+use codex_hepta_context_compiler::canonical_context_bundle_bytes_v2;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::DurableRegistryError;
@@ -35,7 +39,6 @@ use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 
 const COMPILED_DELIVERY_DOMAIN: &[u8] = b"hepta.prompt-registry.compiled-context.v3";
-const SERIALIZED_PAYLOAD_DOMAIN: &[u8] = b"hepta.prompt-registry.serialized-context.v3";
 const SELECTED_PROMPT_GROUP_ID: &str = "prompt:exercise-selected";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -57,6 +60,7 @@ pub struct PromptRegistryCompiledContextV2 {
     pub portfolio_receipt_digest: Digest32,
     pub compiled: CompiledContextV2,
     pub model_profile: ContextModelProfileV2,
+    pub admission_snapshot: VerifiedAdmissionSnapshotV2,
     pub selected_deliveries: Vec<RealizationDeliveryV2>,
     pub serialized_payload: Vec<u8>,
     pub serialization: ContextSerializationReceiptV2,
@@ -76,6 +80,8 @@ impl PromptRegistryCompiledContextV2 {
             .validate()
             .map_err(PromptRegistryCompilationErrorV2::Context)?;
         if self.authority.grants_any()
+            || self.admission_snapshot.snapshot_digest()
+                != self.attachment.admission_snapshot_digest()
             || self.delivery_set_digest.is_zero()
             || self.exercise_receipt_digest.is_zero()
             || self.portfolio_receipt_digest.is_zero()
@@ -198,7 +204,7 @@ pub fn compile_prompt_registry_v2(
                 .ok_or(PromptRegistryCompilationErrorV2::Integrity)
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let serialized_payload = serialize_selected_deliveries(&selected_deliveries);
+    let serialized_payload = serialize_selected_deliveries(&selected_deliveries)?;
     let delivery = prepare_prompt_delivery_v1(
         registry,
         portfolio,
@@ -229,6 +235,7 @@ pub fn compile_prompt_registry_v2(
         compatible,
         exercise_receipt_digest: delivery.exercise.receipt_digest,
         portfolio_receipt_digest: portfolio.receipt.receipt_digest,
+        admission_snapshot: prepared.admission_snapshot.clone(),
         compiled: prepared.compiled,
         model_profile,
         selected_deliveries,
@@ -244,40 +251,24 @@ pub fn compile_prompt_registry_v2(
     Ok(output)
 }
 
-fn serialize_selected_deliveries(deliveries: &[RealizationDeliveryV2]) -> Vec<u8> {
-    let mut bytes = SERIALIZED_PAYLOAD_DOMAIN.to_vec();
-    bytes.extend_from_slice(
-        &u64::try_from(deliveries.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
-    for delivery in deliveries {
-        let realization_id = delivery.binding.realization_id.as_str().as_bytes();
-        bytes.extend_from_slice(
-            &u64::try_from(realization_id.len())
-                .unwrap_or(u64::MAX)
-                .to_be_bytes(),
-        );
-        bytes.extend_from_slice(realization_id);
-        bytes.push(prompt_role_code(delivery.binding.role));
-        bytes.extend_from_slice(delivery.binding.digest().as_array());
-        bytes.extend_from_slice(
-            &u64::try_from(delivery.payload.len())
-                .unwrap_or(u64::MAX)
-                .to_be_bytes(),
-        );
-        bytes.extend_from_slice(&delivery.payload);
-    }
-    bytes
-}
-
-const fn prompt_role_code(role: PromptRoleV2) -> u8 {
-    match role {
-        PromptRoleV2::SystemInstruction => 0,
-        PromptRoleV2::DeveloperInstruction => 1,
-        PromptRoleV2::UserTemplate => 2,
-        PromptRoleV2::ToolSchemaFragment => 3,
-    }
+fn serialize_selected_deliveries(
+    deliveries: &[RealizationDeliveryV2],
+) -> Result<Vec<u8>, PromptRegistryCompilationErrorV2> {
+    let realizations = deliveries
+        .iter()
+        .map(|delivery| ContextRealizedItemV2 {
+            item_id: delivery.binding.realization_id.clone(),
+            role: match delivery.binding.role {
+                PromptRoleV2::ToolSchemaFragment => ContextRoleV2::Schema,
+                PromptRoleV2::SystemInstruction
+                | PromptRoleV2::DeveloperInstruction
+                | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
+            },
+            content: delivery.payload.clone(),
+        })
+        .collect::<Vec<_>>();
+    canonical_context_bundle_bytes_v2(&realizations)
+        .map_err(|_| PromptRegistryCompilationErrorV2::Integrity)
 }
 
 #[derive(Debug)]

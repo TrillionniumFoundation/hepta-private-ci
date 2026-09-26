@@ -25,7 +25,6 @@ use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextRealizedItemV2;
 use codex_hepta_context_compiler::ContextRoleV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
-use codex_hepta_context_compiler::ContextSerializerV2;
 use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
@@ -33,7 +32,7 @@ use codex_hepta_context_compiler::TokenizationReceiptV2;
 use codex_hepta_context_compiler::VerifiedAdmissionSnapshotV2;
 use codex_hepta_context_compiler::build_attachment;
 use codex_hepta_context_compiler::compile_v2;
-use codex_hepta_context_compiler::record_serialization;
+use codex_hepta_context_compiler::record_canonical_context_bundle_v2;
 use codex_hepta_context_compiler::verify_admission_snapshot_v2;
 use codex_hepta_context_compiler::verify_admission_v2;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1;
@@ -224,32 +223,6 @@ impl ExactTokenizerV2 for RegistryBoundTokenizer {
             .get(&Digest32::of_bytes(bytes))
             .copied()
             .ok_or(ContextCompilerV2Error::InvalidSerializedTokenCount)
-    }
-}
-
-#[derive(Clone, Debug)]
-struct ExactPreparedSerializer {
-    serializer_digest: Digest32,
-    template_digest: Digest32,
-    tool_schema_digest: Digest32,
-    payload: Vec<u8>,
-}
-
-impl ContextSerializerV2 for ExactPreparedSerializer {
-    fn serializer_digest(&self) -> Digest32 {
-        self.serializer_digest
-    }
-    fn template_digest(&self) -> Digest32 {
-        self.template_digest
-    }
-    fn tool_schema_digest(&self) -> Digest32 {
-        self.tool_schema_digest
-    }
-    fn serialize(
-        &self,
-        _items: &[ContextRealizedItemV2],
-    ) -> Result<Vec<u8>, ContextCompilerV2Error> {
-        Ok(self.payload.clone())
     }
 }
 
@@ -484,21 +457,17 @@ pub fn prepare_prompt_delivery_v1(
         tokenizer_digest: prepared.model_profile.tokenizer_digest,
         exact_counts: counts,
     };
-    let serializer = ExactPreparedSerializer {
-        serializer_digest: prepared.model_profile.serializer_digest,
-        template_digest: prepared.model_profile.template_digest,
-        tool_schema_digest: prepared.model_profile.tool_schema_digest,
-        payload: serialized_payload.clone(),
-    };
-    let serialized_context = record_serialization(
+    let serialized_context = record_canonical_context_bundle_v2(
         &prepared.compiled,
         &prepared.model_profile,
         serialization_id,
         realizations,
-        &serializer,
         &tokenizer,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+    if serialized_context.payload() != serialized_payload.as_slice() {
+        return Err(PromptPipelineErrorV1::SerializationProofDrift);
+    }
     let serialization = serialized_context.receipt().clone();
     let attachment = build_attachment(
         &prepared.compiled,

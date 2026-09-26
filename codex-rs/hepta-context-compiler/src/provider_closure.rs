@@ -12,6 +12,8 @@
 
 use std::fmt;
 
+use serde::Serialize;
+
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -22,18 +24,22 @@ use crate::ContextAttachmentV2;
 use crate::ContextCompilerV2Error;
 use crate::ContextDeliveryPreparationV2;
 use crate::ContextModelProfileV2;
+use crate::ContextRealizedItemV2;
+use crate::ContextRoleV2;
+use crate::ContextSerializerV2;
+use crate::ExactTokenizerV2;
 use crate::SerializedContextV2;
 use crate::VerifiedAdmissionSnapshotV2;
 use crate::prepare_delivery_v2;
+use crate::record_serialization;
 use crate::verify_admission_snapshot_successor_v2;
 
-const SNAPSHOT_SUCCESSOR_DOMAIN: &[u8] =
-    b"hepta.context-verified-admission-snapshot-successor.v2";
+const SNAPSHOT_SUCCESSOR_DOMAIN: &[u8] = b"hepta.context-verified-admission-snapshot-successor.v2";
 const TOKENIZER_IDENTITY_DOMAIN: &[u8] = b"hepta.context-final-request-tokenizer-identity.v2";
-const TOKENIZATION_RECEIPT_DOMAIN: &[u8] =
-    b"hepta.context-final-request-tokenization-receipt.v2";
+const TOKENIZATION_RECEIPT_DOMAIN: &[u8] = b"hepta.context-final-request-tokenization-receipt.v2";
 const SEGMENT_MAP_DOMAIN: &[u8] = b"hepta.context-final-request-segment-map.v2";
 const FINAL_REQUEST_PROOF_DOMAIN: &[u8] = b"hepta.context-final-provider-request-proof.v2";
+const CANONICAL_CONTEXT_BUNDLE_SCHEMA_V2: &str = "hepta.context-bundle.v2";
 
 pub const MAX_FINAL_PROVIDER_REQUEST_BYTES_V2: usize = 32 * 1024 * 1024;
 pub const MAX_FINAL_PROVIDER_REQUEST_SEGMENTS_V2: usize = 3;
@@ -85,7 +91,7 @@ impl VerifiedAdmissionSnapshotSuccessorV2 {
     }
 
     #[must_use]
-    pub const fn successor_snapshot_digest(&self) -> Digest32 {
+    pub fn successor_snapshot_digest(&self) -> Digest32 {
         self.verified_snapshot.snapshot_digest()
     }
 
@@ -166,6 +172,113 @@ pub fn prepare_delivery_from_successor_v2(
         successor.verified_snapshot(),
         preparation_id,
     )?)
+}
+
+#[derive(Serialize)]
+struct CanonicalContextBundleEnvelopeV2<'a> {
+    schema: &'static str,
+    items: Vec<CanonicalContextBundleItemV2<'a>>,
+}
+
+#[derive(Serialize)]
+struct CanonicalContextBundleItemV2<'a> {
+    item_id: &'a str,
+    role: &'static str,
+    content_sha256: String,
+    content: &'a str,
+}
+
+#[derive(Clone, Debug)]
+struct CanonicalContextBundleSerializerV2 {
+    serializer_digest: Digest32,
+    template_digest: Digest32,
+    tool_schema_digest: Digest32,
+}
+
+impl CanonicalContextBundleSerializerV2 {
+    fn for_profile(profile: &ContextModelProfileV2) -> Self {
+        Self {
+            serializer_digest: profile.serializer_digest,
+            template_digest: profile.template_digest,
+            tool_schema_digest: profile.tool_schema_digest,
+        }
+    }
+}
+
+impl ContextSerializerV2 for CanonicalContextBundleSerializerV2 {
+    fn serializer_digest(&self) -> Digest32 {
+        self.serializer_digest
+    }
+
+    fn template_digest(&self) -> Digest32 {
+        self.template_digest
+    }
+
+    fn tool_schema_digest(&self) -> Digest32 {
+        self.tool_schema_digest
+    }
+
+    fn serialize(
+        &self,
+        items: &[ContextRealizedItemV2],
+    ) -> Result<Vec<u8>, ContextCompilerV2Error> {
+        canonical_context_bundle_bytes_core(items)
+    }
+}
+
+/// Render the only product-authorized context bundle. Serde struct field order,
+/// compiler-selected item order, explicit role labels, content digests, and
+/// UTF-8 rejection make this byte sequence deterministic and reviewable.
+pub fn canonical_context_bundle_bytes_v2(
+    items: &[ContextRealizedItemV2],
+) -> Result<Vec<u8>, ProviderClosureErrorV2> {
+    Ok(canonical_context_bundle_bytes_core(items)?)
+}
+
+/// Record a serialization receipt using the compiler-owned canonical serializer.
+/// Product callsites use this instead of supplying a `ContextSerializerV2`.
+pub fn record_canonical_context_bundle_v2(
+    compiled: &crate::CompiledContextV2,
+    profile: &ContextModelProfileV2,
+    serialization_id: StableId,
+    realizations: Vec<ContextRealizedItemV2>,
+    tokenizer: &impl ExactTokenizerV2,
+) -> Result<SerializedContextV2, ProviderClosureErrorV2> {
+    let serializer = CanonicalContextBundleSerializerV2::for_profile(profile);
+    Ok(record_serialization(
+        compiled,
+        profile,
+        serialization_id,
+        realizations,
+        &serializer,
+        tokenizer,
+    )?)
+}
+
+fn canonical_context_bundle_bytes_core(
+    items: &[ContextRealizedItemV2],
+) -> Result<Vec<u8>, ContextCompilerV2Error> {
+    let mut encoded_items = Vec::with_capacity(items.len());
+    for item in items {
+        let content = std::str::from_utf8(&item.content)
+            .map_err(|_| ContextCompilerV2Error::SerializationMismatch)?;
+        let role = match item.role {
+            ContextRoleV2::TrustedInstruction => "trusted_instruction",
+            ContextRoleV2::Schema => "schema",
+            ContextRoleV2::UntrustedEvidence => "untrusted_evidence",
+        };
+        encoded_items.push(CanonicalContextBundleItemV2 {
+            item_id: item.item_id.as_str(),
+            role,
+            content_sha256: Digest32::of_bytes(&item.content).to_string(),
+            content,
+        });
+    }
+    serde_json::to_vec(&CanonicalContextBundleEnvelopeV2 {
+        schema: CANONICAL_CONTEXT_BUNDLE_SCHEMA_V2,
+        items: encoded_items,
+    })
+    .map_err(|_| ContextCompilerV2Error::SerializationMismatch)
 }
 
 /// Identity of the exact tokenizer executable and vocabulary used on the
@@ -596,24 +709,25 @@ fn build_segment_map(
             Err(ProviderClosureErrorV2::ContextPayloadAmbiguous)
         };
     };
+    let start = *start;
     let end = start
         .checked_add(encoded_payload.len())
         .ok_or(ProviderClosureErrorV2::Arithmetic)?;
     let mut segments = Vec::with_capacity(MAX_FINAL_PROVIDER_REQUEST_SEGMENTS_V2);
-    if *start > 0 {
+    if start > 0 {
         segments.push(segment(
             FinalRequestSegmentKindV2::TypedProviderFraming,
             0,
-            *start,
-            &request[..*start],
+            start,
+            &request[..start],
             None,
         )?);
     }
     segments.push(segment(
         FinalRequestSegmentKindV2::CanonicalContextBundle,
-        *start,
+        start,
         end,
-        &request[*start..end],
+        &request[start..end],
         Some(source_payload_digest),
     )?);
     if end < request.len() {
@@ -744,7 +858,10 @@ mod tests {
             FinalRequestSegmentKindV2::CanonicalContextBundle
         );
         assert_eq!(segments[0].start_offset(), 0);
-        assert_eq!(segments.last().expect("last").end_offset(), request.len() as u64);
+        assert_eq!(
+            segments.last().expect("last").end_offset(),
+            request.len() as u64
+        );
     }
 
     #[test]
@@ -762,7 +879,7 @@ mod tests {
         let payload = b"context-bundle";
         let mut request = vec![b'a'; 1024 * 1024];
         request.extend_from_slice(payload);
-        request.extend(std::iter::repeat_n(b'z', 1024 * 1024));
+        request.extend(std::iter::repeat(b'z').take(1024 * 1024));
         let segments = build_segment_map(&request, payload, digest("payload")).expect("proof");
         assert_eq!(segments.len(), MAX_FINAL_PROVIDER_REQUEST_SEGMENTS_V2);
         validate_segment_coverage(&segments, request.len() as u64).expect("coverage");
