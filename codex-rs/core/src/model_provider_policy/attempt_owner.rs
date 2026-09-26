@@ -1,12 +1,72 @@
+use std::fmt;
+use std::sync::Arc;
+
+use codex_api::EncodedRequestBodyObserver;
 use codex_api::RequestDispatchMetadata;
 use codex_extension_api::ModelProviderAttemptLease;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderTerminal;
+use futures::future::BoxFuture;
+use tokio::sync::Mutex;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 
 const OWNER_DROPPED_BEFORE_DISPATCH: &str = "model_provider_policy_owner_dropped_before_dispatch";
 const OWNER_DROPPED_AFTER_DISPATCH: &str = "model_provider_policy_owner_dropped_after_dispatch";
+
+struct SharedAttemptLease {
+    lease: Mutex<Option<Box<dyn ModelProviderAttemptLease>>>,
+}
+
+impl SharedAttemptLease {
+    fn new(lease: Box<dyn ModelProviderAttemptLease>) -> Self {
+        Self {
+            lease: Mutex::new(Some(lease)),
+        }
+    }
+
+    async fn finish(
+        &self,
+        terminal: ModelProviderTerminal,
+    ) -> Result<(), ModelProviderPolicyError> {
+        let lease = self
+            .lease
+            .lock()
+            .await
+            .take()
+            .ok_or_else(owner_stopped_error)?;
+        lease.finish(terminal).await
+    }
+}
+
+struct LeaseFinalRequestObserver {
+    lease: Arc<SharedAttemptLease>,
+}
+
+impl fmt::Debug for LeaseFinalRequestObserver {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("LeaseFinalRequestObserver")
+            .finish_non_exhaustive()
+    }
+}
+
+impl EncodedRequestBodyObserver for LeaseFinalRequestObserver {
+    fn observe_encoded_body<'a>(
+        &'a self,
+        body: &'a [u8],
+    ) -> BoxFuture<'a, Result<(), String>> {
+        Box::pin(async move {
+            let guard = self.lease.lease.lock().await;
+            let lease = guard.as_ref().ok_or_else(|| {
+                "provider attempt lease was consumed before final request observation".to_owned()
+            })?;
+            lease.observe_final_request(body).await.map_err(|error| {
+                format!("{}: {}", error.reason_code(), error.detail())
+            })
+        })
+    }
+}
 
 /// Cancellation-safe terminal owner for one admitted physical provider send.
 ///
@@ -23,14 +83,39 @@ impl ProviderAttemptOwner {
         lease: Box<dyn ModelProviderAttemptLease>,
         dispatch_metadata: RequestDispatchMetadata,
     ) -> Self {
-        Self::new_with_dispatch_probe(
+        let requires_final_request_observation = lease.requires_final_request_observation();
+        let lease = Arc::new(SharedAttemptLease::new(lease));
+        if requires_final_request_observation {
+            dispatch_metadata.require_final_request_observation();
+        }
+        if requires_final_request_observation
+            && let Err(error) = dispatch_metadata.install_final_request_observer(Arc::new(
+                LeaseFinalRequestObserver {
+                    lease: Arc::clone(&lease),
+                },
+            ))
+        {
+            tracing::error!(
+                detail = error,
+                "provider final-request observer installation invariant failed"
+            );
+        }
+        Self::new_with_shared_lease(
             lease,
             Box::new(move || dispatch_metadata.transport_invoked()),
         )
     }
 
+    #[cfg(test)]
     fn new_with_dispatch_probe(
         lease: Box<dyn ModelProviderAttemptLease>,
+        dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
+    ) -> Self {
+        Self::new_with_shared_lease(Arc::new(SharedAttemptLease::new(lease)), dispatch_probe)
+    }
+
+    fn new_with_shared_lease(
+        lease: Arc<SharedAttemptLease>,
         dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
     ) -> Self {
         let (commands, receiver) = mpsc::unbounded_channel();
@@ -61,7 +146,7 @@ enum OwnerCommand {
 }
 
 async fn run_owner(
-    lease: Box<dyn ModelProviderAttemptLease>,
+    lease: Arc<SharedAttemptLease>,
     dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
     mut commands: mpsc::UnboundedReceiver<OwnerCommand>,
 ) {
