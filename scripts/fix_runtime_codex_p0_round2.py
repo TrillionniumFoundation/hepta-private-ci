@@ -69,4 +69,36 @@ fn idempotent_dispatch_loser_never_aborts_the_global_owner() {
 '''
     target.write_text(text + "\n", encoding="utf-8")
 
-print("runtime.codex exact-dispatch winner preservation applied")
+# The native caller now enters the physical turn through a sealed helper. Keep
+# the ordering test bound to that exact effect entry rather than a stale inner
+# client implementation string.
+replace_once(
+    test_path,
+    '.find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")',
+    '.find("send_authorized_turn_start(&mut client")',
+)
+
+# The cross-crate cognitive product fixture runs an in-process App Server under
+# the deny-only model profile. App Server construction requires an explicit
+# re-exec identity even though this profile cannot expose tools or execute a
+# child helper. Bind the exact test harness path so startup is explicit and any
+# accidental helper re-entry fails closed inside the test process.
+replace_once(
+    "codex-rs/hepta-agentd/src/test_support.rs",
+    '''        let control_task = tokio::spawn(control.run());
+        let app_server_task = tokio::spawn(run_app_server(
+            identity.clone(),
+            Arg0DispatchPaths::default(),
+''',
+    '''        let control_task = tokio::spawn(control.run());
+        let test_harness_exe = std::env::current_exe()?.canonicalize()?;
+        let app_server_task = tokio::spawn(run_app_server(
+            identity.clone(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(test_harness_exe),
+                ..Arg0DispatchPaths::default()
+            },
+''',
+)
+
+print("runtime.codex exact-dispatch winner and P0 test seams repaired")
