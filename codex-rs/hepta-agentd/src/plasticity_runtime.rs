@@ -51,7 +51,7 @@ const DEFAULT_PLASTICITY_DEADLINE_SECONDS: u64 = 30;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PlasticityRuntimeBudgetV1 {
-    /// Absolute Unix deadline. Admission never treats queue acceptance as success.
+    /// Absolute Unix deadline, independent from evidence observation time.
     pub deadline_unix_seconds: u64,
     /// Conservative in-memory request-size estimate supplied by the producer.
     pub encoded_bytes: u64,
@@ -60,8 +60,8 @@ pub struct PlasticityRuntimeBudgetV1 {
 }
 
 impl PlasticityRuntimeBudgetV1 {
-    pub fn validate(self, now: u64) -> Result<(), PlasticityRuntimeCallErrorV1> {
-        if self.deadline_unix_seconds <= now {
+    pub fn validate(self, wall_now: u64) -> Result<(), PlasticityRuntimeCallErrorV1> {
+        if self.deadline_unix_seconds <= wall_now {
             return Err(PlasticityRuntimeCallErrorV1::DeadlineExceeded);
         }
         if self.encoded_bytes == 0
@@ -85,8 +85,8 @@ pub struct PlasticityRuntimeMetricsSnapshotV1 {
     pub completed: u64,
     pub queue_wait_micros: u64,
     /// Includes current-frontier resolution, cryptographic verification,
-    /// registry append, fsync and external anchor commit. The product adapter
-    /// remains the authoritative source for individual phase receipts.
+    /// registry append, fsync and external anchor commit. Product receipts remain
+    /// the authoritative source for the exact durability boundary.
     pub verification_append_anchor_micros: u64,
 }
 
@@ -124,6 +124,18 @@ impl PlasticityRuntimeMetricsV1 {
         let micros = u64::try_from(duration.as_micros()).unwrap_or(u64::MAX);
         counter.fetch_add(micros, Ordering::Relaxed);
     }
+
+    fn record_rejection(&self, error: &PlasticityRuntimeCallErrorV1) {
+        match error {
+            PlasticityRuntimeCallErrorV1::DeadlineExceeded => {
+                self.deadline_rejections.fetch_add(1, Ordering::Relaxed);
+            }
+            PlasticityRuntimeCallErrorV1::BudgetExceeded => {
+                self.budget_rejections.fetch_add(1, Ordering::Relaxed);
+            }
+            _ => {}
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -147,7 +159,7 @@ impl StdError for PlasticityRuntimeCallErrorV1 {}
 
 struct RuntimeEnvelopeV1<T, R> {
     request: Box<T>,
-    now: u64,
+    evidence_now: u64,
     budget: PlasticityRuntimeBudgetV1,
     enqueued_at: Instant,
     cancellation: CancellationToken,
@@ -172,28 +184,33 @@ impl PlasticityRuntimeHandleV1 {
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
-        now: u64,
+        evidence_now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        let budget = estimate_parameter_budget(&request, now)?;
-        self.propose_parameter_with_budget(request, now, budget, CancellationToken::new())
-            .await
+        let budget = estimate_parameter_budget(&request)?;
+        self.propose_parameter_with_budget(
+            request,
+            evidence_now,
+            budget,
+            CancellationToken::new(),
+        )
+        .await
     }
 
     pub async fn propose_parameter_with_budget(
         &self,
         request: ParameterPlasticityProductRequestV1,
-        now: u64,
+        evidence_now: u64,
         budget: PlasticityRuntimeBudgetV1,
         cancellation: CancellationToken,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        if let Err(error) = budget.validate(now) {
-            self.metrics.budget_rejections.fetch_add(1, Ordering::Relaxed);
+        if let Err(error) = budget.validate(wall_clock_unix_seconds()?) {
+            self.metrics.record_rejection(&error);
             return Err(error);
         }
         let (response, receive) = oneshot::channel();
         let command = RuntimeEnvelopeV1 {
             request: Box::new(request),
-            now,
+            evidence_now,
             budget,
             enqueued_at: Instant::now(),
             cancellation: cancellation.clone(),
@@ -215,28 +232,33 @@ impl PlasticityRuntimeHandleV1 {
     pub async fn propose_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
-        now: u64,
+        evidence_now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        let budget = estimate_topology_budget(&request, now)?;
-        self.propose_topology_with_budget(request, now, budget, CancellationToken::new())
-            .await
+        let budget = estimate_topology_budget(&request)?;
+        self.propose_topology_with_budget(
+            request,
+            evidence_now,
+            budget,
+            CancellationToken::new(),
+        )
+        .await
     }
 
     pub async fn propose_topology_with_budget(
         &self,
         request: TopologyPlasticityProductRequestV1,
-        now: u64,
+        evidence_now: u64,
         budget: PlasticityRuntimeBudgetV1,
         cancellation: CancellationToken,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        if let Err(error) = budget.validate(now) {
-            self.metrics.budget_rejections.fetch_add(1, Ordering::Relaxed);
+        if let Err(error) = budget.validate(wall_clock_unix_seconds()?) {
+            self.metrics.record_rejection(&error);
             return Err(error);
         }
         let (response, receive) = oneshot::channel();
         let command = RuntimeEnvelopeV1 {
             request: Box::new(request),
-            now,
+            evidence_now,
             budget,
             enqueued_at: Instant::now(),
             cancellation: cancellation.clone(),
@@ -278,20 +300,21 @@ async fn receive_before_deadline<T>(
 }
 
 fn remaining_until(deadline_unix_seconds: u64) -> Result<Duration, PlasticityRuntimeCallErrorV1> {
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|_| PlasticityRuntimeCallErrorV1::DeadlineExceeded)?
-        .as_secs();
     deadline_unix_seconds
-        .checked_sub(now)
+        .checked_sub(wall_clock_unix_seconds()?)
         .filter(|value| *value > 0)
         .map(Duration::from_secs)
         .ok_or(PlasticityRuntimeCallErrorV1::DeadlineExceeded)
 }
 
+fn default_deadline() -> Result<u64, PlasticityRuntimeCallErrorV1> {
+    wall_clock_unix_seconds()?
+        .checked_add(DEFAULT_PLASTICITY_DEADLINE_SECONDS)
+        .ok_or(PlasticityRuntimeCallErrorV1::DeadlineExceeded)
+}
+
 fn estimate_parameter_budget(
     request: &ParameterPlasticityProductRequestV1,
-    now: u64,
 ) -> Result<PlasticityRuntimeBudgetV1, PlasticityRuntimeCallErrorV1> {
     let signal_count = u64::try_from(request.generator_profile.signals.len())
         .map_err(|_| PlasticityRuntimeCallErrorV1::BudgetExceeded)?;
@@ -320,9 +343,7 @@ fn estimate_parameter_budget(
         .and_then(|value| value.checked_add(evaluation_count.saturating_mul(4_096)))
         .ok_or(PlasticityRuntimeCallErrorV1::BudgetExceeded)?;
     Ok(PlasticityRuntimeBudgetV1 {
-        deadline_unix_seconds: now
-            .checked_add(DEFAULT_PLASTICITY_DEADLINE_SECONDS)
-            .ok_or(PlasticityRuntimeCallErrorV1::DeadlineExceeded)?,
+        deadline_unix_seconds: default_deadline()?,
         encoded_bytes,
         estimated_work,
     })
@@ -330,16 +351,13 @@ fn estimate_parameter_budget(
 
 fn estimate_topology_budget(
     request: &TopologyPlasticityProductRequestV1,
-    now: u64,
 ) -> Result<PlasticityRuntimeBudgetV1, PlasticityRuntimeCallErrorV1> {
     let change_count = u64::try_from(request.changes.len())
         .map_err(|_| PlasticityRuntimeCallErrorV1::BudgetExceeded)?;
     let handoff_count = u64::try_from(request.handoffs.len())
         .map_err(|_| PlasticityRuntimeCallErrorV1::BudgetExceeded)?;
     Ok(PlasticityRuntimeBudgetV1 {
-        deadline_unix_seconds: now
-            .checked_add(DEFAULT_PLASTICITY_DEADLINE_SECONDS)
-            .ok_or(PlasticityRuntimeCallErrorV1::DeadlineExceeded)?,
+        deadline_unix_seconds: default_deadline()?,
         encoded_bytes: 4_096_u64
             .checked_add(change_count.saturating_mul(1_024))
             .and_then(|value| value.checked_add(handoff_count.saturating_mul(512)))
@@ -581,7 +599,7 @@ impl PlasticityRuntimeOwnerV1 {
     ) -> Result<(), AgentdError> {
         let RuntimeEnvelopeV1 {
             request,
-            now,
+            evidence_now,
             budget,
             enqueued_at,
             cancellation,
@@ -591,9 +609,9 @@ impl PlasticityRuntimeOwnerV1 {
             self.metrics.cancelled_before_execution.fetch_add(1, Ordering::Relaxed);
             return Ok(());
         }
-        if budget.validate(current_unix_seconds()?).is_err() {
-            self.metrics.deadline_rejections.fetch_add(1, Ordering::Relaxed);
-            let _ = response.send(Err(PlasticityRuntimeCallErrorV1::DeadlineExceeded));
+        if let Err(error) = budget.validate(wall_clock_unix_seconds().map_err(runtime_error)?) {
+            self.metrics.record_rejection(&error);
+            let _ = response.send(Err(error));
             return Ok(());
         }
         PlasticityRuntimeMetricsV1::add_duration(
@@ -629,7 +647,7 @@ impl PlasticityRuntimeOwnerV1 {
                 verifier,
                 parameter_writer,
                 parameter_anchor_store,
-                now,
+                evidence_now,
             )
             .map_err(PlasticityRuntimeCallErrorV1::Parameter)
         })
@@ -653,7 +671,7 @@ impl PlasticityRuntimeOwnerV1 {
     ) -> Result<(), AgentdError> {
         let RuntimeEnvelopeV1 {
             request,
-            now,
+            evidence_now,
             budget,
             enqueued_at,
             cancellation,
@@ -663,9 +681,9 @@ impl PlasticityRuntimeOwnerV1 {
             self.metrics.cancelled_before_execution.fetch_add(1, Ordering::Relaxed);
             return Ok(());
         }
-        if budget.validate(current_unix_seconds()?).is_err() {
-            self.metrics.deadline_rejections.fetch_add(1, Ordering::Relaxed);
-            let _ = response.send(Err(PlasticityRuntimeCallErrorV1::DeadlineExceeded));
+        if let Err(error) = budget.validate(wall_clock_unix_seconds().map_err(runtime_error)?) {
+            self.metrics.record_rejection(&error);
+            let _ = response.send(Err(error));
             return Ok(());
         }
         PlasticityRuntimeMetricsV1::add_duration(
@@ -697,7 +715,7 @@ impl PlasticityRuntimeOwnerV1 {
                 verifier,
                 topology_writer,
                 topology_anchor_store,
-                now,
+                evidence_now,
             )
             .map_err(PlasticityRuntimeCallErrorV1::Topology)
         })
@@ -720,11 +738,15 @@ enum NextPlasticityCommandV1 {
     Topology(TopologyCommandV1),
 }
 
-fn current_unix_seconds() -> Result<u64, AgentdError> {
+fn wall_clock_unix_seconds() -> Result<u64, PlasticityRuntimeCallErrorV1> {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_secs())
-        .map_err(|_| AgentdError::Invalid("system time is before Unix epoch".to_string()))
+        .map_err(|_| PlasticityRuntimeCallErrorV1::DeadlineExceeded)
+}
+
+fn runtime_error(_error: PlasticityRuntimeCallErrorV1) -> AgentdError {
+    AgentdError::Invalid("system time is before Unix epoch".to_string())
 }
 
 #[cfg(test)]
@@ -745,7 +767,7 @@ mod tests {
 
     #[test]
     fn runtime_budget_rejects_expired_and_oversized_requests() {
-        assert_eq!(
+        assert!(matches!(
             PlasticityRuntimeBudgetV1 {
                 deadline_unix_seconds: 10,
                 encoded_bytes: 1,
@@ -753,8 +775,8 @@ mod tests {
             }
             .validate(10),
             Err(PlasticityRuntimeCallErrorV1::DeadlineExceeded)
-        );
-        assert_eq!(
+        ));
+        assert!(matches!(
             PlasticityRuntimeBudgetV1 {
                 deadline_unix_seconds: 11,
                 encoded_bytes: MAX_PLASTICITY_REQUEST_BYTES + 1,
@@ -762,6 +784,6 @@ mod tests {
             }
             .validate(10),
             Err(PlasticityRuntimeCallErrorV1::BudgetExceeded)
-        );
+        ));
     }
 }
