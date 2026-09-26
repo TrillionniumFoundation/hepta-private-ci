@@ -59,6 +59,28 @@ pub(crate) async fn reconcile_one(
     Ok(true)
 }
 
+pub(crate) async fn reconcile_bounded(
+    store: &AutomationStore,
+    state: &AgentdState,
+    identity: &AgentdIdentity,
+    now_ms: u64,
+    budget: usize,
+) -> Result<usize, AgentdError> {
+    if budget == 0 {
+        return Err(AgentdError::Protocol(
+            "automation recovery budget must be non-zero".to_string(),
+        ));
+    }
+    let mut reconciled = 0;
+    for _ in 0..budget {
+        if !reconcile_one(store, state, identity, now_ms).await? {
+            break;
+        }
+        reconciled += 1;
+    }
+    Ok(reconciled)
+}
+
 async fn reconcile_one_unknown_dispatch(
     store: &AutomationStore,
     state: &AgentdState,

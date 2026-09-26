@@ -14,12 +14,16 @@ use codex_app_server_protocol::ThreadQueueReconcileParams;
 use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationAdmission;
+use codex_hepta_automation::AutomationBatchLimits;
 use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::AutomationFailureDisposition;
 use codex_hepta_automation::AutomationFuture;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationScheduler;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_automation::bounded_automation_retry_delay_ms;
+use codex_hepta_automation::classify_automation_error;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio_util::sync::CancellationToken;
 
@@ -32,6 +36,9 @@ const AUTOMATION_TICK_INTERVAL: Duration = Duration::from_millis(250);
 const AUTOMATION_LEASE_DURATION: Duration = Duration::from_secs(30);
 const AUTOMATION_DISPATCH_TIMEOUT: Duration = Duration::from_secs(5);
 const AUTOMATION_MAX_CONSECUTIVE_DISPATCH_RETRIES: u8 = 3;
+const AUTOMATION_MAX_CONSECUTIVE_RUNTIME_RETRIES: u8 = 3;
+const AUTOMATION_RECOVERY_BUDGET: usize = 4;
+const AUTOMATION_ADMISSION_BUDGET: usize = 8;
 const APP_SERVER_COMMAND_CAPACITY: usize = 8;
 const APP_SERVER_EVENT_CAPACITY: usize = 16;
 
@@ -250,7 +257,10 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     cancellation: CancellationToken,
     tick_interval: Duration,
 ) -> Result<(), AgentdError> {
+    let batch_limits =
+        AutomationBatchLimits::new(AUTOMATION_ADMISSION_BUDGET).map_err(AgentdError::from)?;
     let mut retry_budget = DispatchRetryBudget::default();
+    let mut runtime_error_budget = RuntimeErrorBudget::default();
     loop {
         tokio::select! {
             biased;
@@ -279,9 +289,14 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         // Reconcile one durable historical occurrence before admitting new
         // work. This is bounded to one item/turn-page chain per tick and does
         // not prevent an overlap-allowed scheduler from also making progress.
-        if let Err(error) =
-            automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
-                .await
+        if let Err(error) = automation_recovery::reconcile_bounded(
+            scheduler.store(),
+            &state,
+            state.identity(),
+            now_ms,
+            AUTOMATION_RECOVERY_BUDGET,
+        )
+        .await
         {
             return stop_after_recovery_error(error, &state, &cancellation).await;
         }
@@ -289,17 +304,33 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if cancellation.is_cancelled() {
             return Ok(());
         }
-        // Once admitted, the tick must record the queue outcome. Dropping this
-        // future on cancellation could lose an acknowledgement after dispatch.
-        match scheduler.tick(now_ms).await {
-            Ok(tick) => {
-                if handle_automation_tick(tick, &mut retry_budget, &state, &cancellation).await? {
-                    return Ok(());
+        // Every occurrence still records its own queue outcome before the
+        // next one is admitted. The batch is bounded and sequential.
+        match scheduler.tick_batch(now_ms, batch_limits).await {
+            Ok(batch) => {
+                runtime_error_budget.reset();
+                for tick in batch.ticks {
+                    if handle_automation_tick(tick, &mut retry_budget, &state, &cancellation)
+                        .await?
+                    {
+                        return Ok(());
+                    }
                 }
             }
-            Err(error) => {
-                return stop_after_automation_error(error, &state, &cancellation).await;
-            }
+            Err(error) => match classify_automation_error(&error) {
+                AutomationFailureDisposition::FailStop => {
+                    return stop_after_automation_error(error, &state, &cancellation).await;
+                }
+                AutomationFailureDisposition::Retry => {
+                    let Some(delay) = runtime_error_budget.next_delay() else {
+                        return stop_after_automation_error(error, &state, &cancellation).await;
+                    };
+                    tokio::time::sleep(delay).await;
+                }
+                AutomationFailureDisposition::Isolate | AutomationFailureDisposition::Reconcile => {
+                    runtime_error_budget.reset();
+                }
+            },
         }
     }
 }
@@ -344,6 +375,27 @@ impl DispatchRetryBudget {
             }
         }
         self.consecutive_retries >= AUTOMATION_MAX_CONSECUTIVE_DISPATCH_RETRIES
+    }
+}
+
+#[derive(Default)]
+struct RuntimeErrorBudget {
+    consecutive_retries: u8,
+}
+
+impl RuntimeErrorBudget {
+    fn next_delay(&mut self) -> Option<Duration> {
+        self.consecutive_retries = self.consecutive_retries.saturating_add(1);
+        if self.consecutive_retries > AUTOMATION_MAX_CONSECUTIVE_RUNTIME_RETRIES {
+            return None;
+        }
+        Some(Duration::from_millis(bounded_automation_retry_delay_ms(
+            self.consecutive_retries,
+        )))
+    }
+
+    fn reset(&mut self) {
+        self.consecutive_retries = 0;
     }
 }
 

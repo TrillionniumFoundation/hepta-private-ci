@@ -15,6 +15,37 @@ use crate::admission_receipt_digest;
 pub type AutomationFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, AutomationError>> + Send + 'a>>;
 
+/// Hard source bound for one scheduler admission pass. Product hosts may
+/// choose a smaller value; callers cannot request unbounded draining.
+pub const MAX_AUTOMATION_ADMISSION_BATCH: usize = 64;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct AutomationBatchLimits {
+    max_admissions: usize,
+}
+
+impl AutomationBatchLimits {
+    pub fn new(max_admissions: usize) -> Result<Self, AutomationError> {
+        if max_admissions == 0 || max_admissions > MAX_AUTOMATION_ADMISSION_BATCH {
+            return Err(AutomationError::Invalid);
+        }
+        Ok(Self { max_admissions })
+    }
+
+    #[must_use]
+    pub const fn max_admissions(self) -> usize {
+        self.max_admissions
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AutomationBatch {
+    pub ticks: Vec<AutomationTick>,
+    /// True only when every admitted item consumed the configured source
+    /// budget. It is backlog pressure, not proof that more work exists.
+    pub budget_exhausted: bool,
+}
+
 /// The only Codex admission seam available to the timer scheduler.
 ///
 /// Product implementations must use the owning Agent's durable App Server
@@ -155,6 +186,33 @@ where
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
             queued_submission_id: receipt.queued_submission_id,
+        })
+    }
+
+    /// Admit a bounded FIFO batch through the existing single-occurrence
+    /// transaction and provider boundary. Calls remain sequential so one
+    /// slow/unknown provider cannot create unbounded in-flight work, while
+    /// bursts no longer wait for one fixed timer period per occurrence.
+    pub async fn tick_batch(
+        &self,
+        now_ms: u64,
+        limits: AutomationBatchLimits,
+    ) -> Result<AutomationBatch, AutomationError> {
+        let mut ticks = Vec::with_capacity(limits.max_admissions());
+        for _ in 0..limits.max_admissions() {
+            let tick = self.tick(now_ms).await?;
+            let admitted = matches!(&tick, AutomationTick::Submitted { .. });
+            ticks.push(tick);
+            if !admitted {
+                return Ok(AutomationBatch {
+                    ticks,
+                    budget_exhausted: false,
+                });
+            }
+        }
+        Ok(AutomationBatch {
+            ticks,
+            budget_exhausted: true,
         })
     }
 }

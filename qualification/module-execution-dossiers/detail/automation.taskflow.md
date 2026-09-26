@@ -42,9 +42,9 @@ An unknown effect blocks dependent steps. Compensation is another separately aut
 
 ## 5. Capacity and performance profile
 
-Current hard bounds include <=1024 recovery/due frontier records per owner query, <=1024 catch-up occurrences per configured window, <=512 timezone transitions per Calendar V2 profile, <=1032 bounded calendar-day probes, TaskFlow's registered graph/step bounds, and <=16 pages of 100 persisted turns for one terminal-observation scan. Agentd still admits at most one new scheduler occurrence per tick and reconciles at most one historical occurrence per tick. No busy-loop retry or unlimited backlog is introduced.
+Current hard bounds include <=1024 recovery/due frontier records per owner query, <=1024 catch-up occurrences per configured window, <=512 timezone transitions per Calendar V2 profile, <=1032 bounded calendar-day probes, TaskFlow's registered graph/step bounds, and <=16 pages of 100 persisted turns for one terminal-observation scan. Agentd uses separate per-pass budgets of four historical reconciliations and eight sequential new admissions; the library rejects zero or more than 64 admissions. The durable due order remains `(scheduled_for_ms, task_id, occurrence)`, backlog snapshots expose bounded oldest-age/truncation evidence, and no busy-loop retry or unlimited provider concurrency is introduced.
 
-Pilot ceilings remain design/qualification inputs, not deployment measurements. Bind selected-host latency, backlog, restore and saturation evidence before activation.
+Pilot ceilings remain design/qualification inputs, not deployment measurements. Bind selected-host latency, backlog, restore and saturation evidence before activation. The source budgets and required observations are enumerated in `docs/modules/automation.taskflow/SLO.md`.
 
 ## 6. Concrete verification cases
 

@@ -552,3 +552,20 @@ in-place schema decrement.  Same-store timer epoch handoff is supported;
 cross-host database transfer remains fail-closed until the runbook's
 snapshot, exclusive-writer and digest requirements are independently
 satisfied.
+
+
+## 20. Bounded admission and recovery budgets
+
+The product host uses separate budgets: four historical reconciliations
+and eight sequential new admissions per 250-ms wake. The public library
+rejects zero and caps a caller at 64 admissions. Every item still crosses
+the original occurrence transaction, durable dispatch-intent boundary and
+queue/provider acknowledgement before the next item, so batching does not
+create unbounded provider concurrency.
+
+Due selection remains ordered by scheduled instant, task ID and occurrence.
+`AutomationBacklogSnapshot` exposes a bounded oldest-due/oldest-uncertain
+age, pending counts and truncation without claiming work. Stable failure
+dispositions distinguish fail-stop, bounded retry, isolated invalid/conflict
+input and reconcile-only unknown outcomes. Source constants and target-host
+qualification requirements are in [SLO.md](SLO.md).
