@@ -1,0 +1,90 @@
+name: intelligence.control exact learning recovery repair
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-product-closure-20260926
+    paths:
+      - .github/workflows/intelligence-control-exact-learning-repair.yml
+      - scripts/codex-intelligence-learning-completeness-rewrite.py
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intelligence-control-exact-learning-repair
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: macos-14
+    timeout-minutes: 25
+    steps:
+      - name: Check out exact feature head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/intelligence-control-product-closure-20260926
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact authenticated recovery repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          python3 -m py_compile scripts/codex-intelligence-learning-completeness-rewrite.py
+          python3 scripts/codex-intelligence-learning-completeness-rewrite.py
+          (cd codex-rs && cargo fmt --all)
+          git diff --check
+
+      - name: Verify repaired source shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path("codex-rs/hepta-agentd/src/intelligence_learning.rs").read_text()
+          normalized = " ".join(source.split())
+          required = (
+              "const LEARNING_PAYLOAD_SCHEMA_VERSION: u32 = 2;",
+              "struct VerifiedEvidenceBindingPayloadV1",
+              "fn expected_persisted_event(",
+              "record.event == expected",
+              "generator_controller_id: payload.evidence_binding.controller_id()?",
+              "observer_controller_id: payload.evidence_binding.controller_id()?",
+              "current_binding != payload.evidence_binding",
+              "fn learning_evidence_digest_v1(",
+              "decision_signing_payload_v2(request)?",
+              "outcome_signing_payload_v2(outcome)",
+              "dispatch_final_use(",
+          )
+          missing = [item for item in required if item not in normalized]
+          if missing:
+              raise SystemExit(f"repair missing required source anchors: {missing}")
+          forbidden = (
+              "value.completeness == completeness",
+              "LedgerEvent::AuthenticatedOutcomeV2(value) if value == &expected",
+          )
+          present = [item for item in forbidden if item in normalized]
+          if present:
+              raise SystemExit(f"stale recovery forms remain: {present}")
+          PY
+          unexpected="$(git diff --name-only | grep -Ev '^codex-rs/hepta-agentd/src/intelligence_learning\.rs$' || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'unexpected repair paths:\n%s\n' "$unexpected" >&2
+            exit 1
+          fi
+          (cd codex-rs && cargo metadata --format-version 1 --no-deps >/dev/null)
+
+      - name: Commit repaired implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$(git status --porcelain codex-rs/hepta-agentd/src/intelligence_learning.rs)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add codex-rs/hepta-agentd/src/intelligence_learning.rs
+          git commit -m "fix(intelligence): bind exact authenticated learning rows"
+          git push origin HEAD:codex/intelligence-control-product-closure-20260926
