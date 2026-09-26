@@ -13,12 +13,12 @@ permissions:
 
 concurrency:
   group: intelligence-control-finalization
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   finalize:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Check out exact feature branch
