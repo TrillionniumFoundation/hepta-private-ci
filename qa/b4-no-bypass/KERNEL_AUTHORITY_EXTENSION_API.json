@@ -1,6 +1,9 @@
 {
   "schema": "hepta.kernel-authority-extension-api.v1",
   "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+  "canonicalDelegates": [
+    "final_use_open_state"
+  ],
   "freeFunctions": {
     "privileged": {
       "open_production_final_use_authority": "final_use_open_state",

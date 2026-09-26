@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 INVENTORY = ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json"
+EXTENSION_INVENTORY = ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json"
 MANIFEST = ROOT / "CALLERS.toml"
 SPEC = importlib.util.spec_from_file_location(
     "verify_hepta_callers", ROOT / "scripts/verify_hepta_callers.py"
@@ -39,6 +40,35 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             len(ids), len(set(ids)), "duplicate canonical privileged boundary id"
         )
         return rows
+
+    def extension_delegates(self) -> dict[str, set[str]]:
+        policy = json.loads(EXTENSION_INVENTORY.read_text(encoding="utf-8"))
+        self.assertEqual(policy.get("schema"), "hepta.kernel-authority-extension-api.v1")
+        source_path = str(policy.get("sourcePath", ""))
+        self.assertTrue(source_path, "extension inventory must name its source path")
+
+        free_functions = policy.get("freeFunctions")
+        self.assertIsInstance(free_functions, dict)
+        assert isinstance(free_functions, dict)
+        privileged = free_functions.get("privileged")
+        self.assertIsInstance(privileged, dict)
+        assert isinstance(privileged, dict)
+        wrapper_boundary_ids = {str(value) for value in privileged.values()}
+
+        delegates = policy.get("canonicalDelegates")
+        self.assertIsInstance(delegates, list)
+        assert isinstance(delegates, list)
+        delegate_ids = {str(value) for value in delegates}
+        canonical_ids = {str(row["id"]) for row in self.inventory()}
+        self.assertTrue(
+            delegate_ids.issubset(canonical_ids),
+            f"extension delegates reference missing canonical boundaries: {sorted(delegate_ids - canonical_ids)}",
+        )
+        self.assertTrue(
+            delegate_ids.issubset(wrapper_boundary_ids),
+            f"extension delegates must be backed by inventoried privileged free-function wrappers: {sorted(delegate_ids - wrapper_boundary_ids)}",
+        )
+        return {boundary_id: {source_path} for boundary_id in delegate_ids}
 
     def rust_sources(self) -> list[Path]:
         return sorted((ROOT / "codex-rs").rglob("*.rs"))
@@ -211,19 +241,23 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         sources = self.rust_sources()
+        extension_delegates = self.extension_delegates()
         raw_cache: dict[Path, str] = {}
         code_cache: dict[Path, str] = {}
         for row in self.inventory():
             boundary_id = str(row["id"])
             type_marker = str(row["typeMarker"])
             definition = str(row["definitionPath"])
+            internal_delegates = extension_delegates.get(boundary_id, set())
             patterns = [re.compile(str(value)) for value in row["callPatterns"]]
             expected = {str(value) for value in row["allowedCallers"]}
             observed: set[str] = set()
             for path in sources:
                 relative = path.relative_to(ROOT).as_posix()
-                if relative == definition or any(
-                    fragment in f"/{relative}" for fragment in ignored
+                if (
+                    relative == definition
+                    or relative in internal_delegates
+                    or any(fragment in f"/{relative}" for fragment in ignored)
                 ):
                     continue
                 if path not in raw_cache:
