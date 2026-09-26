@@ -36,13 +36,18 @@ pub struct AgentdIdentity {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CognitiveRetrievalMode {
     Compatibility,
+    HnmfShadow,
+    HnmfCanary,
     HnmfRequired,
 }
 
 impl CognitiveRetrievalMode {
     #[must_use]
     pub const fn requires_current_context(self) -> bool {
-        matches!(self, Self::HnmfRequired)
+        matches!(
+            self,
+            Self::HnmfShadow | Self::HnmfCanary | Self::HnmfRequired
+        )
     }
 }
 
@@ -59,9 +64,11 @@ fn parse_cognitive_retrieval_mode(
     })?;
     match value.as_str() {
         "compatibility" => Ok(CognitiveRetrievalMode::Compatibility),
+        "hnmf-shadow" => Ok(CognitiveRetrievalMode::HnmfShadow),
+        "hnmf-canary" => Ok(CognitiveRetrievalMode::HnmfCanary),
         "hnmf-required" => Ok(CognitiveRetrievalMode::HnmfRequired),
         _ => Err(AgentdError::Invalid(format!(
-            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be compatibility or hnmf-required"
+            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be compatibility, hnmf-shadow, hnmf-canary or hnmf-required"
         ))),
     }
 }

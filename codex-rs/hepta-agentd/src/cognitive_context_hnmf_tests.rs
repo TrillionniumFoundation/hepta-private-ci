@@ -373,3 +373,6 @@ async fn revoked_product_context_invalidates_final_use() {
         .is_err()
     );
 }
+
+#[path = "cognitive_context_mode_tests.rs"]
+mod mode_tests;

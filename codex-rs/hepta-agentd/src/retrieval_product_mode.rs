@@ -1,12 +1,12 @@
 //! Product delivery routing. The host selects the mode once at composition;
 //! requests cannot choose their own arm or turn a shadow selection into exposure.
 
-use std::sync::Arc;
+use crate::CognitiveRetrievalMode;
+use crate::CurrentMemoryRetrievalContext;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_types::Digest32;
-use crate::CognitiveRetrievalMode;
-use crate::CurrentMemoryRetrievalContext;
+use std::sync::Arc;
 
 // Versioned 5% owner cohort. Changing this policy requires a new mode binding
 // and independent rollout acceptance, not mutable per-request sampling.
@@ -59,19 +59,35 @@ impl CurrentMemoryRetrievalContext for ModeRoutedContext {
         delivers_hnmf(self.mode, owner)
     }
 
-    fn current(&self, owner: &AgentId, body_generation: u64) -> Result<RetrievalExecutionContextV1, String> {
+    fn current(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<RetrievalExecutionContextV1, String> {
         self.reader.current(owner, body_generation)
     }
 
-    fn acquire_context(&self, owner: &AgentId, body_generation: u64)
-        -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String>
-    {
+    fn acquire_context(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
         let (context, state, deadline) = self.reader.acquire_context(owner, body_generation)?;
         Ok((context, self.bind(state), deadline))
     }
 
-    fn lifecycle_epoch(&self) -> Result<u64, String> { self.reader.lifecycle_epoch() }
-    fn lease_expires_unix_ms(&self) -> Result<u64, String> { self.reader.lease_expires_unix_ms() }
-    fn context_state_digest(&self) -> Result<Digest32, String> { self.reader.context_state_digest().map(|state| self.bind(state)) }
-    fn revoked(&self) -> Result<bool, String> { self.reader.revoked() }
+    fn lifecycle_epoch(&self) -> Result<u64, String> {
+        self.reader.lifecycle_epoch()
+    }
+    fn lease_expires_unix_ms(&self) -> Result<u64, String> {
+        self.reader.lease_expires_unix_ms()
+    }
+    fn context_state_digest(&self) -> Result<Digest32, String> {
+        self.reader
+            .context_state_digest()
+            .map(|state| self.bind(state))
+    }
+    fn revoked(&self) -> Result<bool, String> {
+        self.reader.revoked()
+    }
 }

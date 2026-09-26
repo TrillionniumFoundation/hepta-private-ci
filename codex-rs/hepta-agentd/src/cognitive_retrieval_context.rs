@@ -18,6 +18,11 @@ pub use product::RetrievalRecoveryWitnessV1;
 
 /// Read capability. Possession does not confer product lifecycle write access.
 pub trait CurrentMemoryRetrievalContext: Send + Sync {
+    /// Trusted composition selects delivery; a request cannot select its arm.
+    fn delivers_hnmf(&self, _owner: &AgentId) -> bool {
+        true
+    }
+
     fn current(
         &self,
         owner: &AgentId,
