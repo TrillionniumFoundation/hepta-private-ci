@@ -29,6 +29,8 @@ on:
       - "docs/modules/intelligence.control/**"
       - "qualification/module-execution-dossiers/detail/intelligence.control.md"
       - "scripts/hepta-intelligence-control-status.py"
+      - "scripts/hepta_ci_v8.py"
+      - "scripts/hepta_ci_exec.py"
       - ".github/workflows/hepta-intelligence-control.yml"
       - ".github/actions/hepta-synthetic-merge/**"
 
@@ -152,14 +154,14 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-command-records/fmt.json"
           -- cargo fmt --all -- --check
 
-      - name: Test canonical intelligence package
+      - name: Test canonical intelligence package and integration boundary
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
         run: >-
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/intelligence-command-records/intelligence-tests.json"
-          -- cargo test --locked -p codex-hepta-intelligence --lib
+          -- cargo test --locked -p codex-hepta-intelligence
 
       - name: Test Agentd default product profile
         working-directory: codex-rs
