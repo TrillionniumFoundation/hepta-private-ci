@@ -88,6 +88,19 @@ export class RuntimeClient {
     const previous = this.#session;
     const rawSession = await this.#transport.refresh(previous, { signal });
     const refreshed = normalizeSession(rawSession, this.#protocolVersion, this.#clock());
+    if (this.#session !== previous) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+        "authenticated session changed while refresh was in flight",
+        {
+          retryable: true,
+          details: {
+            previousSessionId: previous.sessionId,
+            currentSessionId: this.#session?.sessionId ?? null,
+          },
+        },
+      );
+    }
     if (refreshed.sessionId !== previous.sessionId) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.SESSION_REVOKED,
@@ -178,6 +191,7 @@ export class RuntimeClient {
 
   readView() {
     const pending = this.#ledger.views();
+    const completed = this.#ledger.completedViews();
     return Object.freeze({
       connected: this.#session !== null,
       authenticated: this.#session?.authenticated === true,
@@ -192,6 +206,8 @@ export class RuntimeClient {
       pending,
       pendingCount: pending.length,
       indeterminateCount: pending.filter(entry => entry.state === "indeterminate").length,
+      completed,
+      completedCount: completed.length,
     });
   }
 
