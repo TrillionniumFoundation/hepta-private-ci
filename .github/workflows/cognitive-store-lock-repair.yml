@@ -52,16 +52,30 @@ jobs:
           cd ..
           git diff --check
           test -n "$(git status --porcelain -- codex-rs/Cargo.lock codex-rs/hepta-cognitive-store/src/durable.rs)"
-      - name: Rebind cognitive.store map
-        run: python3 scripts/hepta-implementation-maps.py migrate --module cognitive.store
-      - name: Commit repaired candidate
+      - name: Commit deterministic source repair
         run: |
           set -euo pipefail
           git config user.name "Hepta Cognitive Store CI"
           git config user.email "hepta-cognitive-ci@users.noreply.github.com"
-          git add -A
+          git add codex-rs/Cargo.lock codex-rs/hepta-cognitive-store/src/durable.rs
+          if test -e cognitive-store-macos-diagnostic.txt; then
+            echo "diagnostic unexpectedly remains" >&2
+            exit 1
+          fi
+          git add -u cognitive-store-macos-diagnostic.txt || true
           git diff --cached --check
-          git commit -m "fix(cognitive-store): synchronize lock and read-only retrieval type [cognitive-store-repaired]"
+          git commit -m "fix(cognitive-store): synchronize lock and read-only retrieval type"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Rebind cognitive.store map
+        run: python3 scripts/hepta-implementation-maps.py migrate --module cognitive.store
+      - name: Commit exact implementation map
+        run: |
+          set -euo pipefail
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git commit -m "docs(cognitive-store): bind repaired source objects [cognitive-store-repaired]"
       - name: Verify repaired exact candidate
         run: |
           set -euo pipefail
