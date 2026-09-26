@@ -1,0 +1,56 @@
+name: Hepta NDU lock refresh diagnostic
+
+on:
+  push:
+    branches:
+      - codex/utility-ndu-production-hardening-20260926
+    paths:
+      - "codex-rs/**/Cargo.toml"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-ndu-lock-refresh.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ndu-lock-refresh-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    name: Generate minimal Cargo.lock refresh
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Refresh lockfile from the existing resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="${RUNNER_TEMP}/ndu-lock-refresh"
+          mkdir -p "$OUT"
+          cp codex-rs/Cargo.lock "$OUT/Cargo.lock.before"
+          (
+            cd codex-rs
+            cargo metadata --format-version 1 --no-deps > /dev/null
+            cargo metadata --locked --format-version 1 --no-deps > /dev/null
+          )
+          cp codex-rs/Cargo.lock "$OUT/Cargo.lock"
+          git diff --binary -- codex-rs/Cargo.lock > "$OUT/Cargo.lock.patch"
+          sha256sum "$OUT/Cargo.lock.before" "$OUT/Cargo.lock" "$OUT/Cargo.lock.patch" > "$OUT/SHA256SUMS"
+          test -s "$OUT/Cargo.lock.patch"
+      - name: Retain generated lockfile and exact patch
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-lock-refresh-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-lock-refresh
+          if-no-files-found: error
+          retention-days: 3
