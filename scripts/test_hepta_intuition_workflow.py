@@ -36,16 +36,20 @@ class IntuitionWorkflowEvidenceTests(unittest.TestCase):
                     for c in workflow_commands(text)
                     if "../scripts/hepta_ci_exec.py" in c
                 ]
-                self.assertEqual(len(commands), 8)
+                self.assertEqual(len(commands), 9)
                 outputs = [c[c.index("--output") + 1] for c in commands]
                 self.assertEqual(len(outputs), len(set(outputs)))
                 self.assertTrue(
                     all(p.startswith("$HEPTA_INTUITION_EVIDENCE/") for p in outputs)
                 )
                 tests = [c for c in commands if "just" in c]
-                self.assertEqual(len(tests), 1)
+                self.assertEqual(len(tests), 2)
                 self.assertEqual(tests[0][tests[0].index("--minimum-tests") + 1], "1")
                 self.assertIn("--retries", tests[0])
+                product = next(c for c in tests if "codex-hepta-agentd" in c)
+                self.assertIn("--retries", product)
+                self.assertIn("--lib", product)
+                self.assertIn("test(intelligence_product)", " ".join(product))
                 self.assertNotIn("continue-on-error", text)
                 for step in text.split("      - name:")[1:]:
                     if "../scripts/hepta_ci_exec.py" in step:
@@ -164,9 +168,10 @@ class IntuitionWorkflowEvidenceTests(unittest.TestCase):
                 receipts = {
                     p.stem: json.loads(p.read_text()) for p in evidence.glob("*.json")
                 }
-                self.assertEqual(len(receipts), 8)
+                self.assertEqual(len(receipts), 9)
                 self.assertEqual(receipts["clippy"]["status"], "failed")
                 self.assertEqual(receipts["tests"]["observed_passed_tests"], 1)
+                self.assertEqual(receipts["product-tests"]["observed_passed_tests"], 1)
                 for name, record in receipts.items():
                     self.assertEqual(
                         record["status"], "failed" if name == "clippy" else "passed"

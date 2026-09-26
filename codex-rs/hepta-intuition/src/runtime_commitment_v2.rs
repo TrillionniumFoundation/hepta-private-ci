@@ -340,7 +340,7 @@ mod tests {
             canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)?;
         let legacy_digest = canonical_scored_outputs_digest_v1(&request)?;
 
-        let mut changed = request.clone();
+        let mut changed = request;
         changed.candidates[0].assignment_probability = ProbabilityQ32::ZERO;
         if let AssignmentModeV1::CounterBased {
             abstain_probability,

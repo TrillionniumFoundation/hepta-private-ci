@@ -201,6 +201,13 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 One append transaction prepares and validates the full semantic event, compares the exact predecessor, writes one canonical frame, syncs the ledger, publishes the in-memory state, then advances and syncs the independent witness before returning success. Atomic conserved credit is one `CreditBatchV2` event. Outcome correction accepts only the current same-episode predecessor head, so a fork, stale branch or cycle cannot commit. Segment rotation runs through `LedgerWriter::rotate_segment`, synchronizes the host-supplied successor directory handle, and only then witnesses the new topology before reporting success.
 
+`LearningAppendIdentityV1` identifies an exact historical signed Decision,
+Outcome or CreditBatch. Recovery compares the original predecessor and persisted
+authentication digest and can finish the exact one-event-late witness; it does not
+append missing records or refresh trust. The authenticated terminal facade binds
+all supplied payload fields before lookup. A recovered acknowledgement is not
+current training eligibility, model selection or proof of an external effect.
+
 Legacy `LearningLedger`, `DurableLedger`, `SegmentedLedger` and `DurableLearningJournal` APIs remain readable compatibility/testing surfaces. New composed callers use `LedgerWriter`; compatibility availability is not permission to create a second production writer.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.

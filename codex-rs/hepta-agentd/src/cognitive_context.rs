@@ -529,44 +529,41 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     Ok(response)
 }
 
+/// Complete delivered view checked together at the final-use boundary.
+/// Grouping the borrowed payload leaves all current owner checks in place.
+pub(crate) struct CognitiveContextRevalidationInput<'a> {
+    pub(crate) snapshot_digest: &'a str,
+    pub(crate) read_digest: &'a str,
+    pub(crate) omitted_records: u64,
+    pub(crate) items: &'a [CognitiveContextItem],
+    pub(crate) plan: Option<&'a CognitiveContextPlan>,
+}
+
 #[cfg(test)]
 pub(crate) async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    input: CognitiveContextRevalidationInput<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
-    revalidate_with_retrieval_context(
-        store,
-        owner,
-        snapshot_digest,
-        read_digest,
-        omitted_records,
-        items,
-        plan,
-        ranker,
-        1,
-        None,
-    )
-    .await
+    revalidate_with_retrieval_context(store, owner, input, ranker, 1, None).await
 }
 
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    input: CognitiveContextRevalidationInput<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     body_generation: u64,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let CognitiveContextRevalidationInput {
+        snapshot_digest,
+        read_digest,
+        omitted_records,
+        items,
+        plan,
+    } = input;
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),

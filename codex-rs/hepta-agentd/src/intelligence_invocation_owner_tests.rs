@@ -100,19 +100,23 @@ fn owners(value: Fixture) -> OwnerFixture {
                 v.inputs.utility_policy.clone(),
             )
         }),
+        reader(&values, &reads, &fail_at, /*index*/ 3, |v| {
+            (
+                v.inputs.neural_config.clone(),
+                v.inputs.neural_tick.clone(),
+                v.inputs.neural_previous.clone(),
+            )
+        }),
+        reader(&values, &reads, &fail_at, /*index*/ 4, |v| {
+            v.inputs.prompt_request.clone()
+        }),
         reader(
             &values,
             &reads,
             &fail_at,
-            /*index*/ 3,
-            |v| v.inputs.neuron.clone(),
+            /*index*/ 5,
+            |v| v.inputs.intuition.clone(),
         ),
-        reader(&values, &reads, &fail_at, /*index*/ 4, |v| {
-            v.inputs.prompt_request.clone()
-        }),
-        reader(&values, &reads, &fail_at, /*index*/ 5, |v| {
-            v.inputs.intuition_request.clone()
-        }),
         reader(&values, &reads, &fail_at, /*index*/ 6, |v| {
             v.inputs.context_request.clone()
         }),
@@ -217,7 +221,7 @@ fn cross_agent_and_stale_generation_are_rejected_before_owner_reads() {
     let mut changed = identity.clone();
     changed.spawn_generation += 1;
     assert!(owners.provider.build(&changed, &record).is_err());
-    let mut changed = record.clone();
+    let mut changed = record;
     changed.snapshot.fence_digest = digest("foreign-run-fence");
     assert!(owners.provider.build(&identity, &changed).is_err());
     assert_eq!(

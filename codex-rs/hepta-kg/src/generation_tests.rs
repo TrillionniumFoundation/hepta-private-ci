@@ -611,3 +611,287 @@ fn bounded_query_still_rejects_tampering_beyond_returned_prefix() {
         Err(KnowledgeGenerationErrorV2::DigestMismatch("generation"))
     );
 }
+
+#[test]
+fn bounded_query_clones_only_selected_edges_and_counts_every_omission() {
+    let graph = build_complete_generation(
+        generation(1),
+        input(
+            vec![
+                node("a", "a"),
+                node("b", "b"),
+                node("c", "c"),
+                node("d", "d"),
+            ],
+            vec![
+                edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab"),
+                edge("a", "c", KnowledgeRelationKindV2::Causes, "edge-ac"),
+                edge("a", "d", KnowledgeRelationKindV2::Causes, "edge-ad"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid graph: {error}"));
+    let query = KnowledgeRelationQueryV2 {
+        query_id: id("query:bounded-copy"),
+        generation_digest: graph.generation_digest,
+        seed_node_ids: vec![id("node:a")],
+        relation_kinds: vec![KnowledgeRelationKindV2::Causes],
+        valid_at_unix_seconds: None,
+        maximum_edges: 1,
+    };
+
+    let (measured, work) = query_relations_with_work(&graph, query.clone())
+        .unwrap_or_else(|error| panic!("valid measured query: {error}"));
+    let ordinary = query_relations(&graph, query)
+        .unwrap_or_else(|error| panic!("valid ordinary query: {error}"));
+
+    assert_eq!(measured, ordinary);
+    assert_eq!(measured.edges, graph.edges[..1]);
+    assert_eq!(measured.omitted_count, 2);
+    assert_eq!(work.validated_nodes, 4);
+    assert_eq!(work.validated_edges, 3);
+    assert_eq!(work.validated_supports, 7);
+    assert_eq!(work.relation_edges_scanned, 3);
+    assert_eq!(work.matching_edges, 3);
+    assert_eq!(work.selected_edges_cloned, 1);
+    assert_eq!(work.selected_supports_cloned, 1);
+    assert_eq!(work.omitted_edges, 2);
+}
+
+#[test]
+fn measured_query_filters_large_support_history_before_cloning() {
+    let mut relation = edge("a", "b", KnowledgeRelationKindV2::Causes, "unused");
+    relation.supports = (0..4096)
+        .map(|index| {
+            let mut value = support(&format!("history-{index:04}"), false);
+            if index != 4095 {
+                value.valid_to_unix_seconds = Some(100);
+            }
+            value
+        })
+        .collect();
+    let graph = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![relation]),
+    )
+    .expect("support-rich graph");
+    let query = KnowledgeRelationQueryV2 {
+        query_id: id("query:support-history"),
+        generation_digest: graph.generation_digest,
+        seed_node_ids: vec![id("node:a")],
+        relation_kinds: Vec::new(),
+        valid_at_unix_seconds: Some(100),
+        maximum_edges: 1,
+    };
+    let (measured, work) =
+        query_relations_with_work(&graph, query.clone()).expect("measured query");
+    assert_eq!(
+        measured,
+        query_relations(&graph, query).expect("ordinary query")
+    );
+    assert_eq!(
+        measured.edges[0].supports,
+        vec![support("history-4095", false)]
+    );
+    assert_eq!(measured.omitted_count, 0);
+    assert_eq!(work.relation_supports_inspected, 4096);
+    assert_eq!(work.selected_supports_cloned, 1);
+    assert!(measured.edges[0].supports.capacity() < 16);
+}
+
+#[test]
+fn measured_query_matches_collect_then_truncate_reference_for_every_bound() {
+    let mut edges = Vec::new();
+    for index in 0..64 {
+        let mut value = edge(
+            "a",
+            "b",
+            KnowledgeRelationKindV2::Custom(id(&format!("r:{index:02}"))),
+            &format!("s:{index:02}"),
+        );
+        value.supports[0].valid_to_unix_seconds = Some(index + 100);
+        edges.push(value);
+    }
+    let graph = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], edges),
+    )
+    .expect("graph");
+    for at in [None, Some(100), Some(132), Some(164)] {
+        for limit in [1, 2, 31, 64, 100] {
+            let mut expected = graph
+                .edges
+                .iter()
+                .filter_map(|edge| {
+                    let mut edge = edge.clone();
+                    if let Some(at) = at {
+                        edge.supports.retain(|support| support.visible_at(at));
+                    }
+                    (!edge.supports.is_empty()).then_some(edge)
+                })
+                .collect::<Vec<_>>();
+            let matches = expected.len();
+            expected.truncate(limit as usize);
+            let query = KnowledgeRelationQueryV2 {
+                query_id: id("query:reference"),
+                generation_digest: graph.generation_digest,
+                seed_node_ids: vec![id("node:a")],
+                relation_kinds: Vec::new(),
+                valid_at_unix_seconds: at,
+                maximum_edges: limit,
+            };
+            let (result, work) = query_relations_with_work(&graph, query.clone()).expect("query");
+            let reference = KnowledgeRelationResultV2 {
+                edges: expected,
+                omitted_count: matches.saturating_sub(limit as usize) as u32,
+                ..result.clone()
+            };
+            assert_eq!(result, reference);
+            assert_eq!(
+                result.result_digest,
+                compute_query_result_digest(&reference)
+            );
+            assert_eq!(
+                result,
+                query_relations(&graph, query).expect("ordinary query")
+            );
+            assert_eq!(work.selected_edges_cloned as usize, result.edges.len());
+            assert_eq!(work.selected_supports_cloned as usize, result.edges.len());
+            assert_eq!(work.omitted_edges as u32, result.omitted_count);
+        }
+    }
+}
+
+#[test]
+fn bulk_node_retirement_and_replacement_match_full_rebuild() {
+    for count in [16_usize, 128, 1024] {
+        let mut nodes = vec![node("hub", "hub")];
+        let mut edges = Vec::new();
+        for index in 0..count {
+            let label = format!("leaf-{index:05}");
+            nodes.push(node(&label, &label));
+            edges.push(edge(
+                "hub",
+                &label,
+                KnowledgeRelationKindV2::Supports,
+                &label,
+            ));
+        }
+        let first = build_complete_generation(generation(1), input(nodes, edges))
+            .unwrap_or_else(|error| panic!("first: {error}"));
+        let before = first.clone();
+        let removed = (0..count / 2)
+            .map(|index| id(&format!("node:leaf-{index:05}")))
+            .collect::<Vec<_>>();
+        // Reinsert a retired node and one of its edges. Other incident edges
+        // remain retired. Replacement of a surviving edge has the same order.
+        let replacement_node = node("leaf-00000", "new-payload");
+        let replacement_edge = edge(
+            "hub",
+            "leaf-00000",
+            KnowledgeRelationKindV2::Contradicts,
+            "new-support",
+        );
+        let last = format!("leaf-{:05}", count - 1);
+        let updated_edge = edge("hub", &last, KnowledgeRelationKindV2::Supports, "updated");
+        let removed_edge = first.edges[count - 2].identity.clone();
+        let mut expected_nodes = vec![node("hub", "hub"), replacement_node.clone()];
+        let mut expected_edges = vec![replacement_edge.clone(), updated_edge.clone()];
+        for index in count / 2..count {
+            let label = format!("leaf-{index:05}");
+            expected_nodes.push(node(&label, &label));
+            if index < count - 2 {
+                expected_edges.push(edge(
+                    "hub",
+                    &label,
+                    KnowledgeRelationKindV2::Supports,
+                    &label,
+                ));
+            }
+        }
+        let full = build_complete_generation(
+            generation(2),
+            KnowledgeProjectionInputV2 {
+                source_snapshot_digest: digest("snapshot:2"),
+                generation_vector_digest: digest("vector:2"),
+                graph_profile_digest: first.graph_profile_digest,
+                complete_source_cut: true,
+                nodes: expected_nodes,
+                edges: expected_edges,
+            },
+        )
+        .unwrap_or_else(|error| panic!("full: {error}"));
+        for reverse in [false, true] {
+            let mut remove_node_ids = removed.clone();
+            if reverse {
+                remove_node_ids.reverse();
+            }
+            let actual = apply_incremental_delta(
+                &first,
+                generation(2),
+                KnowledgeProjectionDeltaV2 {
+                    expected_predecessor_digest: first.generation_digest,
+                    source_snapshot_digest: digest("snapshot:2"),
+                    generation_vector_digest: digest("vector:2"),
+                    graph_profile_digest: first.graph_profile_digest,
+                    remove_node_ids,
+                    upsert_nodes: vec![replacement_node.clone()],
+                    remove_edge_identities: vec![
+                        removed_edge.clone(),
+                        updated_edge.identity.clone(),
+                    ],
+                    upsert_edges: vec![replacement_edge.clone(), updated_edge.clone()],
+                },
+            )
+            .unwrap_or_else(|error| panic!("delta: {error}"));
+            assert_eq!(actual, full);
+            assert_eq!(first, before);
+        }
+    }
+}
+
+#[test]
+#[ignore = "observational history-growth measurement; not a target-host qualification"]
+fn bulk_retirement_emits_history_growth_curve() {
+    for count in [1024_usize, 4096, 16384] {
+        let mut nodes = vec![node("hub", "hub")];
+        let mut edges = Vec::new();
+        for index in 0..count {
+            let label = format!("leaf-{index:05}");
+            nodes.push(node(&label, &label));
+            edges.push(edge(
+                "hub",
+                &label,
+                KnowledgeRelationKindV2::Supports,
+                &label,
+            ));
+        }
+        let first = build_complete_generation(generation(1), input(nodes, edges))
+            .unwrap_or_else(|error| panic!("first: {error}"));
+        let delta = KnowledgeProjectionDeltaV2 {
+            expected_predecessor_digest: first.generation_digest,
+            source_snapshot_digest: digest("snapshot:2"),
+            generation_vector_digest: digest("vector:2"),
+            graph_profile_digest: first.graph_profile_digest,
+            remove_node_ids: (0..count / 2)
+                .map(|index| id(&format!("node:leaf-{index:05}")))
+                .collect(),
+            upsert_nodes: Vec::new(),
+            remove_edge_identities: Vec::new(),
+            upsert_edges: Vec::new(),
+        };
+        let started = std::time::Instant::now();
+        let result = apply_incremental_delta(&first, generation(2), delta)
+            .unwrap_or_else(|error| panic!("delta: {error}"));
+        let elapsed_ns = started.elapsed().as_nanos();
+        assert_eq!(result.edges.len(), count / 2);
+        assert_eq!(result.nodes.len(), count / 2 + 1);
+        println!(
+            "KG_BULK_RETIREMENT nodes={} edges={} removed={} retained_edges={} elapsed_ns={elapsed_ns}",
+            count + 1,
+            count,
+            count / 2,
+            result.edges.len()
+        );
+    }
+}

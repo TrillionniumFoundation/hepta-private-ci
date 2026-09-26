@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -75,6 +76,15 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        Self::new_with_prompt_registry_recovery(identity, registry, event_capacity, None)
+    }
+
+    pub(crate) fn new_with_prompt_registry_recovery(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        prompt_registry_recovery_checkpoint: Option<&Path>,
+    ) -> Result<Self, AgentdError> {
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
@@ -110,9 +120,12 @@ impl AgentdState {
         .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");
+        let prompt_registry_owner_id = format!("agentd:{}:prompt.registry", identity.agent_id);
         let prompt_runtime_root = identity.run_root.join("prompt-runtime");
         let prompt_pipeline = crate::AgentdPromptPipelineOwner::open_state_dirs(
             &prompt_registry_root,
+            prompt_registry_recovery_checkpoint,
+            &prompt_registry_owner_id,
             &prompt_runtime_root,
             crate::prompt_runtime::AGENTD_PROMPT_REGISTRY_MAX_RECORDS,
         )
@@ -538,6 +551,21 @@ impl AgentdState {
 
     pub(crate) fn is_fenced(&self) -> Result<bool, AgentdError> {
         Ok(self.runtime.lock().map_err(poisoned_state)?.fenced)
+    }
+
+    /// Observation of already-admitted work is distinct from new admission.
+    /// The existing Agent generation and stores must still be current.
+    pub(crate) fn automation_recovery_ready(&self) -> Result<bool, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        Ok(matches!(
+            runtime.lifecycle,
+            AgentLifecycle::Running | AgentLifecycle::Draining
+        ) && runtime.app_server_ready
+            && runtime.critical_stores_ready
+            && runtime.revocation_ready
+            && runtime.required_ports_ready
+            && !runtime.fenced)
     }
 
     pub(crate) fn automation_admission_ready(&self) -> Result<bool, AgentdError> {

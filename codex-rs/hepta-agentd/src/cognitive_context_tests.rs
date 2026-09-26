@@ -8,11 +8,13 @@ use codex_hepta_memory::MemoryDraft;
 use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryRevisionDraft;
 use codex_hepta_memory::MemoryVerification;
+use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::SourceDraft;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::StableId;
 
 use super::PagedRetrievalOwnerCutV1;
+use super::now_seconds;
 use super::read;
 use super::revalidate;
 
@@ -85,11 +87,13 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let current = revalidate(
         &store,
         &owner,
-        &context.snapshot_digest,
-        &context.read_digest,
-        context.omitted_records,
-        &context.items,
-        context.plan.as_ref(),
+        crate::cognitive_context::CognitiveContextRevalidationInput {
+            snapshot_digest: &context.snapshot_digest,
+            read_digest: &context.read_digest,
+            omitted_records: context.omitted_records,
+            items: &context.items,
+            plan: context.plan.as_ref(),
+        },
         None,
     )
     .await
@@ -106,11 +110,13 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            Some(&tampered_plan),
+            crate::cognitive_context::CognitiveContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: Some(&tampered_plan),
+            },
             None,
         )
         .await
@@ -121,11 +127,13 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &"11".repeat(32),
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
+            crate::cognitive_context::CognitiveContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &"11".repeat(32),
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: context.plan.as_ref(),
+            },
             None,
         )
         .await
@@ -150,11 +158,13 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
+            crate::cognitive_context::CognitiveContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: context.plan.as_ref(),
+            },
             None,
         )
         .await
@@ -260,11 +270,13 @@ async fn final_use_binds_complete_owner_cut_not_only_selected_memory_bytes() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
+            crate::cognitive_context::CognitiveContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: context.plan.as_ref(),
+            },
             None,
         )
         .await
@@ -327,17 +339,71 @@ async fn context_reads_a_candidate_beyond_the_first_owner_page() {
     let context = read(&store, &owner, 1, target_token, 4, None)
         .await
         .unwrap();
-    assert_eq!(context.items.len(), 1);
-    assert_eq!(&context.items[0].memory_id, target_id);
-    assert_eq!(&context.items[0].content, target_token);
+    // Retrieval also has a Recency channel: an exact lexical match does not
+    // imply that the other three requested slots are empty. Compare the full
+    // bounded projection with the declared RRF ordering over owner facts, then require
+    // the beyond-first-page target to survive that projection exactly once.
+    let observation = store
+        .observe_memory_retrieval(
+            &access,
+            &RetrievalRequest::new(target_token, now_seconds().unwrap()),
+        )
+        .await
+        .unwrap();
+    let mut ranked = observation.candidates().iter().collect::<Vec<_>>();
+    // Owner observations are identity ordered, not the public context ranking.
+    // Independently apply the baseline RRF score and stable identity tie-breaks.
+    ranked.sort_by_key(|candidate| {
+        (
+            std::cmp::Reverse(candidate.reciprocal_rank_score),
+            candidate.revalidation.memory.memory_id.as_str(),
+            candidate.revalidation.memory.revision,
+        )
+    });
+    let expected = ranked
+        .into_iter()
+        .take(4)
+        .map(|candidate| {
+            let id = candidate.revalidation.memory.memory_id.as_str();
+            seeded
+                .iter()
+                .find(|(memory_id, _)| memory_id == id)
+                .unwrap()
+                .clone()
+        })
+        .collect::<Vec<_>>();
+    let actual = context
+        .items
+        .iter()
+        .map(|item| (item.memory_id.clone(), item.content.clone()))
+        .collect::<Vec<_>>();
+    assert_eq!(actual, expected);
+    assert_eq!(
+        actual
+            .iter()
+            .filter(|(id, text)| id == target_id && text == target_token)
+            .count(),
+        1
+    );
+    assert_eq!(context.items.len(), 4);
+    // Lexical and Recency channels are combined by RRF. The first item must
+    // match the independent complete ranking, not an assumed lexical winner.
+    assert_eq!(context.items[0].memory_id, expected[0].0);
+    assert_eq!(context.items[0].content, expected[0].1);
+    let single = read(&store, &owner, 1, target_token, 1, None)
+        .await
+        .unwrap();
+    assert_eq!(single.items, vec![context.items[0].clone()]);
     revalidate(
         &store,
         &owner,
-        &context.snapshot_digest,
-        &context.read_digest,
-        context.omitted_records,
-        &context.items,
-        context.plan.as_ref(),
+        crate::cognitive_context::CognitiveContextRevalidationInput {
+            snapshot_digest: &context.snapshot_digest,
+            read_digest: &context.read_digest,
+            omitted_records: context.omitted_records,
+            items: &context.items,
+            plan: context.plan.as_ref(),
+        },
         None,
     )
     .await

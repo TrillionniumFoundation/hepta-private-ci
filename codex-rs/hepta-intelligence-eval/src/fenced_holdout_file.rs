@@ -56,8 +56,34 @@ impl fmt::Display for LockedFileCasErrorV1 {
 }
 impl StdError for LockedFileCasErrorV1 {}
 
+/// The acquiring owner explicitly releases its OS lock on every exit path.
+/// Closing one descriptor is insufficient when a concurrent fork temporarily
+/// retains another descriptor for the same open-file description.
+struct AcquiredHoldoutFile(File);
+
+impl std::ops::Deref for AcquiredHoldoutFile {
+    type Target = File;
+    fn deref(&self) -> &File {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for AcquiredHoldoutFile {
+    fn deref_mut(&mut self) -> &mut File {
+        &mut self.0
+    }
+}
+
+impl Drop for AcquiredHoldoutFile {
+    fn drop(&mut self) {
+        // Do not unlock a failed contender: this guard is constructed only
+        // after try_lock succeeds. Errors remain fail-closed for the next owner.
+        let _ = self.0.unlock();
+    }
+}
+
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: File,
+    file: AcquiredHoldoutFile,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
@@ -65,8 +91,8 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
 }
 
 impl LockedFileFinalHoldoutCasStoreV1 {
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        let mut file = acquire(file, binding)?;
         if file.metadata().map_err(io_error)?.len() != 0 {
             return Err(LockedFileCasErrorV1::AlreadyInitialized);
         }
@@ -87,18 +113,18 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     }
 
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+        let mut file = acquire(file, binding)?;
         let length = file.metadata().map_err(io_error)?.len();
         if length > MAX_BYTES {
             return Err(LockedFileCasErrorV1::Capacity);
         }
         file.seek(SeekFrom::Start(0)).map_err(io_error)?;
         let mut bytes = Vec::new();
-        (&mut file)
+        (&mut *file)
             .take(MAX_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(io_error)?;
@@ -115,7 +141,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             return Err(LockedFileCasErrorV1::Corrupt);
         }
 
-        let mut state: Option<FinalHoldoutCasRecordV1> = None;
+        let mut replay = ValidatedReplay::new(binding)?;
         let mut minimum_witnessed = minimum.is_none();
         let mut cursor = HEADER;
         while cursor < bytes.len() {
@@ -138,15 +164,12 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             if checksum != Digest32::of_bytes(payload).as_array() {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
-            state = Some(replay_event(binding, state, payload)?);
-            if minimum.is_some_and(|anchor| {
-                state
-                    .as_ref()
-                    .is_some_and(|record| record_anchor(record) == anchor)
-            }) {
+            let observed = replay.apply(payload)?;
+            if minimum == Some(observed) {
                 minimum_witnessed = true;
             }
         }
+        let state = replay.finish()?;
         validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
         file.sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
@@ -292,7 +315,82 @@ fn transition_payload(
     }
 }
 
-fn replay_event(
+/// Reuse the semantic journal while streaming verified frames. Previously every
+/// frame reconstructed and revalidated the entire prefix multiple times. Each
+/// event still checks its checksum, plan seal, one-use/lineage invariants and
+/// fence order; each prefix is compared with the retained independent anchor.
+/// Only the final externally returned CAS record is fully materialized.
+struct ValidatedReplay {
+    binding: Digest32,
+    fence: Option<HoldoutWriterFenceV1>,
+    journal: FinalHoldoutJournalV1,
+}
+
+impl ValidatedReplay {
+    fn new(binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        Ok(Self {
+            binding,
+            fence: None,
+            journal: FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+                .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+        })
+    }
+
+    fn apply(&mut self, payload: &[u8]) -> Result<FinalHoldoutCasAnchorV1, LockedFileCasErrorV1> {
+        match payload.first().copied() {
+            Some(EVENT_FENCE) => {
+                let next = decode_fence(payload)?;
+                if self
+                    .fence
+                    .as_ref()
+                    .is_some_and(|current| next.generation <= current.generation)
+                {
+                    return Err(LockedFileCasErrorV1::Rollback);
+                }
+                self.fence = Some(next);
+            }
+            Some(EVENT_PLAN) => {
+                if self.fence.is_none() {
+                    return Err(LockedFileCasErrorV1::Corrupt);
+                }
+                let plan = decode_holdout_plan(&payload[1..])
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                let receipt = self
+                    .journal
+                    .consume(self.journal.head_digest(), &plan)
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                if receipt.disposition != crate::HoldoutUseDispositionV1::Recorded {
+                    return Err(LockedFileCasErrorV1::Corrupt);
+                }
+            }
+            _ => return Err(LockedFileCasErrorV1::Corrupt),
+        }
+        let fence = self.fence.as_ref().ok_or(LockedFileCasErrorV1::Corrupt)?;
+        Ok(FinalHoldoutCasAnchorV1 {
+            fence_generation: fence.generation,
+            record_count: self.journal.records().len() as u64,
+            state_digest: crate::fenced_holdout::digest_state_frontier(
+                self.binding,
+                fence,
+                self.journal.records().len(),
+                self.journal.head_digest(),
+            )
+            .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+        })
+    }
+
+    fn finish(self) -> Result<Option<FinalHoldoutCasRecordV1>, LockedFileCasErrorV1> {
+        self.fence
+            .map(|fence| {
+                FinalHoldoutCasRecordV1::new(self.binding, fence, self.journal.snapshot())
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)
+            })
+            .transpose()
+    }
+}
+
+#[cfg(test)]
+fn replay_event_reference(
     binding: Digest32,
     current: Option<FinalHoldoutCasRecordV1>,
     payload: &[u8],
@@ -426,7 +524,7 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<AcquiredHoldoutFile, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
@@ -436,7 +534,8 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
     file.try_lock().map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
-    })
+    })?;
+    Ok(AcquiredHoldoutFile(file))
 }
 
 fn io_error(error: io::Error) -> LockedFileCasErrorV1 {

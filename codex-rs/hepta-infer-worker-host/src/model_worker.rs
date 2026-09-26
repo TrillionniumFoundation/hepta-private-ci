@@ -21,7 +21,8 @@ const MAX_TOKENS: u32 = 1_000_000;
 const MAX_NEURON_FEATURES: usize = 512;
 const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ModelManifest {
     pub model_id: String,
     pub model_digest: String,

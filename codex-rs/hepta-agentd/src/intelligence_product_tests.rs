@@ -1,6 +1,6 @@
 fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
-        agent_id: "agent.product".to_string(),
+        agent_id: "019153a4-3088-7e03-a56a-9b1964f75dde".to_string(),
         supervisor_generation: 1,
         agentd_generation: 1,
         configuration_digest: digest("runtime-config").to_string(),
@@ -18,6 +18,13 @@ use crate::RuntimeComposition;
 use std::fs::OpenOptions;
 
 use super::*;
+use crate::AgentdIntuitionPolicyPinsV2;
+use codex_hepta_intuition::CalibratedDecisionRequestV1;
+use std::sync::Arc;
+#[path = "intelligence_product_intuition_support.rs"]
+mod intuition_support;
+#[path = "intelligence_product_intuition_tests.rs"]
+mod intuition_tests;
 use codex_hepta_context_compiler::ContextItem;
 use codex_hepta_context_compiler::ContextRole;
 use codex_hepta_intelligence::CanonicalBudgetV1;
@@ -87,6 +94,7 @@ use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+const Q24: i64 = 1 << 24;
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
 const NOW_MICROS: u64 = OBSERVED_MICROS + 1_000_000;
 
@@ -372,7 +380,7 @@ struct Fixture {
     request: CanonicalIntelligenceRunRequestV1,
     inputs: AgentdIntelligenceOwnerInputsV1,
     owners: Vec<OwnerBindingV1>,
-    neuron_control: std::sync::Arc<neuron_fixture::FixtureControl>,
+    intuition_host: Arc<AgentdIntuitionPolicyHostV2>,
 }
 
 fn fixture() -> Fixture {
@@ -454,8 +462,35 @@ fn fixture() -> Fixture {
     )
     .expect("NDU");
 
-    let (neuron, neuron_control) =
-        neuron_fixture::invocation(objective_digest, ndu.evaluation_digest_v2);
+    let model_digest = digest("model-artifact");
+    let neural_config = SparseConfig {
+        model_digest,
+        normalization_digest: digest("normalization"),
+        generation: generation(7),
+        width: 5,
+        top_k: 1,
+        temporal_decay_q24: Q24 / 2,
+        inhibition_gain_q24: 0,
+        inhibition: Vec::new(),
+        activity_decay_q24: Q24 / 2,
+        target_activity_q24: Q24 / 5,
+        threshold_rate_q24: Q24 / 10,
+        threshold_min_q24: -Q24,
+        threshold_max_q24: Q24,
+        eligibility_decay_q24: Q24 / 2,
+    };
+    let neural_tick = SparseTick {
+        scope_digest: digest("scope"),
+        objective_digest,
+        ndu_digest: ndu.evaluation_digest_v2,
+        body_digest: digest("body"),
+        input_digest: digest("approved-input"),
+        sequence: 1,
+        monotonic_micros: 1,
+        drive_q24: vec![Q24, Q24 / 2, 0, 0, 0],
+        prediction_q24: vec![0; 5],
+    };
+    let (_, neural_receipt) = sparse_tick(&neural_config, &neural_tick, None).expect("neural tick");
 
     let prompt_registry = digest("prompt-registry");
     let prompt_request = OptimizationRequest {
@@ -497,7 +532,7 @@ fn fixture() -> Fixture {
         decision_id: id("run:agentd-intelligence"),
         objective_digest,
         objective_class_digest,
-        state_digest: digest("neuron-state-not-yet-produced"),
+        state_digest: neural_receipt.checkpoint_after,
         policy_digest,
         policy_generation: 7,
         sequence: 1,
@@ -541,7 +576,21 @@ fn fixture() -> Fixture {
         candidates: intuition_candidates,
     };
 
-    let owners = owner_bindings();
+    let intuition = intuition_support::build(
+        intuition_request,
+        model_digest,
+        intuition_support::TEST_AGENT_ID,
+        1,
+        wall_clock_ms().expect("intuition fixture clock"),
+    );
+    let mut owners = owner_bindings();
+    let intuition_owner = owners
+        .iter_mut()
+        .find(|owner| owner.owner_id.as_str() == "intuition.policy")
+        .expect("intuition owner");
+    intuition_owner.generation = generation(intuition.input.profile.generation);
+    intuition_owner.key_digest = intuition.root_key_digest;
+    intuition_owner.key_epoch = intuition.authority_epoch;
     let snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
         objective_digest,
         authority_epoch: 11,
@@ -619,16 +668,25 @@ fn fixture() -> Fixture {
             utility_profile,
             utility_scalarization,
             utility_policy,
-            neuron,
+            neural_config,
+            neural_tick,
+            neural_previous: None,
             prompt_request,
-            intuition_request,
+            intuition: intuition.input,
             context_request,
             evaluation_request,
             signed_evaluation: None,
         },
         owners,
-        neuron_control,
+        intuition_host: intuition.host,
     }
+}
+
+fn product_runner(authority: PathBuf, fixture: &Fixture) -> AgentdIntelligenceProductRunnerV1 {
+    AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_intuition_policy_host(Arc::clone(&fixture.intuition_host))
+        .expect("authenticated intuition host")
 }
 
 #[cfg(feature = "qualification-legacy-learning-write")]
@@ -642,8 +700,7 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -782,8 +839,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
         serde_json::to_vec(&value).expect("tampered authority json"),
     )
     .expect("tamper authority");
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     assert!(matches!(
         runner
             .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
@@ -805,8 +861,7 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+    let runner = product_runner(authority.clone(), &fixture);
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await
@@ -856,8 +911,7 @@ async fn missing_current_owner_fails_before_product_use() {
         &owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     assert!(matches!(
         runner
             .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
@@ -888,8 +942,7 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = product_runner(authority, &fixture);
     let result = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await;
@@ -911,11 +964,14 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
     let temp = tempfile::tempdir().expect("tempdir");
-    let runner = AgentdIntelligenceProductRunnerV1::new(
-        temp.path().join("authority.json"),
-        authority_verifier(),
-    )
-    .expect("runner");
+    let fixture = fixture();
+    let authority = temp.path().join("authority.json");
+    write_authority_file(
+        &authority,
+        &fixture.owners,
+        fixture.request.snapshot.revocation_frontier_digest(),
+    );
+    let runner = product_runner(authority, &fixture);
     let mut releases = Vec::new();
     let mut workers = Vec::new();
     for _ in 0..MAX_CANONICAL_OWNER_WORKERS {
@@ -936,7 +992,6 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         workers.push(worker);
     }
     assert_eq!(runner.worker_slots.available_permits(), 0);
-    let fixture = fixture();
     let result = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await;
@@ -962,6 +1017,3 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
-
-#[path = "neuron_product_fixture.rs"]
-mod neuron_fixture;

@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-contracts/CALLERS.toml"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-learning-ledger/**"
       - "docs/modules/intuition.policy/**"
@@ -20,6 +22,8 @@ on:
       - main
     paths:
       - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-contracts/CALLERS.toml"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-learning-ledger/**"
       - "docs/modules/intuition.policy/**"
@@ -80,22 +84,29 @@ jobs:
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/format.json"
-          -- cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence -- --check
+          -- cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
       - name: Compile all qualified policy targets
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/compile.json"
-          -- cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets
+          -- cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
       - name: Strict Clippy for qualified policy
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/clippy.json"
-          -- cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets -- -D warnings
+          -- cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Run policy and frozen-data qualification tests
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/tests.json" --minimum-tests 1
           -- just test --locked -p codex-hepta-intuition -p codex-hepta-intelligence --retries 0
+      - name: Run authenticated Agentd product and lifecycle tests
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/product-tests.json" --minimum-tests 1
+          -- just test --locked -p codex-hepta-agentd --lib
+          -E 'test(intelligence_product) | test(intelligence_run_start) | test(intuition_policy) | test(intelligence_invocation)'
+          --retries 0
       - name: Capture tested host profile
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
@@ -183,22 +194,29 @@ jobs:
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/format.json"
-          -- cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence -- --check
+          -- cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
       - name: Compile all qualified policy targets
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/compile.json"
-          -- cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets
+          -- cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
       - name: Strict Clippy for qualified policy
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/clippy.json"
-          -- cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets -- -D warnings
+          -- cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Run policy and frozen-data qualification tests
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-
           python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/tests.json" --minimum-tests 1
           -- just test --locked -p codex-hepta-intuition -p codex-hepta-intelligence --retries 0
+      - name: Run authenticated Agentd product and lifecycle tests
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --output "$HEPTA_INTUITION_EVIDENCE/product-tests.json" --minimum-tests 1
+          -- just test --locked -p codex-hepta-agentd --lib
+          -E 'test(intelligence_product) | test(intelligence_run_start) | test(intuition_policy) | test(intelligence_invocation)'
+          --retries 0
       - name: Capture tested host profile
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
         run: >-

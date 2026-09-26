@@ -567,7 +567,7 @@
         {
           "path": "codex-rs/hepta-authbus/src/authority_store.rs",
           "mustContain": [
-            "pub struct AuthBusAuthorityStore",
+            "pub(crate) struct AuthBusAuthorityStore",
             "pub async fn create_policy(",
             "pub async fn authorize(",
             "record_policy_history"

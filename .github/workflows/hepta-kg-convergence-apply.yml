@@ -1,0 +1,140 @@
+name: Apply knowledge.graph convergence phase one
+
+on:
+  push:
+    branches: [work/product-convergence-20260923]
+    paths:
+      - ".github/workflows/hepta-kg-convergence-apply.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-convergence-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain)"
+
+      - name: Apply exact phase-one transformations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/hepta-kg-convergence-apply-phase1.py
+          python3 scripts/hepta-kg-convergence-apply-phase1.py
+          rm scripts/hepta-kg-convergence-apply-phase1.py
+          rm .github/workflows/hepta-kg-convergence-apply.yml
+
+      - name: Capture cargo check and lock refresh
+        id: cargo_check
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo check -p codex-hepta-kg 2>&1 | tee "$RUNNER_TEMP/phase1-cargo-check.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Retain phase-one cargo diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-phase1-cargo-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/phase1-cargo-check.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce cargo check
+        shell: bash
+        env:
+          CARGO_STATUS: ${{ steps.cargo_check.outputs.status }}
+        run: |
+          set -euo pipefail
+          test "$CARGO_STATUS" = 0
+
+      - name: Format exact kernel source
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-kg
+          cargo fmt --package codex-hepta-kg -- --check
+
+      - name: Test canonical kernel
+        working-directory: codex-rs
+        shell: bash
+        run: cargo test --locked -p codex-hepta-kg -- --nocapture
+
+      - name: Strict kernel lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-kg --all-targets --no-deps -- -D warnings
+
+      - name: Refresh governed document indexes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          python3 scripts/hepta-module-docs.py verify
+          git diff --check
+
+      - name: Commit tested phase-one source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta KG Convergence Bot"
+          git config user.email "hepta-kg-convergence@users.noreply.github.com"
+          git add -A
+          git commit -s -m "knowledge.graph: bound indexed generation queries"
+          test -z "$(git status --porcelain)"
+
+      - name: Rebind exact knowledge.graph source map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          git diff --check
+          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+          git commit -s -m "docs(knowledge.graph): bind phase-one source identity"
+          test -z "$(git status --porcelain)"
+
+      - name: Verify final committed candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="$(git rev-parse HEAD)"
+          TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$SHA" --expected-tree "$TREE"
+          python3 scripts/hepta-technical-closure.py verify
+          python3 scripts/test_hepta_knowledge_graph_target_measure.py
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Push tested candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin HEAD:work/product-convergence-20260923

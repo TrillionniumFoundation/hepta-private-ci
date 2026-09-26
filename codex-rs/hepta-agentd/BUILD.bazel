@@ -5,6 +5,7 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
+    compile_data = ["tests/support/terminal_cell_owner.rs", "//codex-rs/hepta-intelligence-eval:product_qualification_fixture"],
     integration_test_timeout = "long",
 )
 

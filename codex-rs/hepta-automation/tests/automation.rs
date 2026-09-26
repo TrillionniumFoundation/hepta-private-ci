@@ -261,19 +261,17 @@ fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraf
     draft
 }
 
-async fn prepare_direct_dispatch(store: &AutomationStore, lease: &AutomationLease, now_ms: u64) {
-    let occurrence = store
-        .materialize_occurrence(lease, now_ms)
-        .await
-        .expect("materialize occurrence before dispatch");
+async fn prepare_direct_dispatch(
+    store: &AutomationStore,
+    lease: &AutomationLease,
+    now_ms: u64,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let occurrence = store.materialize_occurrence(lease, now_ms).await?;
     store
         .prepare_occurrence_taskflow(&occurrence, lease, now_ms, 60_000)
-        .await
-        .expect("prepare durable TaskFlow intent before dispatch");
-    store
-        .record_dispatch_uncertain(lease, now_ms)
-        .await
-        .expect("persist uncertainty before provider contact");
+        .await?;
+    store.record_dispatch_uncertain(lease, now_ms).await?;
+    Ok(())
 }
 
 #[tokio::test]
@@ -301,7 +299,9 @@ async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
         "an unclassified durable lease must block graceful drain"
     );
 
-    prepare_direct_dispatch(&store, &lease, 101).await;
+    prepare_direct_dispatch(&store, &lease, 101)
+        .await
+        .expect("durable dispatch preparation");
     assert_eq!(
         store
             .drain_blockers()
@@ -474,7 +474,9 @@ async fn pre_admission_dispatch_error_clears_intent_and_allows_next_generation_r
         .await
         .expect("claim retry")
         .expect("retry remains due");
-    prepare_direct_dispatch(&restarted, &lease, 102).await;
+    prepare_direct_dispatch(&restarted, &lease, 102)
+        .await
+        .expect("durable dispatch preparation");
     restarted
         .record_occurrence_admitted(
             &lease,
@@ -920,7 +922,9 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
         lease.client_user_message_id,
         uncertain.client_user_message_id
     );
-    prepare_direct_dispatch(&store, &lease, 100_003).await;
+    prepare_direct_dispatch(&store, &lease, 100_003)
+        .await
+        .expect("durable dispatch preparation");
     store
         .record_occurrence_admitted(
             &lease,
@@ -1023,7 +1027,9 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         lease.schedule_revision, 1,
         "the first post-migration claim must freeze the authoritative schedule revision"
     );
-    prepare_direct_dispatch(&migrated, &lease, 101).await;
+    prepare_direct_dispatch(&migrated, &lease, 101)
+        .await
+        .expect("durable dispatch preparation");
     migrated
         .record_occurrence_admitted(
             &lease,
@@ -1343,8 +1349,12 @@ async fn duplicate_provider_receipt_is_rejected_by_local_outcome_fence() {
         queued_submission_id: "provider-receipt-shared".to_string(),
         client_user_message_id: lease.client_user_message_id.clone(),
     };
-    prepare_direct_dispatch(&store, &first_lease, 101).await;
-    prepare_direct_dispatch(&store, &second_lease, 101).await;
+    prepare_direct_dispatch(&store, &first_lease, 101)
+        .await
+        .expect("durable dispatch preparation");
+    prepare_direct_dispatch(&store, &second_lease, 101)
+        .await
+        .expect("durable dispatch preparation");
     store
         .record_occurrence_admitted(&first_lease, &receipt(&first_lease), 102)
         .await
@@ -1447,7 +1457,9 @@ async fn disabling_an_inflight_lease_never_resurrects_the_task() {
         .expect("claim")
         .expect("due lease");
 
-    prepare_direct_dispatch(&store, &lease, 101).await;
+    prepare_direct_dispatch(&store, &lease, 101)
+        .await
+        .expect("durable dispatch preparation");
     let disabled = store
         .set_enabled(task.task_id, false, None, 102)
         .await

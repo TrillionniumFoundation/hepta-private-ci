@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 //! Qualification-only local keys and actual durable owners; no runtime authority.
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::Digest32;
@@ -298,4 +299,30 @@ pub(super) fn outcome(
             finalized_at: Some(46),
         },
     }
+}
+
+pub(super) fn rotate_trust(writer: &mut LedgerWriter) {
+    let root_key = trust_root_key();
+    let root = LearningTrustRootV1 {
+        root_id: id("learning-root"),
+        scope_digest: digest("scope"),
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("successor-distribution"),
+            generation: 2,
+            effective_at: 50,
+            trust: trust(),
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 50,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    writer.rotate_trust(&root, signed, 50).unwrap();
 }

@@ -29,6 +29,12 @@ path = "src/bin/hepta-supervisor-intent-recovery.rs"
 test = false
 
 [[bin]]
+name = "hepta-supervisor-release-controller"
+path = "src/bin/hepta-supervisor-release-controller.rs"
+test = false
+required-features = ["production-authority"]
+
+[[bin]]
 name = "hepta-authority-signer"
 path = "src/bin/hepta-authority-signer.rs"
 test = false

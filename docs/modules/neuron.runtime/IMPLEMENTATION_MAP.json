@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "90a485815fa83f6cb1d3fa13925d25a2cd639d21",
-    "tree": "62b5d2742dc3f363f2064f64a81ca470a9c3eb90"
+    "commit": "c8d9ea1365795d8984c746957a0f3d5b15070ced",
+    "tree": "18fdaeb7d3dcf4eb1b4cbcb5e731ee86cb07ac77"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -18,19 +18,17 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "guarded_canonical_agentd_library_owner_composed_not_selected_daemon_qualified",
+  "productCallerState": "agentd_owner_source_compiled_not_daemon_lifecycle_composed",
   "productionWriterState": "durable_complete_result_journal_external_witness_source_implemented_not_activated",
   "operations": [
     {
       "operation": "neuron_runtime_tick",
-      "nativeSymbol": "NeuronRuntime::tick_guarded",
-      "sourcePath": "codex-rs/hepta-neuron/src/runtime_admission.rs",
-      "state": "source_implemented_guarded_owner_not_deployment_qualified",
+      "nativeSymbol": "NeuronRuntime::tick",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime.rs",
+      "state": "source_implemented_owner_not_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/runtime_tests.rs",
-        "codex-rs/hepta-neuron/src/runtime_admission_tests.rs",
-        "codex-rs/hepta-neuron/src/runtime_process_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "neuron_runtime_tick",
@@ -54,11 +52,6 @@
         {
           "path": "codex-rs/hepta-neuron/src/operation_store.rs",
           "symbol": "FileNeuronOperationStore",
-          "role": "source_declaration"
-        },
-        {
-          "path": "codex-rs/hepta-neuron/src/runtime.rs",
-          "symbol": "NeuronRuntime::query_result",
           "role": "source_declaration"
         }
       ]
@@ -181,22 +174,12 @@
       "state": "source_implemented_registered_json_projection_not_activation",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/protocol_tests.rs",
-        "codex-rs/hepta-neuron/src/artifact_binding_tests.rs",
-        "codex-rs/hepta-agentd/tests/support/neuron_artifact_tests.rs",
-        "codex-rs/hepta-agentd/tests/support/current_artifacts.rs",
-        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs"
+        "codex-rs/hepta-neuron/src/protocol_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
       "mappingClass": "owner_native",
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-neuron/src/artifact_binding.rs",
-          "symbol": "NeuronRuntimeConfigV1::execution_profile_digest_v1",
-          "role": "source_declaration"
-        }
-      ]
+      "delegatedCallees": []
     },
     {
       "operation": "population_sparse_v2",
@@ -214,11 +197,11 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Install the actual authenticated startup/owner-input factory and concrete selected inference-control feature backend behind AgentdNeuronHandleV1; the guarded library path and deterministic fixture are not a qualified daemon deployment.",
-    "Deploy the concrete signed-CURRENT AgentdNeuronArtifactAdmissionV1 with the authenticated startup factory and real selected model/calibration/OOD artifacts. Connect feature/NDU/modulator and withdrawal-owner currentness, current selector trust/restart frontiers and inference-owner physical cancellation; source guards and fixture signatures are not independent deployment qualification.",
-    "Implement an explicit reviewed migration for historical journals lacking the integrated binary operation store or using the alternate unqualified sidecar dialect; never initialize missing acknowledged history or reinterpret candidate bytes.",
-    "Implement separately versioned V2/DecisionCell durable migration and actual base/organ/cell parameter consumption; pure PopulationSparseConfigV2 remains qualification-only.",
-    "Run final exact-head, applicable deterministic synthetic-merge, full product/lint and selected-target-host qualification; preserve every unresolved upstream gate instead of treating filtered source tests as activation."
+    "Compose the compiled AgentdNeuronOwner into the normal daemon-owned runtime.agentd lifecycle with a concrete current inference.control feature owner, selected-artifact/currentness provider and actual intelligence consumer; a compiled owner boundary is not daemon activation.",
+    "Bind live revocation, queue/deadline cancellation and independently authenticated calibration/OOD evidence at the physical neuron use boundary before changing productExecutionProved.",
+    "Define an explicit migration for predecessor V1 journals that lack HPTNOP01 operation history; never initialize a replacement sidecar beside acknowledged history.",
+    "If PopulationSparseConfigV2 or DecisionCell is promoted beyond qualification, implement a separately versioned durable owner/store migration with effective base/organ/cell parameter consumption; never reinterpret V1 journal bytes as V2 state.",
+    "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation, productExecutionProved, activation or release."
   ],
   "externalEvidenceGates": [
     "target-host product execution with authenticated selected model/runtime/device evidence",
@@ -240,62 +223,20 @@
   ],
   "productCallers": [
     {
-      "state": "guarded_long_lived_owner_source_implemented_not_selected_daemon_qualified",
+      "state": "compiled_long_lived_owner_boundary_not_daemon_activated",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "nativeSymbol": "AgentdNeuronHandleV1"
+      "nativeSymbol": "AgentdNeuronOwner"
     },
     {
-      "state": "canonical_library_consumes_durable_neuron_state_not_raw_sparse_vectors",
-      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "nativeSymbol": "AgentdOwnerPortsV1::collect_neural_signal"
-    },
-    {
-      "state": "live_signed_snapshot_deadline_cancellation_guard_source_implemented",
-      "sourcePath": "codex-rs/hepta-agentd/src/neuron_product.rs",
-      "nativeSymbol": "NeuronStageAdmission"
-    },
-    {
-      "state": "qualification_typed_caller_not_product_ingress",
+      "state": "typed_intelligence_caller_source_implemented",
       "sourcePath": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
       "nativeSymbol": "run_neuron_tick_v1"
-    },
-    {
-      "state": "selected_artifact_current_guard_source_implemented_not_default_daemon_factory",
-      "sourcePath": "codex-rs/hepta-agentd/src/neuron_artifact_admission.rs",
-      "nativeSymbol": "AgentdNeuronArtifactAdmissionV1",
-      "tests": [
-        "codex-rs/hepta-agentd/tests/support/neuron_artifact_tests.rs"
-      ]
     }
   ],
   "sourceObjects": [
     {
-      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "fd85e2571052815a112280dc291f4c1b2be37a18"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/neuron_artifact_admission.rs",
-      "object": "b9f4e6b7b221c85c2a18f9b17a21577df345940b"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/neuron_product.rs",
-      "object": "b43c07de822881ef10fa372bbc54aad1468d0526"
-    },
-    {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "object": "13134d58629ec8e8657aa464c3fb77a7f984ea80"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/tests/support/current_artifacts.rs",
-      "object": "ca790792ad93cffac1dd8ab3445896275f8f1deb"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/tests/support/neuron_artifact_tests.rs",
-      "object": "a599160fb7558ce6908fee6417aa290b696fc692"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "9691dc0cf5a7d7146e3573df54dcc713e4f382c9"
+      "object": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
@@ -307,19 +248,11 @@
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "f61d41e329b2873ea095cb1d4bcac2df81f7d7e2"
+      "object": "547ac1816441326278e889e22695253289a03994"
     },
     {
       "path": "codex-rs/hepta-neuron/OPERATION_STORE.md",
-      "object": "0d6b566c4101121e60658b71a2a1c6dc5a941e12"
-    },
-    {
-      "path": "codex-rs/hepta-neuron/src/artifact_binding.rs",
-      "object": "4096cbf5d9d5c1dd48e222a0c83cf157d2749397"
-    },
-    {
-      "path": "codex-rs/hepta-neuron/src/artifact_binding_tests.rs",
-      "object": "9efc2589c0c76152f9e9ea3afae21a209d610530"
+      "object": "cc3e5bec3a3e9601c278dc65d67e6b4bdb5297a5"
     },
     {
       "path": "codex-rs/hepta-neuron/src/deletion.rs",
@@ -339,7 +272,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/journal.rs",
-      "object": "07e54ceb25a76b314a477eac0a0bfb77f4adf8e6"
+      "object": "4a1a9cbba6082e259da3b8df7414aea8f87c79bb"
     },
     {
       "path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
@@ -355,7 +288,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/operation_store.rs",
-      "object": "7ab52da13793f67f62dcea46c9ab1ed7909b2b88"
+      "object": "07c776e365b435447d9ffe95aeb9f8f0c2d08948"
     },
     {
       "path": "codex-rs/hepta-neuron/src/operation_store_tests.rs",
@@ -395,31 +328,19 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime.rs",
-      "object": "d5a9d5e3077a8497102cb6cc47dfcc0680a92689"
-    },
-    {
-      "path": "codex-rs/hepta-neuron/src/runtime_admission.rs",
-      "object": "113f7fc287d1885745a98812c9f33a75ed18558e"
-    },
-    {
-      "path": "codex-rs/hepta-neuron/src/runtime_admission_tests.rs",
-      "object": "d8cf7767e0ab367d3eb6405d864db69189ecdf6f"
-    },
-    {
-      "path": "codex-rs/hepta-neuron/src/runtime_process_tests.rs",
-      "object": "89aefddff506c024e4fed646796a3a5e53e7dbd2"
+      "object": "f1b55d581160890448b04724bdf1ecd8dfcfaa12"
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
-      "object": "a753274b4d44e54fddf9f2d41c3e3ee079fdc076"
+      "object": "7b483722a1ca075aebe83bc1ff12c226a3d8308d"
     },
     {
       "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
-      "object": "2db4eab27c03d2f14cbbe17e21ebb358bcfcb97a"
+      "object": "744c4637a5f689c9ddb9d1202c4bc16c502d1a1c"
     },
     {
       "path": "codex-rs/hepta-neuron/src/witness.rs",
-      "object": "ea8cafa832311d3fe86fa3bd2c5450761767f393"
+      "object": "c56bad3540aa606fcadf0d45dc4fea45145cb4c6"
     },
     {
       "path": "codex-rs/hepta-neuron/src/witness_tests.rs",
@@ -427,7 +348,7 @@
     },
     {
       "path": "docs/modules/neuron.runtime/TECHNICAL.md",
-      "object": "5a9e2cd13d880adc104f779e3c2a23dd8658f52f"
+      "object": "5beb614ece27a538a1bdb668db06bfe1e97d6ec4"
     }
   ]
 }

@@ -310,11 +310,20 @@ pub struct AgentSupervisorSnapshot {
     pub(crate) has_last_command: bool,
 }
 
+impl AgentSupervisorSnapshot {
+    /// Read-only observation of a scheduled recovery; this does not authorize a restart.
+    #[must_use]
+    pub const fn restart_pending(&self) -> bool {
+        self.restart_pending
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum ControlRuntimePhase {
     AwaitingHealth,
     Running,
+    Unhealthy,
     Draining,
     Stopping,
     Killing,

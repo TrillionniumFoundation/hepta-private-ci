@@ -1366,3 +1366,6 @@ async fn failed_evidence_insert_rolls_back_authbus_replay_advance() {
         .await
         .expect("failed evidence insert must not consume replay sequence");
 }
+
+#[path = "qualification_current_issuer_tests.rs"]
+mod current_issuer;

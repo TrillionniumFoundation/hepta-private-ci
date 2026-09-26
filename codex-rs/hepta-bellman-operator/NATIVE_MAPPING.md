@@ -58,7 +58,7 @@ canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile. Duplicate underlying `evidence_digest` values are rejected by the canonical fit itself, so relabelling one observation cannot increase a cell count. `fit_tabular_operator_strict_v2` remains an additive compatibility/error surface rather than a stronger hidden trust boundary.
 
-`verify_tabular_operator_plan_v2` is the qualification ingress: it independently verifies a `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality, and requires the sorted training evidence set to equal the frozen dataset's canonical `source_record_digests` exactly. Only its opaque `VerifiedTabularOperatorPlanV2` can enter `fit_tabular_operator_verified_v2`.
+`verify_tabular_operator_plan_v2` is now qualification-fixture-only, behind `unchecked-qualification-inputs`. It verifies a self-describing receipt and evidence-set membership, not whether caller-supplied targets or feature labels actually follow from the named records. It must not be used as a product trust boundary. Default training uses `freeze_terminal_cell_from_owner_v1` and `fit_terminal_cell_from_owner_v1`, which derive rows from authenticated current `LedgerWriter` facts and re-materialize them at final training use. The complete plan and learning trust-distribution digest must remain unchanged.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
@@ -172,3 +172,28 @@ holds expected payload/manifest/registry pins outside the files being inspected;
 no extra artifact store or production selection is introduced. This is executable
 cross-owner engineering qualification, not an authenticated external operator
 acceptance, future-window efficacy result or live C1 deployment.
+
+## Default-build boundary and recovery format (2026-09-25)
+
+The raw table/world-model constructors and predictors are absent from the default
+public API. The only Cargo consumer enabling `unchecked-qualification-inputs` is
+the explicit shadow-qualification dev-dependency. Bazel gives that compatibility
+variant a separate `testonly` target with visibility limited to qualification.
+`scripts/hepta-learning-operator-boundary.py` compiles a positive owner/loaded API
+control and rejects each raw import and mutation of loaded private state using
+the exact default Cargo artifact, rather than searching strings for privacy.
+
+Agentd read-consumer fixtures now train from actual signed ledger records; they
+do not enable the raw API. Shared-terminal recovery emits bundle version 2,
+including the training trust-distribution digest inside the signed payload. Old
+V1 bundles are not reinterpreted as V2. Reissue by explicit current-owner training
+and independent artifact publication/selection; failed restore never retrains.
+Current source permission, dataset activity, trust distribution and selection
+must all hold at load and every inference use. A failed/cancelled use closes the
+loaded consumer; reloading is explicit and rechecks current owners.
+
+These changes do not manufacture a trusted production bootstrap or a default
+learning loop. The host must obtain current root-authorized learning trust and
+retain its minimum generation outside rollbackable model files. Package tests,
+engineering process-recovery fixtures and synthetic held-out gains do not prove
+independent future-window effectiveness, deployment approval or release.

@@ -232,9 +232,22 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
 
 #[test]
 fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
-    let mutations: [fn(&mut Fixture); 10] = [
+    let mutations: [fn(&mut Fixture); 14] = [
         |f| f.qualification.publication_digest = digest("tampered publication"),
         |f| f.qualification.decision.authentication_digest = digest("tampered authentication"),
+        |f| {
+            f.qualification.decision.decision.disposition =
+                IndependentEvaluationDispositionV1::Ineligible;
+        },
+        |f| {
+            f.qualification
+                .decision
+                .decision
+                .failed_metrics
+                .push(id("tampered-metric"));
+        },
+        |f| f.qualification.decision.decision.baseline_id = id("tampered-baseline"),
+        |f| f.qualification.decision.decision.evaluation_id = id("tampered-evaluation"),
         |f| f.candidate_evidence.signature[0] ^= 1,
         |f| f.decision_evidence.signature[0] ^= 1,
         |f| {

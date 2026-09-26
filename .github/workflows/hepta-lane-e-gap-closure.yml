@@ -60,6 +60,12 @@ jobs:
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
 
+      - name: Default operator API and source projection regressions
+        run: |
+          python3 -m unittest discover -s scripts -p test_hepta_rust_surface.py
+          python3 -m unittest discover -s scripts -p test_hepta_learning_operator_boundary.py
+          python3 scripts/hepta-learning-operator-boundary.py
+
       - name: Locked all-target compilation
         working-directory: codex-rs
         run: >-
@@ -289,6 +295,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Verify merged default operator boundary
+        run: |
+          python3 -m unittest discover -s scripts -p test_hepta_rust_surface.py
+          python3 -m unittest discover -s scripts -p test_hepta_learning_operator_boundary.py
+          python3 scripts/hepta-learning-operator-boundary.py
 
       - name: Compile merged candidate
         working-directory: codex-rs

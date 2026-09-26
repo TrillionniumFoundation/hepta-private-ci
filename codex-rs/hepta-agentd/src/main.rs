@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
+use codex_hepta_agentd::load_intuition_policy_bootstrap_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -18,6 +19,8 @@ fn main() -> anyhow::Result<()> {
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
         let mut intelligence_authority_file = None;
+        let mut intuition_policy_file: Option<PathBuf> = None;
+        let mut intuition_policy_digest: Option<Digest32> = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
         let mut memory_retrieval_context_file = None;
@@ -26,6 +29,7 @@ fn main() -> anyhow::Result<()> {
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
+        let mut prompt_registry_recovery_checkpoint = None;
         let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
         let mut automation_effect_host = None;
@@ -56,6 +60,23 @@ fn main() -> anyhow::Result<()> {
                     Some(value.parse::<Digest32>().map_err(|error| {
                         anyhow::anyhow!("invalid plasticity descriptor digest: {error}")
                     })?);
+            } else if flag == "--intuition-policy-file" {
+                anyhow::ensure!(
+                    intuition_policy_file.is_none(),
+                    "duplicate --intuition-policy-file"
+                );
+                intuition_policy_file = Some(PathBuf::from(path));
+            } else if flag == "--intuition-policy-digest" {
+                anyhow::ensure!(
+                    intuition_policy_digest.is_none(),
+                    "duplicate --intuition-policy-digest"
+                );
+                intuition_policy_digest = Some(
+                    path.into_string()
+                        .map_err(|_| anyhow::anyhow!("intuition digest must be UTF-8"))?
+                        .parse::<Digest32>()
+                        .map_err(|error| anyhow::anyhow!("invalid intuition digest: {error}"))?,
+                );
             } else if flag == "--intelligence-authority-file" {
                 anyhow::ensure!(
                     intelligence_authority_file.is_none(),
@@ -99,6 +120,12 @@ fn main() -> anyhow::Result<()> {
                 );
                 memory_retrieval_context_verifying_key =
                     Some(parse_verifying_key_hex(path, "memory retrieval context")?);
+            } else if flag == "--prompt-registry-recovery-checkpoint-file" {
+                anyhow::ensure!(
+                    prompt_registry_recovery_checkpoint.is_none(),
+                    "duplicate --prompt-registry-recovery-checkpoint-file"
+                );
+                prompt_registry_recovery_checkpoint = Some(PathBuf::from(path));
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
@@ -136,6 +163,14 @@ fn main() -> anyhow::Result<()> {
                 anyhow::bail!("unknown Agentd argument {flag:?}");
             }
         }
+        anyhow::ensure!(
+            intuition_policy_file.is_some() == intuition_policy_digest.is_some(),
+            "--intuition-policy-file and --intuition-policy-digest must be supplied together"
+        );
+        anyhow::ensure!(
+            intuition_policy_file.is_none() || intelligence_authority_file.is_some(),
+            "intuition policy requires the intelligence authority configuration"
+        );
         match (
             intelligence_authority_file,
             intelligence_authority_signer,
@@ -150,6 +185,26 @@ fn main() -> anyhow::Result<()> {
                         verifying_key,
                     },
                 )?;
+                let runner = match (intuition_policy_file, intuition_policy_digest) {
+                    (Some(path), Some(pin)) => {
+                        let identity = config.identity();
+                        let now = u64::try_from(
+                            std::time::SystemTime::now()
+                                .duration_since(std::time::UNIX_EPOCH)?
+                                .as_millis(),
+                        )?;
+                        let host = load_intuition_policy_bootstrap_v1(
+                            &path,
+                            pin,
+                            identity.agent_id.clone(),
+                            identity.spawn_generation,
+                            now,
+                        )?;
+                        runner.with_intuition_policy_host(host)?
+                    }
+                    (None, None) => runner,
+                    _ => anyhow::bail!("incomplete intuition bootstrap configuration"),
+                };
                 config = config.with_intelligence_product_runner(Arc::new(runner))?;
             }
             _ => {
@@ -188,6 +243,9 @@ fn main() -> anyhow::Result<()> {
         }
         if let Some(path) = automation_effect_host {
             config = config.with_automation_effect_host_file(path.into());
+        }
+        if let Some(path) = prompt_registry_recovery_checkpoint {
+            config = config.with_prompt_registry_recovery_checkpoint_file(path)?;
         }
         if let Some(path) = objective_profile {
             config = config.with_objective_profile_file(path.into());

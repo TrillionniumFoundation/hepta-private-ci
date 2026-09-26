@@ -26,7 +26,7 @@ rust_test(
     compile_data = ["fixtures/live_product_oracle_v2_2f704.json"],
     crate = ":hepta-shadow-qualification-lib",
     deps = [
-        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-qualification",
         "//codex-rs/hepta-intelligence-eval",
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",
@@ -61,7 +61,7 @@ rust_test(
     crate_root = "tests/durable_learning_roundtrip.rs",
     edition = "2024",
     deps = [
-        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-qualification",
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",
         "//codex-rs/hepta-types",
@@ -80,7 +80,7 @@ rust_test(
     crate_root = "tests/lane_e_api_contract.rs",
     edition = "2024",
     deps = [
-        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-qualification",
         "//codex-rs/hepta-intelligence-eval",
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",

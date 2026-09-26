@@ -125,8 +125,6 @@ pub(crate) async fn append(
         request.expires_at_ms,
         &envelope,
     )?;
-    let trust = host.trust(state)?;
-    let issuer = trust.issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)?;
     let message = SignedMessage {
         claims,
         signature: hex_bytes(&request.signature_hex)?,
@@ -134,7 +132,23 @@ pub(crate) async fn append(
     let evidence_id = host
         .store
         .qualification()
-        .append_receipt(&issuer, &message, &envelope)
+        .append_receipt_with_current_issuer(
+            || {
+                host.trust(state)
+                    .and_then(|trust| {
+                        trust.issuer_for(
+                            &request.issuer_id,
+                            request.key_epoch,
+                            envelope.issuer_role,
+                        )
+                    })
+                    .map_err(|error| {
+                        codex_hepta_evidence::EvidenceError::InvalidRecord(error.to_string())
+                    })
+            },
+            &message,
+            &envelope,
+        )
         .await
         .map_err(evidence_error)?;
     require_ready(state)?;

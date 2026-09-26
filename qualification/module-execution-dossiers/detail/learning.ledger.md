@@ -274,3 +274,32 @@ composition, not a daemon-owned live deployment. They do not change
 `productionImplementation=false` or `productExecutionProved=false` until the
 runtime owner binds them to real terminal observations and current production
 trust/storage dependencies and exact product execution is evidenced.
+
+## 12. Exact signed-append acknowledgement recovery
+
+`LedgerWriter::authenticated_append_identity` produces a bounded, non-authorizing
+identity for the existing caller intent: ledger binding, record ID, original
+predecessor and complete signed-evidence digest. `LearningAppendIdentityV1`
+encodes/decodes it with a versioned, bounded, closed-field format. The caller must
+persist it before submission in its existing durable intent; this API creates no
+second database, writer, authority or execution path.
+
+`LedgerWriter::recover_authenticated_append` reads the validated owner index and
+returns the original authenticated Decision/Outcome receipt. It never inserts a
+missing event, runs a model, renews evidence or reauthorizes an external effect.
+A one-event-late independent witness can advance only for the exact committed
+record. An absent record is not evidence that an external effect did not happen.
+Any subsequent new append still requires normal current signed admission.
+
+The historical receipt remains readable after signature expiry or data withdrawal;
+it does not restore dataset eligibility or roll back withdrawal. Tests cover a
+real child-process exit without returning a receipt, independently lost witness
+acknowledgement, payload-identity/predecessor/store substitution, bounded decoding,
+and authenticated Outcome withdrawal followed by reopen. The child helper is
+included in the seven targeted test cases; it is not a separate production role.
+
+This owner recovery primitive does not close the daemon canonical handoff or
+persist a not-yet-committed full request. Normal Agentd lifecycle installation,
+physical App Server execution, real Laya training/serving, independent efficacy,
+and current exact-head/base-merge qualification remain separate unfinished work.
+No capability or production flag changes with this source addition.

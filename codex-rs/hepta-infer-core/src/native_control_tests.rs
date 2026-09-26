@@ -883,3 +883,6 @@ mod maintenance;
 
 #[path = "native_usage_tests.rs"]
 mod usage;
+
+#[path = "native_prepared_input_tests.rs"]
+mod prepared_input;

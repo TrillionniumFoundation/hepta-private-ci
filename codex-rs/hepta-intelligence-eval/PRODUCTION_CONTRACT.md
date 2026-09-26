@@ -96,6 +96,61 @@ baseline metric intervals are derived from sealed `TemporalEvaluationReceipt`
 and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
 `MetricGateV1` intervals. The runner builds the signed qualification bundle itself and returns success only after `ProductQualificationEvidenceSinkV1` returns a nonzero durable publication digest. The resulting `ProductQualificationReceiptV1` has a private integrity seal and binds the candidate, evaluator, objective, dataset, snapshot set, claim scope, signed decision and durable publication.
 
+## Terminal receipt integrity profile
+
+The current product receipt digest domain is
+`hepta.intelligence-eval.product-qualification.v4`; its private seal domain is
+`hepta.intelligence-eval.product-qualification-receipt.v2`. In addition to the
+execution, candidate, principals, objective, dataset, snapshots, scope and
+publication, it binds the complete terminal decision: evaluation/candidate/baseline
+identities, disposition, ordered failed metrics, evidence, trust, authentication
+and deny-all authority. Retaining an old opaque decision digest does not permit
+changing any of these fields. Consumer signing payloads incorporate the current
+product digest and must reject a modified receipt before requesting a signature.
+
+Historical v3/v1 product digests/seals are not accepted as this profile. Recovery
+must use the preserved original signed inputs and authoritative publication/holdout
+identity; do not bless old mutable conclusions, change plans, consume a different
+holdout or turn a read-only historical result into a current-use authorization.
+
+## Evidence publication and recovery
+
+`ProductEvaluationRunnerV1::qualification_publication_payload` prepares exact
+terminal bytes using the same signed admission as qualification. It produces no
+qualification receipt. The external producer signs an existing kernel.evidence
+envelope, and the host retains that original intent in its operation/outbox owner.
+`qualify_and_persist` rechecks current trust/time and requires the exact publication.
+
+`AgentdEvaluationEvidenceSinkV1` uses the ordinary Agentd evidence endpoint, AuthBus
+and SQLite. It creates no database or credentials. Publication identity is derived
+from the frozen evaluation ID in the Agent namespace. Changed terminal bytes are
+rejected; a lost response remains indeterminate and only the original signed
+intent may be retried. Success requires the expected evidence ID from the owner.
+The synchronous adapter requires a multithread runtime and bounded blocking host.
+It publishes causal qualification, not independent longitudinal acceptance.
+
+The evidence host resolves its issuer after acquiring the SQLite writer lock.
+Revocation while waiting is observed before authentication, including retries.
+That post-lock read defines admission order relative to later trust changes.
+
+Recovery tests use actual files, locks, synchronization and child-process exit.
+The real-Agentd fixture uses the actual socket and evidence database, restart and
+revocation. Its observations and identities are synthetic, not field acceptance.
+The default authenticated input provider, immutable input archive, durable signing
+outbox and evaluation scheduler still require named product integration. This
+publication adapter must not be reported as completion of those missing owners.
+
+## Storage recovery and measurement
+
+Locked-file recovery now reuses one validated semantic journal for event replay,
+while retaining checksums, plan integrity, one-use rules, monotonic fences and
+every-prefix matching against the independent minimum anchor. The disk format
+and state digests are unchanged. Full-prefix replay remains a test oracle.
+`examples/fenced_holdout_probe.rs` measures isolated storage with synthetic plans
+and refuses an existing directory. Record exact source, build profile, filesystem,
+host load and workload alongside append percentiles, memory and recovery cost.
+These measurements do not establish field or future-window efficacy.
+
 ## Canonical product consumer
 
 The repository's current signed consumer is
@@ -129,3 +184,12 @@ promotion or release evidence.
 head and ordered-parent synthetic merge pass the Lane E workflow including the
 mandatory learning-eval qualification artifact. External evidence gates remain
 open independently and must not be collapsed into source qualification.
+
+### Persisted qualification consumption
+
+`ProductQualificationReceiptV1::verify_signed_bundle_current` only verifies an
+already sealed, persisted result against its exact signed bundle and current
+trust; it cannot mint a new qualification. Agentd uses request-bound
+`AgentdSignedEvaluationV2`, and governed parameter proposals use
+`CandidateEvaluationAdmissionV2`. Both reject a raw signed-metrics substitute.
+The generic `decide_with_signed_evidence_v2` remains crate-private.

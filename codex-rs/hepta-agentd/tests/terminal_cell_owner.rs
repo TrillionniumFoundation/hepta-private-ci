@@ -1,3 +1,4 @@
+#![allow(clippy::unwrap_used)]
 use codex_hepta_bellman_operator::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -297,31 +298,73 @@ fn durable_owner_history_and_concurrent_training_profile() {
     for (agents, pairs) in [(1, 32), (1, 128), (1, 512), (4, 128)] {
         let started = Instant::now();
         let reports = std::thread::scope(|scope| {
-            let jobs=(0..agents).map(|agent| scope.spawn(move || {
-                let fixture=Fixture::new();let mut writer=fixture.writer_with_limit(4096);
-                let mut append_latencies=Vec::new();
-                for index in 0..pairs {
-                    let t=Instant::now();
-                    collect(&mut writer,&format!("profile-{agent}-{index}"),if index%2==0 { "read" } else { "abstain" },if index%2==0 { FixedQ32::ONE.raw() } else { 0 });
-                    append_latencies.push(t.elapsed().as_micros());
-                }
-                let t=Instant::now();
-                let data=freeze(&writer,&format!("profile.dataset.{agent}"));
-                let frozen=freeze_terminal_cell_from_owner_v1(&writer,&data,profile(1),50).unwrap();
-                let trained=fit_terminal_cell_from_owner_v1(&writer,frozen,50).unwrap();
-                let mut registry=artifacts::ArtifactRegistry::new();
-                let loaded=persist_reload(&fixture.root,&mut registry,&trained,None);
-                assert!(loaded.predict(&id("single-approved-state"),&id("read")).is_ok());
-                let fit_and_reload_us=t.elapsed().as_micros();
-                let cut=writer.witness_frontier().unwrap();drop(writer);
-                let bytes=std::fs::metadata(fixture.root.join("ledger")).unwrap().len();
-                let t=Instant::now();let recovered=fixture.recover_writer(4096,cut);let recovery_us=t.elapsed().as_micros();
-                assert_eq!(recovered.witness_frontier().unwrap().anchor.sequence, (pairs*2) as u64);
-                let t=Instant::now();assert_eq!(recovered.read_dataset_records(&data,50).unwrap().len(),pairs*2);let page_us=t.elapsed().as_micros();
-                append_latencies.sort_unstable();
-                format!("OWNER_HISTORY_PROFILE agents={agents} agent={agent} records={} ledger_bytes={bytes} decision_outcome_p50_us={} p95_us={} p99_us={} fit_registry_reload_us={fit_and_reload_us} full_recovery_us={recovery_us} indexed_dataset_read_us={page_us} recovery_profile=complete_authenticated_history not_cold_compaction=true",pairs*2,append_latencies[pairs/2],append_latencies[(pairs*95/100).min(pairs-1)],append_latencies[(pairs*99/100).min(pairs-1)])
-            })).collect::<Vec<_>>();
-            jobs.into_iter()
+            (0..agents)
+                .map(|agent| {
+                    scope.spawn(move || {
+                        let fixture = Fixture::new();
+                        let mut writer = fixture.writer_with_limit(4096);
+                        let mut append_latencies = Vec::new();
+                        for index in 0..pairs {
+                            let t = Instant::now();
+                            collect(
+                                &mut writer,
+                                &format!("profile-{agent}-{index}"),
+                                if index % 2 == 0 { "read" } else { "abstain" },
+                                if index % 2 == 0 {
+                                    FixedQ32::ONE.raw()
+                                } else {
+                                    0
+                                },
+                            );
+                            append_latencies.push(t.elapsed().as_micros());
+                        }
+                        let t = Instant::now();
+                        let data = freeze(&writer, &format!("profile.dataset.{agent}"));
+                        let frozen = freeze_terminal_cell_from_owner_v1(
+                            &writer,
+                            &data,
+                            profile(1),
+                            50,
+                        )
+                        .unwrap();
+                        let trained = fit_terminal_cell_from_owner_v1(&writer, frozen, 50).unwrap();
+                        let mut registry = artifacts::ArtifactRegistry::new();
+                        let loaded =
+                            persist_reload(&fixture.root, &mut registry, &trained, None);
+                        assert!(
+                            loaded
+                                .predict(&id("single-approved-state"), &id("read"))
+                                .is_ok()
+                        );
+                        let fit_and_reload_us = t.elapsed().as_micros();
+                        let cut = writer.witness_frontier().unwrap();
+                        drop(writer);
+                        let bytes = std::fs::metadata(fixture.root.join("ledger"))
+                            .unwrap()
+                            .len();
+                        let t = Instant::now();
+                        let recovered = fixture.recover_writer(4096, cut);
+                        let recovery_us = t.elapsed().as_micros();
+                        assert_eq!(
+                            recovered.witness_frontier().unwrap().anchor.sequence,
+                            (pairs * 2) as u64
+                        );
+                        let t = Instant::now();
+                        assert_eq!(
+                            recovered.read_dataset_records(&data, 50).unwrap().len(),
+                            pairs * 2
+                        );
+                        let page_us = t.elapsed().as_micros();
+                        append_latencies.sort_unstable();
+                        format!(
+                            "OWNER_HISTORY_PROFILE agents={agents} agent={agent} records={} ledger_bytes={bytes} decision_outcome_p50_us={} p95_us={} p99_us={} fit_registry_reload_us={fit_and_reload_us} full_recovery_us={recovery_us} indexed_dataset_read_us={page_us} recovery_profile=complete_authenticated_history not_cold_compaction=true",
+                            pairs * 2,
+                            append_latencies[pairs / 2],
+                            append_latencies[(pairs * 95 / 100).min(pairs - 1)],
+                            append_latencies[(pairs * 99 / 100).min(pairs - 1)]
+                        )
+                    })
+                })
                 .map(|job| job.join().unwrap())
                 .collect::<Vec<_>>()
         });
@@ -346,6 +389,3 @@ mod shared_process_tests;
 
 #[path = "support/shared_terminal_manifest_tests.rs"]
 mod shared_manifest_tests;
-
-#[path = "support/neuron_artifact_tests.rs"]
-mod neuron_artifact_tests;

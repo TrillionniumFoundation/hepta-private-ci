@@ -22,6 +22,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             authority_file,
             authority_verifier,
             evaluation_trust: None,
+            intuition_policy: None,
         })
     }
 
@@ -35,6 +36,19 @@ impl AgentdIntelligenceProductRunnerV1 {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
         }
         self.evaluation_trust = Some(std::sync::Arc::new(trust));
+        Ok(self)
+    }
+
+    /// Install the host-selected current intuition profile and activated trust.
+    /// Ordinary product preparation fails closed when this host is absent.
+    pub fn with_intuition_policy_host(
+        mut self,
+        host: std::sync::Arc<AgentdIntuitionPolicyHostV2>,
+    ) -> Result<Self, AgentdIntelligenceProductError> {
+        if self.intuition_policy.is_some() {
+            return Err(AgentdIntelligenceProductError::IntuitionPolicyUnavailable);
+        }
+        self.intuition_policy = Some(host);
         Ok(self)
     }
 
@@ -77,17 +91,6 @@ impl AgentdIntelligenceProductRunnerV1 {
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let cancellation = tokio_util::sync::CancellationToken::new();
-        let _cancel_on_drop = cancellation.clone().drop_guard();
-        let deadline = Instant::now()
-            .checked_add(Duration::from_micros(request.budget.total_micros))
-            .ok_or(AgentdIntelligenceProductError::Clock)?;
-        if !inputs
-            .neuron
-            .matches_run(&request.run_id, request.snapshot.body_generation().get())
-        {
-            return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
-        }
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -95,7 +98,8 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map(|candidate| candidate.candidate_id.clone())
             .collect::<Vec<_>>();
         let intuition_ids = inputs
-            .intuition_request
+            .intuition
+            .request
             .candidates
             .iter()
             .map(|candidate| candidate.candidate_id.clone())
@@ -114,7 +118,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
+        let timeout_micros = request.budget.total_micros.min(
+            u64::try_from(crate::control_budget::OWNER_PREPARATION_TIMEOUT.as_micros())
+                .map_err(|_| AgentdIntelligenceProductError::Clock)?,
+        );
         let started_ms = wall_clock_ms()?;
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
         let deadline_ms = started_ms
@@ -122,6 +129,26 @@ impl AgentdIntelligenceProductRunnerV1 {
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
+        let intuition_host = self
+            .intuition_policy
+            .as_ref()
+            .cloned()
+            .ok_or(AgentdIntelligenceProductError::IntuitionPolicyUnavailable)?;
+        let agent_id = codex_hepta_contracts::AgentId::parse(&composition.agent_id)
+            .map_err(|_| AgentdIntelligenceProductError::IntuitionPolicyUnavailable)?;
+        let intuition_owner_id = StableId::new("intuition.policy")
+            .map_err(|_| AgentdIntelligenceProductError::IntuitionPolicyUnavailable)?;
+        let mut current_oracle =
+            FileBackedFreshnessOracleV1::new(authority_file.clone(), authority_verifier.clone());
+        let intuition_owner = current_oracle
+            .current(&intuition_owner_id)
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let intuition_current = AgentdIntuitionCurrentBindingV1 {
+            snapshot_digest: snapshot.digest(),
+            authority_epoch: snapshot.authority_epoch(),
+            revocation_frontier_digest: snapshot.revocation_frontier_digest(),
+            owner: intuition_owner,
+        };
         let evaluation_session = match inputs.signed_evaluation.take() {
             None => None,
             Some(signed) => {
@@ -146,15 +173,19 @@ impl AgentdIntelligenceProductRunnerV1 {
                 })
             }
         };
-        let neuron_admission = neuron_product::NeuronStageAdmission {
-            snapshot: snapshot.clone(),
-            authority_file: authority_file.clone(),
-            authority_verifier: authority_verifier.clone(),
-            deadline,
-            cancellation,
-        };
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session, neuron_admission);
+            let mut ports = AgentdOwnerPortsV1::new(
+                inputs,
+                evaluation_session,
+                intuition_host,
+                intuition_current,
+                agent_id,
+                generation,
+                FileBackedFreshnessOracleV1::new(
+                    authority_file.clone(),
+                    authority_verifier.clone(),
+                ),
+            );
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;

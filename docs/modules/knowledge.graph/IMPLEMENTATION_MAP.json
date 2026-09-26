@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "90a485815fa83f6cb1d3fa13925d25a2cd639d21",
-    "tree": "62b5d2742dc3f363f2064f64a81ca470a9c3eb90"
+    "commit": "28d96586fa68e8db7ec0fe7fe53ce68b638d471b",
+    "tree": "9bfb2f00aba387426508b1c505c7c1cc300717f8"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -114,6 +114,10 @@
         {
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
+        },
+        {
+          "path": "codex-rs/hepta-kg/src/generation.rs",
+          "symbol": "query_relations_with_work"
         }
       ]
     },
@@ -204,8 +208,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "90a485815fa83f6cb1d3fa13925d25a2cd639d21",
-    "tree": "62b5d2742dc3f363f2064f64a81ca470a9c3eb90"
+    "commit": "28d96586fa68e8db7ec0fe7fe53ce68b638d471b",
+    "tree": "9bfb2f00aba387426508b1c505c7c1cc300717f8"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -256,19 +260,19 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-      "object": "3d6c567a32cb8486702690778f9afdb292a3bda0"
+      "object": "349afbba605bbec194d039da8268311d9588d827"
     },
     {
       "path": "codex-rs/hepta-kg",
-      "object": "0f936a5ce379f36b9ef4a6cacb77551e0da7212a"
+      "object": "009e2fd667d04d48b63a116c90cdeea2f86199d5"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation.rs",
-      "object": "5776ea79a0fb502bc3c478cdea5840b2c8b03202"
+      "object": "8c431c0c35ee32e36a7107797282e8c8f2a6b4d0"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation_tests.rs",
-      "object": "e1d24dbff54ab0249169deaa18ffae0dfed3d786"
+      "object": "3b396de45b5751db8e12afbaa080beb68eaf0bd1"
     },
     {
       "path": "codex-rs/hepta-kg/src/prompt_factor.rs",
@@ -280,7 +284,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
-      "object": "cfb84c235e1c98a5b968db12009ef5d5e5e6d24c"
+      "object": "b0a873f2479f62d9a8e2027dbd0e78963a1fc8db"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
@@ -296,7 +300,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "f6cba14ca4c719d02ecbc423400d58125437a09b"
+      "object": "56f8e6c3f4e2f862046720c15a87d85a0d891a7d"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
@@ -308,7 +312,7 @@
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
-      "object": "dcad4ab66bc88db8b7afc3a34fcab7946be9425f"
+      "object": "209c368e3aeecd199c5951103ed862a2c995a4b4"
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
@@ -316,7 +320,7 @@
     },
     {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "object": "35e346aae3b7f0f264edd2a215bdc5b49874c053"
+      "object": "df2b50221cfc4d72536cfd00b095f044b2582eec"
     }
   ]
 }

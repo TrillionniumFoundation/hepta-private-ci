@@ -39,12 +39,7 @@ impl RuntimeExecutableIdentity {
     pub fn observe_current() -> Result<&'static Self, AgentdError> {
         static OBSERVED: OnceLock<Result<RuntimeExecutableIdentity, io::ErrorKind>> =
             OnceLock::new();
-        OBSERVED
-            .get_or_init(|| observe_current_image().map_err(|error| error.kind()))
-            .as_ref()
-            .map_err(|kind| {
-                AgentdError::Io(io::Error::new(*kind, "runtime executable observation failed"))
-            })
+        observe_cached(&OBSERVED, observe_current_image)
     }
 
     pub fn origin(&self) -> RuntimeExecutableOrigin {
@@ -77,6 +72,24 @@ impl RuntimeExecutableIdentity {
             manifest.as_array(),
         ])
     }
+}
+
+fn observe_cached<F>(
+    cache: &OnceLock<Result<RuntimeExecutableIdentity, io::ErrorKind>>,
+    observe: F,
+) -> Result<&RuntimeExecutableIdentity, AgentdError>
+where
+    F: FnOnce() -> io::Result<RuntimeExecutableIdentity>,
+{
+    cache
+        .get_or_init(|| observe().map_err(|error| error.kind()))
+        .as_ref()
+        .map_err(|kind| {
+            AgentdError::Io(io::Error::new(
+                *kind,
+                "runtime executable observation failed",
+            ))
+        })
 }
 
 fn observe_current_image() -> io::Result<RuntimeExecutableIdentity> {

@@ -22,6 +22,15 @@ fn durable_inputs() -> (
     composition.agent_id = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12".to_string();
     composition.agentd_generation = value.request.snapshot.body_generation().get();
     composition.supervisor_generation = composition.agentd_generation;
+    let intuition = intuition_support::build(
+        value.inputs.intuition.request.clone(),
+        value.inputs.intuition.profile.scorer.model_digest,
+        &composition.agent_id,
+        composition.agentd_generation,
+        wall_clock_ms().unwrap(),
+    );
+    value.inputs.intuition = intuition.input;
+    value.intuition_host = intuition.host;
     let mut fence = b"hepta:agentd:objective-fence:v1\0".to_vec();
     fence.extend_from_slice(composition.agent_id.as_bytes());
     fence.extend_from_slice(&composition.agentd_generation.to_be_bytes());
@@ -51,7 +60,7 @@ fn durable_inputs() -> (
                 signature: [1; 64],
             },
             run_id: record_id.clone(),
-            runtime_body_digest: value.inputs.neuron.runtime_body_digest(),
+            runtime_body_digest: value.inputs.neural_tick.body_digest,
             preference_state_digest: digest("preference"),
             model_tuple_digest: digest("model-tuple"),
             prompt_registry_digest: value.inputs.prompt_request.registry_snapshot_digest,
@@ -93,8 +102,7 @@ fn durable_inputs() -> (
         &value.owners,
         value.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
-        .unwrap()
+    let runner = product_runner(authority, &value)
         .with_evaluation_trust(trust)
         .unwrap();
     (value, record, composition, directory, runner)

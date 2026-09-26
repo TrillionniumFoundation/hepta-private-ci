@@ -346,13 +346,20 @@ async fn queued_writer_does_not_admit_a_grant_that_expired_while_waiting() {
 #[tokio::test]
 async fn missing_quota_head_is_rejected_on_reopen_even_with_intact_schema() {
     let fixture = Fixture::new().await;
-    // Simulate state-file corruption while restoring the exact expected schema.
+    // Pin fault injection to one transaction: other pool connections must
+    // never observe an intermediate schema without its immutability trigger.
+    let mut fault = fixture
+        .store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .unwrap();
     sqlx::query("DROP TRIGGER shared_experience_use_heads_no_delete")
-        .execute(&fixture.store.pool)
+        .execute(&mut *fault)
         .await
         .unwrap();
     sqlx::query("DELETE FROM shared_experience_use_heads")
-        .execute(&fixture.store.pool)
+        .execute(&mut *fault)
         .await
         .unwrap();
     sqlx::raw_sql(
@@ -361,9 +368,18 @@ BEFORE DELETE ON shared_experience_use_heads BEGIN
     SELECT RAISE(ABORT,'shared use predecessors are retained after expiry or revocation');
 END;",
     )
-    .execute(&fixture.store.pool)
+    .execute(&mut *fault)
     .await
     .unwrap();
+    fault.commit().await.unwrap();
+    let remaining: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM shared_experience_use_heads")
+        .fetch_one(&fixture.store.pool)
+        .await
+        .unwrap();
+    assert_eq!(
+        remaining, 0,
+        "corruption fixture must actually remove every head"
+    );
     assert!(matches!(
         verify_current_use_heads(&fixture.store.pool).await,
         Err(CognitiveStoreError::Corrupt(_))

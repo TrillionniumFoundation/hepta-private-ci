@@ -93,26 +93,20 @@ product_callers = ["codex-rs/hepta-native-gateway/src/lib.rs"]
 [[surface]]
 crate = "codex-hepta-intuition"
 role = "authority_free_authenticated_policy_kernel"
-public_items = [
-  "CanonicalPolicyProfileV1",
-  "ScoringCommitmentV1",
-  "AssignmentCommitmentV1",
-  "decide_calibrated_v3",
-]
-product_callers = [
-  "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
-  "codex-rs/hepta-agentd/src/intuition_policy.rs",
-]
+public_items = ["CanonicalPolicyProfileV1", "ScoringCommitmentV2", "AssignmentCommitmentV1", "decide_calibrated_v3"]
+product_callers = ["codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs", "codex-rs/hepta-agentd/src/intuition_policy_v2.rs"]
 
 [[surface]]
 crate = "codex-hepta-intelligence"
 role = "authenticated_intuition_policy_admission"
-public_items = [
-  "decide_authenticated_intuition_v2",
-  "IntuitionQualificationEvidenceV2",
-  "AuthenticatedIntuitionDecisionV2",
-]
-product_callers = ["codex-rs/hepta-agentd/src/intuition_policy.rs"]
+public_items = ["decide_authenticated_intuition_v3", "IntuitionQualificationEvidenceV2", "AuthenticatedIntuitionDecisionV3"]
+product_callers = ["codex-rs/hepta-agentd/src/intuition_policy_v2.rs"]
+
+[[surface]]
+crate = "codex-hepta-agentd"
+role = "authenticated_intuition_product_and_deployment_bootstrap"
+public_items = ["AgentdAuthenticatedIntuitionInputV1", "AgentdIntuitionPolicyHostV2", "AgentdIntuitionPolicyPinsV2", "load_intuition_policy_bootstrap_v1"]
+product_callers = ["codex-rs/hepta-agentd/src/intelligence_product.rs", "codex-rs/hepta-agentd/src/intelligence_ingress.rs", "codex-rs/hepta-agentd/src/main.rs"]
 
 [[surface]]
 crate = "codex-hepta-control-plane"

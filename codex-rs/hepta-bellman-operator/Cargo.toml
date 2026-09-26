@@ -10,6 +10,12 @@ name = "codex_hepta_bellman_operator"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Explicit qualification-only raw input/prediction surface; never enabled by
+# a production dependency. Product consumers use owner materialization and pins.
+unchecked-qualification-inputs = []
+
 [lints]
 workspace = true
 

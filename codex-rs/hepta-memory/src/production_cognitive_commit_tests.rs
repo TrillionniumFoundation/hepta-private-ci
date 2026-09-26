@@ -14,10 +14,9 @@ impl Drop for Hold {
 #[tokio::test]
 async fn caller_cancellation_does_not_release_guard_before_sqlite_commit()
 -> Result<(), Box<dyn std::error::Error>> {
-    let pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .max_connections(2)
-        .connect("sqlite::memory:")
-        .await?;
+    let temp = tempfile::TempDir::new()?;
+    let pool =
+        codex_state::open_durable_sqlite_pool(&temp.path().join("commit.sqlite3"), 2).await?;
     sqlx::query("CREATE TABLE counter (value INTEGER NOT NULL)")
         .execute(&pool)
         .await?;
@@ -70,11 +69,11 @@ fn runtime_shutdown_retains_authority_and_writer_until_commit_finishes()
         .worker_threads(2)
         .enable_all()
         .build()?;
-    let pool = runtime.block_on(
-        sqlx::sqlite::SqlitePoolOptions::new()
-            .max_connections(2)
-            .connect("sqlite::memory:"),
-    )?;
+    let temp = tempfile::TempDir::new()?;
+    let pool = runtime.block_on(codex_state::open_durable_sqlite_pool(
+        &temp.path().join("shutdown.sqlite3"),
+        2,
+    ))?;
     runtime.block_on(sqlx::query("CREATE TABLE committed (value INTEGER)").execute(&pool))?;
     let mut keeper = runtime.block_on(pool.acquire())?;
     let mut transaction = runtime.block_on(pool.begin_with("BEGIN IMMEDIATE"))?;
@@ -120,5 +119,11 @@ fn runtime_shutdown_retains_authority_and_writer_until_commit_finishes()
     let count: i64 = reader
         .block_on(sqlx::query_scalar("SELECT COUNT(*) FROM committed").fetch_one(&mut *keeper))?;
     assert_eq!(count, 1);
+    // SQLx pool-connection Drop schedules work. Dispose the retained reader
+    // connection inside its live runtime, after verifying the shutdown commit.
+    reader.block_on(async move {
+        drop(keeper);
+        pool.close().await;
+    });
     Ok(())
 }

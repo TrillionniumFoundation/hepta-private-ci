@@ -260,7 +260,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if !state.automation_is_available()? {
             return wait_for_cancellation(&cancellation).await;
         }
-        let ready = match state.automation_admission_ready() {
+        let ready = match state.automation_recovery_ready() {
             Ok(ready) => ready,
             Err(error @ AgentdError::GenerationFenced(_)) => {
                 state.mark_fenced();
@@ -276,9 +276,8 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
             Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
         };
 
-        // Reconcile one durable historical occurrence before admitting new
-        // work. This is bounded to one item/turn-page chain per tick and does
-        // not prevent an overlap-allowed scheduler from also making progress.
+        // Reconcile one occurrence and one unknown admission per quantum.
+        // Observation remains available during drain; new admission does not.
         if let Err(error) =
             automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
                 .await
@@ -288,6 +287,9 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
 
         if cancellation.is_cancelled() {
             return Ok(());
+        }
+        if !state.automation_admission_ready()? {
+            continue;
         }
         // Once admitted, the tick must record the queue outcome. Dropping this
         // future on cancellation could lose an acknowledgement after dispatch.

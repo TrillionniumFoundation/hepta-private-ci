@@ -314,9 +314,14 @@ fn numeric_and_digest_grammar_remains_exact() {
 #[test]
 fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
+    let mut empty_actions = original.clone();
+    empty_actions["structuredIntent"]["legalActionClasses"] = json!([]);
+    assert!(
+        decode_source_envelope_json_v1(&serde_json::to_vec(&empty_actions).unwrap()).is_ok(),
+        "an empty caller action set remains structurally valid for intrinsic abstain",
+    );
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
