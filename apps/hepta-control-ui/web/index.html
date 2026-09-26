@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="">
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
     >
     <title>Hepta Runtime Control</title>
     <link rel="stylesheet" href="./styles.css">
@@ -24,7 +24,8 @@
         <h2 id="connection-heading">Connection</h2>
         <dl class="summary-grid">
           <div><dt>Status</dt><dd id="connection-state">Disconnected</dd></div>
-          <div><dt>Session</dt><dd id="identity-state">—</dd></div>
+          <div><dt>Session</dt><dd id="session-state">—</dd></div>
+          <div><dt>Operator</dt><dd id="identity-state">—</dd></div>
           <div><dt>Generation</dt><dd id="generation-state">—</dd></div>
           <div><dt>Revision</dt><dd id="revision-state">—</dd></div>
         </dl>
@@ -67,6 +68,12 @@
       <section aria-labelledby="pending-heading">
         <h2 id="pending-heading">Pending and indeterminate operations</h2>
         <ul id="pending-list"></ul>
+      </section>
+
+      <section aria-labelledby="completed-heading">
+        <h2 id="completed-heading">Recent terminal operations</h2>
+        <p>Terminal facts shown here come from authenticated backend observations, not local acknowledgements.</p>
+        <ul id="completed-list"></ul>
       </section>
     </main>
 
