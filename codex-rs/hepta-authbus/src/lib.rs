@@ -41,17 +41,21 @@ pub(crate) use settlement::SettlementIssuerRegistration;
 pub use settlement::SettlementStatus;
 pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;
-pub(crate) use signed::IssuerRegistration;
 pub use signed::SignedMessage;
 pub use signed::SignedMessageClaims;
 pub use trust::IssuerLifecycleState;
 pub use trust::IssuerPurpose;
 pub use trust::IssuerRecord;
+pub use trust::IssuerRegistrationView;
 pub use trust::IssuerRetirement;
 pub use trust::IssuerSpec;
 pub use trust::SignedTrustedTimeAttestation;
 pub use trust::TrustedTimeAttestationClaims;
 pub use trust::VerifiedIssuerHandle;
+
+/// Compatibility name for the sealed registry-backed issuer capability. It is
+/// not a struct that callers can construct and it carries a lifecycle read fence.
+pub type IssuerRegistration = VerifiedIssuerHandle;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
