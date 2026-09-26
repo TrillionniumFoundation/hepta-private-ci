@@ -1,28 +1,4 @@
 #!/usr/bin/env python3
-"""Finalize the cognitive.store convergence after installing its real workflow."""
-
-from __future__ import annotations
-
-import json
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-GENERATED = "docs/modules/cognitive.store/cognitive-store-qualification.generated.yml"
-WORKFLOW = ".github/workflows/cognitive-store-qualification.yml"
-
-
-def replace_all(path: Path, old: str, new: str) -> bool:
-    text = path.read_text(encoding="utf-8")
-    if old not in text:
-        return False
-    path.write_text(text.replace(old, new), encoding="utf-8")
-    return True
-
-
-def write_map_verifier() -> None:
-    target = ROOT / "scripts/cognitive_store_map_verify.py"
-    target.write_text(
-        r'''#!/usr/bin/env python3
 """Verify the cognitive.store implementation map against one exact Git candidate.
 
 This intentionally scopes verification to cognitive.store. The global map
@@ -172,41 +148,6 @@ def main() -> None:
         "canonicalFacade": canonical[0],
         "executionClaim": False,
     }, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
-''',
-        encoding="utf-8",
-    )
-    target.chmod(0o755)
-
-
-def main() -> None:
-    changed: list[str] = []
-    module_root = ROOT / "docs/modules/cognitive.store"
-    for path in sorted(module_root.rglob("*")):
-        if path.is_file() and path.suffix in {".md", ".json", ".yml", ".yaml"}:
-            if replace_all(path, GENERATED, WORKFLOW):
-                changed.append(str(path.relative_to(ROOT)))
-
-    generated = ROOT / GENERATED
-    if generated.exists():
-        generated.unlink()
-        changed.append(GENERATED + " (removed)")
-    for relative in (
-        "cognitive-store-bootstrap-architecture.txt",
-        "cognitive-store-bootstrap-map-verify.txt",
-    ):
-        path = ROOT / relative
-        if path.exists():
-            path.unlink()
-            changed.append(relative + " (removed)")
-
-    write_map_verifier()
-    changed.append("scripts/cognitive_store_map_verify.py")
-    Path(__file__).unlink()
-    print(json.dumps({"status": "finalized", "changed": changed}, sort_keys=True))
 
 
 if __name__ == "__main__":

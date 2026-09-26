@@ -19,4 +19,4 @@ This directory has one current architecture decision:
 - `SLO.md`
 - `THREAT_MODEL.md`
 
-Run `python3 scripts/cognitive_store_architecture.py` before any cognitive-store change.  Exact source-head and deterministic base-merge execution belongs to `docs/modules/cognitive.store/cognitive-store-qualification.generated.yml`; source presence or prose never substitutes for its terminal receipts.
+Run `python3 scripts/cognitive_store_architecture.py` before any cognitive-store change.  Exact source-head and deterministic base-merge execution belongs to `.github/workflows/cognitive-store-qualification.yml`; source presence or prose never substitutes for its terminal receipts.
