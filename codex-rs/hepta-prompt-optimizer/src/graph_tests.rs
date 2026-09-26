@@ -1,13 +1,25 @@
 use super::*;
+use std::collections::BTreeSet;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_kg::PromptFactorProjectionV1;
 use codex_hepta_kg::build_prompt_factor_projection_v1;
+use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::FactorSource;
 use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
 use codex_hepta_prompt_registry::PromptFactorRelation;
 use codex_hepta_prompt_registry::PromptFactorRelationKind;
-use codex_hepta_prompt_registry::PromptRegistry;
+use codex_hepta_prompt_registry::final_use_admission_binding;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 use crate::CandidateDisposition;
 use crate::OptimizationRequest;
@@ -21,31 +33,94 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn register_admitted_factor(registry: &mut PromptRegistry, factor_id: &str) {
-    let factor_id = id(factor_id);
+fn now_unix_ms() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock after epoch")
+        .as_millis() as u64
+}
+
+fn register_admitted_factor(
+    registry: &mut DurablePromptRegistry,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+    factor_name: &str,
+    grant_index: u8,
+) {
+    let factor_id = id(factor_name);
+    let factor = PromptFactor {
+        factor_id: factor_id.clone(),
+        proposer_id: id("proposer:graph-tests"),
+        semantic_version: id("semantic:v1"),
+        semantic_purpose: "optimizer relation graph qualification".to_owned(),
+        authority_class: "registered_prompt_factor".to_owned(),
+        eligible_objective_dimensions: vec![id("dimension:graph-utility")],
+        content_digest: digest(&format!("factor-content:{factor_id}")),
+        source: FactorSource::GovernedInternal,
+        lifecycle: Lifecycle::Draft,
+    };
     registry
-        .register_factor(PromptFactor {
-            factor_id: factor_id.clone(),
-            proposer_id: id("proposer:graph-tests"),
-            semantic_version: id("semantic:v1"),
-            content_digest: digest(&format!("factor-content:{factor_id}")),
-            source: FactorSource::GovernedInternal,
-            lifecycle: Lifecycle::Draft,
-        })
-        .expect("register factor");
+        .register_factor(factor.clone())
+        .expect("register durable factor");
+
+    let reviewer = id("reviewer:graph-tests");
+    let scope = digest(&format!("factor-scope:{factor_id}"));
+    let evidence = digest(&format!("factor-admission:{factor_id}"));
+    let binding = final_use_admission_binding(&factor, &reviewer, scope, evidence)
+        .expect("admission binding");
+    let now = now_unix_ms();
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "security-owner:graph-tests".to_owned(),
+        authority_epoch: 1,
+        grant_id: format!("grant:graph-tests:{grant_index}"),
+        nonce: [grant_index; 32],
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
     registry
-        .admit_factor(
-            &factor_id,
-            &id("reviewer:graph-tests"),
-            digest(&format!("factor-admission:{factor_id}")),
-        )
-        .expect("admit factor");
+        .admit_factor_final_use(authority, &signed, &factor_id, scope, evidence)
+        .expect("admit durable factor through final-use authority");
 }
 
 fn graph() -> PromptFactorProjectionV1 {
-    let mut registry = PromptRegistry::new(32).expect("registry");
-    for factor_id in ["factor:a", "factor:b", "factor:c"] {
-        register_admitted_factor(&mut registry, factor_id);
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let signing_key = SigningKey::from_bytes(&[71; 32]);
+    let authority = FinalUseAuthority::open_state_dir(
+        &temporary.path().join("authority"),
+        "security-owner:graph-tests".to_owned(),
+        signing_key.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .expect("final-use authority");
+    let mut registry = DurablePromptRegistry::open_state_dir(
+        &temporary.path().join("registry"),
+        32,
+    )
+    .expect("durable registry");
+    for (index, factor_id) in ["factor:a", "factor:b", "factor:c"]
+        .into_iter()
+        .enumerate()
+    {
+        register_admitted_factor(
+            &mut registry,
+            &authority,
+            &signing_key,
+            factor_id,
+            u8::try_from(index + 1).expect("bounded grant index"),
+        );
     }
     registry
         .register_factor_relation(PromptFactorRelation {
@@ -55,7 +130,7 @@ fn graph() -> PromptFactorProjectionV1 {
             kind: PromptFactorRelationKind::Conflicts,
             evidence_digest: digest("evidence:a-b-conflict"),
         })
-        .expect("register conflict");
+        .expect("register durable conflict");
     registry
         .register_factor_relation(PromptFactorRelation {
             relation_id: id("relation:a-c-complement"),
@@ -64,7 +139,7 @@ fn graph() -> PromptFactorProjectionV1 {
             kind: PromptFactorRelationKind::Complements,
             evidence_digest: digest("evidence:a-c-complement"),
         })
-        .expect("register complement");
+        .expect("register durable complement");
     registry
         .register_factor_relation(PromptFactorRelation {
             relation_id: id("relation:b-c-substitute"),
@@ -73,8 +148,11 @@ fn graph() -> PromptFactorProjectionV1 {
             kind: PromptFactorRelationKind::Substitutes,
             evidence_digest: digest("evidence:b-c-substitute"),
         })
-        .expect("register substitute");
-    let source = registry.factor_graph_source_v1();
+        .expect("register durable substitute");
+    let source = registry
+        .registry()
+        .expect("authoritative registry")
+        .factor_graph_source_v1();
     build_prompt_factor_projection_v1(
         Generation::new(1).expect("generation"),
         digest("prompt-generation-vector"),
