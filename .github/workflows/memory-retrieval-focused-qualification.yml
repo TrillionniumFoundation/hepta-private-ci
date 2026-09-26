@@ -1,0 +1,65 @@
+name: Memory retrieval focused qualification
+
+on:
+  push:
+    branches:
+      - work/memory-retrieval-production-convergence-20260926
+    paths:
+      - codex-rs/hepta-memory-retrieval/**
+      - codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs
+      - codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs
+      - codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-cognitive-types/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - rust-toolchain.toml
+      - .github/workflows/memory-retrieval-focused-qualification.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-focused-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  core:
+    name: Core semantics
+    runs-on: ubuntu-slim
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Verify exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git diff --exit-code
+
+      - name: Check formatting
+        working-directory: codex-rs
+        run: cargo fmt --all -- --check
+
+      - name: Test memory retrieval library
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-memory-retrieval --lib
+
+      - name: Strict memory retrieval Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-memory-retrieval --all-targets -- -D warnings
