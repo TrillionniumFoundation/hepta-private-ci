@@ -1,0 +1,128 @@
+{
+  "schema": "hepta.control-runtime-maturity.v1",
+  "schemaVersion": 1,
+  "module": "control.runtime",
+  "owner": "runtime-control",
+  "deputy": "security-authority",
+  "authorityDelta": "none",
+  "sourceObservation": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "historicalBaseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "candidateBranch": "codex/control-runtime-production-closure-2026-09-27",
+    "exactHeadDerivedByQualification": true,
+    "selfAuthenticatingTrackedShaClaim": false
+  },
+  "productCallerState": "read_only_agentd_source_composed_candidate_global_planner_not_composed",
+  "productionWriterState": "planner_store_source_candidate_named_product_writer_not_composed",
+  "subsystems": {
+    "plannerKernel": {
+      "state": "source_candidate_implemented",
+      "productionComposed": false,
+      "authority": "deny_all"
+    },
+    "plannerPublicBoundary": {
+      "state": "source_candidate_implemented",
+      "productionComposed": false,
+      "controls": [
+        "exact_required_owner_set",
+        "duplicate_final_payload_rejection"
+      ]
+    },
+    "plannerStore": {
+      "state": "source_candidate_implemented_unqualified",
+      "productionComposed": false,
+      "controls": [
+        "versioned_schema",
+        "single_writer_lock",
+        "framed_self_validating_image",
+        "temp_write_atomic_rename",
+        "file_and_directory_fsync",
+        "crash_failpoints",
+        "last_complete_image_reopen",
+        "legacy_digest_only_migration",
+        "bounded_retention_compaction",
+        "monotonic_backup_restore",
+        "exact_decision_bodies",
+        "external_checkpoint_anchor"
+      ]
+    },
+    "readOnlyAgentdContextCaller": {
+      "state": "source_composed_candidate",
+      "productionComposed": true,
+      "scope": "authenticated_bounded_read_only_context_delivery",
+      "remaining": [
+        "final_use_plan_receipt_binding",
+        "canonical_authenticated_observation_v2",
+        "request_query_retrieval_ranker_binding",
+        "monotonic_lease_domain"
+      ]
+    },
+    "globalPlannerCaller": {
+      "state": "not_composed",
+      "productionComposed": false
+    },
+    "organHost": {
+      "state": "source_candidate_implemented",
+      "productionComposed": false,
+      "remaining": [
+        "dispatch_identity",
+        "partial_fanout_terminal_receipts",
+        "target_deduplication_and_reconciliation"
+      ]
+    },
+    "embodimentReference": {
+      "state": "source_candidate_implemented_reference_only",
+      "productionComposed": false
+    },
+    "authorityConsumer": {
+      "state": "not_composed",
+      "productionComposed": false
+    },
+    "effectExecutor": {
+      "state": "not_composed",
+      "productionComposed": false
+    },
+    "terminalReconciliation": {
+      "state": "not_composed",
+      "productionComposed": false
+    }
+  },
+  "qualification": {
+    "exactHead": "pending_current_candidate_runs",
+    "syntheticMerge": "pending_current_candidate_runs",
+    "packageTests": "pending_current_candidate_runs",
+    "strictClippy": "pending_current_candidate_runs",
+    "formatting": "pending_current_candidate_runs",
+    "nduCallerRegression": "pending_current_candidate_runs",
+    "namedHost": "pending_current_candidate_runs"
+  },
+  "externalGovernance": {
+    "independentSemanticReview": false,
+    "operatorAcceptance": false,
+    "activation": false,
+    "canaryPromotion": false,
+    "release": false
+  },
+  "completion": {
+    "specification": "complete",
+    "nativePlanningKernel": "candidate_implemed",
+    "publicBoundaryGuards": "candidate_implemented",
+    "ownerLocalDurabilityReference": "candidate_implemented",
+    "productionDurabilityCandidate": "candidate_implemented_unqualified",
+    "readOnlyAgentdProductCaller": "source_composed_candidate",
+    "globalPlannerProductCaller": "not_established",
+    "productionWriter": "not_established",
+    "canonicalExternalProtocolAdmission": "not_established",
+    "exactHeadQualification": "pending",
+    "independentAcceptanceState": "not_established",
+    "activationState": "not_established",
+    "releaseState": "not_established"
+  },
+  "nonClaims": [
+    "No planner output is a capability.",
+    "No source candidate establishes operator acceptance or activation.",
+    "No tracked manifest self-authenticates the commit that contains it.",
+    "The Unix durability profile is not a Windows durability qualification.",
+    "A read-only Agentd caller is not a global planner production caller."
+  ]
+}
