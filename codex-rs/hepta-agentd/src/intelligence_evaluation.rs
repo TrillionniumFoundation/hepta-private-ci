@@ -13,9 +13,10 @@ use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::RepositoryEvaluationConsumerV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_intelligence_eval::admit_repository_evaluation_v1;
 use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
@@ -121,22 +122,29 @@ impl AgentdEvaluationSessionV1 {
         {
             return Err(AgentdIntelligenceEvaluationError::Binding);
         }
-        let result = decide_with_signed_evidence_v2(
+        let consumer_binding = Digest32::of_bytes(&payload);
+        let result = admit_repository_evaluation_v1(
             self.signed.bundle,
             self.signed.roles,
             &self.signed.evidence,
             self.trust.verifier(),
             now,
+            RepositoryEvaluationConsumerV1::Agentd,
+            consumer_binding,
         )
         .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
+        result
+            .validate_integrity()
+            .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
         if result.decision.authority.grants_any()
             || result.decision.disposition
                 != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
             return Err(AgentdIntelligenceEvaluationError::Ineligible);
         }
-        let mut receipt = b"hepta.agentd.evaluation-consumption.v1\0".to_vec();
-        receipt.extend_from_slice(Digest32::of_bytes(&payload).as_array());
+        let mut receipt = b"hepta.agentd.evaluation-consumption.v2\0".to_vec();
+        receipt.extend_from_slice(consumer_binding.as_array());
+        receipt.extend_from_slice(result.admission_digest.as_array());
         receipt.extend_from_slice(result.authentication_digest.as_array());
         receipt.extend_from_slice(self.trust.distribution_digest().as_array());
         receipt.extend_from_slice(&self.signed.use_attestation.signature);
