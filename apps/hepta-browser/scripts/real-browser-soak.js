@@ -67,13 +67,17 @@ function operation(operationId, pageGeneration, typedAction, effectGrant) {
   };
 }
 async function metrics(processId) {
-  const match = /^servo\.pid\.(\d+)\.[A-Za-z0-9-]+$/.exec(processId);
-  const pid = match ? Number(match[1]) : NaN;
+  const processMatch = /^servo\.pid\.(\d+)\.[A-Za-z0-9-]+$/.exec(processId);
+  const pid = processMatch ? Number(processMatch[1]) : NaN;
   if (!Number.isSafeInteger(pid) || pid < 1) throw new Error("invalid Servo process id");
   const status = await readFile(`/proc/${pid}/status`, "utf8");
-  const match = /^VmRSS:\s+(\d+)\s+kB$/m.exec(status);
-  if (!match) throw new Error("VmRSS missing from worker process status");
-  return { pid, rssKiB: Number(match[1]), fdCount: (await readdir(`/proc/${pid}/fd`)).length };
+  const rssMatch = /^VmRSS:\s+(\d+)\s+kB$/m.exec(status);
+  if (!rssMatch) throw new Error("VmRSS missing from worker process status");
+  return {
+    pid,
+    rssKiB: Number(rssMatch[1]),
+    fdCount: (await readdir(`/proc/${pid}/fd`)).length,
+  };
 }
 
 const workerBytes = await readFile(workerPath);
@@ -103,7 +107,12 @@ try {
     journal: new FileBrowserOperationJournal(join(root, "journal.log")),
     driverCallTimeoutMs: 15_000,
   });
-  const navigate = { kind: "navigate", url: `${origin}/soak`, policyDigest: D1, expectedRevision: 1 };
+  const navigate = {
+    kind: "navigate",
+    url: `${origin}/soak`,
+    policyDigest: D1,
+    expectedRevision: 1,
+  };
   const navGrant = grant("navigate", "navigate", browserActionDigest(navigate));
   const session = await host.openProfile({
     profileId: "profile.soak",
@@ -147,7 +156,11 @@ try {
     assert.equal(receipt.status, "succeeded");
     samples.push(await metrics(session.processId));
   }
-  await host.closeProfile({ profileId: "profile.soak", principalId: "principal.soak", generation: 1 });
+  await host.closeProfile({
+    profileId: "profile.soak",
+    principalId: "principal.soak",
+    generation: 1,
+  });
 
   const rss = samples.map((sample) => sample.rssKiB);
   const fds = samples.map((sample) => sample.fdCount);
@@ -155,8 +168,18 @@ try {
     schema: "hepta.browser.real-soak.v1",
     cycles: CYCLES,
     workerSha256: sha(workerBytes),
-    rssKiB: { first: rss[0], last: rss.at(-1), min: Math.min(...rss), max: Math.max(...rss) },
-    fdCount: { first: fds[0], last: fds.at(-1), min: Math.min(...fds), max: Math.max(...fds) },
+    rssKiB: {
+      first: rss[0],
+      last: rss.at(-1),
+      min: Math.min(...rss),
+      max: Math.max(...rss),
+    },
+    fdCount: {
+      first: fds[0],
+      last: fds.at(-1),
+      min: Math.min(...fds),
+      max: Math.max(...fds),
+    },
     rssPeakGrowthLimitKiB: RSS_PEAK_GROWTH_LIMIT_KIB,
     rssTerminalGrowthLimitKiB: RSS_TERMINAL_GROWTH_LIMIT_KIB,
     boundedRssGrowth:
