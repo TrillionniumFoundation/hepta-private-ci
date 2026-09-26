@@ -1,0 +1,54 @@
+name: Cognitive store exact map rebind
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-convergence-20260927
+
+concurrency:
+  group: cognitive-store-exact-map-rebind
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  rebind:
+    if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-map-rebound]') }}
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-store-full-convergence-20260927
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind exact candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Rebind cognitive.store implementation map
+        run: python3 scripts/hepta-implementation-maps.py migrate --module cognitive.store
+      - name: Commit and verify exact map
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Cognitive Store CI"
+          git config user.email "hepta-cognitive-ci@users.noreply.github.com"
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "cognitive.store map already exact"
+          else
+            git commit -m "docs(cognitive-store): bind final qualification workflow object [cognitive-store-map-rebound]"
+          fi
+          python3 scripts/cognitive_store_architecture.py
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          git diff --check
+          git diff --exit-code
+      - name: Push exact map
+        run: git push origin HEAD:codex/cognitive-store-full-convergence-20260927
