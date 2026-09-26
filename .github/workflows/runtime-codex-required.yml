@@ -1,0 +1,275 @@
+name: runtime.codex required
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/app-server/**"
+      - "codex-rs/core/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "docs/modules/runtime.codex/**"
+      - "qualification/module-execution-dossiers/detail/runtime.codex.md"
+      - "scripts/runtime_codex_qualification.py"
+      - ".github/workflows/runtime-codex-required.yml"
+      - ".github/workflows/blocking-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/app-server/**"
+      - "codex-rs/core/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "docs/modules/runtime.codex/**"
+      - "qualification/module-execution-dossiers/detail/runtime.codex.md"
+      - "scripts/runtime_codex_qualification.py"
+      - ".github/workflows/runtime-codex-required.yml"
+      - ".github/workflows/blocking-ci.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: runtime-codex-required-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  RUST_BACKTRACE: "1"
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  exact-head:
+    name: runtime.codex exact-head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Bind source identity
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sudo sysctl -a 2>/dev/null | grep -q '^kernel.appamor_restrict_unprivileged_userns'; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Execute exact-head qualification
+        id: qualify
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/runtime-codex/exact-head
+          python3 scripts/runtime_codex_qualification.py run \
+            --mode exact-head \
+            --source-sha "${SOURCE_SHA}" \
+            --source-tree "${{ steps.identity.outputs.tree }}" \
+            --candidate-sha "${{ steps.identity.outputs.sha }}" \
+            --candidate-tree "${{ steps.identity.outputs.tree }}" \
+            --output .hepta-evidence/runtime-codex/exact-head/receipt.json
+
+      - name: Retain exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: runtime-codex-exact-head-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/runtime-codex/exact-head/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attest exact-head receipt
+        if: github.event_name == 'push' && steps.qualify.outcome == 'success'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/runtime-codex/exact-head/receipt.json
+
+      - name: Enforce exact-head result
+        if: always()
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.qualify.outcome }}
+        run: |
+          set -euo pipefail
+          test "$OUTCOME" = success
+          python3 scripts/runtime_codex_qualification.py verify \
+            .hepta-evidence/runtime-codex/exact-head/receipt.json
+
+  synthetic-merge:
+    name: runtime.codex synthetic-merge
+    if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Bind source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          git cat-file -e "${BASE_SHA}^{commit}"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Construct ordered-parent deterministic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || github.run_number }}
+          author-name: runtime-codex-ci
+          author-email: runtime-codex-ci@users.noreply.github.com
+          message: runtime.codex synthetic merge qualification
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sudo sysctl -a 2>/dev/null | grep -q '^kernel.appamor_restrict_unprivileged_userns'; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Execute synthetic-merge qualification
+        id: qualify
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/runtime-codex/synthetic-merge
+          python3 scripts/runtime_codex_qualification.py run \
+            --mode synthetic-merge \
+            --source-sha "${SOURCE_SHA}" \
+            --source-tree "${{ steps.source.outputs.tree }}" \
+            --base-sha "${BASE_SHA}" \
+            --candidate-sha "${{ steps.merge.outputs.sha }}" \
+            --candidate-tree "${{ steps.merge.outputs.tree }}" \
+            --output .hepta-evidence/runtime-codex/synthetic-merge/receipt.json
+
+      - name: Retain synthetic-merge evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: runtime-codex-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/runtime-codex/synthetic-merge/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attest synthetic-merge receipt
+        if: github.event_name == 'push' && steps.qualify.outcome == 'success'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/runtime-codex/synthetic-merge/receipt.json
+
+      - name: Enforce synthetic-merge result
+        if: always()
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.qualify.outcome }}
+        run: |
+          set -euo pipefail
+          test "$OUTCOME" = success
+          python3 scripts/runtime_codex_qualification.py verify \
+            .hepta-evidence/runtime-codex/synthetic-merge/receipt.json
+
+  required:
+    name: runtime.codex required
+    if: always()
+    needs:
+      - exact-head
+      - synthetic-merge
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require exact-head and merge evidence
+        env:
+          EXACT_RESULT: ${{ needs.exact-head.result }}
+          MERGE_RESULT: ${{ needs.synthetic-merge.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$EXACT_RESULT" = success
+          if [[ "${{ github.event_name }}" == pull_request ]]; then
+            test "$MERGE_RESULT" = success
+          else
+            test "$MERGE_RESULT" = success || test "$MERGE_RESULT" = skipped
+          fi
