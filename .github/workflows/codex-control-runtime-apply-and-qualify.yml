@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   apply-and-qualify:
-    runs-on: ubuntu-24.04
+    runs-on: macos-14
     timeout-minutes: 45
     steps:
       - name: Check out exact branch
