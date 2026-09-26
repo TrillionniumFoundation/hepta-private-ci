@@ -1,0 +1,40 @@
+name: Hepta source export
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-production-closure-20260926
+    paths:
+      - .github/workflows/hepta-source-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact export identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git archive --format=zip --output="$RUNNER_TEMP/hepta-source.zip" HEAD
+          sha256sum "$RUNNER_TEMP/hepta-source.zip" > "$RUNNER_TEMP/hepta-source.zip.sha256"
+      - name: Retain exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-source.zip
+            ${{ runner.temp }}/hepta-source.zip.sha256
+          if-no-files-found: error
+          retention-days: 1
