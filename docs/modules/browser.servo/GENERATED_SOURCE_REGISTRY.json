@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.browser.generated-source-registry.v1",
+  "schemaVersion": 1,
+  "module": "browser.servo",
+  "rpcRegistry": [
+    "open_profile",
+    "admit_effect_grant",
+    "observe_page",
+    "navigate_or_act",
+    "reconcile_operation",
+    "reconcile_persisted_operation",
+    "close_profile"
+  ],
+  "workerCapabilityMatrix": {
+    "registeredActions": [
+      "navigate",
+      "click",
+      "type",
+      "credential",
+      "upload",
+      "download",
+      "focus",
+      "scroll",
+      "wait"
+    ],
+    "executableActions": [
+      "navigate",
+      "click",
+      "type",
+      "focus",
+      "scroll",
+      "wait"
+    ],
+    "failClosedActions": [
+      "credential",
+      "upload",
+      "download"
+    ],
+    "credentialBrokerConnected": false,
+    "uploadBrokerConnected": false,
+    "downloadObserverConnected": false,
+    "networkControlListener": false,
+    "callerProvidedJavaScript": false,
+    "workerAdmissionReceipt": true,
+    "pageRevisionRevalidation": true,
+    "semanticObservation": true,
+    "grantScopedEgress": true,
+    "persistedReconciliation": true,
+    "monotonicJournalOwner": true
+  },
+  "sourceBlobs": {
+    "apps/hepta-browser/src/action.js": "dc57104d79699c4f5538b9daefb0195e7d3248f9",
+    "apps/hepta-browser/src/agentd-protocol.js": "1478d8ab3739f3332f515a57a8ff36d8d42443ce",
+    "apps/hepta-browser/src/agentd-service-main.js": "1f5293b8a4eaf3b651f43a3c32ffcb15ab9233d1",
+    "apps/hepta-browser/src/agentd-service.js": "a88e84766381a8ab37bc52643cfea884c173851f",
+    "apps/hepta-browser/src/bridge.js": "6638ca7f3beb66ba3965e9728619be1b88553fd2",
+    "apps/hepta-browser/src/egress-broker.js": "742755fcbe28fb101bf827a52edad8e861aa7c94",
+    "apps/hepta-browser/src/journal.js": "0b615de358c2e83d8dd92b964b2e32f93d846b11",
+    "apps/hepta-browser/src/journal-core.js": "4b184d1cf10677621a6e609b22f58ee5f4d08c8b",
+    "apps/hepta-browser/src/persisted-reconciler.js": "ab45a3a9d1a10d06db5db4494c2e6606361b58e1",
+    "apps/hepta-browser/src/runtime-boundary.js": "bb63f2328028477959ab6640c5ea38c1b7f05d94",
+    "apps/hepta-browser/src/runtime-contract.js": "81ab44c545238145183019fb5d15c38f0ea76b82",
+    "apps/hepta-browser/src/runtime-host.js": "0755ff0692e6149c64e754f4e10108872b4281d7",
+    "apps/hepta-browser/src/runtime.js": "fc532344cce5ef96afb2272fd320f42659b8ed1c",
+    "apps/hepta-browser/src/worker-driver.js": "67859381b2bb4b7353950b80b48e7010428b9137",
+    "apps/hepta-browser/src/worker-protocol.js": "dc8e9732c7bfc4dfba74d881476c6952921d5236",
+    "apps/hepta-browser/servo-worker/Cargo.toml": "b10f7f02027c99c99bfb0a34fd0b48c45b01c094",
+    "apps/hepta-browser/servo-worker/Cargo.lock": "a51ffa3ac527c1389f3eb875fb6c29d9a18512a8",
+    "apps/hepta-browser/servo-worker/src/main.rs": "c8fef125b162db64a897bace97f60aa141af509c"
+  }
+}
