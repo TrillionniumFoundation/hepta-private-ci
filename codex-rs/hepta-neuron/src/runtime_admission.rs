@@ -1,12 +1,12 @@
 //! Admission checks for the existing durable owner. A prepared operation is a
 //! committed recovery obligation; current-use checks never rewrite its history.
 use super::*;
-use crate::AbstainReasonV1;
-use crate::CalibrationExpiryPolicyV1;
-use crate::CalibrationWindowDecisionV1;
-use crate::DegradationReasonV1;
-use crate::NeuronCommitDispositionV1;
-use crate::SparseError;
+pub(super) use crate::AbstainReasonV1;
+pub(super) use crate::CalibrationExpiryPolicyV1;
+pub(super) use crate::CalibrationWindowDecisionV1;
+pub(super) use crate::DegradationReasonV1;
+pub(super) use crate::NeuronCommitDispositionV1;
+pub(super) use crate::SparseError;
 use crate::sparse_tick;
 
 /// Host-owned live checks. Implementations must use authenticated current owners
@@ -28,7 +28,7 @@ pub enum NeuronAdmissionError {
     BindingMismatch,
 }
 
-struct MechanismOnly;
+pub(super) struct MechanismOnly;
 impl NeuronAdmissionGuard for MechanismOnly {
     fn check(
         &mut self,
