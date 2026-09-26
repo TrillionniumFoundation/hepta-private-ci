@@ -1,257 +1,262 @@
 # compact.engine technical development guide
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
-
-**Module:** `compact.engine`
-
-**Owner:** `cognitive-platform`
-
-**Deputy:** `durability-kernel`
-
-**Lifecycle:** `target`
-
-**Source status:** `existing_bound`
-
+**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
+**Module:** `compact.engine`  
+**Owner:** `cognitive-platform`  
+**Deputy:** `durability-kernel`  
+**Lane:** `LANE-C-MEMORY`  
+**Lifecycle:** `target`  
+**Source status:** `existing_bound`  
 **Bootstrap work package:** `MEM-5-COMPACT`
 
-This stable document is the implementation guide for `compact.engine`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This document is the normative implementation and operating guide for the repository implementation of `compact.engine`. It distinguishes source implementation, product composition, qualification, independent acceptance, activation and release. A source path or passing unit test never grants production, deployment, merge or release authority.
 
-## 1. Identity, mission and ownership
+## 1. Mission and non-negotiable boundary
 
-Create bounded compaction checkpoints without rewriting source facts.
+`compact.engine` constructs bounded, content-addressed cognitive checkpoints from an authoritative `CognitiveSnapshot`. It may select, summarize and qualify material, but it may not rewrite source facts, erase source lineage, resurrect a tombstoned record, self-enroll trust, or treat a generated summary as source evidence.
 
-The primary owner `cognitive-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `durability-kernel` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
+The module has one canonical construction route:
 
-Plane `domain`, kind `engine`, state model `stateful` and architecture role `execution_plant` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+1. receive an authoritative `CognitiveSnapshot` and exact compaction input manifest;
+2. verify exact input coverage and deletion/revision invariants;
+3. verify signed retention-selection, semantic-generation and tokenization receipts;
+4. build a private `QualifiedCompactionCandidateV2` under record, byte and token ceilings;
+5. verify an independently signed evaluator receipt and construct `CompactionProofV2`;
+6. publish immutable artifact images through `DurableCompactionStoreV1` using one SQLite transaction and a generation/predecessor CAS;
+7. expose the active checkpoint through `MemoryCheckpointCoordinatorV1` only after reopen integrity and revocation checks.
 
-## 2. Source binding and implementation status
+The legacy record-only `compact()` entrypoint is not exported. Callers cannot construct `QualifiedCompactionCandidateV2` by filling public fields.
 
-Declared exclusive target roots:
+## 2. Source inventory
+
+Authoritative source root:
 
 - `codex-rs/hepta-compact-engine`
 
-Existing declared roots at this exact source snapshot:
+Primary components:
 
-- `codex-rs/hepta-compact-engine`
+- `src/lib.rs` — closed public inventory; only canonical qualified/trusted/durable surfaces are exported.
+- `src/qualified.rs` — deterministic bounded kernel, exact snapshot coverage, deletion non-resurrection, protected-reference retention, loss report and proof construction.
+- `src/trust.rs` — Ed25519 enrollment and receipt validation for selector, generator, tokenizer and evaluator identities.
+- `src/durable.rs` — durable owner, transaction, generation CAS, outbox, restart verification, revocation and fallback selection.
+- `src/compaction_schema.sql` — exact SQLite schema, constraints, indexes and immutability guards.
+- `src/qualified_tests.rs`, `src/trust_tests.rs`, `src/durable_tests.rs` — source tests.
+- `.github/workflows/compact-engine-qualification.yml` — read-only exact-head and deterministic synthetic-merge qualification.
 
-Non-authoritative implementation evidence roots:
+The source root is materialized. This fact does not by itself establish a green exact-head receipt, product execution, independent semantic acceptance, activation or release.
 
-None.
+## 3. Canonical kernel contract
 
-Declared roots not yet present:
+### 3.1 Authoritative input
 
-None.
+The public builder receives:
 
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
+- `CognitiveSnapshotKeyV1` identifying the exact source frontier;
+- an authoritative `CognitiveSnapshot` containing the current source records;
+- `CompactionInputRecordV2[]` whose stable IDs, revisions, predecessor links, deletion state and payload digests must exactly cover the authoritative snapshot;
+- `CompactionPolicyV2` with bounded record, byte and token budgets;
+- protected live references;
+- signed selector, generator and tokenizer receipts.
 
-### Native source and scope
+Omission and injection are both hard failures. Internal consistency of a caller-supplied subset is not sufficient.
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+### 3.2 Determinism and selection
 
-## 3. Boundary, responsibilities and non-goals
+The selection algorithm is protocol-visible. Inputs are ordered by registered retention priority and stable deterministic tie-break keys. Every retained record must fit all active ceilings. Checked arithmetic is mandatory for counts, encoded bytes, token counts and report totals. Changing sort keys, tie-break semantics, fit behavior or digest scope requires a new schema/algorithm revision.
 
-Direct dependencies:
+Current hard ceilings are:
 
-- `cognitive.read`
-- `kernel.operations`
+- at most 65,536 input records;
+- at most 64 MiB encoded semantic payload;
+- at most 8,000,000 tokens;
+- a bounded protected-reference set.
 
-Authoritative write domains:
+The exact constants in source prevail if this document and source diverge; such divergence fails documentation qualification.
 
-- `compact_checkpoint`
+### 3.3 Deletion and protected support
 
-Explicitly denied capabilities:
+A tombstoned stable ID cannot reappear as live in a later revision. Required protected live references are retained before optional material. A candidate records retained and omitted IDs, counts, digests, capacity usage and explicit loss observations. Compaction never converts omitted material into a deletion decision.
 
-- `source_fact_mutation`
+### 3.4 Candidate and proof identity
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+Candidate, semantic payload, checkpoint, qualification and proof identities bind the exact source snapshot, source-memory snapshot, policy, input manifest, retained/omitted sets, payload bytes, tokenizer receipt, generator receipt, evaluator receipt and implementation/attestation identities. Unknown or zero critical digests are rejected.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+## 4. Trust and receipt lifecycle
 
-## 4. Internal architecture and component decomposition
+Four roles are independent:
 
-The bounded components are:
+- `TrustedRetentionSelectorV1` — authorizes the exact retention ordering/manifest.
+- `TrustedSemanticGeneratorV1` — attests the exact semantic payload and generation configuration.
+- `TrustedTokenizerV1` — attests token accounting only.
+- `TrustedCompactionEvaluatorV1` — independently evaluates reconstruction/loss obligations and signs the qualification.
 
-- `bounded input stage`
-- `deterministic algorithm core`
-- `generation publisher`
-- `checkpoint and recovery layer`
+Tokenizer trust cannot substitute for generator provenance or evaluator independence.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+Every `TrustEnrollmentV1` binds:
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+- schema version;
+- role;
+- key ID;
+- trust epoch;
+- validity interval;
+- optional predecessor key digest;
+- implementation digest;
+- attestation digest;
+- Ed25519 verifying key;
+- optional one-way revocation time.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Every signed receipt binds its exact subject digests, key ID, trust epoch, issue/expiry interval, anti-replay nonce and 64-byte Ed25519 signature. Current verification rejects not-yet-valid, expired or revoked trust. Historical verification evaluates trust and receipt validity at the durable acceptance time, preserving verifiability after later rotation while rejecting a key already revoked at acceptance.
 
-### Shared-experience and isolated-Agent integration target
+Rotation requires a strictly increasing epoch, a different key digest and an explicit predecessor-key digest. The durable trust registry is append-only except for a one-way transition from unrevoked to revoked.
 
-Propose bounded semantic/procedural consolidation and replay plans without rewriting source evidence or becoming the trainer. Summaries keep support and permissions; distillation does not erase source lineage. Current facts, historical lessons and skill candidates have separate validity.
+## 5. Durable state model
 
-The target [HNMF contract](../../hnmf/TECHNICAL.md) and
-[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
-retain current source, wire and capability states.
+`src/compaction_schema.sql` owns these tables:
 
-## 5. Contracts, ports and compatibility
+| Table | Purpose |
+|---|---|
+| `compaction_candidates` | immutable candidate identity, exact snapshot/policy/generation tuple, source-retention fence and idempotency key |
+| `compaction_payloads` | content-addressed semantic payload bytes and bounded byte/token costs |
+| `compaction_evaluations` | immutable evaluator artifact and evaluator epoch |
+| `compaction_proofs` | immutable proof image plus 96-byte verification witness |
+| `compaction_checkpoints` | immutable checkpoint lineage and publication digest |
+| `active_compaction_checkpoint` | one CAS-controlled active pointer per owner/scope/purpose |
+| `compaction_outbox` | durable local events with claim/delivery fencing and bounded retries |
+| `compaction_trust_registry` | role-scoped trust epochs, validity and revocation |
+| `compaction_checkpoint_revocations` | append-only checkpoint revocation facts |
 
-Produced contracts:
+Payload, candidate, evaluation, proof, checkpoint and revocation records are immutable. Outbox identity and payload are immutable while delivery state advances. The active pointer may advance only by one generation and must name the previous checkpoint as predecessor.
 
-- `DomainRead::compact_checkpointV1`
+## 6. Atomic publication protocol
 
-Consumed contracts:
+`DurableCompactionStoreV1::publish` acquires `BEGIN IMMEDIATE` ownership and executes this sequence in one transaction:
 
-- `DomainRead::cross_owner_outboxV1`
-- `DomainRead::operation_ledgerV1`
-- `ModulePort::cognitive.read::compact.engine`
-- `ModulePort::kernel.operations::compact.engine`
+1. resolve an existing idempotency key; identical semantics return `Unchanged`, drift conflicts;
+2. validate and persist the four trust enrollments;
+3. insert or verify the content-addressed payload;
+4. insert immutable candidate, evaluation, proof and checkpoint rows;
+5. compare the active generation/checkpoint and perform a predecessor-bound CAS;
+6. insert the `checkpoint-published` outbox event;
+7. commit.
 
-Critical protocol schemas:
+Any failure rolls the transaction back. The first generation must be `1` with no predecessor. Later generations must be exactly previous generation plus one and name the exact active checkpoint digest. Duplicate requests are idempotent; reuse of an idempotency key with different semantics is terminal conflict.
 
-None.
+The publication digest includes owner, idempotency key, scope, purpose, generation, predecessor, source snapshots, source-retention fence, policy, candidate, payload, evaluation, proof, checkpoint, selector/generator receipt digests, all four trust enrollment identities, all artifact-image digests and acceptance time.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+## 7. Recovery, revocation and retention
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Store open enables foreign keys, WAL and `synchronous=FULL`, applies the deterministic schema, runs `PRAGMA integrity_check` and `PRAGMA foreign_key_check`, verifies required schema objects, rehashes every payload and artifact image, and validates every active pointer against an exact immutable checkpoint row.
 
-## 6. Data authority, persistence and migrations
+`MemoryCheckpointCoordinatorV1::recover_current_checkpoint` repeats integrity verification, requeues interrupted outbox claims, and then selects the active non-revoked checkpoint. If the active checkpoint is revoked, selection falls back to the highest earlier non-revoked generation and marks the returned selection as a fallback.
 
-Owned authoritative or rebuildable domains:
+Every candidate carries a `source_retention_fence_digest` and `retain_source_until_unix_seconds`. Source facts remain owned by the source store; this module records the fence but may not delete source data. Physical payload GC is prohibited until a separately reviewed fenced-GC transaction proves all referencing checkpoints revoked, the source-retention deadline elapsed, no active pointer references the payload and the GC outbox event is durable. Until that transaction is implemented and qualified, payload deletion remains fail-closed.
 
-- `compact_checkpoint`
+Checkpoint revocation is append-only and emits a durable `checkpoint-revoked` event. Revocation does not erase historical evidence.
 
-Read-only data dependencies:
+## 8. Outbox and response-loss semantics
 
-- `cross_owner_outbox`
-- `operation_ledger`
+Outbox events are inserted in the same transaction as publication/revocation. Event identity is deterministic from publication digest and event kind. A worker claims one pending event with a unique claim token and atomically increments the attempt count. Completion requires the exact claim token. Process restart calls `reconcile_claims`, returning interrupted claims to pending state. Delivered events remain immutable audit evidence.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+Queue acceptance is not external success. Destination-specific delivery, deduplication, acknowledgement and terminal failure remain responsibilities of the named adapter. The local outbox supports at most 1,000 attempts per row and a payload ceiling of 1 MiB; the delivery policy must terminalize before violating that bound.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+## 9. Named product caller
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The repository-owned caller is:
 
-## 7. Runtime, concurrency and transaction model
+```text
+memory.checkpoint-coordinator.v1
+```
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md).
+represented by `MemoryCheckpointCoordinatorV1`. It accepts only a fully verified `DurableCompactionBundleV1`, publishes through the durable owner and recovers only after integrity/reconciliation checks. It does not mint trust, generate semantic payloads, approve its own evaluation or mutate cognitive source records.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+Library composition is not activation. A product host must still construct this caller from the product-owned cognitive store/runtime bootstrap and provide externally enrolled selector/generator/tokenizer/evaluator identities. The implementation map records the exact composition state.
 
-## 8. Failure semantics, recovery and rollback
+## 10. Failure and crash boundaries
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Required crash-injection boundaries are:
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+- before and after payload insert;
+- before and after candidate/evaluation/proof insert;
+- before and after checkpoint insert;
+- immediately before and after active-pointer CAS;
+- immediately before and after outbox insert;
+- after commit but before response delivery;
+- after outbox claim and before destination acknowledgement.
 
-## 9. Security, privacy and threat controls
+Expected behavior is either the prior complete active generation or the new complete generation plus its outbox event—never a partial generation. Retrying after committed-response loss returns the existing publication. A CAS loser receives conflict and must rebuild from the new active head.
 
-Owned threat entries:
+Migration failure must leave the predecessor database usable by the predecessor binary. Schema changes require a versioned migration rehearsal, checksum, forward test, rollback/restore test and corruption fixture.
 
-None.
+## 11. Verification matrix
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+Source tests must cover at least:
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+- input order invariance and identical-input digest determinism;
+- exact-coverage omission and injection rejection;
+- tombstone non-resurrection;
+- protected-reference retention;
+- record/byte/token `limit-1`, `limit`, `limit+1` boundaries;
+- selector/generator/tokenizer/evaluator signature, nonce, epoch and subject tamper;
+- trust rotation, revocation and historical validation;
+- duplicate idempotency, semantic drift and concurrent generation CAS;
+- commit/response-loss replay;
+- outbox claim/restart reconciliation and completion fencing;
+- revoked-head fallback;
+- payload/artifact corruption and active-pointer corruption on reopen;
+- migration failure and predecessor recovery;
+- property tests for ordering, capacity and digest stability;
+- fuzzing of receipt decoding, manifest construction and durable-row corruption.
 
-## 10. Performance, capacity and hot-path policy
+The focused workflow runs, from a clean read-only checkout:
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs) and the linked implementation components.
+```bash
+cd codex-rs
+cargo fmt --all -- --check
+cargo check --locked -p codex-hepta-compact-engine --all-targets
+cargo test --locked -p codex-hepta-compact-engine --all-targets
+cargo clippy --locked -p codex-hepta-compact-engine --all-targets -- -D warnings
+```
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+It executes both the exact source head and a deterministic synthetic merge with the current PR base. A queued, skipped, cancelled or failed job is not qualification evidence.
 
-## 11. Observability and operations
+## 12. Capacity and performance qualification
 
-Checkpoint/projection library. Keep source lineage, omissions and deletion frontiers with every compact result and retain the prior complete generation on failed construction. A compact receipt does not implement the entire replay or learned-skill pipeline; lifecycle/storage publication belongs to the composed owner.
+Qualification fixtures cover 65,536 records, 64 MiB payload and 8,000,000 tokens. They record:
 
-Current operating and state-format references:
+- wall and CPU time;
+- peak RSS;
+- allocation/clone count where instrumentation supports it;
+- source and artifact hash count;
+- publication latency;
+- reopen/integrity-verification latency;
+- SQLite database, WAL and outbox sizes.
 
-- [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs).
-- [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs).
+Large capacity fixtures may be ignored in ordinary unit CI only when a named qualification lane runs them and publishes exact-source artifacts. Numeric SLOs cannot be claimed until target-host measurements are stored. The implementation remains fail-closed at hard source limits regardless of benchmark status.
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+## 13. Observability and operations
 
-## 12. Verification and qualification
+Safe metrics include publication disposition, generation, bounded artifact sizes, transaction latency, CAS conflicts, integrity failures, revocation/fallback count, pending/claimed/terminal outbox count and reopen latency. Logs use digests and bounded identifiers, never semantic payload bytes, signatures, keys or source record contents.
 
-Current focused test sources (source references, not pass receipts):
+Alerts are required for:
 
-- [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs); named case: `latest_revision_and_tombstone_are_preserved`.
-- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `protected_live_reference_is_retained_before_higher_priority_optional_record`.
+- integrity or foreign-key failure;
+- active pointer corruption;
+- repeated CAS conflict;
+- trust expiry/revocation affecting new publication;
+- outbox age/attempt threshold;
+- fallback from a revoked head;
+- payload or checkpoint capacity pressure.
 
-In `codex-rs`, run `just test -p codex-hepta-compact-engine`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.
+The stop procedure disables new publication, preserves immutable evidence, continues safe read/fallback where integrity allows, and does not delete source facts.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+## 14. Claim boundary and completion
 
-## 13. Implementation sequence and work packages
+Repository source implementation is complete only after:
 
-Applicable work packages:
+1. exact-head and synthetic-merge focused qualification pass on the final SHA;
+2. durable and trust tests cover the required failure matrix;
+3. the named caller is composed through a product-owned bootstrap;
+4. implementation map, dossier, source map and registries match the final public inventory;
+5. target-host capacity receipts and migration rehearsals are stored.
 
-- `MEM-5-COMPACT`
-
-The bootstrap package is `MEM-5-COMPACT`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
-
-## 14. Activation, compatibility and retirement
-
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
-
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
-
-## 15. Definition of module completion
-
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `compact.engine`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `MEM-5-COMPACT`
-
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
-- Owner/deputy: `cognitive-platform` / `durability-kernel`.
-- Allowed write paths:
-- `codex-rs/hepta-compact-engine/**`
-- Development predecessors:
-- `MEM-0-TYPES`
-- Activation predecessors:
-- `MEM-1-STORE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-## 16. V8.2 pre-coding implementation-readiness overlay
-
-The canonical readiness overlay binds `compact.engine` to primary lane `LANE-C-MEMORY`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-## 17. Source implementation receipt
-
-The bootstrap source-location obligation for `compact.engine` is implemented by work package `MEM-5-COMPACT` in:
-
-- `codex-rs/hepta-compact-engine`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Independent semantic acceptance, production activation, canary, promotion and release remain external gates. This document grants no authority to merge, deploy, activate or release.
