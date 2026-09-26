@@ -67,6 +67,26 @@ pub trait IdempotentQualificationEvidenceSinkV1 {
     ) -> Result<QualificationPublicationRecordV1, IdempotentQualificationEvidenceSinkErrorV1>;
 }
 
+impl<T: IdempotentQualificationEvidenceSinkV1 + ?Sized>
+    IdempotentQualificationEvidenceSinkV1 for &mut T
+{
+    fn lookup(
+        &mut self,
+        execution_digest: Digest32,
+    ) -> Result<QualificationPublicationLookupV1, IdempotentQualificationEvidenceSinkErrorV1> {
+        (**self).lookup(execution_digest)
+    }
+
+    fn persist_once(
+        &mut self,
+        execution_digest: Digest32,
+        decision_digest: Digest32,
+        decision: &SignedEvaluationDecisionV1,
+    ) -> Result<QualificationPublicationRecordV1, IdempotentQualificationEvidenceSinkErrorV1> {
+        (**self).persist_once(execution_digest, decision_digest, decision)
+    }
+}
+
 /// Adapter that implements the product runner's narrow sink surface while
 /// enforcing idempotency and accepted-or-unknown reconciliation.
 pub struct ReconcilingQualificationEvidenceSinkV1<S> {
