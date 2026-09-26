@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::sync::Arc;
 
 use codex_hepta_types::Digest32;
@@ -65,13 +66,17 @@ pub struct AuthenticatedMessage {
 impl SignedMessage {
     /// Verify against a sealed handle minted by `AuthBusAuthorityHost`.
     /// Supplying issuer bytes or an untrusted trust-file object is impossible.
-    pub fn authenticate(
+    pub fn authenticate<I>(
         &self,
-        issuer: &VerifiedIssuerHandle,
+        issuer: I,
         expected_scope: Digest32,
         expected_payload: Digest32,
         now_ms: u64,
-    ) -> Result<AuthenticatedMessage, Error> {
+    ) -> Result<AuthenticatedMessage, Error>
+    where
+        I: Borrow<VerifiedIssuerHandle>,
+    {
+        let issuer = issuer.borrow();
         if issuer.purpose() != IssuerPurpose::Message
             || self.claims.issuer_id != *issuer.issuer_id()
             || self.claims.key_epoch != issuer.key_epoch()
