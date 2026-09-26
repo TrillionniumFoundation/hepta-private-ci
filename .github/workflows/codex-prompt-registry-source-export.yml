@@ -1,4 +1,4 @@
-name: Codex prompt registry source export
+name: Codex prompt registry remediation apply
 
 on:
   push:
@@ -6,19 +6,59 @@ on:
       - codex/prompt-registry-v4-production-closure-20260926
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  export:
+  apply-and-export:
+    if: ${{ !contains(github.event.head_commit.message, '[prompt-registry-apply]') }}
     runs-on:
       group: trillionnium-android-gpu
       labels: [self-hosted, linux, x64]
-    timeout-minutes: 10
+    timeout-minutes: 60
     steps:
       - name: Check out exact branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          persist-credentials: false
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Apply exact-anchor V4 migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply-prompt-registry-v4-remediation.py
+          cd codex-rs
+          cargo fmt --all
+          cd ..
+          git diff --check
+      - name: Commit applied source migration
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add codex-rs/hepta-prompt-registry codex-rs/hepta-prompt-optimizer
+          git commit -m "prompt.registry: persist V4 factor relations [prompt-registry-apply]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "applied_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Run registry and optimizer unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test -p codex-hepta-prompt-registry --lib
+          cargo test -p codex-hepta-prompt-optimizer --lib
+      - name: Run strict registry and optimizer Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo clippy -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer --all-targets -- -D warnings
       - name: Package prompt registry workset
         shell: bash
         run: |
@@ -51,7 +91,7 @@ jobs:
       - name: Upload prompt registry workset
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: codex-prompt-registry-workset
+          name: codex-prompt-registry-workset-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/prompt-registry-workset.tar.gz
             ${{ runner.temp }}/prompt-registry-workset.tar.gz.sha256
