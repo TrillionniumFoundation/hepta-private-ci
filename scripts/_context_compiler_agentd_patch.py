@@ -65,8 +65,18 @@ replace_once(
 )
 replace_once(
     "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
-    "            recorded_unix_ms,\n        }\n    }\n}",
-    "            recorded_unix_ms,\n        })\n    }\n}",
+    "            segment_map_digest: proof.segment_map_digest().into_array(),\n"
+    "            recorded_unix_ms,\n"
+    "        }\n"
+    "    }\n"
+    "}\n\n"
+    "#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]",
+    "            segment_map_digest: proof.segment_map_digest().into_array(),\n"
+    "            recorded_unix_ms,\n"
+    "        })\n"
+    "    }\n"
+    "}\n\n"
+    "#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]",
 )
 
 # Export the fresh-registry preparation object to the Agentd product owner.
@@ -93,10 +103,10 @@ replace_once(
 # Compose the exact owner with the same durable registry instance as compilation.
 replace_once(
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-    "use crate::error::",
+    "use serde::Serialize;\n",
+    "use serde::Serialize;\n\n"
     "use crate::exact_context_delivery::AgentdExactContextDeliveryOwner;\n"
-    "use crate::exact_context_delivery::ExactContextDeliveryError;\n"
-    "use crate::error::",
+    "use crate::exact_context_delivery::ExactContextDeliveryError;\n",
 )
 replace_once(
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
