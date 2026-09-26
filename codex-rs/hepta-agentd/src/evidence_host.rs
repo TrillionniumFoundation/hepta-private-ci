@@ -15,6 +15,7 @@ use codex_hepta_agent_protocol::KernelEvidenceQueryV1;
 use codex_hepta_agent_protocol::KernelEvidenceResult;
 use codex_hepta_agent_protocol::KernelEvidenceVerifyV1;
 use codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
+use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_evidence::EvidenceCandidateV1;
@@ -36,10 +37,12 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::authbus_trust::hex_bytes;
+use crate::authbus_trust::shared_authority;
 use crate::evidence_trust::EvidenceTrust;
 
 pub(crate) struct EvidenceHost {
     pub(crate) store: HeptaEvidenceStore,
+    authority: Arc<AuthBusAuthorityHost>,
     trust_file: PathBuf,
 }
 
@@ -49,7 +52,10 @@ impl EvidenceHost {
         trust_file: PathBuf,
         recovery_frontier: Option<(PathBuf, PathBuf)>,
     ) -> Result<Self, AgentdError> {
-        EvidenceTrust::load(&trust_file, identity)?;
+        let authority = shared_authority(identity).await?;
+        EvidenceTrust::load(&trust_file, identity)?
+            .reconcile_all(&authority)
+            .await?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
@@ -63,7 +69,11 @@ impl EvidenceHost {
             )
             .await?;
         }
-        Ok(Self { store, trust_file })
+        Ok(Self {
+            store,
+            authority,
+            trust_file,
+        })
     }
 
     fn trust(&self, state: &AgentdState) -> Result<EvidenceTrust, AgentdError> {
@@ -126,7 +136,14 @@ pub(crate) async fn append(
         &envelope,
     )?;
     let trust = host.trust(state)?;
-    let issuer = trust.issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)?;
+    let issuer = trust
+        .issuer_for(
+            &host.authority,
+            &request.issuer_id,
+            request.key_epoch,
+            envelope.issuer_role,
+        )
+        .await?;
     let message = SignedMessage {
         claims,
         signature: hex_bytes(&request.signature_hex)?,
@@ -178,7 +195,10 @@ pub(crate) async fn verify(
         .iter()
         .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
         .collect::<Result<Vec<_>, _>>()?;
-    let current_trust = host.trust(state)?.verification_bindings()?;
+    let current_trust = host
+        .trust(state)?
+        .verification_bindings(&host.authority)
+        .await?;
     let disposition = host
         .store
         .qualification()
