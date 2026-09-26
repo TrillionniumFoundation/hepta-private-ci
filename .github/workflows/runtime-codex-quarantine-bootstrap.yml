@@ -1,0 +1,68 @@
+name: runtime.codex quarantine protocol bootstrap
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-quarantine-protocol-20260926
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-quarantine-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-test-commit:
+    if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-quarantine-qualified]') }}
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.sha }}
+
+      - name: Prepare repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Resolve verified sandboxed V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: aarch64-apple-darwin
+
+      - name: Apply exact source repair
+        run: python3 scripts/fix_runtime_codex_quarantine.py
+
+      - name: Format and test the signed protocol
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked -p codex-hepta-infer-worker-host runtime_codex_quarantine --lib -- --test-threads=1
+          cargo clippy --locked -p codex-hepta-infer-worker-host --lib -- -D warnings
+
+      - name: Commit only the qualified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/fix_runtime_codex_quarantine.py
+          rm .github/workflows/runtime-codex-quarantine-bootstrap.yml
+          git add -A
+          git diff --cached --check
+          git config user.name "OpenAI Codex"
+          git config user.email "noreply@openai.com"
+          git commit \
+            -m "runtime.codex: qualify signed quarantine resolution [runtime-codex-quarantine-qualified]" \
+            -m "Validate exact quarantine revision, request/dispatch/evidence binding, signer epoch, monotonic sequence, nonce, portable frontier and new-operation non-replay rules under Rust 1.95 format, tests and strict Clippy." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          git push origin "HEAD:codex/runtime-codex-quarantine-protocol-20260926"
