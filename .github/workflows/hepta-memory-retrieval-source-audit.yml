@@ -11,25 +11,43 @@ permissions:
 
 jobs:
   source-audit:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
           persist-credentials: false
-      - name: Export tracked source and exact identity, without credentials or runtime data
+      - name: Export exact tracked source without credentials or runtime state
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           mkdir -p "$RUNNER_TEMP/retrieval-source-audit"
           git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source-audit/source.tar.gz"
+          git bundle create "$RUNNER_TEMP/retrieval-source-audit/source.bundle" HEAD
           printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/retrieval-source-audit/identity.txt"
-          (cd "$RUNNER_TEMP/retrieval-source-audit" && sha256sum source.tar.gz identity.txt > SHA256SUMS)
+          (cd "$RUNNER_TEMP/retrieval-source-audit" && sha256sum source.tar.gz source.bundle identity.txt > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: memory-retrieval-source-${{ github.sha }}
           path: ${{ runner.temp }}/retrieval-source-audit/
           retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+      - name: Export repository-pinned offline compiler separately from source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
+          mkdir -p "$RUNNER_TEMP/retrieval-compiler"
+          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/retrieval-compiler/compiler.tar.gz" .
+          (cd "$RUNNER_TEMP/retrieval-compiler" && sha256sum compiler.tar.gz > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-compiler-${{ github.sha }}
+          path: ${{ runner.temp }}/retrieval-compiler/
+          retention-days: 7
+          compression-level: 0
           if-no-files-found: error
