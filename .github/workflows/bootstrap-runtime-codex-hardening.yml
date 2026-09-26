@@ -59,8 +59,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # The source re-export uses `pub use`; normalize the bootstrap anchor
-          # without weakening its one-occurrence assertions.
+          # Normalize reviewed source anchors without weakening one-occurrence
+          # assertions in the patch itself.
           python3 - <<'PY'
           from pathlib import Path
           path = Path('scripts/bootstrap_runtime_codex_hardening.py')
@@ -72,6 +72,10 @@ jobs:
           value = value.replace(
               '"use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;\\nuse codex_hepta_infer_core',
               '"pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;\\nuse codex_hepta_infer_core',
+          )
+          value = value.replace(
+              '\n    6,\n)\n# Two branches use a temporary `stopped` result',
+              '\n    7,\n)\n# Two branches use a temporary `stopped` result',
           )
           path.write_text(value)
           PY
