@@ -24,8 +24,11 @@ pub(super) fn production_policy_digest(
         canonical_evaluation_policy_digest(&policy.utility_profile, &policy.evaluation_policy)?;
     let scalarization = policy
         .scalarization
-        .as_ref()
-        .map(canonical_scalarization_digest)
+        .clone()
+        .map(|profile| {
+            crate::ValidatedScalarizationProfileV1::try_new(&policy.utility_profile, profile)
+                .map(|validated| validated.scalarization_digest())
+        })
         .transpose()?;
 
     let mut bytes = b"hepta.ndu.production-policy.v1\0".to_vec();
