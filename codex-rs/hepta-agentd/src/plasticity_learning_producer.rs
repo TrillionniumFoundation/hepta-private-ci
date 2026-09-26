@@ -11,9 +11,12 @@ use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
+use tokio_util::sync::CancellationToken;
 
+use crate::PlasticityRuntimeBudgetV1;
 use crate::PlasticityRuntimeCallErrorV1;
 use crate::PlasticityRuntimeHandleV1;
+use crate::PlasticityRuntimeMetricsSnapshotV1;
 
 /// Product-side learning producer bound to one Agentd generation.
 ///
@@ -32,16 +35,45 @@ impl AgentdLearningPlasticityProducerV1 {
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
-        now: u64,
+        evidence_now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        self.handle.propose_parameter(request, now).await
+        self.handle.propose_parameter(request, evidence_now).await
+    }
+
+    pub(crate) async fn submit_parameter_with_budget(
+        &self,
+        request: ParameterPlasticityProductRequestV1,
+        evidence_now: u64,
+        budget: PlasticityRuntimeBudgetV1,
+        cancellation: CancellationToken,
+    ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        self.handle
+            .propose_parameter_with_budget(request, evidence_now, budget, cancellation)
+            .await
     }
 
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
-        now: u64,
+        evidence_now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        self.handle.propose_topology(request, now).await
+        self.handle.propose_topology(request, evidence_now).await
+    }
+
+    pub(crate) async fn submit_topology_with_budget(
+        &self,
+        request: TopologyPlasticityProductRequestV1,
+        evidence_now: u64,
+        budget: PlasticityRuntimeBudgetV1,
+        cancellation: CancellationToken,
+    ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        self.handle
+            .propose_topology_with_budget(request, evidence_now, budget, cancellation)
+            .await
+    }
+
+    #[must_use]
+    pub(crate) fn metrics(&self) -> PlasticityRuntimeMetricsSnapshotV1 {
+        self.handle.metrics()
     }
 }
