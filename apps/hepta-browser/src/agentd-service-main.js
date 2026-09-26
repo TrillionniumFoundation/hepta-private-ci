@@ -8,6 +8,7 @@ import {
   EffectAdmissionBrowserDriver,
   ParentFinalUseAuthority,
 } from "./agentd-service.js";
+import { EffectScopedNetworkDriver } from "./effect-network-driver.js";
 import { FileBrowserOperationJournal } from "./journal.js";
 import { BrowserProfileHost } from "./runtime.js";
 import { createFilePersistedEffectReconciler } from "./persisted-reconciler.js";
@@ -69,10 +70,11 @@ const channel = new AgentdBrowserChannel({
 const authority = new ParentFinalUseAuthority(channel);
 const maxProfiles = optionalPositiveInteger("HEPTA_BROWSER_MAX_PROFILES", 16);
 const reconciliationRoot = process.env.HEPTA_BROWSER_RECONCILIATION_ROOT;
+const profileRoot = requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT");
 const subprocessPool = new PooledSubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
   workerDigest: requiredDigest("HEPTA_BROWSER_WORKER_SHA256"),
-  profileRoot: requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT"),
+  profileRoot,
   maxProfiles,
   persistedReconciler:
     reconciliationRoot === undefined
@@ -123,8 +125,20 @@ const subprocessPool = new PooledSubprocessBrowserDriver({
     ),
   }),
 });
-const driver = new EffectAdmissionBrowserDriver({
+const networkDriver = new EffectScopedNetworkDriver({
   driver: subprocessPool,
+  profileRoot,
+  maxRequestBytes: optionalPositiveInteger(
+    "HEPTA_BROWSER_MAX_EGRESS_REQUEST_BYTES",
+    1 * 1024 * 1024,
+  ),
+  maxResponseBytes: optionalPositiveInteger(
+    "HEPTA_BROWSER_MAX_EGRESS_RESPONSE_BYTES",
+    32 * 1024 * 1024,
+  ),
+});
+const driver = new EffectAdmissionBrowserDriver({
+  driver: networkDriver,
   containmentTimeoutMs: optionalPositiveInteger(
     "HEPTA_BROWSER_CONTAINMENT_TIMEOUT_MS",
     10_000,
