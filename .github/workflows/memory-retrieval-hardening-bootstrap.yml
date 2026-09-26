@@ -6,6 +6,7 @@ on:
       - work/memory-retrieval-production-hardening-20260927
     paths:
       - scripts/apply_memory_retrieval_hardening.py
+      - scripts/fix_memory_retrieval_hardening_bootstrap.py
       - .github/workflows/memory-retrieval-hardening-bootstrap.yml
 
 permissions:
@@ -28,7 +29,9 @@ jobs:
           persist-credentials: true
 
       - name: Apply semantic hardening
-        run: python3 scripts/apply_memory_retrieval_hardening.py
+        run: |
+          python3 scripts/fix_memory_retrieval_hardening_bootstrap.py
+          python3 scripts/apply_memory_retrieval_hardening.py
 
       - name: Format
         working-directory: codex-rs
@@ -51,6 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           rm scripts/apply_memory_retrieval_hardening.py
+          rm scripts/fix_memory_retrieval_hardening_bootstrap.py
           rm .github/workflows/memory-retrieval-hardening-bootstrap.yml
           git add -A
           git diff --cached --check
