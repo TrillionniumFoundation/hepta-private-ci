@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  HEPTA_P0_MATERIALIZER_REVISION: "3"
+  HEPTA_P0_MATERIALIZER_REVISION: "4"
 
 jobs:
   materialize:
@@ -30,10 +30,35 @@ jobs:
         with:
           toolchain: 1.95.0
           components: clippy,rustfmt
-      - name: Apply and verify P0 remediation
+      - name: Remove brittle control-byte cardinality guard
         shell: bash
         run: |
           set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("scripts/learning-operator-p0-materialize.py")
+          text = path.read_text(encoding="utf-8")
+          pattern = re.compile(
+              r'positions = \[index for index, value in enumerate\(text\) if value == "\\x08"\].*?'
+              r'path\.write_text\(text, encoding="utf-8"\)\n',
+              re.DOTALL,
+          )
+          replacement = '''# Repair any historical ASCII-backspace word-boundary corruption.\n# The transformation is idempotent: a source that already contains canonical\n# raw-string ``\\b`` boundaries is left unchanged.\ntext = text.replace("\\x08", r"\\b")\nif "\\x08" in text:\n    raise SystemExit("backspace remained after regex-boundary repair")\npath.write_text(text, encoding="utf-8")\n'''
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit("could not locate obsolete materializer guard")
+          path.write_text(text, encoding="utf-8")
+          PY
+      - name: Apply and verify P0 remediation
+        id: apply
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          exec > >(tee p0-materializer.log) 2>&1
+          set -eux
           python3 scripts/learning-operator-p0-materialize.py
           python3 -m py_compile scripts/hepta-lane-e-closure.py scripts/hepta-learning-eval-evidence.py
           python3 scripts/hepta-lane-e-closure.py self-test
@@ -68,3 +93,17 @@ jobs:
             codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs
           git commit -m "fix(learning.operator): close verifier and evaluated runtime admission"
           git push origin HEAD:codex/learning-operator-full-convergence-20260926
+      - name: Retain materializer diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-p0-materializer-${{ github.run_id }}
+          path: |
+            p0-materializer.log
+            qualification/lane-e/latest-verify.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Fail when remediation did not materialize
+        if: steps.apply.outcome != 'success'
+        shell: bash
+        run: exit 1
