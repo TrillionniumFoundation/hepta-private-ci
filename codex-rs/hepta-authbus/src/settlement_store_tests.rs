@@ -1,15 +1,22 @@
+use std::sync::Arc;
+
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
+use tokio::sync::RwLock;
 
 use super::*;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
 use crate::PolicyDecision;
 use crate::PolicySpec;
 use crate::QuotaSpec;
 use crate::ReservationRequest;
 use crate::SettlementEvidenceClaims;
 use crate::SignedSettlementEvidence;
+use crate::VerifiedIssuerHandle;
 use codex_hepta_types::Generation;
 
 fn id(value: &str) -> StableId {
@@ -93,13 +100,34 @@ async fn configured() -> (
     (root, store, decision, reservation)
 }
 
-fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
-    SettlementIssuerRegistration {
-        issuer_id: id("issuer:settlement"),
-        key_epoch: Generation::new(1).expect("generation"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    }
+async fn issuer_with(
+    key: &SigningKey,
+    epoch: u64,
+    state: IssuerLifecycleState,
+    purpose: IssuerPurpose,
+) -> VerifiedIssuerHandle {
+    let guard = Arc::new(RwLock::new(())).read_owned().await;
+    VerifiedIssuerHandle::from_record(
+        IssuerRecord {
+            issuer_id: id("issuer:settlement"),
+            purpose,
+            key_epoch: Generation::new(epoch).expect("generation"),
+            verifying_key: key.verifying_key(),
+            state,
+            revision: 1,
+        },
+        guard,
+    )
+}
+
+async fn issuer(key: &SigningKey) -> VerifiedIssuerHandle {
+    issuer_with(
+        key,
+        1,
+        IssuerLifecycleState::Active,
+        IssuerPurpose::Settlement,
+    )
+    .await
 }
 
 fn evidence(
@@ -159,9 +187,10 @@ async fn completed_settlement_is_conservative_and_idempotent() {
         .await
         .expect("mark dispatch");
     let key = SigningKey::from_bytes(&[9; 32]);
+    let settlement_issuer = issuer(&key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     let settled = store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&settlement_issuer, &signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(settled.state, ReservationState::Settled);
@@ -187,7 +216,7 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     );
     assert_eq!(
         store
-            .settle(&issuer(&key), &signed, sample(7, 1_700))
+            .settle(&settlement_issuer, &signed, sample(7, 1_700))
             .await
             .expect("exact settlement retry"),
         settled
@@ -195,9 +224,80 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     let changed = evidence(&key, &dispatched, SettlementStatus::Completed, 4, 1_600);
     assert!(matches!(
         store
-            .settle(&issuer(&key), &changed, sample(8, 1_800))
+            .settle(&settlement_issuer, &changed, sample(8, 1_800))
             .await,
         Err(AuthBusAuthorityError::IdempotencyConflict)
+    ));
+}
+
+#[tokio::test]
+async fn settlement_rejects_forged_revoked_epoch_and_purpose_substitution() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            reservation.revision,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .expect("mark dispatch");
+    let legitimate = SigningKey::from_bytes(&[41; 32]);
+    let signed = evidence(
+        &legitimate,
+        &dispatched,
+        SettlementStatus::Completed,
+        5,
+        1_600,
+    );
+
+    let forged = SigningKey::from_bytes(&[42; 32]);
+    let forged_handle = issuer(&forged).await;
+    assert!(matches!(
+        store
+            .settle(&forged_handle, &signed, sample(6, 1_600))
+            .await,
+        Err(AuthBusAuthorityError::InvalidSettlementSignature)
+    ));
+
+    let revoked = issuer_with(
+        &legitimate,
+        1,
+        IssuerLifecycleState::Revoked,
+        IssuerPurpose::Settlement,
+    )
+    .await;
+    assert!(matches!(
+        store.settle(&revoked, &signed, sample(7, 1_700)).await,
+        Err(AuthBusAuthorityError::SettlementIssuerRevoked)
+    ));
+
+    let epoch_substitution = issuer_with(
+        &legitimate,
+        2,
+        IssuerLifecycleState::Active,
+        IssuerPurpose::Settlement,
+    )
+    .await;
+    assert!(matches!(
+        store
+            .settle(&epoch_substitution, &signed, sample(8, 1_800))
+            .await,
+        Err(AuthBusAuthorityError::SettlementIssuerMismatch)
+    ));
+
+    let purpose_substitution = issuer_with(
+        &legitimate,
+        1,
+        IssuerLifecycleState::Active,
+        IssuerPurpose::Message,
+    )
+    .await;
+    assert!(matches!(
+        store
+            .settle(&purpose_substitution, &signed, sample(9, 1_900))
+            .await,
+        Err(AuthBusAuthorityError::SettlementIssuerMismatch)
     ));
 }
 
@@ -229,9 +329,10 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
     assert_eq!((held.available, held.reserved, held.consumed), (3, 7, 0));
 
     let key = SigningKey::from_bytes(&[10; 32]);
+    let settlement_issuer = issuer(&key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 5_200);
     store
-        .settle(&issuer(&key), &signed, sample(7, 5_200))
+        .settle(&settlement_issuer, &signed, sample(7, 5_200))
         .await
         .expect("late terminal settlement");
     let closed = store
@@ -242,6 +343,37 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
         (closed.available, closed.reserved, closed.consumed),
         (5, 0, 5)
     );
+}
+
+#[tokio::test]
+async fn bounded_sweep_refunds_held_reservations_and_reports_remaining_work() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let sweep = store
+        .reconcile_expired_reservations(sample(5, 5_100), 1)
+        .await
+        .expect("bounded sweep");
+    assert_eq!(
+        sweep,
+        ExpiredReservationSweep {
+            scanned: 1,
+            expired: 1,
+            indeterminate: 0,
+            remaining: false,
+        }
+    );
+    assert_eq!(
+        store
+            .reservation(&reservation.reservation_id)
+            .await
+            .expect("reservation")
+            .state,
+        ReservationState::Expired
+    );
+    let quota = store
+        .quota_snapshot(&reservation.quota_key)
+        .await
+        .expect("quota snapshot");
+    assert_eq!((quota.available, quota.reserved, quota.consumed), (10, 0, 0));
 }
 
 #[tokio::test]
@@ -350,9 +482,10 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         .await
         .expect("mark dispatch");
     let key = SigningKey::from_bytes(&[33; 32]);
+    let settlement_issuer = issuer(&key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&settlement_issuer, &signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(
