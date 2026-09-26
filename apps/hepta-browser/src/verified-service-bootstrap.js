@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const MANIFEST_SCHEMA = "hepta.browser.service-closure-manifest.v1";
 const EXPECTED_MANIFEST_SHA256 =
-  "352940dbff09c0fdeaeba74ea6019522815aaf51c1611e10757d818347cc31b6";
+  "a01c504323d66a02b914668719d3243764b13c018e720ee2a26fecd582796d4f";
 const MAX_MANIFEST_BYTES = 256 * 1024;
 const MAX_MODULE_BYTES = 16 * 1024 * 1024;
 const GIT_BLOB = /^[0-9a-f]{40}$/;
