@@ -25,7 +25,14 @@ mod exercise;
 #[path = "canonical_codec.rs"]
 mod codec;
 
+pub use codex_hepta_kg::KnowledgeEdgeIdentityV2;
+pub use codex_hepta_kg::KnowledgeEdgeV2;
 pub use codex_hepta_kg::KnowledgeGenerationV2;
+pub use codex_hepta_kg::KnowledgeNodeV2;
+pub use codex_hepta_kg::KnowledgeProjectionInputV2;
+pub use codex_hepta_kg::KnowledgeRelationKindV2;
+pub use codex_hepta_kg::KnowledgeSupportV2;
+pub use codex_hepta_kg::build_complete_generation;
 
 pub use codec::*;
 pub use enumeration::*;
