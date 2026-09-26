@@ -16,7 +16,7 @@ jobs:
   repair:
     if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-repaired]') }}
     runs-on: macos-15
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -30,41 +30,54 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
-      - name: Repair read-only type and regenerate lock
+      - name: Repair read-only type and resolve exact lockfile
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           path = Path('codex-rs/hepta-cognitive-store/src/durable.rs')
           text = path.read_text(encoding='utf-8')
-          old = 'codex_hepta_memory::CognitiveRetrievalObservationV1'
-          new = 'codex_hepta_memory::RetrievalObservation'
-          if text.count(old) != 1:
-              raise SystemExit(f'expected exactly one stale retrieval type, found {text.count(old)}')
-          path.write_text(text.replace(old, new), encoding='utf-8')
+          stale = 'codex_hepta_memory::CognitiveRetrievalObservationV1'
+          current = 'codex_hepta_memory::RetrievalObservation'
+          if stale in text:
+              text = text.replace(stale, current)
+              path.write_text(text, encoding='utf-8')
+          elif current not in text:
+              raise SystemExit('read-only retrieval observation return type is missing')
           diagnostic = Path('cognitive-store-macos-diagnostic.txt')
           if diagnostic.exists():
               diagnostic.unlink()
           PY
           cd codex-rs
-          cargo metadata --format-version 1 --no-deps > /dev/null
+          cargo metadata --format-version 1 > /dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('Cargo.lock').read_text(encoding='utf-8')
+          marker = '[[package]]\nname = "codex-hepta-cognitive-store"'
+          start = text.index(marker)
+          end = text.find('\n[[package]]', start + len(marker))
+          block = text[start:] if end < 0 else text[start:end]
+          if '"codex-hepta-contracts",' not in block:
+              raise SystemExit('Cargo.lock cognitive-store stanza still lacks codex-hepta-contracts')
+          print(block)
+          PY
           cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd
+          cargo metadata --locked --format-version 1 --no-deps > /dev/null
           cd ..
           git diff --check
-          test -n "$(git status --porcelain -- codex-rs/Cargo.lock codex-rs/hepta-cognitive-store/src/durable.rs)"
       - name: Commit deterministic source repair
         run: |
           set -euo pipefail
           git config user.name "Hepta Cognitive Store CI"
           git config user.email "hepta-cognitive-ci@users.noreply.github.com"
           git add codex-rs/Cargo.lock codex-rs/hepta-cognitive-store/src/durable.rs
-          if test -e cognitive-store-macos-diagnostic.txt; then
-            echo "diagnostic unexpectedly remains" >&2
-            exit 1
-          fi
           git add -u cognitive-store-macos-diagnostic.txt || true
           git diff --cached --check
-          git commit -m "fix(cognitive-store): synchronize lock and read-only retrieval type"
+          if git diff --cached --quiet; then
+            echo 'source repair already exact'
+          else
+            git commit -m "fix(cognitive-store): synchronize lock and read-only retrieval type"
+          fi
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=normal)"
@@ -75,7 +88,11 @@ jobs:
           set -euo pipefail
           git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
           git diff --cached --check
-          git commit -m "docs(cognitive-store): bind repaired source objects [cognitive-store-repaired]"
+          if git diff --cached --quiet; then
+            git commit --allow-empty -m "docs(cognitive-store): confirm repaired source objects [cognitive-store-repaired]"
+          else
+            git commit -m "docs(cognitive-store): bind repaired source objects [cognitive-store-repaired]"
+          fi
       - name: Verify repaired exact candidate
         run: |
           set -euo pipefail
