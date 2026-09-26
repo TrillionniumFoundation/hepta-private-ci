@@ -7,6 +7,7 @@
 
 #[path = "cognitive_context_legacy.rs"]
 mod legacy;
+#[path = "cognitive_context_v2/mod.rs"]
 mod cognitive_context_v2;
 
 pub(crate) use cognitive_context_v2::read_with_retrieval_context_and_learning;
