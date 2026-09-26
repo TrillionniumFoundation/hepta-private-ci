@@ -32,27 +32,41 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
         token: VerifiedUseToken,
         binding: &FinalUseBinding,
     ) -> Result<EnteredSend, OutboxDispatchError> {
+        let claimed_epoch = token.claimed_authority_epoch();
+        let claimed_revision = token.claimed_revocation_revision();
         let mut token = Some(token);
         let mut proof = None;
         let mut send: Option<MatrixSendFuture<'_>> = None;
         let observed = {
-            // The final check runs in the SAME poll as adapter entry. Merely
-            // constructing or awaiting this future does not consume authority.
+            // Recheck before EVERY adapter poll, including a continuation after
+            // Pending. A transport may do DNS, TLS, encryption or session work
+            // before writing its request; its first poll is not a network write.
+            // The kernel entry proof is consumed only once, never renewed here.
             let gated = poll_fn(|context| {
+                if self.cancel.is_cancelled() {
+                    return Poll::Ready(Err(OutboxDispatchError::Canceled));
+                }
+                if Instant::now() >= self.deadline {
+                    return Poll::Ready(Err(OutboxDispatchError::LeaseExpired));
+                }
+                if self.authorizer.refresh_revocations().is_err() {
+                    return Poll::Ready(Err(OutboxDispatchError::Authority));
+                }
+                let head = match self.authorizer.authority().revocation_head() {
+                    Ok(head) => head,
+                    Err(_) => return Poll::Ready(Err(OutboxDispatchError::Authority)),
+                };
+                // Fail closed on any head advance. Comparing the revocation
+                // identity, rather than a state digest including claimed nonces,
+                // avoids canceling an unrelated simultaneous nonce admission.
+                if head.authority_epoch != claimed_epoch || head.revision != claimed_revision {
+                    return Poll::Ready(Err(OutboxDispatchError::Authority));
+                }
+                match self.transport.identity() {
+                    Ok(identity) if &identity == self.expected_identity => {}
+                    _ => return Poll::Ready(Err(OutboxDispatchError::TransportIdentity)),
+                }
                 if send.is_none() {
-                    if self.cancel.is_cancelled() {
-                        return Poll::Ready(Err(OutboxDispatchError::Canceled));
-                    }
-                    if Instant::now() >= self.deadline {
-                        return Poll::Ready(Err(OutboxDispatchError::LeaseExpired));
-                    }
-                    if self.authorizer.refresh_revocations().is_err() {
-                        return Poll::Ready(Err(OutboxDispatchError::Authority));
-                    }
-                    match self.transport.identity() {
-                        Ok(identity) if &identity == self.expected_identity => {}
-                        _ => return Poll::Ready(Err(OutboxDispatchError::TransportIdentity)),
-                    }
                     let Some(token) = token.take() else {
                         return Poll::Ready(Err(OutboxDispatchError::Authority));
                     };
@@ -64,8 +78,7 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
                         Ok(entered) if entered.matches(binding) => entered,
                         _ => return Poll::Ready(Err(OutboxDispatchError::Authority)),
                     };
-                    // Refresh and the protected-clock check may do synchronous
-                    // I/O. They do not renew the durable claim's deadline.
+                    // Synchronous authority work does not renew the lease.
                     if self.cancel.is_cancelled() {
                         return Poll::Ready(Err(OutboxDispatchError::Canceled));
                     }
@@ -74,6 +87,13 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
                     }
                     proof = Some(entered);
                     send = Some(self.transport.send(self.record));
+                }
+                // Refresh/identity reads may block even on subsequent polls.
+                if self.cancel.is_cancelled() {
+                    return Poll::Ready(Err(OutboxDispatchError::Canceled));
+                }
+                if Instant::now() >= self.deadline {
+                    return Poll::Ready(Err(OutboxDispatchError::LeaseExpired));
                 }
                 match send.as_mut() {
                     Some(send) => send.as_mut().poll(context).map(Ok),
@@ -93,7 +113,9 @@ impl<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>
                 result: match observed {
                     Ok(result) => result,
                     Err(OutboxDispatchError::LeaseExpired) => Err(MatrixTransportError::ReadTimeout),
-                    // Cancellation after entry cannot prove a negative effect.
+                    // Stopping polling cannot undo a request already written.
+                    // Revocation, identity loss and cancellation after entry all
+                    // preserve uncertainty and the existing transaction identity.
                     Err(_) => Err(MatrixTransportError::ResponseLost),
                 },
                 _proof: proof,
