@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""One-shot, exact-object migration; run only on the existing retrieval candidate.
-
-The generated Rust diff is committed and tested by the scoped native workflow.
-This is a source migration, never a production acceptance or benchmark receipt.
+"""One-shot exact-object migration; generated Rust is committed and tested.
+No production, independent acceptance, calibration or SLO claim is issued.
 """
 from pathlib import Path
 import hashlib
@@ -31,16 +29,15 @@ def main():
         if actual != expected:
             raise RuntimeError(f'exact source conflict: {path.relative_to(ROOT)} {actual}')
     values = {}
-    # Add an explicit evidence collection to native candidate/union/selection
-    # values. Canonical cognitive.types wire structures are not changed.
     paths = [ROOT / p for p in subprocess.check_output(
         ['git', 'ls-files', 'codex-rs'], cwd=ROOT, text=True).splitlines() if p.endswith('.rs')]
     for path in paths:
+        if path.name in {'explicit_evidence_tests.rs', 'cognitive_retrieval_proposition_tests.rs'}:
+            continue  # These new fixtures already use the explicit native fields.
         text = path.read_text()
         if 'contradiction_group_digest' not in text:
             continue
         if not (path.is_relative_to(R) or path == M / 'cognitive_retrieval_adapter.rs'):
-            # Do not silently rewrite an unrelated module or wire contract.
             if 'contradiction_group_digest:' in text or 'contradiction_group_digests:' in text:
                 raise RuntimeError(f'new native literal requires reviewed migration: {path}')
             continue
@@ -50,7 +47,7 @@ def main():
             indent = line[:len(line) - len(line.lstrip())]
             if stripped.startswith('pub contradiction_group_digest:') or stripped.startswith('pub contradiction_group_digests:'):
                 lines.append(indent + 'pub contradiction_evidence: Vec<crate::ContradictionEvidenceV1>,\n')
-            elif stripped == 'contradiction_group_digests: BTreeSet<Digest32>,' or stripped == 'contradiction_group_digest: Option<Digest32>,':
+            elif stripped in {'contradiction_group_digests: BTreeSet<Digest32>,', 'contradiction_group_digest: Option<Digest32>,'}:
                 lines.append(indent + 'contradiction_evidence: BTreeSet<crate::ContradictionEvidenceV1>,\n')
             elif stripped.startswith('contradiction_group_digest:') or stripped.startswith('contradiction_group_digests:'):
                 if 'BTreeSet::new()' in stripped:
@@ -69,20 +66,15 @@ def main():
 
     p = R / 'generation_bound.rs'
     text = values[p]
-    text = replace(text, '        ensure_digest("candidate_support", self.support_digest)?;',
-        '        super::validate_contradiction_evidence(&self.contradiction_evidence)?;\n'
-        '        ensure_digest("candidate_support", self.support_digest)?;')
-    text = replace(text, '            observed_channels.extend(entry.channels.iter().copied());',
-        '            super::validate_contradiction_evidence(&entry.contradiction_evidence)?;\n'
-        '            observed_channels.extend(entry.channels.iter().copied());')
-    text = replace(text, '            ensure_digest("selection_record", selection.record_digest)?;',
-        '            super::validate_contradiction_evidence(&selection.contradiction_evidence)?;\n'
-        '            ensure_digest("selection_record", selection.record_digest)?;')
+    for anchor, validation in [
+        ('        ensure_digest("candidate_support", self.support_digest)?;', '        super::validate_contradiction_evidence(&self.contradiction_evidence)?;'),
+        ('            observed_channels.extend(entry.channels.iter().copied());', '            super::validate_contradiction_evidence(&entry.contradiction_evidence)?;'),
+        ('            ensure_digest("selection_record", selection.record_digest)?;', '            super::validate_contradiction_evidence(&selection.contradiction_evidence)?;'),
+    ]:
+        text = replace(text, anchor, validation + '\n' + anchor)
     text = replace(text, '        builder.support_digests.insert(candidate.support_digest);',
         '        builder.contradiction_evidence.extend(candidate.contradiction_evidence);\n'
         '        builder.support_digests.insert(candidate.support_digest);')
-    # Version the native identity domains: new typed fields are never omitted
-    # from a union or selected-packet commitment.
     text = text.replace('hepta.retrieval-candidate-union.v1', 'hepta.retrieval-candidate-union.v2')
     text = text.replace('hepta.recall-packet.v1', 'hepta.recall-packet.v2')
     for name in ('entry', 'selection'):
@@ -123,10 +115,7 @@ pub(crate) fn validate_contradiction_evidence(
     Ok(())
 }
 
-pub(crate) fn encode_contradiction_evidence(
-    bytes: &mut Vec<u8>,
-    evidence: &[ContradictionEvidenceV1],
-) {
+pub(crate) fn encode_contradiction_evidence(bytes: &mut Vec<u8>, evidence: &[ContradictionEvidenceV1]) {
     bytes.extend_from_slice(&(evidence.len() as u64).to_be_bytes());
     for item in evidence {
         bytes.extend_from_slice(item.proposition_digest.as_array());
@@ -138,12 +127,13 @@ pub(crate) fn encode_contradiction_evidence(
 }
 
 ''' + text[end:]
-    text = text.replace('//! Legacy native structures are retained. This compatibility wrapper restricts\n//! OOD and channel coverage to the admitted set. Its legacy contradiction\n//! accessor still infers stance from channels and is NOT explicit owner-issued\n//! proposition/polarity evidence; that migration remains an activation blocker.',
-        '//! Native evidence is owner-issued and propagated without channel inference.\n//! Union and packet V2 digest domains commit every proposition/polarity pair.\n//! Legacy group digests remain uninterpreted compatibility metadata.')
+    header_end = text.index('\nuse std::collections::BTreeMap;')
+    text = ('//! Policy-admitted native recall with explicit owner-issued statement stances.\n'
+            '//! Union/packet commitments bind the actual proposition/polarity pairs.\n'
+            '//! Legacy group digests are uninterpreted compatibility metadata.\n' + text[header_end:])
     text = replace(text, '.filter(|entry| entry.weighted_score >= policy.minimum_total_score)',
         '.filter(|entry| entry.weighted_score > FixedQ32::ZERO\n'
         '            && entry.weighted_score >= policy.minimum_total_score)')
-    # flat_map now returns borrowed facts, never combinations of groups/channels.
     text += '\n#[cfg(test)]\n#[path = "explicit_evidence_tests.rs"]\nmod explicit_evidence_tests;\n'
     values[p] = text
 
@@ -164,9 +154,8 @@ pub(crate) fn encode_contradiction_evidence(
 
     p = R / 'generation_bound_semantic_tests.rs'
     text = values[p]
-    # Existing fixtures now explicitly choose their polarity. Production has no
-    # such channel-based constructor; new tests below vary channels independently.
     text = replace(text, '        contradiction_evidence: Vec::new(),',
+        '        // Fixture stances are explicit; production never infers from channels.\n'
         '        contradiction_evidence: proposition.map(|proposition_digest| ContradictionEvidenceV1 {\n'
         '            proposition_digest,\n'
         '            polarity: if channel == RetrievalChannelV1::ContradictionSupport {\n'
@@ -186,8 +175,7 @@ pub(crate) fn encode_contradiction_evidence(
     text = replace(text, 'const OWNER_CONTRADICTION_DOMAIN: &[u8] = b"hepta.sqlite.retrieval-contradiction-group.v1";\n', '')
     start = text.index('fn owner_contradiction_group_digest(')
     end = text.index('\n#[cfg(test)]', start)
-    text = text[:start] + text[end:]
-    values[p] = text
+    values[p] = text[:start] + text[end:]
 
     p = M / 'cognitive_retrieval_observation.rs'
     text = p.read_text()
@@ -207,18 +195,14 @@ pub(crate) fn encode_contradiction_evidence(
         '            ).await?;\n'
         '        }\n'
         '        observed.sort_by(|left, right| {')
-    text = replace(text, 'hepta:cognitive:retrieval-observation:v1', 'hepta:cognitive:retrieval-observation:v2')
-    values[p] = text
+    values[p] = replace(text, 'hepta:cognitive:retrieval-observation:v1', 'hepta:cognitive:retrieval-observation:v2')
 
     p = M / 'cognitive_retrieval_adapter_tests.rs'
     text = p.read_text()
-    # A legacy Contradicts relation describes conflict, not a statement stance.
     old = '        contradiction.candidates[0]\n            .contradiction_group_digest\n            .is_some()'
     text = replace(text, old, '        contradiction.candidates[0].contradiction_evidence.is_empty()\n'
         '            && contradiction.candidates[0].contradiction_group_digest.is_none()')
-    text += '\n#[path = "cognitive_retrieval_proposition_tests.rs"]\nmod proposition_tests;\n'
-    values[p] = text
-
+    values[p] = text + '\n#[path = "cognitive_retrieval_proposition_tests.rs"]\nmod proposition_tests;\n'
     for path, text in values.items():
         path.write_text(text)
     print('Migrated explicit evidence in', len(values), 'reviewed Rust files.')
