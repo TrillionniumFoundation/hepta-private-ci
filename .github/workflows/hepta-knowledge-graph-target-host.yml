@@ -29,7 +29,6 @@ concurrency:
 env:
   CANDIDATE_SHA: ${{ inputs.candidate_sha || github.sha }}
   HOST_PROFILE_ID: rog-linux-x64-kg-v1
-  EVIDENCE_DIR: ${{ runner.temp }}/knowledge-graph-target-host
   CARGO_INCREMENTAL: "0"
   CARGO_BUILD_JOBS: "2"
   PYTHONDONTWRITEBYTECODE: "1"
@@ -50,6 +49,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/knowledge-graph-target-host"
+          printf 'EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$EVIDENCE_DIR"
           test "$GITHUB_REF" = refs/heads/main
           test "$RUNNER_NAME" = rog
           test "$RUNNER_OS" = Linux
@@ -60,7 +62,6 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain)"
-          mkdir -p "$EVIDENCE_DIR"
 
       - name: Run qualification under exclusive host fence
         shell: bash
@@ -192,6 +193,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="${EVIDENCE_DIR:-$RUNNER_TEMP/knowledge-graph-target-host}"
           {
             printf '## knowledge.graph target-host qualification\n\n'
             printf -- '- Candidate: `%s`\n' "$CANDIDATE_SHA"
@@ -215,6 +217,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: knowledge-graph-target-host-${{ env.CANDIDATE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ env.EVIDENCE_DIR }}/**
+          path: ${{ runner.temp }}/knowledge-graph-target-host/**
           if-no-files-found: error
-          retention-days: 365
+          retention-days: 90

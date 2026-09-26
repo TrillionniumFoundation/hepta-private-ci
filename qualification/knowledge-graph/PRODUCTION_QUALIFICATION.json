@@ -45,7 +45,8 @@
     "remainingScaleBoundary": "complete physical source-cut assembly and reopen digest scan"
   },
   "retention": {
-    "targetHostArtifactsDays": 365,
+    "targetHostArtifactsDays": 90,
+    "targetHostImmutableArchiveDays": 365,
     "releaseEvidenceDays": 2555,
     "hotGenerationReceiptsDays": 90,
     "rawLogsRequired": true,

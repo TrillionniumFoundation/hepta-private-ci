@@ -39,7 +39,7 @@ The receipt must report the selected incremental writer, a full-rebuild oracle i
 
 ## Required evidence
 
-The workflow retains, for 365 days:
+The Actions workflow retains the online artifact for 90 days, the maximum portable repository-local window used by this project. Before that artifact expires, the named operator must export the exact SHA-256 manifest and every listed object into the append-only archive retained for at least 365 days:
 
 - exact source commit and tree;
 - host and runner metadata;
@@ -50,7 +50,7 @@ The workflow retains, for 365 days:
 - production-gate admission JSON and log;
 - SHA-256 manifest over every retained object.
 
-The gate verifies the raw-log digest, profile, workload, canonical cardinality, runtime writer, oracle interval, p95/p99, RSS, DB/WAL growth and exact source identity. Missing, malformed, duplicated or over-budget evidence fails closed.
+The gate verifies the raw-log digest, profile, workload, canonical cardinality, runtime writer, oracle interval, p95/p99, RSS, DB/WAL growth and exact source identity. Missing, malformed, duplicated or over-budget evidence fails closed. A successful Actions upload is not by itself proof that the required long-term archive was completed.
 
 ## Checkpoint, retention and archive
 
@@ -60,10 +60,10 @@ The operational policy is:
 2. `TRUNCATE` checkpoint is maintenance-only and requires the same exclusive owner fence as mutation.
 3. Hot generation receipts are retained for at least 90 days.
 4. Every 1,024 generations or 24 hours, whichever occurs first, immutable content-addressed archives are produced for generation receipts, publication receipts, source frontier and admission receipts.
-5. Qualification artifacts are retained 365 days; evidence supporting an activated release is retained at least 2,555 days.
+5. Actions qualification artifacts are retained online for 90 days and exported into immutable storage retained at least 365 days; evidence supporting an activated release is retained at least 2,555 days.
 6. Every archive is append-only and SHA-256 bound. Archive failure does not authorize receipt deletion or pointer advancement.
 
-This policy defines the production obligation. The target-host workflow proves measurement and rollback behavior; a named production operator must separately prove checkpoint/archive execution before acceptance.
+This policy defines the production obligation. The target-host workflow proves measurement and rollback behavior; a named production operator must separately prove checkpoint and archive execution before acceptance.
 
 ## Acceptance, canary and release boundary
 
