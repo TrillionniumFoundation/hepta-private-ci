@@ -21,6 +21,7 @@ pub struct RequestDispatchMetadata {
     expected_headers: Arc<Vec<(HeaderName, Option<HeaderValue>)>>,
     final_request_observer: Arc<OnceLock<Arc<dyn EncodedRequestBodyObserver>>>,
     final_request_observation_required: Arc<AtomicBool>,
+    final_request_observer_conflicted: Arc<AtomicBool>,
 }
 
 impl RequestDispatchMetadata {
@@ -41,6 +42,7 @@ impl RequestDispatchMetadata {
             expected_headers: Arc::new(expected_headers),
             final_request_observer: Arc::new(OnceLock::new()),
             final_request_observation_required: Arc::new(AtomicBool::new(false)),
+            final_request_observer_conflicted: Arc::new(AtomicBool::new(false)),
         }
     }
 
@@ -59,21 +61,35 @@ impl RequestDispatchMetadata {
 
     /// Installs the single final-use observer for the exact encoded body.
     ///
-    /// All clones share the same once-cell. A second installation is rejected
-    /// so no later policy layer can replace the observer admitted for this
-    /// physical attempt.
+    /// All clones share the same once-cell. A second installation permanently
+    /// poisons this attempt, so a conflicting policy layer can never leave a
+    /// previously installed but ambiguous observer active at the send boundary.
     pub fn install_final_request_observer(
         &self,
         observer: Arc<dyn EncodedRequestBodyObserver>,
     ) -> Result<(), String> {
-        self.final_request_observer.set(observer).map_err(|_| {
-            "final request observer was already installed for this provider attempt".to_owned()
-        })
+        if self.final_request_observer.set(observer).is_err() {
+            self.final_request_observer_conflicted
+                .store(true, Ordering::Release);
+            return Err(
+                "final request observer installation conflicted for this provider attempt"
+                    .to_owned(),
+            );
+        }
+        Ok(())
     }
 
     pub(crate) fn final_request_observer(
         &self,
     ) -> Result<Option<Arc<dyn EncodedRequestBodyObserver>>, String> {
+        if self
+            .final_request_observer_conflicted
+            .load(Ordering::Acquire)
+        {
+            return Err(
+                "final request observer state is conflicted for this provider attempt".to_owned(),
+            );
+        }
         let observer = self.final_request_observer.get().cloned();
         if observer.is_none()
             && self
@@ -189,10 +205,21 @@ mod tests {
             .install_final_request_observer(Arc::new(TestObserver))
             .expect("first observer installation");
         assert!(clone.final_request_observer().expect("observer state").is_some());
+    }
+
+    #[test]
+    fn conflicting_final_request_observer_poisoning_fails_closed() {
+        let metadata = RequestDispatchMetadata::new();
+        let clone = metadata.clone();
+        metadata
+            .install_final_request_observer(Arc::new(TestObserver))
+            .expect("first observer installation");
         assert!(
             clone
                 .install_final_request_observer(Arc::new(TestObserver))
                 .is_err()
         );
+        assert!(metadata.final_request_observer().is_err());
+        assert!(clone.final_request_observer().is_err());
     }
 }
