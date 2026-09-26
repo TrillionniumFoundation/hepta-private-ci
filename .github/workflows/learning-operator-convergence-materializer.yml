@@ -1,0 +1,330 @@
+name: Learning operator P0 convergence materializer
+
+on:
+  push:
+    branches:
+      - codex/learning-operator-full-convergence-20260926
+    paths:
+      - .github/workflows/learning-operator-convergence-materializer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/learning-operator-full-convergence-20260926
+          fetch-depth: 0
+      - name: Materialize P0 closed-world and writer-boundary fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import re
+          from pathlib import Path
+
+          root = Path.cwd()
+
+          def replace_once(path: Path, old: str, new: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}: {old[:80]!r}")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          closure = root / "scripts/hepta-lane-e-closure.py"
+          replace_once(
+              closure,
+              '    *(f"OP-{index:02d}" for index in range(1, 5)),',
+              '    *(f"OP-{index:02d}" for index in range(1, 7)),',
+          )
+          replace_once(
+              closure,
+              '''    "learning.operator": {
+                  "build_targets",
+                  "validate_applicability_certificate",
+                  "build_sensor_core",
+                  "evaluate_bellman_reference",
+                  "admit_operator_regularity",
+                  "fit_transition_model",
+                  "predict_transition",
+              },''',
+              '''    "learning.operator": {
+                  "build_targets",
+                  "validate_applicability_certificate",
+                  "validate_applicability_with_signed_evidence_v2",
+                  "build_sensor_core",
+                  "evaluate_bellman_reference",
+                  "admit_operator_regularity",
+                  "admit_operator_regularity_with_signed_evidence_v2",
+                  "fit_transition_model",
+                  "predict_transition",
+                  "verify_tabular_operator_plan_v2",
+                  "fit_tabular_operator_verified_v2",
+                  "verify_world_model_dataset_v2",
+                  "fit_transition_model_verified_v2",
+              },''',
+          )
+          replace_once(
+              closure,
+              '''TEMPORARY_WORKFLOW_PATH = (
+              ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
+          )
+          ''',
+              '''TEMPORARY_WORKFLOW_PATH = (
+              ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
+          )
+          LEGACY_WRITER_EXCEPTIONS_PATH = (
+              ROOT / "qualification/lane-e/LEGACY_WRITER_EXCEPTIONS.json"
+          )
+          ''',
+          )
+
+          replacement = r'''def verify_product_writer_exclusivity(findings: Findings) -> None:
+              """Prevent product crates from bypassing LedgerWriter with raw V1 appends.
+
+              A small closed-world exception file is allowed only for read-only recovery
+              inspection and compile-time qualification compatibility. Every exception is
+              path- and finding-specific, marker-bound, and rejected when stale.
+              """
+
+              allowed_roots = {
+                  "codex-rs/hepta-learning-ledger",
+                  "codex-rs/hepta-shadow-qualification",
+              }
+              forbidden = {
+                  r"\bDurableLearningJournal\b": "legacy durable journal trait",
+                  r"LedgerEvent::Decision\b": "raw V1 Decision append",
+                  r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
+                  r"LedgerEvent::Credit\b": "raw V1 Credit append",
+                  r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
+              }
+              exception_document = load_json(LEGACY_WRITER_EXCEPTIONS_PATH, findings)
+              findings.require(
+                  exception_document.get("schema")
+                  == "hepta.lane-e-legacy-writer-exceptions.v1",
+                  "legacy_writer_exception_schema",
+                  "unexpected legacy writer exception schema",
+              )
+              records = exception_document.get("exceptions")
+              if not isinstance(records, list):
+                  findings.add(
+                      "legacy_writer_exception_records",
+                      "legacy writer exceptions must be an array",
+                  )
+                  records = []
+              exceptions: dict[tuple[str, str], dict[str, Any]] = {}
+              for record in records:
+                  if not isinstance(record, dict):
+                      findings.add(
+                          "legacy_writer_exception_record",
+                          "legacy writer exception record must be an object",
+                      )
+                      continue
+                  path = record.get("path")
+                  finding = record.get("finding")
+                  classification = record.get("classification")
+                  if (
+                      not isinstance(path, str)
+                      or not isinstance(finding, str)
+                      or classification
+                      not in {"read_only_runstart_bridge", "qualification_feature_only"}
+                  ):
+                      findings.add(
+                          "legacy_writer_exception_record",
+                          f"invalid legacy writer exception: {record!r}",
+                      )
+                      continue
+                  key = (path, finding)
+                  if key in exceptions:
+                      findings.add(
+                          "legacy_writer_exception_duplicate",
+                          f"duplicate legacy writer exception: {key!r}",
+                      )
+                      continue
+                  exceptions[key] = record
+
+              seen: set[tuple[str, str]] = set()
+              feature_manifest = ROOT / "codex-rs/hepta-agentd/Cargo.toml"
+              feature_text = (
+                  feature_manifest.read_text(encoding="utf-8")
+                  if feature_manifest.is_file()
+                  else ""
+              )
+              for path in (ROOT / "codex-rs").rglob("*.rs"):
+                  relative = path.relative_to(ROOT).as_posix()
+                  if any(
+                      relative == root or relative.startswith(f"{root}/")
+                      for root in allowed_roots
+                  ):
+                      continue
+                  if (
+                      "/tests/" in relative
+                      or path.name.endswith("_tests.rs")
+                      or path.name.endswith("_test_support.rs")
+                  ):
+                      continue
+
+                  text = path.read_text(encoding="utf-8")
+                  for pattern, description in forbidden.items():
+                      if re.search(pattern, text) is None:
+                          continue
+                      key = (relative, description)
+                      exception = exceptions.get(key)
+                      if exception is None:
+                          findings.add(
+                              "legacy_learning_writer_product_bypass",
+                              f"{relative} uses {description}; product learning writes must use LedgerWriter",
+                          )
+                          continue
+                      seen.add(key)
+                      markers = exception.get("requiredMarkers")
+                      findings.require(
+                          isinstance(markers, list)
+                          and bool(markers)
+                          and all(
+                              isinstance(marker, str) and marker in text
+                              for marker in markers
+                          ),
+                          "legacy_writer_exception_marker",
+                          f"{relative} no longer satisfies the audited exception markers for {description}",
+                      )
+                      classification = exception["classification"]
+                      if classification == "qualification_feature_only":
+                          findings.require(
+                              "qualification-legacy-learning-write" in text
+                              and "qualification-legacy-learning-write = []" in feature_text,
+                              "legacy_writer_exception_feature",
+                              f"{relative} legacy surface is not confined to the explicit qualification feature",
+                          )
+                      else:
+                          forbidden_markers = exception.get("forbiddenMarkers", [])
+                          findings.require(
+                              isinstance(forbidden_markers, list)
+                              and all(
+                                  isinstance(marker, str) and marker not in text
+                                  for marker in forbidden_markers
+                              ),
+                              "legacy_writer_exception_write",
+                              f"{relative} read-only exception contains a forbidden write marker",
+                          )
+
+              for key in sorted(set(exceptions) - seen):
+                  findings.add(
+                      "legacy_writer_exception_stale",
+                      f"stale legacy writer exception: {key!r}",
+                  )
+          '''
+          text = closure.read_text(encoding="utf-8")
+          pattern = re.compile(
+              r"def verify_product_writer_exclusivity\(findings: Findings\) -> None:\n.*?\n\ndef verify_authority_posture",
+              re.DOTALL,
+          )
+          if len(pattern.findall(text)) != 1:
+              raise SystemExit("unable to locate product writer exclusivity verifier")
+          text = pattern.sub(replacement + "\n\ndef verify_authority_posture", text, count=1)
+          closure.write_text(text, encoding="utf-8")
+
+          eval_lib = root / "codex-rs/hepta-intelligence-eval/src/lib.rs"
+          replace_once(
+              eval_lib,
+              "pub use signed_evaluation::decide_with_signed_evidence_v2;",
+              "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;",
+          )
+
+          exceptions = {
+              "schema": "hepta.lane-e-legacy-writer-exceptions.v1",
+              "authorityDelta": "none",
+              "exceptions": [
+                  {
+                      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+                      "finding": "legacy durable journal trait",
+                      "classification": "read_only_runstart_bridge",
+                      "owner": "runtime.agentd",
+                      "rationale": "The Objective owner publishes and recovers RunStart through the pre-existing typed intelligence owner bridge. It does not construct Decision, Outcome, Credit, or Revocation writes.",
+                      "requiredMarkers": [
+                          "prepare_intelligence_run_v1",
+                          "LedgerEvent::RunStart",
+                          "fn event_record_id",
+                      ],
+                      "forbiddenMarkers": ["append_qualification("],
+                  },
+                  *[
+                      {
+                          "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+                          "finding": finding,
+                          "classification": "read_only_runstart_bridge",
+                          "owner": "runtime.agentd",
+                          "rationale": "The V1 variant occurs only in exhaustive read/recovery matching; product writes enter through the RunStart owner bridge.",
+                          "requiredMarkers": [
+                              "match event",
+                              "LedgerEvent::RunStart",
+                              "fn event_record_id",
+                          ],
+                          "forbiddenMarkers": ["append_qualification("],
+                      }
+                      for finding in [
+                          "raw V1 Decision append",
+                          "raw V1 Outcome append",
+                          "raw V1 Credit append",
+                          "raw V1 Revocation append",
+                      ]
+                  ],
+                  {
+                      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+                      "finding": "legacy durable journal trait",
+                      "classification": "qualification_feature_only",
+                      "owner": "runtime.agentd",
+                      "rationale": "Compatibility imports compile only under qualification-legacy-learning-write, which is not a default or product feature.",
+                      "requiredMarkers": [
+                          "#[cfg(feature = \"qualification-legacy-learning-write\")]",
+                          "DurableLearningJournal",
+                      ],
+                  },
+                  {
+                      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+                      "finding": "raw V1 Decision append",
+                      "classification": "qualification_feature_only",
+                      "owner": "runtime.agentd",
+                      "rationale": "The raw V1 constructor is confined to the explicit qualification compatibility feature.",
+                      "requiredMarkers": [
+                          "#[cfg(feature = \"qualification-legacy-learning-write\")]",
+                          "pub fn append_decision",
+                      ],
+                  },
+                  {
+                      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+                      "finding": "raw V1 Outcome append",
+                      "classification": "qualification_feature_only",
+                      "owner": "runtime.agentd",
+                      "rationale": "The raw V1 constructor is confined to the explicit qualification compatibility feature.",
+                      "requiredMarkers": [
+                          "#[cfg(feature = \"qualification-legacy-learning-write\")]",
+                          "pub fn append_outcome",
+                      ],
+                  },
+              ],
+          }
+          exception_path = root / "qualification/lane-e/LEGACY_WRITER_EXCEPTIONS.json"
+          exception_path.write_text(
+              json.dumps(exceptions, indent=2, sort_keys=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          python3 -m py_compile scripts/hepta-lane-e-closure.py
+          python3 scripts/hepta-lane-e-closure.py self-test
+          rm .github/workflows/learning-operator-convergence-materializer.yml
+          git config user.name "openai-codex[bot]"
+          git config user.email "openai-codex[bot]@users.noreply.github.com"
+          git add scripts/hepta-lane-e-closure.py \
+            codex-rs/hepta-intelligence-eval/src/lib.rs \
+            qualification/lane-e/LEGACY_WRITER_EXCEPTIONS.json \
+            .github/workflows/learning-operator-convergence-materializer.yml
+          git commit -m "fix(lane-e): restore closed-world qualification consistency"
+          git push origin HEAD:codex/learning-operator-full-convergence-20260926
