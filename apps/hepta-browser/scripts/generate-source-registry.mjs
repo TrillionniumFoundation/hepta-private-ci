@@ -89,7 +89,7 @@ function verifyCapabilities() {
     "retireGeneration",
   ]);
   assertContains("codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs", [
-    "PersistentBrowserServoControl",
+    "open_browser_servo_port_from_file",
     "while let Some(frame)",
     "navigate_or_act requires signed final-use grant",
   ]);
