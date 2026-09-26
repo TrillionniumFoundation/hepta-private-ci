@@ -28,6 +28,7 @@ mod evidence_trust;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
+mod lane_b_bound;
 mod lane_b_runtime;
 mod neuron_runtime;
 mod objective_runtime;
