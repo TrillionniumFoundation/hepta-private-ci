@@ -1,0 +1,157 @@
+name: Control runtime independent acceptance
+
+on:
+  push:
+    branches:
+      - control-runtime-acceptance-v1
+    paths:
+      - "codex-rs/hepta-control-plane/src/bin/control-runtime-named-host-qualification.rs"
+      - "codex-rs/hepta-control-plane/tests/control_runtime_acceptance.rs"
+      - ".github/workflows/control-runtime-acceptance.yml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-agent-protocol/src/lib.rs"
+      - "codex-rs/hepta-agentd/src/cognitive_context.rs"
+      - "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      - "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
+      - "docs/modules/control.runtime/**"
+      - ".github/workflows/control-runtime-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-acceptance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    name: acceptance (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Check out exact acceptance source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source-head or deterministic merge candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            if [ -z "$BASE_SHA" ]; then
+              git fetch --no-tags origin control-runtime-production-closure-v1
+              BASE_SHA=$(git rev-parse origin/control-runtime-production-closure-v1)
+            fi
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-acceptance GIT_COMMITTER_NAME=hepta-acceptance
+            export GIT_AUTHOR_EMAIL=acceptance@invalid GIT_COMMITTER_EMAIL=acceptance@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'control.runtime independent acceptance candidate' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+          fi
+          {
+            printf 'event_source_sha=%s\n' "$SOURCE_SHA"
+            printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'candidate_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'base_sha=%s\n' "$BASE_SHA"
+            printf 'lane=%s\n' '${{ matrix.lane }}'
+          } | tee "${RUNNER_TEMP}/candidate.txt"
+
+      - name: Verify repository invariants
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_cargo_lock.py
+          python3 scripts/hepta-ndu-source-policy.py
+          python3 -m json.tool docs/modules/control.runtime/MATURITY.json >/dev/null
+          python3 -m json.tool docs/modules/control.runtime/IMPLEMENTATION_MAP.json >/dev/null
+
+      - name: Formatting and locked compilation
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo check --locked --all-targets -p codex-hepta-control-plane
+
+      - name: Fault, fan-out, canary and rollback acceptance
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-control-plane --test control_runtime_acceptance
+          cargo test --locked -p codex-hepta-control-plane --lib planner_store
+          cargo test --locked -p codex-hepta-control-plane --lib planner_execution
+
+      - name: Control NDU caller regressions
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-control-plane --lib planner_context
+          cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
+
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
+
+      - name: Named-host performance and recovery receipt
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          RECEIPT="${RUNNER_TEMP}/control-runtime-named-host-${{ matrix.lane }}.json"
+          export HEPTA_CONTROL_RUNTIME_RECEIPT_PATH="$RECEIPT"
+          export HEPTA_CONTROL_RUNTIME_SOURCE_SHA="$(git rev-parse HEAD)"
+          export HEPTA_CONTROL_RUNTIME_SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          export HEPTA_CONTROL_RUNTIME_HOST_ID="github-hosted-ubuntu-24.04-x86_64"
+          export HEPTA_CONTROL_RUNTIME_LANE='${{ matrix.lane }}'
+          export HEPTA_CONTROL_RUNTIME_RUSTC="$(rustc --version)"
+          export HEPTA_CONTROL_RUNTIME_FS_PROFILE="$(stat -f -c %T "${RUNNER_TEMP}")"
+          cargo run --locked --release -p codex-hepta-control-plane \
+            --bin control-runtime-named-host-qualification
+          python3 - <<'PY'
+          import json, os
+          path = os.environ["HEPTA_CONTROL_RUNTIME_RECEIPT_PATH"]
+          with open(path, encoding="utf-8") as stream:
+              receipt = json.load(stream)
+          assert receipt["complete"] is True
+          assert receipt["activation"] is False
+          assert receipt["release"] is False
+          assert receipt["source_sha"]
+          assert receipt["source_tree"]
+          assert receipt["append_ops_per_second"] >= receipt["minimum_append_ops_per_second"]
+          PY
+
+      - name: Preserve exact source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-acceptance-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/candidate.txt
+            ${{ runner.temp }}/control-runtime-named-host-${{ matrix.lane }}.json
+          if-no-files-found: warn
