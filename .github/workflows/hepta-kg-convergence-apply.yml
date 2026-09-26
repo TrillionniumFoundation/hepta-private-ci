@@ -43,12 +43,40 @@ jobs:
           rm scripts/hepta-kg-convergence-apply-phase1.py
           rm .github/workflows/hepta-kg-convergence-apply.yml
 
-      - name: Refresh lockfile and formatting
+      - name: Capture cargo check and lock refresh
+        id: cargo_check
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo check -p codex-hepta-kg 2>&1 | tee "$RUNNER_TEMP/phase1-cargo-check.log"
+          status=${PIPESTATUS[0]}
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Retain phase-one cargo diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-phase1-cargo-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/phase1-cargo-check.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce cargo check
+        shell: bash
+        env:
+          CARGO_STATUS: ${{ steps.cargo_check.outputs.status }}
+        run: |
+          set -euo pipefail
+          test "$CARGO_STATUS" = 0
+
+      - name: Format exact kernel source
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check -p codex-hepta-kg
           cargo fmt --package codex-hepta-kg
           cargo fmt --package codex-hepta-kg -- --check
 
