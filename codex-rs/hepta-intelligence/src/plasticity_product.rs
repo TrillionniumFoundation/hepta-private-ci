@@ -485,6 +485,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         }
         verify_signed_independent_roles_v1(&observer, &evaluator, now)
             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        verify_signed_independent_roles_v1(&generator, &evaluator, now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
 
         let consumer_binding_digest = plasticity_evaluation_consumer_binding_digest(
             &request.proposal_id,
