@@ -1,51 +1,67 @@
 name: Browser source truth
 
 on:
-  push:
-    paths:
-      - 'apps/hepta-browser/**'
-      - 'third_party/servo-patches/**'
-      - 'docs/modules/browser.servo/**'
-      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
-      - '.github/workflows/hepta-browser-source-truth.yml'
-  pull_request:
-    paths:
-      - 'apps/hepta-browser/**'
-      - 'third_party/servo-patches/**'
-      - 'docs/modules/browser.servo/**'
-      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
-      - '.github/workflows/hepta-browser-source-truth.yml'
+  workflow_call:
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: browser-source-truth-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   source-truth:
-    name: Browser source truth
+    name: Browser source truth (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Bind exact Browser source
+      - name: Construct deterministic Browser merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+
+      - name: Bind exact Browser source and execution lane
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
+          mkdir -p "$RUNNER_TEMP/browser-evidence"
+          {
+            printf 'source=%s\nbase=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.lane }}'
+            git rev-parse HEAD HEAD^{tree}
+            node --version
+          } > "$RUNNER_TEMP/browser-evidence/source-identity.txt"
+          # Tracked sources only; never archive checkout credentials, build caches
+          # or ambient files. This subset makes failed Node runs reproducible.
+          git archive --format=tar.gz HEAD \
+            apps/hepta-browser codex-rs/hepta-agentd \
+            docs/modules/browser.servo third_party/servo-patches \
+            > "$RUNNER_TEMP/browser-evidence/browser-source.tar.gz"
+          sha256sum "$RUNNER_TEMP/browser-evidence/browser-source.tar.gz" \
+            > "$RUNNER_TEMP/browser-evidence/browser-source.tar.gz.sha256"
 
       - name: Verify generated RPC capability and source registry
         shell: bash
@@ -53,35 +69,53 @@ jobs:
           set -euo pipefail
           node apps/hepta-browser/scripts/browser-source-registry.js --check
 
-      - name: Check Browser JavaScript syntax
+      - name: Check all Browser JavaScript syntax
         shell: bash
         run: |
           set -euo pipefail
-          for source in apps/hepta-browser/src/*.js apps/hepta-browser/scripts/*.js; do
+          for source in apps/hepta-browser/src/*.js apps/hepta-browser/scripts/*.js apps/hepta-browser/test/*.test.js; do
             node --check "$source"
           done
 
-      - name: Run the complete Browser owner suite
+      - name: Run complete Browser owner suite independently of Rust
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/*.test.js
+          timeout 300s node --test --test-concurrency=4 --test-reporter=tap \
+            apps/hepta-browser/test/*.test.js 2>&1 \
+            | tee "$RUNNER_TEMP/browser-evidence/browser-tests.tap"
 
-      - name: Verify the reviewed Servo lock resolves exactly
+      - name: Require a committed exact Servo dependency lock
         shell: bash
         run: |
           set -euo pipefail
-          test -s apps/hepta-browser/servo-worker/Cargo.lock
-          cargo metadata --locked --format-version 1 \
-            --manifest-path apps/hepta-browser/servo-worker/Cargo.toml \
-            --no-deps >/dev/null
+          git ls-files --error-unmatch apps/hepta-browser/servo-worker/Cargo.lock
+          python3 - <<'PY'
+          import pathlib, re, tomllib
+          root = pathlib.Path('apps/hepta-browser/servo-worker')
+          manifest = tomllib.loads((root / 'Cargo.toml').read_text())
+          pin = manifest['dependencies']['servo']['rev']
+          assert re.fullmatch(r'[0-9a-f]{40}', pin)
+          lock = tomllib.loads((root / 'Cargo.lock').read_text())
+          packages = [p for p in lock['package'] if p['name'] == 'servo']
+          assert len(packages) == 1
+          assert packages[0]['source'] == f'git+https://github.com/servo/servo.git?rev={pin}#{pin}'
+          PY
+
+      - name: Retain exact lane output, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-source-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/browser-evidence
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Verify source stayed clean
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"

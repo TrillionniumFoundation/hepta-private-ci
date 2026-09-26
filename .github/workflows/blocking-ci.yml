@@ -13,6 +13,12 @@ permissions:
   contents: read
 
 jobs:
+  browser-source-truth:
+    name: Browser required
+    # Independent of native scope: Browser-only changes must never skip tests,
+    # and a slow/cancelled Cargo lane must not prevent the Node lane from running.
+    uses: ./.github/workflows/hepta-browser-source-truth.yml
+
   scope:
     name: Select blocking CI scope
     runs-on: ubuntu-24.04
@@ -215,6 +221,7 @@ jobs:
     name: CI required
     if: ${{ always() }}
     needs:
+      - browser-source-truth
       - scope
       - hepta-contract-gate
       - bazel
