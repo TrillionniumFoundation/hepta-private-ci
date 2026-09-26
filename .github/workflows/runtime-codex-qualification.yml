@@ -32,8 +32,6 @@ jobs:
       HEPTA_CI_LANE: ${{ matrix.lane }}
       CARGO_INCREMENTAL: 0
       CARGO_TERM_COLOR: never
-      RECORDS: ${{ runner.temp }}/runtime-codex/records
-      EVIDENCE: ${{ runner.temp }}/runtime-codex
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -44,6 +42,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          RECORDS="$RUNNER_TEMP/runtime-codex/records"
+          echo "RECORDS=$RECORDS" >> "$GITHUB_ENV"
+          echo "EVIDENCE=$RUNNER_TEMP/runtime-codex" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if [ "$HEPTA_CI_LANE" = base-merge ]; then
             if [[ ! "$BASE_SHA" =~ ^[0-9a-f]{40}$ || "$BASE_SHA" = 0000000000000000000000000000000000000000 ]]; then
