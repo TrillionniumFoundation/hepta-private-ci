@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   RuntimeClient,
   UI_CONTROL_ERROR_CODES,
+  UI_CONTROL_PERMISSIONS,
   UiControlError,
 } from "../src/index.js";
 import {
@@ -45,6 +46,7 @@ test("client connects, applies a coherent view, submits, and terminally reconcil
   const view = client.readView();
   assert.equal(view.stale, false);
   assert.equal(view.snapshot.revision, 11);
+  assert.equal(view.identityId, "operator-1");
 
   const accepted = await client.submitRequest(operation());
   assert.equal(accepted.state, "pending");
@@ -61,6 +63,8 @@ test("client connects, applies a coherent view, submits, and terminally reconcil
   });
   assert.equal(terminal.terminalStatus, "succeeded");
   assert.equal(client.readView().pendingCount, 0);
+  assert.equal(client.readView().completedCount, 1);
+  assert.equal(client.readView().completed[0].terminalStatus, "succeeded");
 
   const duplicate = await client.submitRequest(operation());
   assert.equal(duplicate.terminalStatus, "succeeded");
@@ -200,6 +204,7 @@ test("accepted-but-timeout remains indeterminate and lookup recovers terminal st
   const recovered = await client.recoverOperation("operation-1");
   assert.equal(recovered.terminalStatus, "succeeded");
   assert.equal(client.readView().pendingCount, 0);
+  assert.equal(client.readView().completed[0].operationId, "operation-1");
   assert.equal(transport.state.lookupCount, 1);
 });
 
@@ -242,6 +247,105 @@ test("stale displayed revisions and expired sessions are rejected", async () => 
     expiring.refreshView(),
     error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.SESSION_EXPIRED,
   );
+});
+
+test("session refresh rejects permission revision regression", async () => {
+  const transport = createTransport();
+  transport.state.session = session({ permissionRevision: 2 });
+  transport.refresh = async () => session({ permissionRevision: 1 });
+  const client = new RuntimeClient({ transport });
+  await client.connect({});
+  await assert.rejects(
+    client.refreshSession(),
+    error =>
+      error instanceof UiControlError &&
+      error.code === UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+  );
+  assert.equal(client.readView().permissionRevision, 2);
+});
+
+test("session refresh rejects permission drift without a revision change", async () => {
+  const transport = createTransport();
+  transport.refresh = async () => session({
+    permissionRevision: 1,
+    permissions: [
+      UI_CONTROL_PERMISSIONS.READ,
+      UI_CONTROL_PERMISSIONS.REQUEST,
+      UI_CONTROL_PERMISSIONS.START,
+    ],
+  });
+  const client = new RuntimeClient({ transport });
+  await client.connect({});
+  await assert.rejects(
+    client.refreshSession(),
+    error =>
+      error instanceof UiControlError &&
+      error.code === UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION,
+  );
+  assert.equal(client.readView().permissions.includes(UI_CONTROL_PERMISSIONS.STOP), true);
+});
+
+test("session refresh rejects authenticated identity drift", async () => {
+  const transport = createTransport({
+    async refresh() {
+      return session({ permissionRevision: 2, identityId: "operator-2" });
+    },
+  });
+  const client = new RuntimeClient({ transport });
+  await client.connect({});
+  await assert.rejects(
+    client.refreshSession(),
+    error =>
+      error instanceof UiControlError &&
+      error.code === UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED,
+  );
+  assert.equal(client.readView().identityId, "operator-1");
+});
+
+test("in-flight refresh cannot resurrect a closed session", async () => {
+  const gate = deferred();
+  let started = false;
+  const transport = createTransport({
+    async refresh() {
+      started = true;
+      return gate.promise;
+    },
+  });
+  const client = new RuntimeClient({ transport });
+  await client.connect({});
+  const refreshing = client.refreshSession();
+  await waitFor(() => started, "session refresh dispatch");
+  await client.close();
+  gate.resolve(session({ permissionRevision: 2 }));
+  await assert.rejects(
+    refreshing,
+    error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+  );
+  assert.equal(client.readView().connected, false);
+});
+
+test("revoke and close fail locally closed when transport cleanup fails", async () => {
+  const revokeTransport = createTransport({
+    async revoke() {
+      throw new Error("revoke response lost");
+    },
+  });
+  const revoking = new RuntimeClient({ transport: revokeTransport });
+  await revoking.connect({});
+  await assert.rejects(revoking.revokeSession());
+  assert.equal(revoking.readView().connected, false);
+  assert.equal(revoking.readView().stale, true);
+
+  const closeTransport = createTransport({
+    async close() {
+      throw new Error("close response lost");
+    },
+  });
+  const closing = new RuntimeClient({ transport: closeTransport });
+  await closing.connect({});
+  await assert.rejects(closing.close());
+  assert.equal(closing.readView().connected, false);
+  assert.equal(closing.readView().stale, true);
 });
 
 test("recovery state survives a client restart without pretending to be authority", async () => {
