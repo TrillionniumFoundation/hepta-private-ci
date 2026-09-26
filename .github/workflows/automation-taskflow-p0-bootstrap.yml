@@ -1,0 +1,162 @@
+name: automation-taskflow-p0-bootstrap
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-v19-runtime-closure
+    paths:
+      - scripts/apply_automation_taskflow_p0.py
+      - .github/workflows/automation-taskflow-p0-bootstrap.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-p0-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-qualify:
+    if: ${{ !contains(github.event.head_commit.message || '', '[automation-p0-generated]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out the work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-v19-runtime-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Configure generated-branch author
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Automation CI"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+
+      - name: Apply source and documentation closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/apply_automation_taskflow_p0.py
+          python3 scripts/apply_automation_taskflow_p0.py source
+          (
+            cd codex-rs
+            cargo fmt -p codex-hepta-automation -p codex-hepta-agentd
+          )
+          git diff --check
+          git add \
+            CALLERS.toml \
+            codex-rs/hepta-agentd/src/automation_effect_host.rs \
+            docs/modules/automation.taskflow \
+            docs/readiness/LANE_B_NATIVE_HOST.md \
+            qualification/module-execution-dossiers/detail/automation.taskflow.md \
+            scripts/check_automation_taskflow_schema.py \
+            scripts/test_automation_taskflow_schema.py
+          git commit -m "automation.taskflow: compose v19 provider-effect product path [automation-p0-generated]"
+          printf 'AUTOMATION_P0_SOURCE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Bind exact source metadata and generated projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_automation_taskflow_p0.py metadata \
+            --source-sha "$AUTOMATION_P0_SOURCE_SHA"
+          python3 scripts/hepta-lane-b-truth.py generate
+          git diff --check
+          git add \
+            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            qualification/lane-b/IMPLEMENTATION_TRUTH.json
+          git commit -m "docs(automation): bind schema-v19 source and qualification truth [automation-p0-generated]"
+
+      - name: Verify schema, projections and privileged caller closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/check_automation_taskflow_schema.py
+          python3 -m unittest scripts/test_automation_taskflow_schema.py
+          python3 scripts/verify_hepta_callers.py self-test
+          python3 scripts/verify_hepta_callers.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          git diff --check
+
+      - name: Check, lint and test automation owners
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+          cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+          cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings
+          cargo test -p codex-hepta-operations
+          cargo test -p codex-hepta-automation --test durable_causal_chain
+          cargo test -p codex-hepta-automation
+          cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+          cargo test -p codex-hepta-agentd --lib automation
+
+      - name: Create exact-head receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/automation-taskflow-p0"
+          export RECEIPT_SHA="$(git rev-parse HEAD)"
+          export RECEIPT_TREE="$(git rev-parse HEAD^{tree})"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = {
+              "schema": "hepta.automation-taskflow.p0-source-receipt.v1",
+              "commit": os.environ["RECEIPT_SHA"],
+              "tree": os.environ["RECEIPT_TREE"],
+              "sourceObservation": os.environ["AUTOMATION_P0_SOURCE_SHA"],
+              "storeSchemaVersion": 19,
+              "checks": [
+                  "schema-document-migration drift",
+                  "closed privileged caller inventory",
+                  "Lane B projection self-tests",
+                  "rustfmt",
+                  "cargo check",
+                  "strict clippy",
+                  "kernel operations tests",
+                  "durable causal-chain test",
+                  "automation package and migration convergence",
+                  "structural qualification",
+                  "Agentd automation/effect-host library tests",
+              ],
+              "repositoryProductCompositionClosed": True,
+              "deploymentQualified": False,
+              "independentAcceptance": False,
+              "activation": False,
+              "release": False,
+          }
+          target = Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-p0" / "receipt.json"
+          target.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Push qualified commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
+
+      - name: Retain P0 exact-head receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-p0-${{ github.sha }}
+          path: ${{ runner.temp }}/automation-taskflow-p0/receipt.json
+          if-no-files-found: error
+          retention-days: 30
