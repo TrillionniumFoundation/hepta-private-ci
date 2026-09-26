@@ -1,0 +1,66 @@
+name: Kernel operations remediation materializer
+
+on:
+  push:
+    branches:
+      - chatgpt/kernel-operations-final-convergence-20260925
+    paths:
+      - .github/workflows/kernel-operations-remediation-materialize.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-operations-remediation-materializer
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out remediation branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: chatgpt/kernel-operations-final-convergence-20260925
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+
+      - name: Merge main, verify payload, apply and qualify
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI Codex"
+          git config user.email "codex@openai.com"
+          git fetch origin main
+          git merge --no-edit origin/main
+          git merge-base --is-ancestor 7e15b0c825d2a0e1626966151840e7cf2e53f1d1 HEAD
+
+          cat .github/kernel-operations-remediation/part* > /tmp/kernel-operations-remediation.b64
+          printf '%s  %s\n' \
+            '5afc7aa0000c497704d5f45a8d9ccb1d451c5184c87ddfa26d503796bc7d0456' \
+            /tmp/kernel-operations-remediation.b64 | sha256sum -c -
+          base64 --decode /tmp/kernel-operations-remediation.b64 \
+            | gzip --decompress > /tmp/kernel-operations-remediation.patch
+          git apply --check /tmp/kernel-operations-remediation.patch
+          git apply /tmp/kernel-operations-remediation.patch
+
+          (
+            cd codex-rs
+            cargo fmt --all -- --config imports_granularity=Item
+            cargo test --locked -p codex-hepta-operations -p codex-hepta-automation
+          )
+
+          rm -rf .github/kernel-operations-remediation
+          rm -f .github/workflows/kernel-operations-remediation-materialize.yml
+          git diff --check
+          git add -A
+          git commit -m "fix(kernel.operations): harden standalone qualification storage"
+          git push origin HEAD:chatgpt/kernel-operations-final-convergence-20260925
