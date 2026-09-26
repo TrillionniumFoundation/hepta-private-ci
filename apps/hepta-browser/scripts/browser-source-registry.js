@@ -26,10 +26,10 @@ const ACTIONS = [
   "type",
   "credential",
   "upload",
+  "download",
   "focus",
   "scroll",
   "wait",
-  "download",
 ];
 const EXECUTABLE_ACTIONS = ["navigate", "click", "type", "focus", "scroll", "wait"];
 const FAIL_CLOSED_ACTIONS = ["credential", "upload", "download"];
