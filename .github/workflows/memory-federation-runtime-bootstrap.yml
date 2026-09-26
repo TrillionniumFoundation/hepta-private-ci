@@ -88,9 +88,14 @@ jobs:
           set -euo pipefail
           git config user.name "Hepta Memory Federation Automation"
           git config user.email "hepta-memory-federation@users.noreply.github.com"
-          git rm .github/workflows/memory-federation-runtime-bootstrap.yml
-          git rm -f scripts/apply_memory_federation_runtime_closure.py
-          git rm -f scripts/postprocess_memory_federation_runtime_closure.py
+          # The workflow token intentionally lacks workflows permission. Restore
+          # every workflow/bootstrap input to the checked-out branch version so
+          # this commit contains only product source, tests, and documentation.
+          git checkout -- \
+            .github/workflows/memory-federation-runtime-bootstrap.yml \
+            .github/workflows/memory-federation-v2-final-verify.yml \
+            scripts/apply_memory_federation_runtime_closure.py \
+            scripts/postprocess_memory_federation_runtime_closure.py
           git rm -f qualification/memory-federation/BOOTSTRAP_FAILURE.md || true
           git add -A
           git commit -m "memory.federation: bound product concurrency and V1 surface
