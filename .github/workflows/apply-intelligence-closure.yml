@@ -1,0 +1,58 @@
+name: Apply intelligence control closure
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-product-closure
+    paths:
+      - qualification/patches/intelligence-control-product-closure.patch
+      - .github/workflows/apply-intelligence-closure.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intelligence-control-closure-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact feature branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/intelligence-control-product-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply reviewed source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch=qualification/patches/intelligence-control-product-closure.patch
+          test -s "$patch"
+          git apply --check "$patch"
+          git apply --index "$patch"
+          rm "$patch"
+          git add -A
+
+      - name: Format and verify patch hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cd ..
+          git add -A
+          git diff --cached --check
+
+      - name: Commit exact source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-ci-bot"
+          git config user.email "hepta-ci-bot@users.noreply.github.com"
+          git commit -m "intelligence.control: bind canonical product identity"
+          git push origin HEAD:codex/intelligence-control-product-closure
