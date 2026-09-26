@@ -58,9 +58,23 @@ jobs:
           git diff --stat
 
       - name: Apply bounded runtime closure
+        env:
+          TARGET_BRANCH: feat/memory-federation-production-closure-20260927
         run: |
-          set -euxo pipefail
-          python3 scripts/_memory_federation_closure_2.py
+          set +e
+          python3 scripts/_memory_federation_closure_2.py > /tmp/memory-federation-bounded-runtime.log 2>&1
+          status=$?
+          cat /tmp/memory-federation-bounded-runtime.log
+          if [ "$status" -ne 0 ]; then
+            mkdir -p qualification/memory-federation/bootstrap-diagnostics
+            cp /tmp/memory-federation-bounded-runtime.log \
+              qualification/memory-federation/bootstrap-diagnostics/bounded-runtime.log
+            git add -f qualification/memory-federation/bootstrap-diagnostics/bounded-runtime.log
+            git commit -m "ci(memory-federation): retain bounded runtime bootstrap failure"
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+            exit "$status"
+          fi
+          rm -rf qualification/memory-federation/bootstrap-diagnostics
           git diff --stat
 
       - name: Apply crate export closure
