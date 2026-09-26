@@ -13,11 +13,11 @@ permissions:
 
 concurrency:
   group: memory-retrieval-hardening-bootstrap
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-and-verify:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 55
     steps:
       - name: Checkout exact hardening branch
