@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod bootstrap;
 mod durable;
 mod v2;
 
