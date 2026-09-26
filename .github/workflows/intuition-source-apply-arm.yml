@@ -11,6 +11,8 @@ on:
 permissions:
   contents: write
 
+# This lane performs deterministic source composition only; independent
+# qualification remains in the dedicated exact-source and ledger workflows.
 concurrency:
   group: intuition-source-apply
   cancel-in-progress: true
