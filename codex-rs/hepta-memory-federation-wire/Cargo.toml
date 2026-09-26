@@ -1,0 +1,21 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-memory-federation-wire"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_memory_federation_wire"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-types = { workspace = true }
+codex-hepta-wire = { path = "../hepta-wire" }
+hmac = { workspace = true }
+rand = { workspace = true }
+sha2 = { workspace = true }
