@@ -64,6 +64,7 @@ jobs:
             mkdir -p "$diagnostics"
             cp "$log" "$diagnostics/${label}.log"
             git add -A "$diagnostics"
+            git add -f "$diagnostics/${label}.log"
             if ! git diff --cached --quiet; then
               git commit -m "ci(memory-federation): retain ${label} bootstrap failure"
               git push origin "HEAD:refs/heads/$TARGET_BRANCH"
