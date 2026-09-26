@@ -1,0 +1,77 @@
+name: Cognitive store deterministic repair
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-convergence-20260927
+
+concurrency:
+  group: cognitive-store-deterministic-repair
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-repaired]') }}
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-store-full-convergence-20260927
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind exact candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Repair read-only type and regenerate lock
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/hepta-cognitive-store/src/durable.rs')
+          text = path.read_text(encoding='utf-8')
+          old = 'codex_hepta_memory::CognitiveRetrievalObservationV1'
+          new = 'codex_hepta_memory::RetrievalObservation'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one stale retrieval type, found {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          diagnostic = Path('cognitive-store-macos-diagnostic.txt')
+          if diagnostic.exists():
+              diagnostic.unlink()
+          PY
+          cd codex-rs
+          cargo metadata --format-version 1 --no-deps > /dev/null
+          cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd
+          cd ..
+          git diff --check
+          test -n "$(git status --porcelain -- codex-rs/Cargo.lock codex-rs/hepta-cognitive-store/src/durable.rs)"
+      - name: Rebind cognitive.store map
+        run: python3 scripts/hepta-implementation-maps.py migrate --module cognitive.store
+      - name: Commit repaired candidate
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Cognitive Store CI"
+          git config user.email "hepta-cognitive-ci@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "fix(cognitive-store): synchronize lock and read-only retrieval type [cognitive-store-repaired]"
+      - name: Verify repaired exact candidate
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_architecture.py
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Push repaired candidate
+        run: git push origin HEAD:codex/cognitive-store-full-convergence-20260927
