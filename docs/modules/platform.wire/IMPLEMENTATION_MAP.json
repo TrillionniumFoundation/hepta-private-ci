@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "84df0b3c9d9713688e5efd969548773bff44f333",
-    "tree": "9dd92ca69bf5aad7bf8b8d9d9be640917d353de7"
+    "commit": "442d9d399dbf02ad182ee4c336464afcb238f40e",
+    "tree": "c202456b09f22b5eb6527e424a999ff98838af2c"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.wire",
@@ -127,6 +127,35 @@
       "delegatedCallees": []
     },
     {
+      "operation": "authenticated_session",
+      "nativeSymbol": "WireSession",
+      "sourcePath": "codex-rs/hepta-wire/src/secure_session.rs",
+      "state": "source_implemented_transcript_registry_and_channel_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/secure_session.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_session",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authenticated_record",
+      "nativeSymbol": "AuthenticatedWireSession",
+      "sourcePath": "codex-rs/hepta-wire/src/directional_session.rs",
+      "state": "source_implemented_direction_separated_and_reflection_hardened",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/directional_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_record",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "runtime_codex_v3_admission",
       "nativeSymbol": "adapt_product_wire_v3",
       "sourcePath": "codex-rs/hepta-codex-adapter/src/wire.rs",
@@ -143,17 +172,35 @@
       "delegatedCallees": [
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
       ]
+    },
+    {
+      "operation": "qualification_lifecycle",
+      "nativeSymbol": "platform_wire_status.py",
+      "sourcePath": "scripts/platform_wire_status.py",
+      "state": "source_implemented_fail_closed_receipt_v2_lifecycle",
+      "authority": "none",
+      "tests": [
+        "scripts/platform_wire_status.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "qualification_lifecycle",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        ".github/workflows/lane-a-foundation.yml",
+        ".github/workflows/platform-wire-target-host.yml"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain current exact-head and deterministic synthetic-merge receipts after the final source/map commit.",
-    "Compose the authenticated WireSession/HPTM record posture into each selected production transport and qualify the named target host.",
-    "Register and qualify each additional product-domain schema codec before admitting it."
+    "Obtain current exact-head, deterministic synthetic-merge and protected target-host receipts after the final source/map commit.",
+    "Compose the authenticated WireSession/HPTM posture into every selected production transport and obtain source-bound independent reviewer and operations acceptance receipts.",
+    "Register and qualify each additional product-domain schema codec before admitting it.",
+    "Issue the source-bound release receipt and artifact digest only after qualification and acceptance are complete."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
-    "target-host product execution and authenticated transport qualification",
-    "operator acceptance, canary, promotion and release"
+    "protected target-host product execution and authenticated transport qualification",
+    "distinct operations acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -189,8 +236,16 @@
       ]
     }
   ],
-  "exactSourceEvidenceMode": "lane_a_runtime_head_tree_and_registered_callers",
+  "exactSourceEvidenceMode": "lane_a_runtime_head_tree_registered_callers_and_receipt_v2",
   "sourceObjects": [
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "object": "fb133d45f2125fbb3aaef1b9adc19c3f6aeacff9"
+    },
+    {
+      "path": ".github/workflows/platform-wire-target-host.yml",
+      "object": "8c6e013ad739e31e45d4651f35f3f95981d230c5"
+    },
     {
       "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
       "object": "bd41d2a22e4b78bd9b465d9928f7623366ed215a"
@@ -233,7 +288,7 @@
     },
     {
       "path": "codex-rs/hepta-wire",
-      "object": "3e8cf0b36230ed4717fc6a6e704674d15446ae48"
+      "object": "aa045b0cd72da1cf74ea744a5ec3139db53a8765"
     },
     {
       "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs",
@@ -242,6 +297,10 @@
     {
       "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
       "object": "f1614bba342ab97b4782b71b8bdf9fe45a09dfc0"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/directional_session.rs",
+      "object": "8262fe99e39862370bf16590544653d785b85551"
     },
     {
       "path": "codex-rs/hepta-wire/src/envelope.rs",
@@ -269,7 +328,7 @@
     },
     {
       "path": "codex-rs/hepta-wire/src/lib.rs",
-      "object": "3088ec64e6312000e281951810431bd679734d5a"
+      "object": "9ebc8010c40cbb2e3db4d459c46298f13afec7bf"
     },
     {
       "path": "codex-rs/hepta-wire/src/property_tests.rs",
@@ -316,8 +375,24 @@
       "object": "4ae32d887c47f81dc32d20b685cf47b3d810bc8e"
     },
     {
+      "path": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
+      "object": "8189591738e2df00b3d64776620ee7d13734ae55"
+    },
+    {
+      "path": "docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md",
+      "object": "ed9f43b6ebd11914c51de1c005c3a9f0251fa108"
+    },
+    {
+      "path": "docs/modules/platform.wire/STATUS.md",
+      "object": "a48f8f81e43b40b6412c3040a11383342e6217c9"
+    },
+    {
       "path": "docs/modules/platform.wire/TECHNICAL.md",
       "object": "e7aae98530999094d9e3acfecb39b1e10f4a9264"
+    },
+    {
+      "path": "scripts/platform_wire_status.py",
+      "object": "4291f4a6c78e3b7069824e894ffd9fda856dd7cf"
     }
   ]
 }
