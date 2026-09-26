@@ -1,5 +1,4 @@
-# One-shot full convergence runner. The verified source commit deletes this file.
-name: Cognitive read full convergence bootstrap
+name: Cognitive read source hardening
 
 on:
   push:
@@ -10,328 +9,35 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-full-convergence-${{ github.ref }}
-  cancel-in-progress: true
+  group: cognitive-read-source-hardening-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  converge:
-    if: endsWith(github.event.head_commit.message, 'launch full convergence')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 180
+  apply:
+    if: "${{ endsWith(github.event.head_commit.message, 'launch agentd hardening') }}"
+    runs-on: macos-15
+    timeout-minutes: 30
     steps:
-      - name: Check out exact launch candidate
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-
-      - name: Install repository tools
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0
-
-      - name: Resolve verified sandboxed V8 artifacts
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-
-      - name: Reconstruct and apply full convergence patch
+      - name: Apply asserted source migration
         shell: bash
         run: |
           set -euo pipefail
-          cat scripts/.cognitive-read-full-convergence.b64.* \
-            | tr -d '\n' \
-            | base64 -d \
-            > scripts/.cognitive-read-full-convergence.py
-          echo 'bc5adcf4c10897dfc19fc33bb9ed99d0b12d6b50e136196fb03d04e78a289eae  scripts/.cognitive-read-full-convergence.py' \
-            | sha256sum -c -
-          python3 -m py_compile scripts/.cognitive-read-full-convergence.py
-
-          git fetch --no-tags origin work/cognitive-read-convergence-20260925
-          git show origin/work/cognitive-read-convergence-20260925:scripts/cognitive-read-convergence-phase1.py \
-            > scripts/.cognitive-read-phase1.py
-          git show origin/work/cognitive-read-convergence-20260925:scripts/cognitive-read-convergence-phase1-fix.py \
-            > scripts/.cognitive-read-phase1-fix.py
-          python3 scripts/.cognitive-read-phase1.py
-          python3 scripts/.cognitive-read-phase1-fix.py
-          python3 scripts/.cognitive-read-full-convergence.py
-
-      - name: Record static qualification documentation
+          python3 scripts/cognitive-read-agentd-hardening.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+      - name: Verify workspace feature policy
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          technical = Path('docs/modules/cognitive.read/TECHNICAL.md')
-          text = technical.read_text(encoding='utf-8')
-          marker = '## 18. Current-head qualification evidence'
-          if marker not in text:
-              text = text.rstrip() + f'''\n\n{marker}\n\nCurrent-head qualification receipts are written under\n`qualification/cognitive-read/receipts/<sourceCommit>.json`. Each receipt binds the\nsource commit, Actions run, immutable artifact digest, per-command exit status and\nper-log SHA-256. Repository qualification never changes `activation=false`; operator\nacceptance and release remain separate external gates.\n'''
-              technical.write_text(text, encoding='utf-8')
-
-          dossier = Path('qualification/module-execution-dossiers/detail/cognitive.read.md')
-          text = dossier.read_text(encoding='utf-8')
-          marker = '## Full-convergence candidate (2026-09-26)'
-          if marker not in text:
-              text = text.rstrip() + f'''\n\n{marker}\n\nThe candidate replaces repeated exact-ID scans with one deterministic identity index,\nseparates payload and total canonical wire accounting, uses exact final-envelope sizing,\nadds trace-safe completion/revalidation observations, typed transient projection,\nproperty/mutation/golden-vector tests, maximum-bound latency/RSS measurement, and a\nmachine-checked limits/compatibility contract. Production implementation, product\nexecution proof, activation and release remain false until their independent gates close.\n'''
-              dossier.write_text(text, encoding='utf-8')
-          PY
-
-      - name: Format the changed Rust surfaces
-        working-directory: codex-rs
-        run: |
-          cargo fmt \
-            --package codex-hepta-cognitive-read \
-            --package codex-hepta-agentd \
-            --package codex-hepta-infer-worker-host
-          cargo fmt \
-            --package codex-hepta-cognitive-read \
-            --package codex-hepta-agentd \
-            --package codex-hepta-infer-worker-host \
-            -- --check
-
-      - name: Create exact source candidate commit
-        id: source
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+      - name: Commit materialized source
         shell: bash
         run: |
           set -euo pipefail
-          rm -f \
-            .github/workflows/cognitive-read-full-convergence-bootstrap.yml \
-            .github/workflows/cognitive-read-bootstrap-parser-repair.yml \
-            scripts/.cognitive-read-full-convergence.b64.* \
-            scripts/.cognitive-read-full-convergence.py \
-            scripts/.cognitive-read-phase1.py \
-            scripts/.cognitive-read-phase1-fix.py \
-            scripts/.cognitive-read-launch
-          rm -rf scripts/__pycache__
-          git diff --check
           git config user.name 'hepta-ci-convergence'
           git config user.email 'hepta-ci-convergence@users.noreply.github.com'
-          git add -A
-          git commit -m 'feat(cognitive.read): complete bounded read convergence'
-          source_sha="$(git rev-parse HEAD)"
-          echo "sha=${source_sha}" >> "$GITHUB_OUTPUT"
-          echo "SOURCE_SHA=${source_sha}" >> "$GITHUB_ENV"
-
-      - name: Run exact-source qualification suite
-        id: suite
-        continue-on-error: true
-        shell: bash
-        env:
-          EVIDENCE_DIR: ${{ runner.temp }}/cognitive-read-evidence
-        run: |
-          set -euo pipefail
-          mkdir -p "$EVIDENCE_DIR"
-          : > "$EVIDENCE_DIR/commands.tsv"
-          overall=0
-
-          run_logged() {
-            local name="$1"
-            shift
-            echo "===== ${name} ====="
-            set +e
-            "$@" 2>&1 | tee "$EVIDENCE_DIR/${name}.log"
-            local rc=${PIPESTATUS[0]}
-            set -e
-            printf '%s\t%s\n' "$name" "$rc" >> "$EVIDENCE_DIR/commands.tsv"
-            if [[ "$rc" -ne 0 ]]; then
-              overall=1
-            fi
-          }
-
-          run_logged rebind-stale-maps bash -lc '
-            set -euo pipefail
-            for module in \
-              objective.compiler utility.ndu cognitive.read learning.ledger \
-              learning.artifacts automation.taskflow control.engineering
-            do
-              python3 scripts/hepta-implementation-maps.py migrate --module "$module"
-            done
-          '
-          run_logged manifest-policy python3 .github/scripts/verify_cargo_workspace_manifests.py
-          run_logged cognitive-contracts python3 scripts/verify-cognitive-read-contracts.py
-          run_logged implementation-maps python3 scripts/hepta-implementation-maps.py verify --expected-sha "$SOURCE_SHA"
-          run_logged technical-receipts python3 scripts/hepta-technical-receipts.py verify
-          run_logged implementation-dossiers python3 scripts/hepta-implementation-dossiers.py verify
-          run_logged documentation python3 scripts/hepta-docs.py verify
-          run_logged diff-check git diff --check
-
-          run_logged cognitive-read-tests bash -lc '
-            cd codex-rs
-            cargo test -p codex-hepta-cognitive-read --lib --locked -- --test-threads=1
-          '
-          run_logged cognitive-read-clippy bash -lc '
-            cd codex-rs
-            cargo clippy -p codex-hepta-cognitive-read --all-targets --locked -- -D warnings
-          '
-          run_logged agentd-context-tests bash -lc '
-            cd codex-rs
-            cargo test -p codex-hepta-agentd --lib --locked cognitive_context -- --test-threads=1
-          '
-          run_logged agentd-runtime-profile-tests bash -lc '
-            cd codex-rs
-            cargo test -p codex-hepta-agentd --lib --locked cognitive_runtime -- --test-threads=1
-          '
-          run_logged agentd-readonly-product-smoke bash -lc '
-            cd codex-rs
-            cargo test -p codex-hepta-agentd --test cognitive_product_e2e --locked \
-              unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools \
-              -- --test-threads=1 --nocapture
-          '
-          run_logged agentd-writer-failclosed-smoke bash -lc '
-            cd codex-rs
-            cargo test -p codex-hepta-agentd --features qualification-cognitive-write \
-              --test cognitive_product_e2e --locked \
-              cognitive_store_unavailable_fails_closed_before_provider \
-              -- --test-threads=1 --nocapture
-          '
-          run_logged worker-final-use-ordering bash -lc '
-            cd codex-rs
-            cargo test -p codex-hepta-infer-worker-host --lib --locked \
-              cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start \
-              -- --test-threads=1
-          '
-          run_logged worker-final-use-race bash -lc '
-            cd codex-rs
-            cargo test -p codex-hepta-infer-worker-host --lib --locked \
-              real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
-              -- --test-threads=1
-          '
-          run_logged agentd-clippy bash -lc '
-            cd codex-rs
-            cargo clippy -p codex-hepta-agentd --all-targets --locked -- -D warnings
-          '
-          run_logged agentd-qualification-clippy bash -lc '
-            cd codex-rs
-            cargo clippy -p codex-hepta-agentd --all-targets \
-              --features qualification-cognitive-write --locked -- -D warnings
-          '
-          run_logged maximum-bound-benchmark bash -lc '
-            cd codex-rs
-            cargo run -p codex-hepta-cognitive-read --example cognitive_read_benchmark \
-              --release --locked
-          '
-
-          grep '^{' "$EVIDENCE_DIR/maximum-bound-benchmark.log" \
-            | tail -n 1 > "$EVIDENCE_DIR/benchmark.json" || true
-          SOURCE_SHA="$SOURCE_SHA" RUN_ID="$GITHUB_RUN_ID" RUN_ATTEMPT="$GITHUB_RUN_ATTEMPT" \
-            python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          root = Path(os.environ['EVIDENCE_DIR'])
-          commands = []
-          for line in (root / 'commands.tsv').read_text(encoding='utf-8').splitlines():
-              name, code = line.split('\t', 1)
-              commands.append({'name': name, 'exitCode': int(code)})
-          payload = {
-              'schema': 'hepta.cognitive-read.qualification-run.v1',
-              'sourceCommit': os.environ['SOURCE_SHA'],
-              'runId': int(os.environ['RUN_ID']),
-              'runAttempt': int(os.environ['RUN_ATTEMPT']),
-              'activation': False,
-              'release': False,
-              'commands': commands,
-          }
-          (root / 'qualification-run.json').write_text(
-              json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8'
-          )
-          PY
-          (
-            cd "$EVIDENCE_DIR"
-            sha256sum *.log benchmark.json commands.tsv qualification-run.json \
-              > checksums.sha256
-          )
-          exit "$overall"
-
-      - name: Upload immutable qualification evidence
-        id: evidence
-        if: always() && steps.source.outputs.sha != ''
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: cognitive-read-qualification-${{ steps.source.outputs.sha }}
-          path: ${{ runner.temp }}/cognitive-read-evidence
-          if-no-files-found: error
-          retention-days: 90
-          compression-level: 6
-
-      - name: Stop before publishing an unqualified candidate
-        if: steps.suite.outcome != 'success'
-        run: |
-          echo 'The exact source candidate failed qualification; remote branch remains at the reusable bootstrap commit.' >&2
-          exit 1
-
-      - name: Write current-head evidence receipt
-        shell: bash
-        env:
-          EVIDENCE_DIR: ${{ runner.temp }}/cognitive-read-evidence
-          ARTIFACT_DIGEST: ${{ steps.evidence.outputs.artifact-digest }}
-          ARTIFACT_URL: ${{ steps.evidence.outputs.artifact-url }}
-          ARTIFACT_NAME: cognitive-read-qualification-${{ steps.source.outputs.sha }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          evidence = Path(os.environ['EVIDENCE_DIR'])
-          source = os.environ['SOURCE_SHA']
-          commands = []
-          for line in (evidence / 'commands.tsv').read_text(encoding='utf-8').splitlines():
-              name, code = line.split('\t', 1)
-              commands.append({'name': name, 'exitCode': int(code)})
-          checksums = []
-          for line in (evidence / 'checksums.sha256').read_text(encoding='utf-8').splitlines():
-              digest, name = line.split(maxsplit=1)
-              checksums.append({'path': name.lstrip('*'), 'sha256': digest})
-          receipt = {
-              'schema': 'hepta.cognitive-read.qualification-receipt.v1',
-              'sourceCommit': source,
-              'qualificationRun': {
-                  'id': int(os.environ['GITHUB_RUN_ID']),
-                  'attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
-                  'url': f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
-              },
-              'artifact': {
-                  'name': os.environ['ARTIFACT_NAME'],
-                  'digest': os.environ['ARTIFACT_DIGEST'],
-                  'url': os.environ['ARTIFACT_URL'],
-                  'retentionDays': 90,
-                  'files': checksums,
-              },
-              'commands': commands,
-              'productSmoke': [
-                  'Agentd read-only outage degradation',
-                  'Agentd writer fail-closed startup',
-                  'native worker final-use ordering',
-                  'real Agentd/worker tombstone race',
-              ],
-              'externalRequiredChecks': {
-                  'CI required': 'pending branch workflow completion',
-                  'Architecture required': 'pending branch workflow completion',
-              },
-              'activation': False,
-              'release': False,
-          }
-          target = Path('qualification/cognitive-read/receipts') / f'{source}.json'
-          target.parent.mkdir(parents=True, exist_ok=True)
-          target.write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n', encoding='utf-8')
-          PY
-
-      - name: Verify and publish source plus receipt commits
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify --expected-sha "$SOURCE_SHA"
-          python3 scripts/hepta-technical-receipts.py verify
-          python3 scripts/hepta-implementation-dossiers.py verify
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/verify-cognitive-read-contracts.py
-          python3 .github/scripts/verify_cargo_workspace_manifests.py
-          git diff --check
-          git add -A
-          git commit -m 'docs(cognitive.read): bind immutable qualification receipt'
+          git add codex-rs/hepta-agentd scripts/cognitive-read-agentd-hardening.py
+          git commit -m 'feat(cognitive.read): harden Agentd product path'
           git push origin "HEAD:${GITHUB_REF_NAME}"
