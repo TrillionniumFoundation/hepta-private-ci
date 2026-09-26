@@ -19,13 +19,26 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
       - name: Apply exact identity and status patches
-        run: python3 scripts/bootstrap_control_engineering_phase1.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/bootstrap_control_engineering_phase1.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'python3 -m unittest -v scripts/test_hepta_implementation_maps.py'
+          new = 'python3 scripts/test_hepta_implementation_maps.py -v'
+          if text.count(old) != 1:
+              raise SystemExit('bootstrap quality-test command anchor missing')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          python3 scripts/bootstrap_control_engineering_phase1.py
       - name: Run focused source-identity tests and retain transcript
         id: map-tests
         shell: bash
         run: |
           set +e
-          python3 -m unittest -v scripts/test_hepta_implementation_maps.py 2>&1 \
+          python3 scripts/test_hepta_implementation_maps.py -v 2>&1 \
             | tee "$RUNNER_TEMP/control-engineering-map-tests.log"
           status=${PIPESTATUS[0]}
           printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
