@@ -8,9 +8,7 @@ pub mod canonical_v1 {
     pub use crate::canonical::*;
 }
 
-#[path = "../graph.rs"]
 pub mod graph;
-#[path = "../local_shadow.rs"]
 pub mod local_shadow;
 pub mod legacy;
 
@@ -25,5 +23,4 @@ pub use legacy::PromptPortfolioReceipt;
 pub use legacy::optimize;
 
 #[cfg(test)]
-#[path = "../graph_tests.rs"]
 mod graph_tests;
