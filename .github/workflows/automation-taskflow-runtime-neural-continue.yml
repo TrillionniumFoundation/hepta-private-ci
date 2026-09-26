@@ -1,0 +1,298 @@
+name: automation-taskflow-runtime-neural-continue
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-v19-runtime-closure
+    paths:
+      - .github/workflows/automation-taskflow-runtime-neural-continue.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-runtime-neural-continue
+  cancel-in-progress: false
+
+jobs:
+  continue-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-v19-runtime-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Configure generated-branch author
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Automation CI"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+          mkdir -p "$RUNNER_TEMP/automation-taskflow-continuation"
+          python3 -m py_compile \
+            scripts/apply_automation_taskflow_runtime.py \
+            scripts/apply_automation_taskflow_neural_runtime.py \
+            scripts/apply_automation_taskflow_qualification.py
+          test -f docs/modules/automation.taskflow/MIGRATION_AND_RECOVERY_RUNBOOK.md
+          test -f docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md
+          grep -Fq 'Automation store schema: v19' docs/modules/automation.taskflow/TECHNICAL.md
+
+      - name: Stage 2 - bounded runtime source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f codex-rs/hepta-automation/tests/runtime_reliability.rs; then
+            echo "runtime source already materialized" | tee "$RUNNER_TEMP/automation-taskflow-continuation/stage2-source.log"
+          else
+            python3 scripts/apply_automation_taskflow_runtime.py source \
+              2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/stage2-source.log"
+            (cd codex-rs && cargo fmt -p codex-hepta-automation -p codex-hepta-agentd)
+            git diff --check
+            git add \
+              codex-rs/hepta-automation/src \
+              codex-rs/hepta-automation/tests/runtime_reliability.rs \
+              codex-rs/hepta-agentd/src/automation.rs \
+              codex-rs/hepta-agentd/src/automation_recovery.rs \
+              docs/modules/automation.taskflow \
+              qualification/module-execution-dossiers/detail/automation.taskflow.md
+            if ! git diff --cached --quiet; then
+              git commit -m "automation.taskflow: add bounded recovery and admission lanes [automation-runtime-generated]"
+            fi
+          fi
+          RUNTIME_SOURCE_SHA="$(git rev-parse HEAD)"
+          printf 'RUNTIME_SOURCE_SHA=%s\n' "$RUNTIME_SOURCE_SHA" >> "$GITHUB_ENV"
+
+      - name: Stage 2 - runtime metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_automation_taskflow_runtime.py metadata \
+            --source-sha "$RUNTIME_SOURCE_SHA" \
+            2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/stage2-metadata.log"
+          git diff --check
+          git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(automation): bind bounded runtime source truth [automation-runtime-generated]"
+          fi
+
+      - name: Stage 3 - durable Neural Circuit and adversarial source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f codex-rs/hepta-automation/src/neural_circuit_runtime.rs; then
+            echo "neural source already materialized" | tee "$RUNNER_TEMP/automation-taskflow-continuation/stage3-source.log"
+          else
+            {
+              python3 scripts/apply_automation_taskflow_neural_runtime.py source
+              python3 scripts/apply_automation_taskflow_qualification.py source
+            } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/stage3-source.log"
+            (cd codex-rs && cargo fmt -p codex-hepta-automation)
+            git diff --check
+            git add \
+              codex-rs/hepta-automation/src \
+              codex-rs/hepta-automation/tests/neural_circuit_runtime.rs \
+              codex-rs/hepta-automation/tests/runtime_crash_points.rs \
+              codex-rs/hepta-automation/tests/runtime_reliability.rs \
+              codex-rs/hepta-automation/tests/runtime_state_machine_fuzz.rs \
+              docs/modules/automation.taskflow/TECHNICAL.md \
+              qualification/module-execution-dossiers/detail/automation.taskflow.md
+            if ! git diff --cached --quiet; then
+              git commit -m "automation.taskflow: add durable Neural Circuit and crash qualification [automation-neural-generated]"
+            fi
+          fi
+          FINAL_SOURCE_SHA="$(git rev-parse HEAD)"
+          printf 'FINAL_SOURCE_SHA=%s\n' "$FINAL_SOURCE_SHA" >> "$GITHUB_ENV"
+
+      - name: Stage 3 - final automation metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            python3 scripts/apply_automation_taskflow_neural_runtime.py metadata \
+              --source-sha "$FINAL_SOURCE_SHA"
+            python3 scripts/apply_automation_taskflow_qualification.py metadata \
+              --source-sha "$FINAL_SOURCE_SHA"
+          } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/stage3-metadata.log"
+          git diff --check
+          git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(automation): bind Neural Circuit and adversarial source truth [automation-neural-generated]"
+          fi
+
+      - name: Rebind other affected Lane B observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/rebind.log"
+          import json
+          import subprocess
+          from pathlib import Path
+
+          root = Path.cwd()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          affected: list[str] = []
+          for path in sorted((root / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
+              row = json.loads(path.read_text(encoding="utf-8"))
+              module = row.get("module")
+              if module == "automation.taskflow":
+                  continue
+              observed = row.get("observedAtHead")
+              if not isinstance(observed, dict):
+                  continue
+              commit = observed.get("commit")
+              if not isinstance(commit, str) or commit == head:
+                  continue
+              paths = row.get("observedSourcePaths", row.get("resolvedRoots", []))
+              if isinstance(paths, str):
+                  paths = [paths]
+              if not isinstance(paths, list) or not paths:
+                  continue
+              completed = subprocess.run(
+                  ["git", "diff", "--quiet", commit, head, "--", *paths],
+                  check=False,
+              )
+              if completed.returncode == 1:
+                  if not isinstance(module, str) or not module:
+                      raise SystemExit(f"invalid module identity in {path}")
+                  affected.append(module)
+              elif completed.returncode != 0:
+                  raise SystemExit(f"cannot compare observed source for {path}")
+          print(json.dumps({"affectedModules": affected}, sort_keys=True))
+          if affected:
+              command = ["python3", "scripts/hepta-implementation-maps.py", "migrate"]
+              for module in affected:
+                  command.extend(["--module", module])
+              subprocess.run(command, check=True)
+          PY
+          git diff --check
+          git add docs/modules/*/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(lane-b): rebind runtime and neural source observations"
+          fi
+
+      - name: Regenerate Lane B truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-truth.py generate \
+            2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/lane-b-generate.log"
+          git diff --check
+          git add \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            qualification/lane-b/IMPLEMENTATION_TRUTH.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(automation): regenerate Lane B runtime truth [automation-neural-generated]"
+          fi
+
+      - name: Verify schema, callers and generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            python3 scripts/check_automation_taskflow_schema.py
+            python3 -m unittest scripts/test_automation_taskflow_schema.py
+            python3 scripts/verify_hepta_callers.py self-test
+            python3 scripts/verify_hepta_callers.py verify
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py
+            python3 scripts/hepta-lane-b-truth.py verify
+            git diff --check
+          } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/source-verify.log"
+
+      - name: Format, compile and strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+            cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+            cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings
+          } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/rust-qualification.log"
+
+      - name: Test migrations, runtime and Agentd product path
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            cargo test -p codex-hepta-operations
+            cargo test -p codex-hepta-automation --test durable_causal_chain
+            cargo test -p codex-hepta-automation --test runtime_reliability
+            cargo test -p codex-hepta-automation --test runtime_crash_points
+            cargo test -p codex-hepta-automation --test runtime_state_machine_fuzz
+            cargo test -p codex-hepta-automation --test neural_circuit_runtime
+            cargo test -p codex-hepta-automation
+            cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+            cargo test -p codex-hepta-agentd --lib automation
+          } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-continuation/tests.log"
+
+      - name: Create exact-head command receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          export RECEIPT_SHA="$(git rev-parse HEAD)"
+          export RECEIPT_TREE="$(git rev-parse HEAD^{tree})"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = {
+              "schema": "hepta.automation-taskflow.runtime-neural-receipt.v1",
+              "commit": os.environ["RECEIPT_SHA"],
+              "tree": os.environ["RECEIPT_TREE"],
+              "finalSourceObservation": os.environ["FINAL_SOURCE_SHA"],
+              "storeSchemaVersion": 19,
+              "sourceClaims": {
+                  "boundedAdmissionBatch": True,
+                  "separateRecoveryAdmissionBudgets": True,
+                  "failureDisposition": True,
+                  "backlogAgeAndFairness": True,
+                  "crashPointMatrix": True,
+                  "propertyStateMachineCases": 20000,
+                  "minimalNeuralCircuitRuntime": True,
+                  "v1CompatibilityPreserved": True,
+                  "secondScheduler": False,
+                  "secondStore": False,
+              },
+              "externalEvidence": {
+                  "selectedHost": False,
+                  "authenticCurrentIanaTzdb": False,
+                  "independentAcceptance": False,
+                  "activation": False,
+                  "release": False,
+              },
+              "result": "pass",
+          }
+          target = Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-continuation" / "receipt.json"
+          target.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Push qualified staged commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
+
+      - name: Retain continuation diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-continuation-${{ github.run_id }}
+          path: ${{ runner.temp }}/automation-taskflow-continuation
+          if-no-files-found: warn
+          retention-days: 30
