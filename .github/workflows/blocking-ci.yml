@@ -73,6 +73,13 @@ jobs:
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
+  kernel-evidence:
+    name: Kernel evidence qualification
+    needs: scope
+    if: needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'
+    uses: ./.github/workflows/hepta-kernel-evidence-qualification.yml
+    secrets: inherit
+
   bazel:
     name: Bazel
     needs: scope
@@ -217,6 +224,7 @@ jobs:
     needs:
       - scope
       - hepta-contract-gate
+      - kernel-evidence
       - bazel
       - blob-size-policy
       - cargo-deny
@@ -248,7 +256,7 @@ jobs:
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
           if not (native or full):
-              allowed.append("hepta-contract-gate")
+              allowed += ["hepta-contract-gate", "kernel-evidence"]
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
