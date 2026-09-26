@@ -2,8 +2,8 @@
 //!
 //! The legacy `start_run` entry remains for compatibility callers. Canonical
 //! intelligence uses `start_bound_run`, which proves the snapshot belongs to
-//! this process launch and an admissible lifecycle generation before mutating
-//! the coordinator.
+//! this process launch and the unique Running lifecycle generation before
+//! mutating the coordinator.
 
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
@@ -18,19 +18,17 @@ impl AgentRunCoordinator {
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
         let composition = self.composition();
-        let maximum_generation = composition
+        let running_generation = composition
             .supervisor_generation
-            .checked_add(2)
+            .checked_add(1)
             .ok_or(AgentRunError::ArithmeticOverflow)?;
-        if snapshot.generation < composition.agentd_generation
-            || snapshot.generation > maximum_generation
-        {
+        if snapshot.generation != running_generation {
             return Err(AgentRunError::InvalidGeneration);
         }
         let expected_fence = objective_run_fence_digest_v1(
             &composition.agent_id,
             composition.supervisor_generation,
-            snapshot.generation,
+            running_generation,
         )
         .to_string();
         if snapshot.fence_digest != expected_fence {
@@ -84,13 +82,25 @@ mod tests {
     }
 
     #[test]
-    fn forged_generation_or_fence_is_rejected_before_mutation() {
+    fn starting_draining_or_forged_fence_is_rejected_before_mutation() {
         let mut coordinator =
             AgentRunCoordinator::compose_runtime(composition()).expect("composition");
-        let mut wrong_generation = snapshot();
-        wrong_generation.generation = 44;
+
+        let mut starting_generation = snapshot();
+        starting_generation.generation = 41;
+        starting_generation.fence_digest =
+            objective_run_fence_digest_v1("agent.bound", 41, 41).to_string();
         assert_eq!(
-            coordinator.start_bound_run(100, wrong_generation),
+            coordinator.start_bound_run(100, starting_generation),
+            Err(AgentRunError::InvalidGeneration)
+        );
+
+        let mut draining_generation = snapshot();
+        draining_generation.generation = 43;
+        draining_generation.fence_digest =
+            objective_run_fence_digest_v1("agent.bound", 41, 43).to_string();
+        assert_eq!(
+            coordinator.start_bound_run(100, draining_generation),
             Err(AgentRunError::InvalidGeneration)
         );
 
