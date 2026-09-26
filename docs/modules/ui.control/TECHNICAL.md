@@ -6,7 +6,7 @@
 
 `ui.control` is an authority-free runtime-control client and browser console. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
 
-The active convergence branch is `work/ui-control-full-convergence-20260926`. The repository baseline used to start this convergence is `7cba86aff6e6d035ce0355d72d08896248cb04a5` / tree `7718bf09154a845a82b4b04d8a3c7fda15757b13`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v1`.
+The active convergence branch is `work/ui-control-production-convergence-20260927`. The repository baseline used to start this convergence is `3729c25bf6dfdf52eb91b74edda852fe84665543` / tree `a373ff294bccff8ec7eafa0e6ba5040291f2e03e`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v1`.
 
 | Dimension | Current state |
 |---|---|
