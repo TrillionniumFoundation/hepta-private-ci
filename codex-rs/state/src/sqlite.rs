@@ -118,6 +118,27 @@ pub struct SqliteConfig {
     sqlite_home: AbsolutePathBuf,
 }
 
+/// Open an owner-managed append-only SQLite database through the one approved
+/// durable connection shim. The owner remains responsible for migrations,
+/// integrity checks and corruption handling.
+pub async fn open_durable_sqlite_pool(
+    path: &Path,
+    max_connections: u32,
+) -> Result<SqlitePool, Error> {
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(max_connections.max(1))
+        .connect_with(options)
+        .await
+}
+
 impl SqliteConfig {
     pub fn from_sqlite_home(sqlite_home: AbsolutePathBuf) -> Self {
         Self { sqlite_home }
@@ -297,18 +318,8 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5))
-            .log_statements(LevelFilter::Off);
-        SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
+        let _ = self;
+        open_durable_sqlite_pool(path, 5).await
     }
 
     /// Checkpoint a private recovery candidate after all validation handles close.

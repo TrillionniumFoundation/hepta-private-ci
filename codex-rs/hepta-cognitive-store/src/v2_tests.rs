@@ -139,13 +139,14 @@ fn intent(
     intent_id: &str,
     candidate: &MemoryAdmissionCandidateV1,
 ) -> MemoryWriteIntentV1 {
-    MemoryWriteIntentV1 {
-        intent_id: id(intent_id),
-        candidate_digest: candidate.digest(),
-        expected_snapshot: store.snapshot_key().clone(),
-        writer_fence_digest: digest("writer-fence"),
-        authorization_digest: digest("authorization"),
-    }
+    MemoryWriteIntentV1::new(
+        id(intent_id),
+        candidate.digest(),
+        store.snapshot_key().clone(),
+        digest("writer-fence"),
+        digest("authorization"),
+    )
+    .unwrap_or_else(|error| panic!("valid write intent: {error}"))
 }
 
 struct Verifier;
@@ -177,8 +178,11 @@ fn admission_appends_full_revision_history_and_advances_frontiers() {
     let first_receipt = store
         .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
         .unwrap_or_else(|error| panic!("append first: {error}"));
-    assert_eq!(first_receipt.committed_frontier, 2);
-    assert_eq!(first_receipt.snapshot_key.vector.knowledge_fact_frontier, 2);
+    assert_eq!(first_receipt.committed_frontier(), Some(2));
+    assert_eq!(
+        first_receipt.snapshot_key().vector.knowledge_fact_frontier,
+        2
+    );
 
     let second = candidate("memory:1", "content:v2", MemoryAdmissionKind::Inference);
     let second_receipt = store
@@ -188,7 +192,7 @@ fn admission_appends_full_revision_history_and_advances_frontiers() {
             intent(&store, "intent:2", &second),
         )
         .unwrap_or_else(|error| panic!("append correction: {error}"));
-    assert_eq!(second_receipt.committed_frontier, 3);
+    assert_eq!(second_receipt.committed_frontier(), Some(3));
     let history = store.history(&id("memory:1")).expect("history exists");
     assert_eq!(history.len(), 2);
     assert_eq!(history[0].revision, revision(1));
@@ -209,16 +213,28 @@ fn stale_snapshot_and_wrong_authorization_fail_before_mutation() {
         .unwrap_or_else(|error| panic!("append first: {error}"));
 
     let second = candidate("memory:2", "content:v1", MemoryAdmissionKind::Observation);
-    let mut stale_intent = intent(&store, "intent:2", &second);
-    stale_intent.expected_snapshot = stale_key;
+    let stale_intent = MemoryWriteIntentV1::new(
+        id("intent:2"),
+        second.digest(),
+        stale_key,
+        digest("writer-fence"),
+        digest("authorization"),
+    )
+    .unwrap_or_else(|error| panic!("valid stale intent: {error}"));
     assert_eq!(
         store.append_admitted(&Verifier, second.clone(), stale_intent),
         Err(CognitiveStoreV2Error::SnapshotConflict)
     );
     assert!(store.current_head(&id("memory:2")).is_none());
 
-    let mut unauthorized = intent(&store, "intent:3", &second);
-    unauthorized.authorization_digest = digest("wrong-authorization");
+    let unauthorized = MemoryWriteIntentV1::new(
+        id("intent:3"),
+        second.digest(),
+        store.snapshot_key().clone(),
+        digest("writer-fence"),
+        digest("wrong-authorization"),
+    )
+    .unwrap_or_else(|error| panic!("valid unauthorized intent: {error}"));
     assert_eq!(
         store.append_admitted(&Verifier, second, unauthorized),
         Err(CognitiveStoreV2Error::AuthorizationRejected)

@@ -90,7 +90,7 @@ pub const INTELLIGENCE_CONTROL_CONSUMER_V1: CanonicalConsumerRegistrationV1 =
         state: ConsumerConvergenceStateV1::RegisteredPendingCutover,
     };
 
-pub const REGISTERED_CONSUMERS_V1: [CanonicalConsumerRegistrationV1; 5] = [
+pub static REGISTERED_CONSUMERS_V1: [CanonicalConsumerRegistrationV1; 5] = [
     COGNITIVE_READ_CONSUMER_V1,
     COGNITIVE_STORE_CONSUMER_V1,
     MEMORY_RETRIEVAL_CONSUMER_V1,

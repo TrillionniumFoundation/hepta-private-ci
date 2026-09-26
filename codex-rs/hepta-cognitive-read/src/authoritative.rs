@@ -20,7 +20,8 @@ use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
 use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
-use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_bound_v1;
+use codex_hepta_cognitive_types::wire::decode_wire_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -255,6 +256,14 @@ pub struct CanonicalReadRecordBindingV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalReadWireBindingV1 {
+    pub legacy_record_id: StableId,
+    pub legacy_record_revision: codex_hepta_types::Revision,
+    pub legacy_record_digest: Digest32,
+    pub event_wire: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CanonicalReadShadowRowV1 {
     pub legacy_record_id: StableId,
     pub legacy_record_revision: codex_hepta_types::Revision,
@@ -327,7 +336,7 @@ impl CanonicalAuthoritativeReadShadowV1 {
             row.event
                 .validate()
                 .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
-            let digest = canonical_contract_digest_v1(&row.event)
+            let digest = canonical_contract_digest_bound_v1(&row.event)
                 .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
             if row.event_id != row.event.event_id || row.event_digest != digest {
                 return Err(CanonicalReadShadowError::EventDigestMismatch(
@@ -365,6 +374,30 @@ impl fmt::Display for CanonicalReadShadowError {
 
 impl StdError for CanonicalReadShadowError {}
 
+/// Production reader adapter for strict canonical MemoryEventV1 envelopes.
+///
+/// Every envelope is decoded before the typed bridge is entered, so unknown
+/// schema/version/contract identities and non-canonical bytes fail closed.
+pub fn adapt_authoritative_read_wire_v1(
+    read: &AuthoritativeReadResultV1,
+    bindings: Vec<CanonicalReadWireBindingV1>,
+) -> Result<CanonicalAuthoritativeReadShadowV1, CanonicalReadShadowError> {
+    let typed = bindings
+        .into_iter()
+        .map(|binding| {
+            let event = decode_wire_v1::<MemoryEventV1>(&binding.event_wire)
+                .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
+            Ok(CanonicalReadRecordBindingV1 {
+                legacy_record_id: binding.legacy_record_id,
+                legacy_record_revision: binding.legacy_record_revision,
+                legacy_record_digest: binding.legacy_record_digest,
+                event,
+            })
+        })
+        .collect::<Result<Vec<_>, CanonicalReadShadowError>>()?;
+    adapt_authoritative_read_to_canonical_shadow_v1(read, typed)
+}
+
 /// Project an already-authoritative legacy read into canonical MemoryEventV1
 /// rows using an explicit exact record-to-event bridge.
 ///
@@ -398,7 +431,7 @@ pub fn adapt_authoritative_read_to_canonical_shadow_v1(
         };
         used[index] = true;
         validate_read_record_event_binding(record, &binding.event)?;
-        let event_digest = canonical_contract_digest_v1(&binding.event)
+        let event_digest = canonical_contract_digest_bound_v1(&binding.event)
             .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
         rows.push(CanonicalReadShadowRowV1 {
             legacy_record_id: record.record_id.clone(),

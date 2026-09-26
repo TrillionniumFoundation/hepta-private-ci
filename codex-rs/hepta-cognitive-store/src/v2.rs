@@ -28,7 +28,8 @@ use codex_hepta_cognitive_types::lane_c::MemoryVerificationState;
 use codex_hepta_cognitive_types::lane_c::MemoryWriteDisposition;
 use codex_hepta_cognitive_types::lane_c::MemoryWriteIntentV1;
 use codex_hepta_cognitive_types::lane_c::MemoryWriteReceiptV1;
-use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_bound_v1;
+use codex_hepta_cognitive_types::wire::decode_wire_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -197,7 +198,7 @@ pub fn bind_canonical_event_to_durable_receipt(
         return Err(CognitiveStoreV2Error::CanonicalDurableStateMismatch);
     }
 
-    let event_digest = canonical_contract_digest_v1(event)
+    let event_digest = canonical_contract_digest_bound_v1(event)
         .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
     let production_receipt_digest = production
         .receipt_sha256
@@ -282,11 +283,20 @@ impl CanonicalMemoryEventShadowWriteV1 {
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
         self.shadow_receipt.validate()?;
-        if self.shadow_receipt.record_id != self.write_receipt.record_id
-            || self.shadow_receipt.record_digest != self.write_receipt.record_digest
+        let Some(record_id) = self.write_receipt.record_id() else {
+            return Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch);
+        };
+        let Some(record_digest) = self.write_receipt.record_digest() else {
+            return Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch);
+        };
+        let Some(disposition) = self.write_receipt.disposition() else {
+            return Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch);
+        };
+        if self.shadow_receipt.record_id != *record_id
+            || self.shadow_receipt.record_digest != record_digest
             || self.shadow_receipt.snapshot_vector_digest
-                != self.write_receipt.snapshot_key.vector_digest
-            || self.shadow_receipt.disposition != self.write_receipt.disposition
+                != self.write_receipt.snapshot_key().vector_digest
+            || self.shadow_receipt.disposition != disposition
         {
             return Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch);
         }
@@ -358,7 +368,7 @@ impl AdmittedCognitiveStoreV2 {
         self.histories.get(record_id).map(Vec::as_slice)
     }
 
-    pub fn append_admitted<V: StoreAuthorityVerifierV2>(
+    pub(crate) fn append_admitted<V: StoreAuthorityVerifierV2>(
         &mut self,
         verifier: &V,
         candidate: MemoryAdmissionCandidateV1,
@@ -381,23 +391,23 @@ impl AdmittedCognitiveStoreV2 {
             }
         }
         let candidate_digest = candidate.digest();
-        if intent.candidate_digest != candidate_digest {
+        if intent.candidate_digest() != candidate_digest {
             return Err(CognitiveStoreV2Error::DigestMismatch("candidate"));
         }
         let semantic_digest = append_semantic_digest(&candidate, &intent);
-        if let Some(entry) = self.intent_journal.get(&intent.intent_id) {
+        if let Some(entry) = self.intent_journal.get(intent.intent_id()) {
             if entry.semantic_digest == semantic_digest {
                 return Ok(entry.receipt.clone());
             }
             return Err(CognitiveStoreV2Error::IntentIdentityConflict(
-                intent.intent_id.to_string(),
+                intent.intent_id().to_string(),
             ));
         }
-        self.validate_mutation_envelope(&intent.expected_snapshot, intent.writer_fence_digest)?;
+        self.validate_mutation_envelope(&intent.expected_snapshot(), intent.writer_fence_digest())?;
         verifier.verify(
-            &intent.intent_id,
+            intent.intent_id(),
             candidate_digest,
-            intent.authorization_digest,
+            intent.authorization_digest(),
         )?;
 
         let citations = candidate_citations(&candidate)?;
@@ -414,25 +424,22 @@ impl AdmittedCognitiveStoreV2 {
                     && head.content_digest == candidate.content_digest
                     && head.citations == citations
                 {
-                    let receipt = MemoryWriteReceiptV1 {
-                        intent_id: intent.intent_id.clone(),
+                    let receipt = MemoryWriteReceiptV1::committed(
+                        &intent,
+                        self.snapshot_key.clone(),
                         record_id,
-                        record_digest: head.record_digest(),
-                        committed_frontier: self.snapshot_key.vector.memory_ledger_frontier,
-                        snapshot_key: self.snapshot_key.clone(),
-                        disposition: MemoryWriteDisposition::Unchanged,
-                        authority: AuthorityPosture::DENY_ALL,
-                    };
-                    receipt
-                        .validate()
-                        .map_err(CognitiveStoreV2Error::Contract)?;
+                        head.record_digest(),
+                        self.snapshot_key.vector.memory_ledger_frontier,
+                        MemoryWriteDisposition::Unchanged,
+                    )
+                    .map_err(CognitiveStoreV2Error::Contract)?;
                     if self.intent_journal.len()
                         >= ordinary_journal_capacity_for(self.maximum_record_revisions)
                     {
                         return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
                     }
                     self.intent_journal.insert(
-                        intent.intent_id,
+                        intent.intent_id().clone(),
                         IntentJournalEntryV2 {
                             semantic_digest,
                             receipt: receipt.clone(),
@@ -465,7 +472,23 @@ impl AdmittedCognitiveStoreV2 {
             citations,
             state: RecordState::Live,
         };
-        self.commit_record(intent.intent_id, semantic_digest, record, disposition)
+        self.commit_record(&intent, semantic_digest, record, disposition)
+    }
+
+    /// Admit one canonical MemoryEventV1 envelope through the authoritative writer.
+    ///
+    /// Unknown schema/version/contract identities and non-canonical bytes are
+    /// rejected before any authorization check or durable mutation occurs.
+    pub fn append_admitted_wire<V: StoreAuthorityVerifierV2>(
+        &mut self,
+        verifier: &V,
+        candidate: MemoryAdmissionCandidateV1,
+        intent: MemoryWriteIntentV1,
+        event_wire: &[u8],
+    ) -> Result<CanonicalMemoryEventShadowWriteV1, CognitiveStoreV2Error> {
+        let event = decode_wire_v1::<MemoryEventV1>(event_wire)
+            .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
+        self.append_admitted_with_canonical_shadow(verifier, candidate, intent, event)
     }
 
     /// Append through the existing authoritative semantic ledger while
@@ -474,7 +497,7 @@ impl AdmittedCognitiveStoreV2 {
     /// The receipt is shadow-only: it proves the checked verification and
     /// source ID/digest/observation-time overlap without replacing the durable
     /// hepta-memory writer or claiming source-revision equivalence.
-    pub fn append_admitted_with_canonical_shadow<V: StoreAuthorityVerifierV2>(
+    pub(crate) fn append_admitted_with_canonical_shadow<V: StoreAuthorityVerifierV2>(
         &mut self,
         verifier: &V,
         candidate: MemoryAdmissionCandidateV1,
@@ -489,19 +512,29 @@ impl AdmittedCognitiveStoreV2 {
             .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
         validate_canonical_event_candidate_binding(&candidate, &event)?;
         let candidate_digest = candidate.digest();
-        let event_digest = canonical_contract_digest_v1(&event)
+        let event_digest = canonical_contract_digest_bound_v1(&event)
             .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
         let event_id = event.event_id;
 
         let write_receipt = self.append_admitted(verifier, candidate, intent)?;
+        let record_id = write_receipt
+            .record_id()
+            .cloned()
+            .ok_or(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch)?;
+        let record_digest = write_receipt
+            .record_digest()
+            .ok_or(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch)?;
+        let disposition = write_receipt
+            .disposition()
+            .ok_or(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch)?;
         let mut shadow_receipt = CanonicalMemoryEventShadowReceiptV1 {
             event_id,
             event_digest,
             candidate_digest,
-            record_id: write_receipt.record_id.clone(),
-            record_digest: write_receipt.record_digest,
-            snapshot_vector_digest: write_receipt.snapshot_key.vector_digest,
-            disposition: write_receipt.disposition,
+            record_id,
+            record_digest,
+            snapshot_vector_digest: write_receipt.snapshot_key().vector_digest,
+            disposition,
             binding_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         };
@@ -519,6 +552,14 @@ impl AdmittedCognitiveStoreV2 {
     ) -> Result<MemoryWriteReceiptV1, CognitiveStoreV2Error> {
         intent.validate()?;
         let semantic_digest = intent.semantic_digest();
+        let write_intent = MemoryWriteIntentV1::new(
+            intent.intent_id.clone(),
+            semantic_digest,
+            intent.expected_snapshot.clone(),
+            intent.writer_fence_digest,
+            intent.authorization_digest,
+        )
+        .map_err(CognitiveStoreV2Error::Contract)?;
         if let Some(entry) = self.intent_journal.get(&intent.intent_id) {
             if entry.semantic_digest == semantic_digest {
                 return Ok(entry.receipt.clone());
@@ -560,7 +601,7 @@ impl AdmittedCognitiveStoreV2 {
             state: RecordState::Tombstone,
         };
         self.commit_record(
-            intent.intent_id,
+            &write_intent,
             semantic_digest,
             record,
             MemoryWriteDisposition::Inserted,
@@ -811,7 +852,7 @@ impl AdmittedCognitiveStoreV2 {
 
     fn commit_record(
         &mut self,
-        intent_id: StableId,
+        intent: &MemoryWriteIntentV1,
         semantic_digest: Digest32,
         record: MemoryRecord,
         disposition: MemoryWriteDisposition,
@@ -871,24 +912,21 @@ impl AdmittedCognitiveStoreV2 {
             CognitiveSnapshotKeyV1::new(next_vector).map_err(CognitiveStoreV2Error::Contract)?;
         let record_id = record.record_id.clone();
         let record_digest = record.record_digest();
-        let receipt = MemoryWriteReceiptV1 {
-            intent_id: intent_id.clone(),
-            record_id: record_id.clone(),
+        let receipt = MemoryWriteReceiptV1::committed(
+            intent,
+            next_snapshot_key.clone(),
+            record_id.clone(),
             record_digest,
-            committed_frontier: next_memory_frontier,
-            snapshot_key: next_snapshot_key.clone(),
+            next_memory_frontier,
             disposition,
-            authority: AuthorityPosture::DENY_ALL,
-        };
-        receipt
-            .validate()
-            .map_err(CognitiveStoreV2Error::Contract)?;
+        )
+        .map_err(CognitiveStoreV2Error::Contract)?;
 
         self.histories.entry(record_id).or_default().push(record);
         self.sequence = next_sequence;
         self.snapshot_key = next_snapshot_key;
         self.intent_journal.insert(
-            intent_id,
+            intent.intent_id().clone(),
             IntentJournalEntryV2 {
                 semantic_digest,
                 receipt: receipt.clone(),
@@ -1281,44 +1319,51 @@ impl CognitiveStoreImageV2 {
                     entry.intent_id.to_string(),
                 ));
             }
-            if entry.intent_id != entry.receipt.intent_id {
+            if &entry.intent_id != entry.receipt.intent_id() {
                 return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
                     entry.intent_id.to_string(),
                 ));
             }
-            if entry.receipt.disposition == MemoryWriteDisposition::Rejected {
-                return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
-                    entry.intent_id.to_string(),
-                ));
-            }
-            if entry.receipt.committed_frontier
-                != entry.receipt.snapshot_key.vector.memory_ledger_frontier
-                || !same_snapshot_context(&entry.receipt.snapshot_key, &self.snapshot_key)
-                || entry.receipt.snapshot_key.vector.memory_ledger_frontier
+            let committed_frontier = entry.receipt.committed_frontier().ok_or_else(|| {
+                CognitiveStoreV2Error::JournalReceiptMismatch(entry.intent_id.to_string())
+            })?;
+            let record_id = entry.receipt.record_id().ok_or_else(|| {
+                CognitiveStoreV2Error::JournalReceiptMismatch(entry.intent_id.to_string())
+            })?;
+            let record_digest = entry.receipt.record_digest().ok_or_else(|| {
+                CognitiveStoreV2Error::JournalReceiptMismatch(entry.intent_id.to_string())
+            })?;
+            let disposition = entry.receipt.disposition().ok_or_else(|| {
+                CognitiveStoreV2Error::JournalReceiptMismatch(entry.intent_id.to_string())
+            })?;
+            let receipt_snapshot = entry.receipt.snapshot_key();
+            if committed_frontier != receipt_snapshot.vector.memory_ledger_frontier
+                || !same_snapshot_context(receipt_snapshot, &self.snapshot_key)
+                || receipt_snapshot.vector.memory_ledger_frontier
                     > self.snapshot_key.vector.memory_ledger_frontier
-                || entry.receipt.snapshot_key.vector.knowledge_fact_frontier
+                || receipt_snapshot.vector.knowledge_fact_frontier
                     > self.snapshot_key.vector.knowledge_fact_frontier
-                || entry.receipt.snapshot_key.vector.tombstone_frontier
+                || receipt_snapshot.vector.tombstone_frontier
                     > self.snapshot_key.vector.tombstone_frontier
             {
                 return Err(CognitiveStoreV2Error::JournalSnapshotMismatch(
                     entry.intent_id.to_string(),
                 ));
             }
-            let Some(history) = histories.get(&entry.receipt.record_id) else {
+            let Some(history) = histories.get(record_id) else {
                 return Err(CognitiveStoreV2Error::JournalRecordMismatch(
                     entry.intent_id.to_string(),
                 ));
             };
             if !history
                 .iter()
-                .any(|record| record.record_digest() == entry.receipt.record_digest)
+                .any(|record| record.record_digest() == record_digest)
             {
                 return Err(CognitiveStoreV2Error::JournalRecordMismatch(
                     entry.intent_id.to_string(),
                 ));
             }
-            if entry.receipt.disposition == MemoryWriteDisposition::Inserted {
+            if disposition == MemoryWriteDisposition::Inserted {
                 inserted_receipts.push(entry);
             }
         }
@@ -1330,22 +1375,24 @@ impl CognitiveStoreImageV2 {
         if inserted_receipts.len() != self.records.len() {
             return Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch);
         }
-        inserted_receipts.sort_by_key(|entry| entry.receipt.committed_frontier);
+        inserted_receipts.sort_by_key(|entry| entry.receipt.committed_frontier());
         let mut covered_records = BTreeSet::new();
         if let Some(first) = inserted_receipts.first() {
+            let first_record_digest = first
+                .receipt
+                .record_digest()
+                .ok_or(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)?;
             let first_record = records_by_digest
-                .get(&first.receipt.record_digest)
+                .get(&first_record_digest)
                 .ok_or(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)?;
             let mut expected_memory = first
                 .receipt
-                .committed_frontier
-                .checked_sub(1)
+                .committed_frontier()
+                .and_then(|frontier| frontier.checked_sub(1))
                 .filter(|value| *value > 0)
                 .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))?;
-            let mut expected_facts = first
-                .receipt
-                .snapshot_key
-                .vector
+            let first_vector = &first.receipt.snapshot_key().vector;
+            let mut expected_facts = first_vector
                 .knowledge_fact_frontier
                 .checked_sub(if first_record.kind == MemoryKind::Fact {
                     1
@@ -1355,10 +1402,7 @@ impl CognitiveStoreImageV2 {
                 .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch(
                     "knowledge_fact",
                 ))?;
-            let mut expected_tombstones = first
-                .receipt
-                .snapshot_key
-                .vector
+            let mut expected_tombstones = first_vector
                 .tombstone_frontier
                 .checked_sub(if first_record.state == RecordState::Tombstone {
                     1
@@ -1368,10 +1412,14 @@ impl CognitiveStoreImageV2 {
                 .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch("tombstone"))?;
 
             for entry in &inserted_receipts {
-                let record = records_by_digest
-                    .get(&entry.receipt.record_digest)
+                let record_digest = entry
+                    .receipt
+                    .record_digest()
                     .ok_or(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)?;
-                if !covered_records.insert(entry.receipt.record_digest) {
+                let record = records_by_digest
+                    .get(&record_digest)
+                    .ok_or(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)?;
+                if !covered_records.insert(record_digest) {
                     return Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch);
                 }
                 expected_memory = expected_memory
@@ -1391,8 +1439,8 @@ impl CognitiveStoreImageV2 {
                         0
                     })
                     .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
-                let vector = &entry.receipt.snapshot_key.vector;
-                if entry.receipt.committed_frontier != expected_memory
+                let vector = &entry.receipt.snapshot_key().vector;
+                if entry.receipt.committed_frontier() != Some(expected_memory)
                     || vector.memory_ledger_frontier != expected_memory
                     || vector.knowledge_fact_frontier != expected_facts
                     || vector.tombstone_frontier != expected_tombstones
@@ -1441,12 +1489,7 @@ impl CognitiveStoreImageV2 {
         for entry in journal {
             push_id(&mut bytes, &entry.intent_id);
             push_digest(&mut bytes, entry.semantic_digest);
-            push_id(&mut bytes, &entry.receipt.intent_id);
-            push_id(&mut bytes, &entry.receipt.record_id);
-            push_digest(&mut bytes, entry.receipt.record_digest);
-            push_digest(&mut bytes, entry.receipt.snapshot_key.vector_digest);
-            push_u64(&mut bytes, entry.receipt.committed_frontier);
-            bytes.push(memory_write_disposition_code(entry.receipt.disposition));
+            push_digest(&mut bytes, entry.receipt.receipt_digest());
         }
         Digest32::of_bytes(&bytes)
     }
@@ -1486,11 +1529,11 @@ fn append_semantic_digest(
     intent: &MemoryWriteIntentV1,
 ) -> Digest32 {
     let mut bytes = b"hepta.cognitive-store.append-admitted.v2".to_vec();
-    push_id(&mut bytes, &intent.intent_id);
+    push_id(&mut bytes, intent.intent_id());
     push_digest(&mut bytes, candidate.digest());
-    push_digest(&mut bytes, intent.expected_snapshot.vector_digest);
-    push_digest(&mut bytes, intent.writer_fence_digest);
-    push_digest(&mut bytes, intent.authorization_digest);
+    push_digest(&mut bytes, intent.expected_snapshot().vector_digest);
+    push_digest(&mut bytes, intent.writer_fence_digest());
+    push_digest(&mut bytes, intent.authorization_digest());
     Digest32::of_bytes(&bytes)
 }
 
@@ -1693,7 +1736,6 @@ const fn memory_write_disposition_code(value: MemoryWriteDisposition) -> u8 {
     match value {
         MemoryWriteDisposition::Inserted => 0,
         MemoryWriteDisposition::Unchanged => 1,
-        MemoryWriteDisposition::Rejected => 2,
     }
 }
 

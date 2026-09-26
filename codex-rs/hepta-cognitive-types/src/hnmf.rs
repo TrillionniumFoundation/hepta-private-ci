@@ -19,6 +19,9 @@ use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
 
+use crate::contract::ContractErrorCodeV1;
+use crate::contract::ContractViolationV1;
+
 pub const PPM: u32 = 1_000_000;
 pub const MAX_MODALITY_SPANS: usize = 32;
 pub const MAX_BINDINGS: usize = 32;
@@ -28,6 +31,8 @@ pub const MAX_PROVENANCE: usize = 64;
 pub const MAX_CAUSAL_REFERENCES: usize = 64;
 pub const MAX_PATH_BYTES: usize = 4_096;
 pub const MAX_LABEL_BYTES: usize = 128;
+pub const MAX_SELECTOR_INDEX_ENTRIES: usize = 4_096;
+pub const MAX_SELECTOR_INDEX_BYTES: usize = 1_048_576;
 
 /// Stable identifier with the repository's canonical \`StableId\` grammar and a
 /// JSON string representation.
@@ -352,10 +357,7 @@ impl SpanRangeV1 {
             }
             (ModalityKindV1::GuiState, Self::GuiNode { .. }) => Ok(()),
             (ModalityKindV1::StructuredData, Self::JsonPointer { pointer }) => {
-                if !pointer.is_empty() && !pointer.starts_with('/') {
-                    return Err(HnmfContractError::Invalid("JSON pointer"));
-                }
-                validate_bounded(pointer, MAX_PATH_BYTES, "JSON pointer")
+                validate_json_pointer_v1(pointer)
             }
             (ModalityKindV1::Sensor, Self::SensorRange { start, end, unit }) => {
                 increasing(*start, *end, "sensor range")?;
@@ -388,12 +390,18 @@ pub enum AssetExtentV1 {
         timebase_num: u32,
         timebase_den: u32,
     },
-    CodeAst,
-    GuiState,
+    CodeAst {
+        valid_paths: BTreeSet<String>,
+    },
+    GuiState {
+        stable_node_ids: BTreeSet<ContractIdV1>,
+    },
     ToolTrajectory {
         event_count: u64,
     },
-    StructuredData,
+    StructuredData {
+        valid_json_pointers: BTreeSet<String>,
+    },
     Sensor {
         sample_count: u64,
         unit: String,
@@ -406,6 +414,61 @@ pub struct AssetManifestV1 {
     pub modality: ModalityKindV1,
     pub extent: AssetExtentV1,
     pub preprocessor_manifest_sha256: ContractDigestV1,
+}
+
+impl AssetManifestV1 {
+    pub fn validate(&self) -> Result<(), HnmfContractError> {
+        match (self.modality, &self.extent) {
+            (ModalityKindV1::Text, AssetExtentV1::Bytes { byte_len }) if *byte_len > 0 => Ok(()),
+            (ModalityKindV1::Image, AssetExtentV1::Image { width, height })
+                if *width > 0 && *height > 0 =>
+            {
+                Ok(())
+            }
+            (
+                ModalityKindV1::Audio,
+                AssetExtentV1::Audio {
+                    sample_count,
+                    sample_rate_hz,
+                },
+            ) if *sample_count > 0 && *sample_rate_hz > 0 => Ok(()),
+            (
+                ModalityKindV1::Video,
+                AssetExtentV1::Video {
+                    frame_count,
+                    timebase_num,
+                    timebase_den,
+                },
+            ) if *frame_count > 0 && *timebase_num > 0 && *timebase_den > 0 => Ok(()),
+            (ModalityKindV1::CodeAst, AssetExtentV1::CodeAst { valid_paths }) => {
+                validate_selector_index_strings_v1(valid_paths, false, "AST selector index")
+            }
+            (ModalityKindV1::GuiState, AssetExtentV1::GuiState { stable_node_ids }) => {
+                validate_selector_index_ids_v1(stable_node_ids, "GUI selector index")
+            }
+            (ModalityKindV1::ToolTrajectory, AssetExtentV1::ToolTrajectory { event_count })
+                if *event_count > 0 =>
+            {
+                Ok(())
+            }
+            (
+                ModalityKindV1::StructuredData,
+                AssetExtentV1::StructuredData {
+                    valid_json_pointers,
+                },
+            ) => {
+                validate_selector_index_strings_v1(valid_json_pointers, true, "JSON pointer index")
+            }
+            (ModalityKindV1::Sensor, AssetExtentV1::Sensor { sample_count, unit })
+                if *sample_count > 0 =>
+            {
+                validate_text(unit, MAX_LABEL_BYTES, "sensor unit")
+            }
+            _ => Err(HnmfContractError::Invalid(
+                "asset extent kind does not match modality or is empty",
+            )),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -437,6 +500,7 @@ pub fn validate_span_against_manifest_v1(
     manifest: &AssetManifestV1,
     span: &ModalitySpanRefV1,
 ) -> Result<(), HnmfContractError> {
+    manifest.validate()?;
     span.validate()?;
     if span.asset_sha256 != manifest.asset_sha256
         || span.preprocessor_manifest_sha256 != manifest.preprocessor_manifest_sha256
@@ -490,13 +554,23 @@ pub fn validate_span_against_manifest_v1(
             },
             ModalityKindV1::Video,
         ) if end <= frame_count && span_num == timebase_num && span_den == timebase_den => Ok(()),
-        (AssetExtentV1::CodeAst, SpanRangeV1::AstPath { .. }, ModalityKindV1::CodeAst)
-        | (AssetExtentV1::GuiState, SpanRangeV1::GuiNode { .. }, ModalityKindV1::GuiState)
-        | (
-            AssetExtentV1::StructuredData,
-            SpanRangeV1::JsonPointer { .. },
+        (
+            AssetExtentV1::CodeAst { valid_paths },
+            SpanRangeV1::AstPath { path },
+            ModalityKindV1::CodeAst,
+        ) if valid_paths.contains(path) => Ok(()),
+        (
+            AssetExtentV1::GuiState { stable_node_ids },
+            SpanRangeV1::GuiNode { stable_node_id },
+            ModalityKindV1::GuiState,
+        ) if stable_node_ids.contains(stable_node_id) => Ok(()),
+        (
+            AssetExtentV1::StructuredData {
+                valid_json_pointers,
+            },
+            SpanRangeV1::JsonPointer { pointer },
             ModalityKindV1::StructuredData,
-        ) => Ok(()),
+        ) if valid_json_pointers.contains(pointer) => Ok(()),
         (
             AssetExtentV1::ToolTrajectory { event_count },
             SpanRangeV1::EventRange { end, .. },
@@ -787,6 +861,54 @@ impl fmt::Display for HnmfContractError {
 
 impl StdError for HnmfContractError {}
 
+impl HnmfContractError {
+    #[must_use]
+    pub fn violation(&self) -> ContractViolationV1 {
+        match self {
+            Self::ZeroValue(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::ZeroValue,
+                *field,
+                "value must be non-zero",
+            ),
+            Self::Invalid(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::InvalidValue,
+                *field,
+                "value violates the contract grammar or invariant",
+            ),
+            Self::Conflict(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::StateConflict,
+                *field,
+                "values conflict across a contract boundary",
+            ),
+            Self::Missing(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::MissingValue,
+                *field,
+                "required value is missing",
+            ),
+            Self::DuplicateIdentity(field) => ContractViolationV1::new(
+                ContractErrorCodeV1::DuplicateIdentity,
+                *field,
+                "semantic identity is duplicated",
+            ),
+            Self::LimitExceeded {
+                field,
+                actual,
+                maximum,
+            } => ContractViolationV1::new(
+                ContractErrorCodeV1::LimitExceeded,
+                *field,
+                format!("{actual} exceeds maximum {maximum}"),
+            ),
+        }
+    }
+}
+
+impl From<HnmfContractError> for ContractViolationV1 {
+    fn from(value: HnmfContractError) -> Self {
+        value.violation()
+    }
+}
+
 pub(crate) fn ppm(value: u32, name: &'static str) -> Result<(), HnmfContractError> {
     if value > PPM {
         return Err(HnmfContractError::Invalid(name));
@@ -832,6 +954,88 @@ pub(crate) fn validate_bounded(
 ) -> Result<(), HnmfContractError> {
     if value.len() > maximum_bytes || value.chars().any(char::is_control) {
         return Err(HnmfContractError::Invalid(name));
+    }
+    Ok(())
+}
+
+fn validate_json_pointer_v1(pointer: &str) -> Result<(), HnmfContractError> {
+    validate_bounded(pointer, MAX_PATH_BYTES, "JSON pointer")?;
+    if !pointer.is_empty() && !pointer.starts_with('/') {
+        return Err(HnmfContractError::Invalid("JSON pointer"));
+    }
+    let bytes = pointer.as_bytes();
+    let mut index = 0usize;
+    while index < bytes.len() {
+        if bytes[index] == b'~' {
+            let Some(escaped) = bytes.get(index + 1) else {
+                return Err(HnmfContractError::Invalid("JSON pointer escape"));
+            };
+            if !matches!(*escaped, b'0' | b'1') {
+                return Err(HnmfContractError::Invalid("JSON pointer escape"));
+            }
+            index += 2;
+        } else {
+            index += 1;
+        }
+    }
+    Ok(())
+}
+
+fn validate_selector_index_strings_v1(
+    values: &BTreeSet<String>,
+    json_pointers: bool,
+    field: &'static str,
+) -> Result<(), HnmfContractError> {
+    if values.is_empty() || values.len() > MAX_SELECTOR_INDEX_ENTRIES {
+        return Err(HnmfContractError::LimitExceeded {
+            field,
+            actual: values.len(),
+            maximum: MAX_SELECTOR_INDEX_ENTRIES,
+        });
+    }
+    let mut aggregate_bytes = 0usize;
+    for value in values {
+        if json_pointers {
+            validate_json_pointer_v1(value)?;
+        } else {
+            validate_text(value, MAX_PATH_BYTES, field)?;
+        }
+        aggregate_bytes = aggregate_bytes
+            .checked_add(value.len())
+            .ok_or(HnmfContractError::Invalid("selector index byte overflow"))?;
+    }
+    if aggregate_bytes > MAX_SELECTOR_INDEX_BYTES {
+        return Err(HnmfContractError::LimitExceeded {
+            field,
+            actual: aggregate_bytes,
+            maximum: MAX_SELECTOR_INDEX_BYTES,
+        });
+    }
+    Ok(())
+}
+
+fn validate_selector_index_ids_v1(
+    values: &BTreeSet<ContractIdV1>,
+    field: &'static str,
+) -> Result<(), HnmfContractError> {
+    if values.is_empty() || values.len() > MAX_SELECTOR_INDEX_ENTRIES {
+        return Err(HnmfContractError::LimitExceeded {
+            field,
+            actual: values.len(),
+            maximum: MAX_SELECTOR_INDEX_ENTRIES,
+        });
+    }
+    let aggregate_bytes = values.iter().try_fold(0usize, |total, value| {
+        total
+            .checked_add(value.as_str().len())
+            .ok_or(HnmfContractError::Invalid("selector index byte overflow"))
+    })?;
+    if aggregate_bytes > MAX_SELECTOR_INDEX_BYTES {
+        return Err(HnmfContractError::LimitExceeded {
+            field,
+            actual: aggregate_bytes,
+            maximum: MAX_SELECTOR_INDEX_BYTES,
+        });
     }
     Ok(())
 }

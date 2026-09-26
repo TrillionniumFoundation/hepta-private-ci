@@ -15,6 +15,11 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::Value;
 
+use crate::contract::CANONICALIZATION_ALGORITHM_V1;
+use crate::contract::ContractErrorCodeV1;
+use crate::contract::ContractViolationV1;
+use crate::contract::ValidateContractV1;
+use crate::contract::Validated;
 use crate::hnmf::CrossModalBindingV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::MemoryEventV1;
@@ -32,6 +37,7 @@ use crate::hnmf_learning::TopologyProposalV1;
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
 const DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.canonical-json.v1\0";
+const BOUND_DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.bound-digest.v1\0";
 
 pub trait CognitiveContractV1: Serialize + DeserializeOwned + Clone + Eq + PartialEq {
     const CONTRACT_ID: &'static str;
@@ -39,6 +45,17 @@ pub trait CognitiveContractV1: Serialize + DeserializeOwned + Clone + Eq + Parti
     const MAX_ENCODED_BYTES: usize;
 
     fn validate_contract(&self) -> Result<(), HnmfContractError>;
+}
+
+impl<T> ValidateContractV1 for T
+where
+    T: CognitiveContractV1,
+{
+    type Error = HnmfContractError;
+
+    fn validate_contract_v1(&self) -> Result<(), Self::Error> {
+        self.validate_contract()
+    }
 }
 
 macro_rules! impl_contract {
@@ -149,6 +166,15 @@ struct CognitiveWireEnvelopeV1<T> {
     payload: T,
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct CognitiveWireEnvelopeRefV1<'a, T> {
+    schema: &'static str,
+    schema_version: u32,
+    contract: &'static str,
+    payload: &'a T,
+}
+
 pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<Vec<u8>, CognitiveWireError> {
@@ -167,12 +193,11 @@ pub fn encode_payload_canonical_v1<T: CognitiveContractV1>(
 
 pub fn encode_wire_v1<T: CognitiveContractV1>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
     let payload_bytes = encode_payload_canonical_v1(value)?;
-    let payload: T = serde_json::from_slice(&payload_bytes).map_err(CognitiveWireError::Json)?;
-    let envelope = CognitiveWireEnvelopeV1 {
-        schema: T::SCHEMA_ID.to_string(),
+    let envelope = CognitiveWireEnvelopeRefV1 {
+        schema: T::SCHEMA_ID,
         schema_version: COGNITIVE_WIRE_VERSION_V1,
-        contract: T::CONTRACT_ID.to_string(),
-        payload,
+        contract: T::CONTRACT_ID,
+        payload: value,
     };
     let encoded = canonical_json_bytes(&envelope)?;
     let maximum = T::MAX_ENCODED_BYTES + MAX_ENVELOPE_OVERHEAD_BYTES;
@@ -222,6 +247,13 @@ pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, Cogniti
     Ok(envelope.payload)
 }
 
+pub fn decode_validated_wire_v1<T: CognitiveContractV1>(
+    bytes: &[u8],
+) -> Result<Validated<T>, CognitiveWireError> {
+    let value = decode_wire_v1(bytes)?;
+    Validated::new(value).map_err(CognitiveWireError::Contract)
+}
+
 /// Canonical V1 digest for one validated contract payload. The contract name is
 /// domain-separated so equal JSON payloads from different contract families
 /// cannot share the same semantic digest.
@@ -235,6 +267,31 @@ pub fn canonical_contract_digest_v1<T: CognitiveContractV1>(
         b"\0",
         payload.as_slice(),
     ]))
+}
+
+/// Strong digest profile for authoritative consumers. In addition to the
+/// frozen legacy contract digest, this profile binds the exact schema identity,
+/// schema version and canonicalization algorithm.
+pub fn canonical_contract_digest_bound_v1<T: CognitiveContractV1>(
+    value: &T,
+) -> Result<Digest32, CognitiveWireError> {
+    let payload = encode_payload_canonical_v1(value)?;
+    let mut bytes = BOUND_DIGEST_DOMAIN_V1.to_vec();
+    push_digest_component_v1(&mut bytes, T::SCHEMA_ID.as_bytes());
+    bytes.extend_from_slice(&COGNITIVE_WIRE_VERSION_V1.to_be_bytes());
+    push_digest_component_v1(&mut bytes, T::CONTRACT_ID.as_bytes());
+    push_digest_component_v1(&mut bytes, CANONICALIZATION_ALGORITHM_V1.as_bytes());
+    push_digest_component_v1(&mut bytes, &payload);
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn push_digest_component_v1(bytes: &mut Vec<u8>, component: &[u8]) {
+    bytes.extend_from_slice(
+        &u64::try_from(component.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(component);
 }
 
 fn canonical_json_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
@@ -327,6 +384,56 @@ impl fmt::Display for CognitiveWireError {
                 )
             }
         }
+    }
+}
+
+impl CognitiveWireError {
+    #[must_use]
+    pub fn violation(&self) -> ContractViolationV1 {
+        match self {
+            Self::Contract(error) => error.violation(),
+            Self::Json(error) => ContractViolationV1::new(
+                ContractErrorCodeV1::InvalidValue,
+                "wire",
+                error.to_string(),
+            ),
+            Self::SchemaMismatch => ContractViolationV1::new(
+                ContractErrorCodeV1::SchemaMismatch,
+                "schema",
+                "wire schema does not match the requested contract",
+            ),
+            Self::VersionMismatch(version) => ContractViolationV1::new(
+                ContractErrorCodeV1::VersionMismatch,
+                "schemaVersion",
+                format!("unsupported cognitive wire version {version}"),
+            ),
+            Self::ContractMismatch => ContractViolationV1::new(
+                ContractErrorCodeV1::ContractMismatch,
+                "contract",
+                "wire contract identity does not match the requested type",
+            ),
+            Self::NonCanonicalInput | Self::NonIntegerNumber => ContractViolationV1::new(
+                ContractErrorCodeV1::NonCanonicalEncoding,
+                "wire",
+                self.to_string(),
+            ),
+            Self::PayloadLength { actual, maximum } => ContractViolationV1::new(
+                ContractErrorCodeV1::LimitExceeded,
+                "payload",
+                format!("{actual} exceeds maximum {maximum}"),
+            ),
+            Self::EnvelopeLength { actual, maximum } => ContractViolationV1::new(
+                ContractErrorCodeV1::LimitExceeded,
+                "envelope",
+                format!("{actual} exceeds maximum {maximum}"),
+            ),
+        }
+    }
+}
+
+impl From<CognitiveWireError> for ContractViolationV1 {
+    fn from(value: CognitiveWireError) -> Self {
+        value.violation()
     }
 }
 
