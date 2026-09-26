@@ -1,0 +1,35 @@
+name: Memory retrieval source audit bundle
+
+on:
+  push:
+    branches: [work/memory-retrieval-semantic-product-convergence-20260926]
+    paths: [.github/workflows/hepta-memory-retrieval-source-audit.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export tracked source and exact identity, without credentials or runtime data
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/retrieval-source-audit"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source-audit/source.tar.gz"
+          printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/retrieval-source-audit/identity.txt"
+          (cd "$RUNNER_TEMP/retrieval-source-audit" && sha256sum source.tar.gz identity.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-source-${{ github.sha }}
+          path: ${{ runner.temp }}/retrieval-source-audit/
+          retention-days: 7
+          if-no-files-found: error
