@@ -34,21 +34,21 @@ env:
 
 jobs:
   rust:
-    name: ${{ matrix.check }} (${{ matrix.lane }})
+    name: ${{ matrix.case.name }} (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
-        include:
-          - check: intelligence core tests
+        case:
+          - name: intelligence core tests
             command: cargo test --locked -p codex-hepta-intelligence --lib --no-fail-fast
-          - check: Agentd all-target check
+          - name: Agentd all-target check
             command: cargo check --locked -p codex-hepta-agentd --all-targets
-          - check: Agentd library tests
+          - name: Agentd library tests
             command: cargo test --locked -p codex-hepta-agentd --lib --no-fail-fast
-          - check: Agentd strict clippy
+          - name: Agentd strict clippy
             command: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -126,7 +126,7 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Run ${{ matrix.check }}
+      - name: Run ${{ matrix.case.name }}
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-control-target
@@ -136,7 +136,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ${{ matrix.command }}
+          ${{ matrix.case.command }}
 
   formatting:
     name: formatting and tracked-source cleanliness
