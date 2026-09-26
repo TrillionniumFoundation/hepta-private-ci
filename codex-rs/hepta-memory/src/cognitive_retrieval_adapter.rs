@@ -9,6 +9,7 @@ use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory_retrieval::ContradictionEvidenceV1;
 use codex_hepta_memory_retrieval::ContradictionPolarityV1;
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
