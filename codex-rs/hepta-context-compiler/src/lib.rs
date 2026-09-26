@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod candidate_bound;
+mod provider_request;
 mod requirements;
 mod v2;
 mod wire;
@@ -21,6 +22,30 @@ mod wire;
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
 pub use candidate_bound::compile_candidate_bound_with_requirements;
+pub use provider_request::CanonicalContextSegmentKindV2;
+pub use provider_request::CanonicalContextSegmentV2;
+pub use provider_request::CanonicalSerializedContextV2;
+pub use provider_request::ExactProviderRequestTokenizerV2;
+pub use provider_request::ExactTokenizerIdentityV2;
+pub use provider_request::MAX_CANONICAL_CONTEXT_SEGMENTS_V2;
+pub use provider_request::MAX_PROVIDER_FINAL_REQUEST_BYTES_V2;
+pub use provider_request::MAX_PROVIDER_ID_BYTES_V2;
+pub use provider_request::MAX_PROVIDER_MODEL_BYTES_V2;
+pub use provider_request::MAX_PROVIDER_REQUEST_SEGMENTS_V2;
+pub use provider_request::ProviderBoundDeliveryPreparationRecordV2;
+pub use provider_request::ProviderBoundDeliveryPreparationV2;
+pub use provider_request::ProviderBoundDeliveryReceiptV2;
+pub use provider_request::ProviderBoundTerminalV2;
+pub use provider_request::ProviderFinalRequestProofV2;
+pub use provider_request::ProviderFinalRequestTokenizationV2;
+pub use provider_request::ProviderRequestProofErrorV2;
+pub use provider_request::ProviderRequestSegmentKindV2;
+pub use provider_request::ProviderRequestSegmentMapV2;
+pub use provider_request::ProviderRequestSegmentV2;
+pub use provider_request::VerifiedAdmissionSnapshotSuccessorV2;
+pub use provider_request::prepare_provider_bound_delivery_v2;
+pub use provider_request::record_canonical_serialization_v2;
+pub use provider_request::verify_typed_admission_snapshot_successor_v2;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
@@ -213,7 +238,7 @@ fn compile_internal(
         .iter()
         .filter(|item| mandatory_ids.contains(&item.item_id))
         .map(|item| u128::from(item.token_count))
-        .sum::<u128>(); // At most 4096 u64 costs; the exact sum fits u128.
+        .sum::<u128>();
     if required_tokens > u128::from(request.token_budget) {
         return Err(Error::InsufficientContext {
             required_tokens,
