@@ -35,6 +35,20 @@ if manifest_path_payload not in stage1:
     if manifest_payload not in stage1:
         raise RuntimeError("stage 1 memory-federation dependency payload missing")
     stage1 = stage1.replace(manifest_payload, manifest_path_payload, 1)
+legacy_test_anchor = 'write("codex-rs/hepta-memory-federation/src/legacy_v1.rs", legacy_source)'
+legacy_test_patch = r'''write("codex-rs/hepta-memory-federation/src/legacy_v1.rs", legacy_source)
+legacy_tests_rel = "codex-rs/hepta-memory-federation/src/lib_tests.rs"
+legacy_tests = read(legacy_tests_rel)
+legacy_tests = legacy_tests.replace(
+    "use super::*;\n",
+    "use super::*;\nuse codex_hepta_types::Digest32;\nuse codex_hepta_types::StableId;\n",
+    1,
+)
+write(legacy_tests_rel, legacy_tests)'''
+if legacy_test_patch not in stage1:
+    if legacy_test_anchor not in stage1:
+        raise RuntimeError("stage 1 legacy test anchor missing")
+    stage1 = stage1.replace(legacy_test_anchor, legacy_test_patch, 1)
 stage1_path.write_text(stage1, encoding="utf-8")
 
 stage2_path = root / "scripts/_memory_federation_closure_2.py"
