@@ -167,7 +167,9 @@ export class RuntimeClient {
 
   async #submit(method, permission, input) {
     this.#assertPermission(permission);
-    if (!this.#snapshot) {
+    const session = this.#session;
+    const snapshot = this.#snapshot;
+    if (!snapshot) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.STALE_REVISION,
         "cannot submit a control request before a current snapshot is observed",
@@ -181,7 +183,7 @@ export class RuntimeClient {
       "displayedRevision",
       { min: 1 },
     );
-    if (displayedRevision !== this.#snapshot.revision) {
+    if (displayedRevision !== snapshot.revision) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.STALE_REVISION,
         "displayed revision does not match the current snapshot",
@@ -189,7 +191,7 @@ export class RuntimeClient {
           retryable: true,
           details: {
             displayedRevision,
-            currentRevision: this.#snapshot.revision,
+            currentRevision: snapshot.revision,
           },
         },
       );
@@ -201,7 +203,7 @@ export class RuntimeClient {
     const intent = buildOperationIntent({
       action,
       targetId,
-      generation: this.#snapshot.generation,
+      generation: snapshot.generation,
       displayedRevision,
       reason,
     });
@@ -217,6 +219,44 @@ export class RuntimeClient {
       );
     }
 
+    this.#assertPermission(permission);
+    if (this.#session !== session) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_GENERATION,
+        "authenticated session changed while preparing the control request",
+        {
+          retryable: true,
+          details: {
+            operationId,
+            observedConnectionGeneration: session.connectionGeneration,
+            currentConnectionGeneration: this.#session.connectionGeneration,
+          },
+        },
+      );
+    }
+    const currentSnapshot = this.#snapshot;
+    if (
+      !currentSnapshot ||
+      currentSnapshot.generation !== snapshot.generation ||
+      currentSnapshot.revision !== snapshot.revision ||
+      !constantTimeEqual(currentSnapshot.semanticDigest, snapshot.semanticDigest)
+    ) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.STALE_REVISION,
+        "runtime snapshot changed while preparing the control request",
+        {
+          retryable: true,
+          details: {
+            operationId,
+            observedGeneration: snapshot.generation,
+            observedRevision: snapshot.revision,
+            currentGeneration: currentSnapshot?.generation ?? null,
+            currentRevision: currentSnapshot?.revision ?? null,
+          },
+        },
+      );
+    }
+
     const request = Object.freeze({
       protocolVersion: this.#protocolVersion,
       method,
@@ -225,11 +265,11 @@ export class RuntimeClient {
       action,
       targetId,
       reason,
-      sessionId: this.#session.sessionId,
-      connectionGeneration: this.#session.connectionGeneration,
-      generation: this.#snapshot.generation,
+      sessionId: session.sessionId,
+      connectionGeneration: session.connectionGeneration,
+      generation: snapshot.generation,
       displayedRevision,
-      snapshotDigest: this.#snapshot.semanticDigest,
+      snapshotDigest: snapshot.semanticDigest,
     });
     return this.#ledger.submit(request, input.signal, (entry, signal) =>
       this.#transport.request(
