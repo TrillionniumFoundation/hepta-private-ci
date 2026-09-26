@@ -31,6 +31,7 @@ jobs:
           set -euo pipefail
           python3 scripts/codex-intelligence-control-rewrite.py
           python3 scripts/codex-intelligence-observability-rewrite.py
+          python3 scripts/codex-intelligence-learning-reconcile-rewrite.py
           python3 scripts/codex-intelligence-status-rewrite.py
           python3 scripts/hepta-intelligence-control-status.py --write-tracked
 
