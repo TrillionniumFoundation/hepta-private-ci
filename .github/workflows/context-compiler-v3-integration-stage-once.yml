@@ -1,0 +1,84 @@
+name: context-compiler-v3-integration-stage-once
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-v3-integration-staging-20260927
+    paths:
+      - .github/workflows/context-compiler-v3-integration-stage-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout V3 integration staging branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/context-compiler-v3-integration-staging-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Apply registry authority and strict product path
+        id: verify
+        continue-on-error: true
+        shell: bash
+        env:
+          LOG_DIR: ${{ runner.temp }}/context-compiler-v3-integration
+        run: |
+          mkdir -p "$LOG_DIR"
+          exec > >(tee "$LOG_DIR/v3-integration.log") 2>&1
+          set -uo pipefail
+          set +e
+          git config user.name "hepta-context-compiler-bot"
+          git config user.email "hepta-context-compiler-bot@users.noreply.github.com"
+          python3 scripts/apply_context_authority_staging.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then python3 scripts/apply_context_compiler_v3_integration.py; rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo fmt --all); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo metadata --format-version 1 >/dev/null); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo test --locked -p codex-hepta-prompt-registry); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo test --locked -p codex-hepta-intelligence); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo check --locked -p codex-hepta-intelligence --no-default-features --lib); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo clippy --locked -p codex-hepta-prompt-registry -p codex-hepta-intelligence --all-targets -- -D warnings); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo clippy --locked -p codex-hepta-intelligence --no-default-features --lib -- -D warnings); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then git diff --check; rc=$?; fi
+          if [ "$rc" -eq 0 ]; then
+            git add -A
+            git commit -m "feat(context.compiler): integrate registry-authoritative V3 compiler"
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            git push origin HEAD:codex/context-compiler-v3-integration-staging-20260927
+            rc=$?
+          fi
+          echo "$rc" > "$LOG_DIR/exit-code.txt"
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+
+      - name: Upload V3 integration evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: context-compiler-v3-integration-${{ github.sha }}
+          path: ${{ runner.temp }}/context-compiler-v3-integration
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce V3 integration result
+        if: always()
+        shell: bash
+        env:
+          EXIT_CODE: ${{ steps.verify.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          test -n "$EXIT_CODE"
+          test "$EXIT_CODE" = "0"
