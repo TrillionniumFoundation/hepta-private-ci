@@ -1,0 +1,102 @@
+name: Control runtime P0 source closure
+
+on:
+  push:
+    branches:
+      - control-runtime-production-closure-v1
+    paths:
+      - "scripts/control_runtime_p0_fixups.py"
+      - ".github/workflows/control-runtime-p0-closure.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-runtime-p0-source-closure-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-prove:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact feature branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: control-runtime-production-closure-v1
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Record input identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Apply P0 source closure
+        run: python3 scripts/control_runtime_p0_fixups.py
+
+      - name: Format touched Rust sources
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Validate source diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --stat
+
+      - name: Locked all-target compilation
+        working-directory: codex-rs
+        run: |
+          cargo check --locked --all-targets \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd
+
+      - name: Package and request-integrity regressions
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-control-plane --lib
+          cargo test --locked -p codex-hepta-agent-protocol --lib
+          cargo test --locked -p codex-hepta-agentd --lib cognitive_context
+
+      - name: Control NDU caller regressions
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-control-plane --lib planner_context
+          cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
+
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked --all-targets \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd \
+            -- -D warnings
+
+      - name: Formatting and no accidental files
+        working-directory: codex-rs
+        run: cargo fmt --all -- --check
+
+      - name: Commit proven generated source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-control-runtime-bot
+          git config user.email control-runtime-bot@invalid
+          git add \
+            codex-rs/hepta-control-plane/src/planner_store.rs \
+            codex-rs/hepta-agent-protocol/src/lib.rs \
+            codex-rs/hepta-agentd/src/cognitive_context.rs \
+            codex-rs/hepta-agentd/src/cognitive_context_tests.rs \
+            codex-rs/hepta-agentd/src/cognitive_ranker.rs
+          if git diff --cached --quiet; then
+            echo "No generated source changes"
+            exit 0
+          fi
+          git commit -m "control.runtime: close monotonic final use and crash-safe writer locking"
+          git push origin HEAD:control-runtime-production-closure-v1
