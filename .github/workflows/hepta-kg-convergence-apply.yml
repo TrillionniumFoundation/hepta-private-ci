@@ -37,7 +37,7 @@ jobs:
         (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
         (github.event_name != 'pull_request' && github.ref == 'refs/heads/work/product-convergence-20260923')
       )
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -171,7 +171,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=TERM 15m cargo test --locked --release -p codex-hepta-kg \
+          cargo test --locked --release -p codex-hepta-kg \
             canonical_cardinality_high_fanout_benchmark_receipt -- --ignored --nocapture \
             2>&1 | tee "$EVIDENCE_DIR/kernel-benchmark-raw.log"
           python3 - "$EVIDENCE_DIR" <<'PY'
