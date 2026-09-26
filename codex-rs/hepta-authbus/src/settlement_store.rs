@@ -11,6 +11,7 @@ use crate::QuotaReservation;
 use crate::QuotaSnapshot;
 use crate::ReservationState;
 use crate::Settlement;
+use crate::IssuerPurpose;
 use crate::SettlementIssuerRegistration;
 use crate::SettlementStatus;
 use crate::SignedSettlementEvidence;
@@ -23,9 +24,10 @@ use crate::authority_store::storage;
 use crate::authority_store::u64_bytes;
 use crate::quota_store::load_quota;
 use crate::quota_store::load_reservation;
+use crate::trust_store::load_issuer;
 
 impl AuthBusAuthorityStore {
-    pub async fn mark_dispatch_attempted(
+    pub(crate) async fn mark_dispatch_attempted(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -79,7 +81,7 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn mark_indeterminate(
+    pub(crate) async fn mark_indeterminate(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -107,7 +109,7 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn cancel_reservation(
+    pub(crate) async fn cancel_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -138,7 +140,7 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn reconcile_expired_reservation(
+    pub(crate) async fn reconcile_expired_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -180,15 +182,109 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
-    pub async fn settle(
+    pub(crate) async fn sweep_expired_reservations(
         &self,
-        issuer: &SettlementIssuerRegistration,
+        time: TrustedTimeSample,
+        limit: u32,
+    ) -> Result<crate::ExpiredReservationSweepReport, AuthBusAuthorityError> {
+        if limit == 0 || limit > 1024 {
+            return Err(AuthBusAuthorityError::InvalidInput(
+                "expired reservation sweep limit must be 1..=1024",
+            ));
+        }
+        self.observe_time(time.clone()).await?;
+        let mut tx = begin(&self.pool).await?;
+        advance_time(&mut tx, &time).await?;
+        let rows = sqlx::query(
+            "SELECT reservation_id FROM authbus_quota_reservation
+             WHERE expires_at_ms <= ? AND state IN ('held', 'dispatch_attempted')
+             ORDER BY expires_at_ms, reservation_id LIMIT ?",
+        )
+        .bind(u64_bytes(time.wall_time_ms).as_slice())
+        .bind(limit)
+        .fetch_all(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let mut report = crate::ExpiredReservationSweepReport {
+            scanned: u32::try_from(rows.len()).unwrap_or(u32::MAX),
+            expired: 0,
+            indeterminate: 0,
+            remaining: 0,
+            oldest_expired_at_ms: None,
+        };
+        for row in rows {
+            use sqlx::Row as _;
+            let reservation_id: String = row.try_get("reservation_id").map_err(storage)?;
+            let reservation_id = StableId::new(reservation_id)
+                .map_err(|_| AuthBusAuthorityError::CorruptState("invalid reservation id"))?;
+            let mut reservation = load_reservation(&mut tx, &reservation_id).await?;
+            match reservation.state {
+                ReservationState::Held => {
+                    let mut quota = load_quota(&mut tx, &reservation.quota_key).await?;
+                    release_reserved(&mut quota, reservation.amount)?;
+                    persist_quota(&mut tx, &quota).await?;
+                    reservation.state = ReservationState::Expired;
+                    reservation.revision = next_revision(reservation.revision)?;
+                    reservation.updated_at_ms = time.wall_time_ms;
+                    update_reservation_state(&mut tx, &reservation, "expired").await?;
+                    report.expired = report.expired.saturating_add(1);
+                }
+                ReservationState::DispatchAttempted => {
+                    reservation.state = ReservationState::Indeterminate;
+                    reservation.revision = next_revision(reservation.revision)?;
+                    reservation.updated_at_ms = time.wall_time_ms;
+                    update_reservation_state(&mut tx, &reservation, "indeterminate").await?;
+                    report.indeterminate = report.indeterminate.saturating_add(1);
+                }
+                _ => {}
+            }
+        }
+        report.remaining = u64::try_from(
+            sqlx::query_scalar::<_, i64>(
+                "SELECT COUNT(*) FROM authbus_quota_reservation
+                 WHERE expires_at_ms <= ? AND state IN ('held', 'dispatch_attempted')",
+            )
+            .bind(u64_bytes(time.wall_time_ms).as_slice())
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(storage)?,
+        )
+        .map_err(|_| AuthBusAuthorityError::CorruptState("negative reservation count"))?;
+        report.oldest_expired_at_ms = sqlx::query_scalar::<_, Option<Vec<u8>>>(
+            "SELECT MIN(expires_at_ms) FROM authbus_quota_reservation
+             WHERE expires_at_ms <= ? AND state IN ('held', 'dispatch_attempted')",
+        )
+        .bind(u64_bytes(time.wall_time_ms).as_slice())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?
+        .map(|bytes| {
+            let raw: [u8; 8] = bytes
+                .try_into()
+                .map_err(|_| AuthBusAuthorityError::CorruptState("invalid expiry width"))?;
+            Ok::<u64, AuthBusAuthorityError>(u64::from_be_bytes(raw))
+        })
+        .transpose()?;
+        tx.commit().await.map_err(storage)?;
+        Ok(report)
+    }
+
+    pub(crate) async fn settle(
+        &self,
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
         self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
+        let issuer_record = load_issuer(
+            &mut tx,
+            IssuerPurpose::Settlement,
+            &evidence.claims.issuer_id,
+            evidence.claims.key_epoch,
+        )
+        .await?;
+        let issuer = SettlementIssuerRegistration::from_record(issuer_record)?;
         let reservation_id = &evidence.claims.reservation_id;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
         let mut quota = load_quota(&mut tx, &reservation.quota_key).await?;
@@ -213,7 +309,7 @@ impl AuthBusAuthorityStore {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
         let authenticated = evidence.authenticate(
-            issuer,
+            &issuer,
             &reservation.reservation_id,
             &reservation.operation_id,
             time.wall_time_ms,

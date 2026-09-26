@@ -1,23 +1,130 @@
+use std::ops::Deref;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 
+use crate::AuthBusAuthorityError;
 use crate::Error;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
 use crate::PreverifiedAuthEnvelope;
 use crate::ReplayWindow;
 use crate::TrustedReplayContext;
 use crate::VerificationReceipt;
 use crate::push_id;
 
-/// Registration obtained from the host's trusted identity/policy store, never
-/// from the message being admitted. Revocation must be refreshed for each call.
-pub struct IssuerRegistration {
+/// Read-only view of a verified message-issuer registration. The view is public
+/// only so existing consumers can inspect fields through `Deref`; APIs accept
+/// `IssuerRegistration`, whose constructor and seal remain inside AuthBus.
+#[doc(hidden)]
+#[derive(Clone)]
+pub struct IssuerRegistrationView {
     pub issuer_id: StableId,
     pub key_epoch: Generation,
     pub verifying_key: VerifyingKey,
     pub revoked: bool,
+}
+
+/// Sealed registration resolved from a verified persistent registry. Callers
+/// can inspect it but cannot construct or alter one in production builds.
+#[derive(Clone)]
+pub struct IssuerRegistration {
+    view: IssuerRegistrationView,
+    registry_digest: Digest32,
+}
+
+impl IssuerRegistration {
+    pub(crate) fn from_record(record: IssuerRecord) -> Result<Self, AuthBusAuthorityError> {
+        if record.purpose != IssuerPurpose::Message {
+            return Err(AuthBusAuthorityError::IssuerPurposeMismatch);
+        }
+        let mut bytes = b"hepta.authbus.sqlite-issuer-record.v1\0".to_vec();
+        push_id(&mut bytes, &record.issuer_id);
+        bytes.extend_from_slice(&record.key_epoch.get().to_be_bytes());
+        bytes.extend_from_slice(&record.verifying_key.to_bytes());
+        bytes.push(match record.state {
+            IssuerLifecycleState::Active => 1,
+            IssuerLifecycleState::Revoked => 2,
+            IssuerLifecycleState::Retired => 3,
+        });
+        bytes.extend_from_slice(&record.revision.to_be_bytes());
+        Self::from_registry_parts(
+            record.issuer_id,
+            record.key_epoch,
+            record.verifying_key,
+            record.state != IssuerLifecycleState::Active,
+            Digest32::of_bytes(&bytes),
+        )
+    }
+
+    pub(crate) fn from_registry_parts(
+        issuer_id: StableId,
+        key_epoch: Generation,
+        verifying_key: VerifyingKey,
+        revoked: bool,
+        registry_digest: Digest32,
+    ) -> Result<Self, AuthBusAuthorityError> {
+        if registry_digest.is_zero() {
+            return Err(AuthBusAuthorityError::UnsafeIssuerRegistry);
+        }
+        Ok(Self {
+            view: IssuerRegistrationView {
+                issuer_id,
+                key_epoch,
+                verifying_key,
+                revoked,
+            },
+            registry_digest,
+        })
+    }
+
+    pub fn issuer_id(&self) -> &StableId {
+        &self.view.issuer_id
+    }
+
+    pub fn key_epoch(&self) -> Generation {
+        self.view.key_epoch
+    }
+
+    pub fn is_revoked(&self) -> bool {
+        self.view.revoked
+    }
+
+    pub fn registry_digest(&self) -> Digest32 {
+        self.registry_digest
+    }
+
+    /// Test-only constructor. The feature is enabled only from dependent
+    /// packages' dev-dependencies and is forbidden by the API inventory gate
+    /// in production dependency declarations.
+    #[cfg(feature = "test-support")]
+    pub fn test_only(
+        issuer_id: StableId,
+        key_epoch: Generation,
+        verifying_key: VerifyingKey,
+        revoked: bool,
+    ) -> Self {
+        Self::from_registry_parts(
+            issuer_id,
+            key_epoch,
+            verifying_key,
+            revoked,
+            Digest32::of_bytes(b"hepta.authbus.test-only-issuer-registry.v1"),
+        )
+        .expect("test registry digest is non-zero")
+    }
+}
+
+impl Deref for IssuerRegistration {
+    type Target = IssuerRegistrationView;
+
+    fn deref(&self) -> &Self::Target {
+        &self.view
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

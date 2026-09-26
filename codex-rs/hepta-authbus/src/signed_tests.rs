@@ -5,12 +5,7 @@ use super::*;
 
 fn fixture() -> (IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[7; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:one").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = IssuerRegistration::from_registry_parts(StableId::new("issuer:one").unwrap(), Generation::new(1).unwrap(), key.verifying_key(), false, Digest32::of_bytes(b\"test-registry\")).unwrap();
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,

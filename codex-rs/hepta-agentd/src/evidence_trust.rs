@@ -8,11 +8,11 @@ use std::io::Read;
 use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::VerifiedIssuerRegistry;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
 use codex_hepta_evidence::EvidenceIssuerTrustBindingV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 
 use crate::AgentdError;
@@ -39,12 +39,26 @@ pub(crate) struct EvidenceTrust {
     schema_version: u32,
     agent_id: String,
     issuers: Vec<EvidenceIssuerTrust>,
+    #[serde(skip)]
+    registry: Option<VerifiedIssuerRegistry>,
 }
 
 impl EvidenceTrust {
     pub(crate) fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
         let bytes = read_owner_file(path, identity)?;
-        let trust: Self = serde_json::from_slice(&bytes)?;
+        let mut trust: Self = serde_json::from_slice(&bytes)?;
+        let registry = VerifiedIssuerRegistry::open_private(
+            path,
+            &identity.home_root,
+            MAX_EVIDENCE_TRUST_FILE_BYTES,
+        )
+        .map_err(|error| invalid(&error.to_string()))?;
+        if registry.digest() != codex_hepta_types::Digest32::of_bytes(&bytes) {
+            return Err(invalid(
+                "evidence trust registry changed during verification",
+            ));
+        }
+        trust.registry = Some(registry);
         if trust.schema_version != 1
             || trust.agent_id != identity.agent_id.as_str()
             || trust.issuers.is_empty()
@@ -117,15 +131,15 @@ impl EvidenceTrust {
                 "evidence issuer is not registered for the requested role",
             ));
         }
-        Ok(IssuerRegistration {
-            issuer_id: StableId::new(&configured.issuer_id)
-                .map_err(|error| invalid(&error.to_string()))?,
-            key_epoch: Generation::new(configured.key_epoch)
-                .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&configured.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
-            revoked: configured.revoked,
-        })
+        let issuer_id =
+            StableId::new(&configured.issuer_id).map_err(|error| invalid(&error.to_string()))?;
+        let key_epoch =
+            Generation::new(configured.key_epoch).map_err(|error| invalid(&error.to_string()))?;
+        self.registry
+            .as_ref()
+            .ok_or_else(|| invalid("verified evidence registry is missing"))?
+            .resolve_message_issuer(&issuer_id, key_epoch)
+            .map_err(|error| invalid(&error.to_string()))
     }
 }
 

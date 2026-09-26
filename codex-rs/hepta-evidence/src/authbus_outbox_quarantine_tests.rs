@@ -24,12 +24,12 @@ async fn enqueue(
     sequence: u64,
 ) -> (IssuerRegistration, AuthBusDeliveryStatus) {
     let key = SigningKey::from_bytes(&[43; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:relay").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = IssuerRegistration::test_only(
+        StableId::new("issuer:relay").unwrap(),
+        Generation::new(1).unwrap(),
+        key.verifying_key(),
+        false,
+    );
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,

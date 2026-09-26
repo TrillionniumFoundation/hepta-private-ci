@@ -7,9 +7,9 @@ use std::io::Read;
 use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::VerifiedIssuerRegistry;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 
 use crate::AgentdError;
@@ -25,6 +25,8 @@ pub(crate) struct TextTrust {
     public_key_hex: String,
     revoked: bool,
     thread_ids: Vec<String>,
+    #[serde(skip)]
+    registry: Option<VerifiedIssuerRegistry>,
 }
 
 impl TextTrust {
@@ -32,7 +34,13 @@ impl TextTrust {
     /// Updating the public key does not synthesize a signature or a grant.
     pub fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
         let bytes = read_private_owner_file(path, identity, 16_384)?;
-        let trust: Self = serde_json::from_slice(&bytes)?;
+        let mut trust: Self = serde_json::from_slice(&bytes)?;
+        let registry = VerifiedIssuerRegistry::open_private(path, &identity.home_root, 16_384)
+            .map_err(|error| invalid(&error.to_string()))?;
+        if registry.digest() != codex_hepta_types::Digest32::of_bytes(&bytes) {
+            return Err(invalid("trust registry changed during verification"));
+        }
+        trust.registry = Some(registry);
         if trust.schema_version != 1
             || trust.agent_id != identity.agent_id.as_str()
             || trust.thread_ids.len() > 16
@@ -50,15 +58,15 @@ impl TextTrust {
     }
 
     pub fn issuer(&self) -> Result<IssuerRegistration, AgentdError> {
-        Ok(IssuerRegistration {
-            issuer_id: StableId::new(&self.issuer_id)
-                .map_err(|error| invalid(&error.to_string()))?,
-            key_epoch: Generation::new(self.key_epoch)
-                .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&self.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
-            revoked: self.revoked,
-        })
+        let issuer_id =
+            StableId::new(&self.issuer_id).map_err(|error| invalid(&error.to_string()))?;
+        let key_epoch =
+            Generation::new(self.key_epoch).map_err(|error| invalid(&error.to_string()))?;
+        self.registry
+            .as_ref()
+            .ok_or_else(|| invalid("verified issuer registry is missing"))?
+            .resolve_message_issuer(&issuer_id, key_epoch)
+            .map_err(|error| invalid(&error.to_string()))
     }
 
     pub fn permits(&self, thread_id: &str) -> bool {

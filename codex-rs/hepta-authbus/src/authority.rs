@@ -181,6 +181,14 @@ pub enum AuthBusAuthorityError {
     ObservedCostExceedsReservation,
     #[error("AuthBus issuer registration is missing")]
     IssuerMissing,
+    #[error("AuthBus issuer purpose does not match the requested operation")]
+    IssuerPurposeMismatch,
+    #[error("AuthBus persistent issuer registry is unsafe or malformed")]
+    UnsafeIssuerRegistry,
+    #[error("another AuthBus authority owner is already active")]
+    OwnerAlreadyActive,
+    #[error("AuthBus owner lock is unsafe or unavailable")]
+    UnsafeOwnerLock,
     #[error("AuthBus issuer key epoch did not advance monotonically")]
     KeyEpochRegression,
     #[error("trusted-time attestation does not name an active time issuer")]

@@ -5,6 +5,9 @@ name = "codex-hepta-authbus"
 version.workspace = true
 publish = false
 
+[features]
+test-support = []
+
 [lib]
 name = "codex_hepta_authbus"
 path = "src/lib.rs"
@@ -18,6 +21,7 @@ codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+rustix = { workspace = true, features = ["fs"] }
 sqlx = { workspace = true }
 thiserror = { workspace = true }
 

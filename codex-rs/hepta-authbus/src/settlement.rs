@@ -6,7 +6,19 @@ use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 
 use crate::AuthBusAuthorityError;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
 use crate::push_id;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ExpiredReservationSweepReport {
+    pub scanned: u32,
+    pub expired: u32,
+    pub indeterminate: u32,
+    pub remaining: u64,
+    pub oldest_expired_at_ms: Option<u64>,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SettlementStatus {
@@ -14,11 +26,28 @@ pub enum SettlementStatus {
     Rejected,
 }
 
-pub struct SettlementIssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
+/// Settlement verifier material can only be constructed from the durable
+/// authority registry. It is intentionally crate-private so callers cannot
+/// substitute a key, epoch, purpose or revocation state.
+pub(crate) struct SettlementIssuerRegistration {
+    issuer_id: StableId,
+    key_epoch: Generation,
+    verifying_key: VerifyingKey,
+    revoked: bool,
+}
+
+impl SettlementIssuerRegistration {
+    pub(crate) fn from_record(record: IssuerRecord) -> Result<Self, AuthBusAuthorityError> {
+        if record.purpose != IssuerPurpose::Settlement {
+            return Err(AuthBusAuthorityError::IssuerPurposeMismatch);
+        }
+        Ok(Self {
+            issuer_id: record.issuer_id,
+            key_epoch: record.key_epoch,
+            verifying_key: record.verifying_key,
+            revoked: record.state != IssuerLifecycleState::Active,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

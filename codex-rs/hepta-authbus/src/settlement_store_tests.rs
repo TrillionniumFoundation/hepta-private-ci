@@ -94,12 +94,7 @@ async fn configured() -> (
 }
 
 fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
-    SettlementIssuerRegistration {
-        issuer_id: id("issuer:settlement"),
-        key_epoch: Generation::new(1).expect("generation"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    }
+    SettlementIssuerRegistration::from_registry_parts(id("issuer:settlement"), Generation::new(1).expect("generation"), key.verifying_key(), false, Digest32::of_bytes(b\"test-registry\")).unwrap()
 }
 
 fn evidence(
@@ -161,7 +156,7 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     let key = SigningKey::from_bytes(&[9; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     let settled = store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(settled.state, ReservationState::Settled);
@@ -187,7 +182,7 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     );
     assert_eq!(
         store
-            .settle(&issuer(&key), &signed, sample(7, 1_700))
+            .settle(&signed, sample(7, 1_700))
             .await
             .expect("exact settlement retry"),
         settled
@@ -231,7 +226,7 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
     let key = SigningKey::from_bytes(&[10; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 5_200);
     store
-        .settle(&issuer(&key), &signed, sample(7, 5_200))
+        .settle(&signed, sample(7, 5_200))
         .await
         .expect("late terminal settlement");
     let closed = store
@@ -352,7 +347,7 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
     let key = SigningKey::from_bytes(&[33; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(

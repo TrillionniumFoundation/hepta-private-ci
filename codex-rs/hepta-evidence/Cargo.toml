@@ -24,6 +24,7 @@ thiserror = { workspace = true }
 tokio = { workspace = true, features = ["sync"] }
 
 [dev-dependencies]
+codex-hepta-authbus = { path = "../hepta-authbus", features = ["test-support"] }
 ed25519-dalek = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 tempfile = { workspace = true }
