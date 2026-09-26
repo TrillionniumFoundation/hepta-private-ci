@@ -1,0 +1,46 @@
+name: Cognitive read implementation-map materializer
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - .github/workflows/cognitive-read-map-materialize.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-map-materialize-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): materialize implementation map' }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebind cognitive.read source navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module cognitive.read
+          python3 scripts/verify-cognitive-read-constants.py
+          git diff --check
+          test -n "$(git status --porcelain -- docs/modules/cognitive.read/IMPLEMENTATION_MAP.json)"
+
+      - name: Commit generated map and remove temporary materializer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-ci-convergence'
+          git config user.email 'hepta-ci-convergence@users.noreply.github.com'
+          git rm .github/workflows/cognitive-read-map-materialize.yml
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(cognitive.read): bind implementation map to converged source'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
