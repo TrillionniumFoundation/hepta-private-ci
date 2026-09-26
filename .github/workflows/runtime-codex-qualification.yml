@@ -1,0 +1,300 @@
+name: runtime.codex qualification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: runtime-codex-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  exact-head:
+    name: runtime.codex exact-head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Prepare repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install native build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential pkg-config libcap-dev time
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Resolve verified sandboxed V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          {
+            printf 'TESTED_SHA=%s\n' "${SOURCE_SHA}"
+            printf 'HEPTA_CI_LANE=source-head\n'
+            printf 'RECORDS=%s/runtime-codex-exact/records\n' "${RUNNER_TEMP}"
+            printf 'EVIDENCE=%s/runtime-codex-exact\n' "${RUNNER_TEMP}"
+          } >> "${GITHUB_ENV}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify receipt tooling
+        run: python3 -m unittest scripts.tests.test_runtime_codex_receipt
+
+      - name: Execute focused exact-head matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RECORDS}"
+          cd codex-rs
+          record() {
+            local name="$1"
+            local floor="$2"
+            shift 2
+            python3 ../scripts/hepta_ci_exec.py \
+              --output "${RECORDS}/${name}.json" \
+              --minimum-tests "${floor}" \
+              --timeout-seconds 3600 \
+              -- "$@"
+          }
+          record adapter 1 cargo test --locked -p codex-hepta-codex-adapter -- --test-threads=1
+          record durable-control 1 cargo test --locked -p codex-hepta-infer-core -- --test-threads=1
+          record agent-protocol 1 cargo test --locked -p codex-hepta-agent-protocol -- --test-threads=1
+          record agent-run-lifecycle 1 cargo test --locked -p codex-hepta-agentd lane_b_runtime --lib -- --test-threads=1
+          record worker-host 1 cargo test --locked -p codex-hepta-infer-worker-host -- --test-threads=1
+          record product-e2e 1 cargo test --locked -p codex-hepta-agentd \
+            --test runtime_codex_product_e2e \
+            runtime_codex_product_caller_commits_one_authorized_terminal_turn \
+            -- --test-threads=1
+          record strict-lint 0 cargo clippy --locked \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets -- -D warnings
+          record formatting 0 cargo fmt \
+            --package codex-hepta-codex-adapter \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-agent-protocol \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-worker-host \
+            -- --check
+
+      - name: Measure bounded source-candidate baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${EVIDENCE}/performance"
+          python3 scripts/runtime_codex_benchmark.py \
+            --iterations 3 \
+            --timeout-seconds 180 \
+            --output "${EVIDENCE}/performance.json" \
+            -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-agentd \
+              --test runtime_codex_product_e2e \
+              runtime_codex_product_caller_commits_one_authorized_terminal_turn \
+              -- --test-threads=1
+
+      - name: Build and verify exact-head receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/runtime_codex_receipt.py build \
+            --source-sha "${SOURCE_SHA}" \
+            --tested-sha "${TESTED_SHA}" \
+            --expected-tree "$(git rev-parse HEAD^{tree})" \
+            --lane source-head \
+            --records "${RECORDS}" \
+            --metrics "${EVIDENCE}/performance.json" \
+            --minimum-total-tests 6 \
+            --output "${EVIDENCE}/receipt.json"
+          python3 scripts/runtime_codex_receipt.py verify "${EVIDENCE}/receipt.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          policy = json.loads(Path('qualification/runtime-codex-qualification-policy.json').read_text())
+          assert policy['schema'] == 'hepta.runtime-codex-qualification-policy.v1'
+          assert policy['module'] == 'runtime.codex'
+          assert all(not value for value in policy['repositoryClaimCeiling'].values())
+          PY
+          mkdir -p .hepta-evidence/runtime-codex/exact-head
+          cp -R "${EVIDENCE}/." .hepta-evidence/runtime-codex/exact-head/
+
+      - name: Retain exact-head receipt and command records
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-exact-head-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/runtime-codex/exact-head/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attest exact-head qualification receipt
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/runtime-codex/exact-head/receipt.json
+
+  synthetic-merge:
+    name: runtime.codex synthetic-merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out source with full history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Prepare repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install native build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential pkg-config libcap-dev
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Resolve verified sandboxed V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Materialize deterministic ordered-parent merge
+        id: merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
+          if [[ -z "${BASE_SHA:-}" ]] \
+            || [[ "${BASE_SHA}" = "0000000000000000000000000000000000000000" ]] \
+            || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            BASE_SHA="$(git rev-parse "${SOURCE_COMMIT}^1")"
+          fi
+          MERGE_TREE="$(git merge-tree --write-tree "${BASE_SHA}" "${SOURCE_COMMIT}")"
+          MERGE_COMMIT="$(printf '%s\n' 'runtime.codex synthetic merge qualification' | \
+            git -c user.name=runtime-codex-ci \
+              -c user.email=runtime-codex-ci@users.noreply.github.com \
+              commit-tree "${MERGE_TREE}" -p "${BASE_SHA}" -p "${SOURCE_COMMIT}")"
+          git checkout --detach "${MERGE_COMMIT}"
+          test "$(git rev-parse HEAD^1)" = "${BASE_SHA}"
+          test "$(git rev-parse HEAD^2)" = "${SOURCE_COMMIT}"
+          test "$(git rev-parse HEAD^{tree})" = "${MERGE_TREE}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          {
+            printf 'BASE_SHA=%s\n' "${BASE_SHA}"
+            printf 'TESTED_SHA=%s\n' "${MERGE_COMMIT}"
+            printf 'MERGE_TREE=%s\n' "${MERGE_TREE}"
+            printf 'HEPTA_CI_LANE=base-merge\n'
+            printf 'RECORDS=%s/runtime-codex-merge/records\n' "${RUNNER_TEMP}"
+            printf 'EVIDENCE=%s/runtime-codex-merge\n' "${RUNNER_TEMP}"
+          } >> "${GITHUB_ENV}"
+          printf 'base=%s\nsource=%s\nmerge=%s\ntree=%s\n' \
+            "${BASE_SHA}" "${SOURCE_COMMIT}" "${MERGE_COMMIT}" "${MERGE_TREE}"
+
+      - name: Execute focused synthetic-merge matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RECORDS}"
+          cd codex-rs
+          record() {
+            local name="$1"
+            local floor="$2"
+            shift 2
+            python3 ../scripts/hepta_ci_exec.py \
+              --output "${RECORDS}/${name}.json" \
+              --minimum-tests "${floor}" \
+              --timeout-seconds 3600 \
+              -- "$@"
+          }
+          record adapter 1 cargo test --locked -p codex-hepta-codex-adapter -- --test-threads=1
+          record durable-control 1 cargo test --locked -p codex-hepta-infer-core -- --test-threads=1
+          record agent-protocol 1 cargo test --locked -p codex-hepta-agent-protocol -- --test-threads=1
+          record agent-run-lifecycle 1 cargo test --locked -p codex-hepta-agentd lane_b_runtime --lib -- --test-threads=1
+          record worker-host 1 cargo test --locked -p codex-hepta-infer-worker-host -- --test-threads=1
+          record product-e2e 1 cargo test --locked -p codex-hepta-agentd \
+            --test runtime_codex_product_e2e \
+            runtime_codex_product_caller_commits_one_authorized_terminal_turn \
+            -- --test-threads=1
+          record strict-lint 0 cargo clippy --locked \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets -- -D warnings
+
+      - name: Build and verify synthetic-merge receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${EVIDENCE}"
+          python3 scripts/runtime_codex_receipt.py build \
+            --source-sha "${SOURCE_SHA}" \
+            --tested-sha "${TESTED_SHA}" \
+            --expected-tree "${MERGE_TREE}" \
+            --base-sha "${BASE_SHA}" \
+            --lane base-merge \
+            --records "${RECORDS}" \
+            --minimum-total-tests 6 \
+            --output "${EVIDENCE}/receipt.json"
+          python3 scripts/runtime_codex_receipt.py verify "${EVIDENCE}/receipt.json"
+          mkdir -p .hepta-evidence/runtime-codex/synthetic-merge
+          cp -R "${EVIDENCE}/." .hepta-evidence/runtime-codex/synthetic-merge/
+
+      - name: Retain synthetic-merge receipt and command records
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/runtime-codex/synthetic-merge/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attest synthetic-merge qualification receipt
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/runtime-codex/synthetic-merge/receipt.json

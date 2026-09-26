@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.runtime-codex-qualification-policy.v1",
+  "schemaVersion": 1,
+  "module": "runtime.codex",
+  "requiredRepositoryChecks": [
+    {
+      "context": "runtime.codex exact-head",
+      "candidateMode": "source-head",
+      "maySkip": false,
+      "minimumObservedTestSuites": 6,
+      "requiresCanonicalReceipt": true,
+      "requiresWorkflowAttestationOnProtectedPush": true
+    },
+    {
+      "context": "runtime.codex synthetic-merge",
+      "candidateMode": "ordered-parent-base-merge",
+      "maySkip": false,
+      "minimumObservedTestSuites": 6,
+      "requiresCanonicalReceipt": true,
+      "requiresWorkflowAttestationOnProtectedPush": true
+    }
+  ],
+  "requiredRepositorySuites": [
+    "codex-hepta-codex-adapter",
+    "codex-hepta-infer-core",
+    "codex-hepta-agent-protocol",
+    "codex-hepta-agentd lane_b_runtime",
+    "codex-hepta-infer-worker-host",
+    "runtime_codex_product_e2e",
+    "strict clippy",
+    "rustfmt"
+  ],
+  "receipt": {
+    "schema": "hepta.runtime-codex-qualification.v1",
+    "exactCommitRequired": true,
+    "exactTreeRequired": true,
+    "cleanCandidateRequired": true,
+    "orderedMergeParents": [
+      "base",
+      "source"
+    ],
+    "rawCommandRecordsRequired": true,
+    "rawLogDigestsRequired": true,
+    "failedTestsAllowed": 0,
+    "skippedOrCancelledIsPassing": false
+  },
+  "externalGates": [
+    {
+      "id": "issuer-key-custody",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "trusted-time-and-revocation-distribution",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "anti-rollback-recovery",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "target-host-process-socket-and-filesystem-identity",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "real-provider-terminal-and-ack-loss-qualification",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "independent-quarantine-resolution-authority",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "target-host-p50-p95-p99-capacity-baseline",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "canary-and-rollback",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    },
+    {
+      "id": "independent-acceptance",
+      "repositoryCanSelfCertify": false,
+      "required": true
+    }
+  ],
+  "repositoryClaimCeiling": {
+    "deploymentQualificationComplete": false,
+    "realProviderQualified": false,
+    "independentAcceptanceComplete": false,
+    "activationApproved": false,
+    "promotionApproved": false,
+    "releaseApproved": false
+  },
+  "documents": [
+    "docs/modules/runtime.codex/TECHNICAL.md",
+    "docs/modules/runtime.codex/FAULT_MATRIX.md",
+    "docs/modules/runtime.codex/CRASH_INJECTION_MATRIX.md",
+    "docs/modules/runtime.codex/QUARANTINE_AND_RELEASE.md",
+    "docs/modules/runtime.codex/OPERATIONS.md",
+    "docs/modules/runtime.codex/PRODUCTION_QUALIFICATION.md"
+  ]
+}
