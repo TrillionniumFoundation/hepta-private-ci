@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Finalize the generated knowledge.graph convergence candidate.
 
-The phase-one transformer intentionally performs large, source-anchored replacements.  This
+The phase-one transformer intentionally performs large, source-anchored replacements. This
 second pass is deliberately small: it removes two structural Clippy failures without adding
-lint exceptions.  It fails closed if the generated Rust shape changes, so it cannot silently
+lint exceptions. It fails closed if the generated Rust shape changes, so it cannot silently
 rewrite an unrelated implementation.
 """
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
+from typing import NoReturn
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,7 +20,7 @@ FUNCTION_NAME = "collect_relation_query_edges"
 OLD_HEADER = "fn collect_relation_query_edges<'a>("
 
 
-def fail(message: str) -> "NoReturn":
+def fail(message: str) -> NoReturn:
     raise SystemExit(f"FAIL_HEPTA_KG_CONVERGENCE_FINALIZE: {message}")
 
 
@@ -249,21 +251,27 @@ fn collect_relation_query_edges<'a>(
     } = selection;"""
     source = source[:header_start] + new_header + source[header_end:]
 
-    old_flatten = ".filter_map(|seed| self.adjacency.get(seed))\n                .flatten()"
-    new_flatten = (
-        ".filter_map(|seed| self.adjacency.get(seed))\n"
-        "                .flat_map(|indices| indices.iter())"
+    flatten_pattern = re.compile(
+        r"(?P<indent>[ \t]*)\.filter_map\(\|seed\| self\.adjacency\.get\(seed\)\)\n"
+        r"(?P=indent)\.flatten\(\)"
     )
-    flatten_count = source.count(old_flatten)
-    if flatten_count != 1:
+    flatten_matches = list(flatten_pattern.finditer(source))
+    if len(flatten_matches) != 1:
         fail(
             "generated adjacency iterator changed; expected one filter-map/flatten pair, "
-            f"observed {flatten_count}"
+            f"observed {len(flatten_matches)}"
         )
-    source = source.replace(old_flatten, new_flatten, 1)
 
+    def replace_flatten(match: re.Match[str]) -> str:
+        indentation = match.group("indent")
+        return (
+            f"{indentation}.filter_map(|seed| self.adjacency.get(seed))\n"
+            f"{indentation}.flat_map(|indices| indices.iter())"
+        )
+
+    source, flatten_count = flatten_pattern.subn(replace_flatten, source, count=1)
     source, call_count = rewrite_calls(source)
-    if OLD_HEADER in source or old_flatten in source:
+    if OLD_HEADER in source or flatten_pattern.search(source):
         fail("obsolete generated structure survived finalization")
 
     TARGET.write_text(source, encoding="utf-8")
