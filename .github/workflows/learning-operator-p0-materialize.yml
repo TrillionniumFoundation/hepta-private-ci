@@ -14,6 +14,9 @@ concurrency:
   group: learning-operator-p0-materialize
   cancel-in-progress: true
 
+env:
+  HEPTA_P0_MATERIALIZER_REVISION: "3"
+
 jobs:
   materialize:
     runs-on: ubuntu-22.04
