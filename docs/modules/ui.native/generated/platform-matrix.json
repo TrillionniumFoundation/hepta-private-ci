@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.ui.native.platform-matrix.v1",
+  "uiFramework": "eframe-0.36",
+  "accessibilityAdapter": "accesskit",
+  "windowPolicy": {
+    "singleProcess": true,
+    "concurrentPlatformEffects": "journal_linearized",
+    "sessionPolicy": "one authenticated runtime session incarnation per shell",
+    "multiWindowPolicy": "not admitted until shared journal ownership is proven"
+  },
+  "platforms": [
+    {
+      "id": "linux",
+      "runner": "ubuntu-24.04",
+      "packageShape": "AppDir deterministic unsigned ZIP",
+      "metadata": "apps/hepta-native/packaging/linux/hepta-native.desktop",
+      "launcher": "hepta-native",
+      "secretStore": "desktop keyring through codex-keyring-store",
+      "sandboxPolicy": "host policy; shell itself owns no domain authority",
+      "signingState": "external_evidence_gate"
+    },
+    {
+      "id": "macos",
+      "runner": "macos-15",
+      "packageShape": "app bundle deterministic unsigned ZIP",
+      "metadata": "apps/hepta-native/packaging/macos/Info.plist",
+      "minimumVersion": "14.0",
+      "bundleIdentifier": "org.trillionnium.hepta.native",
+      "secretStore": "Keychain through codex-keyring-store",
+      "entitlements": "release-owner supplied and independently reviewed",
+      "signingState": "developer_id_and_notarization_external_gate"
+    },
+    {
+      "id": "windows",
+      "runner": "windows-2025",
+      "packageShape": "application directory deterministic unsigned ZIP",
+      "metadata": "apps/hepta-native/packaging/windows/app.manifest",
+      "executionLevel": "asInvoker",
+      "dpiAwareness": "PerMonitorV2",
+      "longPathAware": true,
+      "secretStore": "Windows credential store through codex-keyring-store",
+      "signingState": "authenticode_external_gate"
+    }
+  ],
+  "automatedAccessibility": [
+    "AccessKit adapter compiled in",
+    "keyboard and focus paths covered by product qualification fixtures",
+    "generated source projection rejects missing accessibility feature"
+  ],
+  "physicalAcceptanceGates": [
+    "screen_reader",
+    "chinese_ime",
+    "focus_restoration",
+    "multi_monitor_dpi",
+    "reduced_motion",
+    "contrast"
+  ]
+}

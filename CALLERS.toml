@@ -1,7 +1,7 @@
 schema_version = 2
 plan_id = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
 plan_version = "8.0.0"
-source_roots = ["codex-rs"]
+source_roots = ["codex-rs", "apps/hepta-native"]
 ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
 rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
 
@@ -142,8 +142,8 @@ id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"]
-caller_markers = ["FinalUseAuthority::open_state_dir", "authority_state_dir", "SignedFinalUseGrant"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "apps/hepta-native/src/security.rs"]
+caller_markers = ["FinalUseAuthority::open_state_dir", "authority_state_dir", "SignedFinalUseGrant", "KernelFinalUseGate::open"]
 
 [[boundary]]
 id = "final_use_claim"
@@ -159,8 +159,8 @@ symbol = "FinalUseAuthority::claim"
 call_pattern = "authority\\s*\\.\\s*claim\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
-caller_markers = [".claim(", "signed_grant", "expected_binding"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "apps/hepta-native/src/security.rs"]
+caller_markers = [".claim(", "signed_grant", "expected_binding", "claim_platform"]
 
 [[boundary]]
 id = "final_use_delivery"
@@ -218,8 +218,8 @@ symbol = "FinalUseAuthority::update_revocations"
 call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-contracts/src/final_use_control.rs"]
-caller_markers = ["FinalUseAuthority", ".update_revocations(signed.update.head.clone())", "FinalUseRevocationFeedVerifier"]
+product_callers = ["codex-rs/hepta-contracts/src/final_use_control.rs", "apps/hepta-native/src/security.rs"]
+caller_markers = ["FinalUseAuthority", ".update_revocations(signed.update.head.clone())", "FinalUseRevocationFeedVerifier", "refresh_revocations"]
 
 [[boundary]]
 id = "final_use_approval_trust"
@@ -507,5 +507,5 @@ id = "final_use_guarded_effect"
 symbol = "FinalUseAuthority::with_verified_effect"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
-caller_markers = ["with_verified_effect"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "apps/hepta-native/src/security.rs"]
+caller_markers = ["with_verified_effect", "with_platform_use"]

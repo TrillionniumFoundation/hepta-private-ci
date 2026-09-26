@@ -20,6 +20,7 @@ mod final_use;
 mod final_use_control;
 mod identity;
 mod memory;
+pub mod native_gateway;
 mod provider;
 mod provider_effect;
 mod qualification_receipt;

@@ -1247,15 +1247,19 @@ mod tests {
     }
 
     fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = tempfile::tempdir()
+            .unwrap_or_else(|error| panic!("create authority lease test directory: {error}"));
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .unwrap_or_else(|error| panic!("secure authority lease test directory: {error}"));
+        let frontier = AuthorityLeaseFrontier::for_empty_epoch(7)
+            .unwrap_or_else(|error| panic!("create authority lease test frontier: {error}"));
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+            frontier,
             Arc::new(FixedClock(2_000)),
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("open authority lease test registry: {error}"));
         (registry, directory)
     }
 

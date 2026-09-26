@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "082f89f44ed0577320cca304061b96425ecb657e",
+    "tree": "032d03150bb62f5ad6883cb0c1d1f8cfc4955565"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -11,10 +11,12 @@
   "deputy": "kernel-contracts",
   "technicalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
   "declaredRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-private-state"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-private-state"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -43,12 +45,17 @@
       "state": "source_implemented_not_product_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+        "codex-rs/hepta-private-state/src/windows.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-private-state/src/windows.rs"
+      ],
+      "sourceSemantics": "Current v3 authority snapshot plus append-only nonce log; Unix owner-only/no-follow durability and Windows private-directory/ACL durability fail closed without weaker fallback."
     },
     {
       "operation": "authority_lease_registry",
@@ -153,9 +160,9 @@
   ],
   "repositoryControlledGaps": [
     "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
+    "Retain Linux and Windows exact-head plus deterministic synthetic-merge store execution receipts for the current source candidate.",
     "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes.",
     "Compose remaining target-only ModulePorts only when their real owner exposes one canonical authority reference/revision; do not create ad-hoc double-authority wrappers.",
-    "Obtain exact-head and deterministic synthetic-merge execution receipts for the current-main closure candidate.",
     "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; runtime.fleet is now source-composed, while the remaining target-only ports are enumerated in TRACEABILITY.md."
   ],
   "externalEvidenceGates": [
@@ -177,7 +184,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-private-state"
   ],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
@@ -234,11 +242,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "65c7a8a9a80e710668880cf254355b59edf6413e"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "bf09734f8900c1e95dfc550bf8766b0667a875c9"
+      "object": "890dc91fd5b5b44580268c5f4741131f85538361"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -246,19 +254,23 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "467272b0f91d123d6fbbccd211dfb726c95965da"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
+      "object": "378c590128111e8ad670be6a88a58043b0a29578"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836"
+      "object": "87467d56f183de3b09ad897442ec033dee183a78"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "object": "924fc00d4cb7404e2361222000caa04a57d33cd5"
+      "object": "b4e53a978fd570c614ad2a405cbaee521166b28f"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "object": "481798ab380c1ae5aaa13f501cc2d9f76ec76a71"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -277,8 +289,16 @@
       "object": "44e0abe36d58ca68a3cc9d5eec381cd077cb3789"
     },
     {
+      "path": "codex-rs/hepta-private-state",
+      "object": "b0f1e9423766988eae362de4d29c1fb66fdb48c2"
+    },
+    {
+      "path": "codex-rs/hepta-private-state/src/windows.rs",
+      "object": "e1ec864abe7173e1b96443b0ed87bc5b5441bd80"
+    },
+    {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
+      "object": "52ffbf87abc8d30cdb918a95323ca657b7ac8280"
     }
   ]
 }

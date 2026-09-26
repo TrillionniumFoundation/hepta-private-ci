@@ -1,0 +1,23 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-private-state"
+version.workspace = true
+
+[lib]
+name = "codex_hepta_private_state"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[target.'cfg(windows)'.dependencies.windows-sys]
+version = "0.52"
+features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Threading",
+]

@@ -47,6 +47,12 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
+// This alias remains only for source compatibility. The re-export must not
+// remove deprecation from downstream callers or change the V2 recommendation.
+#[expect(
+    deprecated,
+    reason = "intentional compatibility re-export; consumers still receive the V2 migration diagnostic"
+)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;

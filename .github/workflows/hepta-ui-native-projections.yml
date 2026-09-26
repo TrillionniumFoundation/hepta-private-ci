@@ -1,0 +1,144 @@
+name: ui.native generated projections and evidence
+
+on:
+  pull_request:
+    paths:
+      - "apps/hepta-native/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/hepta-private-state/**"
+      - "docs/modules/ui.native/**"
+      - "tools/ui-native-projections/**"
+      - ".github/workflows/hepta-ui-native-projections.yml"
+  push:
+    branches:
+      - main
+      - work/ui-native-current-source-20260925
+    paths:
+      - "apps/hepta-native/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/hepta-private-state/**"
+      - "docs/modules/ui.native/**"
+      - "tools/ui-native-projections/**"
+      - ".github/workflows/hepta-ui-native-projections.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-projections-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  projection:
+    name: projections-${{ matrix.source }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact head or deterministic synthetic merge
+        env:
+          SOURCE: ${{ matrix.source }}
+        run: |
+          set -euo pipefail
+          candidate=$(git rev-parse HEAD)
+          git fetch --no-tags origin \
+            refs/heads/main:refs/remotes/origin/main
+          base=$(git rev-parse refs/remotes/origin/main)
+          if test "$SOURCE" = merge; then
+            tree=$(git merge-tree --write-tree "$base" "$candidate")
+            export GIT_AUTHOR_NAME=ui-native-projection
+            export GIT_AUTHOR_EMAIL=ui-native-projection@users.noreply.github.com
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z
+            export GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge=$(printf '%s\n' 'deterministic ui.native projection merge' |
+              git commit-tree "$tree" -p "$base" -p "$candidate")
+            git checkout --detach "$merge"
+          fi
+          mkdir -p native-evidence
+          {
+            printf 'candidate=%s\n' "$candidate"
+            printf 'base=%s\n' "$base"
+            printf 'source=%s\n' "$SOURCE"
+            printf 'checkout=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          } > native-evidence/projection-source.txt
+
+      - name: Require Node 22 or newer
+        run: |
+          node -e 'const major=Number(process.versions.node.split(".")[0]); if (major < 22) process.exit(1)'
+
+      - name: Install projection tooling
+        working-directory: tools/ui-native-projections
+        run: npm ci
+
+      - name: Regenerate source projections
+        working-directory: tools/ui-native-projections
+        run: npm run generate
+
+      - name: Lint projection tooling
+        working-directory: tools/ui-native-projections
+        run: npm run lint
+
+      - name: Verify generated source projections
+        working-directory: tools/ui-native-projections
+        run: npm run typecheck
+
+      - name: Test projection and source contracts
+        working-directory: tools/ui-native-projections
+        run: npm test
+
+      - name: Signing and notarization dry-run
+        working-directory: tools/ui-native-projections
+        run: npm run --silent signing-dry-run > ../../native-evidence/signing-dry-run.json
+
+      - name: Generate source dependency SBOM
+        working-directory: tools/ui-native-projections
+        run: npm run --silent sbom -- --out native-evidence/ui-native-sbom.spdx.json
+
+      - name: Generate bound qualification receipt
+        working-directory: tools/ui-native-projections
+        env:
+          HEPTA_SOURCE_KIND: ${{ matrix.source }}
+        run: npm run --silent receipt -- --out native-evidence/projection-receipt.json
+
+      - name: Verify source tree and evidence integrity
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          test -s native-evidence/projection-receipt.json
+          test -s native-evidence/ui-native-sbom.spdx.json
+          test -s native-evidence/signing-dry-run.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          for (const path of [
+            'native-evidence/projection-receipt.json',
+            'native-evidence/ui-native-sbom.spdx.json',
+            'native-evidence/signing-dry-run.json',
+          ]) {
+            JSON.parse(fs.readFileSync(path, 'utf8'));
+          }
+          NODE
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ui-native-projections-${{ matrix.source }}-${{ github.sha }}
+          path: |
+            native-evidence/
+            docs/modules/ui.native/generated/*.json
+          if-no-files-found: error
+          retention-days: 30

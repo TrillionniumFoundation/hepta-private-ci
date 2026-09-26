@@ -143,7 +143,7 @@ fn async_effect_entry_rechecks_revocation_and_consumes_the_token() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert!(entered.matches(&binding));
@@ -158,7 +158,7 @@ fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert_eq!(
@@ -779,6 +779,19 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
 }
 
 #[test]
+fn delivery_callback_runs_without_holding_the_revocation_mutex() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+
+    let lock_was_free = authority
+        .with_verified_use(token, &binding, || authority.0.state.try_lock().is_ok())
+        .unwrap();
+
+    assert!(lock_was_free);
+}
+
+#[test]
 fn synchronous_final_use_rejects_a_concurrent_revocation_commit() {
     let (authority, signed, _directory) = fixture().unwrap();
     let binding = signed.grant.binding.clone();
@@ -847,7 +860,7 @@ fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
     let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
     assert_eq!(claims.len(), 40);
 
-    let mut second = signed.clone();
+    let mut second = signed;
     second.grant.grant_id = "read-two".into();
     second.grant.nonce = [6; 32];
     second.signature = SigningKey::from_bytes(&[47; 32])
