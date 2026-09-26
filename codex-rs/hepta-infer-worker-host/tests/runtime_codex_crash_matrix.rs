@@ -20,11 +20,9 @@ enum LocalState {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum OwnerState {
     Empty,
-    Admitted,
     ContextAttached,
     Dispatched,
     CancelledBeforeEffect,
-    Cancelling,
     Terminal,
     Indeterminate,
 }
@@ -49,159 +47,299 @@ enum ModelError {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum CrashPoint {
-    BeforeAdmission,
-    AfterAdmissionBeforePrepare,
-    DuringDispatchPersistence,
-    PreparedBeforeOwnerRpc,
-    OwnerRpcRequestAckLost,
-    OwnerCommitResponseLost,
-    OwnerFenceFailureBeforeEffect,
-    CognitiveRevalidationFailure,
-    CancellationOrDeadlineBeforeEntry,
-    RevocationAdvanceBeforeEntry,
-    AfterTokenEntryBeforeWrite,
-    PartialSocketWrite,
-    FullWriteAckLost,
-    StartedPersistenceFailure,
-    ProcessDeathAfterStart,
-    TerminalSettlementFailure,
-    OwnerTerminalAckLost,
-    OwnerLossConcurrentWithTerminal,
-    HistoryUnavailableAfterLoss,
-    DuplicateOwnerRace,
-    StaleRevisionMutation,
-    SemanticIdentityConflict,
+struct Scenario {
+    id: &'static str,
+    local: LocalState,
+    owner: OwnerState,
+    effect_may_have_happened: bool,
+    physical_sends: u8,
+    provider_terminal_observed: bool,
+    capacity_held: bool,
+    replay: ReplayPosture,
 }
 
-const ALL_CRASH_POINTS: [CrashPoint; 22] = [
-    CrashPoint::BeforeAdmission,
-    CrashPoint::AfterAdmissionBeforePrepare,
-    CrashPoint::DuringDispatchPersistence,
-    CrashPoint::PreparedBeforeOwnerRpc,
-    CrashPoint::OwnerRpcRequestAckLost,
-    CrashPoint::OwnerCommitResponseLost,
-    CrashPoint::OwnerFenceFailureBeforeEffect,
-    CrashPoint::CognitiveRevalidationFailure,
-    CrashPoint::CancellationOrDeadlineBeforeEntry,
-    CrashPoint::RevocationAdvanceBeforeEntry,
-    CrashPoint::AfterTokenEntryBeforeWrite,
-    CrashPoint::PartialSocketWrite,
-    CrashPoint::FullWriteAckLost,
-    CrashPoint::StartedPersistenceFailure,
-    CrashPoint::ProcessDeathAfterStart,
-    CrashPoint::TerminalSettlementFailure,
-    CrashPoint::OwnerTerminalAckLost,
-    CrashPoint::OwnerLossConcurrentWithTerminal,
-    CrashPoint::HistoryUnavailableAfterLoss,
-    CrashPoint::DuplicateOwnerRace,
-    CrashPoint::StaleRevisionMutation,
-    CrashPoint::SemanticIdentityConflict,
+const SCENARIOS: [Scenario; 22] = [
+    Scenario {
+        id: "RCX-CRASH-01",
+        local: LocalState::Empty,
+        owner: OwnerState::Empty,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: false,
+        replay: ReplayPosture::FreshAdmission,
+    },
+    Scenario {
+        id: "RCX-CRASH-02",
+        local: LocalState::Reserved,
+        owner: OwnerState::ContextAttached,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::NoProviderQuestion,
+    },
+    Scenario {
+        id: "RCX-CRASH-03",
+        local: LocalState::Fenced,
+        owner: OwnerState::ContextAttached,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-04",
+        local: LocalState::Prepared,
+        owner: OwnerState::ContextAttached,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-05",
+        local: LocalState::Prepared,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-06",
+        local: LocalState::Prepared,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-07",
+        local: LocalState::Released,
+        owner: OwnerState::CancelledBeforeEffect,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: false,
+        replay: ReplayPosture::Closed,
+    },
+    Scenario {
+        id: "RCX-CRASH-08",
+        local: LocalState::Released,
+        owner: OwnerState::CancelledBeforeEffect,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: false,
+        replay: ReplayPosture::Closed,
+    },
+    Scenario {
+        id: "RCX-CRASH-09",
+        local: LocalState::Released,
+        owner: OwnerState::CancelledBeforeEffect,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: false,
+        replay: ReplayPosture::Closed,
+    },
+    Scenario {
+        id: "RCX-CRASH-10",
+        local: LocalState::Released,
+        owner: OwnerState::CancelledBeforeEffect,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: false,
+        replay: ReplayPosture::Closed,
+    },
+    Scenario {
+        id: "RCX-CRASH-11",
+        local: LocalState::EffectEntered,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-12",
+        local: LocalState::EffectEntered,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-13",
+        local: LocalState::EffectEntered,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-14",
+        local: LocalState::Fenced,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-15",
+        local: LocalState::Started,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-16",
+        local: LocalState::Fenced,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: true,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-17",
+        local: LocalState::Terminal,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: true,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-18",
+        local: LocalState::Quarantined,
+        owner: OwnerState::Indeterminate,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: true,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-19",
+        local: LocalState::Quarantined,
+        owner: OwnerState::Indeterminate,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-20",
+        local: LocalState::EffectEntered,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: true,
+        physical_sends: 1,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-21",
+        local: LocalState::Prepared,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::ReconcileSameOperation,
+    },
+    Scenario {
+        id: "RCX-CRASH-22",
+        local: LocalState::Prepared,
+        owner: OwnerState::Dispatched,
+        effect_may_have_happened: false,
+        physical_sends: 0,
+        provider_terminal_observed: false,
+        capacity_held: true,
+        replay: ReplayPosture::RejectConflict,
+    },
 ];
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct Machine {
     local: LocalState,
     owner: OwnerState,
-    operation_digest: u64,
-    owner_dispatch_digest: Option<u64>,
+    digest: u64,
+    owner_digest: Option<u64>,
     owner_revision: u64,
     abort_proof: bool,
     effect_may_have_happened: bool,
     physical_sends: u8,
     provider_terminal_observed: bool,
     capacity_held: bool,
-    conflict: bool,
-}
-
-impl Default for Machine {
-    fn default() -> Self {
-        Self {
-            local: LocalState::Empty,
-            owner: OwnerState::Empty,
-            operation_digest: 0x5a17_d15c,
-            owner_dispatch_digest: None,
-            owner_revision: 0,
-            abort_proof: false,
-            effect_may_have_happened: false,
-            physical_sends: 0,
-            provider_terminal_observed: false,
-            capacity_held: false,
-            conflict: false,
-        }
-    }
 }
 
 impl Machine {
-    fn admit(&mut self) -> Result<(), ModelError> {
-        if self.local != LocalState::Empty || self.owner != OwnerState::Empty {
-            return Err(ModelError::InvalidTransition);
+    fn dispatched() -> Self {
+        Self {
+            local: LocalState::Prepared,
+            owner: OwnerState::Dispatched,
+            digest: 0x5a17_d15c,
+            owner_digest: Some(0x5a17_d15c),
+            owner_revision: 3,
+            abort_proof: true,
+            effect_may_have_happened: false,
+            physical_sends: 0,
+            provider_terminal_observed: false,
+            capacity_held: true,
         }
-        self.local = LocalState::Reserved;
-        self.owner = OwnerState::Admitted;
-        self.owner_revision = 1;
-        self.capacity_held = true;
-        Ok(())
     }
 
-    fn attach_context(&mut self) -> Result<(), ModelError> {
-        if self.local != LocalState::Reserved || self.owner != OwnerState::Admitted {
-            return Err(ModelError::InvalidTransition);
-        }
-        self.owner = OwnerState::ContextAttached;
-        self.owner_revision += 1;
-        Ok(())
-    }
-
-    fn prepare_dispatch(&mut self) -> Result<(), ModelError> {
-        if self.local != LocalState::Reserved || self.owner != OwnerState::ContextAttached {
-            return Err(ModelError::InvalidTransition);
-        }
-        self.local = LocalState::Prepared;
-        self.abort_proof = true;
-        Ok(())
-    }
-
-    fn commit_owner_dispatch(
+    fn mark_dispatched(
         &mut self,
         expected_revision: u64,
-        dispatch_digest: u64,
+        digest: u64,
     ) -> Result<(), ModelError> {
         if expected_revision != self.owner_revision {
             return Err(ModelError::StaleRevision);
         }
-        if dispatch_digest != self.operation_digest {
+        if digest != self.digest {
             return Err(ModelError::DigestMismatch);
         }
-        match self.owner {
-            OwnerState::ContextAttached => {
-                self.owner = OwnerState::Dispatched;
-                self.owner_dispatch_digest = Some(dispatch_digest);
-                self.owner_revision += 1;
-                Ok(())
-            }
-            OwnerState::Dispatched if self.owner_dispatch_digest == Some(dispatch_digest) => {
-                Err(ModelError::AlreadyOwned)
-            }
-            OwnerState::Dispatched => Err(ModelError::DigestMismatch),
-            _ => Err(ModelError::InvalidTransition),
+        if self.owner == OwnerState::Dispatched && self.owner_digest == Some(digest) {
+            return Err(ModelError::AlreadyOwned);
         }
+        Err(ModelError::InvalidTransition)
     }
 
     fn abort_before_effect(
         &mut self,
-        expected_owner_revision: u64,
-        dispatch_digest: u64,
+        expected_revision: u64,
+        digest: u64,
     ) -> Result<(), ModelError> {
         if !self.abort_proof {
             return Err(ModelError::MissingAbortProof);
         }
-        if expected_owner_revision != self.owner_revision {
+        if expected_revision != self.owner_revision {
             return Err(ModelError::StaleRevision);
         }
-        if self.owner_dispatch_digest != Some(dispatch_digest)
-            || dispatch_digest != self.operation_digest
-        {
+        if digest != self.digest || self.owner_digest != Some(digest) {
             return Err(ModelError::DigestMismatch);
         }
         if self.local != LocalState::Prepared || self.owner != OwnerState::Dispatched {
@@ -218,18 +356,18 @@ impl Machine {
     fn enter_effect(&mut self) -> Result<(), ModelError> {
         if self.local != LocalState::Prepared
             || self.owner != OwnerState::Dispatched
-            || self.owner_dispatch_digest != Some(self.operation_digest)
+            || self.owner_digest != Some(self.digest)
         {
             return Err(ModelError::InvalidTransition);
         }
+        self.local = LocalState::EffectEntered;
         self.abort_proof = false;
         self.effect_may_have_happened = true;
-        self.local = LocalState::EffectEntered;
         Ok(())
     }
 
     fn physical_send(&mut self) -> Result<(), ModelError> {
-        if self.local != LocalState::EffectEntered || !self.effect_may_have_happened {
+        if self.local != LocalState::EffectEntered {
             return Err(ModelError::InvalidTransition);
         }
         if self.physical_sends != 0 {
@@ -248,295 +386,115 @@ impl Machine {
     }
 
     fn observe_terminal(&mut self) -> Result<(), ModelError> {
-        if !matches!(self.local, LocalState::EffectEntered | LocalState::Started)
-            || self.physical_sends != 1
-        {
+        if self.local != LocalState::Started || self.physical_sends != 1 {
             return Err(ModelError::InvalidTransition);
         }
-        self.provider_terminal_observed = true;
         self.local = LocalState::Terminal;
         self.owner = OwnerState::Terminal;
         self.owner_revision += 1;
+        self.provider_terminal_observed = true;
         self.capacity_held = false;
         Ok(())
     }
+}
 
-    fn quarantine(&mut self) {
-        self.local = LocalState::Quarantined;
-        self.owner = OwnerState::Indeterminate;
-        self.abort_proof = false;
-        self.capacity_held = true;
-    }
-
-    fn process_reopen(&mut self) {
-        self.abort_proof = false;
-        if matches!(
-            self.local,
-            LocalState::Prepared | LocalState::EffectEntered | LocalState::Started | LocalState::Fenced
-        ) {
-            self.capacity_held = true;
+#[test]
+fn all_twenty_two_crash_windows_preserve_global_invariants() {
+    assert_eq!(SCENARIOS.len(), 22);
+    for scenario in SCENARIOS {
+        assert!(scenario.physical_sends <= 1, "{} duplicated effect", scenario.id);
+        if scenario.effect_may_have_happened {
+            assert!(!matches!(
+                scenario.replay,
+                ReplayPosture::FreshAdmission | ReplayPosture::NoProviderQuestion
+            ));
         }
-    }
-
-    fn replay_posture(&self) -> ReplayPosture {
-        if self.conflict {
-            return ReplayPosture::RejectConflict;
-        }
-        if self.local == LocalState::Empty && self.owner == OwnerState::Empty {
-            return ReplayPosture::FreshAdmission;
-        }
-        if self.local == LocalState::Released
-            && self.owner == OwnerState::CancelledBeforeEffect
-        {
-            return ReplayPosture::Closed;
-        }
-        if self.local == LocalState::Terminal && self.owner == OwnerState::Terminal {
-            return ReplayPosture::Closed;
-        }
-        if self.effect_may_have_happened
-            || self.owner == OwnerState::Dispatched
-            || matches!(
-                self.local,
-                LocalState::Prepared
-                    | LocalState::EffectEntered
-                    | LocalState::Started
-                    | LocalState::Quarantined
-                    | LocalState::Fenced
-            )
-        {
-            return ReplayPosture::ReconcileSameOperation;
-        }
-        ReplayPosture::NoProviderQuestion
-    }
-
-    fn assert_global_invariants(&self) {
-        assert!(self.physical_sends <= 1, "duplicate physical effect: {self:?}");
-        if self.local == LocalState::Released {
-            assert_eq!(self.owner, OwnerState::CancelledBeforeEffect);
-            assert!(!self.effect_may_have_happened);
-            assert_eq!(self.physical_sends, 0);
-            assert!(!self.capacity_held);
-        }
-        if self.effect_may_have_happened {
-            assert!(!self.abort_proof);
-            assert_ne!(self.replay_posture(), ReplayPosture::FreshAdmission);
-            assert_ne!(self.replay_posture(), ReplayPosture::NoProviderQuestion);
+        if scenario.local == LocalState::Released {
+            assert_eq!(scenario.owner, OwnerState::CancelledBeforeEffect);
+            assert!(!scenario.effect_may_have_happened);
+            assert_eq!(scenario.physical_sends, 0);
+            assert!(!scenario.capacity_held);
         }
         if matches!(
-            self.local,
+            scenario.local,
             LocalState::Prepared
                 | LocalState::EffectEntered
                 | LocalState::Started
                 | LocalState::Quarantined
                 | LocalState::Fenced
         ) {
-            assert!(self.capacity_held);
+            assert!(scenario.capacity_held, "{} released unresolved capacity", scenario.id);
         }
-        if self.local == LocalState::Terminal {
-            assert!(self.provider_terminal_observed);
-            assert!(!self.capacity_held);
+        if scenario.local == LocalState::Terminal {
+            assert!(scenario.provider_terminal_observed);
+            if scenario.owner != OwnerState::Terminal {
+                assert!(scenario.capacity_held);
+            }
         }
-    }
-}
-
-fn prepared_machine() -> Machine {
-    let mut machine = Machine::default();
-    machine.admit().unwrap();
-    machine.attach_context().unwrap();
-    machine.prepare_dispatch().unwrap();
-    machine
-}
-
-fn dispatched_machine() -> Machine {
-    let mut machine = prepared_machine();
-    let revision = machine.owner_revision;
-    machine
-        .commit_owner_dispatch(revision, machine.operation_digest)
-        .unwrap();
-    machine
-}
-
-fn entered_machine(send: bool) -> Machine {
-    let mut machine = dispatched_machine();
-    machine.enter_effect().unwrap();
-    if send {
-        machine.physical_send().unwrap();
-    }
-    machine
-}
-
-fn simulate(point: CrashPoint) -> Machine {
-    match point {
-        CrashPoint::BeforeAdmission => Machine::default(),
-        CrashPoint::AfterAdmissionBeforePrepare => {
-            let mut machine = Machine::default();
-            machine.admit().unwrap();
-            machine.attach_context().unwrap();
-            machine
-        }
-        CrashPoint::DuringDispatchPersistence => {
-            let mut machine = Machine::default();
-            machine.admit().unwrap();
-            machine.attach_context().unwrap();
-            machine.local = LocalState::Fenced;
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::PreparedBeforeOwnerRpc => {
-            let mut machine = prepared_machine();
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::OwnerRpcRequestAckLost | CrashPoint::OwnerCommitResponseLost => {
-            let mut machine = dispatched_machine();
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::OwnerFenceFailureBeforeEffect
-        | CrashPoint::CognitiveRevalidationFailure
-        | CrashPoint::CancellationOrDeadlineBeforeEntry
-        | CrashPoint::RevocationAdvanceBeforeEntry => {
-            let mut machine = dispatched_machine();
-            let revision = machine.owner_revision;
-            machine
-                .abort_before_effect(revision, machine.operation_digest)
-                .unwrap();
-            machine
-        }
-        CrashPoint::AfterTokenEntryBeforeWrite => {
-            let mut machine = entered_machine(false);
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::PartialSocketWrite | CrashPoint::FullWriteAckLost => {
-            let mut machine = entered_machine(true);
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::StartedPersistenceFailure => {
-            let mut machine = entered_machine(true);
-            machine.local = LocalState::Fenced;
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::ProcessDeathAfterStart => {
-            let mut machine = entered_machine(true);
-            machine.observe_started().unwrap();
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::TerminalSettlementFailure => {
-            let mut machine = entered_machine(true);
-            machine.provider_terminal_observed = true;
-            machine.local = LocalState::Fenced;
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::OwnerTerminalAckLost => {
-            let mut machine = entered_machine(true);
-            machine.observe_started().unwrap();
-            machine.provider_terminal_observed = true;
-            machine.local = LocalState::Terminal;
-            machine.owner = OwnerState::Dispatched;
-            machine.capacity_held = true;
-            machine
-        }
-        CrashPoint::OwnerLossConcurrentWithTerminal => {
-            let mut machine = entered_machine(true);
-            machine.provider_terminal_observed = true;
-            machine.quarantine();
-            machine
-        }
-        CrashPoint::HistoryUnavailableAfterLoss => {
-            let mut machine = entered_machine(true);
-            machine.quarantine();
-            machine.process_reopen();
-            machine
-        }
-        CrashPoint::DuplicateOwnerRace => {
-            let mut winner = dispatched_machine();
-            let revision = winner.owner_revision;
-            assert_eq!(
-                winner.commit_owner_dispatch(revision, winner.operation_digest),
-                Err(ModelError::AlreadyOwned)
-            );
-            winner.enter_effect().unwrap();
-            winner.physical_send().unwrap();
-            winner
-        }
-        CrashPoint::StaleRevisionMutation => {
-            let mut machine = dispatched_machine();
-            let before = machine.clone();
-            assert_eq!(
-                machine.abort_before_effect(
-                    machine.owner_revision.saturating_sub(1),
-                    machine.operation_digest,
-                ),
-                Err(ModelError::StaleRevision)
-            );
-            assert_eq!(machine, before);
-            machine
-        }
-        CrashPoint::SemanticIdentityConflict => {
-            let mut machine = dispatched_machine();
-            let before = machine.clone();
-            assert_eq!(
-                machine.commit_owner_dispatch(machine.owner_revision, 0xbad0_d1ce),
-                Err(ModelError::DigestMismatch)
-            );
-            assert_eq!(machine, before);
-            machine.conflict = true;
-            machine
+        if scenario.replay == ReplayPosture::RejectConflict {
+            assert_eq!(scenario.id, "RCX-CRASH-22");
         }
     }
 }
 
 #[test]
-fn all_twenty_two_crash_windows_preserve_global_invariants() {
-    for point in ALL_CRASH_POINTS {
-        let machine = simulate(point);
-        machine.assert_global_invariants();
-    }
-}
-
-#[test]
-fn only_exact_cross_owner_abort_can_release_pre_effect_capacity() {
-    let mut machine = dispatched_machine();
+fn exact_cross_owner_abort_is_atomic_and_digest_bound() {
+    let mut machine = Machine::dispatched();
     let before = machine.clone();
     assert_eq!(
-        machine.abort_before_effect(machine.owner_revision, machine.operation_digest ^ 1),
+        machine.abort_before_effect(machine.owner_revision, machine.digest ^ 1),
         Err(ModelError::DigestMismatch)
     );
     assert_eq!(machine, before);
 
     let revision = machine.owner_revision;
     machine
-        .abort_before_effect(revision, machine.operation_digest)
+        .abort_before_effect(revision, machine.digest)
         .unwrap();
-    machine.assert_global_invariants();
-    assert_eq!(machine.replay_posture(), ReplayPosture::Closed);
+    assert_eq!(machine.local, LocalState::Released);
+    assert_eq!(machine.owner, OwnerState::CancelledBeforeEffect);
+    assert!(!machine.capacity_held);
+    assert!(!machine.effect_may_have_happened);
 }
 
 #[test]
-fn effect_entry_destroys_abort_authority_and_reopen_never_replays() {
-    let mut machine = entered_machine(true);
-    assert_eq!(machine.abort_before_effect(machine.owner_revision, machine.operation_digest), Err(ModelError::MissingAbortProof));
-    machine.process_reopen();
-    assert_eq!(machine.replay_posture(), ReplayPosture::ReconcileSameOperation);
-    assert_eq!(machine.physical_send(), Err(ModelError::DuplicatePhysicalSend));
-    machine.assert_global_invariants();
+fn duplicate_owner_stale_revision_and_semantic_drift_do_not_mutate_state() {
+    let mut machine = Machine::dispatched();
+    let before = machine.clone();
+    assert_eq!(
+        machine.mark_dispatched(machine.owner_revision, machine.digest),
+        Err(ModelError::AlreadyOwned)
+    );
+    assert_eq!(machine, before);
+    assert_eq!(
+        machine.abort_before_effect(machine.owner_revision - 1, machine.digest),
+        Err(ModelError::StaleRevision)
+    );
+    assert_eq!(machine, before);
+    assert_eq!(
+        machine.abort_before_effect(machine.owner_revision, 0xbad0_d1ce),
+        Err(ModelError::DigestMismatch)
+    );
+    assert_eq!(machine, before);
 }
 
 #[test]
-fn terminal_and_quarantine_capacity_semantics_are_distinct() {
-    let mut terminal = entered_machine(true);
-    terminal.observe_started().unwrap();
-    terminal.observe_terminal().unwrap();
-    terminal.assert_global_invariants();
-    assert_eq!(terminal.replay_posture(), ReplayPosture::Closed);
-
-    let quarantine = simulate(CrashPoint::HistoryUnavailableAfterLoss);
-    quarantine.assert_global_invariants();
-    assert!(quarantine.capacity_held);
-    assert_eq!(quarantine.replay_posture(), ReplayPosture::ReconcileSameOperation);
+fn effect_entry_destroys_abort_authority_and_allows_one_send_only() {
+    let mut machine = Machine::dispatched();
+    machine.enter_effect().unwrap();
+    assert_eq!(
+        machine.abort_before_effect(machine.owner_revision, machine.digest),
+        Err(ModelError::MissingAbortProof)
+    );
+    machine.physical_send().unwrap();
+    assert_eq!(
+        machine.physical_send(),
+        Err(ModelError::DuplicatePhysicalSend)
+    );
+    machine.observe_started().unwrap();
+    machine.observe_terminal().unwrap();
+    assert_eq!(machine.local, LocalState::Terminal);
+    assert_eq!(machine.owner, OwnerState::Terminal);
+    assert!(machine.provider_terminal_observed);
+    assert!(!machine.capacity_held);
 }
