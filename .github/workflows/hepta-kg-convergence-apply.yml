@@ -26,7 +26,7 @@ jobs:
   apply:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -51,10 +51,12 @@ jobs:
           set +e
           python3 -m py_compile \
             scripts/hepta-kg-convergence-apply-phase1.py \
-            scripts/hepta-kg-convergence-finalize.py
+            scripts/hepta-kg-convergence-finalize.py \
+            scripts/hepta-kg-durable-writer-finalize.py
           compile_status=$?
           transform_status=$compile_status
           finalize_status=125
+          durable_status=125
           if [ "$compile_status" = 0 ]; then
             python3 scripts/hepta-kg-convergence-apply-phase1.py 2>&1 \
               | tee "$RUNNER_TEMP/phase1-transform.log"
@@ -65,10 +67,19 @@ jobs:
               | tee "$RUNNER_TEMP/phase1-finalize.log"
             finalize_status=${PIPESTATUS[0]}
           fi
+          if [ "$finalize_status" = 0 ]; then
+            python3 scripts/hepta-kg-durable-writer-finalize.py 2>&1 \
+              | tee "$RUNNER_TEMP/phase1-durable-writer.log"
+            durable_status=${PIPESTATUS[0]}
+          fi
           printf 'compile_status=%s\n' "$compile_status" >> "$GITHUB_OUTPUT"
           printf 'transform_status=%s\n' "$transform_status" >> "$GITHUB_OUTPUT"
           printf 'finalize_status=%s\n' "$finalize_status" >> "$GITHUB_OUTPUT"
-          if [ "$compile_status" = 0 ] && [ "$transform_status" = 0 ] && [ "$finalize_status" = 0 ]; then
+          printf 'durable_status=%s\n' "$durable_status" >> "$GITHUB_OUTPUT"
+          if [ "$compile_status" = 0 ] \
+            && [ "$transform_status" = 0 ] \
+            && [ "$finalize_status" = 0 ] \
+            && [ "$durable_status" = 0 ]; then
             printf 'status=0\n' >> "$GITHUB_OUTPUT"
           else
             printf 'status=1\n' >> "$GITHUB_OUTPUT"
@@ -83,11 +94,14 @@ jobs:
           path: |
             ${{ runner.temp }}/phase1-transform.log
             ${{ runner.temp }}/phase1-finalize.log
+            ${{ runner.temp }}/phase1-durable-writer.log
             codex-rs/hepta-kg/src/generation.rs
             codex-rs/hepta-kg/src/generation_convergence_tests.rs
+            codex-rs/hepta-memory/src/cognitive_kg_store.rs
+            scripts/hepta-knowledge-graph-target-measure.py
+            scripts/test_hepta_knowledge_graph_target_measure.py
             docs/modules/knowledge.graph/TECHNICAL.md
             docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
-            scripts/test_hepta_knowledge_graph_target_measure.py
           if-no-files-found: error
           retention-days: 90
 
@@ -106,7 +120,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          cargo check --locked -p codex-hepta-kg 2>&1 \
+          cargo check --locked -p codex-hepta-kg -p codex-hepta-memory 2>&1 \
             | tee "$RUNNER_TEMP/phase1-cargo-check.log"
           status=${PIPESTATUS[0]}
           printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
@@ -129,36 +143,40 @@ jobs:
           set -euo pipefail
           test "$CARGO_STATUS" = 0
 
-      - name: Format exact kernel source
+      - name: Format exact kernel and owner source
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --package codex-hepta-kg
-          cargo fmt --package codex-hepta-kg -- --check
+          cargo fmt --package codex-hepta-kg --package codex-hepta-memory
+          cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check
 
-      - name: Test canonical kernel
-        id: kernel_tests
+      - name: Test canonical kernel and durable owner
+        id: owner_tests
         continue-on-error: true
         working-directory: codex-rs
         shell: bash
         run: |
           set +e
-          cargo test --locked -p codex-hepta-kg -- --nocapture 2>&1 \
-            | tee "$RUNNER_TEMP/phase1-kernel-tests.log"
+          {
+            cargo test --locked -p codex-hepta-kg -- --nocapture
+            cargo test --locked -p codex-hepta-memory --lib cognitive_kg -- --nocapture
+          } 2>&1 | tee "$RUNNER_TEMP/phase1-owner-tests.log"
           status=${PIPESTATUS[0]}
           printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Strict kernel lint
-        id: kernel_lint
+      - name: Strict kernel and owner lint
+        id: owner_lint
         continue-on-error: true
         working-directory: codex-rs
         shell: bash
         run: |
           set +e
-          cargo clippy --locked -p codex-hepta-kg --all-targets --no-deps -- -D warnings 2>&1 \
-            | tee "$RUNNER_TEMP/phase1-kernel-clippy.log"
+          cargo clippy --locked \
+            -p codex-hepta-kg -p codex-hepta-memory \
+            --all-targets --no-deps -- -D warnings 2>&1 \
+            | tee "$RUNNER_TEMP/phase1-owner-clippy.log"
           status=${PIPESTATUS[0]}
           printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
           exit 0
@@ -167,18 +185,18 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-kernel-${{ github.run_id }}-${{ github.run_attempt }}
+          name: knowledge-graph-owner-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            ${{ runner.temp }}/phase1-kernel-tests.log
-            ${{ runner.temp }}/phase1-kernel-clippy.log
+            ${{ runner.temp }}/phase1-owner-tests.log
+            ${{ runner.temp }}/phase1-owner-clippy.log
           if-no-files-found: error
           retention-days: 90
 
-      - name: Enforce kernel tests and lint
+      - name: Enforce kernel and owner qualification
         shell: bash
         env:
-          TEST_STATUS: ${{ steps.kernel_tests.outputs.status }}
-          LINT_STATUS: ${{ steps.kernel_lint.outputs.status }}
+          TEST_STATUS: ${{ steps.owner_tests.outputs.status }}
+          LINT_STATUS: ${{ steps.owner_lint.outputs.status }}
         run: |
           set -euo pipefail
           test "$TEST_STATUS" = 0
@@ -192,6 +210,7 @@ jobs:
           python3 scripts/hepta-module-docs.py verify
           rm scripts/hepta-kg-convergence-apply-phase1.py
           rm scripts/hepta-kg-convergence-finalize.py
+          rm scripts/hepta-kg-durable-writer-finalize.py
           rm .github/workflows/hepta-kg-convergence-apply.yml
           rm -f .github/workflows/hepta-kg-source-diagnostic.yml
           git diff --check
@@ -204,7 +223,7 @@ jobs:
           git config user.name "Hepta KG Convergence Bot"
           git config user.email "hepta-kg-convergence@users.noreply.github.com"
           git add -A
-          git commit -s -m "knowledge.graph: bound indexed generation queries"
+          git commit -s -m "knowledge.graph: bound indexed queries and incremental writer"
           test -z "$(git status --porcelain)"
 
           git fetch origin "$CANDIDATE_BRANCH"
@@ -306,7 +325,6 @@ jobs:
           test -z "$(git status --porcelain)"
 
       - name: Verify final committed candidate
-        working-directory: .
         shell: bash
         run: |
           set -euo pipefail
@@ -316,9 +334,13 @@ jobs:
             --expected-sha "$SHA" --expected-tree "$TREE"
           python3 scripts/hepta-technical-closure.py verify
           python3 scripts/test_hepta_knowledge_graph_target_measure.py
-          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-kg
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory --lib cognitive_kg
           cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-kg --all-targets --no-deps -- -D warnings
+            -p codex-hepta-kg -p codex-hepta-memory \
+            --all-targets --no-deps -- -D warnings
           git diff --check
           test -z "$(git status --porcelain)"
 
