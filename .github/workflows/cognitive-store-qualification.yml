@@ -1,0 +1,305 @@
+name: Cognitive store qualification
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-cognitive-store/**'
+      - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/state/**'
+      - 'docs/modules/cognitive.store/**'
+      - 'scripts/verify_cognitive_store_boundary.py'
+      - 'scripts/cognitive_qualification_manifest.py'
+      - '.github/workflows/cognitive-store-qualification.yml'
+  push:
+    branches:
+      - main
+      - 'codex/cognitive-store-full-closure-*'
+    paths:
+      - 'codex-rs/hepta-cognitive-store/**'
+      - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/state/**'
+      - 'docs/modules/cognitive.store/**'
+      - 'scripts/verify_cognitive_store_boundary.py'
+      - 'scripts/cognitive_qualification_manifest.py'
+      - '.github/workflows/cognitive-store-qualification.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: cognitive-store-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+
+jobs:
+  qualify:
+    name: cognitive.store (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+
+      - name: Construct deterministic base merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha || env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Cognitive Qualification
+          author-email: hepta-cognitive-ci@users.noreply.github.com
+          message: Cognitive store synthetic merge
+
+      - name: Bind exact candidate identity
+        env:
+          CANDIDATE_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          if [ "${{ matrix.lane }}" = base-merge ]; then
+            test -n "${{ steps.synthetic.outputs.sha }}"
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+          else
+            test "$CANDIDATE_SHA" = "$SOURCE_SHA"
+          fi
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$CANDIDATE_SHA" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "${{ matrix.lane }}" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/cognitive-command-records"
+
+      - name: Verify workspace metadata
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/workspace.json" -- \
+            cargo metadata --locked --format-version 1 --no-deps
+
+      - name: Verify canonical product boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/boundary.json" -- \
+            python3 scripts/verify_cognitive_store_boundary.py \
+              --output "$RUNNER_TEMP/cognitive-boundary-receipt.json"
+
+      - name: Check formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/format.json" -- \
+            cargo fmt \
+              --package codex-hepta-cognitive-store \
+              --package codex-hepta-memory \
+              --package codex-hepta-agentd \
+              -- --check
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install native test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Test cognitive-store semantic package
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cognitive-command-records/cognitive-store-tests.json" -- \
+            cargo test --locked -p codex-hepta-cognitive-store --all-features
+
+      - name: Test durable memory owner
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cognitive-command-records/memory-tests.json" -- \
+            cargo test --locked -p codex-hepta-memory
+
+      - name: Test Agentd cognitive product writer
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cognitive-command-records/agentd-product-tests.json" -- \
+            cargo test --locked -p codex-hepta-agentd \
+              --test cognitive_store_product_writer \
+              --features qualification-cognitive-write
+
+      - name: Test signed bootstrap, rotation and revocation
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cognitive-command-records/bootstrap-tests.json" -- \
+            cargo test --locked -p codex-hepta-agentd \
+              --test cognitive_bootstrap \
+              --features qualification-cognitive-write
+
+      - name: Qualify child-process crash and reopen
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cognitive-command-records/crash-reopen.json" -- \
+            cargo test --locked -p codex-hepta-memory \
+              local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe \
+              -- --ignored --exact
+
+      - name: Measure 256-record durable profile
+        working-directory: codex-rs
+        env:
+          HEPTA_COGNITIVE_PERF_RECORDS: '256'
+          HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/cognitive-perf-256.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/perf-256.json" -- \
+            cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
+
+      - name: Measure 16384-record retained profile
+        working-directory: codex-rs
+        env:
+          HEPTA_COGNITIVE_PERF_RECORDS: '16384'
+          HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/cognitive-perf-16384.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/perf-16384.json" -- \
+            cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
+
+      - name: Strict all-target Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/cognitive-command-records/clippy.json" -- \
+            cargo clippy --locked \
+              -p codex-hepta-cognitive-store \
+              -p codex-hepta-memory \
+              -p codex-hepta-agentd \
+              --all-targets --all-features -- -D warnings
+
+      - name: Build exact qualification manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_qualification_manifest.py \
+            --records "$RUNNER_TEMP/cognitive-command-records" \
+            --output "$RUNNER_TEMP/cognitive-qualification-manifest.json" \
+            --required workspace.json \
+            --required boundary.json \
+            --required format.json \
+            --required cognitive-store-tests.json \
+            --required memory-tests.json \
+            --required agentd-product-tests.json \
+            --required bootstrap-tests.json \
+            --required crash-reopen.json \
+            --required perf-256.json \
+            --required perf-16384.json \
+            --required clippy.json \
+            --evidence "$RUNNER_TEMP/cognitive-boundary-receipt.json" \
+            --evidence "$RUNNER_TEMP/cognitive-perf-256.json" \
+            --evidence "$RUNNER_TEMP/cognitive-perf-16384.json"
+
+      - name: Verify clean tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain cognitive qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-store-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: |
+            ${{ runner.temp }}/cognitive-command-records/*
+            ${{ runner.temp }}/cognitive-boundary-receipt.json
+            ${{ runner.temp }}/cognitive-perf-256.json
+            ${{ runner.temp }}/cognitive-perf-16384.json
+            ${{ runner.temp }}/cognitive-qualification-manifest.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  required:
+    name: Cognitive store required
+    needs: [qualify]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all exact-candidate lanes
+        env:
+          RESULT: ${{ needs.qualify.result }}
+        run: test "$RESULT" = success
