@@ -315,11 +315,12 @@ impl Store {
             .and_then(|value| value.checked_add(CLAIM_FRAME_BYTES))
             .ok_or(FinalUseError::InvalidTrust)?;
         let bytes = read_bounded(&self.root, "authority.claims", maximum)?;
-        if bytes.len() % CLAIM_FRAME_BYTES != 0 {
+        let (frames, remainder) = bytes.as_chunks::<CLAIM_FRAME_BYTES>();
+        if !remainder.is_empty() {
             return Err(FinalUseError::InvalidTrust);
         }
         let mut claims = BTreeSet::new();
-        for frame in bytes.chunks_exact(CLAIM_FRAME_BYTES) {
+        for frame in frames {
             let mut epoch_bytes = [0u8; 8];
             epoch_bytes.copy_from_slice(&frame[..8]);
             let epoch = u64::from_be_bytes(epoch_bytes);
