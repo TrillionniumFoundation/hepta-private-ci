@@ -8,15 +8,18 @@ on:
       - "docs/contracts/**"
       - "docs/lane-a-foundation/**"
       - "docs/modules/platform.types/**"
+      - "docs/modules/platform.wire/**"
       - "qualification/module-execution-dossiers/**"
       - "scripts/lane_a_foundation_core.py"
       - "scripts/lane_a_foundation_lib.py"
+      - "scripts/platform_wire_status.py"
       - "scripts/verify_lane_a_foundation.py"
       - "scripts/verify_lane_a_pr_tuple.py"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_kernel_authority_map_freshness.py"
       - "qualification/kernel-authority/**"
       - ".github/workflows/lane-a-foundation.yml"
+      - ".github/workflows/platform-wire-target-host.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
@@ -61,6 +64,8 @@ jobs:
           python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
           python3 codex-rs/hepta-types/conformance/verify_vectors.py
           node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts
           python3 codex-rs/hepta-types/conformance/verify_rejections.py
@@ -70,6 +75,78 @@ jobs:
           node codex-rs/hepta-types/bindings/verify_generated.mjs
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Install scoped native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Qualify wire framing, policy sessions and both binary directions
+        id: wire-native
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$(mktemp -d "$RUNNER_TEMP/platform-wire-${GITHUB_JOB}.XXXXXX")"
+          echo "directory=$records" >> "$GITHUB_OUTPUT"
+          status=0
+          record() {
+            local name="$1" minimum="$2"
+            shift 2
+            if python3 scripts/hepta_ci_exec.py --output "$records/$name.json" \
+              --minimum-tests "$minimum" -- "$@"; then
+              :
+            else
+              status=1
+            fi
+          }
+          record wire 41 just test --locked -p codex-hepta-wire
+          record ports 8 just test --locked -p codex-hepta-context-compiler \
+            -p codex-hepta-codex-adapter --lib -E 'test(wire::tests)'
+          record cross-runtime 2 just test --locked -p codex-hepta-shadow-qualification \
+            --test cross_runtime_wire_session
+          record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire -p codex-hepta-codex-adapter \
+            --all-targets --no-deps -- -D warnings
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          STATUS_CODE="$status" GENERATED_AT="$generated_at" python3 - \
+            > "$records/lifecycle-receipt.json" <<'PY'
+          import json
+          import os
+
+          print(json.dumps({
+              "schema": "hepta.platform-wire.receipt.v2",
+              "kind": "platform-wire-exact-head",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["TESTED_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "status": "passed" if os.environ["STATUS_CODE"] == "0" else "failed",
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "generated_at": os.environ["GENERATED_AT"],
+              "lane": "source-head",
+          }, sort_keys=True, indent=2))
+          PY
+          python3 scripts/platform_wire_status.py validate-receipt \
+            --path "$records/lifecycle-receipt.json" \
+            --kind platform-wire-exact-head
+          exit "$status"
+
+      - name: Retain wire results even when the wider Lane A fails
+        if: always() && steps.wire-native.outputs.directory != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-source-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ steps.wire-native.outputs.directory }}
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Run Lane A native tests and strict lint
         shell: bash
@@ -137,6 +214,8 @@ jobs:
           python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
           python3 codex-rs/hepta-types/conformance/verify_vectors.py
           node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts
           python3 codex-rs/hepta-types/conformance/verify_rejections.py
@@ -146,6 +225,78 @@ jobs:
           node codex-rs/hepta-types/bindings/verify_generated.mjs
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Install scoped native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Qualify wire framing, policy sessions and both binary directions
+        id: wire-native
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          TESTED_SHA: ${{ steps.merge.outputs.sha }}
+          HEPTA_CI_LANE: synthetic-merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$(mktemp -d "$RUNNER_TEMP/platform-wire-${GITHUB_JOB}.XXXXXX")"
+          echo "directory=$records" >> "$GITHUB_OUTPUT"
+          status=0
+          record() {
+            local name="$1" minimum="$2"
+            shift 2
+            if python3 scripts/hepta_ci_exec.py --output "$records/$name.json" \
+              --minimum-tests "$minimum" -- "$@"; then
+              :
+            else
+              status=1
+            fi
+          }
+          record wire 41 just test --locked -p codex-hepta-wire
+          record ports 8 just test --locked -p codex-hepta-context-compiler \
+            -p codex-hepta-codex-adapter --lib -E 'test(wire::tests)'
+          record cross-runtime 2 just test --locked -p codex-hepta-shadow-qualification \
+            --test cross_runtime_wire_session
+          record strict-lint 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire -p codex-hepta-codex-adapter \
+            --all-targets --no-deps -- -D warnings
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          STATUS_CODE="$status" GENERATED_AT="$generated_at" python3 - \
+            > "$records/lifecycle-receipt.json" <<'PY'
+          import json
+          import os
+
+          print(json.dumps({
+              "schema": "hepta.platform-wire.receipt.v2",
+              "kind": "platform-wire-synthetic-merge",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["TESTED_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "status": "passed" if os.environ["STATUS_CODE"] == "0" else "failed",
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "generated_at": os.environ["GENERATED_AT"],
+              "lane": "synthetic-merge",
+          }, sort_keys=True, indent=2))
+          PY
+          python3 scripts/platform_wire_status.py validate-receipt \
+            --path "$records/lifecycle-receipt.json" \
+            --kind platform-wire-synthetic-merge
+          exit "$status"
+
+      - name: Retain wire results even when the wider Lane A fails
+        if: always() && steps.wire-native.outputs.directory != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-synthetic-merge-${{ github.event.pull_request.head.sha }}
+          path: ${{ steps.wire-native.outputs.directory }}
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Run Lane A native tests and strict lint on merge candidate
         shell: bash

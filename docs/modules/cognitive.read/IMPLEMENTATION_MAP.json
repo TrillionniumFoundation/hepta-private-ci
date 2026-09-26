@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "85831f23c0ae530b66c397a6eb306c5a1e45e208",
+    "tree": "c953bc12f4afb6f6a74d46ce8070516f8cf5bd86"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -36,8 +36,7 @@
       "delegatedCallees": [
         "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
         "codex-rs/hepta-agentd/src/cognitive_context.rs"
-      ],
-      "sourceBlob": "e56b2ef34038c35a0d7c179375ce21ad463f0347"
+      ]
     },
     {
       "operation": "read_v2",
@@ -51,8 +50,7 @@
       "sourcePathExists": true,
       "designOperation": "bounded_compatibility_projection",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourceBlob": "67135f3f56c4779fbd27568ee69c389a38522e5c"
+      "delegatedCallees": []
     },
     {
       "operation": "read_authoritative_compatibility",
@@ -66,8 +64,7 @@
       "sourcePathExists": true,
       "designOperation": "compatibility_authoritative_provider",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourceBlob": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
+      "delegatedCallees": []
     },
     {
       "operation": "durable_cognitive_snapshot",
@@ -81,8 +78,7 @@
       "sourcePathExists": true,
       "designOperation": "acquire_snapshot",
       "mappingClass": "existing_owner_adapter",
-      "delegatedCallees": [],
-      "sourceBlob": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
+      "delegatedCallees": []
     },
     {
       "operation": "final_use_revalidate",
@@ -108,8 +104,7 @@
         "codex-rs/hepta-infer-core/src/native_control.rs",
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
         "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
-      ],
-      "sourceBlob": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      ]
     },
     {
       "operation": "adapt_authoritative_read_to_canonical_shadow_v1",
@@ -128,8 +123,7 @@
           "symbol": "AuthoritativeReadResultV1::validate",
           "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs"
         }
-      ],
-      "sourceBlob": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
+      ]
     }
   ],
   "repositoryControlledGaps": [
@@ -205,7 +199,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
-      "object": "acd350012b1af7dd1092d4688d85f5accd779f33"
+      "object": "a3d48d6c51db7f13036c716687e31fbc06e3c94b"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
@@ -253,11 +247,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0"
+      "object": "68ce6b1633235310ad50d0b87017b17898ea5cb4"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "e96da1855228f1bb27c3aec7431631e5018e89ac"
+      "object": "89e6feb6fbd032b21942552e0064f01de48a604c"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -303,7 +297,7 @@
     },
     {
       "role": "model_effect_consumer",
-      "blobSha": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+      "blobSha": "68ce6b1633235310ad50d0b87017b17898ea5cb4",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "nativeSymbol": "owner.revalidate_cognitive_context(snapshot).await"
     },
@@ -320,8 +314,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "85831f23c0ae530b66c397a6eb306c5a1e45e208",
+    "tree": "c953bc12f4afb6f6a74d46ce8070516f8cf5bd86"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",

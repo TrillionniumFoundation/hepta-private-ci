@@ -25,6 +25,9 @@ def load_module(name: str, filename: str):
 
 
 LANE_B = load_module("ci_source_lane_b", "hepta-lane-b-truth.py")
+LANE_B_PATHS = load_module(
+    "ci_source_lane_b_paths", "hepta-lane-b-path-guard.py"
+)
 LANE_E = load_module("ci_source_lane_e", "hepta-lane-e-closure.py")
 IMAPS = load_module("ci_implementation_maps", "hepta-implementation-maps.py")
 
@@ -420,6 +423,39 @@ class SourceConformanceTests(unittest.TestCase):
         with self.assertRaisesRegex(LANE_B.Invalid, "missing symbol"):
             LANE_B.verify_truth(truth, maps)
 
+    def test_path_guard_resolves_registered_cross_lane_owner_roots(self):
+        truth = LANE_B_PATHS.load(LANE_B_PATHS.TRUTH)
+        maps = {
+            entry["module"]: LANE_B_PATHS.load(
+                LANE_B_PATHS.ROOT / entry["mapPath"]
+            )
+            for entry in truth["modules"]
+        }
+        roots = {module: list(row["resolvedRoots"]) for module, row in maps.items()}
+        LANE_B_PATHS.add_registered_delegate_roots(
+            LANE_B_PATHS.ROOT, maps, roots
+        )
+        self.assertEqual(roots["learning.ledger"], ["codex-rs/hepta-learning-ledger"])
+        self.assertEqual(roots["neuron.runtime"], ["codex-rs/hepta-neuron"])
+
+        changed = copy.deepcopy(maps)
+        agentd = changed["runtime.agentd"]
+        operation = next(
+            row
+            for row in agentd["operations"]
+            if row.get("operation") == "admit_revalidated_run_start"
+        )
+        operation["delegatedCallees"][0]["ownerModule"] = "unregistered.owner"
+        with self.assertRaisesRegex(
+            LANE_B_PATHS.Invalid, "unregistered delegated owner"
+        ):
+            LANE_B_PATHS.add_registered_delegate_roots(
+                LANE_B_PATHS.ROOT, changed, {
+                    module: list(row["resolvedRoots"])
+                    for module, row in changed.items()
+                }
+            )
+
     def test_registered_cross_lane_delegate_preserves_owner_boundary(self):
         truth = LANE_B.load(LANE_B.TRUTH)
         maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
@@ -470,6 +506,31 @@ class WorkflowGateTests(unittest.TestCase):
                 findings = LANE_E.Findings()
                 LANE_E.verify_workflow(findings)
                 return [item.code for item in findings.items]
+
+    def test_implementation_map_workflows_use_current_exact_source_cli(self) -> None:
+        workflows = (
+            "hepta-objective-admission.yml",
+            "hepta-lane-d-semantic-conformance.yml",
+            "hepta-contract-gate.yml",
+        )
+        root = SCRIPTS.parent / ".github" / "workflows"
+        for name in workflows:
+            with self.subTest(workflow=name):
+                workflow = (root / name).read_text(encoding="utf-8")
+                self.assertIn(
+                    "python3 scripts/hepta-implementation-maps.py verify "
+                    "--require-current-source",
+                    workflow,
+                )
+                self.assertNotIn(
+                    "hepta-implementation-maps.py verify --expected-sha", workflow
+                )
+                self.assertNotRegex(
+                    workflow,
+                    r"hepta-implementation-maps[.]py verify[\s\S]{0,160}"
+                    r"--expected-(?:sha|tree)",
+                )
+                self.assertIn('test "$(git rev-parse HEAD)" = ', workflow)
 
     def test_real_just_and_legacy_cargo_commands_preserve_test_contract(self) -> None:
         text = LANE_E.WORKFLOW_PATH.read_text(encoding="utf-8")

@@ -56,6 +56,31 @@ class NumericTests(unittest.TestCase):
     def test_duplicate_json_keys(self):
         with self.assertRaises(c.Invalid): json.loads('{"x":1,"x":2}',object_pairs_hook=c.pairs)
 
+class NativeEntrypointReferenceTests(unittest.TestCase):
+    def test_qualified_and_multi_symbol_entrypoints_are_strict(self):
+        self.assertEqual(
+            c.entrypoint_identifiers("AuthorityPosture::try_from_wire_bytes"),
+            ("try_from_wire_bytes",),
+        )
+        self.assertEqual(
+            c.entrypoint_identifiers(
+                "canonical_runtime_config_v1 / canonical_checkpoint_v1"
+            ),
+            ("canonical_runtime_config_v1", "canonical_checkpoint_v1"),
+        )
+
+    def test_malformed_or_duplicate_entrypoint_references_reject(self):
+        for symbol in (
+            "",
+            "Owner::",
+            "owner method",
+            "same / same",
+            "one / two-three",
+        ):
+            with self.subTest(symbol=symbol), self.assertRaises(c.Invalid):
+                c.entrypoint_identifiers(symbol)
+
+
 class NativeBindingCoverageTests(unittest.TestCase):
     def merged_native_observations(self):
         native=c.read_json(BASE/'NATIVE_BINDINGS.json')

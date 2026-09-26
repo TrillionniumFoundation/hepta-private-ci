@@ -145,16 +145,21 @@ fn revocation_is_scoped_to_objective_and_subject() {
 }
 
 #[test]
-fn revocation_requires_a_recorded_projection() {
+fn live_selection_and_revocation_require_a_recorded_projection() {
     let mut journal = NduProjectionJournalV1::new();
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+
     assert_eq!(
         journal
-            .revoke_projection(
-                digest("revocation"),
-                digest("objective"),
-                digest("subject"),
-                digest("projection"),
-            )
+            .select_projection(digest("selection"), objective, subject, projection)
+            .expect_err("unknown projection cannot be selected"),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+    assert_eq!(
+        journal
+            .revoke_projection(digest("revocation"), objective, subject, projection)
             .expect_err("unknown projection cannot be revoked"),
         NduProjectionJournalError::ProjectionNotRecorded
     );

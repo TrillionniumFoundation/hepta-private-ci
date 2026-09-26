@@ -51,7 +51,7 @@ use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
-use codex_hepta_codex_adapter::adapt_request;
+use codex_hepta_codex_adapter::adapt_product_wire_v3;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::EnteredUseToken;
@@ -79,6 +79,10 @@ use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
+
+#[path = "native_message_output.rs"]
+mod message_output;
+use message_output::NativeMessageOutput;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
@@ -595,7 +599,11 @@ impl AppServerModelDriver {
                 connection_id,
             }),
         };
-        let request_receipt = adapt_request(adapted_at_ms, adapter_intent.clone())?;
+        let request_receipt = adapt_product_wire_v3(
+            adapted_at_ms,
+            &adapter_intent,
+            Generation::new(self.config.generation)?,
+        )?;
         let authority_binding = final_use_binding(
             &self.config.agent_id,
             &adapter_intent,
@@ -898,6 +906,7 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
         }
+        let mut messages = NativeMessageOutput::default();
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
         let result = self
@@ -907,7 +916,7 @@ impl AppServerModelDriver {
                 deadline,
                 cancellation,
                 Some(&owner),
-                &binding,
+                (&binding, &mut messages),
             )
             .await;
         if let Err(reason) = result {
@@ -947,7 +956,7 @@ impl AppServerModelDriver {
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
-                    &binding,
+                    (&binding, &mut messages),
                 )
                 .await;
             loss_recorded?;
@@ -1011,8 +1020,9 @@ impl AppServerModelDriver {
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
-        binding: &CodexTurnBinding,
+        observation: (&CodexTurnBinding, &mut NativeMessageOutput),
     ) -> std::result::Result<(), String> {
+        let (binding, messages) = observation;
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             let event = tokio::select! {
@@ -1029,7 +1039,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, &event, binding, messages)? {
                         return Ok(());
                     }
                 }
@@ -1421,6 +1431,7 @@ fn observe_event(
     output: &mut NativeRunOutput,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
+    messages: &mut NativeMessageOutput,
 ) -> std::result::Result<bool, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
@@ -1429,10 +1440,14 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.record(&mut output.output, &delta.item_id, &delta.delta, false)?;
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.record(&mut output.output, id, text, true)?;
             }
-            output.output.push_str(&delta.delta);
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1453,6 +1468,11 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            for item in &completed.turn.items {
+                if let ThreadItem::AgentMessage { id, text, .. } = item {
+                    messages.record(&mut output.output, id, text, true)?;
+                }
+            }
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;

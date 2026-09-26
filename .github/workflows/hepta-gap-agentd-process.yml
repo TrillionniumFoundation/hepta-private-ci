@@ -114,8 +114,9 @@ jobs:
       EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
       RUST_BACKTRACE: "1"
       CARGO_BUILD_JOBS: "2"
-      # Preserve the short private Unix-socket test root on Darwin.
-      TMPDIR: /tmp
+      # Keep Unix sockets short without traversing macOS' /tmp -> /private/tmp
+      # symlink; owner path validation intentionally rejects redirected roots.
+      TMPDIR: ${{ matrix.os == 'macos-15' && '/private/tmp' || '/tmp' }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -169,7 +170,7 @@ jobs:
             --test runtime_shutdown_outcomes --test-threads=1
           just test --locked -p codex-hepta-automation --test retirement_recovery \
             --test operation_timer_fence --test-threads=1
-          just test --locked -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
+          just test --locked -p codex-hepta-operations --test destination_recovery_binding --test-threads=1
       - name: Exercise named plasticity and live cutover paths
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs

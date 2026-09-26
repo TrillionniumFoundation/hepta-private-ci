@@ -40,6 +40,35 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
                      "Verify Cargo lock resolution and print exact resolver drift"):
             self.assertLess(workflow.index("      - name: " + name), first_native)
 
+    def test_current_inference_regressions_replace_retired_zero_test_filters(self):
+        architecture = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text()
+        maintenance = (
+            ROOT / ".github/workflows/hepta-inference-maintenance.yml"
+        ).read_text()
+        retired = (
+            "history_growth_emits_update_recovery_memory_and_disk_curve",
+            "alternating_writers_replay_only_peer_deltas",
+            "post_compaction_multi_generation_curve",
+        )
+        for workflow in (architecture, maintenance):
+            for name in retired:
+                self.assertNotIn(name, workflow)
+        for name in (
+            "journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes",
+            "duplicate_reopen_preserves_exact_binding_and_reserves_only_once",
+            "missing_terminal_observation_becomes_indeterminate",
+        ):
+            self.assertIn(name, architecture)
+        for name in (
+            "journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes",
+            "reopens_exact_committed_state",
+        ):
+            self.assertIn(name, maintenance)
+        self.assertGreaterEqual(architecture.count("--minimum-tests 1"), 3)
+        self.assertGreaterEqual(maintenance.count("--minimum-tests 1"), 2)
+
     def run_step(self, status: int, body: str, *, timeout: bool = False):
         workflow = (ROOT / ".github/workflows/hepta-architecture-convergence.yml").read_text()
         block = workflow.split(STEP, 1)[1].split("      - name:", 1)[0]
@@ -77,8 +106,10 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
                         assert host == "github.com"
                         assert kwargs["timeout"] > 0 and kwargs["context"] is not None
                     def request(self, method, path, **kwargs):
-                        record(["request", method, path])
-                        assert method == "GET" and kwargs.get("body") is None
+                        body = kwargs.get("body")
+                        record(["request", method, path, len(body or b"")])
+                        assert method == "POST" and body == b"0000"
+                        assert kwargs["headers"]["Content-Type"] == "application/x-git-receive-pack-request"
                     def getresponse(self):
                         if os.environ["INJECT_TIMEOUT"] == "1":
                             raise TimeoutError("fixture timeout")
@@ -107,8 +138,8 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
             retained = (root / "hepta-command-records/candidate-transport.json").read_text()
         self.assertNotIn(env["GH_TOKEN"], result.stdout + result.stderr + retained)
         self.assertEqual(trace[0], ["api", "repos/TrillionniumFoundation/hepta-private-ci"])
-        self.assertEqual(trace[1], ["request", "GET",
-            "/TrillionniumFoundation/hepta-private-ci.git/info/refs?service=git-receive-pack"])
+        self.assertEqual(trace[1], ["request", "POST",
+            "/TrillionniumFoundation/hepta-private-ci.git/git-receive-pack", 4])
         self.assertEqual(trace[-1], ["close"])
         return result, retained
 

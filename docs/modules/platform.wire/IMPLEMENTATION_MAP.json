@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "12bef0c3561731419b33d71a08b409cf16ae0a3a",
+    "tree": "1c809dec3d9ee930188438c0222c03f97ecea68a"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.wire",
@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "source_composed_read_only_and_registered_port_adapters",
+  "productCallerState": "source_composed_read_only_and_product_bound_callers",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -46,7 +46,9 @@
         "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
         "codex-rs/hepta-native-gateway/src/lib.rs",
         "codex-rs/hepta-context-compiler/src/wire_tests.rs",
-        "codex-rs/hepta-codex-adapter/src/wire_tests.rs"
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "wire_v2",
@@ -55,17 +57,20 @@
         "codex-rs/hepta-runtime/src/lib.rs",
         "codex-rs/hepta-native-gateway/src/lib.rs",
         "codex-rs/hepta-context-compiler/src/wire.rs",
-        "codex-rs/hepta-codex-adapter/src/wire.rs"
+        "codex-rs/hepta-codex-adapter/src/wire.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
       ]
     },
     {
       "operation": "negotiate",
       "nativeSymbol": "negotiate",
       "sourcePath": "codex-rs/hepta-wire/src/version.rs",
-      "state": "source_implemented",
+      "state": "source_implemented_effective_capabilities",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/version_tests.rs",
+        "codex-rs/hepta-wire/src/session_tests.rs",
         "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
       ],
       "sourcePathExists": true,
@@ -74,10 +79,25 @@
       "delegatedCallees": []
     },
     {
+      "operation": "session_decode",
+      "nativeSymbol": "WireSessionDecoder",
+      "sourcePath": "codex-rs/hepta-wire/src/session.rs",
+      "state": "source_implemented_registry_and_session_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/session_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "session_decode",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "schema_admission",
-      "nativeSymbol": "SchemaRegistry",
-      "sourcePath": "codex-rs/hepta-wire/src/schema.rs",
-      "state": "source_implemented_framework",
+      "nativeSymbol": "FrozenSchemaRegistry",
+      "sourcePath": "codex-rs/hepta-wire/src/registry.rs",
+      "state": "source_implemented_frozen_policy_snapshot",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/schema_tests.rs",
@@ -94,7 +114,7 @@
       "operation": "stream_decode",
       "nativeSymbol": "StreamingDecoder",
       "sourcePath": "codex-rs/hepta-wire/src/stream.rs",
-      "state": "source_implemented",
+      "state": "source_implemented_byte_and_frame_work_bounded",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/stream_tests.rs",
@@ -105,17 +125,82 @@
       "designOperation": "stream_decode",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "authenticated_session",
+      "nativeSymbol": "WireSession",
+      "sourcePath": "codex-rs/hepta-wire/src/secure_session.rs",
+      "state": "source_implemented_transcript_registry_and_channel_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/secure_session.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_session",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authenticated_record",
+      "nativeSymbol": "AuthenticatedWireSession",
+      "sourcePath": "codex-rs/hepta-wire/src/directional_session.rs",
+      "state": "source_implemented_direction_separated_and_reflection_hardened",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/directional_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_record",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "runtime_codex_v3_admission",
+      "nativeSymbol": "adapt_product_wire_v3",
+      "sourcePath": "codex-rs/hepta-codex-adapter/src/wire.rs",
+      "state": "source_implemented_source_composed_product_caller",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_codex_v3_admission",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+      ]
+    },
+    {
+      "operation": "qualification_lifecycle",
+      "nativeSymbol": "platform_wire_status.py",
+      "sourcePath": "scripts/platform_wire_status.py",
+      "state": "source_implemented_fail_closed_receipt_v2_lifecycle",
+      "authority": "none",
+      "tests": [
+        "scripts/platform_wire_status.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "qualification_lifecycle",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        ".github/workflows/lane-a-foundation.yml",
+        ".github/workflows/platform-wire-target-host.yml"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and registered product source callers.",
-    "Bind HPTN negotiation and encoded HPTA frames to the selected authenticated production transport/session.",
-    "Register and qualify each additional product-domain schema codec before admitting it."
+    "Obtain current exact-head, deterministic synthetic-merge and protected target-host receipts after the final source/map commit.",
+    "Compose the authenticated WireSession/HPTM posture into every selected production transport and obtain source-bound independent reviewer and operations acceptance receipts.",
+    "Register and qualify each additional product-domain schema codec before admitting it.",
+    "Issue the source-bound release receipt and artifact digest only after qualification and acceptance are complete."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
-    "target-host product execution and authenticated transport qualification",
-    "operator acceptance, canary, promotion and release"
+    "protected target-host product execution and authenticated transport qualification",
+    "distinct operations acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -139,17 +224,39 @@
       "tests": [
         "codex-rs/hepta-native-gateway/src/lib.rs"
       ]
+    },
+    {
+      "id": "hepta-infer-worker-host.runtime-codex-v3",
+      "nativeSymbol": "AppServerModelDriver::run_once",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "state": "source_composed_product_bound_caller",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
+      ]
     }
   ],
-  "exactSourceEvidenceMode": "lane_a_runtime_head_tree_and_registered_callers",
+  "exactSourceEvidenceMode": "lane_a_runtime_head_tree_registered_callers_and_receipt_v2",
   "sourceObjects": [
     {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "object": "fb133d45f2125fbb3aaef1b9adc19c3f6aeacff9"
+    },
+    {
+      "path": ".github/workflows/platform-wire-target-host.yml",
+      "object": "8c6e013ad739e31e45d4651f35f3f95981d230c5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "object": "bd41d2a22e4b78bd9b465d9928f7623366ed215a"
+    },
+    {
       "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
-      "object": "05cb3a796f614f18ea499bd8d324772712e15a49"
+      "object": "7f61e07d67189bea1c9cc0bc31a653f80fe3f3a8"
     },
     {
       "path": "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
-      "object": "eb197f712637f86863b93759f72f2f3893f1d4b4"
+      "object": "b85fb3d89881e736d64f0e190f86db2db6cfe2bd"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/wire.rs",
@@ -158,6 +265,14 @@
     {
       "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
       "object": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "68ce6b1633235310ad50d0b87017b17898ea5cb4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "89e6feb6fbd032b21942552e0064f01de48a604c"
     },
     {
       "path": "codex-rs/hepta-native-gateway/src/lib.rs",
@@ -169,19 +284,23 @@
     },
     {
       "path": "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
-      "object": "3d743e5a3282d48f71dd900284c7fd0dd11c4996"
+      "object": "6a80915688cf5c1116add275ebafa66c6ed7c890"
     },
     {
       "path": "codex-rs/hepta-wire",
-      "object": "d8f26171ef868d94485175b6761d185074a38e74"
+      "object": "7dada4a83be146471d64ca82506fc66347d89312"
     },
     {
       "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs",
-      "object": "296b03b20e2f6329304bfbc457cab487bd6bb379"
+      "object": "799fb6ddb63aafc70ab232a1e3043c0d3e0b6abb"
     },
     {
       "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
       "object": "f1614bba342ab97b4782b71b8bdf9fe45a09dfc0"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/directional_session.rs",
+      "object": "194408faf369e8c899f318b24c81dd7e8068e769"
     },
     {
       "path": "codex-rs/hepta-wire/src/envelope.rs",
@@ -200,8 +319,24 @@
       "object": "dc760e52d315ddd17ee5237db064e511f5f32775"
     },
     {
+      "path": "codex-rs/hepta-wire/src/frame.rs",
+      "object": "32545befa5ef426a4b2a639a8a4827f53a88198a"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/frame_header.rs",
+      "object": "aa4cf1a92cdf62ca905b7578f4ae8a636fdc59d9"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/lib.rs",
+      "object": "9ebc8010c40cbb2e3db4d459c46298f13afec7bf"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/property_tests.rs",
       "object": "4ee69dfc4846e38b533a6767e3c734657d019b7c"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/registry.rs",
+      "object": "95c15170333c56acfefd385f490167522593ec0a"
     },
     {
       "path": "codex-rs/hepta-wire/src/schema.rs",
@@ -212,24 +347,56 @@
       "object": "a317246b9a4487ae1aaee45debfa7c79553d4c31"
     },
     {
+      "path": "codex-rs/hepta-wire/src/secure_session.rs",
+      "object": "542c5e1dc0f18022fb2939c3256f58e29ccce952"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/session.rs",
+      "object": "fc4c7c84e2306d0febd8c753aba8010277eb93a5"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/session_tests.rs",
+      "object": "4901bd0df8ccb948221677e6746c953e33f21fbd"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/stream.rs",
-      "object": "6e83762934b13bf6b6e2c8d1458633d0512fa543"
+      "object": "01f524ccb7dd6bd7a107ba43f6e08d6e2489b43d"
     },
     {
       "path": "codex-rs/hepta-wire/src/stream_tests.rs",
-      "object": "0c5e22254047658110df7ec5541d9726617d25c0"
+      "object": "80aec09d95143b7e551c415f048dccbdd6eeeb40"
     },
     {
       "path": "codex-rs/hepta-wire/src/version.rs",
-      "object": "d4e9388500f674e0e9b33cf37161549379223dda"
+      "object": "8559fc3bb8a61911e08e32da0ff47bfdfd4d72b1"
     },
     {
       "path": "codex-rs/hepta-wire/src/version_tests.rs",
       "object": "4ae32d887c47f81dc32d20b685cf47b3d810bc8e"
     },
     {
+      "path": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
+      "object": "8189591738e2df00b3d64776620ee7d13734ae55"
+    },
+    {
+      "path": "docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md",
+      "object": "ed9f43b6ebd11914c51de1c005c3a9f0251fa108"
+    },
+    {
+      "path": "docs/modules/platform.wire/STATUS.md",
+      "object": "a48f8f81e43b40b6412c3040a11383342e6217c9"
+    },
+    {
       "path": "docs/modules/platform.wire/TECHNICAL.md",
-      "object": "c3a4a6fc43d5353de4dd419a2c92255947ce42ad"
+      "object": "11d640de0fbeb41ebd871cad728200cf812731e1"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/platform.wire.md",
+      "object": "cbb84d999a48b6231c6f34b4587ced6fc54991bc"
+    },
+    {
+      "path": "scripts/platform_wire_status.py",
+      "object": "4291f4a6c78e3b7069824e894ffd9fda856dd7cf"
     }
   ]
 }

@@ -18,7 +18,10 @@ for package in "${PACKAGES[@]}"; do
 done
 
 cargo test --locked --manifest-path "$MANIFEST" "${ARGS[@]}"
-cargo clippy --locked --manifest-path "$MANIFEST" "${ARGS[@]}" --all-targets -- -D warnings
+# Lint the Lane A packages themselves. Workspace dependencies are qualified by
+# their owning lanes; linting them here makes an unrelated package warning a
+# false-negative for the platform.wire qualification boundary.
+cargo clippy --locked --manifest-path "$MANIFEST" "${ARGS[@]}" --all-targets --no-deps -- -D warnings
 
 # The final-use issuer/approver/revocation-distributor tools are deliberately
 # feature-gated. Compile and lint the explicit production-authority surface so
@@ -40,4 +43,5 @@ cargo clippy --locked --manifest-path "$MANIFEST" \
   --package codex-hepta-supervisor \
   --features production-authority \
   "${BIN_ARGS[@]}" \
+  --no-deps \
   -- -D warnings

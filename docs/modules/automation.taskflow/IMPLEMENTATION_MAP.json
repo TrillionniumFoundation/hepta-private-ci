@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "422dc02f6a65957f6f6d09e81d1fc661fc79e66d",
+    "tree": "ee7a8acdd3bdf2aa8fcbdefa5b3727f7692a6031"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -62,8 +62,7 @@
           "symbol": "pub async fn automation_create_calendar_v2(",
           "ownerModule": "runtime.agentd"
         }
-      ],
-      "sourceBlob": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      ]
     },
     {
       "designOperation": "materialize_due",
@@ -91,8 +90,7 @@
       "operation": "materialize_due",
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
-      "sourcePathExists": true,
-      "sourceBlob": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "sourcePathExists": true
     },
     {
       "designOperation": "claim_occurrence",
@@ -128,8 +126,7 @@
       "operation": "claim_occurrence",
       "nativeSymbol": "pub async fn materialize_occurrence(",
       "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "sourcePathExists": true,
-      "sourceBlob": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "sourcePathExists": true
     },
     {
       "designOperation": "execute_step",
@@ -184,8 +181,7 @@
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
       "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
-      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending"
     }
   ],
   "repositoryControlledGaps": [],
@@ -231,8 +227,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "422dc02f6a65957f6f6d09e81d1fc661fc79e66d",
+    "tree": "ee7a8acdd3bdf2aa8fcbdefa5b3727f7692a6031"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {

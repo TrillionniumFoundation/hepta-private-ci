@@ -125,9 +125,10 @@ class TransportObservationTests(unittest.TestCase):
         self.assertEqual(connect.call_args.args, ("github.com",))
         self.assertIsNotNone(connect.call_args.kwargs["context"])
         args, kwargs = connection.request.call_args
-        self.assertEqual(args[:2], ("GET", f"/{REPO}.git/info/refs?service=git-receive-pack"))
+        self.assertEqual(args[:2], ("POST", f"/{REPO}.git/git-receive-pack"))
         self.assertNotIn("fixture-token", repr(args))
-        self.assertIsNone(kwargs.get("body"))
+        self.assertEqual(kwargs.get("body"), b"0000")
+        self.assertEqual(kwargs["headers"]["Content-Type"], "application/x-git-receive-pack-request")
         return result
 
     def test_explicit_authenticated_write_denial_is_narrow_observation(self):

@@ -276,6 +276,11 @@ impl DurableLeaseRegistryV1 {
         match (&current.kind, observation) {
             (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
                 validate_lease(&lease)?;
+                // Issuance admits only a newly active lease. Persisted lifecycle
+                // states are validated separately and must remain reopenable.
+                if lease.state != SecretLeaseStateV1::Active {
+                    return Err(LeaseRegistryErrorV1::InvalidInput);
+                }
                 if next.leases.contains_key(&lease.lease_id) {
                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
                 }
@@ -487,7 +492,6 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
         || lease.provider_metadata_sha256 == [0; 32]
         || lease.generation == 0
         || lease.expires_at_unix_ms <= lease.issued_at_unix_ms
-        || lease.state != SecretLeaseStateV1::Active
     {
         return Err(LeaseRegistryErrorV1::InvalidInput);
     }

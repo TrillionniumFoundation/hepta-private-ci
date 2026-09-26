@@ -158,8 +158,36 @@ fn callers_manifest_records_the_live_product_chain() {
     );
 
     let wire = surface(&manifest, "codex-hepta-wire");
-    assert_eq!(wire.public_items, ["WireEnvelopeV2"]);
-    assert_eq!(wire.product_callers, ["codex-rs/hepta-runtime/src/lib.rs"]);
+    assert_eq!(
+        wire.public_items,
+        [
+            "WireEnvelopeV2",
+            "NegotiatedStreamingDecoder",
+            "StreamDecodeBatch"
+        ]
+    );
+    assert_eq!(
+        wire.product_callers,
+        [
+            "codex-rs/hepta-runtime/src/lib.rs",
+            "codex-rs/hepta-context-compiler/src/wire.rs",
+            "codex-rs/hepta-codex-adapter/src/wire.rs",
+        ]
+    );
+
+    let codex_wire = surface(&manifest, "codex-hepta-codex-adapter");
+    assert_eq!(
+        codex_wire.role,
+        "product_bound_runtime_codex_wire_admission"
+    );
+    assert_eq!(
+        codex_wire.public_items,
+        ["CodexOperationIntentWireV3", "adapt_product_wire_v3"]
+    );
+    assert_eq!(
+        codex_wire.product_callers,
+        ["codex-rs/hepta-infer-worker-host/src/native_app_server.rs"]
+    );
 
     let runtime = surface(&manifest, "codex-hepta-runtime");
     assert_eq!(runtime.public_items, ["HeptaRuntime", "RuntimeStatus"]);

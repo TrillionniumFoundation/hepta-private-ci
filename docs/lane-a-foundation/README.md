@@ -54,7 +54,8 @@ pass for the exact source and synthetic merge candidate.
 
 This package deliberately does **not** claim completion of target-only
 implementations, production activation, operator acceptance, promotion, release,
-distributed anti-rollback, durable operations, durable AuthBus policy/quota, or
-any external effect not proven by an exact-candidate receipt. Remaining
+distributed anti-rollback, AuthBus policy/quota hosting, or any external effect
+not proven by an exact-candidate receipt. Source-implemented durable operations
+remain separately gated from product execution and external acceptance. Remaining
 implementation and external gates are listed in
 [`REMAINING_GATES.md`](REMAINING_GATES.md).

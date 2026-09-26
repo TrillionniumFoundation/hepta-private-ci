@@ -77,6 +77,13 @@ impl WireCapabilities {
         }
         Ok(Self(bits))
     }
+
+    const fn effective_for(self, version: WireVersion) -> Self {
+        let version_semantics = version.provided_version_semantics().0;
+        let non_version_scoped = self.0 & !Self::VERSION_SCOPED.0;
+        let selected_version_scoped = self.0 & version_semantics;
+        Self(non_version_scoped | selected_version_scoped)
+    }
 }
 
 /// Canonical transport-neutral version/capability advertisement.
@@ -197,10 +204,41 @@ impl NegotiationOffer {
     }
 }
 
+/// Immutable result of `negotiate`; consumers cannot replace the selected
+/// version or remove required capabilities before constructing a session.
+/// This enforces protocol consistency, not peer authentication or authority.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct NegotiatedWire {
-    pub version: WireVersion,
-    pub capabilities: WireCapabilities,
+    version: WireVersion,
+    /// Capabilities that are effective for the selected version.
+    ///
+    /// Version-scoped properties advertised by both peers are removed when the
+    /// selected version does not provide them. For example, a V1 session never
+    /// reports `METADATA_BOUND_DIGEST` as effective.
+    capabilities: WireCapabilities,
+    /// Raw capability intersection advertised by both peers. This is retained
+    /// for diagnostics and must not be used as the selected session posture.
+    common_advertised_capabilities: WireCapabilities,
+    /// Capabilities the caller required when negotiating this session.
+    required_capabilities: WireCapabilities,
+}
+
+impl NegotiatedWire {
+    pub const fn version(self) -> WireVersion {
+        self.version
+    }
+
+    pub const fn capabilities(self) -> WireCapabilities {
+        self.capabilities
+    }
+
+    pub const fn common_advertised_capabilities(self) -> WireCapabilities {
+        self.common_advertised_capabilities
+    }
+
+    pub const fn required_capabilities(self) -> WireCapabilities {
+        self.required_capabilities
+    }
 }
 
 /// Select the highest explicitly common implemented version that satisfies all
@@ -230,11 +268,14 @@ pub fn negotiate(
         {
             continue;
         }
+        let effective_capabilities = common_capabilities.effective_for(version);
         let needed = required.union(version.required_capabilities());
-        if common_capabilities.contains(needed) {
+        if effective_capabilities.contains(needed) {
             return Ok(NegotiatedWire {
                 version,
-                capabilities: common_capabilities,
+                capabilities: effective_capabilities,
+                common_advertised_capabilities: common_capabilities,
+                required_capabilities: required,
             });
         }
     }

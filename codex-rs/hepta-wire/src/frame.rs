@@ -9,6 +9,8 @@ use crate::WireEnvelopeV2;
 use crate::WireError;
 use crate::WireV2Error;
 use crate::WireVersion;
+use crate::frame_header::FrameHeader;
+use crate::frame_header::FrameHeaderParseError;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DecodedEnvelope {
@@ -61,21 +63,25 @@ impl DecodedEnvelope {
 }
 
 pub fn decode_frame(encoded: &[u8]) -> Result<DecodedEnvelope, DecodeFrameError> {
-    if encoded.len() < 6 {
-        return Err(DecodeFrameError::Truncated);
-    }
-    if encoded[..4] != *b"HPTA" {
-        return Err(DecodeFrameError::Magic);
-    }
-    let version = u16::from_be_bytes([encoded[4], encoded[5]]);
-    match version {
-        1 => WireEnvelope::decode(encoded)
+    let header = FrameHeader::parse(encoded).map_err(map_header_error)?;
+    match header.version() {
+        WireVersion::V1 => WireEnvelope::decode(encoded)
             .map(DecodedEnvelope::V1)
             .map_err(DecodeFrameError::V1),
-        2 => WireEnvelopeV2::decode(encoded)
+        WireVersion::V2 => WireEnvelopeV2::decode(encoded)
             .map(DecodedEnvelope::V2)
             .map_err(DecodeFrameError::V2),
-        other => Err(DecodeFrameError::Version(other)),
+    }
+}
+
+fn map_header_error(error: FrameHeaderParseError) -> DecodeFrameError {
+    match error {
+        FrameHeaderParseError::Truncated { .. } => DecodeFrameError::Truncated,
+        FrameHeaderParseError::Magic { .. } => DecodeFrameError::Magic,
+        FrameHeaderParseError::Version { actual, .. } => DecodeFrameError::Version(actual),
+        // A u32 payload length is representable on every production target.
+        // Retain the historical closed error surface for exotic narrower targets.
+        FrameHeaderParseError::PlatformLength { .. } => DecodeFrameError::Truncated,
     }
 }
 
@@ -91,7 +97,7 @@ pub enum DecodeFrameError {
 impl fmt::Display for DecodeFrameError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Truncated => formatter.write_str("wire frame is truncated before version"),
+            Self::Truncated => formatter.write_str("wire frame is truncated before fixed header"),
             Self::Magic => formatter.write_str("wire frame magic mismatch"),
             Self::Version(version) => write!(formatter, "unsupported wire version {version}"),
             Self::V1(error) => error.fmt(formatter),

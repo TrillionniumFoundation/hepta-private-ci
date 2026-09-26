@@ -1,0 +1,169 @@
+name: Platform wire target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source_sha:
+        description: Exact 40-hex SHA selected by the operator; must equal the dispatched ref head
+        required: true
+        type: string
+      host_profile:
+        description: Registered protected target-host profile
+        required: true
+        default: hepta-target-host
+        type: choice
+        options:
+          - hepta-target-host
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-target-host-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: Qualify platform.wire on protected target host
+    environment: platform-wire-target-host
+    runs-on:
+      - self-hosted
+      - hepta-target-host
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_NET_OFFLINE: "true"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/platform-wire-target-${{ github.run_id }}-${{ github.run_attempt }}
+      EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+      HOST_PROFILE: ${{ inputs.host_profile }}
+    steps:
+      - name: Check out dispatched exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify trusted subject and pre-provisioned toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXPECTED_SOURCE_SHA" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$HOST_PROFILE" = "hepta-target-host"
+          command -v cargo
+          command -v rustc
+          command -v python3
+          command -v node
+          cargo --version
+          rustc --version
+          python3 --version
+          node --version
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify source and generated lifecycle document
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
+
+      - name: Run target-host native qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire --all-targets
+          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-context-compiler --lib wire::tests
+          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-codex-adapter --lib wire::tests
+          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-shadow-qualification --test cross_runtime_wire_session
+          cargo clippy --locked --offline --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire -p codex-hepta-codex-adapter \
+            --all-targets --no-deps -- -D warnings
+
+      - name: Write source-bound target-host receipt
+        env:
+          RUNNER_NAME_VALUE: ${{ runner.name }}
+          RUNNER_OS_VALUE: ${{ runner.os }}
+          RUNNER_ARCH_VALUE: ${{ runner.arch }}
+          WORKFLOW_NAME_VALUE: ${{ github.workflow }}
+          WORKFLOW_REF_VALUE: ${{ github.workflow_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 - \
+            "$GITHUB_SHA" \
+            "$HOST_PROFILE" \
+            "$RUNNER_NAME_VALUE" \
+            "$RUNNER_OS_VALUE" \
+            "$RUNNER_ARCH_VALUE" \
+            "$WORKFLOW_NAME_VALUE" \
+            "$WORKFLOW_REF_VALUE" \
+            "$GITHUB_RUN_ID" \
+            "$GITHUB_RUN_ATTEMPT" \
+            "$GITHUB_EVENT_NAME" \
+            "$generated_at" \
+            > .hepta-evidence/platform-wire-target-host.json <<'PY'
+          import json
+          import sys
+
+          (
+              source_sha,
+              profile,
+              runner_name,
+              runner_os,
+              runner_arch,
+              workflow,
+              workflow_ref,
+              run_id,
+              run_attempt,
+              event,
+              generated_at,
+          ) = sys.argv[1:]
+          print(json.dumps({
+              "schema": "hepta.platform-wire.receipt.v2",
+              "kind": "platform-wire-target-host",
+              "source_sha": source_sha,
+              "tested_sha": source_sha,
+              "status": "passed",
+              "workflow": workflow,
+              "workflow_ref": workflow_ref,
+              "run_id": int(run_id),
+              "run_attempt": int(run_attempt),
+              "event": event,
+              "generated_at": generated_at,
+              "environment": "platform-wire-target-host",
+              "host_profile": profile,
+              "runner_name": runner_name,
+              "runner_os": runner_os,
+              "runner_arch": runner_arch,
+          }, sort_keys=True, indent=2))
+          PY
+          python3 scripts/platform_wire_status.py validate-receipt \
+            --path .hepta-evidence/platform-wire-target-host.json \
+            --kind platform-wire-target-host
+          python3 scripts/platform_wire_status.py render \
+            --target-host .hepta-evidence/platform-wire-target-host.json \
+            --format json \
+            --output .hepta-evidence/platform-wire-target-host-status.json
+
+      - name: Retain target-host evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-target-host-${{ github.sha }}-${{ github.run_id }}
+          path: .hepta-evidence/platform-wire-target-host*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 180
+
+      - name: Remove target-host build products
+        if: always()
+        shell: bash
+        run: rm -rf -- "$CARGO_TARGET_DIR"

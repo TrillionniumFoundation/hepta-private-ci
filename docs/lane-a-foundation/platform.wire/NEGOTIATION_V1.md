@@ -43,6 +43,11 @@ requires schema admission must pass both requirements. If the only common
 version cannot satisfy the required properties, negotiation fails rather than
 silently falling back.
 
+`NegotiatedWire.capabilities` contains only capabilities effective for the
+selected version. `common_advertised_capabilities` separately records the raw
+intersection for diagnostics, so a V1 selection cannot be mistaken for a V2
+metadata-bound session merely because both peers advertised that capability.
+
 A future peer may advertise an unknown raw version number. An older
 implementation preserves that advertisement as data but never invents semantics
 for it and never selects it.
@@ -60,6 +65,14 @@ The current implementation advertises versions `1, 2` and capability mask
 
 The same vector is frozen in `HPTN_V1_CONFORMANCE.json` and native tests.
 
+## Session binding
+
+After negotiation, a live byte stream uses `NegotiatedStreamingDecoder`. A
+frame whose HPTA version differs from the selected HPTN version terminates and
+poisons that connection-local decoder. The generic `decode_frame` function is
+an offline multi-version parser and is not a replacement for session binding.
+A fresh connection negotiates again.
+
 ## Authentication requirement
 
 The HPTN hello is not authenticated by itself. Where downgrade or peer
@@ -73,3 +86,23 @@ transcript and frame into the channel's authenticated transcript.
 Connection-local negotiation state is discarded on disconnect. A new
 connection negotiates again. Negotiation success is not an effect
 acknowledgement and must not cause an uncertain external effect to be replayed.
+
+### Header-first session rejection
+
+`NegotiatedStreamingDecoder` applies the selected frame version when the fixed
+54-byte HPTA header is complete, before reserving or copying its advertised
+body. A supported but unselected version returns `VersionMismatch` even when
+the peer sends no body. Completed prefix frames are returned in the same batch;
+all partial bytes are discarded and subsequent feeds retain the terminal error.
+This is connection policy, not authentication: transport/session owners still
+bind the actual peer and transcript using their existing security boundary.
+
+## Native session result
+
+`NegotiatedWire` is constructed only by `negotiate`. Its read-only `version()`,
+`capabilities()`, `common_advertised_capabilities()` and
+`required_capabilities()` accessors distinguish effective session properties
+from peer advertisements. No public field mutation or DTO deserialization can
+replace the selected version or remove the caller's required capabilities.
+This native API constraint neither authenticates the HPTN transcript nor grants
+execution authority; those checks remain at the existing security owner.
