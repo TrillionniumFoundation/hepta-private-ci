@@ -118,8 +118,7 @@ impl DurableCognitiveReadStore {
         &self,
         access: &CognitiveAccess,
         request: &codex_hepta_memory::RetrievalRequest,
-    ) -> Result<codex_hepta_memory::CognitiveRetrievalObservationV1, DurableCognitiveStoreError>
-    {
+    ) -> Result<codex_hepta_memory::RetrievalObservation, DurableCognitiveStoreError> {
         self.backend.observe_memory_retrieval(access, request).await
     }
 
