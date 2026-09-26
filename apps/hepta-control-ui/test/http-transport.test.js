@@ -30,6 +30,28 @@ test("HTTP transport enforces same-origin URLs and credentials", async () => {
   assert.equal(observed.options.referrerPolicy, "no-referrer");
 });
 
+test("default fetch is invoked with the global receiver", async t => {
+  const originalFetch = globalThis.fetch;
+  let receiver;
+  let observedUrl;
+  globalThis.fetch = async function receiverSensitiveFetch(url) {
+    receiver = this;
+    observedUrl = String(url);
+    return response({ authenticated: true });
+  };
+  t.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+  });
+  await transport.connect({ client: "test" });
+
+  assert.equal(receiver, globalThis);
+  assert.equal(observedUrl, "https://control.example/api/ui-control/v1/session/connect");
+});
+
 test("mutations require CSRF and are never automatically retried", async () => {
   let calls = 0;
   const transport = new SameOriginHttpTransport({
