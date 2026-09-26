@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.kernel-authority-extension-api.v1",
+  "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+  "freeFunctions": {
+    "privileged": {
+      "open_production_final_use_authority": "final_use_open_state",
+      "recover_production_final_use_authority": "final_use_open_state"
+    },
+    "nonPrivileged": []
+  },
+  "types": [
+    {
+      "typeName": "ProductionAuthorityTrustEvidence",
+      "privilegedMethods": {},
+      "nonPrivilegedMethods": [
+        "validate"
+      ]
+    },
+    {
+      "typeName": "ProductionAuthorityKeyCustodyEvidence",
+      "privilegedMethods": {},
+      "nonPrivilegedMethods": [
+        "validate"
+      ]
+    },
+    {
+      "typeName": "ProductionAuthorityTrustBundle",
+      "privilegedMethods": {},
+      "nonPrivilegedMethods": [
+        "new",
+        "validate"
+      ]
+    },
+    {
+      "typeName": "AuthorityDispatchBinding",
+      "privilegedMethods": {
+        "dispatch": "authority_lease_dispatch_binding"
+      },
+      "nonPrivilegedMethods": []
+    },
+    {
+      "typeName": "AuthorityLeaseVerifier",
+      "privilegedMethods": {
+        "bind_dispatch": "authority_lease_bind_dispatch"
+      },
+      "nonPrivilegedMethods": []
+    },
+    {
+      "typeName": "AuthorityLeaseRegistry",
+      "privilegedMethods": {
+        "open_production_state_dir": "authority_lease_open_production_state"
+      },
+      "nonPrivilegedMethods": []
+    }
+  ],
+  "freeFunctionCallers": [
+    {
+      "function": "open_production_final_use_authority",
+      "boundaryId": "final_use_open_state",
+      "callPatterns": [
+        "\\bopen_production_final_use_authority\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "function": "recover_production_final_use_authority",
+      "boundaryId": "final_use_open_state",
+      "callPatterns": [
+        "\\brecover_production_final_use_authority\\s*\\("
+      ],
+      "allowedCallers": []
+    }
+  ]
+}
