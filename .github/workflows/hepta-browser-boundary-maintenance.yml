@@ -1,0 +1,90 @@
+name: Hepta Browser boundary maintenance
+
+on:
+  push:
+    branches:
+      - codex/browser-servo-canonical-v2-20260927
+    paths:
+      - 'apps/hepta-browser/scripts/apply-browser-servo-boundary-hardening.py'
+      - '.github/workflows/hepta-browser-boundary-maintenance.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-browser-boundary-maintenance
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind maintenance source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = codex/browser-servo-canonical-v2-20260927
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Apply exact boundary transform
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-browser/scripts/apply-browser-servo-boundary-hardening.py
+
+      - name: Verify JavaScript syntax and generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check apps/hepta-browser/src/*.js
+          node --check apps/hepta-browser/test/*.test.js
+          node apps/hepta-browser/scripts/browser-source-registry.js --check >/dev/null
+
+      - name: Exercise Browser boundary suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s node --test \
+            apps/hepta-browser/test/egress-broker.test.js \
+            apps/hepta-browser/test/worker-driver.test.js \
+            apps/hepta-browser/test/agentd-service.test.js \
+            apps/hepta-browser/test/runtime.test.js
+
+      - name: Verify Rust formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path apps/hepta-browser/servo-worker/Cargo.toml -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
+
+      - name: Exercise Agentd Browser authority tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd browser_servo --lib
+
+      - name: Commit verified boundary hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -n "$(git status --porcelain)"
+          git config user.name "hepta-browser-boundary-maintenance"
+          git config user.email "hepta-browser-boundary-maintenance@users.noreply.github.com"
+          git add \
+            apps/hepta-browser/src \
+            apps/hepta-browser/servo-worker/src/main.rs \
+            apps/hepta-browser/service-manifest.json \
+            apps/hepta-browser/test \
+            codex-rs/hepta-agentd/src/browser_servo.rs \
+            docs/modules/browser.servo/GENERATED_SOURCE_REGISTRY.json
+          git commit -m "browser.servo: enforce admission, egress, and containment boundaries"
+          git push origin HEAD:codex/browser-servo-canonical-v2-20260927
