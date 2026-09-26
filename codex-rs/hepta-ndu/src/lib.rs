@@ -27,6 +27,7 @@ mod projection_store;
 mod protocol;
 mod recursive;
 mod scoring;
+mod validated_scalarization;
 mod z_conversion;
 
 pub use coefficient_profile::AdmittedNduCoefficientProfileV1;
@@ -102,6 +103,7 @@ pub use recursive::RecursiveUtilityPath;
 pub use recursive::RecursiveUtilityReceipt;
 pub use recursive::UtilityEvent;
 pub use recursive::evaluate_recursive_utility;
+pub use validated_scalarization::ValidatedScalarizationProfileV1;
 pub use z_conversion::AdmittedZConversionProfileV1;
 pub use z_conversion::NduZConversionProfileV1;
 pub use z_conversion::ZConversionError;
