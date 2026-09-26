@@ -67,12 +67,21 @@ jobs:
           git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
           git diff --cached --check
           git commit -m "docs(cognitive.store): bind convergence map to exact source [cognitive-store-bootstrap]"
-      - name: Verify exact committed result without hiding diagnostics
+      - name: Retain exact verifier diagnostic
         run: |
           set -euo pipefail
+          set +e
           python3 scripts/hepta-implementation-maps.py verify \
             --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})"
+            --expected-tree "$(git rev-parse HEAD^{tree})" \
+            > cognitive-store-bootstrap-map-verify.log 2>&1
+          status=$?
+          set -e
+          cat cognitive-store-bootstrap-map-verify.log
+          printf 'exit_code=%s\n' "$status" >> cognitive-store-bootstrap-map-verify.log
+          git add cognitive-store-bootstrap-map-verify.log
+          git diff --cached --check
+          git commit -m "ci(cognitive-store): retain exact map verifier diagnostic [cognitive-store-bootstrap]"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
