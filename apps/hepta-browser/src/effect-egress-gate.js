@@ -349,11 +349,9 @@ export class EffectScopedEgressBroker {
     return receipt;
   }
 
-  async close() {
+  async close({ status = "profile_closed" } = {}) {
     if (this.#active !== null) {
-      this.completeOperation(this.#active.operationId, {
-        status: "profile_closed",
-      });
+      this.completeOperation(this.#active.operationId, { status });
     }
     const server = this.#server;
     this.#server = null;
