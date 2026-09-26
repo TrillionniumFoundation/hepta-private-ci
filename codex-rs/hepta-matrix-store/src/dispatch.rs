@@ -237,13 +237,14 @@ impl MatrixDurableStore {
             "SELECT logical_outbox_id, payload_sha256
              FROM outbox_messages
              WHERE outbox_id = ? AND stable_txn_id = ? AND room_id = ?
-               AND binding_revision = ? AND generation = ?",
+               AND binding_revision = ? AND generation = ? AND attempts = ?",
         )
         .bind(to_i64(record.outbox_id)?)
         .bind(record.stable_txn_id.as_str())
         .bind(record.room_id.as_str())
         .bind(to_i64(record.binding_revision)?)
         .bind(to_i64(record.generation)?)
+        .bind(to_i64(record.attempts)?)
         .fetch_optional(&mut *transaction)
         .await
         .map_err(unavailable)?
@@ -280,8 +281,15 @@ impl MatrixDurableStore {
                 transaction.commit().await.map_err(unavailable)?;
                 return Ok(existing);
             }
+            // A retry must not erase uncertainty about any earlier effect.
+            // An unfinished prior dispatch is also uncertain after recovery;
+            // a new claim/attempt number is not evidence of non-delivery.
             let next_state = if existing.state == MatrixDispatchState::Accepted {
                 MatrixDispatchState::Accepted
+            } else if existing.state == MatrixDispatchState::Indeterminate
+                || record.attempts > existing.attempts
+            {
+                MatrixDispatchState::Indeterminate
             } else {
                 MatrixDispatchState::Dispatched
             };
@@ -561,7 +569,9 @@ impl MatrixDurableStore {
         }
         if matches!(
             existing.state,
-            MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+            MatrixDispatchState::Succeeded
+                | MatrixDispatchState::ObservedUnqualified
+                | MatrixDispatchState::Redacted
         ) {
             return Err(MatrixDurableError::Conflict);
         }
@@ -579,16 +589,24 @@ impl MatrixDurableStore {
             transaction.commit().await.map_err(unavailable)?;
             return Ok(existing);
         }
-        if existing.accepted_event_id.is_some() {
-            // A prior request already crossed the transport boundary. A later
-            // permanent rejection of a retry cannot prove the original event
-            // was absent, so preserve Accepted until homeserver reconciliation.
+        if existing.accepted_event_id.is_some()
+            || existing.state == MatrixDispatchState::Indeterminate
+        {
+            // Even without an ACK/event ID, an earlier unknown effect cannot
+            // be disproved by a later rejected request. Preserve uncertainty
+            // across both retries and process restarts until reconciliation.
+            let state = if existing.accepted_event_id.is_some() {
+                MatrixDispatchState::Accepted
+            } else {
+                MatrixDispatchState::Indeterminate
+            };
             sqlx::query(
                 "UPDATE matrix_dispatch_ledger
-                 SET state = 'accepted', transport_observation_sha256 = ?,
+                 SET state = ?, transport_observation_sha256 = ?,
                      updated_at_ms = ?
                  WHERE stable_txn_id = ?",
             )
+            .bind(state.as_str())
             .bind(&digest)
             .bind(to_i64(now_ms)?)
             .bind(txn_id.as_str())
@@ -596,7 +614,7 @@ impl MatrixDurableStore {
             .await
             .map_err(unavailable)?;
             let record = MatrixDispatchRecord {
-                state: MatrixDispatchState::Accepted,
+                state,
                 transport_observation_digest: Some(digest),
                 updated_at_ms: now_ms,
                 ..existing

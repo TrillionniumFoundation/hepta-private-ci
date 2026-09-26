@@ -8,6 +8,7 @@ use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_store::MatrixAttemptFailureClass;
 use codex_hepta_matrix_store::MatrixDispatchAttemptEventKind;
 use codex_hepta_matrix_store::MatrixDispatchAuthorityClaim;
+use codex_hepta_matrix_store::MatrixDispatchRecord;
 use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
@@ -21,6 +22,13 @@ use crate::authority::MatrixOutboundAuthorizer;
 use crate::authority::MatrixOutboundIdentity;
 use crate::authority::build_matrix_final_use_request;
 
+mod clock;
+mod gate;
+mod retry;
+use clock::DispatchClock;
+use gate::FinalSendGate;
+use retry::*;
+
 const PARKED_RECONCILIATION_AT_MS: u64 = i64::MAX as u64;
 
 pub type MatrixSendFuture<'a> =
@@ -30,10 +38,7 @@ pub trait MatrixOutboundTransport: Send + Sync {
     /// Return the exact authenticated Matrix transport/session identity.
     fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError>;
 
-    /// Enter the physical Matrix adapter.
-    ///
-    /// Implementations must be lazy: this method may construct a future but
-    /// must not perform external I/O until the returned future is polled.
+    /// Construct a lazy physical-adapter future; construction must perform no I/O.
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a>;
 }
 
@@ -96,20 +101,6 @@ impl OutboxDispatchConfig {
             && !self.idle_poll.is_zero()
             && self.idle_poll <= Duration::from_secs(5)
     }
-
-    fn physical_send_deadline(
-        &self,
-        remaining_lease_ms: u64,
-    ) -> Result<Duration, OutboxDispatchError> {
-        let deadline_ms = self
-            .lease_ms
-            .saturating_sub(1)
-            .min(remaining_lease_ms.saturating_sub(1));
-        if deadline_ms == 0 {
-            return Err(OutboxDispatchError::Invalid);
-        }
-        Ok(Duration::from_millis(deadline_ms))
-    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -118,6 +109,7 @@ pub struct OutboxDispatchStats {
     pub sent: u64,
     pub transport_accepted: u64,
     pub indeterminate: u64,
+    pub observed_unqualified: u64,
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
     pub cancelled: bool,
@@ -133,6 +125,10 @@ pub enum OutboxDispatchError {
     Authority,
     #[error("Matrix transport identity is unavailable")]
     TransportIdentity,
+    #[error("Matrix claim expired before physical adapter entry")]
+    LeaseExpired,
+    #[error("Matrix dispatch was canceled before physical adapter entry")]
+    Canceled,
 }
 
 pub async fn dispatch_outbox_once<
@@ -149,6 +145,13 @@ pub async fn dispatch_outbox_once<
     if !config.is_valid() {
         return Err(OutboxDispatchError::Invalid);
     }
+    let clock = DispatchClock::new(now_ms);
+    if cancel.is_cancelled() {
+        return Ok(OutboxDispatchStats {
+            cancelled: true,
+            ..OutboxDispatchStats::default()
+        });
+    }
     let claims = store
         .claim_outbox_fenced(now_ms, config.lease_ms, config.claim_limit)
         .await
@@ -157,341 +160,259 @@ pub async fn dispatch_outbox_once<
         claimed: claims.len() as u64,
         ..OutboxDispatchStats::default()
     };
-
     for index in 0..claims.len() {
         let claim = &claims[index];
         let record = claim.record();
-        let prepared_at_ms = per_record_time(now_ms, index, 0)?;
-        let prepared = store
-            .prepare_outbox_dispatch(record, prepared_at_ms)
-            .await
-            .map_err(store_error)?;
-        store
-            .record_outbox_prepared(claim, prepared_at_ms)
-            .await
-            .map_err(store_error)?;
-        if prepared.state.is_terminal() {
-            let (kind, successful) = match prepared.state {
-                MatrixDispatchState::Succeeded => {
-                    (MatrixDispatchAttemptEventKind::Confirmed, true)
-                }
-                MatrixDispatchState::Redacted => {
-                    (MatrixDispatchAttemptEventKind::Redacted, true)
-                }
-                MatrixDispatchState::ObservedUnqualified | MatrixDispatchState::Failed => (
-                    MatrixDispatchAttemptEventKind::PermanentlyRejected,
-                    false,
-                ),
-                MatrixDispatchState::Dispatched
-                | MatrixDispatchState::Accepted
-                | MatrixDispatchState::Indeterminate => {
-                    return Err(OutboxDispatchError::Store);
+        let mut entered_effect = false;
+        let attempt_result: Result<(), OutboxDispatchError> = async {
+            if cancel.is_cancelled() {
+                return Err(OutboxDispatchError::Canceled);
+            }
+            let deadline = clock.deadline(claim.lease_until_ms())?;
+            let prepared_at_ms = clock.now_ms()?;
+            let prepared = store
+                .prepare_outbox_dispatch(record, prepared_at_ms)
+                .await
+                .map_err(store_error)?;
+            if prepared.state.is_terminal() {
+                close_observed_terminal(store, claim, &prepared, &clock, &mut stats).await?;
+                return Ok(());
+            }
+            store
+                .record_outbox_prepared(claim, clock.now_ms()?)
+                .await
+                .map_err(store_error)?;
+            let identity = transport
+                .identity()
+                .map_err(|_| OutboxDispatchError::TransportIdentity)?;
+            let request = build_matrix_final_use_request(
+                store.owner_agent_id().as_str(),
+                &prepared,
+                record,
+                &identity,
+            )
+            .map_err(authority_error)?;
+            let signed = tokio::select! {
+                biased;
+                _ = cancel.cancelled() => return Err(OutboxDispatchError::Canceled),
+                result = tokio::time::timeout_at(deadline, authorizer.signed_grant(&request)) => {
+                    result.map_err(|_| OutboxDispatchError::LeaseExpired)?.map_err(authority_error)?
                 }
             };
+            // This is an early refresh for nonce admission. The final gate
+            // refreshes again in the very poll which enters the adapter.
+            authorizer.refresh_revocations().map_err(authority_error)?;
+            let token = authorizer
+                .authority()
+                .claim(&signed, &request.binding)
+                .map_err(|_| OutboxDispatchError::Authority)?;
+            let claimed_authority_epoch = token.claimed_authority_epoch();
+            let claimed_revocation_revision = token.claimed_revocation_revision();
+            if claimed_authority_epoch != signed.grant.authority_epoch {
+                return Err(OutboxDispatchError::Authority);
+            }
+            let witness = MatrixOutboxAuthorityWitness {
+                authority_epoch: claimed_authority_epoch,
+                revocation_revision: claimed_revocation_revision,
+                grant_id: signed.grant.grant_id.clone(),
+                verified_use_witness_sha256: hex_digest(token.witness_sha256()),
+                revocation_head_sha256: hex_digest(token.claimed_revocation_head_sha256()),
+            };
             store
-                .close_terminal_outbox_claim(
-                    claim,
-                    kind,
-                    prepared.terminal_event_id.as_ref(),
-                    per_record_time(now_ms, index, 1)?,
+                .record_outbox_authorized(claim, &witness, clock.now_ms()?)
+                .await
+                .map_err(store_error)?;
+            store
+                .record_dispatch_authority_claim(
+                    &record.stable_txn_id,
+                    &MatrixDispatchAuthorityClaim {
+                        operation_id: request.operation_id.clone(),
+                        subject_id: request.subject_id.clone(),
+                        destination_id: request.destination_id.clone(),
+                        homeserver_id: request.homeserver_id.clone(),
+                        matrix_user_id: request.matrix_user_id.clone(),
+                        device_id: request.device_id.clone(),
+                        session_generation: request.session_generation,
+                        authority_epoch: claimed_authority_epoch,
+                        revocation_revision: claimed_revocation_revision,
+                        grant_id: signed.grant.grant_id.clone(),
+                        request_digest: request.request_digest.clone(),
+                        scope_digest: request.scope_digest.clone(),
+                        payload_digest: request.payload_digest.clone(),
+                        attempt: record.attempts,
+                        expires_at_ms: signed.grant.expires_at_unix_ms,
+                        claimed_at_ms: system_time_ms()?,
+                    },
                 )
                 .await
                 .map_err(store_error)?;
-            if successful {
-                stats.sent += 1;
-            } else {
-                stats.permanent_failure += 1;
+            if cancel.is_cancelled() {
+                return Err(OutboxDispatchError::Canceled);
             }
-            continue;
+            // Durable intent is NOT a statement that physical entry happened.
+            store
+                .record_outbox_dispatching(claim, clock.now_ms()?)
+                .await
+                .map_err(store_error)?;
+            clock.deadline(claim.lease_until_ms())?;
+            let gate = FinalSendGate {
+                transport,
+                authorizer,
+                expected_identity: &identity,
+                record,
+                cancel,
+                deadline,
+            };
+            let entered = gate.enter_verified_use(token, &request.binding).await?;
+            entered_effect = true;
+            let outcome_at_ms = clock.now_ms()?;
+            match entered.result {
+                Ok(event_id) => {
+                    let observed = store
+                        .record_outbox_transport_accepted(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            &event_id,
+                            outcome_at_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    stats.transport_accepted += 1;
+                    if observed.state.is_terminal() {
+                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
+                    } else {
+                        let scheduled_at_ms = clock.now_ms()?;
+                        let next = reconciliation_attempt_at(config, record, scheduled_at_ms)?;
+                        store
+                            .finish_outbox_transport_accepted(claim, &event_id, scheduled_at_ms, next)
+                            .await
+                            .map_err(store_error)?;
+                        count_retry(&mut stats, next);
+                    }
+                }
+                Err(MatrixTransportError::Permanent) => {
+                    let observed = store
+                        .record_outbox_transport_rejected(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            outcome_at_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    if matches!(
+                        observed.state,
+                        MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate
+                    ) {
+                        store
+                            .finish_outbox_indeterminate(
+                                claim,
+                                MatrixAttemptFailureClass::Permanent,
+                                /*retry_after_ms*/ None,
+                                clock.now_ms()?,
+                                PARKED_RECONCILIATION_AT_MS,
+                            )
+                            .await
+                            .map_err(store_error)?;
+                        stats.indeterminate += 1;
+                    } else {
+                        store
+                            .finish_outbox_permanently_rejected(claim, clock.now_ms()?)
+                            .await
+                            .map_err(store_error)?;
+                        stats.permanent_failure += 1;
+                    }
+                }
+                Err(error) => {
+                    let observed = store
+                        .record_outbox_transport_indeterminate(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            outcome_at_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    if observed.state.is_terminal() {
+                        close_observed_terminal(store, claim, &observed, &clock, &mut stats).await?;
+                    } else {
+                        let scheduled_at_ms = clock.now_ms()?;
+                        let next = classified_retry_at(config, record, scheduled_at_ms, error)?;
+                        store
+                            .finish_outbox_indeterminate(
+                                claim,
+                                failure_class(error),
+                                retry_after_hint(error),
+                                scheduled_at_ms,
+                                next,
+                            )
+                            .await
+                            .map_err(store_error)?;
+                        count_retry(&mut stats, next);
+                    }
+                }
+            }
+            Ok(())
         }
-        if cancel.is_cancelled() {
-            release_pre_entry_claims(store, &claims[index..], prepared_at_ms).await?;
-            stats.cancelled = true;
-            break;
-        }
-
-        let identity = match transport.identity() {
-            Ok(identity) => identity,
-            Err(_) => {
-                release_pre_entry_claims(store, &claims[index..], prepared_at_ms).await?;
-                return Err(OutboxDispatchError::TransportIdentity);
-            }
-        };
-        let request = match build_matrix_final_use_request(
-            store.owner_agent_id().as_str(),
-            &prepared,
-            record,
-            &identity,
-        ) {
-            Ok(request) => request,
-            Err(error) => {
-                release_pre_entry_claims(store, &claims[index..], prepared_at_ms).await?;
-                return Err(authority_error(error));
-            }
-        };
-        let signed_result = tokio::select! {
-            biased;
-            _ = cancel.cancelled() => {
-                release_pre_entry_claims(store, &claims[index..], prepared_at_ms).await?;
+        .await;
+        if let Err(error) = attempt_result {
+            // Never release an entered/unknown effect as a pre-entry cancel.
+            // Every other claimed row is still independently safe to release.
+            let remaining = if entered_effect { index + 1 } else { index };
+            release_pre_entry_claims(
+                store,
+                &claims[remaining..],
+                &clock,
+                !entered_effect && error == OutboxDispatchError::Authority,
+            )
+            .await?;
+            if error == OutboxDispatchError::Canceled {
                 stats.cancelled = true;
                 break;
             }
-            result = authorizer.signed_grant(&request) => result,
-        };
-        let signed = match signed_result {
-            Ok(signed) => signed,
-            Err(error) => {
-                release_pre_entry_claims(store, &claims[index..], prepared_at_ms).await?;
-                return Err(authority_error(error));
-            }
-        };
-        let token = match authorizer.authority().claim(&signed, &request.binding) {
-            Ok(token) => token,
-            Err(_) => {
-                store
-                    .release_outbox_claim_revoked(
-                        claim,
-                        per_record_time(now_ms, index, 1)?,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                return Err(OutboxDispatchError::Authority);
-            }
-        };
-        let claimed_authority_epoch = token.claimed_authority_epoch();
-        let claimed_revocation_revision = token.claimed_revocation_revision();
-        if claimed_authority_epoch != signed.grant.authority_epoch {
-            store
-                .release_outbox_claim_revoked(claim, per_record_time(now_ms, index, 1)?)
-                .await
-                .map_err(store_error)?;
-            return Err(OutboxDispatchError::Authority);
-        }
-
-        let witness = MatrixOutboxAuthorityWitness {
-            authority_epoch: claimed_authority_epoch,
-            revocation_revision: claimed_revocation_revision,
-            grant_id: signed.grant.grant_id.clone(),
-            verified_use_witness_sha256: hex_digest(token.witness_sha256()),
-            revocation_head_sha256: hex_digest(token.claimed_revocation_head_sha256()),
-        };
-        let authorized_at_ms = per_record_time(now_ms, index, 1)?;
-        store
-            .record_outbox_authorized(claim, &witness, authorized_at_ms)
-            .await
-            .map_err(store_error)?;
-
-        let authority_claimed_at_ms = system_time_ms()?;
-        store
-            .record_dispatch_authority_claim(
-                &record.stable_txn_id,
-                &MatrixDispatchAuthorityClaim {
-                    operation_id: request.operation_id.clone(),
-                    subject_id: request.subject_id.clone(),
-                    destination_id: request.destination_id.clone(),
-                    homeserver_id: request.homeserver_id.clone(),
-                    matrix_user_id: request.matrix_user_id.clone(),
-                    device_id: request.device_id.clone(),
-                    session_generation: request.session_generation,
-                    authority_epoch: claimed_authority_epoch,
-                    revocation_revision: claimed_revocation_revision,
-                    grant_id: signed.grant.grant_id.clone(),
-                    request_digest: request.request_digest.clone(),
-                    scope_digest: request.scope_digest.clone(),
-                    payload_digest: request.payload_digest.clone(),
-                    attempt: record.attempts,
-                    expires_at_ms: signed.grant.expires_at_unix_ms,
-                    claimed_at_ms: authority_claimed_at_ms,
-                },
-            )
-            .await
-            .map_err(store_error)?;
-
-        if cancel.is_cancelled() {
-            release_pre_entry_claims(store, &claims[index..], authorized_at_ms).await?;
-            stats.cancelled = true;
-            break;
-        }
-
-        // This is the final persistence point before the physical effect. The
-        // authority frontier is refreshed and the opaque token is consumed
-        // after this await, so no await or persistence can stale the permit.
-        let dispatching_at_ms = per_record_time(now_ms, index, 2)?;
-        let remaining_lease_ms = store
-            .record_outbox_dispatching(claim, dispatching_at_ms)
-            .await
-            .map_err(store_error)?;
-        if let Err(error) = authorizer.refresh_revocations() {
-            store
-                .release_outbox_claim_revoked(claim, dispatching_at_ms)
-                .await
-                .map_err(store_error)?;
-            return Err(authority_error(error));
-        }
-        let entered = match authorizer
-            .authority()
-            .enter_verified_use(token, &request.binding)
-        {
-            Ok(entered) => entered,
-            Err(_) => {
-                store
-                    .release_outbox_claim_revoked(claim, dispatching_at_ms)
-                    .await
-                    .map_err(store_error)?;
-                return Err(OutboxDispatchError::Authority);
-            }
-        };
-        if !entered.matches(&request.binding) {
-            store
-                .release_outbox_claim_revoked(claim, dispatching_at_ms)
-                .await
-                .map_err(store_error)?;
-            return Err(OutboxDispatchError::Authority);
-        }
-
-        let deadline = config.physical_send_deadline(remaining_lease_ms)?;
-        let result = tokio::select! {
-            biased;
-            _ = cancel.cancelled() => Err(MatrixTransportError::ResponseLost),
-            result = tokio::time::timeout(deadline, transport.send(record)) => {
-                match result {
-                    Ok(result) => result,
-                    Err(_) => Err(MatrixTransportError::ReadTimeout),
-                }
-            }
-        };
-        let outcome_at_ms = per_record_time(now_ms, index, 3)?;
-        match result {
-            Ok(event_id) => {
-                let observed = store
-                    .record_outbox_transport_accepted(
-                        &record.stable_txn_id,
-                        record.attempts,
-                        &event_id,
-                        outcome_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                stats.transport_accepted += 1;
-                if observed.state.is_terminal() {
-                    let kind = if observed.state == MatrixDispatchState::Redacted {
-                        MatrixDispatchAttemptEventKind::Redacted
-                    } else {
-                        MatrixDispatchAttemptEventKind::Confirmed
-                    };
-                    store
-                        .close_terminal_outbox_claim(
-                            claim,
-                            kind,
-                            observed.terminal_event_id.as_ref(),
-                            outcome_at_ms,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    stats.sent += 1;
-                    continue;
-                }
-                let next_attempt_at_ms =
-                    reconciliation_attempt_at(config, record, outcome_at_ms)?;
-                store
-                    .finish_outbox_transport_accepted(
-                        claim,
-                        &event_id,
-                        outcome_at_ms,
-                        next_attempt_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                count_retry(&mut stats, next_attempt_at_ms);
-            }
-            Err(error @ MatrixTransportError::RateLimited { .. }) => {
-                store
-                    .record_outbox_transport_indeterminate(
-                        &record.stable_txn_id,
-                        record.attempts,
-                        outcome_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                let next_attempt_at_ms =
-                    classified_retry_at(config, record, outcome_at_ms, error)?;
-                store
-                    .finish_outbox_indeterminate(
-                        claim,
-                        failure_class(error),
-                        retry_after_hint(error),
-                        outcome_at_ms,
-                        next_attempt_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                count_retry(&mut stats, next_attempt_at_ms);
-            }
-            Err(
-                error @ (MatrixTransportError::Retryable
-                | MatrixTransportError::Dns
-                | MatrixTransportError::Tls
-                | MatrixTransportError::ConnectTimeout
-                | MatrixTransportError::ConnectFailure
-                | MatrixTransportError::ReadTimeout
-                | MatrixTransportError::ConnectionReset
-                | MatrixTransportError::ResponseLost
-                | MatrixTransportError::ServerUnavailable),
-            ) => {
-                store
-                    .record_outbox_transport_indeterminate(
-                        &record.stable_txn_id,
-                        record.attempts,
-                        outcome_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                let next_attempt_at_ms =
-                    classified_retry_at(config, record, outcome_at_ms, error)?;
-                store
-                    .finish_outbox_indeterminate(
-                        claim,
-                        failure_class(error),
-                        None,
-                        outcome_at_ms,
-                        next_attempt_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                count_retry(&mut stats, next_attempt_at_ms);
-            }
-            Err(MatrixTransportError::Permanent) => {
-                let observed = store
-                    .record_outbox_transport_rejected(
-                        &record.stable_txn_id,
-                        record.attempts,
-                        outcome_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                if observed.state == MatrixDispatchState::Accepted {
-                    store
-                        .finish_outbox_indeterminate(
-                            claim,
-                            MatrixAttemptFailureClass::Permanent,
-                            None,
-                            outcome_at_ms,
-                            PARKED_RECONCILIATION_AT_MS,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    stats.indeterminate += 1;
-                } else {
-                    store
-                        .finish_outbox_permanently_rejected(claim, outcome_at_ms)
-                        .await
-                        .map_err(store_error)?;
-                    stats.permanent_failure += 1;
-                }
-            }
+            return Err(error);
         }
     }
+    stats.cancelled |= cancel.is_cancelled();
     Ok(stats)
+}
+
+async fn close_observed_terminal(
+    store: &MatrixDurableStore,
+    claim: &MatrixFencedOutboxClaim,
+    observed: &MatrixDispatchRecord,
+    clock: &DispatchClock,
+    stats: &mut OutboxDispatchStats,
+) -> Result<(), OutboxDispatchError> {
+    let kind = match observed.state {
+        MatrixDispatchState::Succeeded => MatrixDispatchAttemptEventKind::Confirmed,
+        MatrixDispatchState::Redacted => MatrixDispatchAttemptEventKind::Redacted,
+        // The remote effect exists, but no qualified authority claim follows
+        // from that fact. Do not misreport it as a permanent transport failure.
+        MatrixDispatchState::ObservedUnqualified => {
+            if observed.redaction_observation_digest.is_some() {
+                MatrixDispatchAttemptEventKind::Redacted
+            } else {
+                MatrixDispatchAttemptEventKind::Confirmed
+            }
+        }
+        MatrixDispatchState::Failed => MatrixDispatchAttemptEventKind::PermanentlyRejected,
+        _ => return Err(OutboxDispatchError::Store),
+    };
+    store
+        .close_terminal_outbox_claim(
+            claim,
+            kind,
+            observed.terminal_event_id.as_ref(),
+            clock.now_ms()?,
+        )
+        .await
+        .map_err(store_error)?;
+    match observed.state {
+        MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted => stats.sent += 1,
+        MatrixDispatchState::ObservedUnqualified => stats.observed_unqualified += 1,
+        MatrixDispatchState::Failed => stats.permanent_failure += 1,
+        _ => return Err(OutboxDispatchError::Store),
+    }
+    Ok(())
 }
 
 pub async fn run_outbox_sender<
@@ -528,6 +449,3 @@ pub async fn run_outbox_sender<
         }
     }
 }
-
-mod retry;
-use retry::*;

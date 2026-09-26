@@ -3,20 +3,29 @@ use super::*;
 pub(super) async fn release_pre_entry_claims(
     store: &MatrixDurableStore,
     claims: &[MatrixFencedOutboxClaim],
-    now_ms: u64,
+    clock: &DispatchClock,
+    first_authority_denied: bool,
 ) -> Result<(), OutboxDispatchError> {
-    for (offset, claim) in claims.iter().enumerate() {
-        store
-            .release_outbox_claim_canceled(
-                claim,
-                now_ms
-                    .checked_add(offset as u64)
-                    .ok_or(OutboxDispatchError::Invalid)?,
-            )
-            .await
-            .map_err(store_error)?;
+    let mut first_error = None;
+    for (index, claim) in claims.iter().enumerate() {
+        let now_ms = clock.now_ms()?;
+        let result = if first_authority_denied && index == 0 {
+            store.release_outbox_claim_revoked(claim, now_ms).await
+        } else {
+            store.release_outbox_claim_canceled(claim, now_ms).await
+        };
+        match result {
+            Ok(()) => {}
+            // A reclaimed expired capability cannot release its new owner.
+            // Reclamation already records expiry; do not invent a new lease.
+            Err(MatrixDurableError::Conflict) if now_ms >= claim.lease_until_ms() => {}
+            Err(error) => {
+                first_error.get_or_insert(store_error(error));
+            }
+        }
     }
-    Ok(())
+    // Try every unentered claim even if an earlier cleanup conflicts.
+    first_error.map_or(Ok(()), Err)
 }
 
 pub(super) fn system_time_ms() -> Result<u64, OutboxDispatchError> {
@@ -25,17 +34,6 @@ pub(super) fn system_time_ms() -> Result<u64, OutboxDispatchError> {
         .map_err(|_| OutboxDispatchError::Invalid)?
         .as_millis();
     u64::try_from(millis).map_err(|_| OutboxDispatchError::Invalid)
-}
-
-pub(super) fn per_record_time(
-    batch_now_ms: u64,
-    record_index: usize,
-    transition_index: u64,
-) -> Result<u64, OutboxDispatchError> {
-    batch_now_ms
-        .checked_add(record_index as u64)
-        .and_then(|value| value.checked_add(transition_index))
-        .ok_or(OutboxDispatchError::Invalid)
 }
 
 pub(super) fn reconciliation_attempt_at(
@@ -89,9 +87,7 @@ pub(super) fn classified_retry_at(
     let delay = base
         .saturating_add(stable_jitter_ms(record, base))
         .min(config.max_retry_delay_ms);
-    now_ms
-        .checked_add(delay)
-        .ok_or(OutboxDispatchError::Invalid)
+    now_ms.checked_add(delay).ok_or(OutboxDispatchError::Invalid)
 }
 
 pub(super) fn retry_delay_ms(
