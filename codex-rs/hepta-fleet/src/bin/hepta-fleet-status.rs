@@ -26,6 +26,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let metrics = owner.metrics()?;
     let state = owner.state();
     let alerts = alerts(&metrics, state.fleet_revocation_frontier.as_ref());
+    let has_alerts = !alerts.is_empty();
     let operation = options.operation_id.as_ref().and_then(|operation_id| {
         state
             .fleet_operation_receipts
@@ -36,8 +37,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let output = json!({
         "schema_version": 1,
         "state_generation": state.generation,
-        "state_sha256": state.content_sha256,
-        "workspace_reservations_sha256": state.workspace_reservations_sha256,
+        "state_sha256": state.content_sha256.clone(),
+        "workspace_reservations_sha256": state.workspace_reservations_sha256.clone(),
         "metrics": {
             "fleet_active_grants": metrics.fleet_active_grants,
             "fleet_expired_uncollected_grants": metrics.fleet_expired_uncollected_grants,
@@ -57,7 +58,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         "alerts": alerts,
         "operation_lookup": options.operation_id.as_ref().map(|operation_id| json!({
             "operation_id": operation_id,
-            "receipt": operation,
+            "receipt": operation.clone(),
             "retention_boundary": "bounded retained receipt window"
         })),
         "claim_boundary": {
@@ -67,7 +68,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
     println!("{}", serde_json::to_string_pretty(&output)?);
-    if options.fail_on_alert && !alerts.is_empty() {
+    if options.fail_on_alert && has_alerts {
         std::process::exit(2);
     }
     Ok(())
