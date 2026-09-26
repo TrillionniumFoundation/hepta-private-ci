@@ -108,6 +108,14 @@
       ]
     },
     {
+      "typeName": "AuthorityDispatchBinding",
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "privilegedMethods": {
+        "dispatch": "authority_lease_dispatch_binding"
+      },
+      "nonPrivilegedMethods": []
+    },
+    {
       "typeName": "FinalUseApprovalVerifier",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "privilegedMethods": {
@@ -196,9 +204,7 @@
       "id": "final_use_claim",
       "typeMarker": "claim_final_use",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "callPatterns": [
-        "\\bclaim_final_use\\s*\\("
-      ],
+      "callPatterns": ["\\bclaim_final_use\\s*\\("],
       "allowedCallers": [
         "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
         "codex-rs/hepta-agentd/src/browser_servo.rs"
@@ -227,20 +233,14 @@
       "id": "final_use_delivery",
       "typeMarker": "deliver_final_use",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "callPatterns": [
-        "\\bdeliver_final_use\\s*\\("
-      ],
-      "allowedCallers": [
-        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
-      ]
+      "callPatterns": ["\\bdeliver_final_use\\s*\\("],
+      "allowedCallers": ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
     },
     {
       "id": "final_use_delivery_witness",
       "typeMarker": "deliver_final_use_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "callPatterns": [
-        "\\bdeliver_final_use_with_witness\\s*\\("
-      ],
+      "callPatterns": ["\\bdeliver_final_use_with_witness\\s*\\("],
       "allowedCallers": []
     },
     {
@@ -264,20 +264,14 @@
       "id": "final_use_dispatch",
       "typeMarker": "dispatch_final_use",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "callPatterns": [
-        "\\bdispatch_final_use\\s*\\("
-      ],
-      "allowedCallers": [
-        "codex-rs/hepta-agentd/src/browser_servo.rs"
-      ]
+      "callPatterns": ["\\bdispatch_final_use\\s*\\("],
+      "allowedCallers": ["codex-rs/hepta-agentd/src/browser_servo.rs"]
     },
     {
       "id": "final_use_dispatch_witness",
       "typeMarker": "dispatch_final_use_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "callPatterns": [
-        "\\bdispatch_final_use_with_witness\\s*\\("
-      ],
+      "callPatterns": ["\\bdispatch_final_use_with_witness\\s*\\("],
       "allowedCallers": []
     },
     {
@@ -323,9 +317,7 @@
         "\\.\\s*verify_with_key_id\\s*\\(",
         "FinalUseApprovalVerifier\\s*::\\s*verify_with_key_id\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
     },
     {
       "id": "final_use_revocation_feed_trust",
@@ -335,9 +327,7 @@
         "FinalUseRevocationFeedVerifier\\s*::\\s*new\\s*\\(",
         "FinalUseRevocationFeedVerifier\\s*::\\s*new_with_keys\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-agentd/src/automation_effect_host.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
     },
     {
       "id": "final_use_revocation_feed_verify",
@@ -347,9 +337,7 @@
         "revocation_feed_verifier\\s*\\.\\s*verify\\s*\\(",
         "FinalUseRevocationFeedVerifier\\s*::\\s*verify\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-agentd/src/automation_effect_host.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
     },
     {
       "id": "final_use_revocation_feed_apply",
@@ -368,9 +356,7 @@
       "id": "final_use_revocation_convergence_trust",
       "typeMarker": "FinalUseRevocationConvergenceVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "callPatterns": [
-        "FinalUseRevocationConvergenceVerifier\\s*::\\s*new\\s*\\("
-      ],
+      "callPatterns": ["FinalUseRevocationConvergenceVerifier\\s*::\\s*new\\s*\\("],
       "allowedCallers": []
     },
     {
@@ -381,9 +367,7 @@
         "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
         "FinalUseRevocationConvergenceVerifier\\s*::\\s*verify\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-fleet/src/revocation_control.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-fleet/src/revocation_control.rs"]
     },
     {
       "id": "bao_final_use_consumer",
@@ -399,18 +383,14 @@
       "id": "bao_registered_consumer_new",
       "typeMarker": "RegisteredBaoConsumer",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-      "callPatterns": [
-        "RegisteredBaoConsumer\\s*::\\s*new\\s*\\("
-      ],
+      "callPatterns": ["RegisteredBaoConsumer\\s*::\\s*new\\s*\\("],
       "allowedCallers": []
     },
     {
       "id": "bao_final_use_host_new",
       "typeMarker": "BaoFinalUseHost",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-      "callPatterns": [
-        "BaoFinalUseHost\\s*::\\s*new\\s*\\("
-      ],
+      "callPatterns": ["BaoFinalUseHost\\s*::\\s*new\\s*\\("],
       "allowedCallers": []
     },
     {
@@ -443,6 +423,13 @@
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_trust\\s*\\("
       ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_open_production_state",
+      "typeMarker": "AuthorityLeaseRegistry",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "callPatterns": ["AuthorityLeaseRegistry\\s*::\\s*open_production_state_dir\\s*\\("],
       "allowedCallers": []
     },
     {
@@ -493,9 +480,17 @@
         "\\.\\s*verify_use\\s*\\(",
         "AuthorityLeaseVerifier\\s*::\\s*verify_use\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-fleet/src/authority_port.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-contracts/src/authority_trust.rs"]
+    },
+    {
+      "id": "authority_lease_bind_dispatch",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "callPatterns": [
+        "\\.\\s*bind_dispatch\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*bind_dispatch\\s*\\("
+      ],
+      "allowedCallers": ["codex-rs/hepta-fleet/src/authority_port.rs"]
     },
     {
       "id": "authority_lease_delivery",
@@ -511,9 +506,7 @@
       "id": "authority_lease_delivery_witness",
       "typeMarker": "deliver_authority_lease_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "callPatterns": [
-        "\\bdeliver_authority_lease_with_witness\\s*\\("
-      ],
+      "callPatterns": ["\\bdeliver_authority_lease_with_witness\\s*\\("],
       "allowedCallers": []
     },
     {
@@ -530,12 +523,18 @@
       "id": "authority_lease_dispatch_witness",
       "typeMarker": "dispatch_authority_lease_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": ["\\bdispatch_authority_lease_with_witness\\s*\\("],
+      "allowedCallers": ["codex-rs/hepta-contracts/src/authority_trust.rs"]
+    },
+    {
+      "id": "authority_lease_dispatch_binding",
+      "typeMarker": "AuthorityDispatchBinding",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
       "callPatterns": [
-        "\\bdispatch_authority_lease_with_witness\\s*\\("
+        "\\bdispatch_binding\\s*\\.\\s*dispatch\\s*\\(",
+        "AuthorityDispatchBinding\\s*::\\s*dispatch\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-fleet/src/authority_port.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-fleet/src/authority_port.rs"]
     },
     {
       "id": "final_use_guarded_effect",
@@ -557,9 +556,7 @@
         "\\.\\s*with_verified_use_async_with_witness\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_verified_use_async_with_witness\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-automation/src/authorized_effect.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-automation/src/authorized_effect.rs"]
     },
     {
       "id": "final_use_async_entry",
@@ -572,9 +569,7 @@
         "VerifiedUseToken\\s*::\\s*enter\\s*\\(",
         "FinalUseAuthority\\s*::\\s*enter_verified_use\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
-      ]
+      "allowedCallers": ["codex-rs/hepta-infer-worker-host/src/native_app_server.rs"]
     },
     {
       "id": "bao_authbus_final_use_consumer",
