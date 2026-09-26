@@ -65,9 +65,7 @@ jobs:
         run: |
           cargo test --locked -p codex-hepta-agentd intuition_policy
           cargo test --locked -p codex-hepta-agentd --test intuition_policy_product
-          if test -f hepta-agentd/tests/intuition_policy_product_v3.rs; then
-            cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
-          fi
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
       - name: Measure signed durable append, rotation and reopen
         env:
           HEPTA_TARGET_HOST_ID: github-actions-ubuntu-24.04-intuition
