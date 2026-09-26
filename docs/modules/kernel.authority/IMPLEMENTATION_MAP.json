@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "1d026ed15964dae11ee84eba0b8633c756399b89",
+    "tree": "6751d43049a55060cb1bd56b9fb890a41c584398"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -18,18 +18,21 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "source_composed_runtime_fleet_registered_bao_host_and_agentd_browser_not_product_activated",
+  "productCallerState": "source_composed_runtime_fleet_bao_browser_and_agentd_automation_hosts_not_product_activated",
   "productionWriterState": "authority_owner_source_implemented_not_activated",
   "operations": [
     {
       "operation": "finaluseauthority",
       "nativeSymbol": "FinalUseAuthority",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "state": "source_implemented_registered_host_not_product_activated",
+      "state": "source_implemented_named_agentd_automation_host_not_product_activated",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/tests/final_use_linearization.rs"
+        "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
@@ -54,7 +57,7 @@
       "operation": "authority_lease_registry",
       "nativeSymbol": "AuthorityLeaseRegistry / AuthorityLeaseVerifier",
       "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "state": "source_implemented_least_authority_handles_retired_revision_lineage_not_product_activated",
+      "state": "source_implemented_exact_predecessor_and_lock_time_regressions_not_product_activated",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-contracts/src/authority_lease.rs"
@@ -82,10 +85,12 @@
       "operation": "final_use_revocation_feed_verifier",
       "nativeSymbol": "FinalUseRevocationFeedVerifier",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "state": "source_implemented_registered_host_not_product_activated",
+      "state": "source_implemented_agentd_refresh_and_pending_admission_fence_not_product_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
+        "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
@@ -96,11 +101,12 @@
       "operation": "authority_external_trust",
       "nativeSymbol": "AuthorityClock / AuthorityFrontierStore",
       "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
-      "state": "source_interface_implemented_external_backend_not_selected",
+      "state": "source_interface_and_named_agentd_backend_implemented_target_qualification_external",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-contracts/src/authority_lease.rs",
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_trust_host.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "trusted_time_and_external_anti_rollback_frontier",
@@ -125,11 +131,13 @@
       "operation": "verified_use_witness_v1",
       "nativeSymbol": "VerifiedUseTokenWitnessV1",
       "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
-      "state": "source_implemented_non_authorizing_evidence_not_product_consumed",
+      "state": "source_implemented_non_authorizing_evidence_durably_consumed_by_taskflow_not_activated",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/src/authority_lease.rs"
+        "codex-rs/hepta-contracts/src/authority_lease.rs",
+        "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "serialize_consumer_entry_or_dispatch_linearization_evidence",
@@ -140,10 +148,12 @@
       "operation": "verified_use_token_witness_v1",
       "nativeSymbol": "VerifiedUseTokenWitnessV1",
       "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
-      "state": "source_implemented_evidence_projection_not_authorization",
+      "state": "source_implemented_non_authorizing_evidence_durably_consumed_by_taskflow_not_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-contracts/src/verified_use_witness.rs"
+        "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+        "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "decision_and_audit_projection",
@@ -152,17 +162,17 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
     "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes.",
-    "Compose remaining target-only ModulePorts only when their real owner exposes one canonical authority reference/revision; do not create ad-hoc double-authority wrappers.",
-    "Obtain exact-head and deterministic synthetic-merge execution receipts for the current-main closure candidate.",
-    "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; runtime.fleet is now source-composed, while the remaining target-only ports are enumerated in TRACEABILITY.md."
+    "Keep B4 and CALLERS.toml bound to the observed closed caller set as product integrations change.",
+    "Compose remaining target-only ModulePorts only at their real owner boundaries with one canonical authority reference and revision.",
+    "Do not promote the named Agentd trust backend into an attestation or rollback-independent deployment claim without target-host evidence."
   ],
   "externalEvidenceGates": [
-    "deployed fleet revocation wire fanout and measured convergence/freshness latency qualification; repository admission/convergence semantics are implemented in runtime.fleet",
-    "protected production AuthorityFrontierStore backend qualification",
-    "attested or otherwise independently protected AuthorityClock qualification",
+    "deployed fleet revocation wire fanout and measured convergence/freshness latency qualification",
+    "selected-host rollback-independent storage/backup-domain qualification for the Agentd or other AuthorityFrontierStore backend",
+    "attested or otherwise independently protected AuthorityClock qualification and clock-uncertainty receipt",
     "HSM/KMS key custody, staged rotation and compromise-response ceremony",
+    "complete schema-v2 target-host capacity and crash/fault evidence",
     "independent semantic review",
     "operator acceptance, canary, promotion and release"
   ],
@@ -213,12 +223,30 @@
         "apps/hepta-browser/test/agentd-service.test.js",
         "apps/hepta-browser/test/runtime.test.js"
       ]
+    },
+    {
+      "id": "automation.taskflow.agentd",
+      "nativeSymbol": "AgentdAutomationEffectHost::execute / AutomationStore::execute_authorized_taskflow_effect",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "state": "named_product_source_path_with_external_trust_signed_feed_and_durable_witness_not_activated",
+      "tests": [
+        "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs"
+      ]
     }
   ],
   "sourceObjects": [
     {
       "path": "apps/hepta-browser/src/runtime-host.js",
       "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+      "object": "1663e4f2b1134c91228bc1391e0f274dd436b533"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "093c44b297fd5f5f378b46e539c059298efe3b66"
     },
     {
       "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
@@ -229,16 +257,24 @@
       "object": "89bf62c8da8808a59047718313b43ed74bcf5ac5"
     },
     {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "f68ff6f7f05e54195df149bd2f92ddffb325b314"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "object": "1b248e8158052ff720c56af37aed940e16088147"
+    },
+    {
       "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "object": "7840a3aab99080c99849c04553611fd728df1332"
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "d3557ff2c3342fd39910e4327284236f2d2d86a0"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "bf09734f8900c1e95dfc550bf8766b0667a875c9"
+      "object": "c1972d933449407523bf0d6f8b7562c682a06eb7"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -246,19 +282,19 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "988af8c5062397c17fc0869238bafdf33dfd9f2e"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
+      "object": "a3b306e51b87bfa9dcfda6d1aa88c5f7b4d976fb"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836"
+      "object": "b1f16e6b5dae30b7aae23f75f73c37c84641140c"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "object": "924fc00d4cb7404e2361222000caa04a57d33cd5"
+      "object": "acf6c1ac9e057cb979cd38c51da724861db6dd8f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -278,7 +314,7 @@
     },
     {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
+      "object": "999ba6b6a4f7ab6af1cf014ffa4d6528b6312952"
     }
   ]
 }

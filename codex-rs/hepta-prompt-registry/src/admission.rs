@@ -478,9 +478,9 @@ fn current_unix_ms() -> Result<u64, AdmissionError> {
 
 pub(crate) const fn map_final_use_error(error: FinalUseError) -> AdmissionError {
     match error {
-        FinalUseError::Unavailable | FinalUseError::StateLocked => {
-            AdmissionError::AuthorityUnavailable
-        }
+        FinalUseError::Unavailable
+        | FinalUseError::StateLocked
+        | FinalUseError::RevocationPending => AdmissionError::AuthorityUnavailable,
         FinalUseError::Revoked => AdmissionError::Revoked,
         FinalUseError::AlreadyClaimed => AdmissionError::AlreadyUsed,
         FinalUseError::NotYetValid => AdmissionError::NotYetValid,

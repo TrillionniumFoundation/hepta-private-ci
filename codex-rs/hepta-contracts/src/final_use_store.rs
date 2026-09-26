@@ -73,6 +73,13 @@ enum StoreTrust {
     IssuerKeyRing([u8; 32]),
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum StartupHeadPolicy {
+    Advance,
+    Exact,
+    Recover,
+}
+
 pub(super) struct Store {
     root: File,
     signer_id: String,
@@ -92,7 +99,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            true,
+            StartupHeadPolicy::Advance,
         )
     }
 
@@ -107,7 +114,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            false,
+            StartupHeadPolicy::Exact,
         )
     }
 
@@ -122,7 +129,24 @@ impl Store {
             signer_id,
             StoreTrust::IssuerKeyRing(issuer_trust_sha256),
             initial,
-            false,
+            StartupHeadPolicy::Exact,
+        )
+    }
+
+    pub(super) fn open_key_ring_recovered(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        // Existing state is never advanced from the bootstrap hint. The caller
+        // must compare its complete frontier with the independent backend.
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            StartupHeadPolicy::Recover,
         )
     }
 
@@ -131,7 +155,7 @@ impl Store {
         signer_id: &str,
         trust: StoreTrust,
         initial: FinalUseRevocations,
-        allow_startup_head_advance: bool,
+        startup_head_policy: StartupHeadPolicy,
     ) -> Result<(Self, State), FinalUseError> {
         let root = prepare_directory(root)?;
         let initialized = entry_exists(&root, "authority.lock")?;
@@ -233,7 +257,7 @@ impl Store {
             state
         };
 
-        if allow_startup_head_advance {
+        if startup_head_policy == StartupHeadPolicy::Advance {
             if initial.authority_epoch >= state.head.authority_epoch
                 && initial.revision > state.head.revision
                 && (initial.authority_epoch > state.head.authority_epoch
@@ -256,7 +280,7 @@ impl Store {
             {
                 return Err(FinalUseError::InvalidTrust);
             }
-        } else if state.head != initial {
+        } else if startup_head_policy == StartupHeadPolicy::Exact && state.head != initial {
             return Err(FinalUseError::InvalidTrust);
         }
 

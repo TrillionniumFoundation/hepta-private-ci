@@ -13,94 +13,129 @@ General leases:
 - live lease records: 16,384 maximum;
 - revocation tombstones: 16,384 maximum per authority epoch;
 - retired lease-ID revision lineage: 16,384 maximum per authority epoch;
-- expired unrevoked pruning: at most 1,024 records per call and never beyond remaining retired-lineage capacity;
-- pruning removes the live record only after durably recording that lease ID's last revision; same-epoch reuse must continue at exactly the next revision and can never restart at revision 1;
+- expired unrevoked pruning: at most 1,024 records per call and never beyond
+  remaining retired-lineage capacity;
+- pruning removes the live record only after durably recording that lease ID's
+  last revision; same-epoch reuse must continue at exactly the next revision and
+  can never restart at revision 1;
 - complete persisted-state read ceiling: 64 MiB;
-- revocation tombstones and retired revision lineage are retained until an explicit authority-epoch rollover.
+- revocation tombstones and retired revision lineage are retained until an
+  explicit authority-epoch rollover.
 
 FinalUse:
 
-- nonce/revocation state is bounded by the native `MAX_CLAIMS` limit;
+- claimed nonce history: 1,048,576 maximum per authority epoch;
+- revoked grant IDs: 16,384 maximum in one head;
 - nonce history is not silently evicted;
 - a stronger authority-epoch transition is the bounded-history reset path.
 
-Both current Unix stores replace a complete JSON state under an owner mutex using
-temp-write, fsync, rename and directory fsync. Therefore write amplification and
-tail latency must be measured at realistic state sizes.
+The general-lease store serializes and atomically replaces its bounded JSON
+image under the owner mutex. The FinalUse hot claim path instead appends a fixed
+40-byte `(authority_epoch, nonce)` frame and fsyncs the claim journal before
+admission; revocation/trust snapshots use atomic replacement and journal
+compaction. This local append optimization does **not** by itself prove
+constant-cost production admission: a production-oriented claim also computes
+and CAS-advances the external frontier, whose current digest covers the complete
+revocation head and nonce set. Both modes therefore require exact-host
+measurement at realistic history sizes.
 
-## Mandatory measurement matrix
+## Mandatory v2 measurement matrix
 
-For each selected filesystem/storage profile, run the exact candidate at these
-state points where applicable: empty, 1k, 8k, 90% capacity and declared maximum.
+For each selected filesystem/storage/frontier profile, run the exact candidate
+at these state points:
 
-Record separately:
+- `empty`
+- `1k`
+- `8k`
+- `90_percent`
+- `max`
 
-| Operation | Required measurements |
+At every point measure all of:
+
+| Evidence operation ID | Measured behavior |
 | --- | --- |
-| lease put/replace | p50/p95/p99 latency, bytes written, fsync time |
-| lease revoke | p50/p95/p99 latency, bytes written, fsync time |
-| lease verify/final use | p50/p95/p99 latency and lock hold time |
-| prune 1 / 128 / 1024 | latency and reclaimed records |
-| epoch rollover | latency, resulting state size and restart verification |
-| FinalUse claim | p50/p95/p99 latency and persistent-state bytes |
-| FinalUse final verify | p50/p95/p99 latency and lock hold time |
-| revocation-head apply | p50/p95/p99 latency at representative revoked-set sizes |
-| restart/open | latency and peak memory at representative and maximum state |
+| `lease_put_replace` | lease create/replace mutation |
+| `lease_revoke` | durable lease revocation |
+| `lease_verify_final_use` | first and final live lease checks |
+| `prune_1` | one-record expired-lease prune |
+| `prune_128` | 128-record prune |
+| `prune_1024` | maximum online prune batch |
+| `epoch_rollover` | durable authority-epoch transition |
+| `final_use_claim` | signature/binding check, nonce burn, external frontier and local journal |
+| `final_use_final_verify` | final consumer/dispatch entry check |
+| `revocation_head_apply` | authenticated monotonic head update |
+| `restart_open` | store/frontier reopen and validation |
 
-The artifact MUST identify CPU, filesystem, storage medium, mount/durability
-settings, operating system, Rust profile and candidate SHA/tree.
+Each point/operation row must retain a content-addressed receipt and record:
+
+- at least 100 samples;
+- p50, p95 and p99 milliseconds in monotonic order;
+- an explicit positive latency budget, with measured p99 no greater than it;
+- bytes written;
+- fsync p99 no greater than total p99;
+- positive peak RSS bytes.
+
+The artifact must identify CPU, filesystem, storage medium, mount/durability
+settings, external frontier implementation, clock implementation, operating
+system, Rust profile and candidate SHA/tree. Compatibility constructors without
+external trust may be measured separately but cannot stand in for the selected
+production configuration.
 
 ## Fault-injection matrix
 
 At minimum inject failure at:
 
-1. before external frontier CAS;
-2. after external CAS but before local temp write completes;
-3. after temp-file fsync but before rename;
-4. after rename but before directory fsync;
-5. immediately after successful local commit;
-6. during prune;
-7. during epoch rollover;
-8. during restart with a restored older local snapshot.
+1. `before_external_frontier_cas`;
+2. `after_external_cas_before_local_temp_write`;
+3. `after_temp_fsync_before_rename`;
+4. `after_rename_before_directory_fsync`;
+5. `after_successful_local_commit`;
+6. `during_prune`;
+7. `during_epoch_rollover`;
+8. `restart_with_older_local_snapshot`.
 
-For each case record whether reopen succeeds, fences, or rejects rollback. An
-unknown commit outcome must remain unavailable/indeterminate; tests must never
-"repair" it by resetting authority state.
+For each case retain a receipt and classify the observed result as exactly one
+of `reopen_succeeds`, `fenced` or `rollback_rejected`. Every case must preserve
+indeterminate state and must record that no reset was attempted. An older
+restored snapshot must be rejected. A mutation made uncertain after external
+CAS, during prune or during epoch rollover may not reopen as ordinary success.
+Tests must never “repair” uncertainty by resetting authority state.
 
 ## Capacity policy
 
-A deployment MUST choose a reserve threshold rather than operating at the hard
-limit. Alerting must begin before `rollover_required_with_reserve` (or the
-equivalent FinalUse capacity check) reaches the deployment reserve. Epoch rollover
-is an authority operation and requires its own change/audit procedure; observability
-or GC code cannot advance epochs.
+A deployment must choose a reserve threshold rather than operating at the hard
+limit. The evidence bundle records hard limit, reserve threshold, observed
+remaining capacity and whether the alert fired. The alert must be demonstrated
+at or below the reserve threshold, and that threshold must remain below the hard
+limit.
 
-Expired unrevoked general leases may be pruned online only while the retired
-lease-ID lineage has capacity. Pruning is not identity deletion: the last
-revision remains authoritative for same-epoch reuse and is included in the
-anti-rollback frontier. Revocation tombstones, retired revision lineage and
-FinalUse replay history must not be discarded merely to recover capacity.
-Only an explicit stronger authority-epoch transition may clear those histories.
+Epoch rollover is an authority operation and requires its own change/audit
+procedure; observability or GC code cannot advance epochs. Expired unrevoked
+general leases may be pruned online only while retired lease-ID lineage has
+capacity. Pruning is not identity deletion: the last revision remains
+authoritative for same-epoch reuse and is included in the anti-rollback
+frontier. Revocation tombstones, retired revision lineage and FinalUse replay
+history must not be discarded merely to recover capacity.
 
 ## Evidence admission
 
 The target-host measurement receipt is a required artifact in the
-[`kernel.authority production evidence bundle`](../../../qualification/kernel-authority/README.md).
-The generic verifier requires every load point and crash/fault case named in this
-document before the bundle can be admitted. This turns omitted measurements into
-a machine failure without treating synthetic repository measurements as target
-hardware evidence.
+[`kernel.authority` production evidence bundle](../../../qualification/kernel-authority/README.md).
+Schema `hepta.kernel-authority-production-evidence.v2` requires the complete
+5-by-11 matrix, all eight structured fault results and the demonstrated reserve
+alert. Missing rows, fewer than 100 samples, percentile contradictions, p99 over
+budget, unsafe reopen outcomes or prose-only pass flags are machine failures.
 
 ## Pass criterion
 
 Capacity qualification is PASS only when:
 
-- the complete matrix has an exact-candidate artifact;
-- no operation violates the selected host's declared latency budget;
-- maximum state remains inside the restart/read envelope;
-- fault injection preserves fail-closed recovery;
+- the complete v2 matrix has exact-candidate artifacts;
+- no p99 violates its declared target-host latency budget;
+- maximum state remains inside the restart/read and memory envelopes;
+- fault injection preserves fail-closed recovery and indeterminate outcomes;
 - reserve/rollover alerts are demonstrated before hard capacity;
 - independent review accepts the measured profile.
 
 Until then the repository may claim bounded source behavior, but not production
-throughput, tail-latency or durability performance.
+throughput, tail latency, durability performance or deployment activation.

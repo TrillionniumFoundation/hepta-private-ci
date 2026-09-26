@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "04bd5c978717ea6b03e085bac2420664d13d2d4c",
+    "tree": "3bff558db0d70bc642a5f30ba7bdf3ae6f7cc618"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -26,15 +26,28 @@
         "symbol": "pub fn compose_runtime(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "AgentdAutomationEffectHost::open",
+          "ownerModule": "runtime.agentd",
+          "buildTarget": "codex-hepta-agentd"
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "native_unit",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+          "kind": "automation_effect_external_trust_owner_handoff_and_rollback_rejection",
+          "command": "just test -p codex-hepta-agentd"
         }
       ],
-      "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities.",
+      "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration and owner-port identities; runtime additionally attaches the strict optional automation-effect host only after its rotating issuer trust, signed revocation feed, external clock/frontier store and provider attestation validate.",
       "operation": "compose_runtime",
       "nativeSymbol": "pub fn compose_runtime(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -282,7 +295,9 @@
   ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
-    "target-host drain/restart/backpressure measurements",
+    "selected-host protected clock and rollback-independent authority frontier/backup domain for the automation effect profile",
+    "issuer/distributor HSM or equivalent custody plus provider attestation and terminal-observer qualification",
+    "target-host drain/restart/backpressure/effect-reconciliation measurements",
     "independent acceptance, promotion and release"
   ],
   "claimBoundary": {
@@ -301,11 +316,15 @@
     "release": false,
     "durableRunStartProjectionSourceImplemented": true,
     "currentTrustRunStartRevalidationComposed": false,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": true,
+    "automationEffectNamedHostSourceComposed": true,
+    "automationEffectExternalTrustSourceComposed": true,
+    "automationEffectDurableWitnessRecoverySourceComposed": true,
+    "automationEffectTargetHostQualified": false
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "daemon_lifecycle_and_durable_run_start_projection_composed_physical_codex_pending",
+  "productCallerState": "daemon_lifecycle_canonical_profile_and_optional_named_automation_final_use_provider_host_source_composed_not_activated",
   "productionWriterState": "not_established",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
@@ -339,12 +358,25 @@
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "nativeSymbol": "start_canonical_intelligence",
       "state": "configured_canonical_profile_freezes_prepared_run_and_context"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "AgentdAutomationEffectHost::execute",
+      "state": "optional_explicit_product_profile_with_final_use_external_trust_signed_feed_and_http_provider_source_composed_not_activated"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "5c68edd0715a2e9a88668d31a166c55286caa29d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+      "object": "1663e4f2b1134c91228bc1391e0f274dd436b533"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "093c44b297fd5f5f378b46e539c059298efe3b66"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -404,7 +436,7 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+      "object": "79075244ab94a672f9b83db392b9e638c33b1fb0"
     }
   ]
 }

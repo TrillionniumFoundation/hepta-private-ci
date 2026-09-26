@@ -27,8 +27,13 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::FinalUseFrontier;
+use codex_hepta_contracts::FinalUseIssuerTrustKey;
+use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
+use codex_hepta_contracts::FinalUseTrustKey;
 use codex_hepta_contracts::ProviderEffectAck;
 use codex_hepta_contracts::ProviderEffectAckStatus;
 use codex_hepta_contracts::ProviderEffectAdapter;
@@ -38,6 +43,7 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
 use codex_model_provider::HttpProviderEffectAdapter;
 use codex_model_provider::HttpProviderEffectConfig;
 use codex_model_provider::HttpProviderEffectContractAttestation;
@@ -48,10 +54,12 @@ use serde::Deserialize;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+use crate::authority_trust_host::AgentdFinalUseTrustStore;
 
-const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
+const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
-const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
+const MAX_AUTOMATION_EFFECT_REVOCATION_FEED_FILE_BYTES: u64 = 4 * 1024 * 1024;
+const MAX_FINAL_USE_TRUST_KEYS: usize = 8;
 const MAX_PROVIDER_HEADERS: usize = 64;
 
 #[derive(Clone, Debug)]
@@ -68,8 +76,10 @@ pub(crate) struct AgentdAutomationEffectHost {
     destination_id: String,
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
-    revocations_file: PathBuf,
-    revocation_frontier: Arc<Mutex<(u64, u64)>>,
+    authority_trust: Arc<AgentdFinalUseTrustStore>,
+    revocation_feed_verifier: FinalUseRevocationFeedVerifier,
+    revocation_feed_file: PathBuf,
+    revocation_refresh: Arc<Mutex<()>>,
     adapter: HttpProviderEffectAdapter,
 }
 
@@ -86,9 +96,18 @@ impl std::fmt::Debug for AgentdAutomationEffectHost {
     }
 }
 
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FinalUseTrustKeyFileV1 {
+    key_id: String,
+    verifying_key_hex: String,
+    not_before_authority_epoch: u64,
+    not_after_authority_epoch: u64,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct AutomationEffectHostFileV1 {
+struct AutomationEffectHostFileV2 {
     schema_version: u32,
     provider_scope: String,
     destination_id: String,
@@ -104,8 +123,11 @@ struct AutomationEffectHostFileV1 {
     contract_signature_hex: String,
     contract_verifying_key_hex: String,
     final_use_signer_id: String,
-    final_use_verifying_key_hex: String,
-    final_use_revocations_file: PathBuf,
+    final_use_issuer_keys: Vec<FinalUseTrustKeyFileV1>,
+    final_use_revocation_distributor_id: String,
+    final_use_revocation_keys: Vec<FinalUseTrustKeyFileV1>,
+    final_use_revocation_feed_file: PathBuf,
+    final_use_trust_root: PathBuf,
 }
 
 impl AgentdAutomationEffectHost {
@@ -139,10 +161,8 @@ impl AgentdAutomationEffectHost {
             &config.contract_verifying_key_hex,
             "contract_verifying_key_hex",
         )?;
-        let final_use_verifying_key = decode_hex_array::<32>(
-            &config.final_use_verifying_key_hex,
-            "final_use_verifying_key_hex",
-        )?;
+        let final_use_issuer_keys = issuer_trust_keys(&config.final_use_issuer_keys)?;
+        let final_use_revocation_keys = control_trust_keys(&config.final_use_revocation_keys)?;
 
         let mut headers = HeaderMap::new();
         for (name, value) in config.headers {
@@ -174,49 +194,88 @@ impl AgentdAutomationEffectHost {
         let adapter =
             HttpProviderEffectAdapter::new(provider_config).map_err(AgentdError::Invalid)?;
 
-        if !config.final_use_revocations_file.is_absolute() {
+        if !config.final_use_revocation_feed_file.is_absolute()
+            || !config.final_use_trust_root.is_absolute()
+        {
             return Err(AgentdError::Invalid(
-                "final_use_revocations_file must be absolute".to_string(),
+                "final_use_revocation_feed_file and final_use_trust_root must be absolute"
+                    .to_string(),
             ));
         }
-        let initial_revocations = read_revocations_file(&config.final_use_revocations_file)?;
-        let frontier = (
-            initial_revocations.authority_epoch,
-            initial_revocations.revision,
-        );
-
+        let revocation_feed_verifier = FinalUseRevocationFeedVerifier::new_with_keys(
+            config.final_use_revocation_distributor_id,
+            final_use_revocation_keys,
+        )
+        .map_err(|error| {
+            AgentdError::Invalid(format!("invalid final-use revocation trust: {error}"))
+        })?;
+        let signed_update = read_revocation_feed_file(&config.final_use_revocation_feed_file)?;
         let authority_root = identity
             .layout
             .automation_root()
             .join("final-use-authority");
+        let local_authority_uninitialized = authority_state_uninitialized(&authority_root)?;
         fs::create_dir_all(&authority_root)?;
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
             fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;
         }
-        let authority = FinalUseAuthority::open_state_dir(
+
+        let authority_trust = Arc::new(AgentdFinalUseTrustStore::open(
+            &config.final_use_trust_root,
+            &identity.home_root,
+            &config.final_use_signer_id,
+        )?);
+        let now_unix_ms = authority_trust.now_unix_ms().map_err(|error| {
+            AgentdError::Protocol(format!("sample protected final-use clock: {error}"))
+        })?;
+        revocation_feed_verifier
+            .verify(&signed_update, now_unix_ms)
+            .map_err(|error| {
+                AgentdError::GenerationFenced(format!(
+                    "initial signed final-use revocation feed rejected: {error}"
+                ))
+            })?;
+        let initial_revocations = signed_update.update.head.clone();
+        let initial_frontier =
+            FinalUseFrontier::for_initial_head(&initial_revocations).map_err(|error| {
+                AgentdError::Invalid(format!("invalid initial final-use frontier: {error}"))
+            })?;
+        authority_trust.ensure_initial_frontier(initial_frontier, local_authority_uninitialized)?;
+        let clock: Arc<dyn AuthorityClock> = authority_trust.clone();
+        let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
+            authority_trust.clone();
+        let authority = FinalUseAuthority::recover_state_dir_with_issuer_keys(
             &authority_root,
             config.final_use_signer_id,
-            final_use_verifying_key,
+            final_use_issuer_keys,
             initial_revocations,
+            clock,
+            frontier_store,
         )
         .map_err(|error| {
             AgentdError::Protocol(format!(
-                "open automation final-use authority state: {error}"
+                "open production automation final-use authority state: {error}"
             ))
         })?;
 
-        Ok(Self {
+        let host = Self {
             agent_id: identity.agent_id.clone(),
             provider_scope: config.provider_scope,
             destination_id: config.destination_id,
             final_use_scope_digest,
             authority,
-            revocations_file: config.final_use_revocations_file,
-            revocation_frontier: Arc::new(Mutex::new(frontier)),
+            authority_trust,
+            revocation_feed_verifier,
+            revocation_feed_file: config.final_use_revocation_feed_file,
+            revocation_refresh: Arc::new(Mutex::new(())),
             adapter,
-        })
+        };
+        // Recover the old durable head first, then authenticate and commit the
+        // current feed through the same entry used before every effect.
+        host.refresh_revocations()?;
+        Ok(host)
     }
 
     pub(crate) async fn execute(
@@ -363,27 +422,35 @@ impl AgentdAutomationEffectHost {
     }
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
-        let head = read_revocations_file(&self.revocations_file)?;
-        let mut frontier = self.revocation_frontier.lock().map_err(|_| {
+        let _refresh = self.revocation_refresh.lock().map_err(|_| {
             AgentdError::Protocol(
-                "automation effect revocation frontier lock is poisoned".to_string(),
+                "automation effect revocation refresh lock is poisoned".to_string(),
             )
         })?;
-        let observed = (head.authority_epoch, head.revision);
-        if observed == *frontier {
+        let signed = read_revocation_feed_file(&self.revocation_feed_file)?;
+        let now_unix_ms = self.authority_trust.now_unix_ms().map_err(|error| {
+            AgentdError::Protocol(format!("sample protected final-use clock: {error}"))
+        })?;
+        self.revocation_feed_verifier
+            .verify(&signed, now_unix_ms)
+            .map_err(|error| {
+                AgentdError::GenerationFenced(format!(
+                    "automation effect signed revocation feed rejected: {error}"
+                ))
+            })?;
+        let current = self.authority.revocation_head().map_err(|error| {
+            AgentdError::Protocol(format!("read automation revocation head: {error}"))
+        })?;
+        if current == signed.update.head {
             return Ok(());
         }
-        if observed.0 < frontier.0 || (observed.0 == frontier.0 && observed.1 < frontier.1) {
-            return Err(AgentdError::GenerationFenced(
-                "automation effect revocation frontier rolled back".to_string(),
-            ));
-        }
-        self.authority.update_revocations(head).map_err(|error| {
-            AgentdError::GenerationFenced(format!(
-                "automation effect revocation refresh rejected: {error}"
-            ))
-        })?;
-        *frontier = observed;
+        self.revocation_feed_verifier
+            .apply(&self.authority, &signed, now_unix_ms)
+            .map_err(|error| {
+                AgentdError::GenerationFenced(format!(
+                    "automation effect revocation refresh rejected: {error}"
+                ))
+            })?;
         Ok(())
     }
 
@@ -574,7 +641,7 @@ fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -
     Sha256Digest::for_bytes(&bytes)
 }
 
-fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
+fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV2, AgentdError> {
     let bytes = read_protected_file(
         path,
         MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES,
@@ -583,13 +650,79 @@ fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError
     Ok(serde_json::from_slice(&bytes)?)
 }
 
-fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError> {
+fn read_revocation_feed_file(path: &Path) -> Result<SignedFinalUseRevocationUpdate, AgentdError> {
     let bytes = read_protected_file(
         path,
-        MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES,
-        "automation effect revocations file",
+        MAX_AUTOMATION_EFFECT_REVOCATION_FEED_FILE_BYTES,
+        "automation effect signed revocation feed file",
     )?;
     Ok(serde_json::from_slice(&bytes)?)
+}
+
+fn issuer_trust_keys(
+    configured: &[FinalUseTrustKeyFileV1],
+) -> Result<Vec<FinalUseIssuerTrustKey>, AgentdError> {
+    validate_trust_key_count(configured)?;
+    configured
+        .iter()
+        .map(|key| {
+            validate_host_identifier("final-use issuer key id", &key.key_id)?;
+            Ok(FinalUseIssuerTrustKey {
+                key_id: key.key_id.clone(),
+                verifying_key: decode_hex_array::<32>(
+                    &key.verifying_key_hex,
+                    "final-use issuer verifying key",
+                )?,
+                not_before_authority_epoch: key.not_before_authority_epoch,
+                not_after_authority_epoch: key.not_after_authority_epoch,
+            })
+        })
+        .collect()
+}
+
+fn control_trust_keys(
+    configured: &[FinalUseTrustKeyFileV1],
+) -> Result<Vec<FinalUseTrustKey>, AgentdError> {
+    validate_trust_key_count(configured)?;
+    configured
+        .iter()
+        .map(|key| {
+            validate_host_identifier("final-use revocation key id", &key.key_id)?;
+            Ok(FinalUseTrustKey {
+                key_id: key.key_id.clone(),
+                verifying_key: decode_hex_array::<32>(
+                    &key.verifying_key_hex,
+                    "final-use revocation verifying key",
+                )?,
+                not_before_authority_epoch: key.not_before_authority_epoch,
+                not_after_authority_epoch: key.not_after_authority_epoch,
+            })
+        })
+        .collect()
+}
+
+fn validate_trust_key_count(configured: &[FinalUseTrustKeyFileV1]) -> Result<(), AgentdError> {
+    if configured.is_empty() || configured.len() > MAX_FINAL_USE_TRUST_KEYS {
+        return Err(AgentdError::Invalid(
+            "final-use trust-key ring must contain 1..=8 keys".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn authority_state_uninitialized(root: &Path) -> Result<bool, AgentdError> {
+    if !root.exists() {
+        return Ok(true);
+    }
+    let metadata = fs::symlink_metadata(root)?;
+    if !metadata.is_dir() || metadata.file_type().is_symlink() {
+        return Err(AgentdError::Invalid(
+            "automation final-use authority root is not a safe directory".to_string(),
+        ));
+    }
+    Ok(!root.join("authority.lock").exists()
+        && !root.join("authority.json").exists()
+        && !root.join("authority.claims").exists())
 }
 
 fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
@@ -682,8 +815,11 @@ mod tests {
     use codex_hepta_automation::TaskFlowStepObservation;
     use codex_hepta_automation::TaskFlowTransition;
     use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::FinalUseRevocationUpdate;
+    use codex_hepta_contracts::FinalUseRevocations;
     use codex_hepta_contracts::ProviderEffectKey;
     use codex_hepta_contracts::SignedFinalUseGrant;
+    use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
     use codex_hepta_fleet::AgentManifest;
     use codex_hepta_fleet::FleetRegistry;
     use codex_hepta_fleet::ResourceBudget;
@@ -969,23 +1105,47 @@ mod tests {
             1,
         );
         let contract_signature = contract_signer.sign(&statement).to_bytes();
-        let revocations_file = fixture
-            .identity
-            .layout
-            .automation_root()
-            .join("effect-revocations.json");
-        fs::write(
-            &revocations_file,
-            serde_json::to_vec(&FinalUseRevocations {
+        let revocation_signer = SigningKey::from_bytes(&[31_u8; 32]);
+        let revocation_update = FinalUseRevocationUpdate::new(
+            "automation-revocation-distributor".to_string(),
+            FinalUseRevocations {
                 authority_epoch: 9,
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
-            })
-            .expect("revocations json"),
+            },
+            now_ms.saturating_sub(1_000),
+            now_ms + 60_000,
+        );
+        let signed_revocation_update = SignedFinalUseRevocationUpdate {
+            signature: revocation_signer
+                .sign(
+                    &revocation_update
+                        .signing_bytes()
+                        .expect("revocation signing bytes"),
+                )
+                .to_bytes()
+                .to_vec(),
+            update: revocation_update,
+        };
+        let revocation_feed_file = fixture
+            .identity
+            .layout
+            .automation_root()
+            .join("effect-revocation-feed.json");
+        fs::write(
+            &revocation_feed_file,
+            serde_json::to_vec(&signed_revocation_update).expect("signed revocation json"),
         )
-        .expect("write revocations file");
-        fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
-            .expect("revocations file permissions");
+        .expect("write signed revocation file");
+        fs::set_permissions(&revocation_feed_file, fs::Permissions::from_mode(0o600))
+            .expect("signed revocation file permissions");
+        let authority_trust_root = fixture._temp.path().join("external-authority-trust");
+        fs::create_dir(&authority_trust_root).expect("create external authority trust root");
+        fs::set_permissions(&authority_trust_root, fs::Permissions::from_mode(0o700))
+            .expect("external authority trust permissions");
+        let authority_trust_root = authority_trust_root
+            .canonicalize()
+            .expect("canonical authority trust root");
 
         let host_file = fixture
             .identity
@@ -993,7 +1153,7 @@ mod tests {
             .automation_root()
             .join("effect-host.json");
         let host_json = serde_json::json!({
-            "schema_version": 1,
+            "schema_version": 2,
             "provider_scope": "provider/fixture-v1",
             "destination_id": "provider:fixture",
             "final_use_scope_sha256": scope.as_str(),
@@ -1007,8 +1167,21 @@ mod tests {
             "contract_signature_hex": hex(&contract_signature),
             "contract_verifying_key_hex": hex(&contract_signer.verifying_key().to_bytes()),
             "final_use_signer_id": "automation-security-owner",
-            "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
-            "final_use_revocations_file": revocations_file
+            "final_use_issuer_keys": [{
+                "key_id": "issuer-2026-a",
+                "verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
+                "not_before_authority_epoch": 1,
+                "not_after_authority_epoch": u64::MAX
+            }],
+            "final_use_revocation_distributor_id": "automation-revocation-distributor",
+            "final_use_revocation_keys": [{
+                "key_id": "revocation-2026-a",
+                "verifying_key_hex": hex(&revocation_signer.verifying_key().to_bytes()),
+                "not_before_authority_epoch": 1,
+                "not_after_authority_epoch": u64::MAX
+            }],
+            "final_use_revocation_feed_file": revocation_feed_file,
+            "final_use_trust_root": authority_trust_root
         });
         fs::write(
             &host_file,
@@ -1089,6 +1262,77 @@ mod tests {
             .await
             .is_err()
         );
+        let witness = fixture
+            .store
+            .authorized_taskflow_effect_authority_witness(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+            )
+            .await
+            .expect("durable witness query")
+            .expect("durable entry witness");
+        drop(host);
+        let mut newer = signed_revocation_update.clone();
+        newer.update.head.revision = 2;
+        newer
+            .update
+            .head
+            .revoked_grant_ids
+            .insert(grant.grant.grant_id.clone());
+        let refreshed_now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("current feed time")
+                .as_millis(),
+        )
+        .expect("feed milliseconds");
+        newer.update.issued_at_unix_ms = refreshed_now_ms.saturating_sub(1_000);
+        newer.update.expires_at_unix_ms = refreshed_now_ms + 60_000;
+        newer.signature = revocation_signer
+            .sign(
+                &newer
+                    .update
+                    .signing_bytes()
+                    .expect("updated feed signing bytes"),
+            )
+            .to_bytes()
+            .to_vec();
+        fs::write(
+            &revocation_feed_file,
+            serde_json::to_vec(&newer).expect("updated feed JSON"),
+        )
+        .expect("advance signed feed during host downtime");
+        let recovered = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .expect("recover original frontier then apply newer signed feed");
+        assert_eq!(
+            recovered.authority.revocation_head().unwrap(),
+            newer.update.head
+        );
+        assert_eq!(
+            fixture
+                .store
+                .authorized_taskflow_effect_authority_witness(
+                    &intent.run_id,
+                    &intent.step_id,
+                    intent.attempt,
+                )
+                .await
+                .expect("recovered witness query"),
+            Some(witness)
+        );
+        let recovered_receipt = recovered
+            .execute(
+                &fixture.store,
+                &intent,
+                WIRE,
+                &grant,
+                "agentd-product-effect-dispatch",
+                now_ms + 8,
+            )
+            .await
+            .expect("observe original terminal outcome after recovery");
+        assert_eq!(recovered_receipt.receipt_digest, receipt.receipt_digest);
         server.verify().await;
     }
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "1d026ed15964dae11ee84eba0b8633c756399b89",
+    "tree": "6751d43049a55060cb1bd56b9fb890a41c584398"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -160,38 +160,52 @@
         {
           "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
           "kind": "canonical_final_use_intent_binding",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
           "kind": "durable_indeterminate_terminal_reconciliation",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "durable_step_and_terminal_propagation",
-          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
         },
         {
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
-          "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+          "command": "just test -p codex-hepta-automation --test authorized_effect"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+          "kind": "named_host_clock_frontier_owner_handoff_and_rollback_rejection",
+          "command": "just test -p codex-hepta-agentd"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed FinalUse subject/destination/scope/payload binding immediately around provider entry, persists the immutable provider-attempt row and canonical non-authorizing dispatch-entry witness before contact, uses an active-effect revocation-pending fence for the async ProviderEffectAdapter bridge, hashes exact wire bytes before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
-      "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
-      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "productCallers": [
+        {
+          "role": "named_product_host",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "AgentdAutomationEffectHost::execute",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "productCompositionState": "named_agentd_external_trust_signed_feed_http_provider_and_durable_witness_source_composed_not_activated",
+      "sourceBlob": "129edeeeca644b29f3e1ab7478671b5c7278b5da"
     }
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
-    "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
+    "target-qualified protected authority clock and rollback-independent frontier/backup domain for the named Agentd effect host",
+    "HSM/KMS custody and rotation/compromise evidence for issuer and revocation-distributor keys",
+    "independently attested downstream provider configuration plus trusted terminal/reconciliation evidence",
     "real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification",
     "independent acceptance, activation, promotion and release evidence"
   ],
@@ -209,20 +223,22 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "repositoryControlledProductCompositionGapsClosed": false,
+    "repositoryControlledProductCompositionGapsClosed": true,
     "calendarV2ProductControlComplete": true,
-    "externalEffectProductCompositionComplete": false,
+    "externalEffectProductCompositionComplete": true,
     "agedTurnRecoveryLivenessGapClosed": true,
     "terminalObserverPerPassBounded": true,
     "terminalObserverDurableContinuation": true,
     "externalEffectAsyncBridgeComplete": true,
     "externalEffectExactWireBindingComplete": true,
     "externalEffectDurableRecoveryIdentityComplete": true,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": true,
+    "externalEffectDurableAuthorityWitnessComplete": true,
+    "externalEffectRevocationPendingFenceComplete": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+  "productCallerState": "agentd_app_server_calendar_v2_and_named_final_use_provider_effect_host_source_composed_not_activated",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -231,8 +247,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "1d026ed15964dae11ee84eba0b8633c756399b89",
+    "tree": "6751d43049a55060cb1bd56b9fb890a41c584398"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -252,7 +268,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+        "blobSha": "129edeeeca644b29f3e1ab7478671b5c7278b5da"
       }
     ]
   },
@@ -299,12 +315,25 @@
       "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
       "nativeSymbol": "run_automation_scheduler",
       "state": "existing_app_server_queue_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "AgentdAutomationEffectHost::execute",
+      "state": "named_final_use_provider_effect_host_with_external_trust_signed_feed_and_durable_witness_source_composed_not_activated"
     }
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+      "object": "1663e4f2b1134c91228bc1391e0f274dd436b533"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
       "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "093c44b297fd5f5f378b46e539c059298efe3b66"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
@@ -316,15 +345,15 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "83cde928712ad0d628ba5fbe1e9cd5522ea341f7"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "129edeeeca644b29f3e1ab7478671b5c7278b5da"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      "object": "f68ff6f7f05e54195df149bd2f92ddffb325b314"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -348,7 +377,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "1b248e8158052ff720c56af37aed940e16088147"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
@@ -360,7 +389,7 @@
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+      "object": "1d78e36dbe634d21f7bf2edc5b23e8123a9acfa6"
     }
   ]
 }

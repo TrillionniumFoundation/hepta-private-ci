@@ -1,15 +1,15 @@
 //! Concrete kernel.authority consumer for the runtime.fleet allocation owner.
 //!
 //! This port does not accept an arbitrary effect closure. It computes the exact
-//! authority binding from one `AllocationGrant`, revalidates the live generic
-//! authority lease at the final owner boundary, and only then calls
-//! `LeaseLedger::issue`.
+//! authority binding from one `AllocationGrant`, binds a one-shot dispatch
+//! capability, revalidates the live generic authority lease at the final owner
+//! boundary, and only then calls `LeaseLedger::issue`.
 
 use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
-use codex_hepta_contracts::authority_lease::dispatch_authority_lease_with_witness;
+use codex_hepta_contracts::authority_trust::AuthorityDispatchBinding;
 use sha2::Digest;
 use sha2::Sha256;
 use std::fmt;
@@ -57,14 +57,12 @@ impl FleetAuthorityPort {
         grant: AllocationGrant,
     ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {
         let binding = allocation_binding(&grant)?;
-        let token = self
+        let dispatch_binding: AuthorityDispatchBinding = self
             .verifier
-            .verify_use(lease_id, expected_lease_revision, &binding)
+            .bind_dispatch(lease_id, expected_lease_revision, &binding)
             .map_err(FleetAuthorityError::Authority)?;
-        let (result, witness) =
-            dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {
-                ledger.issue(now_ms, grant)
-            })
+        let (result, witness) = dispatch_binding
+            .dispatch(|_| ledger.issue(now_ms, grant))
             .map_err(FleetAuthorityError::Authority)?;
         let receipt = result.map_err(FleetAuthorityError::Fleet)?;
         Ok((receipt, witness))

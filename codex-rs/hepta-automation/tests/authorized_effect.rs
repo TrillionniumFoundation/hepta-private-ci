@@ -56,6 +56,8 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseAuthorityRefV1;
+use codex_hepta_contracts::VerifiedUseBoundaryV1;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -469,7 +471,7 @@ impl RevocationRaceDriver {
         }
     }
 
-    fn join_revoker(&mut self) {
+    fn join_revoker_and_leave_pending(&mut self) {
         let result = self
             .revoker
             .take()
@@ -477,6 +479,9 @@ impl RevocationRaceDriver {
             .join()
             .expect("revocation thread join");
         assert_eq!(result, Err(FinalUseError::DispatchInProgress));
+    }
+
+    fn apply_pending_revocation(&self) {
         self.authority
             .update_revocations(FinalUseRevocations {
                 authority_epoch: 9,
@@ -591,6 +596,39 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
         )
         .await
         .expect("same grant remains usable after local wire mismatch");
+    let witness = store
+        .authorized_taskflow_effect_authority_witness(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+        )
+        .await
+        .expect("read authority witness")
+        .expect("dispatch-entry witness");
+    witness.validate().expect("valid authority witness");
+    assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
+    match &witness.authority_ref {
+        VerifiedUseAuthorityRefV1::FinalUse(reference) => {
+            assert_eq!(reference.grant_id, signed.grant.grant_id);
+            assert_eq!(reference.revocation_revision, 1);
+        }
+        VerifiedUseAuthorityRefV1::AuthorityLease(_) => panic!("unexpected authority family"),
+    }
+    drop(store);
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen automation store");
+    assert_eq!(
+        reopened
+            .authorized_taskflow_effect_authority_witness(
+                &effect.run_id,
+                &effect.step_id,
+                effect.attempt,
+            )
+            .await
+            .expect("read restarted authority witness"),
+        Some(witness),
+    );
     assert_eq!(driver.calls, 1);
 }
 
@@ -862,6 +900,22 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
     let reopened = AutomationStore::open(&fixture.layout)
         .await
         .expect("reopen after provider-contact crash");
+    let witness = reopened
+        .authorized_taskflow_effect_authority_witness(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+        )
+        .await
+        .expect("read durable authority witness after crash")
+        .expect("dispatch-entry witness survives provider response loss");
+    witness.validate().expect("valid durable witness");
+    assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
+    assert!(matches!(
+        witness.authority_ref,
+        VerifiedUseAuthorityRefV1::FinalUse(ref reference)
+            if reference.grant_id == signed.grant.grant_id
+    ));
     let pending = reopened
         .pending_authorized_taskflow_effects(8)
         .await
@@ -1112,7 +1166,15 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
         TaskFlowRunState::Succeeded
     );
 
-    driver.join_revoker();
+    driver.join_revoker_and_leave_pending();
+    assert!(
+        matches!(
+            authority.claim(&signed, &expected),
+            Err(FinalUseError::RevocationPending)
+        ),
+        "a blocked revocation must stop new authority admission until the exact update retries",
+    );
+    driver.apply_pending_revocation();
 
     let mut must_not_dispatch =
         RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"must-not-dispatch");
@@ -1226,4 +1288,99 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
         "reconciled compensation must never be replayed as a new effect"
     );
     assert_eq!(must_not_dispatch.calls, 0);
+}
+
+#[tokio::test]
+async fn witness_write_failure_preserves_attempt_and_never_contacts_provider() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "witness-write-fault");
+    let sqlite_home = codex_utils_absolute_path::AbsolutePathBuf::try_from(
+        fixture.layout.automation_root().to_path_buf(),
+    )
+    .expect("absolute fixture owner directory");
+    let fault_pool = codex_state::SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await
+        .expect("test fault connection through canonical SQLite shim");
+    sqlx::query("CREATE TRIGGER reject_test_witness BEFORE INSERT ON taskflow_effect_dispatch_authority_witnesses BEGIN SELECT RAISE(ABORT, 'injected witness write failure'); END")
+        .execute(&fault_pool).await.expect("install test fault");
+    let mut driver =
+        RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"not-dispatched");
+    let result = store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-dispatch",
+            30,
+        )
+        .await;
+    assert!(
+        matches!(
+            result,
+            Err(AuthorizedEffectError::TaskFlow(
+                codex_hepta_automation::TaskFlowError::Unavailable
+            ))
+        ),
+        "storage uncertainty must remain unavailable: {result:?}"
+    );
+    assert_eq!(driver.calls, 0);
+    assert_eq!(
+        authority
+            .claim(&signed, &expected)
+            .expect_err("nonce remains consumed"),
+        FinalUseError::AlreadyClaimed
+    );
+    assert!(
+        store
+            .authorized_taskflow_effect_authority_witness(
+                &effect.run_id,
+                &effect.step_id,
+                effect.attempt,
+            )
+            .await
+            .expect("read missing witness")
+            .is_none()
+    );
+    sqlx::query("DROP TRIGGER reject_test_witness")
+        .execute(&fault_pool)
+        .await
+        .expect("remove only test fault trigger");
+    fault_pool.close().await;
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen same owner");
+    assert!(
+        reopened
+            .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, effect.attempt,)
+            .await
+            .expect("read original attempt")
+            .is_some()
+    );
+    assert!(matches!(
+        reopened
+            .execute_authorized_taskflow_effect(
+                &authority,
+                &mut driver,
+                &effect,
+                EFFECT_PAYLOAD,
+                &owner,
+                &signed,
+                &expected,
+                "authorized-effect-dispatch",
+                31,
+            )
+            .await,
+        Err(AuthorizedEffectError::RecoveryRequired)
+    ));
+    assert_eq!(
+        driver.calls, 0,
+        "repairing storage does not authorize redispatch"
+    );
 }

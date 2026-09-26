@@ -6,6 +6,7 @@ import re
 import sys
 import tomllib
 import unittest
+import tempfile
 from pathlib import Path
 
 
@@ -60,7 +61,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         block = code[brace + 1 : end]
         methods: set[str] = set()
         for method in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
+            r"\bpub\s+(?:(?:async|const)\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
         ):
             prefix = block[: method.start()]
             depth = prefix.count("{") - prefix.count("}")
@@ -72,7 +73,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         code = self.lexical_code(source_path)
         functions: set[str] = set()
         for function in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", code
+            r"\bpub\s+(?:(?:async|const)\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", code
         ):
             prefix = code[: function.start()]
             depth = prefix.count("{") - prefix.count("}")
@@ -80,7 +81,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 functions.add(function.group(1))
         return functions
 
-    def test_every_public_authority_free_function_is_explicitly_classified(self) -> None:
+    def test_every_public_authority_free_function_is_explicitly_classified(
+        self,
+    ) -> None:
         data = self.data()
         rows = data.get("freeFunctions")
         self.assertIsInstance(rows, list)
@@ -92,7 +95,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             assert isinstance(row, dict)
             source_path = str(row["sourcePath"])
             self.assertNotIn(
-                source_path, seen_paths, f"duplicate free-function policy: {source_path}"
+                source_path,
+                seen_paths,
+                f"duplicate free-function policy: {source_path}",
             )
             seen_paths.add(source_path)
             privileged = row.get("privilegedFunctions")
@@ -131,7 +136,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             self.assertIsInstance(row, dict)
             assert isinstance(row, dict)
             type_name = str(row["typeName"])
-            self.assertNotIn(type_name, seen_types, f"duplicate type policy: {type_name}")
+            self.assertNotIn(
+                type_name, seen_types, f"duplicate type policy: {type_name}"
+            )
             seen_types.add(type_name)
             privileged = row.get("privilegedMethods")
             non_privileged = row.get("nonPrivilegedMethods")
@@ -158,7 +165,30 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 f"{type_name}: public method classification drifted",
             )
 
-    def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(self) -> None:
+    def test_forbidden_production_code_is_not_confused_with_negative_tests(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "owner.rs"
+            policy = {
+                "protected_file": [
+                    {"path": "owner.rs", "required": [], "forbidden": ["self_select"]}
+                ]
+            }
+            path.write_text(
+                "fn verify() {}\n#[cfg(test)] mod tests { fn rejects_self_select() {} }\n"
+            )
+            self.assertEqual(
+                CALLER_PROOF._verify_protected_files(root, policy), ["owner.rs"]
+            )
+            path.write_text("fn self_select() {}\n")
+            with self.assertRaises(CALLER_PROOF.VerificationFailure):
+                CALLER_PROOF._verify_protected_files(root, policy)
+
+    def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(
+        self,
+    ) -> None:
         data = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))
         declared_rows = data.get("boundary")
         self.assertIsInstance(declared_rows, list)
@@ -181,6 +211,8 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         sources = self.rust_sources()
+        raw_cache: dict[Path, str] = {}
+        code_cache: dict[Path, str] = {}
         for row in self.inventory():
             boundary_id = str(row["id"])
             type_marker = str(row["typeMarker"])
@@ -194,12 +226,16 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     fragment in f"/{relative}" for fragment in ignored
                 ):
                     continue
-                raw = path.read_text(encoding="utf-8")
+                if path not in raw_cache:
+                    raw_cache[path] = path.read_text(encoding="utf-8")
+                raw = raw_cache[path]
                 if type_marker not in raw:
                     continue
-                code = CALLER_PROOF._strip_cfg_test_items(
-                    CALLER_PROOF._strip_rust_non_code(raw)
-                )
+                if path not in code_cache:
+                    code_cache[path] = CALLER_PROOF._strip_cfg_test_items(
+                        CALLER_PROOF._strip_rust_non_code(raw)
+                    )
+                code = code_cache[path]
                 if any(pattern.search(code) for pattern in patterns):
                     observed.add(relative)
             self.assertEqual(

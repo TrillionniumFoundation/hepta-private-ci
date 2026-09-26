@@ -31,4 +31,5 @@ pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
 serde_json = { workspace = true }
 toml = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt"] }
+# Make the workspace await-holding guard checks resolvable in async tests.
+tokio = { workspace = true, features = ["macros", "rt", "sync"] }

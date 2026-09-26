@@ -23,6 +23,7 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -760,10 +761,22 @@ impl AutomationStore {
             binding: expected_binding,
         };
         let provider = match authority
-            .with_verified_effect(token, expected_binding, || driver.dispatch(&request))
+            .with_verified_use_async_with_witness(token, expected_binding, |witness| async move {
+                self.record_effect_dispatch_authority_witness(
+                    &intent.run_id,
+                    &intent.step_id,
+                    intent.attempt,
+                    &witness,
+                )
+                .await?;
+                driver
+                    .dispatch(&request)
+                    .map_err(AuthorizedEffectError::Driver)
+            })
+            .await
         {
-            Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok((Ok(receipt), _witness)) => receipt,
+            Ok((Err(AuthorizedEffectError::Driver(error)), _witness)) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -778,6 +791,7 @@ impl AutomationStore {
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
                 return Err(AuthorizedEffectError::Driver(error));
             }
+            Ok((Err(error), _witness)) => return Err(error),
             Err(error) => {
                 // `with_verified_use` invokes the consumer only after its
                 // final revocation/epoch check succeeds, so this path is a
@@ -829,6 +843,20 @@ impl AutomationStore {
             .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .map(AuthorizedEffectPending::from))
+    }
+
+    /// Read the immutable, non-authorizing witness emitted at the exact
+    /// final-use dispatch-entry cut. Absence means no durable witness is known;
+    /// it never authorizes retry or proves provider absence by itself.
+    pub async fn authorized_taskflow_effect_authority_witness(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<VerifiedUseTokenWitnessV1>, AuthorizedEffectError> {
+        Ok(self
+            .effect_dispatch_authority_witness(run_id, step_id, attempt)
+            .await?)
     }
 
     /// Settle already-durable local provider evidence into TaskFlow before a
@@ -978,11 +1006,23 @@ impl AutomationStore {
             wire_payload,
         };
         let provider = match authority
-            .with_verified_use_async(token, expected_binding, || driver.dispatch(request))
+            .with_verified_use_async_with_witness(token, expected_binding, |witness| async move {
+                self.record_effect_dispatch_authority_witness(
+                    &intent.run_id,
+                    &intent.step_id,
+                    intent.attempt,
+                    &witness,
+                )
+                .await?;
+                driver
+                    .dispatch(request)
+                    .await
+                    .map_err(AuthorizedEffectError::Driver)
+            })
             .await
         {
-            Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok((Ok(receipt), _witness)) => receipt,
+            Ok((Err(AuthorizedEffectError::Driver(error)), _witness)) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -997,6 +1037,7 @@ impl AutomationStore {
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
                 return Err(AuthorizedEffectError::Driver(error));
             }
+            Ok((Err(error), _witness)) => return Err(error),
             Err(error) => {
                 let proof = no_contact_digest(&durable, "final_use_pre_dispatch_rejection");
                 let durable = self

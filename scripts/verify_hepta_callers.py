@@ -48,6 +48,7 @@ class Boundary:
     product_callers: tuple[str, ...]
     caller_markers: tuple[str, ...]
     call_pattern: str | None
+    caller_type_marker: str | None
 
 
 def _load_manifest(path: Path) -> dict[str, Any]:
@@ -93,6 +94,13 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
         if symbol in symbols:
             raise VerificationFailure(f"duplicate boundary symbol: {symbol}")
         call_pattern = row.get("call_pattern")
+        caller_type_marker = row.get("caller_type_marker")
+        if caller_type_marker is not None and (
+            not isinstance(caller_type_marker, str) or not caller_type_marker
+        ):
+            raise VerificationFailure(
+                f"{identifier}: caller_type_marker must be a non-empty string"
+            )
         if call_pattern is not None:
             if not isinstance(call_pattern, str) or not call_pattern:
                 raise VerificationFailure(
@@ -115,6 +123,7 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
                 product_callers=_string_tuple(row, "product_callers"),
                 caller_markers=_string_tuple(row, "caller_markers"),
                 call_pattern=call_pattern,
+                caller_type_marker=caller_type_marker,
             )
         )
     return tuple(boundaries)
@@ -406,6 +415,11 @@ def _verify_boundary(
             relative, ignored_fragments
         ):
             continue
+        if (
+            boundary.caller_type_marker is not None
+            and boundary.caller_type_marker not in code
+        ):
+            continue
         if call_pattern.search(code):
             observed.add(relative)
     expected = set(boundary.product_callers)
@@ -431,6 +445,7 @@ def _verify_boundary(
         "id": boundary.identifier,
         "symbol": boundary.symbol,
         "callPattern": boundary.call_pattern,
+        "callerTypeMarker": boundary.caller_type_marker,
         "productCallers": sorted(observed),
     }
 
@@ -453,8 +468,13 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 raise VerificationFailure(
                     f"{relative}: required marker missing: {marker!r}"
                 )
+        code = (
+            _strip_cfg_test_items(_strip_rust_non_code(text))
+            if path.suffix == ".rs"
+            else text
+        )
         for marker in _string_tuple(row, "forbidden"):
-            if marker in text:
+            if marker in code:
                 raise VerificationFailure(
                     f"{relative}: forbidden marker present: {marker!r}"
                 )

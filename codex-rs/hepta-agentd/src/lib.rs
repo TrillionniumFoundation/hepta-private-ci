@@ -9,6 +9,7 @@ mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;
+mod authority_trust_host;
 mod automation;
 mod automation_effect_host;
 mod automation_recovery;

@@ -130,19 +130,21 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-The current general authority-lease store starts at canonical store schema V2 because retired lease-ID revision lineage participates in the authoritative frontier. No schema-V1 general lease store was activated or released; V1 images are rejected rather than silently reinterpreted. Any future durable predecessor requires an explicit migration and frontier transition. FinalUse retains its separately documented V1 single-key compatibility format and V2 key-ring format.
+The current general authority-lease store starts at canonical store schema V2 because retired lease-ID revision lineage participates in the authoritative frontier. No schema-V1 general lease store was activated or released; V1 images are rejected rather than silently reinterpreted. Any future durable predecessor requires an explicit migration and frontier transition. FinalUse writes the separately documented V3 journal snapshot with an explicit trust-family tag; its explicit legacy V1/V2 layouts migrate within the original trust family while preserving nonce history.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md) identifies the actual state owners and lock/transaction boundaries. General V1 leases are registry-authoritative online references, with non-cloneable admin authority and a cloneable read/verify attenuation. FinalUse supports consumer-entry and bounded local-dispatch linearization as specified in [LINEARIZATION.md](LINEARIZATION.md). Product composition must follow [TRACEABILITY.md](TRACEABILITY.md); target contract registration alone is not runtime composition.
+The [current native implementation](../../lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md) identifies the actual state owners and lock/transaction boundaries. General V1 leases are registry-authoritative online references, with non-cloneable admin authority and a cloneable read/verify attenuation. An identical lease mutation is idempotent only with the original expected predecessor revision. Every final lease use acquires the owner lock before sampling its bound clock, so expiry while waiting for the lock is rejected. FinalUse supports consumer-entry and bounded local-dispatch linearization as specified in [LINEARIZATION.md](LINEARIZATION.md). Product composition must follow [TRACEABILITY.md](TRACEABILITY.md); target contract registration alone is not runtime composition.
+
+For guarded FinalUse effects, a revocation update that encounters an active effect returns `DispatchInProgress` and marks revocation pending. While pending, new claims and all new entry paths fail closed with `RevocationPending`. The exact monotonic update must be retried after the active effect drains. A named host must retain or re-read the independently signed update across restart; the process-local pending bit is not durable authority state.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.authority.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.authority.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler. The named Agentd automation path durably records the effect attempt and canonical dispatch-entry witness before provider contact; provider response loss, crash or timeout preserves one indeterminate identity for lookup/reconciliation and never blindly redispatches the same attempt.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -166,6 +168,8 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Embed authority owners behind a trusted host boundary. Production-oriented construction binds an `AuthorityClock` plus an externally durable CAS `AuthorityFrontierStore`; the owner-only local directory remains the crash-durable state store and must not be treated as the rollback oracle. A restored local snapshot behind the external frontier fails closed. Compatibility constructors without external trust are not production qualification.
 
+`AgentdAutomationEffectHost` is the current named repository-controlled host composition. Host schema V2 requires a bounded issuer key ring, a separately pinned signed revocation-feed key ring and feed file, exact provider configuration and an absolute trust root outside Agent home. `AgentdFinalUseTrustStore` supplies a single-writer persistent clock floor and exact FinalUse CAS frontier, and normal construction uses `open_state_dir_with_issuer_keys`; it does not fall back to `open_state_dir`. Source tests cover CAS conflict, owner handoff, clock rollback, missing frontier and restored local authority state. These tests establish source composition, not attestation or target storage qualification.
+
 The exact-frontier asynchronous `VerifiedUseToken::enter` additionally requires the claim-time durable head to remain current and samples that same protected owner clock. A new head invalidates an unentered asynchronous token; an already entered effect remains subject to terminal observation and reconciliation, not automatic retry.
 
 Current operating and state-format references:
@@ -183,7 +187,9 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-contracts/src/agent_id_tests.rs](../../../codex-rs/hepta-contracts/src/agent_id_tests.rs); named case: `canonical_id_is_stable_across_display_parse_and_serde`.
 The previously listed dedicated kernel-authority traceability test is not present in this source tree. Its target-port and Browser B4 closed-set coverage must not be inferred from these source references.
 
-In `codex-rs`, run `just test -p codex-hepta-contracts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-contracts`. The current source-composed product path additionally requires `just test -p codex-hepta-automation --test authorized_effect`, `just test -p codex-hepta-agentd` and the applicable prompt-registry tests, plus strict Clippy for every affected package. Run the independent B4 closed-world test and whole-repository caller proof. These commands are invocations, not stored results; inspect exact-head and deterministic merge-candidate outputs for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) separately labels target acceptance designs.
+
+Production evidence admission uses schema `hepta.kernel-authority-production-evidence.v2`. It numerically checks revocation delivery/ack latency and complete node counts, requires all 55 point/operation capacity rows with at least 100 samples each, enforces percentile and budget consistency, and admits only structured crash outcomes that preserve indeterminate state without reset. Caller-supplied `withinSla` or `latencyBudgetPass` booleans are not accepted.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
