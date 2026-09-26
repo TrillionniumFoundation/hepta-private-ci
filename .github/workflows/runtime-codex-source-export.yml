@@ -14,9 +14,9 @@ concurrency:
 
 jobs:
   export:
-    name: Export runtime.codex source subset
+    name: Export runtime.codex source workspace
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Check out exact branch candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -33,37 +33,14 @@ jobs:
             printf 'TREE=%s\n' "$(git rev-parse HEAD^{tree})"
           } > runtime-codex-export-identity.txt
 
-      - name: Package bounded source subset
+      - name: Package exact source workspace
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf runtime-codex-source.tar.gz \
-            runtime-codex-export-identity.txt \
-            justfile \
-            .github/actions \
-            .github/scripts \
-            .github/workflows \
-            scripts \
-            docs/modules/runtime.codex \
-            docs/readiness \
-            qualification/module-execution-dossiers \
-            codex-rs/Cargo.toml \
-            codex-rs/Cargo.lock \
-            codex-rs/rust-toolchain.toml \
-            codex-rs/.cargo \
-            codex-rs/hepta-agent-protocol \
-            codex-rs/hepta-agentd \
-            codex-rs/hepta-contracts \
-            codex-rs/hepta-types \
-            codex-rs/hepta-infer-core \
-            codex-rs/hepta-infer-worker-host \
-            codex-rs/hepta-codex-adapter \
-            codex-rs/app-server-client \
-            codex-rs/app-server-protocol \
-            codex-rs/app-server \
-            codex-rs/core
+          tar --exclude=.git --exclude=runtime-codex-source.tar.gz \
+            -czf runtime-codex-source.tar.gz .
 
-      - name: Upload bounded source archive
+      - name: Upload exact source workspace
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: runtime-codex-source-${{ github.sha }}
