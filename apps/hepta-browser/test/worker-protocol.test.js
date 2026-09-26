@@ -82,3 +82,23 @@ test("decoder fails closed on partial channel termination", () => {
   decoder.push(encoded.subarray(0, encoded.length - 1));
   assert.throws(() => decoder.end(), /partial frame/);
 });
+
+
+test("worker protocol admits an explicit dispatch-boundary response frame", () => {
+  const boundary = buildWorkerFrame({
+    sessionId: "session.1",
+    generation: 7,
+    sequence: 2,
+    kind: "dispatch_boundary",
+    requestId: "operation.1",
+    payload: {
+      localDispatchCrossed: true,
+      requestKind: "dispatch",
+      requestPayloadDigest: "1".repeat(64),
+    },
+  });
+  const decoded = new WorkerFrameDecoder().push(encodeWorkerFrame(boundary));
+  assert.equal(decoded.length, 1);
+  assert.equal(decoded[0].kind, "dispatch_boundary");
+  assert.equal(decoded[0].payload.localDispatchCrossed, true);
+});

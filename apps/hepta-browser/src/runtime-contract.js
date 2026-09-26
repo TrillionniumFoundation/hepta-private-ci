@@ -5,11 +5,14 @@ import {
   normalizeBrowserAction,
 } from "./action.js";
 
+export const DEFAULT_MAX_ACTIVE_PROFILES = 1;
+export const MAX_CONFIGURED_ACTIVE_PROFILES = 64;
 export const MAX_ORIGINS = 128;
 export const MAX_EFFECT_GRANTS = 1024;
 export const MAX_OUTSTANDING_OPERATIONS = 1024;
 export const MAX_RETAINED_TERMINAL_OPERATIONS = 256;
 export const DEFAULT_DRIVER_CALL_TIMEOUT_MS = 30_000;
+export const MAX_DRIVER_CALL_TIMEOUT_MS = 120_000;
 
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
@@ -111,6 +114,7 @@ export function indeterminateReceipt(profileId, operationId, semanticDigest, rea
     semanticDigest,
     status: "indeterminate",
     outcomeDigest: null,
+    terminalEvidenceDigest: null,
     terminalObserved: false,
     observationReason: reason,
   });
