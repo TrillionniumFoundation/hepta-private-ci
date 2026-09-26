@@ -11,6 +11,14 @@ on:
       - codex-rs/hepta-agentd/src/intelligence_product_runner.rs
       - codex-rs/hepta-agentd/src/neuron_product.rs
       - codex-rs/hepta-agentd/src/neuron_runtime.rs
+  pull_request:
+    paths:
+      - scripts/ci/synthesize-neuron-product.py
+      - .github/workflows/neuron-runtime-source-synthesis.yml
+      - codex-rs/hepta-agentd/src/intelligence_product.rs
+      - codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+      - codex-rs/hepta-agentd/src/neuron_product.rs
+      - codex-rs/hepta-agentd/src/neuron_runtime.rs
   workflow_dispatch:
 
 permissions:
