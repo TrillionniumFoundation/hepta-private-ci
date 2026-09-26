@@ -1,0 +1,40 @@
+name: Hepta memory retrieval convergence
+
+on:
+  push:
+    branches: [work/memory-retrieval-hardening-20260927]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-convergence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture immutable source identity
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/retrieval-source"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retrieval-source/source.tar.gz"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-source/identity.txt"
+          sha256sum "$RUNNER_TEMP/retrieval-source/source.tar.gz" > "$RUNNER_TEMP/retrieval-source/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-source-${{ github.sha }}
+          path: ${{ runner.temp }}/retrieval-source/
+          retention-days: 7
+          if-no-files-found: error
