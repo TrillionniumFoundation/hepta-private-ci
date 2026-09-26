@@ -60,20 +60,16 @@ env:
 
 jobs:
   qualification:
-    name: Runtime supervisor (${{ matrix.lane }}, ${{ matrix.host_instances }} instances)
+    name: Runtime supervisor (${{ matrix.lane }}, ${{ matrix.lane == 'source-head' && '256' || '8' }} instances)
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
-        include:
-          - lane: source-head
-            host_instances: 256
-          - lane: merge-candidate
-            host_instances: 8
     env:
       EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      HOST_INSTANCES: ${{ matrix.lane == 'source-head' && '256' || '8' }}
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -124,8 +120,6 @@ jobs:
         run: python3 scripts/hepta_ci_v8.py
 
       - name: Execute exact-candidate supervisor qualification
-        env:
-          HOST_INSTANCES: ${{ matrix.host_instances }}
         run: |
           set -euo pipefail
           python3 scripts/hepta-supervisor-validation.py \
