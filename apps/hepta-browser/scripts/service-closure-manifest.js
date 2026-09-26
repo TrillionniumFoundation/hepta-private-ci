@@ -15,6 +15,8 @@ const ROLE_PATHS = Object.freeze({
   agentd_service: "src/agentd-service.js",
   agentd_protocol: "src/agentd-protocol.js",
   action: "src/action.js",
+  effect_egress_gate: "src/effect-egress-gate.js",
+  effect_network_driver: "src/effect-network-driver.js",
   egress_broker: "src/egress-broker.js",
   journal: "src/journal.js",
   persisted_reconciler: "src/persisted-reconciler.js",
@@ -52,7 +54,12 @@ if (!rootArgument || !outputArgument) {
       throw new TypeError(`closure role ${role} escaped the Browser root`);
     }
     const info = lstatSync(path);
-    if (info.isSymbolicLink() || !info.isFile() || info.size < 1 || info.size > MAX_FILE_BYTES) {
+    if (
+      info.isSymbolicLink() ||
+      !info.isFile() ||
+      info.size < 1 ||
+      info.size > MAX_FILE_BYTES
+    ) {
       throw new TypeError(`closure role ${role} is not a bounded regular file`);
     }
     if (realpathSync(path) !== path) {
