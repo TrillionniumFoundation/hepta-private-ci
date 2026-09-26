@@ -29,6 +29,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.sha }}"
           git diff --quiet
           git diff --cached --quiet
+      - name: Isolate permanent workflow from one-shot token
+        run: python3 scripts/cognitive_store_bootstrap_workflow_permission_patch.py
       - name: Apply convergence source
         run: |
           set -euo pipefail
