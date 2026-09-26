@@ -145,6 +145,16 @@ async function captureLinuxProcessTree(rootPid) {
   return identities;
 }
 
+function mergeProcessIdentities(...groups) {
+  const merged = new Map();
+  for (const group of groups) {
+    for (const identity of group) {
+      merged.set(`${identity.pid}:${identity.startTime}`, identity);
+    }
+  }
+  return [...merged.values()];
+}
+
 async function sameLinuxProcessAlive(identity) {
   const current = await linuxProcessIdentity(identity.pid);
   return current !== null && current.startTime === identity.startTime;
@@ -292,12 +302,15 @@ export class EffectAdmissionBrowserDriver {
       generation,
       processId,
       pid: processIdFromBrowserIdentity(processId),
+      contained: false,
+      containmentProof: null,
     });
     this.#armExpiry(profileId, positiveInteger(input.expiresAtMs, "expiresAtMs"));
     return observed;
   }
 
   observe(input, options = {}) {
+    this.#session(input);
     return this.#driver.observe(input, options);
   }
 
@@ -339,6 +352,7 @@ export class EffectAdmissionBrowserDriver {
   }
 
   reconcile(input, options = {}) {
+    this.#session(input);
     return this.#driver.reconcile(input, options);
   }
 
@@ -347,8 +361,17 @@ export class EffectAdmissionBrowserDriver {
   }
 
   async contain(input) {
-    const session = this.#session(input, { allowMissing: true });
+    const session = this.#session(input, {
+      allowMissing: true,
+      allowContained: true,
+    });
     if (session === null) return { contained: true };
+    if (session.contained && session.containmentProof !== null) {
+      return Object.freeze({
+        contained: true,
+        ...session.containmentProof,
+      });
+    }
     const tree = await captureLinuxProcessTree(session.pid);
     const proof = await this.#containAndProve(input, tree);
     return Object.freeze({ contained: true, ...proof });
@@ -365,7 +388,10 @@ export class EffectAdmissionBrowserDriver {
     return observed;
   }
 
-  #session(input, { allowMissing = false } = {}) {
+  #session(
+    input,
+    { allowMissing = false, allowContained = false } = {},
+  ) {
     const profileId = stableId(input.profileId, "profileId");
     const session = this.#sessions.get(profileId) ?? null;
     if (session === null) {
@@ -382,10 +408,17 @@ export class EffectAdmissionBrowserDriver {
     if (input.processId !== undefined && input.processId !== session.processId) {
       throw new TypeError("effect admission process identity mismatch");
     }
+    if (session.contained && !allowContained) {
+      throw new TypeError("effect admission profile is contained");
+    }
     return session;
   }
 
   async #containAndProve(input, capturedTree) {
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId) ?? null;
+    const freshTree = await captureLinuxProcessTree(session?.pid ?? null);
+    const processTree = mergeProcessIdentities(capturedTree, freshTree);
     let containError = null;
     try {
       await this.#driver.contain(input);
@@ -393,19 +426,23 @@ export class EffectAdmissionBrowserDriver {
       containError = error;
     }
     await waitForLinuxProcessTreeExit(
-      capturedTree,
+      processTree,
       this.#containmentTimeoutMs,
     );
-    const profileId = stableId(input.profileId, "profileId");
     this.#clearExpiry(profileId);
-    const proof = Object.freeze({
-      containmentDigest: containmentDigest(capturedTree),
-      processCount: capturedTree.length,
-    });
-    if (containError !== null && capturedTree.length > 0) {
+    const proofRecord = {
+      containmentDigest: containmentDigest(processTree),
+      processCount: processTree.length,
+    };
+    if (containError !== null) {
       // Process-tree disappearance is the effect-containment proof. Preserve a
       // non-fatal inner cleanup failure for diagnostics without weakening it.
-      proof.innerContainmentError = boundedError(containError);
+      proofRecord.innerContainmentError = boundedError(containError);
+    }
+    const proof = Object.freeze(proofRecord);
+    if (session !== null) {
+      session.contained = true;
+      session.containmentProof = proof;
     }
     return proof;
   }
@@ -414,7 +451,7 @@ export class EffectAdmissionBrowserDriver {
     this.#clearExpiry(profileId);
     const arm = () => {
       const session = this.#sessions.get(profileId);
-      if (!session) return;
+      if (!session || session.contained) return;
       const remaining = expiresAtMs - this.#clock();
       if (remaining <= 0) {
         void this.contain({
