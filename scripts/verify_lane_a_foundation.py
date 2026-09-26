@@ -6,9 +6,32 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lane_a_foundation_lib import *  # noqa: F403
+
+
+def _module_order_diagnostic() -> str:
+    """Return an exact, side-effect-free snapshot for closed-world failures."""
+
+    matrix = read_json(MATRIX_PATH)  # noqa: F405
+    modules: Any = matrix.get("modules")
+    row_types = (
+        [type(row).__name__ for row in modules]
+        if isinstance(modules, list)
+        else type(modules).__name__
+    )
+    observed = (
+        [row.get("module") for row in modules if isinstance(row, dict)]
+        if isinstance(modules, list)
+        else None
+    )
+    expected = list(EXPECTED_MODULES)  # noqa: F405
+    return (
+        f"matrix={MATRIX_PATH}; observed={observed!r}; expected={expected!r}; "
+        f"row_types={row_types!r}; module_coverage={matrix.get('moduleCoverage')!r}"
+    )
 
 
 def main() -> int:
@@ -33,7 +56,16 @@ def main() -> int:
                 native=args.command == "native-receipt",
             )
     except VerificationError as error:  # noqa: F405
-        print(f"lane-a-foundation verification failed: {error}", file=sys.stderr)
+        suffix = ""
+        if "closed-world module order mismatch" in str(error):
+            try:
+                suffix = f"; {_module_order_diagnostic()}"
+            except Exception as diagnostic_error:  # pragma: no cover - CI diagnostic
+                suffix = f"; diagnostic_failed={diagnostic_error!r}"
+        print(
+            f"lane-a-foundation verification failed: {error}{suffix}",
+            file=sys.stderr,
+        )
         return 1
     print(f"lane-a-foundation {args.command}: ok")
     return 0
