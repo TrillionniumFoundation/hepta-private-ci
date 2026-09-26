@@ -1,5 +1,7 @@
 import {
   assertCanonicalText,
+  assertSafeInteger,
+  assertSha256,
   assertStableIdentifier,
 } from "./canonical.js";
 import {
@@ -11,6 +13,7 @@ import {
 
 const encoder = new TextEncoder();
 const MAX_RESPONSE_BYTES = 1024 * 1024;
+const JSON_CONTENT_TYPE = /^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/iu;
 
 function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, { details });
@@ -33,30 +36,64 @@ function anySignal(signals) {
   return controller.signal;
 }
 
+async function readResponseText(response, signal) {
+  if (!signal) return response.text();
+  if (signal.aborted) throw signal.reason ?? new DOMException("request aborted", "AbortError");
+  let rejectOnAbort;
+  const aborted = new Promise((resolve, reject) => {
+    rejectOnAbort = () => reject(
+      signal.reason ?? new DOMException("request aborted", "AbortError"),
+    );
+    signal.addEventListener("abort", rejectOnAbort, { once: true });
+  });
+  try {
+    return await Promise.race([response.text(), aborted]);
+  } finally {
+    signal.removeEventListener("abort", rejectOnAbort);
+  }
+}
+
 function classifyHttpFailure(status, payload) {
   const message =
     payload && typeof payload.message === "string"
       ? payload.message
       : `ui.control backend returned HTTP ${status}`;
-  if ([400, 403, 404, 409, 412, 422].includes(status)) {
-    return uiControlError(UI_CONTROL_ERROR_CODES.BACKEND_REJECTED, message, {
-      retryable: status === 409 || status === 412,
-      details: {
-        status,
-        backendCode: payload?.errorCode ?? null,
-        requestDispatched: true,
-      },
-    });
-  }
+  const details = {
+    status,
+    backendCode: payload?.errorCode ?? null,
+    requestDispatched: true,
+  };
   if (status === 401) {
     return uiControlError(UI_CONTROL_ERROR_CODES.SESSION_EXPIRED, message, {
       retryable: true,
-      details: { status, requestDispatched: true },
+      details,
+    });
+  }
+  if (status === 403) {
+    return uiControlError(UI_CONTROL_ERROR_CODES.PERMISSION_DENIED, message, {
+      details,
+    });
+  }
+  if (status === 409) {
+    return uiControlError(UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT, message, {
+      retryable: true,
+      details,
+    });
+  }
+  if (status === 412) {
+    return uiControlError(UI_CONTROL_ERROR_CODES.STALE_REVISION, message, {
+      retryable: true,
+      details,
+    });
+  }
+  if ([400, 404, 422].includes(status)) {
+    return uiControlError(UI_CONTROL_ERROR_CODES.BACKEND_REJECTED, message, {
+      details,
     });
   }
   return uiControlError(UI_CONTROL_ERROR_CODES.TRANSPORT, message, {
     retryable: status >= 429,
-    details: { status, requestDispatched: true },
+    details,
   });
 }
 
@@ -137,6 +174,8 @@ export class SameOriginHttpTransport {
       if (
         cause instanceof UiControlError &&
         (cause.code === UI_CONTROL_ERROR_CODES.BACKEND_REJECTED ||
+          cause.code === UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT ||
+          cause.code === UI_CONTROL_ERROR_CODES.STALE_REVISION ||
           cause.code === UI_CONTROL_ERROR_CODES.SESSION_EXPIRED ||
           cause.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED ||
           cause.code === UI_CONTROL_ERROR_CODES.AMBIGUOUS_SUBMISSION ||
@@ -162,10 +201,17 @@ export class SameOriginHttpTransport {
 
   async lookup(input, { signal } = {}) {
     const operationId = assertStableIdentifier(input.operationId, "operationId");
+    const sessionId = assertStableIdentifier(input.sessionId, "sessionId");
+    const connectionGeneration = assertSafeInteger(
+      input.connectionGeneration,
+      "connectionGeneration",
+      { min: 1 },
+    );
+    const semanticDigest = assertSha256(input.semanticDigest, "semanticDigest");
     const query = new URLSearchParams({
-      sessionId: input.sessionId,
-      connectionGeneration: String(input.connectionGeneration),
-      semanticDigest: input.semanticDigest,
+      sessionId,
+      connectionGeneration: String(connectionGeneration),
+      semanticDigest,
     });
     return this.#fetchJson(
       `operations/${encodeURIComponent(operationId)}?${query.toString()}`,
@@ -226,13 +272,17 @@ export class SameOriginHttpTransport {
     if (url.origin !== this.#origin || !url.href.startsWith(this.#baseUrl.href)) {
       throw invalid("transport path escaped the same-origin API base", { path });
     }
-    const csrfToken = this.#csrfTokenProvider();
-    if (mutation && (typeof csrfToken !== "string" || csrfToken.length === 0)) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
-        "mutation request requires a CSRF token",
-        { details: { requestDispatched: false } },
-      );
+    let csrfToken = null;
+    if (mutation) {
+      const providedToken = this.#csrfTokenProvider();
+      if (typeof providedToken !== "string" || providedToken.length === 0) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
+          "mutation request requires a CSRF token",
+          { details: { requestDispatched: false } },
+        );
+      }
+      csrfToken = assertCanonicalText(providedToken, "CSRF token", { maxBytes: 512 });
     }
     if (signal?.aborted) {
       throw uiControlError(UI_CONTROL_ERROR_CODES.ABORTED, "request was aborted before dispatch", {
@@ -248,6 +298,7 @@ export class SameOriginHttpTransport {
     );
     const combinedSignal = anySignal([signal, timeout.signal]);
     let response;
+    let text;
     try {
       response = await this.#fetch(url, {
         method,
@@ -258,7 +309,7 @@ export class SameOriginHttpTransport {
         headers: {
           accept: "application/json",
           ...(body === undefined ? {} : { "content-type": "application/json" }),
-          "x-hepta-request-id": assertCanonicalText(requestId, "requestId", {
+          "x-hepta-request-id": assertStableIdentifier(requestId, "requestId", {
             maxBytes: 192,
           }),
           ...(csrfToken ? { "x-hepta-csrf-token": csrfToken } : {}),
@@ -266,8 +317,17 @@ export class SameOriginHttpTransport {
         body: body === undefined ? undefined : JSON.stringify(body),
         signal: combinedSignal,
       });
+
+      const declaredLength = Number(response.headers.get("content-length") ?? 0);
+      if (Number.isFinite(declaredLength) && declaredLength > MAX_RESPONSE_BYTES) {
+        throw uiControlError(
+          UI_CONTROL_ERROR_CODES.TRANSPORT,
+          "ui.control response exceeds the maximum allowed size",
+          { details: { status: response.status, requestDispatched: true } },
+        );
+      }
+      text = await readResponseText(response, combinedSignal);
     } catch (cause) {
-      clearTimeout(timeoutHandle);
       if (combinedSignal?.aborted) {
         const code = mutation
           ? UI_CONTROL_ERROR_CODES.AMBIGUOUS_SUBMISSION
@@ -278,6 +338,7 @@ export class SameOriginHttpTransport {
           cause,
         });
       }
+      if (cause instanceof UiControlError) throw cause;
       throw asUiControlError(cause, UI_CONTROL_ERROR_CODES.TRANSPORT, "ui.control network failure", {
         retryable: true,
         details: { requestDispatched: true, mutation },
@@ -286,20 +347,19 @@ export class SameOriginHttpTransport {
       clearTimeout(timeoutHandle);
     }
 
-    const declaredLength = Number(response.headers.get("content-length") ?? 0);
-    if (Number.isFinite(declaredLength) && declaredLength > MAX_RESPONSE_BYTES) {
-      throw uiControlError(
-        UI_CONTROL_ERROR_CODES.TRANSPORT,
-        "ui.control response exceeds the maximum allowed size",
-        { details: { status: response.status } },
-      );
-    }
-    const text = await response.text();
     if (encoder.encode(text).byteLength > MAX_RESPONSE_BYTES) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.TRANSPORT,
         "ui.control response exceeds the maximum allowed size",
-        { details: { status: response.status } },
+        { details: { status: response.status, requestDispatched: true } },
+      );
+    }
+    const contentType = response.headers.get("content-type") ?? "";
+    if (text.length > 0 && !JSON_CONTENT_TYPE.test(contentType)) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.TRANSPORT,
+        "ui.control backend returned a non-JSON content type",
+        { details: { status: response.status, contentType, requestDispatched: true } },
       );
     }
     let payload = null;
@@ -310,7 +370,7 @@ export class SameOriginHttpTransport {
         throw uiControlError(
           UI_CONTROL_ERROR_CODES.TRANSPORT,
           "ui.control backend returned malformed JSON",
-          { details: { status: response.status }, cause },
+          { details: { status: response.status, requestDispatched: true }, cause },
         );
       }
     }
@@ -319,7 +379,7 @@ export class SameOriginHttpTransport {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.TRANSPORT,
         "ui.control backend returned an invalid response object",
-        { details: { status: response.status } },
+        { details: { status: response.status, requestDispatched: true } },
       );
     }
     return payload;
