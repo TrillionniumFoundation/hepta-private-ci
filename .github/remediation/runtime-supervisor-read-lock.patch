@@ -1,0 +1,156 @@
+diff --git a/codex-rs/hepta-supervisor/src/daemon.rs b/codex-rs/hepta-supervisor/src/daemon.rs
+--- a/codex-rs/hepta-supervisor/src/daemon.rs
++++ b/codex-rs/hepta-supervisor/src/daemon.rs
+@@ -404,8 +404,14 @@ async fn handle_request<D: ProcessDriver>(
+ ) -> SupervisordPayload {
+     match method {
+         SupervisordMethod::Health => {
+-            let registered_agents = match state.registry.load() {
+-                Ok(snapshot) => snapshot.agents.len(),
++            let registry = state.registry.clone();
++            let registered_agents = match tokio::task::spawn_blocking(move || registry.load()).await {
++                Ok(Ok(snapshot)) => snapshot.agents.len(),
++                Ok(Err(error)) => {
++                    return safe_rejection(
++                        error.into(),
++                        /*actual*/ None,
++                        /*mutation_started*/ false,
++                    );
++                }
+                 Err(error) => {
+                     return safe_rejection(
+-                        error.into(),
++                        SupervisorError::Invalid(format!(
++                            "registry health worker failed: {error}"
++                        )),
+                         /*actual*/ None,
+                         /*mutation_started*/ false,
+                     );
+@@ -442,17 +448,24 @@ async fn handle_request<D: ProcessDriver>(
+                     /*actual*/ None,
+                 );
+             }
+-            let supervisor = state.supervisor.lock().await;
+-            let records = match state.registry.load() {
+-                Ok(snapshot) => snapshot.agents,
+-                Err(error) => {
++            let registry = state.registry.clone();
++            let records = match tokio::task::spawn_blocking(move || registry.load()).await {
++                Ok(Ok(snapshot)) => snapshot.agents,
++                Ok(Err(error)) => {
+                     return safe_rejection(
+                         error.into(),
+                         /*actual*/ None,
+                         /*mutation_started*/ false,
+                     );
+                 }
++                Err(error) => {
++                    return safe_rejection(
++                        SupervisorError::Invalid(format!(
++                            "registry roster worker failed: {error}"
++                        )),
++                        /*actual*/ None,
++                        /*mutation_started*/ false,
++                    );
++                }
+             };
+-            let agents = match records
++            let selected = records
+                 .into_iter()
+                 .take(usize::from(limit))
+-                .map(|(agent_id, record)| {
+-                    status_from(
+-                        &state.supervisor_epoch,
+-                        &record,
+-                        supervisor.snapshot(&agent_id),
+-                    )
++                .collect::<Vec<_>>();
++            let snapshots = {
++                let supervisor = state.supervisor.lock().await;
++                selected
++                    .iter()
++                    .map(|(agent_id, _)| supervisor.snapshot(agent_id))
++                    .collect::<Vec<_>>()
++            };
++            let agents = match selected
++                .into_iter()
++                .zip(snapshots)
++                .map(|((_, record), snapshot)| {
++                    status_from(&state.supervisor_epoch, &record, snapshot)
+                 })
+                 .collect::<Result<Vec<_>, _>>()
+             {
+@@ -964,8 +977,20 @@ async fn agent_status<D: ProcessDriver>(
+     state: &DaemonState<D>,
+     agent_id: &AgentId,
+ ) -> Result<SupervisordAgentStatus, SupervisorError> {
+-    let supervisor = state.supervisor.lock().await;
+-    agent_status_locked(state, &supervisor, agent_id)
++    let registry = state.registry.clone();
++    let requested = agent_id.clone();
++    let record = tokio::task::spawn_blocking(move || registry.load_agent(&requested))
++        .await
++        .map_err(|error| {
++            SupervisorError::Invalid(format!("registry snapshot worker failed: {error}"))
++        })??;
++    // Read-side snapshots are optimistic observations. A concurrent mutation
++    // may make this cut stale, but every mutation recomputes the complete
++    // control fence under the owner lock before acting.
++    let snapshot = {
++        let supervisor = state.supervisor.lock().await;
++        supervisor.snapshot(agent_id)
++    };
++    status_from(&state.supervisor_epoch, &record, snapshot)
+ }
+ 
+ #[cfg(unix)]
+diff --git a/docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md b/docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md
+--- a/docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md
++++ b/docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md
+@@ -134,7 +134,7 @@ Each receipt must include commit SHA, binary digest, target host identity, OS/ker
+ 
+ ## 5. 256-instance HOL/load qualification
+ 
+-The daemon retains one authoritative supervisor mutex and Fleet generation/CAS checks. Periodic work releases that mutex between Agents, executes one bounded queued blocking worker at a time, and samples a fresh monotonic clock for each Agent. Exact Agent lookups replace whole-Fleet load/clone calls in tick and snapshot paths. This removes fleet-sized critical sections without introducing a parallel owner.
++The daemon retains one authoritative Supervisor mutation owner and Fleet generation/CAS checks. Periodic work releases the owner lock between Agents, executes one bounded queued blocking worker at a time, and samples a fresh monotonic clock for each Agent. Ordinary `Health`, `Roster` and `Snapshot` registry reads plus release resolution execute on blocking workers outside the owner lock; the lock is reacquired only long enough to clone process snapshots. Signed mutation context and mutation preflight deliberately retain exact under-lock revalidation until a revisioned registry snapshot replaces that authority-critical read. See [the concurrency and host-qualification contract](CONCURRENCY_AND_HOST_QUALIFICATION.md).
+ 
+ The existing native health thread also owns typed Drain exchanges. Request queueing is not an acknowledgement. Native Unix connect/write/full-frame reads share one absolute deadline, so a peer trickling bytes cannot extend the exchange forever. Protocol errors are recorded separately from the local Drain/Stop deadlines. None of this makes an indefinitely stalled filesystem operation preemptible; disk latency and global ownership contention remain measured qualification constraints.
+@@ -153,6 +153,8 @@ Record tick duration, mutex hold duration if instrumented, control RPC p50/p95/p9
+ 
+ Further lock partitioning requires measured evidence and explicit cross-Agent ordering rules. Do not replace the owner or relax its generation/CAS checks to improve a latency number.
+ 
++The repository workflow runs exact source-head and prospective-merge lanes on Ubuntu and macOS. The source-head profiles use 256 Linux and 64 macOS process fixtures; both platforms execute crash waves, restart exhaustion, daemon adoption and faulty drain. Linux additionally uses the scoped syscall interposer for `ENOSPC` and parent-directory `fsync` EIO. `scripts/hepta-supervisor-receipt-gate.py` rejects missing/skipped cuts and enforces the initial snapshot/drain latency SLO. These are repository host receipts, not deployment qualification.
++
+ ## 6. Release-selection authority boundary
+@@ -176,10 +178,10 @@ This source change can close repository-controlled implementation gaps only after
+ 
+ - deployed executable qualification;
+ - target-host crash/fault-injection receipts, including proof of restart-journal durability under real SIGKILL/filesystem faults;
+-- 256-instance latency/HOL qualification;
++- deployment-profile latency/HOL qualification beyond the repository host SLO gate;
+ - independent operational acceptance;
+-- production caller/writer composition;
++- deployment and operational acceptance of the composed production caller, writer journals and external trust roots;
+ - activation, promotion or release.
+@@ -190,6 +192,8 @@ cargo build --locked -p codex-hepta-supervisor --features production-authority --
+ target/debug/examples/supervisor_host_qualification ABS_SUPERVISORD ABS_NEW_RECEIPT_JSON 256
+ ```
+ 
++The dedicated `Runtime supervisor qualification` workflow executes this harness on exact source and prospective-merge identities, retains `result.json`, `physical-host.json`, `physical-host-policy.json` and bounded logs, and requires every platform/lane result to succeed. The final packet for an external reviewer is prepared with `scripts/hepta-supervisor-acceptance-bundle.py`; see [the independent acceptance and release ceremony](../../../qualification/runtime-supervisor/INDEPENDENT_ACCEPTANCE.md).
++
+ Run from the Cargo workspace for the build, and from the repository for source identity capture. The example creates an isolated Fleet on the actual `/tmp` filesystem, uses small native OS processes implementing the Agentd control protocol, and retains before/after journals and daemon logs. Its backend is explicitly `native_agentd_protocol_fixture`, **not 256 real Agentd/App Server processes**. It records failures and unmeasured fault classes instead of treating an incomplete run as a pass. Temporary permission faults are restored by a scoped guard; only its own process groups are terminated.
+ 
+ Separate real-product acceptance sets `HEPTA_SUPERVISOR_QUAL_AGENTD` to the built `codex-hepta-agentd` binary before executing `tests/production_release_product.rs`. That test uses isolated configuration, disposable qualification signing keys and no submitted model turn. Neither test installs production trust roots, deploys a release nor establishes independent operational acceptance.
+diff --git a/docs/modules/runtime.supervisor/TECHNICAL.md b/docs/modules/runtime.supervisor/TECHNICAL.md
+--- a/docs/modules/runtime.supervisor/TECHNICAL.md
++++ b/docs/modules/runtime.supervisor/TECHNICAL.md
+@@ -342,7 +342,9 @@ For `runtime.supervisor`, this document grants no runtime, production, model, pro
+ 
+ ## 18. Supervisor convergence mechanics
+ 
+-[Recovery and qualification](RECOVERY_AND_QUALIFICATION.md) defines bounded startup/runtime failure handling, durable explicit-stop suppression, ambiguous signed recovery, native full-frame deadlines and per-Agent tick scheduling. [Production release caller](PRODUCTION_RELEASE_CALLER.md) defines the independent signer/caller/owner path and exact-grant historical lookup.
++[Recovery and qualification](RECOVERY_AND_QUALIFICATION.md) defines bounded startup/runtime failure handling, durable explicit-stop suppression, ambiguous signed recovery, native full-frame deadlines and per-Agent tick scheduling. [Concurrency and host qualification](CONCURRENCY_AND_HOST_QUALIFICATION.md) freezes the lock/I/O contract, optimistic read semantics, per-Agent executor migration target and cross-platform SLO gate. [Production release caller](PRODUCTION_RELEASE_CALLER.md) defines the independent signer/caller/owner path and exact-grant historical lookup. [Independent acceptance and release](../../../qualification/runtime-supervisor/INDEPENDENT_ACCEPTANCE.md) defines the external evidence packet, recovery drill and authority separation without self-asserting completion.
+ 
+ The current implementation adds no model, tool or secret-reading authority to Supervisor. Default builds still omit `production-authority`; read-only context/history calls are not execution permits. The source files, focused tests and host qualification executable must be checked on the same committed source and applicable deterministic merge. Historical passes, dirty-worktree runs and control-protocol fixtures are not interchangeable with deployed real-Agentd acceptance.
++
++Ordinary roster/snapshot registry I/O runs outside the Supervisor owner lock, and the process snapshot is cloned in a short critical section. Mutation and production-context paths still revalidate exact durable/control state under the owner lock. The full per-Agent executor/actor split is a separately measured migration target and is not claimed complete by this source candidate.

@@ -13,11 +13,17 @@ use tokio::time::Instant;
 use tokio::time::sleep;
 
 use crate::ControlStateDigest;
+use crate::DurableReleaseTransaction;
 use crate::H7H89ProductionGrant;
 use crate::H7H89ProductionTransition;
 use crate::ProductionMutationReceipt;
 use crate::ProductionMutationState;
 use crate::ProductionMutationStatus;
+use crate::ProductionRecoveryDecision;
+use crate::ProductionRecoveryOutcome;
+use crate::ReleaseTransactionKind;
+use crate::ReleaseTransactionPhase;
+use crate::SignResponse;
 use crate::SupervisorError;
 use crate::SupervisordClient;
 use crate::release_controller_store::JournalLock;
@@ -32,6 +38,7 @@ pub const PRODUCTION_RELEASE_REQUEST_SCHEMA_VERSION: u32 = 1;
 pub const PRODUCTION_RELEASE_JOURNAL_SCHEMA_VERSION: u32 = 1;
 pub const MAX_PRODUCTION_RELEASE_REQUEST_BYTES: u64 = 256 * 1024;
 pub const MAX_PRODUCTION_RELEASE_JOURNAL_BYTES: u64 = 256 * 1024;
+pub const MAX_PRODUCTION_RECOVERY_DECISION_BYTES: u64 = 256 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -133,6 +140,15 @@ pub struct ProductionReleaseJournalV1 {
     pub accepted_receipt: Option<ProductionMutationReceipt>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub production_state: Option<ProductionMutationState>,
+    /// Exact externally signed recovery decision selected for this operation.
+    /// Presence never means success; the owner transaction must bind the same
+    /// digest before the journal becomes terminal.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recovery_decision_sha256: Option<Sha256Digest>,
+    /// Durable caller-side effect boundary. Once true, this caller never sends
+    /// the same recovery decision again; it only observes owner evidence.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub recovery_resolution_submitted: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_error: Option<String>,
     pub journal_sha256: Sha256Digest,
@@ -151,6 +167,8 @@ impl ProductionReleaseJournalV1 {
             accepted_state_digest: None,
             accepted_receipt: None,
             production_state: None,
+            recovery_decision_sha256: None,
+            recovery_resolution_submitted: false,
             last_error: None,
             journal_sha256: Sha256Digest::for_bytes(b"pending"),
         }
@@ -179,6 +197,19 @@ impl ProductionReleaseJournalV1 {
         {
             return Err(ProductionReleaseControllerError::Conflict(
                 "existing caller journal belongs to different operation semantics".to_string(),
+            ));
+        }
+        if self.recovery_resolution_submitted != self.recovery_decision_sha256.is_some()
+            || (self.recovery_resolution_submitted
+                && matches!(
+                    self.status,
+                    ProductionReleaseCallerStatusV1::Prepared
+                        | ProductionReleaseCallerStatusV1::Accepted
+                        | ProductionReleaseCallerStatusV1::Aborted
+                ))
+        {
+            return Err(ProductionReleaseControllerError::Conflict(
+                "caller recovery audit fields are incoherent".to_string(),
             ));
         }
         if self
@@ -361,6 +392,135 @@ impl ProductionReleaseController {
         Ok(journal)
     }
 
+    /// Submit one independently signed recovery decision through the same
+    /// named durable caller. The caller persists its no-replay boundary before
+    /// sending and accepts success only from exact terminal owner evidence.
+    pub async fn resolve_recovery(
+        &self,
+        request: &ProductionReleaseRequestV1,
+        decision: &ProductionRecoveryDecision,
+    ) -> Result<ProductionReleaseJournalV1, ProductionReleaseControllerError> {
+        decision.validate_shape().map_err(|error| {
+            ProductionReleaseControllerError::Invalid(format!(
+                "production recovery decision is invalid: {error}"
+            ))
+        })?;
+        validate_recovery_request_binding(request, decision)?;
+
+        let _lock = JournalLock::acquire(&self.journal_path)?;
+        let request_sha256 = request.digest()?;
+        let mut journal = read_journal(&self.journal_path)?.ok_or_else(|| {
+            ProductionReleaseControllerError::Invalid(
+                "production recovery requires an existing release caller journal".to_string(),
+            )
+        })?;
+        journal.validate_request(request, &request_sha256)?;
+        if let Some(existing) = journal.recovery_decision_sha256.as_ref()
+            && existing != decision.digest()
+        {
+            return Err(ProductionReleaseControllerError::Conflict(
+                "caller journal already binds a different recovery decision".to_string(),
+            ));
+        }
+
+        let state = self
+            .client
+            .production_mutation_lookup(
+                request.agent_id.clone(),
+                request.grant.grant_sha256.clone(),
+            )
+            .await?
+            .ok_or_else(|| {
+                ProductionReleaseControllerError::Conflict(
+                    "supervisor has no durable mutation state for recovery".to_string(),
+                )
+            })?;
+        if terminal_recovery_status(state.receipt.status) {
+            return self
+                .finish_recovery_from_owner(request, decision, journal, state)
+                .await;
+        }
+        validate_pending_recovery(request, decision, &state)?;
+        journal.observe(request, state)?;
+
+        if journal.recovery_resolution_submitted {
+            journal.mark_indeterminate(
+                "recovery decision was already submitted; caller will not replay without terminal owner evidence",
+            );
+            write_journal(&self.journal_path, &mut journal)?;
+            return Ok(journal);
+        }
+
+        let context = self
+            .client
+            .production_mutation_context(request.agent_id.clone())
+            .await?;
+        validate_recovery_context(decision, &context)?;
+        journal.recovery_decision_sha256 = Some(decision.digest().clone());
+        journal.recovery_resolution_submitted = true;
+        journal.status = ProductionReleaseCallerStatusV1::RecoveryRequired;
+        journal.last_error = None;
+        write_journal(&self.journal_path, &mut journal)?;
+
+        match self
+            .client
+            .resolve_production_recovery(context.agent.control_fence, decision.clone())
+            .await
+        {
+            Ok(state) => {
+                self.finish_recovery_from_owner(request, decision, journal, state)
+                    .await
+            }
+            Err(error) => {
+                match self
+                    .client
+                    .production_mutation_lookup(
+                        request.agent_id.clone(),
+                        request.grant.grant_sha256.clone(),
+                    )
+                    .await
+                {
+                    Ok(Some(state)) if terminal_recovery_status(state.receipt.status) => {
+                        self.finish_recovery_from_owner(request, decision, journal, state)
+                            .await
+                    }
+                    _ => {
+                        journal.mark_indeterminate(format!(
+                            "recovery acknowledgement is indeterminate and replay is forbidden: {error}"
+                        ));
+                        write_journal(&self.journal_path, &mut journal)?;
+                        Ok(journal)
+                    }
+                }
+            }
+        }
+    }
+
+    async fn finish_recovery_from_owner(
+        &self,
+        request: &ProductionReleaseRequestV1,
+        decision: &ProductionRecoveryDecision,
+        mut journal: ProductionReleaseJournalV1,
+        state: ProductionMutationState,
+    ) -> Result<ProductionReleaseJournalV1, ProductionReleaseControllerError> {
+        let transaction = self
+            .client
+            .release_selection(request.agent_id.clone())
+            .await?
+            .ok_or_else(|| {
+                ProductionReleaseControllerError::Conflict(
+                    "terminal recovery has no durable release transaction".to_string(),
+                )
+            })?;
+        validate_terminal_recovery(request, decision, &state, &transaction)?;
+        journal.observe(request, state)?;
+        journal.recovery_decision_sha256 = Some(decision.digest().clone());
+        journal.recovery_resolution_submitted = true;
+        journal.last_error = None;
+        write_journal(&self.journal_path, &mut journal)?;
+        Ok(journal)
+    }
+
     async fn recover_locked(
         &self,
         request: &ProductionReleaseRequestV1,
@@ -368,6 +528,13 @@ impl ProductionReleaseController {
         wait_timeout: Duration,
     ) -> Result<ProductionReleaseJournalV1, ProductionReleaseControllerError> {
         if journal.status.terminal() {
+            return Ok(journal);
+        }
+        if journal.recovery_resolution_submitted {
+            journal.mark_indeterminate(
+                "a recovery decision was submitted; use resolve-recovery with the exact signed decision to validate terminal owner evidence",
+            );
+            write_journal(&self.journal_path, &mut journal)?;
             return Ok(journal);
         }
         if wait_timeout > Duration::from_secs(3_600) {
@@ -454,6 +621,26 @@ pub fn read_production_release_request(
     Ok(request)
 }
 
+/// Read the exact tagged output emitted by `hepta-authority-signer` for a
+/// production recovery operation. Other signer operations are rejected.
+pub fn read_production_recovery_decision(
+    path: &Path,
+) -> Result<ProductionRecoveryDecision, ProductionReleaseControllerError> {
+    let bytes = read_bounded_regular_file(path, MAX_PRODUCTION_RECOVERY_DECISION_BYTES)?;
+    let response: SignResponse = serde_json::from_slice(&bytes)?;
+    let SignResponse::ProductionRecovery { decision } = response else {
+        return Err(ProductionReleaseControllerError::Invalid(
+            "recovery decision file is not a production_recovery signer response".to_string(),
+        ));
+    };
+    decision.validate_shape().map_err(|error| {
+        ProductionReleaseControllerError::Invalid(format!(
+            "production recovery decision is invalid: {error}"
+        ))
+    })?;
+    Ok(decision)
+}
+
 fn validate_admission_snapshot(
     request: &ProductionReleaseRequestV1,
     snapshot: &crate::SupervisordAgentStatus,
@@ -487,6 +674,126 @@ fn validate_admission_snapshot(
     Ok(())
 }
 
+fn validate_recovery_request_binding(
+    request: &ProductionReleaseRequestV1,
+    decision: &ProductionRecoveryDecision,
+) -> Result<(), ProductionReleaseControllerError> {
+    let expected = recovery_expectation(request, decision)?;
+    if decision.agent_id != request.agent_id.as_str()
+        || decision.grant_sha256 != request.grant.grant_sha256
+        || decision.observed_release != expected.observed_release
+    {
+        return Err(ProductionReleaseControllerError::Conflict(
+            "recovery decision does not bind the original release operation".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn validate_pending_recovery(
+    request: &ProductionReleaseRequestV1,
+    decision: &ProductionRecoveryDecision,
+    state: &ProductionMutationState,
+) -> Result<(), ProductionReleaseControllerError> {
+    if state.receipt.status != ProductionMutationStatus::RecoveryRequired
+        || !receipt_matches(request, &state.receipt)
+        || state.intent_sha256 != decision.intent_sha256
+        || state.release_transaction_sha256.as_ref()
+            != Some(&decision.release_transaction_sha256)
+    {
+        return Err(ProductionReleaseControllerError::Conflict(
+            "recovery decision does not bind the current quarantined owner state".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn validate_recovery_context(
+    decision: &ProductionRecoveryDecision,
+    context: &crate::ProductionMutationContext,
+) -> Result<(), ProductionReleaseControllerError> {
+    if context.agent.agent_id.as_str() != decision.agent_id
+        || context.agent.lifecycle_generation != decision.expected_lifecycle_generation
+        || context.authority_epoch != decision.authority_epoch
+        || context
+            .agent
+            .current_release
+            .as_ref()
+            .map(ToString::to_string)
+            .as_deref()
+            != Some(decision.observed_release.as_str())
+    {
+        return Err(ProductionReleaseControllerError::Conflict(
+            "current daemon/lifecycle/release context differs from the signed recovery decision"
+                .to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn validate_terminal_recovery(
+    request: &ProductionReleaseRequestV1,
+    decision: &ProductionRecoveryDecision,
+    state: &ProductionMutationState,
+    transaction: &DurableReleaseTransaction,
+) -> Result<(), ProductionReleaseControllerError> {
+    let expected = recovery_expectation(request, decision)?;
+    let expected_kind = match request.grant.transition {
+        H7H89ProductionTransition::Upgrade => ReleaseTransactionKind::Upgrade,
+        H7H89ProductionTransition::Rollback => ReleaseTransactionKind::ExplicitRollback,
+    };
+    if !receipt_matches(request, &state.receipt)
+        || state.receipt.status != expected.status
+        || state.intent_sha256 != decision.intent_sha256
+        || state.release_transaction_sha256.as_ref() != Some(&transaction.transaction_sha256)
+        || transaction.kind != expected_kind
+        || transaction.phase != expected.phase
+        || transaction.agent_id != request.agent_id.as_str()
+        || transaction.source_release != request.grant.source_release
+        || transaction.target_release != request.grant.target_release
+        || transaction.grant_sha256.as_ref() != Some(&request.grant.grant_sha256)
+        || transaction.authority_epoch != Some(request.grant.authority_epoch)
+        || transaction.recovery_decision_sha256.as_ref() != Some(decision.digest())
+    {
+        return Err(ProductionReleaseControllerError::Conflict(
+            "terminal owner state does not bind the signed recovery decision".to_string(),
+        ));
+    }
+    let pending = transaction
+        .with_phase(ReleaseTransactionPhase::RecoveryRequired)
+        .map_err(|error| ProductionReleaseControllerError::Conflict(error.to_string()))?;
+    if pending.transaction_sha256 != decision.release_transaction_sha256 {
+        return Err(ProductionReleaseControllerError::Conflict(
+            "terminal transaction cannot reconstruct the signed recovery predecessor".to_string(),
+        ));
+    }
+    let binding = if expected.use_target_binding {
+        transaction.target_binding.as_ref()
+    } else {
+        transaction.source_binding.as_ref()
+    }
+    .ok_or_else(|| {
+        ProductionReleaseControllerError::Conflict(
+            "terminal recovery transaction has no immutable observed release binding".to_string(),
+        )
+    })?;
+    if binding.release_id != decision.observed_release
+        || binding.manifest_sha256 != decision.observed_manifest_sha256.as_str()
+        || binding.agentd_program_sha256 != decision.observed_agentd_sha256.as_str()
+        || binding.matrixd_program_sha256.as_deref()
+            != decision
+                .observed_matrixd_sha256
+                .as_ref()
+                .map(Sha256Digest::as_str)
+    {
+        return Err(ProductionReleaseControllerError::Conflict(
+            "terminal recovery transaction does not bind the observed immutable release bytes"
+                .to_string(),
+        ));
+    }
+    Ok(())
+}
+
 fn receipt_matches(
     request: &ProductionReleaseRequestV1,
     receipt: &ProductionMutationReceipt,
@@ -499,6 +806,57 @@ fn receipt_matches(
         && request.grant.expected_control_revision.checked_add(1) == Some(receipt.control_revision)
 }
 
+fn terminal_recovery_status(status: ProductionMutationStatus) -> bool {
+    matches!(
+        status,
+        ProductionMutationStatus::Committed | ProductionMutationStatus::RolledBack
+    )
+}
+
+struct RecoveryExpectation<'a> {
+    status: ProductionMutationStatus,
+    phase: ReleaseTransactionPhase,
+    observed_release: &'a str,
+    use_target_binding: bool,
+}
+
+fn recovery_expectation<'a>(
+    request: &'a ProductionReleaseRequestV1,
+    decision: &ProductionRecoveryDecision,
+) -> Result<RecoveryExpectation<'a>, ProductionReleaseControllerError> {
+    match (request.grant.transition, decision.outcome) {
+        (H7H89ProductionTransition::Upgrade, ProductionRecoveryOutcome::Committed) => {
+            Ok(RecoveryExpectation {
+                status: ProductionMutationStatus::Committed,
+                phase: ReleaseTransactionPhase::Committed,
+                observed_release: request.grant.target_release.as_str(),
+                use_target_binding: true,
+            })
+        }
+        (H7H89ProductionTransition::Upgrade, ProductionRecoveryOutcome::RolledBack) => {
+            Ok(RecoveryExpectation {
+                status: ProductionMutationStatus::RolledBack,
+                phase: ReleaseTransactionPhase::RolledBack,
+                observed_release: request.grant.source_release.as_str(),
+                use_target_binding: false,
+            })
+        }
+        (H7H89ProductionTransition::Rollback, ProductionRecoveryOutcome::RolledBack) => {
+            Ok(RecoveryExpectation {
+                status: ProductionMutationStatus::RolledBack,
+                phase: ReleaseTransactionPhase::RolledBack,
+                observed_release: request.grant.target_release.as_str(),
+                use_target_binding: true,
+            })
+        }
+        (H7H89ProductionTransition::Rollback, ProductionRecoveryOutcome::Committed) => {
+            Err(ProductionReleaseControllerError::Invalid(
+                "a rollback transition cannot recover as a committed upgrade".to_string(),
+            ))
+        }
+    }
+}
+
 fn caller_status(status: ProductionMutationStatus) -> ProductionReleaseCallerStatusV1 {
     match status {
         ProductionMutationStatus::Queued => ProductionReleaseCallerStatusV1::Accepted,
@@ -509,6 +867,10 @@ fn caller_status(status: ProductionMutationStatus) -> ProductionReleaseCallerSta
         }
         ProductionMutationStatus::Aborted => ProductionReleaseCallerStatusV1::Aborted,
     }
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 #[cfg(test)]

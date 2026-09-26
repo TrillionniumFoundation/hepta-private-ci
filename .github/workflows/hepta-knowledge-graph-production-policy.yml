@@ -1,0 +1,99 @@
+name: Hepta knowledge.graph production policy
+
+on:
+  pull_request:
+    paths:
+      - "qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json"
+      - "qualification/knowledge-graph/ACCEPTANCE_STATE.json"
+      - "qualification/knowledge-graph/TARGET_HOST.md"
+      - "scripts/hepta-knowledge-graph-production-gate.py"
+      - ".github/workflows/hepta-knowledge-graph-production-policy.yml"
+      - ".github/workflows/hepta-knowledge-graph-target-host.yml"
+  push:
+    branches: [main]
+    paths:
+      - "qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json"
+      - "qualification/knowledge-graph/ACCEPTANCE_STATE.json"
+      - "qualification/knowledge-graph/TARGET_HOST.md"
+      - "scripts/hepta-knowledge-graph-production-gate.py"
+      - ".github/workflows/hepta-knowledge-graph-production-policy.yml"
+      - ".github/workflows/hepta-knowledge-graph-target-host.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-knowledge-graph-production-policy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  verify:
+    name: production policy (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta KG Policy CI
+          author-email: hepta-kg-policy-ci@users.noreply.github.com
+          message: Synthetic merge
+
+      - name: Bind tested candidate
+        shell: bash
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify fail-closed policy and inactive acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/hepta-knowledge-graph-production-gate.py
+          python3 scripts/hepta-knowledge-graph-production-gate.py --self-test
+          python3 scripts/hepta-knowledge-graph-production-gate.py verify-state \
+            --policy qualification/knowledge-graph/PRODUCTION_QUALIFICATION.json \
+            --state qualification/knowledge-graph/ACCEPTANCE_STATE.json \
+            --require-inactive
+
+      - name: Preserve exact source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

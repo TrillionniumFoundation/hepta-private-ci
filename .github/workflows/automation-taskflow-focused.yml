@@ -37,6 +37,12 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: automation-taskflow-focused-${{ github.event.pull_request.number || github.ref }}
+  # A superseded PR/work-branch head cannot contribute current qualification.
+  # Mainline evidence is retained to completion.
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
+
 jobs:
   focused:
     runs-on: ubuntu-24.04

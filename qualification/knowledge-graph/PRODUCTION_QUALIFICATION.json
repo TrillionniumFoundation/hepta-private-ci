@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.knowledge-graph-production-qualification-policy.v1",
+  "profileId": "rog-linux-x64-kg-v1",
+  "targetHost": {
+    "runnerName": "rog",
+    "requiredLabels": [
+      "self-hosted",
+      "linux",
+      "x64",
+      "rog"
+    ],
+    "runnerOs": "Linux",
+    "runnerArch": "X64",
+    "exclusiveRunRequired": true,
+    "sharedGithubHostedRunnerForbidden": true,
+    "sourceRef": "refs/heads/main"
+  },
+  "workload": {
+    "writes": 256,
+    "querySamples": 100,
+    "reopenSamples": 20,
+    "contentionReaders": 8,
+    "contentionRounds": 20,
+    "logicalNodes": 4096,
+    "logicalEdges": 32768
+  },
+  "budgets": {
+    "mutationP95Ns": 2000000000,
+    "mutationP99Ns": 4000000000,
+    "queryP95Ns": 100000000,
+    "queryP99Ns": 250000000,
+    "reopenP95Ns": 2000000000,
+    "reopenP99Ns": 4000000000,
+    "peakRssKiB": 6291456,
+    "databaseAndWalBytes": 1073741824,
+    "databaseGrowthPerMutationBytes": 4194304,
+    "contentionWriterP95Ns": 2500000000,
+    "contentionWriterP99Ns": 5000000000,
+    "contentionReaderP95Ns": 250000000,
+    "contentionReaderP99Ns": 500000000
+  },
+  "writer": {
+    "selectedRuntimeWriter": "incremental-delta-with-complete-cut-and-periodic-oracle",
+    "fullRebuildOracleInterval": 64,
+    "remainingScaleBoundary": "complete physical source-cut assembly and reopen digest scan"
+  },
+  "retention": {
+    "targetHostArtifactsDays": 90,
+    "targetHostImmutableArchiveDays": 365,
+    "releaseEvidenceDays": 2555,
+    "hotGenerationReceiptsDays": 90,
+    "rawLogsRequired": true,
+    "structuredJsonRequired": true,
+    "sha256ManifestRequired": true
+  },
+  "checkpoint": {
+    "onlineWalCheckpointGenerationInterval": 64,
+    "onlineWalCheckpointBytes": 67108864,
+    "mode": "PASSIVE",
+    "maintenanceMode": "TRUNCATE",
+    "maintenanceRequiresExclusiveOwnerFence": true
+  },
+  "archive": {
+    "generationInterval": 1024,
+    "maximumWallClockHours": 24,
+    "format": "content-addressed-immutable-bundle-v1",
+    "requiredObjects": [
+      "generation receipts",
+      "publication receipts",
+      "source frontier",
+      "benchmark admission receipt"
+    ],
+    "digest": "sha256",
+    "appendOnly": true
+  },
+  "externalGates": {
+    "independentSemanticReviewRequired": true,
+    "operatorAcceptanceRequired": true,
+    "canaryRequired": true,
+    "rollbackRehearsalRequired": true,
+    "activationRequiresAll": true,
+    "releaseRequiresActivation": true
+  },
+  "budgetRationale": "Initial admission ceilings are deliberately looser than the incomplete shared-runner observation and are not universal SLOs. A failed target-host run blocks admission; changing a ceiling requires a separately reviewed policy commit and a fresh exact-SHA receipt."
+}

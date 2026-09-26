@@ -1,0 +1,103 @@
+name: Runtime supervisor read-lock remediation
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/remediation/runtime-supervisor-read-lock.patch
+      - .github/workflows/runtime-supervisor-read-lock-remediation.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-read-lock-remediation
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  REMEDIATION_BRANCH: work/product-convergence-20260923
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out staged remediation
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebase the staged remediation onto the latest shared branch head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$REMEDIATION_BRANCH"
+          git fetch origin "$REMEDIATION_BRANCH"
+          git merge-base --is-ancestor "$GITHUB_SHA" "origin/$REMEDIATION_BRANCH"
+          git checkout -B runtime-supervisor-remediation "origin/$REMEDIATION_BRANCH"
+
+      - name: Verify immutable patch prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/remediation/runtime-supervisor-read-lock.patch
+          test "$(git hash-object .github/remediation/runtime-supervisor-read-lock.patch)" = ea0c917fe4b805f97f5f3de04a7e331ad2ccc387
+          test "$(git hash-object codex-rs/hepta-supervisor/src/daemon.rs)" = adfa4dd445c8bc0fb0bd3b20863420cfc55b6b18
+          test "$(git hash-object docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md)" = fe363dfdbd13461b55768525426e5dc6e8c0e508
+          test "$(git hash-object docs/modules/runtime.supervisor/TECHNICAL.md)" = 621afc89e6bcba2b568de33559221b92fb0ae893
+          git diff --check
+
+      - name: Apply read-side lock and documentation patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --check --whitespace=error-all .github/remediation/runtime-supervisor-read-lock.patch
+          git apply --whitespace=error-all .github/remediation/runtime-supervisor-read-lock.patch
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor
+          python3 -m py_compile \
+            scripts/hepta-supervisor-acceptance-bundle.py \
+            scripts/hepta-supervisor-receipt-gate.py \
+            scripts/hepta-supervisor-validation.py \
+            scripts/tests/test_hepta_supervisor_acceptance_bundle.py \
+            scripts/tests/test_hepta_supervisor_lock_boundaries.py \
+            scripts/tests/test_hepta_supervisor_receipt_gate.py
+          python3 -m unittest -v \
+            scripts.tests.test_hepta_supervisor_receipt_gate \
+            scripts.tests.test_hepta_supervisor_lock_boundaries
+          git diff --check
+          unexpected="$(git diff --name-only | grep -Ev '^(codex-rs/hepta-supervisor/src/daemon.rs|docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md|docs/modules/runtime.supervisor/TECHNICAL.md)$' || true)"
+          test -z "$unexpected" || { printf 'unexpected formatted files:\n%s\n' "$unexpected" >&2; exit 1; }
+
+      - name: Commit the bounded source remediation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            codex-rs/hepta-supervisor/src/daemon.rs \
+            docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md \
+            docs/modules/runtime.supervisor/TECHNICAL.md
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m "runtime.supervisor: move read registry I/O outside owner lock"
+
+      - name: Publish without overwriting concurrent work
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:refs/heads/$REMEDIATION_BRANCH"; then
+              exit 0
+            fi
+            test "$attempt" -lt 3
+            git fetch origin "$REMEDIATION_BRANCH"
+            git rebase "origin/$REMEDIATION_BRANCH"
+            python3 -m unittest -v \
+              scripts.tests.test_hepta_supervisor_receipt_gate \
+              scripts.tests.test_hepta_supervisor_lock_boundaries
+            git diff --check
+          done
+          exit 1

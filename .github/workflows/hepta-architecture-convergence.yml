@@ -4,6 +4,9 @@ on:
   # Always report a terminal identity check; select expensive boundaries below.
   # Workflow-level path skipping can leave a required check permanently pending.
   pull_request:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:

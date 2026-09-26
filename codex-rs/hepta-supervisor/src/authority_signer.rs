@@ -1,7 +1,7 @@
-//! Offline signing boundary for externally controlled H7 authority material.
+//! Offline signing boundary for externally controlled H7 and recovery authority material.
 //!
 //! This module deliberately has no connection to the supervisor daemon and
-//! never generates keys.  Callers must provide a signing key through an
+//! never generates keys. Callers must provide a signing key through an
 //! explicit, owner-controlled file descriptor or an owner-only regular file.
 //! The request format is tagged JSON so an external ceremony can review the
 //! exact inputs before invoking the signer binary.
@@ -14,6 +14,8 @@ use std::path::Path;
 use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantSigner;
 use crate::signed_authority::H7H89ProductionTransition;
+use crate::signed_authority::ProductionRecoveryDecision;
+use crate::signed_authority::ProductionRecoveryOutcome;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7Artifact;
@@ -27,7 +29,7 @@ use serde::Serialize;
 use thiserror::Error;
 use zeroize::Zeroize;
 
-/// Maximum bytes accepted from a key file/FD.  This prevents accidentally
+/// Maximum bytes accepted from a key file/FD. This prevents accidentally
 /// consuming an unbounded stream while still allowing a textual 64-byte hex
 /// seed and a trailing newline.
 pub const MAX_SIGNING_KEY_INPUT_BYTES: usize = 4096;
@@ -66,15 +68,34 @@ pub enum SignRequest {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     },
+    ProductionRecovery {
+        signer_id: String,
+        signer_epoch: u64,
+        agent_id: String,
+        grant_sha256: Sha256Digest,
+        intent_sha256: Sha256Digest,
+        release_transaction_sha256: Sha256Digest,
+        observed_release: String,
+        observed_manifest_sha256: Sha256Digest,
+        observed_agentd_sha256: Sha256Digest,
+        #[serde(default)]
+        observed_matrixd_sha256: Option<Sha256Digest>,
+        outcome: ProductionRecoveryOutcome,
+        expected_lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
 }
 
-/// Typed output from [`sign_request`].  The caller may serialize the selected
+/// Typed output from [`sign_request`]. The caller may serialize the selected
 /// envelope directly; the enum keeps the operation boundary explicit.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignResponse {
     H7Envelope { envelope: H7SignedArtifactEnvelope },
     ProductionGrant { grant: H7H89ProductionGrant },
+    ProductionRecovery { decision: ProductionRecoveryDecision },
 }
 
 #[derive(Debug, Error)]
@@ -95,6 +116,8 @@ pub enum ExternalSignerError {
     H7(String),
     #[error("production grant signing failed: {0}")]
     Grant(String),
+    #[error("production recovery signing failed: {0}")]
+    Recovery(String),
 }
 
 /// Read an external Ed25519 seed from an owner-only, non-symlink regular file.
@@ -125,9 +148,9 @@ pub fn load_signing_key_from_path(path: &Path) -> Result<SigningKey, ExternalSig
     read_signing_key(&mut file)
 }
 
-/// Read an external Ed25519 seed from an already-open file descriptor.  The
+/// Read an external Ed25519 seed from an already-open file descriptor. The
 /// descriptor is duplicated on Unix so this function never closes the
-/// caller's descriptor.  No key material is generated or persisted.
+/// caller's descriptor. No key material is generated or persisted.
 #[cfg(unix)]
 pub fn load_signing_key_from_fd(fd: i32) -> Result<SigningKey, ExternalSignerError> {
     use std::os::fd::FromRawFd;
@@ -264,6 +287,50 @@ pub fn sign_request(
                 )
                 .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
             Ok(SignResponse::ProductionGrant { grant })
+        }
+        SignRequest::ProductionRecovery {
+            signer_id,
+            signer_epoch,
+            agent_id,
+            grant_sha256,
+            intent_sha256,
+            release_transaction_sha256,
+            observed_release,
+            observed_manifest_sha256,
+            observed_agentd_sha256,
+            observed_matrixd_sha256,
+            outcome,
+            expected_lifecycle_generation,
+            authority_epoch,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        } => {
+            let agent = AgentId::parse(agent_id.clone())
+                .map_err(|error| ExternalSignerError::Recovery(error.to_string()))?;
+            let signer = H7H89ProductionGrantSigner::new(
+                signer_id.clone(),
+                *signer_epoch,
+                signing_key.clone(),
+            )
+            .map_err(|error| ExternalSignerError::Recovery(error.to_string()))?;
+            let decision = signer
+                .sign_recovery(
+                    &agent,
+                    grant_sha256.clone(),
+                    intent_sha256.clone(),
+                    release_transaction_sha256.clone(),
+                    observed_release.clone(),
+                    observed_manifest_sha256.clone(),
+                    observed_agentd_sha256.clone(),
+                    observed_matrixd_sha256.clone(),
+                    *outcome,
+                    *expected_lifecycle_generation,
+                    *authority_epoch,
+                    *issued_at_unix_seconds,
+                    *expires_at_unix_seconds,
+                )
+                .map_err(|error| ExternalSignerError::Recovery(error.to_string()))?;
+            Ok(SignResponse::ProductionRecovery { decision })
         }
     }
 }
@@ -473,6 +540,83 @@ mod tests {
                 150,
             )
             .expect("verify grant");
+    }
+
+    #[test]
+    fn request_boundary_signs_and_verifies_production_recovery() {
+        let key = SigningKey::from_bytes(&[11; 32]);
+        let agent = AgentId::parse("00000000-0000-4000-8000-000000000002")
+            .expect("agent");
+        let grant_sha256 = digest(2);
+        let intent_sha256 = digest(3);
+        let release_transaction_sha256 = digest(4);
+        let observed_manifest_sha256 = digest(5);
+        let observed_agentd_sha256 = digest(6);
+        let observed_matrixd_sha256 = digest(7);
+        let request = SignRequest::ProductionRecovery {
+            signer_id: "external-recovery".to_string(),
+            signer_epoch: 11,
+            agent_id: agent.to_string(),
+            grant_sha256: grant_sha256.clone(),
+            intent_sha256: intent_sha256.clone(),
+            release_transaction_sha256: release_transaction_sha256.clone(),
+            observed_release: "release-b".to_string(),
+            observed_manifest_sha256: observed_manifest_sha256.clone(),
+            observed_agentd_sha256: observed_agentd_sha256.clone(),
+            observed_matrixd_sha256: Some(observed_matrixd_sha256.clone()),
+            outcome: ProductionRecoveryOutcome::Committed,
+            expected_lifecycle_generation: 12,
+            authority_epoch: 13,
+            issued_at_unix_seconds: 100,
+            expires_at_unix_seconds: 200,
+        };
+        let response = sign_request(&request, &key).expect("sign recovery request");
+        let SignResponse::ProductionRecovery { decision } = response else {
+            panic!("wrong response");
+        };
+        let verifier = H7H89ProductionGrantVerifier::new(
+            "external-recovery",
+            11,
+            key.verifying_key(),
+        )
+        .expect("recovery verifier");
+        verifier
+            .verify_recovery(
+                &decision,
+                &agent,
+                &grant_sha256,
+                &intent_sha256,
+                &release_transaction_sha256,
+                "release-b",
+                &observed_manifest_sha256,
+                &observed_agentd_sha256,
+                Some(&observed_matrixd_sha256),
+                12,
+                13,
+                150,
+            )
+            .expect("verify recovery decision");
+
+        let mut tampered = decision;
+        tampered.authority_epoch = 14;
+        assert!(
+            verifier
+                .verify_recovery(
+                    &tampered,
+                    &agent,
+                    &grant_sha256,
+                    &intent_sha256,
+                    &release_transaction_sha256,
+                    "release-b",
+                    &observed_manifest_sha256,
+                    &observed_agentd_sha256,
+                    Some(&observed_matrixd_sha256),
+                    12,
+                    13,
+                    150,
+                )
+                .is_err()
+        );
     }
 
     #[test]
