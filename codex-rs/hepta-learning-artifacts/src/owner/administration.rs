@@ -74,7 +74,7 @@ impl LearningArtifactReferenceHostV1 {
                 return Err(error.into());
             }
         };
-        if let Err(error = persist_policy_anchor(
+        if let Err(error) = persist_policy_anchor(
             &self.control_root,
             &next,
             &self.durability,
