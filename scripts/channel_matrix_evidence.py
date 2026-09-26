@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only exact-candidate and artifact binding for channel.matrix.
-
-This records source/command provenance, not Matrix delivery, deployment or
-independent acceptance. In particular, a focused Cargo/nextest run cannot
-stand in for an authenticated Synapse qualification run.
-"""
+"""Read-only exact-candidate and command provenance, never deployment authority."""
 from __future__ import annotations
 
 import argparse
@@ -13,34 +8,39 @@ import json
 import os
 import re
 import subprocess
+import time
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (
-    "codex-rs/hepta-matrix-protocol",
-    "codex-rs/hepta-matrix-store",
-    "codex-rs/hepta-matrix-sdk",
-    "codex-rs/hepta-matrixd",
-    "docs/modules/channel.matrix",
-    "scripts/verify_channel_matrix_candidate.py",
-    "scripts/channel_matrix_evidence.py",
-    "scripts/tests/test_channel_matrix_evidence.py",
+    "codex-rs/hepta-matrix-protocol", "codex-rs/hepta-matrix-store",
+    "codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd",
+    "docs/modules/channel.matrix", "scripts/verify_channel_matrix_candidate.py",
+    "scripts/channel_matrix_evidence.py", "scripts/tests/test_channel_matrix_evidence.py",
     ".github/workflows/channel-matrix-preserve-unknown.yml",
-    "codex-rs/Cargo.lock",
-    "MODULE.bazel.lock",
+    "codex-rs/Cargo.lock", "MODULE.bazel.lock",
 )
+PACKAGES = ("codex-hepta-matrix-protocol", "codex-hepta-matrix-store",
+            "codex-hepta-matrix-sdk", "codex-hepta-matrixd")
+PACKAGE_ARGS = [item for package in PACKAGES for item in ("-p", package)]
+COMMANDS = {
+    "focused-tests": ["just", "test", "--locked", *PACKAGE_ARGS],
+    "clippy": ["cargo", "clippy", "--manifest-path", "codex-rs/Cargo.toml",
+               "--locked", *PACKAGE_ARGS, "--all-targets", "--", "-D", "warnings"],
+    "format": ["cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml",
+               *[item for package in PACKAGES for item in ("--package", package)], "--", "--check"],
+}
+MAX_LOG_BYTES = 64 * 1024 * 1024
 
 
 def git(root: Path, *args: str) -> bytes:
-    return subprocess.run(
-        ["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE, timeout=60,
-    ).stdout
+    return subprocess.run(["git", *args], cwd=root, check=True, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE, timeout=60).stdout
 
 
 def exact_commit(root: Path, value: str) -> str:
-    if not re.fullmatch(r"[0-9a-f]{40}", value):
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{40}", value):
         raise ValueError("an exact 40-character commit SHA is required")
     if git(root, "rev-parse", f"{value}^{{commit}}").decode().strip() != value:
         raise ValueError("commit identity changed during resolution")
@@ -48,17 +48,13 @@ def exact_commit(root: Path, value: str) -> str:
 
 
 def clean(root: Path) -> None:
-    # Tests must not mutate even an unrelated tracked contract/lockfile.
     git(root, "diff", "--exit-code", "HEAD", "--")
     git(root, "diff", "--cached", "--exit-code", "--")
-    untracked = git(root, "ls-files", "--others", "-z", "--", *SOURCE_ROOTS)
-    if untracked:
+    if git(root, "ls-files", "--others", "-z", "--", *SOURCE_ROOTS):
         raise ValueError("untracked (including ignored) Matrix source/evidence inputs exist")
 
 
-def snapshot(
-    root: Path, expected: str, source: str, base: str, lane: str,
-) -> dict[str, Any]:
+def snapshot(root: Path, expected: str, source: str, base: str, lane: str) -> dict[str, Any]:
     root = root.resolve(strict=True)
     for value in (expected, source, base):
         exact_commit(root, value)
@@ -78,9 +74,8 @@ def snapshot(
     else:
         raise ValueError("unsupported candidate lane")
     clean(root)
-    paths = git(root, "ls-files", "-z", "--", *SOURCE_ROOTS).split(b"\0")
     files: list[dict[str, Any]] = []
-    for raw in paths:
+    for raw in git(root, "ls-files", "-z", "--", *SOURCE_ROOTS).split(b"\0"):
         if not raw:
             continue
         relative = raw.decode("utf-8")
@@ -88,25 +83,99 @@ def snapshot(
         if path.is_symlink() or not path.is_file():
             raise ValueError(f"non-regular source file: {relative}")
         data = path.read_bytes()
-        committed = git(root, "show", f"{head}:{relative}")
-        if data != committed:
+        if data != git(root, "show", f"{head}:{relative}"):
             raise ValueError(f"working bytes differ from committed bytes: {relative}")
-        files.append({
-            "path": relative,
-            "gitBlob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
-            "sha256": hashlib.sha256(data).hexdigest(),
-            "bytes": len(data),
-        })
+        files.append({"path": relative,
+                      "gitBlob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
+                      "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)})
     if not files:
         raise ValueError("candidate has no Matrix inputs")
-    return {
-        "schema": "hepta.channel-matrix-source-snapshot.v1",
-        "lane": lane, "sourceSha": source, "baseSha": base, "testedSha": head,
-        "testedTree": git(root, "rev-parse", "HEAD^{tree}").decode().strip(),
-        "files": files,
-        "claims": {"sourceBytesBound": True, "testsPassed": False,
-                   "homeserverQualified": False, "authorityGranted": False},
-    }
+    return {"schema": "hepta.channel-matrix-source-snapshot.v1", "lane": lane,
+            "sourceSha": source, "baseSha": base, "testedSha": head,
+            "testedTree": git(root, "rev-parse", "HEAD^{tree}").decode().strip(), "files": files,
+            "claims": {"sourceBytesBound": True, "testsPassed": False,
+                       "homeserverQualified": False, "authorityGranted": False}}
+
+
+def file_digest(path: Path) -> str:
+    if path.is_symlink() or not path.is_file():
+        raise ValueError(f"non-regular evidence: {path.name}")
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def read_object(path: Path) -> dict[str, Any]:
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"duplicate evidence key: {key}")
+            result[key] = value
+        return result
+
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 16 * 1024 * 1024:
+        raise ValueError(f"invalid evidence object: {path.name}")
+    result = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique)
+    if not isinstance(result, dict):
+        raise ValueError(f"evidence must be an object: {path.name}")
+    return result
+
+
+def run_command(root: Path, directory: Path, label: str) -> int:
+    """Execute a fixed owner command; preserve failures without inferring test coverage.
+
+    The enclosing workflow owns the wall-time/process limit. An interrupted run
+    has no completed command receipt and cannot produce a successful manifest.
+    """
+    if label not in COMMANDS:
+        raise ValueError("unknown owner command")
+    root = root.resolve(strict=True)
+    directory = directory.resolve(strict=True)
+    if directory.is_relative_to(root):
+        raise ValueError("receipts must be outside the candidate checkout")
+    source_path = directory / "source.json"
+    source = read_object(source_path)
+    identity = (source["testedSha"], source["sourceSha"], source["baseSha"], source["lane"])
+    if source != snapshot(root, *identity):
+        raise ValueError("source receipt does not match the command checkout")
+    source_digest = file_digest(source_path)
+    log = directory / f"{label}.log"
+    receipt = directory / f"{label}.command.json"
+    if receipt.exists() or receipt.is_symlink():
+        raise ValueError("command receipt already exists")
+    started = time.monotonic_ns()
+    code = None
+    launch_error = None
+    with log.open("xb") as stream:
+        try:
+            code = subprocess.run(COMMANDS[label], cwd=root, stdout=stream,
+                                  stderr=subprocess.STDOUT, check=False).returncode
+        except OSError as exc:
+            launch_error = type(exc).__name__
+        stream.flush()
+        os.fsync(stream.fileno())
+    unchanged = False
+    try:
+        unchanged = (snapshot(root, *identity) == source
+                     and file_digest(source_path) == source_digest)
+    except (OSError, ValueError, subprocess.SubprocessError):
+        pass
+    bounded = log.stat().st_size <= MAX_LOG_BYTES
+    value = {"schema": "hepta.channel-matrix-command.v1", "label": label,
+             "arguments": COMMANDS[label], "testedSha": source["testedSha"],
+             "sourceSnapshotSha256": source_digest, "exitCode": code,
+             "completed": code is not None, "launchError": launch_error,
+             "durationNs": time.monotonic_ns() - started, "sourceUnchanged": unchanged,
+             "log": {"path": log.name, "bytes": log.stat().st_size,
+                     "sha256": file_digest(log), "withinBudget": bounded}}
+    with receipt.open("x", encoding="utf-8") as stream:
+        json.dump(value, stream, indent=2, sort_keys=True)
+        stream.write("\n")
+    print(f"{label}: exit={code}, sourceUnchanged={unchanged}, log={log.name}", flush=True)
+    return 0 if code == 0 and unchanged and bounded else 1
 
 
 def manifest(directory: Path, status: str) -> dict[str, Any]:
@@ -115,32 +184,52 @@ def manifest(directory: Path, status: str) -> dict[str, Any]:
     directory = directory.resolve(strict=True)
     files = []
     for path in sorted(directory.rglob("*")):
-        if path.name == "manifest.json":
+        if path == directory / "manifest.json":
             continue
         if path.is_symlink():
             raise ValueError("evidence contains a symlink")
-        if not path.is_file():
-            continue
-        payload = path.read_bytes()
-        files.append({"path": path.relative_to(directory).as_posix(), "bytes": len(payload),
-                      "sha256": hashlib.sha256(payload).hexdigest()})
+        if path.is_file():
+            files.append({"path": path.relative_to(directory).as_posix(),
+                          "bytes": path.stat().st_size, "sha256": file_digest(path)})
     if status == "success":
-        required = {"source.json", "source-after.json", "candidate.json", "focused-tests.log", "clippy.log"}
-        if not required.issubset({item["path"] for item in files if item["bytes"]}):
-            raise ValueError("successful job is missing source/test/lint evidence")
-        if (directory / "source.json").read_bytes() != (directory / "source-after.json").read_bytes():
+        source = read_object(directory / "source.json")
+        candidate = read_object(directory / "candidate.json")
+        if (source.get("schema") != "hepta.channel-matrix-source-snapshot.v1"
+                or candidate.get("schema") != "hepta.channel-matrix-candidate-receipt.v1"
+                or candidate.get("status") != "PASS_CHANNEL_MATRIX_CANDIDATE_BINDING"
+                or candidate.get("candidate") != {"commit": source.get("testedSha"),
+                                                  "tree": source.get("testedTree")}):
+            raise ValueError("source/candidate receipt identities disagree")
+        for key in ("sourceSha", "baseSha", "testedSha", "testedTree"):
+            if not isinstance(source.get(key), str) or not re.fullmatch(r"[0-9a-f]{40}", source[key]):
+                raise ValueError("invalid exact source identity")
+        if source.get("lane") not in ("source-head", "base-merge") or not source.get("files"):
+            raise ValueError("source receipt lacks a lane or file inventory")
+        source_digest = file_digest(directory / "source.json")
+        if source_digest != file_digest(directory / "source-after.json"):
             raise ValueError("source changed during qualification")
+        for label, arguments in COMMANDS.items():
+            row = read_object(directory / f"{label}.command.json")
+            log = directory / f"{label}.log"
+            if (row.get("schema") != "hepta.channel-matrix-command.v1"
+                    or row.get("label") != label or row.get("arguments") != arguments
+                    or row.get("testedSha") != source["testedSha"]
+                    or row.get("sourceSnapshotSha256") != source_digest
+                    or type(row.get("exitCode")) is not int or row["exitCode"] != 0
+                    or row.get("completed") is not True or row.get("launchError") is not None
+                    or row.get("sourceUnchanged") is not True
+                    or log.stat().st_size > MAX_LOG_BYTES
+                    or row.get("log") != {"path": log.name, "bytes": log.stat().st_size,
+                                          "sha256": file_digest(log), "withinBudget": True}):
+                raise ValueError(f"missing, failed or mismatched command evidence: {label}")
     encoded = json.dumps(files, sort_keys=True, separators=(",", ":")).encode()
-    return {
-        "schema": "hepta.channel-matrix-artifact-manifest.v1",
-        "runnerReportedStatus": status,
-        "runId": os.environ.get("GITHUB_RUN_ID"),
-        "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-        "files": files,
-        "artifactSetSha256": hashlib.sha256(b"hepta.matrix.artifacts.v1\0" + encoded).hexdigest(),
-        "claims": {"homeserverQualified": False, "independentAcceptance": False,
-                   "activation": False, "release": False, "authorityGranted": False},
-    }
+    return {"schema": "hepta.channel-matrix-artifact-manifest.v2", "runnerReportedStatus": status,
+            "runId": os.environ.get("GITHUB_RUN_ID"), "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+            "files": files,
+            "artifactSetSha256": hashlib.sha256(b"hepta.matrix.artifacts.v2\0" + encoded).hexdigest(),
+            "claims": {"focusedCommandsPassed": status == "success", "homeserverQualified": False,
+                       "independentAcceptance": False, "activation": False,
+                       "release": False, "authorityGranted": False}}
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
@@ -160,6 +249,9 @@ def main() -> int:
     artifacts = commands.add_parser("manifest")
     artifacts.add_argument("--directory", type=Path, required=True)
     artifacts.add_argument("--job-status", required=True)
+    execution = commands.add_parser("run")
+    execution.add_argument("--directory", type=Path, required=True)
+    execution.add_argument("--label", required=True, choices=tuple(COMMANDS))
     args = parser.parse_args()
     try:
         if args.command == "snapshot":
@@ -167,9 +259,11 @@ def main() -> int:
             if args.output.resolve().is_relative_to(ROOT.resolve()):
                 raise ValueError("receipts must be outside the candidate checkout")
             write_json(args.output, value)
+        elif args.command == "run":
+            return run_command(ROOT, args.directory, args.label)
         else:
             write_json(args.directory / "manifest.json", manifest(args.directory, args.job_status))
-    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
         parser.exit(1, f"FAIL_CHANNEL_MATRIX_EVIDENCE: {exc}\n")
     return 0
 

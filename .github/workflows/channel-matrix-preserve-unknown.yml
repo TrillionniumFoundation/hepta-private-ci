@@ -101,25 +101,17 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Locked Matrix tests, including store and protocol
-        shell: bash
-        run: |
-          set -euo pipefail
-          just test --locked -p codex-hepta-matrix-protocol \
-            -p codex-hepta-matrix-store -p codex-hepta-matrix-sdk \
-            -p codex-hepta-matrixd \
-            2>&1 | tee "$RUNNER_TEMP/matrix-evidence/focused-tests.log"
-      - name: Strict owner lint and formatting checks
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-matrix-protocol -p codex-hepta-matrix-store \
-            -p codex-hepta-matrix-sdk -p codex-hepta-matrixd \
-            --all-targets -- -D warnings \
-            2>&1 | tee "$RUNNER_TEMP/matrix-evidence/clippy.log"
-          cargo fmt --manifest-path codex-rs/Cargo.toml \
-            --package codex-hepta-matrix-protocol --package codex-hepta-matrix-store \
-            --package codex-hepta-matrix-sdk --package codex-hepta-matrixd -- --check
+        run: >-
+          python3 scripts/channel_matrix_evidence.py run
+          --directory "$RUNNER_TEMP/matrix-evidence" --label focused-tests
+      - name: Strict owner lint
+        run: >-
+          python3 scripts/channel_matrix_evidence.py run
+          --directory "$RUNNER_TEMP/matrix-evidence" --label clippy
+      - name: Owner formatting check
+        run: >-
+          python3 scripts/channel_matrix_evidence.py run
+          --directory "$RUNNER_TEMP/matrix-evidence" --label format
       - name: Verify source was never patched by qualification
         if: always()
         shell: bash
