@@ -37,12 +37,14 @@ const SOURCE_PATHS = [
   "apps/hepta-browser/src/action.js",
   "apps/hepta-browser/src/agentd-protocol.js",
   "apps/hepta-browser/src/agentd-service-main.js",
+  "apps/hepta-browser/src/agentd-service-production-main.js",
   "apps/hepta-browser/src/agentd-service.js",
   "apps/hepta-browser/src/bridge.js",
   "apps/hepta-browser/src/egress-broker.js",
   "apps/hepta-browser/src/journal.js",
   "apps/hepta-browser/src/journal-core.js",
   "apps/hepta-browser/src/persisted-reconciler.js",
+  "apps/hepta-browser/src/production-launcher.js",
   "apps/hepta-browser/src/runtime-boundary.js",
   "apps/hepta-browser/src/runtime-contract.js",
   "apps/hepta-browser/src/runtime-host.js",
@@ -52,6 +54,12 @@ const SOURCE_PATHS = [
   "apps/hepta-browser/servo-worker/Cargo.toml",
   "apps/hepta-browser/servo-worker/Cargo.lock",
   "apps/hepta-browser/servo-worker/src/main.rs",
+  "codex-rs/hepta-agentd/Cargo.toml",
+  "codex-rs/hepta-agentd/src/lib.rs",
+  "codex-rs/hepta-agentd/src/browser_servo.rs",
+  "codex-rs/hepta-agentd/src/browser_revocation_feed.rs",
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
 ];
 
 function assert(condition, message) {
@@ -83,12 +91,27 @@ function gitBlob(path) {
 }
 
 const service = await text("apps/hepta-browser/src/agentd-service.js");
+const productionService = await text(
+  "apps/hepta-browser/src/agentd-service-production-main.js",
+);
 const action = await text("apps/hepta-browser/src/action.js");
 const worker = await text("apps/hepta-browser/servo-worker/src/main.rs");
 const runtime = await text("apps/hepta-browser/src/runtime-host.js");
 const driver = await text("apps/hepta-browser/src/worker-driver.js");
+const productionLauncher = await text(
+  "apps/hepta-browser/src/production-launcher.js",
+);
 const egress = await text("apps/hepta-browser/src/egress-broker.js");
 const journal = await text("apps/hepta-browser/src/journal.js");
+const browserServoRust = await text(
+  "codex-rs/hepta-agentd/src/browser_servo.rs",
+);
+const revocationRust = await text(
+  "codex-rs/hepta-agentd/src/browser_revocation_feed.rs",
+);
+const browserdRust = await text(
+  "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs",
+);
 
 const rpcMethods = quotedItems(
   service,
@@ -126,6 +149,18 @@ const markers = {
   monotonicJournalOwner:
     journal.includes("BrowserJournalOwnerLockedError") &&
     journal.includes("foldObservation"),
+  strongLinuxIsolation:
+    productionLauncher.includes("--seccomp") &&
+    productionLauncher.includes("cgroup.procs") &&
+    productionLauncher.includes("memory.max") &&
+    productionService.includes("linux-isolation-policy.v1"),
+  longRunningAgentdOwner:
+    browserdRust.includes("PersistentBrowserServoControl") &&
+    browserdRust.includes("loop {") &&
+    browserServoRust.includes("PersistentBrowserServoControl"),
+  liveRevocationFeed:
+    revocationRust.includes("update_revocations") &&
+    browserServoRust.includes("BrowserRevocationFeed"),
 };
 for (const [name, present] of Object.entries(markers)) {
   assert(present, `Browser capability marker ${name} is absent`);
@@ -154,6 +189,9 @@ const registry = {
     grantScopedEgress: markers.grantScopedEgress,
     persistedReconciliation: markers.persistedReconciliation,
     monotonicJournalOwner: markers.monotonicJournalOwner,
+    strongLinuxIsolation: markers.strongLinuxIsolation,
+    longRunningAgentdOwner: markers.longRunningAgentdOwner,
+    liveRevocationFeed: markers.liveRevocationFeed,
   },
   sourceBlobs,
 };
