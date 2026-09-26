@@ -48,10 +48,13 @@
     "persistedReconciliation": true,
     "monotonicJournalOwner": true,
     "strongLinuxIsolation": true,
+    "verifiedServiceClosure": true,
     "longRunningAgentdOwner": true,
-    "liveRevocationFeed": true
+    "liveRevocationFeed": true,
+    "redactedServiceMetrics": true
   },
   "sourceBlobs": {
+    "apps/hepta-browser/service-manifest.json": "ab95ef5384981ecd0239efbe600e45c83ffd98a6",
     "apps/hepta-browser/src/action.js": "dc57104d79699c4f5538b9daefb0195e7d3248f9",
     "apps/hepta-browser/src/agentd-protocol.js": "1478d8ab3739f3332f515a57a8ff36d8d42443ce",
     "apps/hepta-browser/src/agentd-service-main.js": "1f5293b8a4eaf3b651f43a3c32ffcb15ab9233d1",
@@ -67,6 +70,7 @@
     "apps/hepta-browser/src/runtime-contract.js": "81ab44c545238145183019fb5d15c38f0ea76b82",
     "apps/hepta-browser/src/runtime-host.js": "0755ff0692e6149c64e754f4e10108872b4281d7",
     "apps/hepta-browser/src/runtime.js": "fc532344cce5ef96afb2272fd320f42659b8ed1c",
+    "apps/hepta-browser/src/verified-service-bootstrap.js": "de61243c03390635b1abf8ecd4e09efa202320c9",
     "apps/hepta-browser/src/worker-driver.js": "67859381b2bb4b7353950b80b48e7010428b9137",
     "apps/hepta-browser/src/worker-protocol.js": "dc8e9732c7bfc4dfba74d881476c6952921d5236",
     "apps/hepta-browser/servo-worker/Cargo.toml": "b10f7f02027c99c99bfb0a34fd0b48c45b01c094",
@@ -77,6 +81,6 @@
     "codex-rs/hepta-agentd/src/browser_servo.rs": "cf1f08dc8204d9b983106d87de22a520a9b89fca",
     "codex-rs/hepta-agentd/src/browser_revocation_feed.rs": "7dfa63247cccf1681f8bb596260db6d4ac70d70e",
     "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs": "bf94039eaddfaeed315513baec1b4e13b2e5c33d",
-    "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs": "f6b54f7ee14c9e5401b6d6dca6c670dbaf547a4c"
+    "codex-rs/hepta-agentd/src/bin/hepta-agentd-browserd.rs": "f5a6a9b50001018abe5fb4b87fe03897497d4cf4"
   }
 }
