@@ -2,9 +2,10 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
   },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
   "owner": "cognitive-platform",
@@ -18,28 +19,19 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "named_memory_checkpoint_coordinator_source_implemented_product_bootstrap_pending",
+  "productionWriterState": "durable_checkpoint_owner_source_implemented_qualification_pending",
   "operations": [
-    {
-      "operation": "compact",
-      "nativeSymbol": "compact",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "compact",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
     {
       "operation": "build_qualified_candidate",
       "nativeSymbol": "build_qualified_candidate",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "sourcePath": "codex-rs/hepta-compact-engine/src/trust.rs",
+      "state": "canonical_signed_builder_source_implemented_qualification_pending",
+      "authority": "externally_enrolled_selector_generator_and_tokenizer",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+        "codex-rs/hepta-compact-engine/src/trust_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
@@ -48,23 +40,85 @@
     {
       "operation": "prove_compaction",
       "nativeSymbol": "prove_compaction",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "sourcePath": "codex-rs/hepta-compact-engine/src/trust.rs",
+      "state": "independently_signed_proof_source_implemented_qualification_pending",
+      "authority": "externally_enrolled_evaluator",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+        "codex-rs/hepta-compact-engine/src/trust_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "publish_verified_checkpoint",
+      "nativeSymbol": "MemoryCheckpointCoordinatorV1::publish_verified_checkpoint",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
+      "state": "durable_atomic_owner_source_implemented_qualification_pending",
+      "authority": "verified_bundle_and_generation_predecessor_cas",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/durable_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recover_current_checkpoint",
+      "nativeSymbol": "MemoryCheckpointCoordinatorV1::recover_current_checkpoint",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
+      "state": "reopen_integrity_reconciliation_and_revoked_fallback_source_implemented_qualification_pending",
+      "authority": "read_only_checkpoint_selection",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/durable_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recover_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "claim_compaction_outbox",
+      "nativeSymbol": "DurableCompactionStoreV1::claim_next_outbox",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
+      "state": "durable_claim_fence_source_implemented_qualification_pending",
+      "authority": "claim_token_and_attempt_bound",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/durable_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "claim_outbox",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_checkpoint",
+      "nativeSymbol": "DurableCompactionStoreV1::revoke_checkpoint",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/durable.rs",
+      "state": "append_only_revocation_and_fallback_source_implemented_qualification_pending",
+      "authority": "checkpoint_digest_and_reason_bound",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/durable_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Close every exact-head and deterministic synthetic-merge compact.engine qualification finding on the final candidate SHA.",
+    "Compose MemoryCheckpointCoordinatorV1 through the product-owned cognitive-store or runtime bootstrap and add full build-to-restart reconstruction E2E coverage.",
+    "Implement and qualify fenced physical payload GC; current source intentionally fails closed on physical deletion.",
+    "Add transaction crash injection, migration rollback, concurrent CAS, corruption, property and fuzz qualification.",
+    "Publish target-host 65536-record, 64-MiB and 8000000-token capacity measurements before raising the production implementation claim."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic review and reconstruction acceptance",
+    "production trust enrollment and target-host storage/power-loss qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -79,5 +133,10 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-compact-engine"
-  ]
+  ],
+  "qualificationWorkflow": ".github/workflows/compact-engine-qualification.yml",
+  "exactSourceEvidence": {
+    "kind": "pending_final_path_blob_manifest_v1",
+    "entries": []
+  }
 }
