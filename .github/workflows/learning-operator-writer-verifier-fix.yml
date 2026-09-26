@@ -1,0 +1,74 @@
+name: Materialize deterministic Lane E writer verifier
+
+on:
+  push:
+    branches:
+      - codex/learning-operator-full-convergence-20260926
+    paths:
+      - .github/workflows/learning-operator-writer-verifier-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/learning-operator-full-convergence-20260926
+          fetch-depth: 0
+      - name: Replace regex scanning with deterministic token scanning
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/hepta-lane-e-closure.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    forbidden = {
+              r"\\bDurableLearningJournal\\b": "legacy durable journal trait",
+              r"LedgerEvent::Decision\\b": "raw V1 Decision append",
+              r"LedgerEvent::Outcome\\b": "raw V1 Outcome append",
+              r"LedgerEvent::Credit\\b": "raw V1 Credit append",
+              r"LedgerEvent::Revocation\\b": "raw V1 Revocation append",
+          }
+          '''
+          new = '''    forbidden = {
+              "DurableLearningJournal": "legacy durable journal trait",
+              "LedgerEvent::Decision": "raw V1 Decision append",
+              "LedgerEvent::Outcome": "raw V1 Outcome append",
+              "LedgerEvent::Credit": "raw V1 Credit append",
+              "LedgerEvent::Revocation": "raw V1 Revocation append",
+          }
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('unexpected forbidden-token block')
+          text = text.replace(old, new, 1)
+          old = '''        for pattern, description in forbidden.items():
+                      if re.search(pattern, text) is None:
+                          continue
+          '''
+          new = '''        for token, description in forbidden.items():
+                      if token not in text:
+                          continue
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('unexpected writer scan loop')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          python3 -m py_compile scripts/hepta-lane-e-closure.py
+          python3 scripts/hepta-lane-e-closure.py self-test
+          set +e
+          python3 scripts/hepta-lane-e-closure.py verify > qualification/lane-e/latest-verify.json
+          status=$?
+          set -e
+          python3 -m json.tool qualification/lane-e/latest-verify.json >/dev/null
+          test "$status" -eq 0
+          rm .github/workflows/learning-operator-writer-verifier-fix.yml
+          git config user.name "openai-codex[bot]"
+          git config user.email "openai-codex[bot]@users.noreply.github.com"
+          git add scripts/hepta-lane-e-closure.py qualification/lane-e/latest-verify.json .github/workflows/learning-operator-writer-verifier-fix.yml
+          git commit -m "fix(lane-e): make writer exception verification deterministic"
+          git push origin HEAD:codex/learning-operator-full-convergence-20260926
