@@ -15,7 +15,7 @@ permissions:
 jobs:
   finalize:
     if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-finalize]') }}
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
