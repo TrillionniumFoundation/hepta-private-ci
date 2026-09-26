@@ -1,6 +1,7 @@
 name: Memory retrieval focused qualification
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - work/memory-retrieval-production-convergence-20260926
@@ -11,6 +12,7 @@ on:
       - codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs
       - codex-rs/hepta-types/**
       - codex-rs/hepta-cognitive-types/**
+      - codex-rs/hepta-contracts/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - rust-toolchain.toml
@@ -63,3 +65,34 @@ jobs:
       - name: Strict memory retrieval Clippy
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-memory-retrieval --all-targets -- -D warnings
+
+  owner-adapter:
+    name: SQLite owner adapter
+    runs-on: ubuntu-slim
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy
+
+      - name: Verify exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git diff --exit-code
+
+      - name: Test owner adapter
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-memory cognitive_retrieval_adapter --lib
+
+      - name: Strict owner adapter Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-memory --all-targets -- -D warnings
