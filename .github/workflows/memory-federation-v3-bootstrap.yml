@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/memory-federation-v3-bootstrap.yml"
       - "qualification/memory-federation/bootstrap_v3.py"
+      - "qualification/memory-federation/bootstrap_v3_followup.py"
       - "codex-rs/hepta-memory-federation-wire/**"
       - "codex-rs/hepta-memory/src/cognitive_federation_profile.rs"
       - "docs/modules/memory.federation/WIRE_V1.md"
@@ -35,7 +36,9 @@ jobs:
           persist-credentials: true
 
       - name: Apply the reviewed integration patch
-        run: python3 qualification/memory-federation/bootstrap_v3.py
+        run: |
+          python3 qualification/memory-federation/bootstrap_v3.py
+          python3 qualification/memory-federation/bootstrap_v3_followup.py
 
       - name: Format integrated Rust sources
         working-directory: codex-rs
