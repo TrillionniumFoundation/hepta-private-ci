@@ -1,10 +1,15 @@
 //! One explicitly installed owner key and bounded thread allowlist.
 
+use std::collections::BTreeMap;
 #[cfg(unix)]
 use std::fs::File;
 #[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::OnceLock;
+use std::sync::Weak;
 
 use codex_hepta_authbus::AuthBusAuthorityError;
 use codex_hepta_authbus::AuthBusAuthorityHost;
@@ -17,9 +22,49 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
+use tokio::sync::Mutex;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+
+static AUTHORITY_HOSTS: OnceLock<Mutex<BTreeMap<PathBuf, Weak<AuthBusAuthorityHost>>>> =
+    OnceLock::new();
+
+/// Compose exactly one in-process AuthBus authority owner per Agent home. The
+/// cross-process owner lock inside `AuthBusAuthorityHost` remains the source of
+/// truth if two Agentd processes race this path.
+pub(crate) async fn shared_authority(
+    identity: &AgentdIdentity,
+) -> Result<Arc<AuthBusAuthorityHost>, AgentdError> {
+    let hosts = AUTHORITY_HOSTS.get_or_init(|| Mutex::new(BTreeMap::new()));
+    let mut hosts = hosts.lock().await;
+    if let Some(existing) = hosts
+        .get(&identity.home_root)
+        .and_then(std::sync::Weak::upgrade)
+    {
+        return Ok(existing);
+    }
+    let database_path = identity
+        .home_root
+        .join("authbus-authority")
+        .join("authority.sqlite");
+    let checkpoint_path = identity
+        .home_root
+        .join("authbus-authority-witness")
+        .join("checkpoint.json");
+    let owner_id = format!("agentd:{}:authbus-authority", identity.agent_id.as_str());
+    let authority = Arc::new(
+        AuthBusAuthorityHost::open_or_bootstrap(
+            &database_path,
+            checkpoint_path,
+            &owner_id,
+        )
+        .await
+        .map_err(|error| invalid(&format!("authority owner open failed: {error}")))?,
+    );
+    hosts.insert(identity.home_root.clone(), Arc::downgrade(&authority));
+    Ok(authority)
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
