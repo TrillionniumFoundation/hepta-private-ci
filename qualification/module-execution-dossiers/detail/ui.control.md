@@ -37,6 +37,7 @@
 
 ## Qualification commands
 
+- `npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund`
 - `npm run lint --prefix apps/hepta-control-ui`
 - `npm test --prefix apps/hepta-control-ui`
 - `npm run test:contract --prefix apps/hepta-control-ui`
