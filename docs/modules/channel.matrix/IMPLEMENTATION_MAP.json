@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a1dd370cdaf65ee4f312502495d214d8b0eb54c7",
-    "tree": "7d64fbd2d7c137396a74705d6d63e64bb61aa6e1"
+    "commit": "714ef9e73b141ad5a09471d1ef007de15ebe402b",
+    "tree": "b9269e35306d094bbdf61fa6723f13d6ede75c79"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
@@ -73,7 +73,7 @@
         {
           "role": "authorized_sender_callsite",
           "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
-          "symbol": "prepare_outbox_dispatch(&record, now_ms)"
+          "symbol": "prepare_outbox_dispatch(record, now_ms)"
         }
       ],
       "tests": [
@@ -130,8 +130,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Add an explicit random claim token in addition to the durable attempt fence and release proven pre-entry claims during shutdown.",
-    "Persist the complete verified-use witness/head digest and finish classified Matrix error, retry_after_ms and jitter handling.",
+    "Add an explicit random claim token in addition to the durable attempt fence.",
+    "Persist the complete verified-use witness/head digest and append the exact classified transport error to durable attempt history; add jitter to validated 429 hints.",
     "Produce current exact-head and deterministic synthetic-merge focused receipts after every source change."
   ],
   "externalEvidenceGates": [
