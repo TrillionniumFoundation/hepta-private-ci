@@ -5,6 +5,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
@@ -31,6 +32,7 @@ use crate::authbus_trust::invalid;
 
 pub(crate) struct TextIngress {
     pub evidence: HeptaEvidenceStore,
+    pub authority: Arc<AuthBusAuthorityHost>,
     pub trust_file: PathBuf,
     pub checkpoint: ReplayCheckpointFile,
     pub subject: StableId,
@@ -40,10 +42,13 @@ pub(crate) struct TextIngress {
 impl TextIngress {
     pub async fn open(
         identity: &AgentdIdentity,
+        authority: Arc<AuthBusAuthorityHost>,
         trust_file: PathBuf,
         checkpoint_file: PathBuf,
     ) -> Result<Self, AgentdError> {
-        TextTrust::load(&trust_file, identity)?;
+        TextTrust::load(&trust_file, identity)?
+            .reconcile(&authority)
+            .await?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
@@ -74,6 +79,7 @@ impl TextIngress {
         }
         Ok(Self {
             evidence,
+            authority,
             trust_file,
             checkpoint,
             subject: subject(&identity.agent_id)?,
@@ -134,6 +140,7 @@ pub(crate) async fn submit(
     require_ready(state)?;
     let host = attached(state)?;
     let trust = host.trust(state)?;
+    trust.reconcile(&host.authority).await?;
     if !trust.permits(&request.body.thread_id)
         || request.body.spawn_generation != state.identity().spawn_generation
     {
@@ -150,7 +157,13 @@ pub(crate) async fn submit(
     let body = payload(&request.body)?;
     let result = host
         .evidence
-        .enqueue_authbus_message(&trust.issuer()?, &message, &host.subject, host.scope, &body)
+        .enqueue_authbus_message(
+            &host.authority,
+            &message,
+            &host.subject,
+            host.scope,
+            &body,
+        )
         .await
         .map_err(|error| invalid(&error.to_string()))?;
     // Replay advancement and message insertion commit together. Before returning
@@ -161,9 +174,10 @@ pub(crate) async fn submit(
     // refuse to report readiness. The worker independently refreshes all gates.
     require_ready(state)?;
     let current = host.trust(state)?;
+    let current_issuer = current.reconcile(&host.authority).await?;
     message
         .authenticate(
-            &current.issuer()?,
+            &current_issuer,
             host.scope,
             Digest32::of_bytes(&body),
             now_ms()?,
