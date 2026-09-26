@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/kernel-evidence-production-hardening-20260927
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,20 +13,27 @@ jobs:
   export-source:
     name: Export exact branch source
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out exact source
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - name: Package source snapshot
+          fetch-depth: 0
+      - name: Package source snapshot outside the checkout
         shell: bash
         run: |
           set -euo pipefail
-          tar --exclude=.git --exclude=source.tar.gz -czf source.tar.gz .
+          archive="$RUNNER_TEMP/source-${GITHUB_SHA}.tar.gz"
+          tar --exclude=.git -czf "$archive" .
+          test -s "$archive"
+          sha256sum "$archive" > "$RUNNER_TEMP/source-${GITHUB_SHA}.sha256"
       - name: Upload source snapshot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: codex-kernel-evidence-source-${{ github.sha }}
-          path: source.tar.gz
+          path: |
+            ${{ runner.temp }}/source-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/source-${{ github.sha }}.sha256
           if-no-files-found: error
           retention-days: 1
