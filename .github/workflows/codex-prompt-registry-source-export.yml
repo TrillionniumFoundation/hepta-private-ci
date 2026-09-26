@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   export:
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
     timeout-minutes: 10
     steps:
       - name: Check out exact branch
