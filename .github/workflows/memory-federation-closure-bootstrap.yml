@@ -17,12 +17,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: memory-federation-production-closure-bootstrap-v2
+  group: memory-federation-production-closure-bootstrap-v3
   cancel-in-progress: true
 
 jobs:
   apply-and-verify:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
     env:
       TARGET_BRANCH: feat/memory-federation-production-closure-20260927
