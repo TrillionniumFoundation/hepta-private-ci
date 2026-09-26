@@ -1,0 +1,165 @@
+schema_version: 1
+module: auth.authbus
+owner: authbus-authority
+label_policy:
+  required: [environment, authority_instance_id, source_sha, schema_digest]
+  forbidden_raw_identifiers:
+    - principal_id
+    - issuer_id
+    - message_id
+    - operation_id
+    - reservation_id
+    - subject_id
+metrics:
+  - name: hepta_authbus_authorization_total
+    type: counter
+    unit: decisions
+    labels: [result, reason]
+    description: Authorization decisions and fail-closed errors by bounded reason.
+  - name: hepta_authbus_authorization_duration_seconds
+    type: histogram
+    unit: seconds
+    labels: [result]
+    buckets: [0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0]
+    description: End-to-end host authorization latency.
+  - name: hepta_authbus_reservation_total
+    type: counter
+    unit: reservations
+    labels: [transition, result, reason]
+    description: Reservation state transitions, including held, dispatch_attempted, expired, indeterminate, settled and cancelled.
+  - name: hepta_authbus_reservation_active
+    type: gauge
+    unit: reservations
+    labels: [state]
+    description: Current reservation count by bounded state.
+  - name: hepta_authbus_reservation_oldest_age_seconds
+    type: gauge
+    unit: seconds
+    labels: [state]
+    description: Age of the oldest active, expired-held or indeterminate reservation.
+  - name: hepta_authbus_reservation_sweep_total
+    type: counter
+    unit: sweeps
+    labels: [result]
+    description: Bounded expiry-sweep executions.
+  - name: hepta_authbus_reservation_sweep_items_total
+    type: counter
+    unit: reservations
+    labels: [outcome]
+    description: Items expired, moved to indeterminate or left in backlog by sweeps.
+  - name: hepta_authbus_reservation_sweep_backlog
+    type: gauge
+    unit: reservations
+    labels: []
+    description: Expired held or dispatch-attempted reservations remaining after the latest sweep.
+  - name: hepta_authbus_quota_amount
+    type: gauge
+    unit: quota_units
+    labels: [component]
+    description: Aggregate configured, available, reserved and consumed quota; no quota key label.
+  - name: hepta_authbus_settlement_total
+    type: counter
+    unit: settlements
+    labels: [result, reason]
+    description: Settlement verification and terminal transition outcomes.
+  - name: hepta_authbus_issuer_verification_total
+    type: counter
+    unit: verifications
+    labels: [purpose, result, reason]
+    description: Issuer lookup, purpose, epoch, lifecycle and signature outcomes.
+  - name: hepta_authbus_trusted_time_age_seconds
+    type: gauge
+    unit: seconds
+    labels: []
+    description: Age of the most recently accepted trusted-time sample.
+  - name: hepta_authbus_trusted_time_total
+    type: counter
+    unit: attestations
+    labels: [result, reason]
+    description: Trusted-time verification, rollback and staleness outcomes.
+  - name: hepta_authbus_owner_lock_total
+    type: counter
+    unit: attempts
+    labels: [result, reason]
+    description: Owner-lock acquisition, collision and unsafe-file outcomes.
+  - name: hepta_authbus_owner_lock_held
+    type: gauge
+    unit: boolean
+    labels: []
+    description: One while this process holds the authority owner fence.
+  - name: hepta_authbus_checkpoint_generation
+    type: gauge
+    unit: generation
+    labels: [side]
+    description: Database and external witness generation.
+  - name: hepta_authbus_checkpoint_dirty
+    type: gauge
+    unit: boolean
+    labels: []
+    description: One when authoritative state awaits witness publication.
+  - name: hepta_authbus_checkpoint_dirty_age_seconds
+    type: gauge
+    unit: seconds
+    labels: []
+    description: Duration of the current dirty interval.
+  - name: hepta_authbus_checkpoint_publish_total
+    type: counter
+    unit: publishes
+    labels: [result, phase, reason]
+    description: Checkpoint compare, write, file-fsync, rename, directory-fsync and verify outcomes.
+  - name: hepta_authbus_recovery_required
+    type: gauge
+    unit: boolean
+    labels: [reason]
+    description: Fail-closed recovery requirement by bounded reason.
+  - name: hepta_authbus_recovery_batch_total
+    type: counter
+    unit: batches
+    labels: [result]
+    description: Startup and periodic recovery batches.
+  - name: hepta_authbus_recovery_backlog
+    type: gauge
+    unit: records
+    labels: [class]
+    description: Remaining restart, indeterminate or compaction backlog.
+  - name: hepta_authbus_maintenance_tick_total
+    type: counter
+    unit: ticks
+    labels: [result, failed_phase]
+    description: Unified authority worker maintenance ticks.
+  - name: hepta_authbus_maintenance_last_success_unixtime
+    type: gauge
+    unit: seconds
+    labels: []
+    description: Unix time of the latest complete maintenance receipt.
+  - name: hepta_authbus_sqlite_operation_duration_seconds
+    type: histogram
+    unit: seconds
+    labels: [operation, result]
+    buckets: [0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 5.0]
+    description: Authority SQLite transaction and integrity-check latency.
+  - name: hepta_authbus_sqlite_busy_total
+    type: counter
+    unit: events
+    labels: [operation]
+    description: SQLite busy/lock contention events.
+  - name: hepta_authbus_database_bytes
+    type: gauge
+    unit: bytes
+    labels: [file]
+    description: Database, WAL and SHM size with a bounded file label.
+  - name: hepta_authbus_outbox_active
+    type: gauge
+    unit: deliveries
+    labels: [state]
+    description: AuthBus evidence outbox deliveries by state.
+  - name: hepta_authbus_outbox_oldest_age_seconds
+    type: gauge
+    unit: seconds
+    labels: [state]
+    description: Age of the oldest ready, leased, retrying or quarantined delivery.
+  - name: hepta_authbus_api_inventory_pass
+    type: gauge
+    unit: boolean
+    labels: [source_sha]
+    description: Build-time closed-world public API inventory result exported with release metadata.
