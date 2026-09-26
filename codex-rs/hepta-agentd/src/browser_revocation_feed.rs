@@ -199,15 +199,13 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
         return Err("Browser revocation feed parent must be a non-symlink directory".into());
     }
     #[cfg(unix)]
-    {
+    let expected_uid = {
         use std::os::unix::fs::{MetadataExt, PermissionsExt};
         if parent_metadata.permissions().mode() & 0o077 != 0 {
             return Err("Browser revocation feed parent permissions are too broad".into());
         }
-        if parent_metadata.uid() != rustix::process::geteuid().as_raw() {
-            return Err("Browser revocation feed parent is not owned by the Agentd uid".into());
-        }
-    }
+        parent_metadata.uid()
+    };
     let canonical_parent = fs::canonicalize(parent)
         .map_err(|error| format!("cannot canonicalize Browser revocation feed parent: {error}"))?;
     if canonical_parent != parent {
@@ -229,8 +227,11 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
         if before.permissions().mode() & 0o077 != 0 {
             return Err("Browser revocation feed permissions are too broad".into());
         }
-        if before.uid() != rustix::process::geteuid().as_raw() || before.nlink() != 1 {
-            return Err("Browser revocation feed must be owner-owned with one hard link".into());
+        if before.uid() != expected_uid || before.nlink() != 1 {
+            return Err(
+                "Browser revocation feed must share its private parent owner and have one hard link"
+                    .into(),
+            );
         }
     }
 
@@ -247,8 +248,8 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
         if opened.dev() != after.dev() || opened.ino() != after.ino() {
             return Err("Browser revocation feed changed during secure open".into());
         }
-        if opened.uid() != rustix::process::geteuid().as_raw()
-            || after.uid() != rustix::process::geteuid().as_raw()
+        if opened.uid() != expected_uid
+            || after.uid() != expected_uid
             || opened.nlink() != 1
             || after.nlink() != 1
         {

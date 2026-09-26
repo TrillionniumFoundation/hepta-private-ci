@@ -30,6 +30,12 @@ test = false
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+
+[[bin]]
+name = "hepta-agentd-browser-service"
+path = "src/bin/hepta-agentd-browser-service.rs"
+test = true
+
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
@@ -83,7 +89,6 @@ codex-utils-home-dir = { workspace = true }
 codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
 http = { workspace = true }
-rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
