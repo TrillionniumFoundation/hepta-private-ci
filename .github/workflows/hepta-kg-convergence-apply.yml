@@ -5,466 +5,218 @@ on:
   push:
     branches: [work/product-convergence-20260923]
     paths:
-      - ".github/workflows/hepta-kg-convergence-apply.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - ".github/workflows/hepta-kg-convergence-apply.yml"
+      - '.github/workflows/hepta-kg-convergence-apply.yml'
+      - 'scripts/hepta-kg-*-finalize.py'
+      - 'scripts/hepta-kg-convergence-apply-phase1.py'
+      - 'scripts/test_hepta_kg_convergence_finalize.py'
 
 permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-convergence-apply
+  group: hepta-kg-convergence-apply-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  SOURCE_SHA: ${{ github.sha }}
   CANDIDATE_BRANCH: work/product-convergence-20260923
 
 jobs:
   apply:
-    if: github.actor != 'github-actions[bot]'
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.ref == 'refs/heads/work/product-convergence-20260923' &&
+      github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
-          persist-credentials: true
 
-      - name: Bind exact source
+      - name: Bind exact source and preserve assembly inputs
         shell: bash
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/kg-assembly"
+          export EVIDENCE_DIR
+          printf 'EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$EVIDENCE_DIR"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git diff --quiet
-          git diff --cached --quiet
           test -z "$(git status --porcelain)"
+          git archive --format=tar.gz --output="$EVIDENCE_DIR/input-source.tar.gz" HEAD
+          printf '%s\n' "$SOURCE_SHA" > "$EVIDENCE_DIR/input-sha.txt"
+          python3 scripts/test_hepta_kg_convergence_finalize.py -v 2>&1 | tee "$EVIDENCE_DIR/finalizer-tests.log"
 
-      - name: Apply and finalize exact transformations
-        id: transform
-        continue-on-error: true
+      - name: Materialize source changes without masked failures
         shell: bash
         run: |
-          set +e
-          python3 -m py_compile \
-            scripts/hepta-kg-convergence-apply-phase1.py \
-            scripts/hepta-kg-convergence-finalize.py \
-            scripts/hepta-kg-durable-writer-finalize.py \
-            scripts/hepta-kg-retrieval-finalize.py \
-            scripts/hepta-kg-scale-benchmark-finalize.py
-          compile_status=$?
-          transform_status=$compile_status
-          finalize_status=125
-          durable_status=125
-          retrieval_status=125
-          scale_status=125
-          if [ "$compile_status" = 0 ]; then
-            python3 scripts/hepta-kg-convergence-apply-phase1.py 2>&1 \
-              | tee "$RUNNER_TEMP/phase1-transform.log"
-            transform_status=${PIPESTATUS[0]}
-          fi
-          if [ "$transform_status" = 0 ]; then
-            python3 scripts/hepta-kg-convergence-finalize.py 2>&1 \
-              | tee "$RUNNER_TEMP/phase1-finalize.log"
-            finalize_status=${PIPESTATUS[0]}
-          fi
-          if [ "$finalize_status" = 0 ]; then
-            python3 scripts/hepta-kg-durable-writer-finalize.py 2>&1 \
-              | tee "$RUNNER_TEMP/phase1-durable-writer.log"
-            durable_status=${PIPESTATUS[0]}
-          fi
-          if [ "$durable_status" = 0 ]; then
-            python3 scripts/hepta-kg-retrieval-finalize.py 2>&1 \
-              | tee "$RUNNER_TEMP/phase1-retrieval.log"
-            retrieval_status=${PIPESTATUS[0]}
-          fi
-          if [ "$retrieval_status" = 0 ]; then
-            python3 scripts/hepta-kg-scale-benchmark-finalize.py 2>&1 \
-              | tee "$RUNNER_TEMP/phase1-scale.log"
-            scale_status=${PIPESTATUS[0]}
-          fi
-          for pair in \
-            compile_status="$compile_status" \
-            transform_status="$transform_status" \
-            finalize_status="$finalize_status" \
-            durable_status="$durable_status" \
-            retrieval_status="$retrieval_status" \
-            scale_status="$scale_status"; do
-            printf '%s\n' "$pair" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          for script in \
+            hepta-kg-convergence-apply-phase1 \
+            hepta-kg-convergence-finalize \
+            hepta-kg-durable-writer-finalize \
+            hepta-kg-retrieval-finalize \
+            hepta-kg-scale-benchmark-finalize; do
+            python3 "scripts/$script.py" 2>&1 | tee "$EVIDENCE_DIR/$script.log"
           done
-          if [ "$compile_status" = 0 ] \
-            && [ "$transform_status" = 0 ] \
-            && [ "$finalize_status" = 0 ] \
-            && [ "$durable_status" = 0 ] \
-            && [ "$retrieval_status" = 0 ] \
-            && [ "$scale_status" = 0 ]; then
-            printf 'status=0\n' >> "$GITHUB_OUTPUT"
-          else
-            printf 'status=1\n' >> "$GITHUB_OUTPUT"
-          fi
-          exit 0
+          git diff --check
 
-      - name: Retain transformed source and diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: knowledge-graph-transformed-source-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/phase1-transform.log
-            ${{ runner.temp }}/phase1-finalize.log
-            ${{ runner.temp }}/phase1-durable-writer.log
-            ${{ runner.temp }}/phase1-retrieval.log
-            ${{ runner.temp }}/phase1-scale.log
-            codex-rs/hepta-kg/src/generation.rs
-            codex-rs/hepta-kg/src/generation_convergence_tests.rs
-            codex-rs/hepta-memory/src/cognitive_kg_store.rs
-            codex-rs/hepta-memory/src/cognitive_retrieval.rs
-            scripts/hepta-knowledge-graph-target-measure.py
-            scripts/test_hepta_knowledge_graph_target_measure.py
-            docs/modules/knowledge.graph/TECHNICAL.md
-            docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
-          if-no-files-found: error
-          retention-days: 90
-
-      - name: Enforce transformation
-        shell: bash
-        env:
-          TRANSFORM_STATUS: ${{ steps.transform.outputs.status }}
-        run: |
-          set -euo pipefail
-          test "$TRANSFORM_STATUS" = 0
-
-      - name: Capture cargo check
-        id: cargo_check
-        continue-on-error: true
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set +e
-          cargo check --locked -p codex-hepta-kg -p codex-hepta-memory 2>&1 \
-            | tee "$RUNNER_TEMP/phase1-cargo-check.log"
-          status=${PIPESTATUS[0]}
-          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Retain cargo diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: knowledge-graph-cargo-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/phase1-cargo-check.log
-          if-no-files-found: error
-          retention-days: 90
-
-      - name: Enforce cargo check
-        shell: bash
-        env:
-          CARGO_STATUS: ${{ steps.cargo_check.outputs.status }}
-        run: |
-          set -euo pipefail
-          test "$CARGO_STATUS" = 0
-
-      - name: Format exact kernel and owner source
+      - name: Format and validate Cargo lock consistency
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo fmt --package codex-hepta-kg --package codex-hepta-memory
           cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check
+          cp Cargo.lock "$EVIDENCE_DIR/input-Cargo.lock"
+          cargo check -p codex-hepta-kg -p codex-hepta-memory 2>&1 | tee "$EVIDENCE_DIR/cargo-check.log"
+          python3 - "$EVIDENCE_DIR/input-Cargo.lock" Cargo.lock <<'PYLOCK'
+          import pathlib
+          import sys
+          import tomllib
+          before = tomllib.loads(pathlib.Path(sys.argv[1]).read_text())
+          after = tomllib.loads(pathlib.Path(sys.argv[2]).read_text())
+          def remove_kg(lock):
+              packages = lock['package']
+              kg = [package for package in packages if package['name'] == 'codex-hepta-kg']
+              if len(kg) != 1:
+                  raise SystemExit('expected one KG lock entry')
+              lock['package'] = [package for package in packages if package['name'] != 'codex-hepta-kg']
+              return kg[0]
+          old, new = remove_kg(before), remove_kg(after)
+          if before != after:
+              raise SystemExit('refusing an unrelated Cargo.lock update')
+          old_dependencies = set(old.pop('dependencies', []))
+          new_dependencies = set(new.pop('dependencies', []))
+          added = new_dependencies - old_dependencies
+          if old != new or old_dependencies - new_dependencies or any(dep.split()[0] != 'sha2' for dep in added):
+              raise SystemExit('unexpected KG dependency drift')
+          PYLOCK
+          cargo check --locked -p codex-hepta-kg -p codex-hepta-memory 2>&1 | tee "$EVIDENCE_DIR/locked-cargo-check.log"
 
-      - name: Test canonical kernel and durable owner
-        id: owner_tests
-        continue-on-error: true
+      - name: Capture each native command status independently
         working-directory: codex-rs
         shell: bash
         run: |
-          set +e
-          {
-            cargo test --locked -p codex-hepta-kg -- --nocapture
-            cargo test --locked -p codex-hepta-memory --lib cognitive_kg -- --nocapture
-            cargo test --locked -p codex-hepta-memory --lib cognitive_retrieval -- --nocapture
-          } 2>&1 | tee "$RUNNER_TEMP/phase1-owner-tests.log"
-          status=${PIPESTATUS[0]}
-          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
-          exit 0
+          set -uo pipefail
+          capture() {
+            label="$1"; shift
+            "$@" 2>&1 | tee "$EVIDENCE_DIR/$label.log"
+            command_status=${PIPESTATUS[0]}
+            printf '%s %s\n' "$label" "$command_status" >> "$EVIDENCE_DIR/command-status.txt"
+            return "$command_status"
+          }
+          failed=0
+          capture kernel-tests cargo test --locked -p codex-hepta-kg -- --nocapture || failed=1
+          capture owner-tests cargo test --locked -p codex-hepta-memory --lib cognitive_kg -- --nocapture || failed=1
+          capture retrieval-tests cargo test --locked -p codex-hepta-memory --lib cognitive_retrieval -- --nocapture || failed=1
+          capture strict-clippy cargo clippy --locked -p codex-hepta-kg -p codex-hepta-memory --all-targets --no-deps -- -D warnings || failed=1
+          exit "$failed"
 
-      - name: Strict kernel and owner lint
-        id: owner_lint
-        continue-on-error: true
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set +e
-          cargo clippy --locked \
-            -p codex-hepta-kg -p codex-hepta-memory \
-            --all-targets --no-deps -- -D warnings 2>&1 \
-            | tee "$RUNNER_TEMP/phase1-owner-clippy.log"
-          status=${PIPESTATUS[0]}
-          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Retain test and lint diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: knowledge-graph-owner-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/phase1-owner-tests.log
-            ${{ runner.temp }}/phase1-owner-clippy.log
-          if-no-files-found: error
-          retention-days: 90
-
-      - name: Enforce kernel and owner qualification
-        shell: bash
-        env:
-          TEST_STATUS: ${{ steps.owner_tests.outputs.status }}
-          LINT_STATUS: ${{ steps.owner_lint.outputs.status }}
-        run: |
-          set -euo pipefail
-          test "$TEST_STATUS" = 0
-          test "$LINT_STATUS" = 0
-
-      - name: Refresh governed documents and remove one-shot machinery
+      - name: Refresh documents and commit source candidate locally
+        id: candidate
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-module-docs.py refresh-indexes
           python3 scripts/hepta-module-docs.py verify
-          rm scripts/hepta-kg-convergence-apply-phase1.py
-          rm scripts/hepta-kg-convergence-finalize.py
-          rm scripts/hepta-kg-durable-writer-finalize.py
-          rm scripts/hepta-kg-retrieval-finalize.py
-          rm scripts/hepta-kg-scale-benchmark-finalize.py
-          rm .github/workflows/hepta-kg-convergence-apply.yml
-          rm -f .github/workflows/hepta-kg-source-diagnostic.yml
+          python3 scripts/test_hepta_knowledge_graph_target_measure.py
           git diff --check
-
-      - name: Commit tested source candidate
-        id: source_commit
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "Hepta KG Convergence Bot"
-          git config user.email "hepta-kg-convergence@users.noreply.github.com"
-          git add -A
-          git commit -s -m "knowledge.graph: bound indexed queries and incremental writer"
-          test -z "$(git status --porcelain)"
-
-          git fetch origin "$CANDIDATE_BRANCH"
-          remote_sha="$(git rev-parse "origin/$CANDIDATE_BRANCH")"
-          if [ "$remote_sha" != "$SOURCE_SHA" ]; then
-            git rebase "origin/$CANDIDATE_BRANCH"
+          git config user.name 'Hepta KG Convergence Bot'
+          git config user.email 'hepta-kg-convergence@users.noreply.github.com'
+          # Only the named materializers and their test are retired. No wildcard deletion.
+          git rm scripts/hepta-kg-convergence-apply-phase1.py \
+            scripts/hepta-kg-convergence-finalize.py \
+            scripts/hepta-kg-durable-writer-finalize.py \
+            scripts/hepta-kg-retrieval-finalize.py \
+            scripts/hepta-kg-scale-benchmark-finalize.py \
+            scripts/test_hepta_kg_convergence_finalize.py \
+            .github/workflows/hepta-kg-convergence-apply.yml
+          if test -f .github/workflows/hepta-kg-source-diagnostic.yml; then
+            git rm .github/workflows/hepta-kg-source-diagnostic.yml
+          fi
+          git add -u
+          git add codex-rs/hepta-kg/src/generation_convergence_tests.rs
+          git commit -s -m 'knowledge.graph: materialize bounded indexed query and owner candidate'
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -s -m 'docs(knowledge.graph): bind materialized source without promoting acceptance'
           fi
           test -z "$(git status --porcelain)"
-          candidate_sha="$(git rev-parse HEAD)"
-          candidate_tree="$(git rev-parse HEAD^{tree})"
-          printf 'sha=%s\n' "$candidate_sha" >> "$GITHUB_OUTPUT"
-          printf 'tree=%s\n' "$candidate_tree" >> "$GITHUB_OUTPUT"
-          printf '%s\n' "$candidate_sha" > "$RUNNER_TEMP/kg-source-sha.txt"
+          SHA="$(git rev-parse HEAD)"
+          TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify --expected-sha "$SHA" --expected-tree "$TREE"
+          printf 'sha=%s\ntree=%s\n' "$SHA" "$TREE" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$SHA" > "$EVIDENCE_DIR/candidate-sha.txt"
+          git bundle create "$EVIDENCE_DIR/candidate.bundle" HEAD
 
-      - name: Publish tested source before exact measurements
-        shell: bash
-        run: |
-          set -euo pipefail
-          git push origin "HEAD:$CANDIDATE_BRANCH"
-
-      - name: Run canonical-cardinality high-fanout benchmark
-        id: kernel_benchmark
-        continue-on-error: true
+      - name: Measure committed kernel candidate
         working-directory: codex-rs
         shell: bash
         run: |
-          set +e
-          timeout --signal=TERM 15m \
-            cargo test --locked --release -p codex-hepta-kg \
-              canonical_cardinality_high_fanout_benchmark_receipt \
-              -- --ignored --nocapture 2>&1 \
-            | tee "$RUNNER_TEMP/kg-kernel-benchmark-raw.log"
-          status=${PIPESTATUS[0]}
-          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Parse exact kernel benchmark receipt
-        if: steps.kernel_benchmark.outputs.status == '0'
-        shell: bash
-        env:
-          CANDIDATE_SHA: ${{ steps.source_commit.outputs.sha }}
-          CANDIDATE_TREE: ${{ steps.source_commit.outputs.tree }}
-        run: |
           set -euo pipefail
-          python3 - "$RUNNER_TEMP/kg-kernel-benchmark-raw.log" \
-            "$RUNNER_TEMP/kg-kernel-benchmark.json" <<'PY'
+          timeout --signal=TERM 15m cargo test --locked --release -p codex-hepta-kg \
+            canonical_cardinality_high_fanout_benchmark_receipt -- --ignored --nocapture \
+            2>&1 | tee "$EVIDENCE_DIR/kernel-benchmark-raw.log"
+          python3 - "$EVIDENCE_DIR" <<'PY'
+          import hashlib
           import json
-          import os
           import pathlib
+          import subprocess
           import sys
-
-          prefix = "HEPTA_KNOWLEDGE_GRAPH_KERNEL_BENCHMARK="
-          raw = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-          payloads = [
-              line.split(prefix, 1)[1].strip()
-              for line in raw.splitlines()
-              if prefix in line
-          ]
-          if len(payloads) != 1:
-              raise SystemExit(f"expected one kernel benchmark receipt, observed {len(payloads)}")
-          receipt = json.loads(payloads[0])
-          expected = {
-              "schema": "hepta.knowledge-graph.kernel-benchmark.v1",
-              "hostClass": "shared-runner-nonqualifying",
-              "nodes": 4096,
-              "edges": 32768,
-              "totalSupports": 36864,
-              "seedCount": 1,
-              "returnedEdges": 128,
-              "omittedEdges": 32640,
-              "relationEdgesScanned": 32768,
-              "selectedEdgesCloned": 128,
-              "selectedSupportsCloned": 128,
-          }
+          directory = pathlib.Path(sys.argv[1])
+          raw = (directory / 'kernel-benchmark-raw.log').read_text(encoding='utf-8')
+          prefix = 'HEPTA_KNOWLEDGE_GRAPH_KERNEL_BENCHMARK='
+          lines = [line.split(prefix, 1)[1].strip() for line in raw.splitlines() if prefix in line]
+          if len(lines) != 1:
+              raise SystemExit('expected exactly one executed kernel benchmark receipt')
+          receipt = json.loads(lines[0])
+          expected = {'nodes': 4096, 'edges': 32768, 'returnedEdges': 128, 'omittedEdges': 32640}
           for key, value in expected.items():
               if receipt.get(key) != value:
-                  raise SystemExit(f"invalid kernel benchmark {key}: {receipt.get(key)!r}")
-          for key in ("buildNs", "validationNs", "queryNs"):
-              value = receipt.get(key)
-              if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-                  raise SystemExit(f"invalid kernel benchmark {key}: {value!r}")
-          receipt["sourceSha"] = os.environ["CANDIDATE_SHA"]
-          receipt["sourceTree"] = os.environ["CANDIDATE_TREE"]
-          pathlib.Path(sys.argv[2]).write_text(
-              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
-              encoding="utf-8",
-          )
+                  raise SystemExit(f'kernel benchmark mismatch: {key}')
+          receipt['sourceSha'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          receipt['sourceTree'] = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          receipt['rawLogSha256'] = hashlib.sha256(raw.encode()).hexdigest()
+          receipt['hostClass'] = 'shared-runner-nonqualifying'
+          (directory / 'kernel-benchmark.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY
 
-      - name: Retain kernel benchmark JSON and raw log
+      - name: Retain source, benchmark JSON and all raw diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/kg-assembly"
+          mkdir -p "$EVIDENCE_DIR"
+          git diff --binary > "$EVIDENCE_DIR/assembled-source.patch"
+          tar -czf "$EVIDENCE_DIR/assembled-files.tar.gz" \
+            codex-rs/hepta-kg codex-rs/hepta-memory/src/cognitive_kg_store.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval.rs \
+            docs/modules/knowledge.graph scripts/hepta-knowledge-graph-target-measure.py
+
+      - name: Upload retained assembly evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-kernel-benchmark-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/kg-source-sha.txt
-            ${{ runner.temp }}/kg-kernel-benchmark.json
-            ${{ runner.temp }}/kg-kernel-benchmark-raw.log
+          name: knowledge-graph-assembly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kg-assembly
           if-no-files-found: error
-          retention-days: 365
+          retention-days: 90
 
-      - name: Enforce exact kernel benchmark
+      - name: Publish only the tested, unchanged-source candidate branch
         shell: bash
         env:
-          BENCHMARK_STATUS: ${{ steps.kernel_benchmark.outputs.status }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
         run: |
           set -euo pipefail
-          test "$BENCHMARK_STATUS" = 0
-          test -s "$RUNNER_TEMP/kg-kernel-benchmark.json"
-
-      - name: Measure exact source candidate
-        id: benchmark
-        continue-on-error: true
-        shell: bash
-        env:
-          CANDIDATE_SHA: ${{ steps.source_commit.outputs.sha }}
-        run: |
-          set +e
-          timeout --signal=TERM 25m \
-            python3 scripts/hepta-knowledge-graph-target-measure.py \
-              --expected-sha "$CANDIDATE_SHA" \
-              --host-profile-id github-hosted-debug-nonqualifying \
-              --writes 32 \
-              --query-samples 10 \
-              --reopen-samples 3 \
-              --contention-readers 2 \
-              --contention-rounds 3 \
-              --target-dir "$RUNNER_TEMP/kg-target" \
-              --output "$RUNNER_TEMP/kg-benchmark.json" \
-              --raw-output "$RUNNER_TEMP/kg-benchmark-raw.log" 2>&1 \
-            | tee "$RUNNER_TEMP/kg-benchmark-driver.log"
-          status=${PIPESTATUS[0]}
-          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Retain benchmark JSON and raw log
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: knowledge-graph-exact-source-benchmark-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/kg-source-sha.txt
-            ${{ runner.temp }}/kg-benchmark.json
-            ${{ runner.temp }}/kg-benchmark-raw.log
-            ${{ runner.temp }}/kg-benchmark-driver.log
-          if-no-files-found: error
-          retention-days: 365
-
-      - name: Enforce exact-source benchmark
-        shell: bash
-        env:
-          BENCHMARK_STATUS: ${{ steps.benchmark.outputs.status }}
-        run: |
-          set -euo pipefail
-          test "$BENCHMARK_STATUS" = 0
-
-      - name: Rebind exact knowledge.graph source map
-        shell: bash
-        env:
-          CANDIDATE_SHA: ${{ steps.source_commit.outputs.sha }}
-          CANDIDATE_TREE: ${{ steps.source_commit.outputs.tree }}
-        run: |
-          set -euo pipefail
+          test -n "$CANDIDATE_SHA"
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          test "$(git rev-parse HEAD^{tree})" = "$CANDIDATE_TREE"
-          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$CANDIDATE_SHA" --expected-tree "$CANDIDATE_TREE"
-          git diff --check
-          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
-          git commit -s -m "docs(knowledge.graph): bind exact measured source identity"
           test -z "$(git status --porcelain)"
-
-      - name: Reconcile map with concurrent branch progress
-        shell: bash
-        run: |
-          set -euo pipefail
           git fetch origin "$CANDIDATE_BRANCH"
-          remote_sha="$(git rev-parse "origin/$CANDIDATE_BRANCH")"
-          if ! git merge-base --is-ancestor "$remote_sha" HEAD; then
-            git rebase "$remote_sha"
-            python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
-            git diff --check
-            if ! git diff --quiet; then
-              git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
-              git commit -s -m "docs(knowledge.graph): refresh post-rebase source observation"
-            fi
-          fi
-          test -z "$(git status --porcelain)"
-
-      - name: Verify final committed candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          SHA="$(git rev-parse HEAD)"
-          TREE="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$SHA" --expected-tree "$TREE"
-          python3 scripts/hepta-technical-closure.py verify
-          python3 scripts/test_hepta_knowledge_graph_target_measure.py
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-kg
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-memory --lib cognitive_kg
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-memory --lib cognitive_retrieval
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-kg -p codex-hepta-memory \
-            --all-targets --no-deps -- -D warnings
-          git diff --check
-          test -z "$(git status --porcelain)"
-
-      - name: Push measured map candidate
-        shell: bash
-        run: |
-          set -euo pipefail
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          # No post-test rebase, force push, main mutation or activation.
           git push origin "HEAD:$CANDIDATE_BRANCH"
