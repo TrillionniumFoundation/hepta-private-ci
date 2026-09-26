@@ -1,5 +1,7 @@
 use super::*;
 use crate::H7H89ProductionGrantSigner;
+use codex_hepta_fleet::ReleaseBinding;
+use codex_hepta_fleet::ReleaseId;
 use codex_hepta_memory::H7ArtifactSigner;
 use codex_hepta_memory::H7QualificationRuntime;
 use codex_hepta_memory::H7SignedArtifactTransition;
@@ -77,6 +79,94 @@ fn terminal(request: &ProductionReleaseRequestV1) -> ProductionMutationState {
     }
 }
 
+fn digest(label: &str) -> Sha256Digest {
+    Sha256Digest::for_bytes(label.as_bytes())
+}
+
+fn recovery_fixture(
+    request: &ProductionReleaseRequestV1,
+) -> (
+    ProductionRecoveryDecision,
+    DurableReleaseTransaction,
+    DurableReleaseTransaction,
+    ProductionMutationState,
+) {
+    let frontier = digest("frontier");
+    let source_manifest = digest("source-manifest");
+    let source_agentd = digest("source-agentd");
+    let source_matrixd = digest("source-matrixd");
+    let target_manifest = digest("target-manifest");
+    let target_agentd = digest("target-agentd");
+    let target_matrixd = digest("target-matrixd");
+    let source = ReleaseBinding {
+        release_id: ReleaseId::parse("source").expect("source release"),
+        manifest_sha256: source_manifest.as_str().to_string(),
+        agentd_program_sha256: source_agentd.as_str().to_string(),
+        matrixd_program_sha256: Some(source_matrixd.as_str().to_string()),
+        admission_frontier_sha256: frontier.as_str().to_string(),
+    };
+    let target = ReleaseBinding {
+        release_id: ReleaseId::parse("target").expect("target release"),
+        manifest_sha256: target_manifest.as_str().to_string(),
+        agentd_program_sha256: target_agentd.as_str().to_string(),
+        matrixd_program_sha256: Some(target_matrixd.as_str().to_string()),
+        admission_frontier_sha256: frontier.as_str().to_string(),
+    };
+    let pending = DurableReleaseTransaction::new(
+        request.agent_id.to_string(),
+        ReleaseTransactionKind::Upgrade,
+        "source",
+        "target",
+        None,
+        Some(source),
+        Some(target),
+        1,
+        2,
+    )
+    .expect("transaction")
+    .with_authority(
+        request.grant.grant_sha256.clone(),
+        request.grant.authority_epoch,
+    )
+    .expect("authority")
+    .with_phase(ReleaseTransactionPhase::RecoveryRequired)
+    .expect("recovery required");
+    let intent = digest("recovery-intent");
+    let signer = H7H89ProductionGrantSigner::from_seed("recovery-fixture", 2, [4; 32])
+        .expect("recovery signer");
+    let decision = signer
+        .sign_recovery(
+            &request.agent_id,
+            request.grant.grant_sha256.clone(),
+            intent.clone(),
+            pending.transaction_sha256.clone(),
+            "target",
+            target_manifest,
+            target_agentd,
+            Some(target_matrixd),
+            ProductionRecoveryOutcome::Committed,
+            3,
+            7,
+            100,
+            200,
+        )
+        .expect("decision");
+    let resolved = pending
+        .with_recovery_resolution(
+            ReleaseTransactionPhase::Committed,
+            decision.digest().clone(),
+        )
+        .expect("resolved transaction");
+    let mut receipt = ProductionMutationReceipt::queued(&request.grant, 1);
+    receipt.status = ProductionMutationStatus::Committed;
+    let state = ProductionMutationState {
+        receipt,
+        intent_sha256: intent,
+        release_transaction_sha256: Some(resolved.transaction_sha256.clone()),
+    };
+    (decision, pending, resolved, state)
+}
+
 #[tokio::test]
 async fn terminal_history_does_not_query_or_downgrade_when_owner_is_unavailable() {
     let temp = tempfile::tempdir().expect("temp");
@@ -123,6 +213,93 @@ fn every_receipt_context_field_is_checked_not_only_grant_digest() {
         assert!(journal.observe(&request, state).is_err());
         assert_eq!(journal.status, ProductionReleaseCallerStatusV1::Prepared);
     }
+}
+
+#[test]
+fn terminal_recovery_binds_decision_and_reconstructs_its_predecessor() {
+    let request = request();
+    let (decision, pending, resolved, state) = recovery_fixture(&request);
+    validate_terminal_recovery(&request, &decision, &state, &resolved)
+        .expect("terminal recovery evidence");
+    assert_eq!(
+        resolved
+            .with_phase(ReleaseTransactionPhase::RecoveryRequired)
+            .expect("reconstruct pending")
+            .transaction_sha256,
+        pending.transaction_sha256
+    );
+
+    let mismatched = pending
+        .with_recovery_resolution(ReleaseTransactionPhase::Committed, digest("other-decision"))
+        .expect("mismatched terminal");
+    let mut mismatched_state = state;
+    mismatched_state.release_transaction_sha256 = Some(mismatched.transaction_sha256.clone());
+    assert!(
+        validate_terminal_recovery(&request, &decision, &mismatched_state, &mismatched).is_err()
+    );
+}
+
+#[test]
+fn recovery_audit_boundary_round_trips_and_rejects_incoherent_replay_state() {
+    let temp = tempfile::tempdir().expect("temp");
+    let path = temp.path().join("journal.json");
+    let request = request();
+    let (decision, pending, _, _) = recovery_fixture(&request);
+    let mut receipt = ProductionMutationReceipt::queued(&request.grant, 1);
+    receipt.status = ProductionMutationStatus::RecoveryRequired;
+    let pending_state = ProductionMutationState {
+        receipt,
+        intent_sha256: decision.intent_sha256.clone(),
+        release_transaction_sha256: Some(pending.transaction_sha256),
+    };
+    let mut journal =
+        ProductionReleaseJournalV1::prepared(&request, request.digest().expect("digest"));
+    journal
+        .observe(&request, pending_state)
+        .expect("observe pending recovery");
+    journal.recovery_decision_sha256 = Some(decision.digest().clone());
+    journal.recovery_resolution_submitted = true;
+    write_journal(&path, &mut journal).expect("publish recovery audit");
+    assert_eq!(read_journal(&path).expect("read journal"), Some(journal.clone()));
+
+    let mut incoherent = journal;
+    incoherent.status = ProductionReleaseCallerStatusV1::Accepted;
+    incoherent.journal_sha256 = incoherent.digest().expect("journal digest");
+    assert!(
+        incoherent
+            .validate_request(&request, &request.digest().expect("request digest"))
+            .is_err()
+    );
+}
+
+#[test]
+fn bounded_reader_accepts_only_tagged_production_recovery_output() {
+    let temp = tempfile::tempdir().expect("temp");
+    let request = request();
+    let (decision, _, _, _) = recovery_fixture(&request);
+    let path = temp.path().join("decision.json");
+    std::fs::write(
+        &path,
+        serde_json::to_vec(&SignResponse::ProductionRecovery {
+            decision: decision.clone(),
+        })
+        .expect("encode decision"),
+    )
+    .expect("write decision");
+    assert_eq!(
+        read_production_recovery_decision(&path).expect("read decision"),
+        decision
+    );
+
+    std::fs::write(
+        &path,
+        serde_json::to_vec(&SignResponse::ProductionGrant {
+            grant: request.grant.clone(),
+        })
+        .expect("encode grant"),
+    )
+    .expect("write wrong operation");
+    assert!(read_production_recovery_decision(&path).is_err());
 }
 
 #[test]
