@@ -16,6 +16,11 @@ use crate::authbus_ingress;
 use crate::objective_runtime::authentication_is_current;
 use crate::state::objective_run_fence;
 
+pub(crate) enum VerifiedRunAdmissionV1 {
+    Canonical(AgentdIntelligenceAdmittedOutcomeV1),
+    Compatibility(RunReceipt),
+}
+
 /// Non-cloneable proof that one exact durable RunStart was current at a named
 /// Agentd owner boundary. All fields are private and construction is crate-
 /// local to this module, so deserialization, request data and ordinary tests
@@ -40,27 +45,10 @@ impl std::fmt::Debug for VerifiedRunStartV1<'_> {
     }
 }
 
-impl<'a> VerifiedRunStartV1<'a> {
-    pub(crate) fn record(&self) -> &'a RunStartRecordV1 {
-        self.record
-    }
-
-    pub(crate) const fn verified_at_ms(&self) -> u64 {
-        self.verified_at_ms
-    }
-
-    pub(crate) const fn current_generation(&self) -> u64 {
-        self.current_generation
-    }
-
-    pub(crate) const fn proof_digest(&self) -> Digest32 {
-        self.proof_digest
-    }
-
+impl VerifiedRunStartV1<'_> {
     /// Consume the old witness and re-observe every mutable trust domain. This
-    /// is used after asynchronous owner preparation and immediately before a
-    /// durable lifecycle mutation.
-    pub(crate) fn reverify(self) -> Result<Self, AgentdError> {
+    /// is used immediately before crossing the admission boundary.
+    fn reverify(self) -> Result<Self, AgentdError> {
         verify_current_run_start(self.agentd, self.record)
     }
 
@@ -68,9 +56,10 @@ impl<'a> VerifiedRunStartV1<'a> {
     /// witness. The state method performs its own final double-read as defense
     /// in depth; this call cannot turn the earlier check into a reusable token.
     pub(crate) fn admit_compatibility(self) -> Result<RunReceipt, AgentdError> {
-        let record = self.record;
-        let agentd = self.agentd;
-        let expected_generation = self.current_generation;
+        let verified = self.reverify()?;
+        let record = verified.record;
+        let agentd = verified.agentd;
+        let expected_generation = verified.current_generation;
         let expected_fence = record.snapshot.fence_digest.to_string();
         let receipt = agentd.start_current_run_start_record(record)?;
         if receipt.generation != expected_generation || receipt.fence_digest != expected_fence {
@@ -81,13 +70,22 @@ impl<'a> VerifiedRunStartV1<'a> {
         Ok(receipt)
     }
 
-    /// Enter the canonical seven-owner path through the same single-use proof.
-    /// The canonical path revalidates after each asynchronous boundary and does
-    /// not receive a constructor for this witness.
-    pub(crate) async fn admit_canonical(
-        self,
-    ) -> Result<Option<AgentdIntelligenceAdmittedOutcomeV1>, AgentdError> {
-        self.agentd.start_canonical_intelligence(self.record).await
+    /// Select the canonical path when its full host composition is installed;
+    /// otherwise enter compatibility admission. The witness is consumed once,
+    /// and the canonical path independently revalidates after each async owner
+    /// boundary before mutating the coordinator.
+    pub(crate) async fn admit(self) -> Result<VerifiedRunAdmissionV1, AgentdError> {
+        let verified = self.reverify()?;
+        match verified
+            .agentd
+            .start_canonical_intelligence(verified.record)
+            .await?
+        {
+            Some(outcome) => Ok(VerifiedRunAdmissionV1::Canonical(outcome)),
+            None => verified
+                .admit_compatibility()
+                .map(VerifiedRunAdmissionV1::Compatibility),
+        }
     }
 }
 
