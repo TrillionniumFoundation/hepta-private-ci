@@ -44,19 +44,19 @@ jobs:
 
           validator = Path("scripts/hepta-ndu-implementation-map-closed-world.py")
           text = validator.read_text(encoding="utf-8")
-          old = '''            identity = (path, symbol)
-              if identity in seen_tests:
-                  errors.append(f"duplicate test identity: {path}::{symbol}")
-              seen_tests.add(identity)
-          '''
-          old = old.replace("              ", "            ", 1).replace("                  ", "                ")
-          new = '''            identity = (path, symbol)
-              # Composite regression tests may deliberately witness more than one
-              # adjacent operation. The set remains a unique executable-identity
-              # inventory; operation and native-symbol identities stay exclusive.
-              seen_tests.add(identity)
-          '''
-          new = new.replace("              ", "            ", 1)
+          old = (
+              "            identity = (path, symbol)\n"
+              "            if identity in seen_tests:\n"
+              "                errors.append(f\"duplicate test identity: {path}::{symbol}\")\n"
+              "            seen_tests.add(identity)\n"
+          )
+          new = (
+              "            identity = (path, symbol)\n"
+              "            # Composite regression tests may deliberately witness more than one\n"
+              "            # adjacent operation. The set remains a unique executable-identity\n"
+              "            # inventory; operation and native-symbol identities stay exclusive.\n"
+              "            seen_tests.add(identity)\n"
+          )
           if old not in text:
               raise SystemExit("validator duplicate-test block changed unexpectedly")
           validator.write_text(text.replace(old, new, 1), encoding="utf-8")
