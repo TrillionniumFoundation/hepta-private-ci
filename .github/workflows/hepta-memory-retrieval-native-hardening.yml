@@ -1,90 +1,46 @@
 name: Memory retrieval native hardening
 
 on:
+  pull_request:
   push:
-    branches: [work/memory-retrieval-semantic-product-convergence-20260926]
-    paths:
-      - .github/workflows/hepta-memory-retrieval-native-hardening.yml
-      - scripts/apply_memory_retrieval_lifecycle_binding.py
-      - codex-rs/hepta-agentd/src/product_retrieval_context*.rs
-      - codex-rs/hepta-agentd/src/cognitive_retrieval*.rs
+    branches: [main, work/memory-retrieval-semantic-product-convergence-20260926]
+    paths: ['codex-rs/**', 'scripts/**', '.github/workflows/**', 'docs/**', 'qualification/**']
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: retrieval-native-hardening-${{ github.ref }}
+  group: retrieval-native-hardening-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
-  bind-source:
-    if: github.ref == 'refs/heads/work/memory-retrieval-semantic-product-convergence-20260926'
+  resolve-source:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20
-    permissions:
-      contents: write
+    timeout-minutes: 10
     outputs:
-      source: ${{ steps.bind.outputs.source }}
-      base: ${{ steps.bind.outputs.base }}
+      source: ${{ steps.resolve.outputs.source }}
+      base: ${{ steps.resolve.outputs.base }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-      - name: Apply exact-object native migration and publish only allowed source paths
-        id: bind
-        shell: bash
+          persist-credentials: false
+      - name: Freeze immutable source and current main identities, without writes
+        id: resolve
         env:
-          BRANCH: work/memory-retrieval-semantic-product-convergence-20260926
+          SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$GITHUB_SHA"
-          BASE=$(git ls-remote origin refs/heads/main | cut -f1)
-          python scripts/apply_memory_retrieval_lifecycle_binding.py
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-          rustup run 1.95.0 rustfmt --edition 2024 --config skip_children=true \
-            codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs \
-            codex-rs/hepta-agentd/src/product_retrieval_context.rs \
-            codex-rs/hepta-agentd/src/product_retrieval_context_tests.rs \
-            codex-rs/hepta-agentd/src/cognitive_retrieval_lease.rs \
-            codex-rs/hepta-agentd/src/cognitive_context.rs \
-            codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs \
-            codex-rs/hepta-agentd/src/lib.rs
-          python - <<'PY'
-          import subprocess
-          allowed = {'codex-rs/hepta-agentd/src/' + name for name in (
-              'cognitive_retrieval_context.rs', 'product_retrieval_context.rs',
-              'product_retrieval_context_tests.rs', 'cognitive_retrieval_lease.rs',
-              'cognitive_context.rs', 'cognitive_context_hnmf_tests.rs', 'lib.rs')}
-          changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
-          if not changed <= allowed:
-              raise SystemExit('refusing out-of-scope source mutation: ' + repr(changed - allowed))
-          PY
-          git diff --check
-          if ! git diff --quiet; then
-            git config user.name 'Hepta retrieval source qualification'
-            git config user.email 'qualification@example.invalid'
-            git add -- codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs codex-rs/hepta-agentd/src/product_retrieval_context.rs codex-rs/hepta-agentd/src/product_retrieval_context_tests.rs codex-rs/hepta-agentd/src/cognitive_retrieval_lease.rs codex-rs/hepta-agentd/src/cognitive_context.rs codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs codex-rs/hepta-agentd/src/lib.rs
-            git commit -m 'fix(memory.retrieval): bind real Agentd reads to provider lifecycle observations'
-            test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$GITHUB_SHA"
-            git push origin "HEAD:refs/heads/$BRANCH"
-          fi
-          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          BASE=$(git rev-parse refs/remotes/origin/main)
+          git cat-file -e "$BASE^{commit}"
+          echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "base=$BASE" >> "$GITHUB_OUTPUT"
-      - name: Retain source migration diagnostic even on failure
-        if: always()
-        run: git diff --binary > "$RUNNER_TEMP/retrieval-native-migration.patch"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: retrieval-native-migration-${{ github.run_id }}
-          path: ${{ runner.temp }}/retrieval-native-migration.patch
-          retention-days: 90
 
   native:
-    needs: bind-source
+    needs: resolve-source
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
     strategy:
@@ -95,15 +51,15 @@ jobs:
       CARGO_BUILD_JOBS: '2'
       CARGO_TERM_COLOR: never
       RUST_BACKTRACE: '1'
-      SOURCE: ${{ needs.bind-source.outputs.source }}
-      BASE: ${{ needs.bind-source.outputs.base }}
+      SOURCE: ${{ needs.resolve-source.outputs.source }}
+      BASE: ${{ needs.resolve-source.outputs.base }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ needs.bind-source.outputs.source }}
+          ref: ${{ needs.resolve-source.outputs.source }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Freeze exact source and ordered-parent merge identity
+      - name: Record exact checkout and deterministic ordered-parent merge
         id: source
         env:
           MODE: ${{ matrix.mode }}
@@ -114,23 +70,29 @@ jobs:
           if [ "$MODE" = exact-main ]; then
             git checkout --detach "$BASE"
           elif [ "$MODE" = synthetic-merge ]; then
-            python "$RUNNER_TEMP/retrieval-native-tools/memory_retrieval_synthetic_merge.py" --base "$BASE" --source "$SOURCE" > "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt"
-            CANDIDATE=$(sed -n 's/^candidate=//p' "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt")
-            git checkout --detach "$CANDIDATE"
+            if [ "$BASE" = "$SOURCE" ]; then
+              # A main push has no distinct merge candidate. Record the identity
+              # case explicitly; this is not a two-parent qualification claim.
+              printf 'mode=identity-no-distinct-parent\nsource=%s\n' "$SOURCE" > "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt"
+            else
+              python "$RUNNER_TEMP/retrieval-native-tools/memory_retrieval_synthetic_merge.py" --base "$BASE" --source "$SOURCE" > "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt"
+              CANDIDATE=$(sed -n 's/^candidate=//p' "$RUNNER_TEMP/retrieval-native/$MODE/merge.txt")
+              git checkout --detach "$CANDIDATE"
+            fi
           fi
           SHA=$(git rev-parse HEAD)
           TREE=$(git rev-parse HEAD^{tree})
           python "$RUNNER_TEMP/retrieval-native-tools/capture_memory_retrieval_source.py" --root "$PWD" --source-sha "$SHA" --source-tree "$TREE" --output "$RUNNER_TEMP/retrieval-native/$MODE/source.json"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "tree=$TREE" >> "$GITHUB_OUTPUT"
-      - name: Run source, approval and SLO validator regressions
+      - name: Run all 44 strict qualification-validator regressions
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         env:
           MODE: ${{ matrix.mode }}
         run: |
           set -euo pipefail
           (cd "$RUNNER_TEMP/retrieval-native-tools" && python -m unittest -v test_verify_memory_retrieval_slo test_verify_memory_retrieval_promotion test_memory_retrieval_source) 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/python-tests.log"
-      - name: Install repository compiler
+      - name: Install exact repository compiler
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
       - name: Retrieval package tests
@@ -141,6 +103,15 @@ jobs:
         run: |
           set -euo pipefail
           cargo +1.95.0 test --locked -p codex-hepta-memory-retrieval --all-targets 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/retrieval-tests.log"
+      - name: Strict all-target retrieval lint and formatting
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --locked -p codex-hepta-memory-retrieval --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/retrieval-clippy.log"
+          cargo +1.95.0 fmt -p codex-hepta-memory-retrieval -- --check 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/retrieval-fmt.log"
       - name: Agentd actual context and product lifecycle tests
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         working-directory: codex-rs
@@ -159,7 +130,7 @@ jobs:
           set -euo pipefail
           cargo +1.95.0 test --locked -p codex-hepta-memory cognitive_retrieval 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/owner-tests.log"
           cargo +1.95.0 test --locked -p codex-hepta-learning-ledger retrieval_assignment 2>&1 | tee "$RUNNER_TEMP/retrieval-native/$MODE/ledger-tests.log"
-      - name: Verify source remained exact and clean
+      - name: Verify source stayed exact and clean
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         env:
           MODE: ${{ matrix.mode }}
@@ -172,7 +143,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: retrieval-native-${{ matrix.mode }}-${{ github.run_id }}
+          name: retrieval-native-${{ matrix.mode }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/retrieval-native/${{ matrix.mode }}/
           retention-days: 90
           if-no-files-found: error
@@ -180,11 +151,11 @@ jobs:
   result:
     name: memory.retrieval native required
     if: always()
-    needs: [bind-source, native]
+    needs: [resolve-source, native]
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Failed, cancelled or skipped qualification cannot pass
         env:
-          BIND: ${{ needs.bind-source.result }}
+          RESOLVE: ${{ needs.resolve-source.result }}
           NATIVE: ${{ needs.native.result }}
-        run: test "$BIND" = success && test "$NATIVE" = success
+        run: test "$RESOLVE" = success && test "$NATIVE" = success
