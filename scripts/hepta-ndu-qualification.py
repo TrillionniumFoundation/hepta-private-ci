@@ -185,6 +185,11 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]
         ("lock", ROOT, ["python3", "scripts/verify_cargo_lock.py"]),
         ("legacy-policy", ROOT, ["python3", "scripts/hepta-ndu-source-policy.py"]),
         (
+            "closed-world-map",
+            ROOT,
+            ["python3", "scripts/hepta-ndu-implementation-map-closed-world.py"],
+        ),
+        (
             "maps",
             ROOT,
             [
