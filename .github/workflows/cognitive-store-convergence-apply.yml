@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: cognitive-store-convergence-apply
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply:
