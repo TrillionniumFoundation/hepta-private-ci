@@ -60,7 +60,9 @@ use codex_hepta_intelligence::CanonicalRunOutcomeV1;
 use codex_hepta_intelligence::CanonicalStageV1;
 use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
+use codex_hepta_intelligence::canonical_candidate_ids_v1;
 use codex_hepta_intelligence::prepare_intelligence_run;
+use codex_hepta_intelligence::validate_canonical_outcome_v1;
 use codex_hepta_intelligence::validate_current_snapshot;
 use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
@@ -213,6 +215,9 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
 }
 
 pub struct AgentdIntelligenceOwnerInputsV1 {
+    /// Injected by the host-owned invocation provider. Direct product tests may
+    /// construct it explicitly; wire callers can never supply it.
+    pub run_identity: Option<crate::AgentdIntelligenceRunIdentityV1>,
     pub objective_envelope: ObjectiveSourceEnvelopeV1,
     pub objective_profile: ObjectiveAdmissionProfileV1,
     pub objective_context: ObjectiveAdmissionContextV1,
@@ -578,6 +583,16 @@ impl PreparedAgentdIntelligenceRunV1 {
     pub fn context_attachment(&self) -> crate::AgentContextAttachment {
         self.context_attachment.clone()
     }
+
+    #[must_use]
+    pub fn canonical_snapshot(&self) -> CanonicalIntelligenceSnapshotV1 {
+        self.snapshot.clone()
+    }
+
+    #[must_use]
+    pub fn candidate_ids(&self) -> &[StableId] {
+        &self.candidate_ids
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -606,6 +621,8 @@ pub enum AgentdIntelligenceProductError {
     Busy,
     TimedOut,
     CandidateSetMismatch,
+    MissingRunIdentity,
+    RunIdentityMismatch,
     Clock,
     InvalidAuthorityVerifier,
     Run(crate::AgentRunError),
