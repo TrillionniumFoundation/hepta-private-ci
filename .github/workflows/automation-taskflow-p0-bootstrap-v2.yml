@@ -12,13 +12,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-full-bootstrap
+  group: automation-taskflow-p0-diagnostic
   cancel-in-progress: true
 
 jobs:
-  p0:
+  diagnose-metadata:
     runs-on: ubuntu-22.04
-    timeout-minutes: 90
+    timeout-minutes: 20
     steps:
       - name: Check out latest work branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -27,87 +27,46 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Set up CI environment
-        uses: ./.github/actions/setup-ci
-
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-
-      - name: Configure author and validate applicators
+      - name: Capture metadata and truth diagnostics
         shell: bash
+        env:
+          P0_SOURCE_SHA: fdcc0a457fdf608ef186e7ff4e7608a9720521ff
         run: |
-          set -euo pipefail
+          set -uo pipefail
           git config user.name "Hepta Automation CI"
           git config user.email "hepta-automation-ci@users.noreply.github.com"
-          python3 -m py_compile \
-            scripts/apply_automation_taskflow_p0.py \
-            scripts/apply_automation_taskflow_p0_wrapper.py
+          mkdir -p qualification
+          LOG="qualification/automation-taskflow-p0-diagnostic.txt"
+          : > "$LOG"
+          {
+            echo "candidate_head=$(git rev-parse HEAD)"
+            echo "source_sha=$P0_SOURCE_SHA"
+            echo "--- metadata ---"
+          } >> "$LOG"
 
-      - name: Apply schema-v19 and product-effect source closure
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/apply_automation_taskflow_p0_wrapper.py source
-          (cd codex-rs && cargo fmt -p codex-hepta-automation -p codex-hepta-agentd)
-          git diff --check
-          git add \
-            CALLERS.toml \
-            codex-rs/hepta-agentd/src/automation_effect_host.rs \
-            docs/modules/automation.taskflow \
-            docs/readiness/LANE_B_NATIVE_HOST.md \
-            qualification/module-execution-dossiers/detail/automation.taskflow.md \
-            scripts/check_automation_taskflow_schema.py \
-            scripts/test_automation_taskflow_schema.py
-          git commit -m "automation.taskflow: close schema-v19 product effect path [automation-p0-v2]"
-          printf 'P0_SOURCE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
-
-      - name: Bind exact source metadata and generated truth
-        shell: bash
-        run: |
-          set -euxo pipefail
-          trap 'git status --short; git diff --check || true' ERR
+          set +e
           python3 scripts/apply_automation_taskflow_p0_wrapper.py metadata \
-            --source-sha "$P0_SOURCE_SHA"
-          python3 scripts/hepta-lane-b-truth.py generate
-          git diff --check
-          git add \
-            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
-            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
-            qualification/lane-b/TEST_TRACEABILITY.json \
-            qualification/lane-b/IMPLEMENTATION_TRUTH.json
-          git commit -m "docs(automation): bind schema-v19 product truth [automation-p0-v2]"
+            --source-sha "$P0_SOURCE_SHA" >> "$LOG" 2>&1
+          metadata_status=$?
+          echo "metadata_status=$metadata_status" >> "$LOG"
+
+          truth_status=99
+          if [ "$metadata_status" -eq 0 ]; then
+            echo "--- lane-b truth generate ---" >> "$LOG"
+            python3 scripts/hepta-lane-b-truth.py generate >> "$LOG" 2>&1
+            truth_status=$?
+          else
+            echo "truth generation skipped after metadata failure" >> "$LOG"
+          fi
+          echo "truth_status=$truth_status" >> "$LOG"
+          echo "--- git status ---" >> "$LOG"
+          git status --short >> "$LOG" 2>&1
+          echo "--- diff check ---" >> "$LOG"
+          git diff --check >> "$LOG" 2>&1
+          diff_status=$?
+          echo "diff_status=$diff_status" >> "$LOG"
+          set -e
+
+          git add "$LOG"
+          git commit -m "ci(automation): record P0 metadata diagnostic"
           git push origin HEAD:work/automation-taskflow-v19-runtime-closure
-
-      - name: Verify P0 truth and privileged callers
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/check_automation_taskflow_schema.py
-          python3 -m unittest scripts/test_automation_taskflow_schema.py
-          python3 scripts/verify_hepta_callers.py self-test
-          python3 scripts/verify_hepta_callers.py verify
-          python3 scripts/hepta-lane-b-truth.py self-test
-          python3 -m unittest scripts/test_hepta_lane_b_truth.py
-          python3 scripts/hepta-lane-b-truth.py verify
-          git diff --check
-
-      - name: Format compile lint and test P0 owners
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
-          cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
-          cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings
-          cargo test -p codex-hepta-operations
-          cargo test -p codex-hepta-automation --test durable_causal_chain
-          cargo test -p codex-hepta-automation
-          cargo test -p codex-hepta-automation --features taskflow-structural-qualification
-          cargo test -p codex-hepta-agentd --lib automation
-
-      - name: Assert qualified branch is clean
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -z "$(git status --porcelain --untracked-files=no)"
