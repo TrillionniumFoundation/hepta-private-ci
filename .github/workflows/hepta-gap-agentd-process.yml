@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
     paths:
+      - CALLERS.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-cognitive-read/**
@@ -27,12 +30,21 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
+      - docs/modules/runtime.supervisor/**
+      - qualification/module-execution-dossiers/detail/runtime.supervisor.md
       - .github/scripts/check_ci_results.py
+      - .github/scripts/verify_cargo_workspace_manifests.py
+      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-module-docs.py
+      - scripts/hepta-supervisor-validation.py
+      - scripts/hepta_module_registry.py
       - scripts/test_hepta_agentd_ci.py
       - scripts/hepta_ci_candidate.py
+      - scripts/hepta_ci_v8.py
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
       - .github/workflows/hepta-gap-agentd-process.yml
+      - .github/workflows/runtime-supervisor-qualification.yml
 
 permissions:
   contents: read
