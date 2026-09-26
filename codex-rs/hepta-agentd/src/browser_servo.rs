@@ -2,12 +2,11 @@
 //!
 //! The Browser process never receives or serializes `VerifiedUseToken`. For an
 //! effect request it challenges Agentd, Agentd claims the independently signed
-//! grant through the canonical `claim_final_use` entrypoint, and
-//! `dispatch_final_use` holds the live
-//! revocation fence only through Browser's durable-intent + local-worker
-//! dispatch boundary. Remote page/effect terminality is observed later through
-//! reconciliation without holding the authority mutex.
+//! grant, and `FinalUseAuthority::with_verified_use` holds the live revocation
+//! fence only through Browser's durable-intent + local-worker-dispatch boundary.
+//! Remote page/effect terminality is observed later through reconciliation.
 
+use std::collections::BTreeSet;
 use std::fmt;
 use std::fs;
 use std::io::BufReader;
@@ -16,8 +15,6 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Child;
-use std::process::ChildStdin;
-use std::process::ChildStdout;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::Mutex;
@@ -25,12 +22,13 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
+use crate::browser_revocation_feed::BrowserRevocationFeed;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_contracts::claim_final_use;
-use codex_hepta_contracts::dispatch_final_use;
+use serde::Deserialize;
 use serde_json::Map;
 use serde_json::Value;
 use serde_json::json;
@@ -43,8 +41,16 @@ const PROTOCOL_VERSION: u64 = 1;
 const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_SERVICE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
+const MAX_BWRAP_BYTES: usize = 64 * 1024 * 1024;
+const MAX_PRLIMIT_BYTES: usize = 16 * 1024 * 1024;
+const MAX_HOST_CONFIG_BYTES: u64 = 65_536;
+const MAX_BROWSER_PROFILES: u64 = 64;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
-const MAX_DISPATCH_CHANNEL_WAIT: Duration = Duration::from_secs(10);
+const MAX_DRIVER_TIMEOUT_MS: u64 = 120_000;
+const MAX_RECONCILIATION_FUTURE_SKEW_MS: u64 = 300_000;
+const PARENT_FRAME_GRACE_MS: u64 = 5_000;
+const DEFAULT_PARENT_FRAME_TIMEOUT_MS: u64 = 35_000;
+const MAX_PARENT_FRAME_TIMEOUT_MS: u64 = MAX_DRIVER_TIMEOUT_MS + PARENT_FRAME_GRACE_MS;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BrowserServoMethod {
@@ -117,13 +123,18 @@ impl BrowserServoCall {
 }
 
 pub trait BrowserServoTransport: Send {
-    fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError>;
-    fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError>;
+    fn write_frame_timeout(
+        &mut self,
+        bytes: &[u8],
+        timeout: Duration,
+    ) -> Result<(), BrowserServoError>;
+    fn read_frame_timeout(&mut self, timeout: Duration) -> Result<Vec<u8>, BrowserServoError>;
 }
 
 pub struct BrowserServoPort<T: BrowserServoTransport> {
     authority: FinalUseAuthority,
     state: Mutex<PortState<T>>,
+    frame_timeout: Duration,
 }
 
 struct PortState<T> {
@@ -152,7 +163,32 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 next_outgoing_sequence: 1,
                 next_incoming_sequence: 1,
             }),
+            frame_timeout: Duration::from_millis(DEFAULT_PARENT_FRAME_TIMEOUT_MS),
         }
+    }
+
+    pub fn with_frame_timeout(
+        authority: FinalUseAuthority,
+        transport: T,
+        frame_timeout: Duration,
+    ) -> Result<Self, BrowserServoError> {
+        if frame_timeout.is_zero()
+            || frame_timeout > Duration::from_millis(MAX_PARENT_FRAME_TIMEOUT_MS)
+        {
+            return Err(BrowserServoError::Invalid(
+                "Browser parent frame timeout is outside the hard bound".into(),
+            ));
+        }
+        Ok(Self {
+            authority,
+            state: Mutex::new(PortState {
+                transport,
+                next_request_id: 1,
+                next_outgoing_sequence: 1,
+                next_incoming_sequence: 1,
+            }),
+            frame_timeout,
+        })
     }
 
     pub fn call(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError> {
@@ -180,9 +216,10 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 "method": call.method.wire_name(),
                 "input": call.input,
             }),
+            self.frame_timeout,
         )?;
 
-        let first = receive_frame(&mut state)?;
+        let first = receive_frame(&mut state, self.frame_timeout)?;
         if call.method.requires_final_use() {
             if first.kind != "authority_challenge" || first.request_id != request_id {
                 return Err(BrowserServoError::Protocol(
@@ -194,7 +231,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 BrowserServoError::Invalid("missing Browser final-use invocation".into())
             })?;
             self.authorize_dispatch_boundary(&mut state, &request_id, &first, invocation)?;
-            let response = receive_frame(&mut state)?;
+            let response = receive_frame(&mut state, self.frame_timeout)?;
             response_result(response, &request_id)
         } else {
             response_result(first, &request_id)
@@ -209,6 +246,11 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         invocation: &BrowserFinalUseInvocation,
     ) -> Result<(), BrowserServoError> {
         let payload = require_plain_object(&challenge.payload, "Browser authority challenge")?;
+        require_exact_object_keys(
+            payload,
+            &["authorityEpoch", "requestDigest"],
+            "Browser authority challenge",
+        )?;
         let request_digest_text = payload
             .get("requestDigest")
             .and_then(Value::as_str)
@@ -231,11 +273,9 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             ));
         }
 
-        let token = claim_final_use(
-            &self.authority,
-            &invocation.signed_grant,
-            &invocation.binding,
-        )?;
+        let token = self
+            .authority
+            .claim(&invocation.signed_grant, &invocation.binding)?;
         let witness_digest = browser_witness_digest(
             &request_digest,
             &invocation.signed_grant.grant.grant_id,
@@ -244,43 +284,64 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         );
         let witness_text = hex_lower(&witness_digest);
 
-        dispatch_final_use(&self.authority, token, &invocation.binding, || {
-            send_frame(
-                state,
-                "authority_enter",
-                request_id,
-                json!({
-                    "authorized": true,
-                    "witnessDigest": witness_text,
-                    "authorityEpoch": authority_epoch,
-                    "requestDigest": request_digest_text,
-                }),
-            )?;
-            let boundary = receive_frame(state)?;
-            if boundary.kind != "dispatch_boundary" || boundary.request_id != request_id {
-                return Err(BrowserServoError::Indeterminate(
-                    "Browser did not acknowledge the local dispatch boundary after authority entry"
-                        .into(),
-                ));
-            }
-            let boundary_payload =
-                require_plain_object(&boundary.payload, "Browser dispatch boundary")?;
-            if boundary_payload.get("localDispatchCrossed") != Some(&Value::Bool(true))
-                || boundary_payload
+        self.authority
+            .with_verified_use(token, &invocation.binding, || {
+                send_frame(
+                    state,
+                    "authority_enter",
+                    request_id,
+                    json!({
+                        "authorized": true,
+                        "witnessDigest": witness_text,
+                        "authorityEpoch": authority_epoch,
+                        "requestDigest": request_digest_text,
+                    }),
+                    self.frame_timeout,
+                )?;
+                let boundary = receive_frame(state, self.frame_timeout)?;
+                if boundary.request_id != request_id {
+                    return Err(BrowserServoError::Indeterminate(
+                        "Browser final-use boundary did not match the active request".into(),
+                    ));
+                }
+                let boundary_payload =
+                    require_plain_object(&boundary.payload, "Browser final-use boundary")?;
+                require_exact_object_keys(
+                    boundary_payload,
+                    &["localDispatchCrossed", "requestDigest", "witnessDigest"],
+                    "Browser final-use boundary",
+                )?;
+                if boundary_payload
                     .get("requestDigest")
                     .and_then(Value::as_str)
                     != Some(request_digest_text)
-                || boundary_payload
-                    .get("witnessDigest")
-                    .and_then(Value::as_str)
-                    != Some(witness_text.as_str())
-            {
-                return Err(BrowserServoError::Indeterminate(
-                    "Browser dispatch-boundary receipt drifted from final-use authority".into(),
-                ));
-            }
-            Ok(())
-        })??;
+                    || boundary_payload
+                        .get("witnessDigest")
+                        .and_then(Value::as_str)
+                        != Some(witness_text.as_str())
+                {
+                    return Err(BrowserServoError::Indeterminate(
+                        "Browser final-use boundary drifted from final-use authority".into(),
+                    ));
+                }
+                match boundary.kind.as_str() {
+                    "dispatch_boundary"
+                        if boundary_payload.get("localDispatchCrossed")
+                            == Some(&Value::Bool(true)) =>
+                    {
+                        Ok(())
+                    }
+                    "dispatch_rejected"
+                        if boundary_payload.get("localDispatchCrossed")
+                            == Some(&Value::Bool(false)) =>
+                    {
+                        Ok(())
+                    }
+                    _ => Err(BrowserServoError::Indeterminate(
+                        "Browser did not issue a valid dispatch or rejection boundary".into(),
+                    )),
+                }
+            })??;
         Ok(())
     }
 }
@@ -293,15 +354,23 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
     }
     let payload = require_plain_object(&frame.payload, "Browser response payload")?;
     match payload.get("ok") {
-        Some(Value::Bool(true)) => payload
-            .get("result")
-            .cloned()
-            .ok_or_else(|| BrowserServoError::Protocol("Browser response lacks result".into())),
+        Some(Value::Bool(true)) => {
+            require_exact_object_keys(payload, &["ok", "result"], "Browser success response")?;
+            payload
+                .get("result")
+                .cloned()
+                .ok_or_else(|| BrowserServoError::Protocol("Browser response lacks result".into()))
+        }
         Some(Value::Bool(false)) => {
+            require_exact_object_keys(payload, &["error", "ok"], "Browser failure response")?;
             let message = payload
                 .get("error")
                 .and_then(Value::as_str)
-                .unwrap_or("Browser service rejected request");
+                .ok_or_else(|| {
+                    BrowserServoError::Protocol(
+                        "Browser failure response error must be a string".into(),
+                    )
+                })?;
             Err(BrowserServoError::Rejected(
                 message.chars().take(512).collect(),
             ))
@@ -325,6 +394,7 @@ fn send_frame<T: BrowserServoTransport>(
     kind: &str,
     request_id: &str,
     payload: Value,
+    timeout: Duration,
 ) -> Result<(), BrowserServoError> {
     if !matches!(kind, "request" | "authority_enter") {
         return Err(BrowserServoError::Protocol(
@@ -356,13 +426,14 @@ fn send_frame<T: BrowserServoTransport>(
     let mut bytes = Vec::with_capacity(body.len() + 4);
     bytes.extend_from_slice(&(body.len() as u32).to_be_bytes());
     bytes.extend_from_slice(&body);
-    state.transport.write_frame(&bytes)
+    state.transport.write_frame_timeout(&bytes, timeout)
 }
 
 fn receive_frame<T: BrowserServoTransport>(
     state: &mut PortState<T>,
+    timeout: Duration,
 ) -> Result<DecodedFrame, BrowserServoError> {
-    let bytes = state.transport.read_frame()?;
+    let bytes = state.transport.read_frame_timeout(timeout)?;
     if bytes.len() < 5 || bytes.len() > MAX_FRAME_BYTES + 4 {
         return Err(BrowserServoError::Protocol(
             "Browser input frame has invalid byte length".into(),
@@ -423,7 +494,7 @@ fn receive_frame<T: BrowserServoTransport>(
         .ok_or_else(|| BrowserServoError::Protocol("Browser frame kind is missing".into()))?;
     if !matches!(
         kind,
-        "response" | "authority_challenge" | "dispatch_boundary"
+        "response" | "authority_challenge" | "dispatch_boundary" | "dispatch_rejected"
     ) {
         return Err(BrowserServoError::Protocol(
             "Browser emitted an unregistered frame kind".into(),
@@ -533,6 +604,19 @@ fn write_canonical(
     Ok(())
 }
 
+fn require_exact_object_keys(
+    object: &Map<String, Value>,
+    expected: &[&str],
+    name: &str,
+) -> Result<(), BrowserServoError> {
+    if object.len() != expected.len() || expected.iter().any(|key| !object.contains_key(*key)) {
+        return Err(BrowserServoError::Protocol(format!(
+            "{name} contains missing or unknown fields"
+        )));
+    }
+    Ok(())
+}
+
 fn require_plain_object<'a>(
     value: &'a Value,
     name: &str,
@@ -612,6 +696,259 @@ fn browser_witness_digest(
     hasher.finalize().into()
 }
 
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BrowserServoHostConfig {
+    pub signer_id: String,
+    pub verifying_key: [u8; 32],
+    pub authority_state_dir: PathBuf,
+    pub authority_epoch: u64,
+    pub revocation_revision: u64,
+    pub revoked_grant_ids: BTreeSet<String>,
+    pub revocation_feed_path: PathBuf,
+    pub node_path: PathBuf,
+    pub service_path: PathBuf,
+    pub service_sha256: String,
+    pub worker_path: PathBuf,
+    pub worker_sha256: String,
+    pub profile_root: PathBuf,
+    pub journal_path: PathBuf,
+    pub reconciliation_root: Option<PathBuf>,
+    pub reconciliation_observer_id: Option<String>,
+    pub reconciliation_verifying_key: Option<String>,
+    pub reconciliation_minimum_observer_generation: Option<u64>,
+    pub reconciliation_minimum_observed_at_unix_ms: Option<u64>,
+    pub reconciliation_current_frontier_digest: Option<String>,
+    pub reconciliation_max_future_skew_ms: Option<u64>,
+    pub bwrap_path: PathBuf,
+    pub bwrap_sha256: String,
+    pub prlimit_path: PathBuf,
+    pub prlimit_sha256: String,
+    pub max_profiles: u64,
+    pub max_address_space_bytes: u64,
+    pub max_cpu_seconds: u64,
+    pub max_open_files: u64,
+    pub max_processes: u64,
+    pub driver_timeout_ms: u64,
+}
+
+pub fn open_browser_servo_port_from_file(
+    path: &Path,
+) -> Result<PersistentBrowserServoControl, BrowserServoError> {
+    let metadata = fs::symlink_metadata(path).map_err(|error| {
+        BrowserServoError::Invalid(format!(
+            "cannot inspect Browser runtime config {}: {error}",
+            path.display()
+        ))
+    })?;
+    if !metadata.is_file()
+        || metadata.file_type().is_symlink()
+        || metadata.len() == 0
+        || metadata.len() > MAX_HOST_CONFIG_BYTES
+    {
+        return Err(BrowserServoError::Invalid(
+            "Browser runtime config must be a bounded regular non-symlink file".into(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o077 != 0 {
+            return Err(BrowserServoError::Invalid(
+                "Browser runtime config permissions are too broad".into(),
+            ));
+        }
+    }
+    let bytes = fs::read(path).map_err(|error| {
+        BrowserServoError::Invalid(format!(
+            "cannot read Browser runtime config {}: {error}",
+            path.display()
+        ))
+    })?;
+    let config: BrowserServoHostConfig = serde_json::from_slice(&bytes).map_err(|error| {
+        BrowserServoError::Invalid(format!("Browser runtime config is invalid JSON: {error}"))
+    })?;
+    if config.authority_epoch == 0 || config.revocation_revision == 0 {
+        return Err(BrowserServoError::Invalid(
+            "Browser authority epoch/revision must be non-zero".into(),
+        ));
+    }
+    let bootstrap_revocations = FinalUseRevocations {
+        authority_epoch: config.authority_epoch,
+        revision: config.revocation_revision,
+        revoked_grant_ids: config.revoked_grant_ids.clone(),
+    };
+    let authority = FinalUseAuthority::open_state_dir(
+        &config.authority_state_dir,
+        config.signer_id,
+        config.verifying_key,
+        bootstrap_revocations.clone(),
+    )?;
+    let revocation_feed = BrowserRevocationFeed::start(
+        authority.clone(),
+        config.revocation_feed_path,
+        bootstrap_revocations,
+    )
+    .map_err(BrowserServoError::RevocationFeed)?;
+    let process = BrowserServoProcessConfig {
+        node_path: config.node_path,
+        service_path: config.service_path,
+        service_sha256: parse_digest_text(&config.service_sha256, "service_sha256")?,
+        worker_path: config.worker_path,
+        worker_sha256: parse_digest_text(&config.worker_sha256, "worker_sha256")?,
+        profile_root: config.profile_root,
+        journal_path: config.journal_path,
+        reconciliation_root: config.reconciliation_root,
+        reconciliation_observer_id: config.reconciliation_observer_id,
+        reconciliation_verifying_key: config
+            .reconciliation_verifying_key
+            .as_deref()
+            .map(|value| parse_digest_text(value, "reconciliation_verifying_key"))
+            .transpose()?,
+        reconciliation_minimum_observer_generation: config
+            .reconciliation_minimum_observer_generation,
+        reconciliation_minimum_observed_at_unix_ms: config
+            .reconciliation_minimum_observed_at_unix_ms,
+        reconciliation_current_frontier_digest: config
+            .reconciliation_current_frontier_digest
+            .as_deref()
+            .map(|value| parse_digest_text(value, "reconciliation_current_frontier_digest"))
+            .transpose()?,
+        reconciliation_max_future_skew_ms: config.reconciliation_max_future_skew_ms,
+        bwrap_path: config.bwrap_path,
+        bwrap_sha256: parse_digest_text(&config.bwrap_sha256, "bwrap_sha256")?,
+        prlimit_path: config.prlimit_path,
+        prlimit_sha256: parse_digest_text(&config.prlimit_sha256, "prlimit_sha256")?,
+        max_profiles: config.max_profiles,
+        max_address_space_bytes: config.max_address_space_bytes,
+        max_cpu_seconds: config.max_cpu_seconds,
+        max_open_files: config.max_open_files,
+        max_processes: config.max_processes,
+        driver_timeout_ms: config.driver_timeout_ms,
+    };
+    PersistentBrowserServoControl::new_with_revocation_feed(authority, process, revocation_feed)
+}
+
+pub struct PersistentBrowserServoControl {
+    authority: FinalUseAuthority,
+    process: BrowserServoProcessConfig,
+    frame_timeout: Duration,
+    port: Mutex<Option<BrowserServoPort<ChildBrowserTransport>>>,
+    revocation_feed: Option<BrowserRevocationFeed>,
+}
+
+impl fmt::Debug for PersistentBrowserServoControl {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("PersistentBrowserServoControl")
+            .field("process", &self.process)
+            .field("port", &"[PRIVATE RESTARTABLE BROWSER CHILD]")
+            .field("live_revocation_feed", &self.revocation_feed.is_some())
+            .finish()
+    }
+}
+
+impl PersistentBrowserServoControl {
+    pub fn new(
+        authority: FinalUseAuthority,
+        process: BrowserServoProcessConfig,
+    ) -> Result<Self, BrowserServoError> {
+        Self::new_internal(authority, process, None)
+    }
+
+    fn new_with_revocation_feed(
+        authority: FinalUseAuthority,
+        process: BrowserServoProcessConfig,
+        revocation_feed: BrowserRevocationFeed,
+    ) -> Result<Self, BrowserServoError> {
+        Self::new_internal(authority, process, Some(revocation_feed))
+    }
+
+    fn new_internal(
+        authority: FinalUseAuthority,
+        process: BrowserServoProcessConfig,
+        revocation_feed: Option<BrowserRevocationFeed>,
+    ) -> Result<Self, BrowserServoError> {
+        process.validate()?;
+        let frame_timeout = process.parent_frame_timeout()?;
+        let transport = ChildBrowserTransport::spawn(&process)?;
+        let port =
+            BrowserServoPort::with_frame_timeout(authority.clone(), transport, frame_timeout)?;
+        Ok(Self {
+            authority,
+            process,
+            frame_timeout,
+            port: Mutex::new(Some(port)),
+            revocation_feed,
+        })
+    }
+
+    pub fn call(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError> {
+        if call.method.requires_final_use()
+            && let Some(feed) = &self.revocation_feed
+        {
+            feed.refresh_now()
+                .map_err(BrowserServoError::RevocationFeed)?;
+        }
+        let mut guard = self.port.lock().map_err(|_| {
+            BrowserServoError::Unavailable("persistent Browser owner mutex is poisoned".into())
+        })?;
+        if guard.is_none() {
+            let transport = ChildBrowserTransport::spawn(&self.process)?;
+            *guard = Some(BrowserServoPort::with_frame_timeout(
+                self.authority.clone(),
+                transport,
+                self.frame_timeout,
+            )?);
+        }
+        let result = guard
+            .as_ref()
+            .ok_or_else(|| {
+                BrowserServoError::Unavailable("persistent Browser child is unavailable".into())
+            })?
+            .call(call);
+        if result
+            .as_ref()
+            .err()
+            .is_some_and(browser_error_requires_child_reset)
+        {
+            // Never retry the current semantic call. Dropping the port contains
+            // the private child; the next caller may start a clean service and
+            // explicitly reconcile any durable indeterminate operation.
+            *guard = None;
+        }
+        result
+    }
+}
+
+fn browser_error_requires_child_reset(error: &BrowserServoError) -> bool {
+    matches!(
+        error,
+        BrowserServoError::Protocol(_)
+            | BrowserServoError::Indeterminate(_)
+            | BrowserServoError::Unavailable(_)
+    )
+}
+
+fn parse_digest_text(value: &str, name: &str) -> Result<[u8; 32], BrowserServoError> {
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    {
+        return Err(BrowserServoError::Invalid(format!(
+            "{name} must be lowercase SHA-256 hex"
+        )));
+    }
+    let mut output = [0u8; 32];
+    for (index, slot) in output.iter_mut().enumerate() {
+        let start = index * 2;
+        *slot = u8::from_str_radix(&value[start..start + 2], 16).map_err(|error| {
+            BrowserServoError::Invalid(format!("{name} contains invalid hex: {error}"))
+        })?;
+    }
+    Ok(output)
+}
+
 #[derive(Clone, Debug)]
 pub struct BrowserServoProcessConfig {
     pub node_path: PathBuf,
@@ -621,7 +958,22 @@ pub struct BrowserServoProcessConfig {
     pub worker_sha256: [u8; 32],
     pub profile_root: PathBuf,
     pub journal_path: PathBuf,
+    pub reconciliation_root: Option<PathBuf>,
+    pub reconciliation_observer_id: Option<String>,
+    pub reconciliation_verifying_key: Option<[u8; 32]>,
+    pub reconciliation_minimum_observer_generation: Option<u64>,
+    pub reconciliation_minimum_observed_at_unix_ms: Option<u64>,
+    pub reconciliation_current_frontier_digest: Option<[u8; 32]>,
+    pub reconciliation_max_future_skew_ms: Option<u64>,
     pub bwrap_path: PathBuf,
+    pub bwrap_sha256: [u8; 32],
+    pub prlimit_path: PathBuf,
+    pub prlimit_sha256: [u8; 32],
+    pub max_profiles: u64,
+    pub max_address_space_bytes: u64,
+    pub max_cpu_seconds: u64,
+    pub max_open_files: u64,
+    pub max_processes: u64,
     pub driver_timeout_ms: u64,
 }
 
@@ -634,6 +986,7 @@ impl BrowserServoProcessConfig {
             ("Browser profile root", &self.profile_root),
             ("Browser journal", &self.journal_path),
             ("Bubblewrap executable", &self.bwrap_path),
+            ("prlimit executable", &self.prlimit_path),
         ] {
             if !path.is_absolute() {
                 return Err(BrowserServoError::Invalid(format!(
@@ -641,28 +994,116 @@ impl BrowserServoProcessConfig {
                 )));
             }
         }
-        if self.driver_timeout_ms == 0 || self.driver_timeout_ms > JS_SAFE_INTEGER {
-            return Err(BrowserServoError::Invalid(
-                "Browser driver timeout must be a positive safe integer".into(),
-            ));
+        match (
+            self.reconciliation_root.as_ref(),
+            self.reconciliation_observer_id.as_ref(),
+            self.reconciliation_verifying_key.as_ref(),
+            self.reconciliation_minimum_observer_generation,
+            self.reconciliation_minimum_observed_at_unix_ms,
+            self.reconciliation_current_frontier_digest.as_ref(),
+            self.reconciliation_max_future_skew_ms,
+        ) {
+            (None, None, None, None, None, None, None) => {}
+            (
+                Some(path),
+                Some(observer_id),
+                Some(verifying_key),
+                Some(minimum_generation),
+                Some(minimum_observed_at),
+                Some(current_frontier),
+                Some(max_future_skew_ms),
+            ) => {
+                if !path.is_absolute() {
+                    return Err(BrowserServoError::Invalid(
+                        "Browser reconciliation root path must be absolute".into(),
+                    ));
+                }
+                stable_id(observer_id, "Browser reconciliation observer id")?;
+                if *verifying_key == [0; 32] || *current_frontier == [0; 32] {
+                    return Err(BrowserServoError::Invalid(
+                        "Browser reconciliation verifying key/frontier must be non-zero".into(),
+                    ));
+                }
+                if minimum_generation == 0
+                    || minimum_generation > JS_SAFE_INTEGER
+                    || minimum_observed_at == 0
+                    || minimum_observed_at > JS_SAFE_INTEGER
+                    || max_future_skew_ms == 0
+                    || max_future_skew_ms > MAX_RECONCILIATION_FUTURE_SKEW_MS
+                {
+                    return Err(BrowserServoError::Invalid(
+                        "Browser reconciliation currentness policy is outside its hard bounds"
+                            .into(),
+                    ));
+                }
+            }
+            _ => {
+                return Err(BrowserServoError::Invalid(
+                    "Browser persisted reconciliation requires root, observer id, verifying key, minimum generation/time, current frontier and future-skew bound together"
+                        .into(),
+                ));
+            }
+        }
+        for (value, name) in [
+            (self.max_profiles, "Browser max profiles"),
+            (self.max_address_space_bytes, "Browser max address space"),
+            (self.max_cpu_seconds, "Browser max CPU seconds"),
+            (self.max_open_files, "Browser max open files"),
+            (self.max_processes, "Browser max processes"),
+            (self.driver_timeout_ms, "Browser driver timeout"),
+        ] {
+            if value == 0 || value > JS_SAFE_INTEGER {
+                return Err(BrowserServoError::Invalid(format!(
+                    "{name} must be a positive safe integer"
+                )));
+            }
+        }
+        if self.max_profiles > MAX_BROWSER_PROFILES {
+            return Err(BrowserServoError::Invalid(format!(
+                "Browser max profiles exceeds {MAX_BROWSER_PROFILES} hard ceiling"
+            )));
+        }
+        if self.driver_timeout_ms > MAX_DRIVER_TIMEOUT_MS {
+            return Err(BrowserServoError::Invalid(format!(
+                "Browser driver timeout exceeds {MAX_DRIVER_TIMEOUT_MS} ms hard ceiling"
+            )));
         }
         verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
         verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
+        verify_file_digest(&self.bwrap_path, self.bwrap_sha256, MAX_BWRAP_BYTES)?;
+        verify_file_digest(&self.prlimit_path, self.prlimit_sha256, MAX_PRLIMIT_BYTES)?;
         Ok(())
     }
+
+    pub fn parent_frame_timeout(&self) -> Result<Duration, BrowserServoError> {
+        if self.driver_timeout_ms == 0 || self.driver_timeout_ms > MAX_DRIVER_TIMEOUT_MS {
+            return Err(BrowserServoError::Invalid(
+                "Browser driver timeout is outside the hard bound".into(),
+            ));
+        }
+        Ok(Duration::from_millis(
+            self.driver_timeout_ms + PARENT_FRAME_GRACE_MS,
+        ))
+    }
+}
+
+struct ChildWriteRequest {
+    bytes: Vec<u8>,
+    ack: mpsc::SyncSender<Result<(), BrowserServoError>>,
 }
 
 pub struct ChildBrowserTransport {
     child: Child,
-    stdin: ChildStdin,
-    frames: mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>,
-    reader: Option<thread::JoinHandle<()>>,
+    stdin_tx: mpsc::Sender<ChildWriteRequest>,
+    stdout_rx: mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>,
+    closed: bool,
 }
 
 impl fmt::Debug for ChildBrowserTransport {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ChildBrowserTransport")
             .field("pid", &self.child.id())
+            .field("closed", &self.closed)
             .finish_non_exhaustive()
     }
 }
@@ -681,11 +1122,82 @@ impl ChildBrowserTransport {
             )
             .env("HEPTA_BROWSER_PROFILE_ROOT", &config.profile_root)
             .env("HEPTA_BROWSER_JOURNAL_PATH", &config.journal_path)
+            .env(
+                "HEPTA_BROWSER_MAX_PROFILES",
+                config.max_profiles.to_string(),
+            )
             .env("HEPTA_BROWSER_BWRAP_PATH", &config.bwrap_path)
+            .env(
+                "HEPTA_BROWSER_BWRAP_SHA256",
+                hex_lower(&config.bwrap_sha256),
+            )
+            .env("HEPTA_BROWSER_PRLIMIT_PATH", &config.prlimit_path)
+            .env(
+                "HEPTA_BROWSER_PRLIMIT_SHA256",
+                hex_lower(&config.prlimit_sha256),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_ADDRESS_SPACE_BYTES",
+                config.max_address_space_bytes.to_string(),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_CPU_SECONDS",
+                config.max_cpu_seconds.to_string(),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_OPEN_FILES",
+                config.max_open_files.to_string(),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_PROCESSES",
+                config.max_processes.to_string(),
+            )
             .env(
                 "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
                 config.driver_timeout_ms.to_string(),
-            )
+            );
+        if let (
+            Some(path),
+            Some(observer_id),
+            Some(verifying_key),
+            Some(minimum_generation),
+            Some(minimum_observed_at),
+            Some(current_frontier),
+            Some(max_future_skew_ms),
+        ) = (
+            config.reconciliation_root.as_ref(),
+            config.reconciliation_observer_id.as_ref(),
+            config.reconciliation_verifying_key.as_ref(),
+            config.reconciliation_minimum_observer_generation,
+            config.reconciliation_minimum_observed_at_unix_ms,
+            config.reconciliation_current_frontier_digest.as_ref(),
+            config.reconciliation_max_future_skew_ms,
+        ) {
+            command
+                .env("HEPTA_BROWSER_RECONCILIATION_ROOT", path)
+                .env("HEPTA_BROWSER_RECONCILIATION_OBSERVER_ID", observer_id)
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_VERIFYING_KEY",
+                    hex_lower(verifying_key),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_MIN_OBSERVER_GENERATION",
+                    minimum_generation.to_string(),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_MIN_OBSERVED_AT_UNIX_MS",
+                    minimum_observed_at.to_string(),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_CURRENT_FRONTIER_DIGEST",
+                    hex_lower(current_frontier),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_MAX_FUTURE_SKEW_MS",
+                    max_future_skew_ms.to_string(),
+                );
+        }
+        command
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::inherit());
@@ -698,78 +1210,74 @@ impl ChildBrowserTransport {
         let stdout = child.stdout.take().ok_or_else(|| {
             BrowserServoError::Unavailable("Browser child stdout was not piped".into())
         })?;
-        let (sender, frames) = mpsc::sync_channel(1);
-        let reader = thread::Builder::new()
-            .name("hepta-browser-private-reader".to_string())
+        let (stdin_tx, stdin_rx) = mpsc::channel::<ChildWriteRequest>();
+        if let Err(error) = thread::Builder::new()
+            .name("hepta-browser-child-writer".to_string())
             .spawn(move || {
-                let mut stdout = BufReader::new(stdout);
-                loop {
-                    let result = read_child_frame(&mut stdout);
+                let mut stdin = stdin;
+                for request in stdin_rx {
+                    let result = stdin
+                        .write_all(&request.bytes)
+                        .and_then(|_| stdin.flush())
+                        .map_err(|error| {
+                            BrowserServoError::Indeterminate(format!(
+                                "Browser private-channel write failed: {error}"
+                            ))
+                        });
                     let terminal = result.is_err();
-                    if sender.send(result).is_err() || terminal {
+                    let _ = request.ack.send(result);
+                    if terminal {
                         break;
                     }
                 }
             })
-            .map_err(|error| {
-                BrowserServoError::Unavailable(format!(
-                    "failed to start Browser private-channel reader: {error}"
-                ))
-            })?;
+        {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(BrowserServoError::Unavailable(format!(
+                "failed to start bounded Browser child writer: {error}"
+            )));
+        }
+        let (stdout_tx, stdout_rx) = mpsc::sync_channel(8);
+        let mut reader = BufReader::new(stdout);
+        if let Err(error) = thread::Builder::new()
+            .name("hepta-browser-child-reader".to_string())
+            .spawn(move || {
+                loop {
+                    let result = read_private_child_frame(&mut reader);
+                    let terminal = result.is_err();
+                    if stdout_tx.send(result).is_err() || terminal {
+                        break;
+                    }
+                }
+            })
+        {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(BrowserServoError::Unavailable(format!(
+                "failed to start bounded Browser child reader: {error}"
+            )));
+        }
         Ok(Self {
             child,
-            stdin,
-            frames,
-            reader: Some(reader),
-        })
-    }
-}
-
-impl BrowserServoTransport for ChildBrowserTransport {
-    fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError> {
-        if bytes.len() < 5 || bytes.len() > MAX_FRAME_BYTES + 4 {
-            return Err(BrowserServoError::Protocol(
-                "Browser output frame bytes are outside bounds".into(),
-            ));
-        }
-        self.stdin.write_all(bytes).map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel write failed: {error}"
-            ))
-        })?;
-        self.stdin.flush().map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel flush failed: {error}"
-            ))
+            stdin_tx,
+            stdout_rx,
+            closed: false,
         })
     }
 
-    fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError> {
-        match self.frames.recv_timeout(MAX_DISPATCH_CHANNEL_WAIT) {
-            Ok(result) => result,
-            Err(mpsc::RecvTimeoutError::Timeout) => Err(BrowserServoError::Indeterminate(
-                "Browser private-channel response deadline exceeded".into(),
-            )),
-            Err(mpsc::RecvTimeoutError::Disconnected) => Err(BrowserServoError::Indeterminate(
-                "Browser private-channel reader disconnected".into(),
-            )),
+    fn terminate(&mut self) {
+        if self.closed {
+            return;
         }
-    }
-}
-
-impl Drop for ChildBrowserTransport {
-    fn drop(&mut self) {
+        self.closed = true;
         let _ = self.child.kill();
-        let _ = self.child.wait();
-        if let Some(reader) = self.reader.take() {
-            let _ = reader.join();
-        }
     }
 }
 
-fn read_child_frame(stdout: &mut BufReader<ChildStdout>) -> Result<Vec<u8>, BrowserServoError> {
+fn read_private_child_frame(reader: &mut impl Read) -> Result<Vec<u8>, BrowserServoError> {
     let mut prefix = [0u8; 4];
-    stdout.read_exact(&mut prefix).map_err(|error| {
+    reader.read_exact(&mut prefix).map_err(|error| {
         BrowserServoError::Indeterminate(format!(
             "Browser private-channel prefix read failed: {error}"
         ))
@@ -781,7 +1289,7 @@ fn read_child_frame(stdout: &mut BufReader<ChildStdout>) -> Result<Vec<u8>, Brow
         ));
     }
     let mut body = vec![0u8; length];
-    stdout.read_exact(&mut body).map_err(|error| {
+    reader.read_exact(&mut body).map_err(|error| {
         BrowserServoError::Indeterminate(format!(
             "Browser private-channel body read failed: {error}"
         ))
@@ -790,6 +1298,83 @@ fn read_child_frame(stdout: &mut BufReader<ChildStdout>) -> Result<Vec<u8>, Brow
     frame.extend_from_slice(&prefix);
     frame.extend_from_slice(&body);
     Ok(frame)
+}
+
+impl BrowserServoTransport for ChildBrowserTransport {
+    fn write_frame_timeout(
+        &mut self,
+        bytes: &[u8],
+        timeout: Duration,
+    ) -> Result<(), BrowserServoError> {
+        if self.closed {
+            return Err(BrowserServoError::Unavailable(
+                "Browser private child is closed".into(),
+            ));
+        }
+        if bytes.len() < 5 || bytes.len() > MAX_FRAME_BYTES + 4 {
+            return Err(BrowserServoError::Protocol(
+                "Browser output frame bytes are outside bounds".into(),
+            ));
+        }
+        let (ack_tx, ack_rx) = mpsc::sync_channel(1);
+        self.stdin_tx
+            .send(ChildWriteRequest {
+                bytes: bytes.to_vec(),
+                ack: ack_tx,
+            })
+            .map_err(|_| {
+                BrowserServoError::Indeterminate(
+                    "Browser private-channel writer is unavailable".into(),
+                )
+            })?;
+        match ack_rx.recv_timeout(timeout) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel write timed out; child terminated before releasing the final-use fence"
+                        .into(),
+                ))
+            }
+            Err(mpsc::RecvTimeoutError::Disconnected) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel writer terminated without an acknowledgement".into(),
+                ))
+            }
+        }
+    }
+
+    fn read_frame_timeout(&mut self, timeout: Duration) -> Result<Vec<u8>, BrowserServoError> {
+        if self.closed {
+            return Err(BrowserServoError::Unavailable(
+                "Browser private child is closed".into(),
+            ));
+        }
+        match self.stdout_rx.recv_timeout(timeout) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel read timed out; child terminated before releasing the final-use fence"
+                        .into(),
+                ))
+            }
+            Err(mpsc::RecvTimeoutError::Disconnected) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel reader terminated without a frame".into(),
+                ))
+            }
+        }
+    }
+}
+
+impl Drop for ChildBrowserTransport {
+    fn drop(&mut self) {
+        self.terminate();
+        let _ = self.child.wait();
+    }
 }
 
 fn verify_file_digest(
@@ -840,6 +1425,8 @@ pub enum BrowserServoError {
     Indeterminate(String),
     #[error("Browser service unavailable: {0}")]
     Unavailable(String),
+    #[error("Browser live revocation feed rejected current authority state: {0}")]
+    RevocationFeed(String),
     #[error("Browser final-use authority rejected request: {0}")]
     Authority(#[from] FinalUseError),
 }
@@ -864,25 +1451,48 @@ mod tests {
     struct ChannelTransport {
         outbound: mpsc::Sender<Vec<u8>>,
         inbound: mpsc::Receiver<Vec<u8>>,
+        writes: usize,
+        stall_second_write: bool,
     }
 
     impl BrowserServoTransport for ChannelTransport {
-        fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError> {
-            self.outbound
-                .send(bytes.to_vec())
-                .map_err(|_| BrowserServoError::Unavailable("test Browser receiver closed".into()))
+        fn write_frame_timeout(
+            &mut self,
+            bytes: &[u8],
+            timeout: Duration,
+        ) -> Result<(), BrowserServoError> {
+            self.writes += 1;
+            self.outbound.send(bytes.to_vec()).map_err(|_| {
+                BrowserServoError::Unavailable("test Browser receiver closed".into())
+            })?;
+            if self.stall_second_write && self.writes == 2 {
+                thread::sleep(timeout);
+                return Err(BrowserServoError::Indeterminate(
+                    "test Browser frame write timed out".into(),
+                ));
+            }
+            Ok(())
         }
 
-        fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError> {
+        fn read_frame_timeout(&mut self, timeout: Duration) -> Result<Vec<u8>, BrowserServoError> {
             self.inbound
-                .recv()
-                .map_err(|_| BrowserServoError::Unavailable("test Browser sender closed".into()))
+                .recv_timeout(timeout)
+                .map_err(|error| match error {
+                    mpsc::RecvTimeoutError::Timeout => {
+                        BrowserServoError::Indeterminate("test Browser frame read timed out".into())
+                    }
+                    mpsc::RecvTimeoutError::Disconnected => {
+                        BrowserServoError::Unavailable("test Browser sender closed".into())
+                    }
+                })
         }
     }
 
     struct Harness {
         port: Arc<BrowserServoPort<ChannelTransport>>,
         authority: FinalUseAuthority,
+        revocation_feed: BrowserRevocationFeed,
+        revocation_feed_path: PathBuf,
         outbound: mpsc::Receiver<Vec<u8>>,
         inbound: mpsc::Sender<Vec<u8>>,
         invocation: BrowserFinalUseInvocation,
@@ -890,20 +1500,83 @@ mod tests {
         _state: tempfile::TempDir,
     }
 
-    fn harness() -> Harness {
+    fn write_revocation_feed(path: &Path, head: &FinalUseRevocations) {
+        let temporary = path.with_extension("next");
+        let bytes = serde_json::to_vec(&json!({
+            "schema": "hepta.browser.revocation-feed.v1",
+            "version": 1,
+            "authority_epoch": head.authority_epoch,
+            "revision": head.revision,
+            "revoked_grant_ids": head.revoked_grant_ids,
+        }))
+        .expect("revocation feed JSON");
+        fs::write(&temporary, bytes).expect("write revocation feed");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&temporary, fs::Permissions::from_mode(0o600))
+                .expect("secure revocation feed");
+        }
+        fs::rename(temporary, path).expect("publish revocation feed");
+    }
+
+    fn wait_for_feed_revision(feed: &BrowserRevocationFeed, revision: u64) {
+        let deadline = std::time::Instant::now() + Duration::from_secs(2);
+        while std::time::Instant::now() < deadline {
+            if feed.applied_revision().expect("feed revision") == revision {
+                return;
+            }
+            thread::sleep(Duration::from_millis(10));
+        }
+        panic!("Browser revocation feed did not reach revision {revision}");
+    }
+
+    fn private_authority_tempdir() -> tempfile::TempDir {
         let state = tempfile::tempdir().expect("authority tempdir");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o700))
+                .expect("secure authority tempdir permissions");
+        }
+        state
+    }
+
+    fn harness() -> Harness {
+        harness_with_timeout(Duration::from_millis(DEFAULT_PARENT_FRAME_TIMEOUT_MS))
+    }
+
+    fn harness_with_timeout(frame_timeout: Duration) -> Harness {
+        harness_with_timeout_and_write_stall(frame_timeout, false)
+    }
+
+    fn harness_with_timeout_and_write_stall(
+        frame_timeout: Duration,
+        stall_second_write: bool,
+    ) -> Harness {
+        let state = private_authority_tempdir();
+        let state_path = fs::canonicalize(state.path()).expect("canonical authority tempdir");
         let signing = SigningKey::from_bytes(&[7u8; 32]);
+        let bootstrap_revocations = FinalUseRevocations {
+            authority_epoch: 7,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        };
         let authority = FinalUseAuthority::open_state_dir(
-            &state.path().join("authority"),
+            &state_path,
             "browser-test-issuer".to_string(),
             signing.verifying_key().to_bytes(),
-            FinalUseRevocations {
-                authority_epoch: 7,
-                revision: 1,
-                revoked_grant_ids: BTreeSet::new(),
-            },
+            bootstrap_revocations.clone(),
         )
         .expect("authority");
+        let revocation_feed_path = state_path.join("browser-revocations.json");
+        write_revocation_feed(&revocation_feed_path, &bootstrap_revocations);
+        let revocation_feed = BrowserRevocationFeed::start(
+            authority.clone(),
+            revocation_feed_path.clone(),
+            bootstrap_revocations,
+        )
+        .expect("live revocation feed");
         let request_digest = [0x11; 32];
         let binding = FinalUseBinding {
             subject_id: "principal.1".to_string(),
@@ -936,16 +1609,24 @@ mod tests {
         };
         let (to_browser, outbound) = mpsc::channel();
         let (inbound, from_browser) = mpsc::channel();
-        let port = Arc::new(BrowserServoPort::new(
-            authority.clone(),
-            ChannelTransport {
-                outbound: to_browser,
-                inbound: from_browser,
-            },
-        ));
+        let port = Arc::new(
+            BrowserServoPort::with_frame_timeout(
+                authority.clone(),
+                ChannelTransport {
+                    outbound: to_browser,
+                    inbound: from_browser,
+                    writes: 0,
+                    stall_second_write,
+                },
+                frame_timeout,
+            )
+            .expect("bounded Browser port"),
+        );
         Harness {
             port,
             authority,
+            revocation_feed,
+            revocation_feed_path,
             outbound,
             inbound,
             invocation,
@@ -985,6 +1666,56 @@ mod tests {
     }
 
     #[test]
+    fn live_revocation_feed_rejects_rollback_and_same_revision_substitution() {
+        let harness = harness();
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["revoked.1".to_string()]),
+            },
+        );
+        harness
+            .revocation_feed
+            .refresh_now()
+            .expect("monotonic revocation head");
+        assert_eq!(
+            harness
+                .revocation_feed
+                .applied_revision()
+                .expect("feed revision"),
+            2,
+        );
+
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        );
+        assert!(
+            harness.revocation_feed.refresh_now().is_err(),
+            "revocation revision rollback must fail closed",
+        );
+
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["different.2".to_string()]),
+            },
+        );
+        assert!(
+            harness.revocation_feed.refresh_now().is_err(),
+            "same revision with substituted revocation set must fail closed",
+        );
+    }
+
+    #[test]
     fn final_use_fence_covers_exactly_the_browser_local_dispatch_boundary() {
         let harness = harness();
         let port = Arc::clone(&harness.port);
@@ -1006,7 +1737,6 @@ mod tests {
                 "authority_challenge",
                 "browser.agentd.1",
                 json!({
-                    "request": {"operationId":"operation.1"},
                     "requestDigest": hex_lower(&harness.request_digest),
                     "authorityEpoch": 7,
                 }),
@@ -1024,20 +1754,23 @@ mod tests {
             .expect("witness")
             .to_string();
 
-        let authority = harness.authority.clone();
-        let (revoked_tx, revoked_rx) = mpsc::channel();
-        let revoke = thread::spawn(move || {
-            let result = authority.update_revocations(FinalUseRevocations {
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
                 authority_epoch: 7,
                 revision: 2,
                 revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
-            });
-            revoked_tx.send(result).expect("revocation result");
-        });
-        assert!(matches!(
-            revoked_rx.recv_timeout(Duration::from_millis(50)),
-            Err(mpsc::RecvTimeoutError::Timeout)
-        ));
+            },
+        );
+        thread::sleep(Duration::from_millis(75));
+        assert_eq!(
+            harness
+                .revocation_feed
+                .applied_revision()
+                .expect("feed revision while fenced"),
+            1,
+            "live revocation feed must block behind the final-use fence",
+        );
 
         harness
             .inbound
@@ -1067,6 +1800,206 @@ mod tests {
 
         let result = call.join().expect("call thread").expect("Browser result");
         assert_eq!(result["status"], "indeterminate");
+        wait_for_feed_revision(&harness.revocation_feed, 2);
+    }
+
+    #[test]
+    fn final_use_authority_enter_write_timeout_releases_revocation_fence() {
+        let harness = harness_with_timeout_and_write_stall(Duration::from_millis(75), true);
+        let port = Arc::clone(&harness.port);
+        let invocation = harness.invocation.clone();
+        let call = thread::spawn(move || {
+            port.call(
+                BrowserServoCall::effect(
+                    json!({"operationId":"operation.write-timeout"}),
+                    invocation,
+                )
+                .expect("effect call"),
+            )
+        });
+
+        let _request = harness.outbound.recv().expect("request");
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "authorityEpoch": 7,
+                }),
+            ))
+            .expect("challenge");
+        let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
+        assert_eq!(enter["kind"], "authority_enter");
+
+        let authority = harness.authority.clone();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        let revoke = thread::spawn(move || {
+            let result = authority.update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
+            });
+            revoked_tx.send(result).expect("revocation result");
+        });
+        assert!(matches!(
+            revoked_rx.recv_timeout(Duration::from_millis(25)),
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+
+        let error = call
+            .join()
+            .expect("call thread")
+            .expect_err("stalled authority-enter write must time out");
+        assert!(matches!(error, BrowserServoError::Indeterminate(_)));
+        revoked_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("revocation unblocked after write timeout")
+            .expect("revocation succeeded");
+        revoke.join().expect("revocation thread");
+    }
+
+    #[test]
+    fn final_use_boundary_timeout_releases_revocation_fence() {
+        let harness = harness_with_timeout(Duration::from_millis(75));
+        let port = Arc::clone(&harness.port);
+        let invocation = harness.invocation.clone();
+        let call = thread::spawn(move || {
+            port.call(
+                BrowserServoCall::effect(json!({"operationId":"operation.timeout"}), invocation)
+                    .expect("effect call"),
+            )
+        });
+
+        let request = decode_outbound(&harness.outbound.recv().expect("request"));
+        assert_eq!(request["kind"], "request");
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "authorityEpoch": 7,
+                }),
+            ))
+            .expect("challenge");
+
+        let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
+        assert_eq!(enter["kind"], "authority_enter");
+
+        let authority = harness.authority.clone();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        let revoke = thread::spawn(move || {
+            let result = authority.update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
+            });
+            revoked_tx.send(result).expect("revocation result");
+        });
+        assert!(matches!(
+            revoked_rx.recv_timeout(Duration::from_millis(25)),
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+
+        let error = call
+            .join()
+            .expect("call thread")
+            .expect_err("missing Browser boundary must time out");
+        assert!(matches!(error, BrowserServoError::Indeterminate(_)));
+        revoked_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("revocation unblocked after timeout")
+            .expect("revocation succeeded");
+        revoke.join().expect("revocation thread");
+    }
+
+    #[test]
+    fn pre_dispatch_rejection_releases_final_use_fence_without_claiming_crossed() {
+        let harness = harness();
+        let port = Arc::clone(&harness.port);
+        let invocation = harness.invocation.clone();
+        let call = thread::spawn(move || {
+            port.call(
+                BrowserServoCall::effect(json!({"operationId":"operation.rejected"}), invocation)
+                    .expect("effect call"),
+            )
+        });
+
+        let request = decode_outbound(&harness.outbound.recv().expect("request"));
+        assert_eq!(request["kind"], "request");
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "authorityEpoch": 7,
+                }),
+            ))
+            .expect("challenge");
+
+        let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
+        assert_eq!(enter["kind"], "authority_enter");
+        let witness = enter["payload"]["witnessDigest"]
+            .as_str()
+            .expect("witness")
+            .to_string();
+
+        let authority = harness.authority.clone();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        let revoke = thread::spawn(move || {
+            let result = authority.update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
+            });
+            revoked_tx.send(result).expect("revocation result");
+        });
+        assert!(matches!(
+            revoked_rx.recv_timeout(Duration::from_millis(50)),
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+
+        harness
+            .inbound
+            .send(inbound_frame(
+                2,
+                "dispatch_rejected",
+                "browser.agentd.1",
+                json!({
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "witnessDigest": witness,
+                    "localDispatchCrossed": false,
+                }),
+            ))
+            .expect("dispatch rejected");
+        harness
+            .inbound
+            .send(inbound_frame(
+                3,
+                "response",
+                "browser.agentd.1",
+                json!({
+                    "ok": true,
+                    "result": {
+                        "status":"failed",
+                        "terminalObserved":true,
+                        "observationReason":"worker_rejected_before_dispatch"
+                    },
+                }),
+            ))
+            .expect("response");
+
+        let result = call.join().expect("call thread").expect("Browser result");
+        assert_eq!(result["status"], "failed");
+        assert_eq!(result["terminalObserved"], true);
         revoked_rx
             .recv_timeout(Duration::from_secs(1))
             .expect("revocation unblocked")
@@ -1093,7 +2026,6 @@ mod tests {
                 "authority_challenge",
                 "browser.agentd.1",
                 json!({
-                    "request": {"operationId":"operation.2"},
                     "requestDigest": hex_lower(&[0x99; 32]),
                     "authorityEpoch": 7,
                 }),
@@ -1104,6 +2036,73 @@ mod tests {
         assert!(matches!(
             harness.outbound.recv_timeout(Duration::from_millis(25)),
             Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+    }
+
+    #[test]
+    fn browser_response_payloads_are_exact_key_closed() {
+        let request_id = "browser.agentd.1";
+
+        let success = response_result(
+            DecodedFrame {
+                sequence: 1,
+                kind: "response".to_string(),
+                request_id: request_id.to_string(),
+                payload: json!({"ok":true,"result":{"status":"ok"}}),
+            },
+            request_id,
+        )
+        .expect("exact success response");
+        assert_eq!(success["status"], "ok");
+
+        let rejected = response_result(
+            DecodedFrame {
+                sequence: 1,
+                kind: "response".to_string(),
+                request_id: request_id.to_string(),
+                payload: json!({"ok":false,"error":"denied"}),
+            },
+            request_id,
+        )
+        .expect_err("exact failure response must be rejected by the service");
+        assert!(matches!(rejected, BrowserServoError::Rejected(_)));
+
+        for payload in [
+            json!({"ok":true,"result":{},"error":"smuggled"}),
+            json!({"ok":false,"error":"denied","result":{}}),
+            json!({"ok":false}),
+            json!({"ok":false,"error":7}),
+        ] {
+            let error = response_result(
+                DecodedFrame {
+                    sequence: 1,
+                    kind: "response".to_string(),
+                    request_id: request_id.to_string(),
+                    payload,
+                },
+                request_id,
+            )
+            .expect_err("non-canonical response payload must fail closed");
+            assert!(matches!(error, BrowserServoError::Protocol(_)));
+        }
+    }
+
+    #[test]
+    fn persistent_owner_resets_only_channel_or_indeterminate_failures() {
+        assert!(browser_error_requires_child_reset(
+            &BrowserServoError::Protocol("bad frame".into())
+        ));
+        assert!(browser_error_requires_child_reset(
+            &BrowserServoError::Indeterminate("unknown effect".into())
+        ));
+        assert!(browser_error_requires_child_reset(
+            &BrowserServoError::Unavailable("child exited".into())
+        ));
+        assert!(!browser_error_requires_child_reset(
+            &BrowserServoError::Rejected("application rejection".into())
+        ));
+        assert!(!browser_error_requires_child_reset(
+            &BrowserServoError::Invalid("caller input".into())
         ));
     }
 

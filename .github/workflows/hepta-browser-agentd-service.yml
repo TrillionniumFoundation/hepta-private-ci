@@ -1,0 +1,107 @@
+name: Browser Agentd service
+
+on:
+  push:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'apps/hepta-browser/**'
+      - 'docs/modules/browser.servo/**'
+      - '.github/workflows/hepta-browser-agentd-service.yml'
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'apps/hepta-browser/**'
+      - 'docs/modules/browser.servo/**'
+      - '.github/workflows/hepta-browser-agentd-service.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-agentd-service-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  service:
+    name: Browser Agentd service
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact service source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Generate complete Browser service closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/service-closure-manifest.js \
+            "$GITHUB_WORKSPACE/apps/hepta-browser" \
+            "$RUNNER_TEMP/browser-service-closure.json"
+          test -s "$RUNNER_TEMP/browser-service-closure.json"
+          grep -F 'hepta.browser.service-closure.v1' \
+            "$RUNNER_TEMP/browser-service-closure.json"
+
+      - name: Verify Agentd formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
+
+      - name: Exercise private service framing
+        working-directory: codex-rs
+        shell: bash
+        run: cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
+
+      - name: Compile both Browser callers
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-agentd \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browser-service
+
+      - name: Deny Browser caller warnings
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-agentd \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browser-service \
+            --no-deps -- -D warnings
+
+      - name: Exercise real final-use and revocation-feed tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --locked -p codex-hepta-agentd browser_revocation_feed --lib
+
+      - name: Verify source stayed clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
