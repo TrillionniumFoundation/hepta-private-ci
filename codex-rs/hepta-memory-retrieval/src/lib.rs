@@ -52,6 +52,7 @@ pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
 pub use generation_bound::CanonicalRecallShadowContextV1;
+pub use generation_bound::ContradictionEvidenceV1;
 pub use generation_bound::ContradictionPolarityV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
 pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
