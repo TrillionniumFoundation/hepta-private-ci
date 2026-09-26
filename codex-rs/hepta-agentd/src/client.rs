@@ -74,6 +74,26 @@ impl AgentdClient {
         })
     }
 
+    /// Send one NDU request. Unknown mutations are never automatically retried;
+    /// reconcile their identity through Outcome instead.
+    pub async fn ndu_control(
+        &self,
+        request: codex_hepta_agent_protocol::NduControlRequestV1,
+    ) -> Result<codex_hepta_agent_protocol::NduControlResultV1, AgentdError> {
+        let response = self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::NduControl { request },
+            })
+            .await?;
+        match response.payload {
+            AgentdPayload::NduControl(result) => Ok(result),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn capabilities(&self) -> Result<AgentdCapabilitySet, AgentdError> {
         match self
             .send(AgentdRequest::capabilities(

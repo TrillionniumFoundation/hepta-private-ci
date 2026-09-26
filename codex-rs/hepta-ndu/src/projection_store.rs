@@ -181,12 +181,21 @@ impl NduProjectionStoreV1 {
         let journal_path = root.join(JOURNAL_FILE);
         reject_existing_symlink(&journal_path)?;
         let journal = match File::open(&journal_path) {
-            Ok(mut file) => {
-                if !file.metadata()?.is_file() {
+            Ok(file) => {
+                let metadata = file.metadata()?;
+                if !metadata.is_file() {
                     return Err(NduProjectionStoreError::NotRegular);
                 }
-                let mut bytes = Vec::new();
-                file.read_to_end(&mut bytes)?;
+                let max_bytes = u64::try_from(MAX_BACKUP_BYTES)
+                    .map_err(|_| NduProjectionStoreError::BackupTooLarge)?;
+                if metadata.len() > max_bytes {
+                    return Err(NduProjectionStoreError::BackupTooLarge);
+                }
+                let capacity = usize::try_from(metadata.len())
+                    .map_err(|_| NduProjectionStoreError::BackupTooLarge)?;
+                let mut bytes = Vec::with_capacity(capacity);
+                let mut bounded = file.take(max_bytes.saturating_add(1));
+                bounded.read_to_end(&mut bytes)?;
                 if bytes.len() > MAX_BACKUP_BYTES {
                     return Err(NduProjectionStoreError::BackupTooLarge);
                 }
@@ -256,6 +265,8 @@ impl NduProjectionStoreV1 {
         })
     }
 
+    /// Compatibility entry for first selection. Replacement callers must use
+    /// `select_projection_if_current` with the exact current predecessor.
     pub fn select_projection(
         &mut self,
         operation_identity_digest: Digest32,
@@ -263,11 +274,29 @@ impl NduProjectionStoreV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionStoreError> {
+        self.select_projection_if_current(
+            operation_identity_digest,
+            objective_digest,
+            subject_digest,
+            None,
+            projection_digest,
+        )
+    }
+
+    pub fn select_projection_if_current(
+        &mut self,
+        operation_identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        expected_predecessor: Option<Digest32>,
+        projection_digest: Digest32,
+    ) -> Result<NduProjectionEntryV1, NduProjectionStoreError> {
         self.commit(|journal| {
-            journal.select_projection(
+            journal.select_projection_if_current(
                 operation_identity_digest,
                 objective_digest,
                 subject_digest,
+                expected_predecessor,
                 projection_digest,
             )
         })
@@ -396,9 +425,10 @@ fn persist_image(
         return Err(error.into());
     }
 
-    if let Err(error) = persistence.rename(&temp_path, &journal_path) {
-        let _ = fs::remove_file(&temp_path);
-        return Err(error.into());
+    // A failed acknowledgement does not prove that replacement did not occur.
+    // Preserve the candidate and fence this handle until reopen reconciles disk.
+    if persistence.rename(&temp_path, &journal_path).is_err() {
+        return Err(NduProjectionStoreError::Indeterminate);
     }
 
     persistence
@@ -409,3 +439,7 @@ fn persist_image(
 #[cfg(test)]
 #[path = "projection_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "projection_store_process_kill_tests.rs"]
+mod process_kill_tests;

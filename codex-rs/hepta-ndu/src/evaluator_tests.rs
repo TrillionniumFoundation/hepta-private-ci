@@ -1,3 +1,8 @@
+#![expect(
+    deprecated,
+    reason = "legacy evaluator compatibility tests deliberately exercise the deprecated entrypoint"
+)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;

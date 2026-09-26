@@ -1,5 +1,11 @@
+#[path = "ndu-named-host-qualification/fixture.rs"]
+mod fixture;
+use fixture::digest;
+use fixture::fixture;
+
 use std::error::Error;
 use std::fs;
+use std::fs::File;
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -14,6 +20,7 @@ use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::NduProjectionJournalError;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_ndu::NduProjectionKindV1;
+use codex_hepta_ndu::NduProjectionStoreError;
 use codex_hepta_ndu::NduProjectionStoreV1;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
@@ -33,7 +40,9 @@ const MAX_CANDIDATES: usize = 128;
 const MAX_ORGANS: usize = 32;
 const MAX_UTILITY_AXES: usize = 8;
 const MAX_RISK_RESOURCE_AXES: usize = 32;
-const JOURNAL_CAPACITY: usize = 4096;
+const JOURNAL_RECORD_CAPACITY: usize = 4096;
+const LIVE_PROJECTION_CAPACITY: usize = JOURNAL_RECORD_CAPACITY / 2;
+const OVERSIZED_IMAGE_BYTES: u64 = 1_u64 << 40;
 
 #[derive(Clone)]
 struct EvaluationFixture {
@@ -89,7 +98,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut journal = NduProjectionJournalV1::new();
     let objective = digest("capacity-objective");
     let subject = digest("capacity-subject");
-    for index in 0..JOURNAL_CAPACITY {
+    for index in 0..LIVE_PROJECTION_CAPACITY {
         journal.append_projection(
             NduProjectionKindV1::Preference,
             digest(&format!("capacity-identity-{index}")),
@@ -98,54 +107,93 @@ fn main() -> Result<(), Box<dyn Error>> {
             digest(&format!("capacity-payload-{index}")),
         )?;
     }
-    let journal_capacity_micros = journal_started.elapsed().as_micros();
-    if journal.entries().len() != JOURNAL_CAPACITY {
-        return Err("journal capacity underfilled".into());
+    if journal.entries().len() != LIVE_PROJECTION_CAPACITY {
+        return Err("journal live-projection envelope underfilled".into());
     }
-    let overflow = journal
-        .append_projection(
-            NduProjectionKindV1::Preference,
-            digest("capacity-overflow-identity"),
+    let overflow = match journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("capacity-overflow-identity"),
+        objective,
+        subject,
+        digest("capacity-overflow-payload"),
+    ) {
+        Ok(_) => return Err("ordinary history consumed reserved revocation capacity".into()),
+        Err(error) => error,
+    };
+    if overflow != NduProjectionJournalError::RevocationCapacityExhausted {
+        return Err("journal revocation-reserve boundary mismatch".into());
+    }
+    let mut capacity_prefix = Vec::new();
+    for index in 0..LIVE_PROJECTION_CAPACITY {
+        if index + 1 == LIVE_PROJECTION_CAPACITY {
+            capacity_prefix = journal.export_bytes();
+        }
+        journal.revoke_projection(
+            digest(&format!("capacity-revocation-{index}")),
             objective,
             subject,
-            digest("capacity-overflow-payload"),
-        )
-        .expect_err("4097th record must reject");
-    if overflow != NduProjectionJournalError::RecordLimitExceeded {
-        return Err("journal capacity boundary mismatch".into());
+            digest(&format!("capacity-payload-{index}")),
+        )?;
+    }
+    if journal.entries().len() != JOURNAL_RECORD_CAPACITY {
+        return Err("full-capacity revocation envelope not exercised".into());
+    }
+    let reopened_capacity = NduProjectionJournalV1::reopen(&journal.export_bytes())?;
+    if reopened_capacity.entries() != journal.entries() {
+        return Err("full-envelope journal recovery drift".into());
+    }
+    let journal_capacity_micros = journal_started.elapsed().as_micros();
+
+    let root_nonce = format!("{}", std::process::id());
+    let store_root = std::env::temp_dir().join(format!("hepta-ndu-named-host-{root_nonce}"));
+    let restore_root =
+        std::env::temp_dir().join(format!("hepta-ndu-named-host-restore-{root_nonce}"));
+    let oversized_root =
+        std::env::temp_dir().join(format!("hepta-ndu-named-host-oversized-{root_nonce}"));
+    let capacity_root =
+        std::env::temp_dir().join(format!("hepta-ndu-named-host-capacity-{root_nonce}"));
+    for root in [&store_root, &restore_root, &oversized_root, &capacity_root] {
+        let _ = fs::remove_dir_all(root);
+        fs::create_dir(root)?;
     }
 
-    let store_root =
-        std::env::temp_dir().join(format!("hepta-ndu-named-host-{}", std::process::id()));
-    let restore_root = std::env::temp_dir().join(format!(
-        "hepta-ndu-named-host-restore-{}",
-        std::process::id()
-    ));
-    let _ = fs::remove_dir_all(&store_root);
-    let _ = fs::remove_dir_all(&restore_root);
-    fs::create_dir(&store_root)?;
-    fs::create_dir(&restore_root)?;
+    let durability_started = Instant::now();
+    let durable_objective = digest("durable-objective");
+    let durable_subject = digest("durable-subject");
     let projection = digest("durable-projection");
     {
         let mut store = NduProjectionStoreV1::open(&store_root)?;
         store.append_projection(
             NduProjectionKindV1::Preference,
             digest("durable-projection-id"),
-            objective,
-            subject,
+            durable_objective,
+            durable_subject,
             projection,
         )?;
-        store.select_projection(digest("durable-select-id"), objective, subject, projection)?;
+        store.select_projection_if_current(
+            digest("durable-select-id"),
+            durable_objective,
+            durable_subject,
+            None,
+            projection,
+        )?;
     }
     let backup;
     {
         let mut reopened = NduProjectionStoreV1::open(&store_root)?;
-        if reopened.selected_projection_digest(objective, subject)? != Some(projection) {
+        if reopened.selected_projection_digest(durable_objective, durable_subject)?
+            != Some(projection)
+        {
             return Err("durable reopen lost selection".into());
         }
-        reopened.revoke_projection(digest("durable-revoke-id"), objective, subject, projection)?;
+        reopened.revoke_projection(
+            digest("durable-revoke-id"),
+            durable_objective,
+            durable_subject,
+            projection,
+        )?;
         if reopened
-            .selected_projection_digest(objective, subject)?
+            .selected_projection_digest(durable_objective, durable_subject)?
             .is_some()
         {
             return Err("durable revocation did not clear selection".into());
@@ -156,7 +204,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut restored = NduProjectionStoreV1::open(&restore_root)?;
         restored.restore_backup(&backup)?;
         if restored
-            .selected_projection_digest(objective, subject)?
+            .selected_projection_digest(durable_objective, durable_subject)?
             .is_some()
         {
             return Err("backup restore resurrected revoked projection".into());
@@ -165,8 +213,41 @@ fn main() -> Result<(), Box<dyn Error>> {
             return Err("backup restore record count mismatch".into());
         }
     }
-    let _ = fs::remove_dir_all(&store_root);
-    let _ = fs::remove_dir_all(&restore_root);
+
+    {
+        let mut store = NduProjectionStoreV1::open(&capacity_root)?;
+        store.restore_backup(&capacity_prefix)?;
+        let last = LIVE_PROJECTION_CAPACITY - 1;
+        store.revoke_projection(
+            digest(&format!("capacity-revocation-{last}")),
+            objective,
+            subject,
+            digest(&format!("capacity-payload-{last}")),
+        )?;
+    }
+    {
+        let reopened = NduProjectionStoreV1::open(&capacity_root)?;
+        if reopened.entries()? != journal.entries() {
+            return Err("full-capacity disk revocation/reopen drift".into());
+        }
+    }
+
+    let oversized = File::create(oversized_root.join("projection.journal"))?;
+    oversized.set_len(OVERSIZED_IMAGE_BYTES)?;
+    oversized.sync_all()?;
+    drop(oversized);
+    if NduProjectionStoreV1::open(&oversized_root)
+        .err()
+        .ok_or("oversized image unexpectedly opened")?
+        != NduProjectionStoreError::BackupTooLarge
+    {
+        return Err("oversized image did not fail at bounded-read admission".into());
+    }
+    let durability_micros = durability_started.elapsed().as_micros();
+
+    for root in [&store_root, &restore_root, &oversized_root, &capacity_root] {
+        let _ = fs::remove_dir_all(root);
+    }
 
     let cpu_after = process_cpu_ticks()?;
     let cpu_ticks = cpu_after.saturating_sub(cpu_before);
@@ -178,14 +259,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     let p99 = percentile(&latencies, 99);
     let hot_target_pass = p95 <= 2_000 && p99 <= 5_000;
 
-    let source_sha = std::env::var("HEPTA_NDU_SOURCE_SHA").unwrap_or_default();
-    let source_tree = std::env::var("HEPTA_NDU_SOURCE_TREE").unwrap_or_default();
-    let lane = std::env::var("HEPTA_NDU_QUALIFICATION_LANE").unwrap_or_default();
+    let source_sha = env_required("HEPTA_NDU_SOURCE_SHA")?;
+    let source_tree = env_required("HEPTA_NDU_SOURCE_TREE")?;
+    let lane = env_required("HEPTA_NDU_QUALIFICATION_LANE")?;
+    if [&source_sha, &source_tree]
+        .iter()
+        .any(|value| value.len() != 40 || !value.bytes().all(|b| b.is_ascii_hexdigit()))
+    {
+        return Err("exact source commit and tree are required".into());
+    }
 
     let json = format!(
         concat!(
             "{{\n",
-            "  \"schema\": \"hepta.ndu.named-host-qualification.v1\",\n",
+            "  \"schema\": \"hepta.ndu.named-host-qualification.v3\",\n",
             "  \"hostId\": \"{}\",\n",
             "  \"lane\": \"{}\",\n",
             "  \"sourceSha\": \"{}\",\n",
@@ -199,10 +286,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             "\"targetP95Micros\": 2000, \"targetP99Micros\": 5000, \"targetPass\": {}}},\n",
             "  \"maxCapacity\": {{\"candidates\": {}, \"contributions\": {}, ",
             "\"utilityAxes\": {}, \"riskResourceAxes\": {}, \"elapsedMicros\": {}}},\n",
-            "  \"journal\": {{\"records\": 4096, \"overflowRejected\": true, ",
+            "  \"journal\": {{\"recordCapacity\": {}, \"liveProjectionCapacity\": {}, ",
+            "\"reservedRevocationSlots\": {}, \"ordinaryOverflowRejected\": true, ",
+            "\"fullEnvelopeRevocation\": true, \"restartRecovery\": true, ",
             "\"elapsedMicros\": {}}},\n",
-            "  \"durability\": {{\"restartReopen\": true, \"revocationNonResurrection\": true, ",
-            "\"backupRestore\": true}},\n",
+            "  \"durability\": {{\"restartReopen\": true, ",
+            "\"revocationNonResurrection\": true, \"backupRestore\": true, \"fullCapacityDiskRecovery\": true, ",
+            "\"oversizedImageBoundedReject\": true, \"faultCuts\": \"separate_test_receipt_required\", \"oversizedSparseBytes\": 1099511627776, ",
+            "\"elapsedMicros\": {}}},\n",
             "  \"process\": {{\"cpuMicros\": {}, \"maxRssKiB\": {}}}\n",
             "}}\n"
         ),
@@ -226,7 +317,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         MAX_UTILITY_AXES,
         MAX_RISK_RESOURCE_AXES,
         max_capacity_micros,
+        JOURNAL_RECORD_CAPACITY,
+        LIVE_PROJECTION_CAPACITY,
+        LIVE_PROJECTION_CAPACITY,
         journal_capacity_micros,
+        durability_micros,
         cpu_micros,
         max_rss_kib
     );
@@ -238,175 +333,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn fixture(
-    candidate_count: usize,
-    organ_count: usize,
-    utility_axes: usize,
-    risk_resource_axes: usize,
-) -> Result<EvaluationFixture, Box<dyn Error>> {
-    let objective = digest("benchmark-objective");
-    let generation = Generation::new(1)?;
-    let organs = (0..organ_count)
-        .map(|index| stable(&format!("organ-{index:02}")))
-        .collect::<Result<Vec<_>, _>>()?;
-    let utility_ids = (0..utility_axes)
-        .map(|index| stable(&format!("utility-{index:02}")))
-        .collect::<Result<Vec<_>, _>>()?;
-    let risk_ids = (0..risk_resource_axes)
-        .map(|index| stable(&format!("risk-{index:02}")))
-        .collect::<Result<Vec<_>, _>>()?;
-    let resource_ids = (0..risk_resource_axes)
-        .map(|index| stable(&format!("resource-{index:02}")))
-        .collect::<Result<Vec<_>, _>>()?;
-
-    let mut contributions = Vec::with_capacity(candidate_count * organ_count);
-    for candidate_index in 0..candidate_count {
-        let candidate = if candidate_index == 0 {
-            stable("abstain")?
-        } else {
-            stable(&format!("candidate-{candidate_index:03}"))?
-        };
-        for organ in &organs {
-            let score = if candidate_index == 0 {
-                FixedQ32::ZERO
-            } else {
-                q32(candidate_index as i64)
-            };
-            contributions.push(UtilityContribution {
-                candidate_id: candidate.clone(),
-                organ_id: organ.clone(),
-                objective_digest: objective,
-                generation,
-                feasibility: FeasibilityPosture::Feasible,
-                utility: utility_ids
-                    .iter()
-                    .cloned()
-                    .map(|axis| AxisValue { axis, value: score })
-                    .collect(),
-                risk: risk_ids
-                    .iter()
-                    .cloned()
-                    .map(|axis| AxisValue {
-                        axis,
-                        value: FixedQ32::ZERO,
-                    })
-                    .collect(),
-                resource: resource_ids
-                    .iter()
-                    .cloned()
-                    .map(|axis| AxisValue {
-                        axis,
-                        value: FixedQ32::ZERO,
-                    })
-                    .collect(),
-                uncertainty: utility_ids
-                    .iter()
-                    .cloned()
-                    .map(|axis| AxisValue {
-                        axis,
-                        value: FixedQ32::ZERO,
-                    })
-                    .collect(),
-                support_digest: digest(&format!("{candidate_index}-{}", organ.as_str())),
-            });
-        }
-    }
-
-    let profile = UtilityProfile {
-        profile_id: stable("named-host-benchmark-v1")?,
-        axis_registry_digest: digest("named-host-benchmark-axis-registry"),
-        normalization_manifest_digest: digest("named-host-benchmark-normalization"),
-        dimensions: utility_ids
-            .iter()
-            .cloned()
-            .map(|axis| (axis, AxisDirection::Maximize))
-            .collect(),
-        risk_ceilings: risk_ids
-            .iter()
-            .cloned()
-            .map(|axis| AxisLimit {
-                axis,
-                maximum: FixedQ32::ZERO,
-            })
-            .collect(),
-        resource_ceilings: resource_ids
-            .iter()
-            .cloned()
-            .map(|axis| AxisLimit {
-                axis,
-                maximum: FixedQ32::ZERO,
-            })
-            .collect(),
-        required_organs: RequiredOrganSet { organ_ids: organs },
-    };
-    let policy = EvaluationPolicyV1 {
-        policy_id: stable("named-host-benchmark-policy-v1")?,
-        utility_rules: utility_ids
-            .iter()
-            .cloned()
-            .map(|axis| AxisAggregationRule {
-                axis,
-                operator: AggregationOperator::Sum,
-            })
-            .collect(),
-        risk_rules: risk_ids
-            .iter()
-            .cloned()
-            .map(|axis| AxisAggregationRule {
-                axis,
-                operator: AggregationOperator::Maximum,
-            })
-            .collect(),
-        resource_rules: resource_ids
-            .iter()
-            .cloned()
-            .map(|axis| AxisAggregationRule {
-                axis,
-                operator: AggregationOperator::Sum,
-            })
-            .collect(),
-        uncertainty_rules: utility_ids
-            .iter()
-            .cloned()
-            .map(|axis| AxisAggregationRule {
-                axis,
-                operator: AggregationOperator::Maximum,
-            })
-            .collect(),
-        pareto_absolute_tolerances: utility_ids
-            .iter()
-            .cloned()
-            .map(|axis| AxisValue {
-                axis,
-                value: FixedQ32::ZERO,
-            })
-            .collect(),
-    };
-    Ok(EvaluationFixture {
-        set: ContributionSet {
-            objective_digest: objective,
-            generation,
-            contributions,
-        },
-        profile,
-        policy,
-    })
-}
-
-fn stable(value: &str) -> Result<StableId, Box<dyn Error>> {
-    StableId::new(value).map_err(|error| format!("invalid id {value}: {error:?}").into())
-}
-
-fn q32(value: i64) -> FixedQ32 {
-    FixedQ32::from_raw(value << 32)
-}
-
-fn digest(value: &str) -> Digest32 {
-    Digest32::of_bytes(value.as_bytes())
-}
-
 fn percentile(values: &[u128], percentile: usize) -> u128 {
-    let index = ((values.len() - 1) * percentile + 99) / 100;
+    let index = ((values.len() - 1) * percentile).div_ceil(100);
     values[index.min(values.len() - 1)]
 }
 

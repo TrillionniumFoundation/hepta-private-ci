@@ -84,6 +84,30 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::NduControl { request } => {
+                let host = self.ndu_owner.get().ok_or_else(|| {
+                    AgentdError::Invalid("utility.ndu owner is not configured".to_string())
+                })?;
+                let mutation = request.requires_mutation_admission();
+                let result = host
+                    .control(request, || {
+                        self.refresh_generation()
+                            .map_err(|_| crate::AgentdNduOwnerErrorV1::NotReady)?;
+                        if self
+                            .is_fenced()
+                            .map_err(|_| crate::AgentdNduOwnerErrorV1::NotReady)?
+                            || (mutation
+                                && !self
+                                    .automation_admission_ready()
+                                    .map_err(|_| crate::AgentdNduOwnerErrorV1::NotReady)?)
+                        {
+                            return Err(crate::AgentdNduOwnerErrorV1::NotReady);
+                        }
+                        Ok(())
+                    })
+                    .map_err(|error| AgentdError::Protocol(format!("utility.ndu: {error}")))?;
+                AgentdPayload::NduControl(result)
+            }
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
@@ -101,6 +125,12 @@ impl AgentdState {
                             0,
                         )
                         .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.ndu_owner.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new("utility.ndu.control", 1, 0)
+                            .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.evidence.get().is_some() {

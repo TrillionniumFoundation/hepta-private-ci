@@ -41,6 +41,7 @@ pub(crate) struct AgentdState {
     pub(crate) cognitive_retrieval_learning:
         std::sync::OnceLock<Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) intuition_policy: std::sync::OnceLock<Arc<crate::AgentdIntuitionPolicyHostV1>>,
+    ndu_owner: std::sync::OnceLock<Arc<crate::AgentdNduOwnerHostV1>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     pub(crate) production_operations: std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
     pub(crate) evidence: std::sync::OnceLock<Arc<crate::evidence_host::EvidenceHost>>,
@@ -139,6 +140,7 @@ impl AgentdState {
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
             plasticity_runtime: std::sync::OnceLock::new(),
             intuition_policy: std::sync::OnceLock::new(),
+            ndu_owner: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -158,6 +160,21 @@ impl AgentdState {
             app_server_drain: AppServerDrainHandle::new(),
             prompt_pipeline,
         })
+    }
+
+    pub(crate) fn attach_ndu_owner(
+        &self,
+        host: Arc<crate::AgentdNduOwnerHostV1>,
+    ) -> Result<(), AgentdError> {
+        host.require_identity(&self.identity.agent_id, self.identity.spawn_generation)
+            .map_err(|error| {
+                AgentdError::GenerationFenced(format!(
+                    "utility.ndu owner identity does not match live Agentd: {error}"
+                ))
+            })?;
+        self.ndu_owner
+            .set(host)
+            .map_err(|_| AgentdError::Protocol("utility.ndu owner already attached".to_string()))
     }
 
     pub(crate) fn attach_plasticity_runtime(

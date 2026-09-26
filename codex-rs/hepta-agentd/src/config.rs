@@ -90,6 +90,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
+    ndu_owner_host: Option<std::sync::Arc<crate::AgentdNduOwnerHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
@@ -213,6 +214,7 @@ impl AgentdConfig {
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
             intuition_policy_host: None,
+            ndu_owner_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
         })
@@ -493,6 +495,29 @@ impl AgentdConfig {
 
     /// Compose the canonical intelligence product caller into this daemon.
     /// No authority file, signer identity, or verifying key is inferred.
+    pub fn with_ndu_owner_host(
+        mut self,
+        host: std::sync::Arc<crate::AgentdNduOwnerHostV1>,
+    ) -> Result<Self, AgentdError> {
+        if self.ndu_owner_host.is_some() {
+            return Err(AgentdError::Invalid(
+                "utility.ndu owner host already configured".to_string(),
+            ));
+        }
+        host.require_identity(&self.identity.agent_id, self.identity.spawn_generation)
+            .map_err(|error| {
+                AgentdError::GenerationFenced(format!(
+                    "utility.ndu owner identity does not match Agentd: {error}"
+                ))
+            })?;
+        self.ndu_owner_host = Some(host);
+        Ok(self)
+    }
+
+    pub(crate) fn ndu_owner_host(&self) -> Option<std::sync::Arc<crate::AgentdNduOwnerHostV1>> {
+        self.ndu_owner_host.clone()
+    }
+
     pub fn with_intelligence_product_runner(
         mut self,
         runner: std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>,

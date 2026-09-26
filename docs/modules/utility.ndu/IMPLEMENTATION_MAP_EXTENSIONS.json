@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.module-implementation-map-extension.v1",
+  "module": "utility.ndu",
+  "extends": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+  "operations": [
+    {
+      "operation": "ValidatedScalarizationProfileV1",
+      "nativeSymbol": "codex_hepta_ndu::ValidatedScalarizationProfileV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_profile_bound_admission",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+          "symbol": "validated_scalarization_is_profile_bound_and_canonical"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+          "symbol": "incomplete_or_out_of_range_scalarization_is_rejected_before_owner_open"
+        }
+      ]
+    },
+    {
+      "operation": "evaluate_candidates_with_quarantine",
+      "nativeSymbol": "codex_hepta_ndu::evaluate_candidates_with_quarantine",
+      "sourcePath": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_candidate_isolation_v3",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+          "symbol": "malformed_non_abstain_is_quarantined_without_hiding_valid_candidate"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+          "symbol": "malformed_abstain_remains_global_fail_closed"
+        }
+      ]
+    },
+    {
+      "operation": "validate_staged_updates_against_snapshot",
+      "nativeSymbol": "codex_hepta_ndu::validate_staged_updates_against_snapshot",
+      "sourcePath": "codex-rs/hepta-ndu/src/hierarchy.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_authenticated_hierarchy_snapshot_v1",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "snapshot_rejects_non_immediate_and_missing_parent_edges"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "snapshot_binding_rejects_any_ancestor_descendant_same_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "unrelated_branches_can_advance_in_the_same_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+          "symbol": "update_must_match_the_authenticated_snapshot_revision_and_edge"
+        }
+      ]
+    },
+    {
+      "operation": "requires_mutation_admission",
+      "nativeSymbol": "codex_hepta_agent_protocol::NduControlRequestV1::requires_mutation_admission",
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "product_implemented_recursive_outer_inner_mutation_classification",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+          "symbol": "external_admission_preserves_inner_mutation_classification"
+        }
+      ]
+    },
+    {
+      "operation": "NduExternalReplayStoreV2",
+      "nativeSymbol": "codex_hepta_agentd::ndu_owner::replay::NduExternalReplayStoreV2",
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "product_implemented_bounded_checksummed_durable_external_replay_v2",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+          "symbol": "completed_and_pending_admissions_survive_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+          "symbol": "corrupt_image_and_symlink_fail_closed"
+        }
+      ]
+    },
+    {
+      "operation": "NduOperationalMetricsV1",
+      "nativeSymbol": "codex_hepta_ndu::NduOperationalMetricsV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_bounded_operational_observations",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+          "symbol": "operational_metrics_cover_required_signals"
+        }
+      ]
+    },
+    {
+      "operation": "validate_restore_drill_receipt_v1",
+      "nativeSymbol": "codex_hepta_ndu::validate_restore_drill_receipt_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_retention_off_host_binding_and_restore_drill_validation",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+          "symbol": "backup_policy_and_restore_drill_are_bounded_and_fail_closed"
+        }
+      ]
+    },
+    {
+      "operation": "admit_with_artifact_lifecycle_v2",
+      "nativeSymbol": "codex_hepta_intelligence::NduStochasticAdmissionRequestV1::admit_with_artifact_lifecycle_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_current_withdrawn_revoked_selection_composition_v2",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+          "symbol": "withdrawal_snapshot_distinguishes_current_and_withdrawn_artifacts"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+          "symbol": "selected_lifecycle_is_bound_and_revocation_wins"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "current_artifact_and_independent_evidence_compose_to_deny_all_admission"
+        }
+      ]
+    },
+    {
+      "operation": "projection_store_process_kill_matrix_v1",
+      "nativeSymbol": "codex_hepta_ndu::process_kill_matrix_reopens_at_every_persistence_cut",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "qualification_only_real_process_kill_and_errno_matrix",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+          "symbol": "process_kill_matrix_reopens_at_every_persistence_cut"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+          "symbol": "disk_full_and_read_only_filesystem_fail_before_commit"
+        }
+      ]
+    }
+  ]
+}

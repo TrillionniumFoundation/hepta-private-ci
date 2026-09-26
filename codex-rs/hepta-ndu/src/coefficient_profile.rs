@@ -198,15 +198,12 @@ pub fn project_z_estimate_to_coefficient_q24(
         return Err(NduCoefficientProfileError::Authority);
     }
 
-    let mut bytes = b"hepta.ndu.coefficient-q24-projection.v1\0".to_vec();
-    bytes.extend_from_slice(profile.digest.as_array());
-    bytes.extend_from_slice(estimate.covariance_profile_digest.as_array());
-    bytes.extend_from_slice(estimate.evidence_digest.as_array());
-    bytes.extend_from_slice(conversion.receipt_digest.as_array());
-    for raw in conversion.q24_raw.iter().flatten() {
-        bytes.extend_from_slice(&raw.to_be_bytes());
-    }
-    let output_digest = Digest32::of_bytes(&bytes);
+    let output_digest = coefficient_projection_digest(
+        profile,
+        estimate.evidence_digest,
+        conversion.receipt_digest,
+        &conversion.q24_raw,
+    );
 
     Ok(NduCoefficientProjectionV1 {
         q24_raw: conversion.q24_raw,
@@ -216,6 +213,62 @@ pub fn project_z_estimate_to_coefficient_q24(
         output_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+/// Revalidates the public projection transport against the exact admitted
+/// profile and numeric payload. This verifies integrity, not artifact currency
+/// or independent acceptance; the consumer must still bind both.
+pub fn validate_ndu_coefficient_projection_v1(
+    profile: &AdmittedNduCoefficientProfileV1,
+    projection: &NduCoefficientProjectionV1,
+) -> Result<(), NduCoefficientProfileError> {
+    if projection.authority.grants_any() {
+        return Err(NduCoefficientProfileError::Authority);
+    }
+    if projection.source_evidence_digest.is_zero()
+        || projection.conversion_receipt_digest.is_zero()
+        || projection.output_digest.is_zero()
+    {
+        return Err(NduCoefficientProfileError::MissingDigest);
+    }
+    if projection.coefficient_profile_digest != profile.digest() {
+        return Err(NduCoefficientProfileError::ProfileMismatch);
+    }
+    if projection.q24_raw.len() != profile.utility_dimension()
+        || projection
+            .q24_raw
+            .iter()
+            .any(|row| row.len() != profile.driver_dimension())
+    {
+        return Err(NduCoefficientProfileError::Dimension);
+    }
+    let digest = coefficient_projection_digest(
+        profile,
+        projection.source_evidence_digest,
+        projection.conversion_receipt_digest,
+        &projection.q24_raw,
+    );
+    if projection.output_digest != digest {
+        return Err(NduCoefficientProfileError::ProfileMismatch);
+    }
+    Ok(())
+}
+
+fn coefficient_projection_digest(
+    profile: &AdmittedNduCoefficientProfileV1,
+    source_evidence: Digest32,
+    conversion_receipt: Digest32,
+    q24_raw: &[Vec<i64>],
+) -> Digest32 {
+    let mut bytes = b"hepta.ndu.coefficient-q24-projection.v1\0".to_vec();
+    bytes.extend_from_slice(profile.digest().as_array());
+    bytes.extend_from_slice(profile.covariance_profile_digest().as_array());
+    bytes.extend_from_slice(source_evidence.as_array());
+    bytes.extend_from_slice(conversion_receipt.as_array());
+    for raw in q24_raw.iter().flatten() {
+        bytes.extend_from_slice(&raw.to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
 }
 
 #[cfg(test)]

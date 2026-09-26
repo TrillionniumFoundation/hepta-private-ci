@@ -27,84 +27,10 @@ pub struct PreferenceState {
     pub state_digest: Digest32,
 }
 
-/// Local deterministic solver step. This is not the canonical
-/// `NduIterationReceiptV1` until bound through the protocol adapter with the
-/// frozen objective, subject, event, coefficient and generation context.
-/// Fields are intentionally private so callers cannot fabricate canonical-
-/// looking state-machine evidence without going through the solver.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NduSolverIterationReceipt {
-    subject_id: StableId,
-    subject_class: SubjectClass,
-    iteration: u32,
-    predecessor_revision: Revision,
-    next_revision: Revision,
-    residual_raw: i64,
-    projection_count: u32,
-    state_digest: Digest32,
-}
-
-impl NduSolverIterationReceipt {
-    #[must_use]
-    pub fn subject_id(&self) -> &StableId {
-        &self.subject_id
-    }
-
-    #[must_use]
-    pub const fn subject_class(&self) -> SubjectClass {
-        self.subject_class
-    }
-
-    #[must_use]
-    pub const fn iteration(&self) -> u32 {
-        self.iteration
-    }
-
-    #[must_use]
-    pub const fn predecessor_revision(&self) -> Revision {
-        self.predecessor_revision
-    }
-
-    #[must_use]
-    pub const fn next_revision(&self) -> Revision {
-        self.next_revision
-    }
-
-    #[must_use]
-    pub const fn residual_raw(&self) -> i64 {
-        self.residual_raw
-    }
-
-    #[must_use]
-    pub const fn projection_count(&self) -> u32 {
-        self.projection_count
-    }
-
-    #[must_use]
-    pub const fn state_digest(&self) -> Digest32 {
-        self.state_digest
-    }
-
-    pub(crate) fn validate(&self) -> Result<(), NduError> {
-        if !(1..=MAX_ITERATIONS).contains(&self.iteration) {
-            return Err(NduError::InvalidSolverReceipt("iteration"));
-        }
-        let expected_next = self
-            .predecessor_revision
-            .next()
-            .map_err(|_| NduError::InvalidSolverReceipt("predecessor revision"))?;
-        if self.next_revision != expected_next {
-            return Err(NduError::InvalidSolverReceipt("revision adjacency"));
-        }
-        if self.residual_raw < 0 {
-            return Err(NduError::InvalidSolverReceipt("negative residual"));
-        }
-        if self.state_digest.is_zero() {
-            return Err(NduError::InvalidSolverReceipt("state digest"));
-        }
-        Ok(())
-    }
-}
+#[path = "preference_receipts.rs"]
+mod receipts;
+pub use receipts::NduSolverIterationReceipt;
+use receipts::SolverSourceV1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SolveDisposition {
@@ -118,7 +44,11 @@ pub enum SolveDisposition {
 pub struct NduSolverTerminationReceipt {
     pub disposition: SolveDisposition,
     pub iterations: u32,
+    /// Residual reported by the terminal emitted iteration, or by the initial
+    /// state when the solver is already converged and emits no iteration.
     pub terminal_residual_raw: i64,
+    /// Maximum residual among emitted iteration receipts. For a zero-iteration
+    /// no-op this is the validated initial residual.
     pub maximum_residual_raw: i64,
     pub projection_count: u32,
     pub predecessor_digest: Digest32,
@@ -227,8 +157,24 @@ const fn expected_parent_class(child: SubjectClass) -> Option<SubjectClass> {
 /// state.
 pub fn solve_preference_target(
     initial: PreferenceState,
+    target: Vec<AxisValue>,
+    eta: FixedQ32,
+) -> Result<
+    (
+        PreferenceState,
+        NduSolverTerminationReceipt,
+        Vec<NduSolverIterationReceipt>,
+    ),
+    NduError,
+> {
+    solve_preference_target_bound(initial, target, eta, None)
+}
+
+pub(crate) fn solve_preference_target_bound(
+    initial: PreferenceState,
     mut target: Vec<AxisValue>,
     eta: FixedQ32,
+    source_context: Option<Digest32>,
 ) -> Result<
     (
         PreferenceState,
@@ -261,6 +207,21 @@ pub fn solve_preference_target(
     if expected_state_digest != state.state_digest {
         return Err(NduError::StateDigestMismatch);
     }
+    let source = source_context.map(|context_digest| {
+        let mut bytes = b"hepta.ndu.preference-solve-input.v1\0".to_vec();
+        bytes.extend_from_slice(context_digest.as_array());
+        bytes.extend_from_slice(state.state_digest.as_array());
+        bytes.extend_from_slice(&eta.raw().to_be_bytes());
+        bytes.extend_from_slice(&usize_to_u32(target.len()).to_be_bytes());
+        for value in &target {
+            push_id(&mut bytes, &value.axis);
+            bytes.extend_from_slice(&value.value.raw().to_be_bytes());
+        }
+        SolverSourceV1 {
+            context_digest,
+            input_digest: Digest32::of_bytes(&bytes),
+        }
+    });
     let predecessor_digest = state.state_digest;
     let initial_residual_raw = maximum_residual(&state.values, &target)?;
     if initial_residual_raw <= RESIDUAL_TOLERANCE_RAW {
@@ -278,10 +239,10 @@ pub fn solve_preference_target(
 
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    let mut maximum_residual_raw = initial_residual_raw;
+    let mut maximum_residual_raw = 0_i64;
 
     for iteration in 1..=MAX_ITERATIONS {
-        let (next, receipt) = update_once(&state, &target, eta, iteration)?;
+        let (next, receipt) = update_once(&state, &target, eta, iteration, source)?;
         let terminal_residual_raw = receipt.residual_raw;
         maximum_residual_raw = maximum_residual_raw.max(terminal_residual_raw);
         total_projection_count = total_projection_count
@@ -318,6 +279,7 @@ fn update_once(
     target: &[AxisValue],
     eta: FixedQ32,
     iteration: u32,
+    source: Option<SolverSourceV1>,
 ) -> Result<(PreferenceState, NduSolverIterationReceipt), NduError> {
     let mut next_values = Vec::with_capacity(state.values.len());
     let mut residual_raw = 0_i64;
@@ -378,6 +340,7 @@ fn update_once(
         residual_raw,
         projection_count,
         state_digest,
+        source,
     };
     Ok((next, receipt))
 }

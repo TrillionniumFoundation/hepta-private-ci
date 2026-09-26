@@ -1,120 +1,59 @@
 # utility.ndu technical development guide
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
-
-**Module:** `utility.ndu`
-
-**Owner:** `intelligence-platform`
-
-**Deputy:** `learning-platform`
-
-**Lifecycle:** `target`
-
-**Source status:** `existing_bound`
-
+**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
+**Module:** `utility.ndu`  
+**Owner / deputy:** `intelligence-platform` / `learning-platform`  
+**Lifecycle:** `target`  
+**Source status:** `existing_bound`  
 **Bootstrap work package:** `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
 
-This stable document is the implementation guide for `utility.ndu`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This guide is the stable implementation and operations entry for `utility.ndu`. Canonical ownership, contract, protocol, data-domain, delivery and threat facts remain in the JSON registries. This document explains the concrete implementation and repeats the generated registry projection exactly; it grants no runtime, production, selection, promotion, merge or release authority.
 
 ## 1. Identity, mission and ownership
 
-Maintain bounded preference and recursive-utility projections for system, domain, agent and episode subjects.
+`utility.ndu` maintains bounded preference and recursive-utility projections for system, domain, agent and episode subjects. The primary owner controls the declared source root and is accountable for deterministic semantics, compatibility, persistence, tests and rollback. The deputy independently reviews public contracts, hierarchy semantics, authority checks, durability, migrations, resource bounds and activation evidence.
 
-The primary owner `intelligence-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `learning-platform` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `domain`, kind `preference_utility_runtime`, state model `stateful_projection` and architecture role `preference_utility_controller` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+The module may compute advisory recommendations and authenticated local evidence. It may not mint authority, mutate hard constraints, dispatch physical effects, select a stochastic artifact without external evidence, or absorb another owner's durable facts.
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+The exclusive source root is:
 
 - `codex-rs/hepta-ndu`
 
-Existing declared roots at this exact source snapshot:
+Named product composition additionally uses bounded callers and authority surfaces in Agentd, the agent protocol, Control, learning artifacts, learning evaluation and intelligence admission. Those paths are evidence and integration paths; they do not transfer ownership of their facts to `utility.ndu`.
 
-- `codex-rs/hepta-ndu`
-
-Non-authoritative implementation evidence roots:
-
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+The source root contains deterministic evaluation, profile-bound scalarization, candidate quarantine, hierarchy-snapshot validation, a bounded solver, stochastic coefficient kernels, a hash-chain projection journal, a crash-bounded durable store, authenticated owner binding, operational metrics and backup/restore drill evidence types. Source existence is not activation. Exact source-head and synthetic-merge receipts remain mandatory.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Direct dependencies:
+Direct dependencies are `platform.types`, `cognitive.read`, `learning.ledger` and `learning.artifacts`. Authoritative projection domains are listed in Section 6. Explicitly denied capabilities are `hard_constraint_mutation`, `authority_issuance` and `physical_effect`.
 
-- `platform.types`
-- `cognitive.read`
-- `learning.ledger`
-- `learning.artifacts`
+Ingress is bounded, versioned and digest-bound. Unknown critical fields, stale revisions, mixed objectives, mixed generations, invalid policy, stale hierarchy snapshots, scope mismatch and authority mismatch fail closed. Non-abstain candidate malformation may be quarantined only through the V3 layered-error API; malformed or infeasible `abstain`, invalid global policy, invalid scalarization and invalid batch identity remain global failures.
 
-Authoritative write domains:
-
-- `ndu_preference_projection`
-- `ndu_utility_projection`
-
-Explicitly denied capabilities:
-
-- `hard_constraint_mutation`
-- `authority_issuance`
-- `physical_effect`
-
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Non-goals include becoming a general state store, using model prose as authority, treating a queue acknowledgement as success, silently adopting a legacy writer, or converting qualification evidence into production authority.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The implementation is divided into:
 
-- `preference-state reader`
-- `bounded state updater`
-- `recursive utility evaluator`
-- `boundary-condition cache`
+- deterministic utility/profile/policy validation and aggregation;
+- `ValidatedScalarizationProfileV1`, bound to the exact utility profile;
+- V3 candidate-local quarantine with globally fail-closed `abstain`;
+- authenticated hierarchy snapshot/revision validation for strict System → Domain → Agent → Episode edges;
+- bounded preference solving with iteration receipts and explicit exhaustion;
+- stochastic conditional-moment, covariance, coordinate-conversion and coefficient-profile kernels;
+- `NduProjectionJournalV1` and `NduProjectionStoreV1`;
+- `NduAuthenticatedOwnerV1` and named Agentd product owner;
+- versioned external admission and replay protection;
+- stochastic current/withdrawn/revoked lifecycle plus signed selection and independent evaluator evidence;
+- `NduOperationalMetricsV1`, backup policy and restore-drill receipt validation.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
-
-### Multiscale DecisionCell integration target
-
-Own NDU recursive-value and preference semantics plus scoped organ/cell learning boundaries. System 2 guides both actions and candidate parameter updates; it need not run a full FBSDE per cell. Provide a declared utility-to-gradient/advantage interface without becoming the tensor trainer or effect executor.
-
-Treat circuit routing/termination and nested duration/cost as explicit control inputs. Optimize policies as well as cells without a mandatory central solve per signal or a fixed reward per visited node. See the
-[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
-
-Required targeted tests: known-value gradient direction, nonlinear-utility profile rejection, resource attribution and parent/peer version drift.
-
-The shared contract and record design are in
-[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
-[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
-This target does not change the current native implementation, source status or
-product/activation evidence recorded below. No existing wire version is redefined.
-
-### Capacity, depth and learning evidence target
-
-Allocate admitted additional computation against supported continuation benefit and actual cost. Separate inference and learning time; start field analysis with declared optimizer/state conditions and multidriver uncertainty. Projection, backward value and parameter gradient remain distinct.
-
-Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
-and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
-planned integration requirement, not a change to source or product status.
-
-### Shared-experience and isolated-Agent integration target
-
-Allocate admitted Recall/Replay/collection budgets by expected task value and coverage rather than upload count or novelty alone. Keep source truth, read/train/derived-use rights and privacy floors outside learned utility. Use actual independent outcomes, not a collector self-score.
-
-The target [HNMF contract](../../hnmf/TECHNICAL.md) and
-[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
-retain current source, wire and capability states.
+Production-policy validation completes before owner store open, lock acquisition or durable I/O. Configuration is frozen for one owner generation. Semantic changes require a new policy, hierarchy, authority or host revision rather than hidden mutable state.
 
 ## 5. Contracts, ports and compatibility
+
+The following lists are the exact generated projection from `docs/modules/MODULE_DOCS.json`; they are not maintained as an independent hand-written registry.
 
 Produced contracts:
 
@@ -125,8 +64,10 @@ Produced contracts:
 - `ModulePort::utility.ndu::intuition.policy`
 - `ModulePort::utility.ndu::prompt.optimizer`
 - `NduBoundaryConditionV1`
+- `NduCoefficientManifestV1`
 - `NduPreferenceStateV1`
 - `NduSummaryReceiptV1`
+- `NduUpdateReceiptV1`
 
 Consumed contracts:
 
@@ -135,238 +76,149 @@ Consumed contracts:
 - `DomainRead::learning_episode_ledgerV1`
 - `DomainRead::learning_unlearning_lineageV1`
 - `DomainRead::operator_sensor_core_registryV1`
+- `GoldenFixtureManifestV1`
 - `ModulePort::cognitive.read::utility.ndu`
 - `ModulePort::learning.artifacts::utility.ndu`
 - `ModulePort::learning.ledger::utility.ndu`
 - `ModulePort::platform.types::utility.ndu`
 - `NduBoundaryConditionV1`
+- `NduWellPosednessCertificateV1`
 - `ObjectiveFunctionV1`
+- `OutcomeWatermarkV1`
+- `RandomStreamManifestV1`
 - `RunStartSnapshotV1`
 
 Critical protocol schemas:
 
+- `GoldenFixtureManifestV1`
 - `NduBoundaryConditionV1`
+- `NduCoefficientManifestV1`
 - `NduPreferenceStateV1`
 - `NduSummaryReceiptV1`
+- `NduUpdateReceiptV1`
+- `NduWellPosednessCertificateV1`
 - `ObjectiveFunctionV1`
+- `OutcomeWatermarkV1`
+- `RandomStreamManifestV1`
 - `RunStartSnapshotV1`
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected and authority interpretation never changes in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and canonical wire representations must retain identical meaning. Tests cover canonical ordering, digest stability, bounds, missing/unknown fields, invalid enums, stale revisions, replay drift and exact duplicate idempotence.
 
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
 
+- `ndu_coefficient_manifest_v1`
 - `ndu_preference_projection`
+- `ndu_update_receipt_v1`
 - `ndu_utility_projection`
 
 Read-only data dependencies:
 
+- `golden_fixture_manifest_v1`
 - `learning_artifact_registry`
 - `learning_credit_ledger`
 - `learning_episode_ledger`
 - `learning_unlearning_lineage`
+- `ndu_well_posedness_certificate_v1`
 - `operator_sensor_core_registry`
+- `outcome_watermark_v1`
+- `random_stream_manifest_v1`
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+For every owned domain, the registered owner is the only authoritative writer. Mutation identities are idempotent only for identical semantics and conflict on reuse with different content. Records bind schema, source identity, logical sequence, objective, subject, predecessor and lineage sufficient for correction, deletion and revocation.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+`NduProjectionJournalV1` is the bounded semantic journal. `NduProjectionStoreV1` uses one live writer lock, complete-image temporary write, file synchronization, atomic rename and Unix parent-directory synchronization. Rename success followed by directory-sync failure returns `Indeterminate` and poisons the handle until reopen. Store open rejects non-directories, symlinks, non-regular files, oversized images, corruption and truncation before unbounded allocation.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Backup restore validates the complete image and rejects regression. Older valid backups may not remove later records or resurrect revocation. Schema and owner-binding migrations are explicit and reviewed; a nonempty legacy store is never silently adopted.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
+The named process bootstrap is `codex-hepta-agentd --ndu-bootstrap-descriptor <absolute-path> --ndu-bootstrap-descriptor-digest <sha256>`. The descriptor binds agent identity, canonical private paths, authority signer/key, independent revocation distributor/key, signed feed location and complete bounded policy.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+`AgentdNduOwnerHostV1` is the named writer for one Fleet generation. Context, prepare, apply, selection and outcome use the existing bounded control socket. Prepare returns an unsigned final-use binding at an exact journal head; it does not authorize a write. Apply requires an externally signed matching grant, exact expected head, current fence and current independently authenticated revocation view. The final lifecycle guard is rechecked at physical mutation entry.
+
+External admission V2 binds caller, request, idempotency key, issue/deadline time, host generation, fence, revocation head, payload digest and critical extensions. Exact replay is idempotent; semantic drift under the same identity conflicts. Product replay state is bounded. Durable outcome reconciliation uses mutation identity and journal history rather than blind grant replay.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Failures are classified as rejected, unavailable, busy, indeterminate, quarantined or terminally failed. Candidate quarantine never converts malformed `abstain` or malformed global policy into success. Solver exhaustion is unavailable, not convergence. `Busy` means another writer owns the store. `Indeterminate` means rename may have committed without acknowledged directory durability and requires close/reopen/reconcile.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+The fault matrix covers temporary write, file sync, rename, post-rename directory sync, process kill at every persistence cut, writer contention, corrupt/truncated journal, restore regression, disk full and read-only filesystem. Real child-process kill tests exercise the same persistence path; production acceptance repeats them on the selected target filesystem.
+
+Rollback fences the active generation, preserves the journal and receipts, verifies binary/schema compatibility and reopens without automatic legacy adoption. Crossing an authority epoch, policy, owner binding or schema boundary requires an explicit migration.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+Owned threats are `parent_child_NDU_oscillation`, `preference_state_goal_drift` and `recursive_utility_instability`. Controls are least authority, bounded input, exact semantic digests, independent revocation trust, generation fencing, external final-use signatures and deny-all advisory outputs.
 
-- `parent_child_NDU_oscillation`
-- `preference_state_goal_drift`
-- `recursive_utility_instability`
-
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Credentials, raw grants, signatures and sensitive utility inputs never enter general metrics, learning datasets or prompt factors. Negative tests cover forged/revoked keys, stale heads, purpose substitution, replay drift, unknown critical extensions, oversize input, scope escape and revocation resurrection.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-ndu/src/lib.rs](../../../codex-rs/hepta-ndu/src/lib.rs) and the linked implementation components.
+Registered source bounds include 128 candidates, 4096 contributions, eight utility dimensions, bounded risk/resource dimensions, bounded required organs, a bounded preference solver and a 4096-record journal with revocation capacity reserved for every live projection.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+Named-host qualification measures the exact 32-candidate × 8-organ workload for 100 runs and records p50/p95/p99 latency. Current acceptance thresholds are p95 ≤ 2 ms and p99 ≤ 5 ms for that fixture. It also exercises maximum candidate/contribution capacity, full-envelope revocation, restart recovery, bounded oversized-image rejection and process resource observations.
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. A real request-local read-only caller is established through `runtime.agentd cognitive_context -> control plan_observed_context -> evaluate_prepared_plan_with_ndu -> NDU V2 evaluator`; this does not establish the authenticated production NDU owner/caller or activate global adaptive reconfiguration. `NduProjectionJournalV1` remains the semantic journal, while `NduProjectionStoreV1` is a crash-bounded durable-writer source candidate with exclusive writer locking, complete-image temp write + file sync, atomic rename, Unix parent-directory sync, indeterminate-handle fencing and monotonic backup restore. Neither source existence nor local qualification substitutes for governed production writer selection, host enrollment, retention/off-host backup policy, monitoring or target-host acceptance.
+`NduOperationalMetricsV1` provides monotonic counters and bounded gauges for:
 
-Current operating and state-format references:
+- evaluation count, total/max latency and host p50/p95/p99;
+- convergence runs, iterations and exhaustion;
+- candidate rejection and quarantine;
+- store `Busy` and `Indeterminate`;
+- reopen and restore failure;
+- journal bytes and verified backup age.
 
-- [docs/readiness/NDU_SYSTEM_EXECUTION.md](../../readiness/NDU_SYSTEM_EXECUTION.md).
-- [codex-rs/hepta-ndu/RECURSIVE_UTILITY.md](../../../codex-rs/hepta-ndu/RECURSIVE_UTILITY.md).
-- [codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md](../../../codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md).
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
+`NduBackupPolicyV1` binds policy revision, minimum/retained copies, maximum age, off-host destination digest and encryption-profile digest. `NduRestoreDrillReceiptV1` binds source/restored journal heads, backup digest, immutable off-host object version, operator, target host, timestamps, size and record count. Validation fails closed on stale backup, identity/time regression, head mismatch or failed drill.
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+The complete startup, metric, backup, retention, restore, incident and promotion procedure is in [OPERATOR_RUNBOOK.md](OPERATOR_RUNBOOK.md). Repository tests validate local semantics and evidence shapes; they do not prove that a production object store, KMS, protected clock or network transfer occurred.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+The dedicated workflow executes six independent suites on both source-head and a deterministic synthetic merge:
 
-- [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs); named case: `scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds`.
-- [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named case: `hard_violation_is_filtered_before_utility`.
-- [codex-rs/hepta-ndu/src/projection_store_tests.rs](../../../codex-rs/hepta-ndu/src/projection_store_tests.rs); durable reopen/restore, single-writer and indeterminate-fencing cases.
-- [codex-rs/hepta-ndu/src/z_conversion_tests.rs](../../../codex-rs/hepta-ndu/src/z_conversion_tests.rs); whitening-coordinate and signed-Q24 ties-to-even cases.
-- [codex-rs/hepta-control-plane/src/planner_context_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_context_tests.rs) and [planner_ndu_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu_tests.rs); real request-local Control caller regressions.
+- source identity, lock/source policy, closed-world map and format;
+- NDU core, authority, independent convergence/well-posedness, stochastic admission, current artifacts, signed evidence and value-learning tests;
+- Control caller regressions;
+- protocol, normal binary, named owner and normal process tests;
+- strict selected-package/all-target Clippy with `-D warnings` and no unrelated dependency lint debt;
+- fault cuts and named-host qualification.
 
-In `codex-rs`, run `just test -p codex-hepta-ndu`. The dedicated NDU qualification workflow also runs focused `codex-hepta-control-plane` planner-context/planner-NDU regressions so the established read-only caller cannot drift independently of the evaluator. These commands are test invocations, not stored results. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
+Every suite writes a receipt containing source SHA/tree, parents, host/kernel, commands, exit codes and log hashes. Source-head and synthetic-merge artifacts are retained separately. A cancelled, skipped, stale or identity-mismatched run is not a pass.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+The closed-world validator treats the primary and extension implementation maps as one inventory, verifies exact candidate SHA/tree, real native/test symbols, all tracked Rust source files and this guide's exact registry projection.
+
+Execution specifications are [NDU_SYSTEM_EXECUTION.md](../../readiness/NDU_SYSTEM_EXECUTION.md) and [NDU_FBSDE_SPEC.md](../../learning/NDU_FBSDE_SPEC.md). The module implementation dossier is [utility.ndu.md](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Applicable work packages are:
 
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- `NDU-2-AGENT-DOMAIN-HIERARCHY`
+- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`;
+- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`;
+- `NDU-2-AGENT-DOMAIN-HIERARCHY`.
 
-The bootstrap package is `NDU-0-PREFERENCE-UTILITY-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Contract and policy validation precede owner open. Deterministic semantics precede product composition. Product composition precedes target-host fault qualification. Target-host qualification and independent evidence precede activation. No work package widens authority merely by becoming source-complete.
 
 ## 14. Activation, compatibility and retirement
 
-Current source already contains a named request-local read-only caller through Agentd and Control. Production activation is a stronger state: it composes an authenticated production NDU owner/caller through registered ports, selects the durable writer, and verifies current authority/revocation, configuration, resource, recovery and failure behavior on the target host. Read-only, shadow and qualification callers are not production activation. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Current source contains request-local read-only callers, a named authenticated owner candidate, a selected local durable writer path, external admission, stochastic lifecycle composition and independent-evidence validation. Production activation remains stronger: it requires governed enrollment, protected time/key/frontier, selected off-host backup, current restore drill, exact receipts, operator acceptance and release approval.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Compatibility adapters are temporary. Retirement requires every named caller migrated, no old path use, historical record interpretability and a rehearsed rollback. A source library, fixture or GitHub runner is never substituted for a target host.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Request-local composition requires a named bounded caller; authenticated production composition additionally requires the production owner/caller, selected writer and current authority/revocation fences. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry agreement and closed-world validation. Source completion requires code in the declared root and exact-candidate tests. Product composition requires the named authenticated caller/owner, selected writer, host fence, revocation feed and bounded external admission. Operational completion requires target-host fault receipts, metrics export, retention, verified off-host backup and restore drill. Qualification, acceptance, selection, promotion and release remain separate governed states.
 
-For `utility.ndu`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
-- Owner/deputy: `intelligence-platform` / `learning-platform`.
-- Allowed write paths:
-- `codex-rs/hepta-ndu/**`
-- `codex-rs/hepta-types/**`
-- Development predecessors:
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- Activation predecessors:
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `intelligence-platform` / `learning-platform`.
-- Allowed write paths:
-- `codex-rs/hepta-ndu/**`
-- Development predecessors:
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- `OBJ-1-OBJECTIVE-COMPILER`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- Activation predecessors:
-- `OBJ-1-OBJECTIVE-COMPILER`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `NDU-2-AGENT-DOMAIN-HIERARCHY`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `intelligence-platform` / `learning-platform`.
-- Allowed write paths:
-- `codex-rs/hepta-ndu/**`
-- `codex-rs/hepta-control-plane/**`
-- Development predecessors:
-- `LONG-1-TEMPORAL-HOLDOUT`
-- `RCP-1-RUNTIME-CONTROL-PLANE`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- Activation predecessors:
-- `LONG-3-UNLEARNING-NON-RESURRECTION`
-- `RCP-1-RUNTIME-CONTROL-PLANE`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- `system_domain_agent_episode_only`
-- `boundary_condition_receipts`
-- `resource_conservation`
-- `weak_coupling_stability`
-- `no_central_hot_path_rpc`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+For `utility.ndu`, this guide grants no runtime, production, model, provider, tool, network, filesystem, secret, fleet, acceptance, promotion or release authority.
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
 ### Exact closed-world registry projection
 
-This generated projection binds `utility.ndu` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
+This projection is generated from the canonical registries and is intentionally identical to Sections 5 and 6.
 
 **Produced contracts:**
 - `DomainRead::ndu_preference_projectionV1`
@@ -443,29 +295,10 @@ This generated projection binds `utility.ndu` to the current canonical contract,
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `utility.ndu` to primary lane `LANE-D-OBJECTIVE-VALUE`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+Mandatory readiness specifications are [SOURCE_BASELINE_AND_BRANCH_POLICY.md](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md), [PARALLEL_DEVELOPMENT.md](../../readiness/PARALLEL_DEVELOPMENT.md) and [NDU_SYSTEM_EXECUTION.md](../../readiness/NDU_SYSTEM_EXECUTION.md). Owned readiness protocols are `NduIterationReceiptV1` and `UtilityContributionV1`; consumed readiness protocols are `NduConvergenceCertificateV1`, `ObjectiveCompileReceiptV1` and `ObjectiveConstraintSetV1`.
 
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-NDU`](../../readiness/NDU_SYSTEM_EXECUTION.md)
-
-Owned readiness protocols:
-
-- `NduIterationReceiptV1`
-- `UtilityContributionV1`
-
-Consumed readiness protocols:
-
-- `NduConvergenceCertificateV1`
-- `ObjectiveCompileReceiptV1`
-- `ObjectiveConstraintSetV1`
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+Ordinary repository coding does not receive runtime authority from an execution envelope. Runtime admission still verifies exact source, frozen contract/readiness digest, expiry and zero authority delta.
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `utility.ndu` is implemented by work package `NDU-0-PREFERENCE-UTILITY-CONTRACTS` in:
-
-- `codex-rs/hepta-ndu`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The bootstrap source-location obligation is implemented in `codex-rs/hepta-ndu`. Source-head and deterministic synthetic-merge qualification, closed-world source mapping, package tests, strict lint, clean-tree checks and retained receipts are required for each candidate. A workflow definition or pending run is not a passing receipt. Source evidence grants no activation, operator acceptance, selection, promotion, merge or release authority.

@@ -1,9 +1,24 @@
-name: Hepta NDU recursion (read-only)
+name: Hepta NDU deterministic qualification
 
 on:
   pull_request:
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-agentd/src/ndu*.rs"
+      - "codex-rs/hepta-agentd/src/main.rs"
+      - "codex-rs/hepta-agentd/src/config.rs"
+      - "codex-rs/hepta-agentd/src/runtime.rs"
+      - "codex-rs/hepta-agentd/src/state*.rs"
+      - "codex-rs/hepta-agentd/src/client.rs"
+      - "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs"
+      - "codex-rs/hepta-agentd/tests/support/fleet.rs"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-contracts/src/final_use*.rs"
+      - "codex-rs/hepta-contracts/src/authority_trust.rs"
+      - "scripts/hepta-ndu-qualification.py"
+      - "scripts/hepta-ndu-implementation-map-closed-world.py"
+      - "scripts/test_hepta_ndu_qualification.py"
+      - "scripts/hepta-implementation-maps.py"
       - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
       - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
       - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
@@ -31,6 +46,21 @@ on:
       - main
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-agentd/src/ndu*.rs"
+      - "codex-rs/hepta-agentd/src/main.rs"
+      - "codex-rs/hepta-agentd/src/config.rs"
+      - "codex-rs/hepta-agentd/src/runtime.rs"
+      - "codex-rs/hepta-agentd/src/state*.rs"
+      - "codex-rs/hepta-agentd/src/client.rs"
+      - "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs"
+      - "codex-rs/hepta-agentd/tests/support/fleet.rs"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-contracts/src/final_use*.rs"
+      - "codex-rs/hepta-contracts/src/authority_trust.rs"
+      - "scripts/hepta-ndu-qualification.py"
+      - "scripts/hepta-ndu-implementation-map-closed-world.py"
+      - "scripts/test_hepta_ndu_qualification.py"
+      - "scripts/hepta-implementation-maps.py"
       - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
       - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
       - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
@@ -63,18 +93,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ndu:
-    name: NDU (${{ matrix.lane }})
+  qualify:
+    name: NDU ${{ matrix.lane }} / ${{ matrix.suite }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         lane: [source-head, synthetic-merge]
+        suite: [source, core, callers, product, lint, host]
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Check out exact source without credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -82,15 +117,14 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Bind source and optional synthetic merge
+      - name: Bind exact candidate or deterministic merge
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if [ '${{ matrix.lane }}' = synthetic-merge ]; then
             if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
-              BASE_SHA=$(git rev-parse "$SOURCE_SHA^")
+              BASE_SHA=$(git rev-parse refs/remotes/origin/main)
             fi
             TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
             export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
@@ -101,101 +135,37 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
-
-      - name: Verify Cargo lockfile integrity
-        run: python3 scripts/verify_cargo_lock.py
-
-      - name: Reject new legacy NDU evaluator callers
-        run: python3 scripts/hepta-ndu-source-policy.py
-
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-
-      - name: Locked all-target compilation
-        working-directory: codex-rs
-        run: |
-          cargo check --locked --all-targets \
-            -p codex-hepta-ndu \
-            -p codex-hepta-intelligence-eval \
-            -p codex-hepta-intelligence \
-            -p codex-hepta-learning-artifacts \
-            -p codex-hepta-learning-ledger \
-            -p codex-hepta-shadow-qualification
-
-      - name: Regression tests
-        working-directory: codex-rs
-        run: |
-          just test --locked -p codex-hepta-ndu
-          cargo test --locked -p codex-hepta-intelligence-eval --lib
-          cargo test --locked -p codex-hepta-intelligence --lib ndu_stochastic_admission
-          cargo test --locked -p codex-hepta-learning-artifacts --lib pinned
-          cargo test --locked -p codex-hepta-learning-ledger --lib signed_evidence
-          cargo test --locked -p codex-hepta-shadow-qualification value_learning
-
-      - name: Control NDU caller regressions
-        working-directory: codex-rs
-        run: |
-          cargo test --locked -p codex-hepta-control-plane --lib planner_context
-          cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
-
-      - name: Strict lint
-        working-directory: codex-rs
-        run: |
-          cargo clippy --locked --all-targets \
-            -p codex-hepta-ndu \
-            -p codex-hepta-intelligence-eval \
-            -p codex-hepta-intelligence \
-            -p codex-hepta-learning-artifacts \
-            -p codex-hepta-learning-ledger \
-            -p codex-hepta-shadow-qualification \
-            -- -D warnings
-
-      - name: Named-host NDU qualification
-        working-directory: codex-rs
+      - name: Validate closed-world implementation mapping
+        if: matrix.suite == 'source'
+        run: python3 scripts/hepta-ndu-implementation-map-closed-world.py
+      - name: Execute independent suite and retain every exit status
         shell: bash
         run: |
-          set -euo pipefail
-          RECEIPT="${RUNNER_TEMP}/ndu-named-host-${{ matrix.lane }}.json"
-          export HEPTA_NDU_HOST_ID="github-hosted-ubuntu-24.04-x86_64"
-          export HEPTA_NDU_FS_PROFILE="$(stat -f -c %T "${RUNNER_TEMP}")"
-          export HEPTA_NDU_RUSTC="$(rustc --version)"
-          export HEPTA_NDU_CLK_TCK="$(getconf CLK_TCK)"
-          export HEPTA_NDU_RECEIPT_PATH="${RECEIPT}"
-          export HEPTA_NDU_SOURCE_SHA="$(git rev-parse HEAD)"
-          export HEPTA_NDU_SOURCE_TREE="$(git rev-parse HEAD^{tree})"
-          export HEPTA_NDU_QUALIFICATION_LANE="${{ matrix.lane }}"
-          cargo run --locked --release -p codex-hepta-ndu --bin ndu-named-host-qualification
-          python3 -m json.tool "${RECEIPT}" >/dev/null
-          cat "${RECEIPT}"
-
-      - name: Retain named-host NDU receipt
+          python3 scripts/hepta-ndu-qualification.py \
+            --suite '${{ matrix.suite }}' --lane '${{ matrix.lane }}' \
+            --output '${{ runner.temp }}/ndu-${{ matrix.lane }}-${{ matrix.suite }}'
+      - name: Retain exact-candidate execution evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ndu-named-host-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/ndu-named-host-${{ matrix.lane }}.json
-          if-no-files-found: ignore
-
-      - name: Formatting check without source mutation
-        if: always()
-        working-directory: codex-rs
-        run: |
-          cargo fmt \
-            --package codex-hepta-ndu \
-            --package codex-hepta-intelligence-eval \
-            --package codex-hepta-intelligence \
-            --package codex-hepta-learning-artifacts \
-            --package codex-hepta-learning-ledger \
-            --package codex-hepta-shadow-qualification \
-            -- --check
-
-      - name: Preserve exact source state
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
-          git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          name: ndu-${{ matrix.lane }}-${{ matrix.suite }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-${{ matrix.lane }}-${{ matrix.suite }}
+          if-no-files-found: error
+          retention-days: 30
+  ndu:
+    name: NDU (${{ matrix.lane }})
+    if: always()
+    needs: qualify
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        lane: [source-head, synthetic-merge]
+    steps:
+      - name: Require every independently executed suite
+        env:
+          RESULT: ${{ needs.qualify.result }}
+        run: test "$RESULT" = success
