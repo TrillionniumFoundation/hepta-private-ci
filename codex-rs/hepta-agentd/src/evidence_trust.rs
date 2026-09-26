@@ -7,9 +7,15 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use codex_hepta_authbus::AuthBusAuthorityError;
+use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::IssuerLifecycleState;
+use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
 use codex_hepta_evidence::EvidenceIssuerTrustBindingV1;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::VerifyingKey;
@@ -56,17 +62,18 @@ impl EvidenceTrust {
         }
         let mut identities = BTreeSet::new();
         for issuer in &trust.issuers {
-            if !identities.insert((issuer.issuer_id.clone(), issuer.key_epoch))
+            if !identities.insert(issuer.issuer_id.clone())
                 || issuer.roles.is_empty()
                 || issuer.roles.len() > MAX_EVIDENCE_ROLES_PER_ISSUER
             {
                 return Err(invalid(
-                    "evidence trust registry has duplicate issuer epochs or invalid role bounds",
+                    "evidence trust registry has duplicate issuer identities or invalid role bounds",
                 ));
             }
             StableId::new(issuer.issuer_id.clone()).map_err(|error| invalid(&error.to_string()))?;
             Generation::new(issuer.key_epoch).map_err(|error| invalid(&error.to_string()))?;
-            let _: [u8; 32] = hex_bytes(&issuer.public_key_hex)?;
+            VerifyingKey::from_bytes(&hex_bytes(&issuer.public_key_hex)?)
+                .map_err(|_| invalid("invalid registered Ed25519 public key"))?;
             let mut roles = BTreeSet::new();
             for role in &issuer.roles {
                 let parsed = EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error))?;
@@ -78,17 +85,28 @@ impl EvidenceTrust {
         Ok(trust)
     }
 
-    pub(crate) fn verification_bindings(
+    pub(crate) async fn reconcile_all(
         &self,
+        authority: &AuthBusAuthorityHost,
+    ) -> Result<(), AgentdError> {
+        for configured in &self.issuers {
+            self.reconcile_configured(configured, authority).await?;
+        }
+        Ok(())
+    }
+
+    pub(crate) async fn verification_bindings(
+        &self,
+        authority: &AuthBusAuthorityHost,
     ) -> Result<Vec<EvidenceIssuerTrustBindingV1>, AgentdError> {
         let mut bindings = Vec::new();
         for configured in &self.issuers {
             if configured.revoked {
                 continue;
             }
+            let issuer = self.reconcile_configured(configured, authority).await?;
             for role in &configured.roles {
                 let role = EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error))?;
-                let issuer = self.issuer_for(&configured.issuer_id, configured.key_epoch, role)?;
                 bindings.push(EvidenceIssuerTrustBindingV1::from_registration(
                     &issuer, role,
                 ));
@@ -97,8 +115,9 @@ impl EvidenceTrust {
         Ok(bindings)
     }
 
-    pub(crate) fn issuer_for(
+    pub(crate) async fn issuer_for(
         &self,
+        authority: &AuthBusAuthorityHost,
         issuer_id: &str,
         key_epoch: u64,
         role: EvidenceIssuerRoleV1,
@@ -117,15 +136,78 @@ impl EvidenceTrust {
                 "evidence issuer is not registered for the requested role",
             ));
         }
-        Ok(IssuerRegistration {
-            issuer_id: StableId::new(&configured.issuer_id)
-                .map_err(|error| invalid(&error.to_string()))?,
-            key_epoch: Generation::new(configured.key_epoch)
-                .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&configured.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
-            revoked: configured.revoked,
-        })
+        self.reconcile_configured(configured, authority).await
+    }
+
+    async fn reconcile_configured(
+        &self,
+        configured: &EvidenceIssuerTrust,
+        authority: &AuthBusAuthorityHost,
+    ) -> Result<IssuerRegistration, AgentdError> {
+        let issuer_id = StableId::new(&configured.issuer_id)
+            .map_err(|error| invalid(&error.to_string()))?;
+        let key_epoch = Generation::new(configured.key_epoch)
+            .map_err(|error| invalid(&error.to_string()))?;
+        let verifying_key = VerifyingKey::from_bytes(&hex_bytes(&configured.public_key_hex)?)
+            .map_err(|_| invalid("invalid registered Ed25519 public key"))?;
+        let expected_key_digest = Digest32::of_bytes(verifying_key.as_bytes());
+        let mut record = match authority
+            .issuer_record(IssuerPurpose::Message, &issuer_id, key_epoch)
+            .await
+        {
+            Ok(record) => record,
+            Err(AuthBusAuthorityError::IssuerMissing) => authority
+                .enroll_issuer(
+                    IssuerPurpose::Message,
+                    IssuerSpec {
+                        issuer_id: issuer_id.clone(),
+                        key_epoch,
+                        verifying_key,
+                    },
+                )
+                .await
+                .map_err(|error| {
+                    invalid(&format!(
+                        "durable evidence issuer enrollment failed; explicit rotation may be required: {error}"
+                    ))
+                })?,
+            Err(error) => {
+                return Err(invalid(&format!(
+                    "durable evidence issuer lookup failed: {error}"
+                )));
+            }
+        };
+        if record.purpose() != IssuerPurpose::Message
+            || record.issuer_id() != &issuer_id
+            || record.key_epoch() != key_epoch
+            || record.verifying_key_digest() != expected_key_digest
+        {
+            return Err(invalid(
+                "evidence trust entry differs from the durable issuer registry",
+            ));
+        }
+        if configured.revoked && record.state() == IssuerLifecycleState::Active {
+            record = authority
+                .revoke_issuer(
+                    IssuerPurpose::Message,
+                    &issuer_id,
+                    key_epoch,
+                    record.revision(),
+                )
+                .await
+                .map_err(|error| {
+                    invalid(&format!("durable evidence issuer revocation failed: {error}"))
+                })?;
+        }
+        if !configured.revoked && record.state() != IssuerLifecycleState::Active {
+            return Err(invalid(
+                "evidence trust file attempts to reactivate a revoked or retired issuer",
+            ));
+        }
+        authority
+            .verify_message_issuer(&issuer_id, key_epoch)
+            .await
+            .map_err(|error| invalid(&format!("evidence issuer handle failed: {error}")))
     }
 }
 

@@ -38,13 +38,18 @@ async fn issuer_rotation_revocation_and_retirement_are_monotonic() {
         .enroll_issuer(IssuerPurpose::Message, spec("issuer:operator", 1, &old_key))
         .await
         .expect("enroll issuer");
-    assert_eq!(first.state, IssuerLifecycleState::Active);
-    assert!(
-        !store
-            .message_issuer(&issuer_id, Generation::new(1).expect("generation"))
+    assert_eq!(first.state(), IssuerLifecycleState::Active);
+    assert_eq!(
+        store
+            .issuer_record(
+                IssuerPurpose::Message,
+                &issuer_id,
+                Generation::new(1).expect("generation"),
+            )
             .await
             .expect("registration")
-            .revoked
+            .state(),
+        IssuerLifecycleState::Active
     );
 
     let second = store
@@ -56,13 +61,18 @@ async fn issuer_rotation_revocation_and_retirement_are_monotonic() {
         )
         .await
         .expect("rotate issuer");
-    assert_eq!(second.key_epoch.get(), 2);
-    assert!(
+    assert_eq!(second.key_epoch().get(), 2);
+    assert_eq!(
         store
-            .message_issuer(&issuer_id, Generation::new(1).expect("generation"))
+            .issuer_record(
+                IssuerPurpose::Message,
+                &issuer_id,
+                Generation::new(1).expect("generation"),
+            )
             .await
             .expect("old registration")
-            .revoked
+            .state(),
+        IssuerLifecycleState::Revoked
     );
 
     let revoked = store
@@ -74,7 +84,7 @@ async fn issuer_rotation_revocation_and_retirement_are_monotonic() {
         )
         .await
         .expect("revoke current issuer");
-    assert_eq!(revoked.state, IssuerLifecycleState::Revoked);
+    assert_eq!(revoked.state(), IssuerLifecycleState::Revoked);
     let retirement = store
         .retire_issuer_epoch(
             IssuerPurpose::Message,

@@ -11,10 +11,8 @@ use crate::AuthBusAuthorityStore;
 use crate::IssuerLifecycleState;
 use crate::IssuerPurpose;
 use crate::IssuerRecord;
-use crate::IssuerRegistration;
 use crate::IssuerRetirement;
 use crate::IssuerSpec;
-use crate::SettlementIssuerRegistration;
 use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
 use crate::authority_store::advance_time;
@@ -167,36 +165,18 @@ impl AuthBusAuthorityStore {
         Ok(record)
     }
 
-    pub async fn message_issuer(
+    /// Return the highest registered epoch for an issuer and purpose, including
+    /// revoked or retired epochs. This is observation only and never mints a
+    /// verification capability.
+    pub async fn latest_issuer_record(
         &self,
+        purpose: IssuerPurpose,
         issuer_id: &StableId,
-        key_epoch: Generation,
-    ) -> Result<IssuerRegistration, AuthBusAuthorityError> {
-        let record = self
-            .issuer_record(IssuerPurpose::Message, issuer_id, key_epoch)
-            .await?;
-        Ok(IssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
-    }
-
-    pub async fn settlement_issuer(
-        &self,
-        issuer_id: &StableId,
-        key_epoch: Generation,
-    ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
-        let record = self
-            .issuer_record(IssuerPurpose::Settlement, issuer_id, key_epoch)
-            .await?;
-        Ok(SettlementIssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
+    ) -> Result<IssuerRecord, AuthBusAuthorityError> {
+        let mut tx = begin(&self.pool).await?;
+        let record = load_latest_issuer(&mut tx, purpose, issuer_id).await?;
+        tx.commit().await.map_err(storage)?;
+        Ok(record)
     }
 
     pub async fn observe_trusted_time_attestation(
@@ -256,6 +236,25 @@ async fn load_active_issuer(
     let row = sqlx::query(
         "SELECT issuer_id, purpose, key_epoch, public_key, state, revision
          FROM authbus_issuer_registry WHERE issuer_id = ? AND purpose = ? AND state = 'active'",
+    )
+    .bind(issuer_id.as_str())
+    .bind(purpose_text(purpose))
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(storage)?
+    .ok_or(AuthBusAuthorityError::IssuerMissing)?;
+    issuer_from_row(&row)
+}
+
+async fn load_latest_issuer(
+    tx: &mut Transaction<'_, Sqlite>,
+    purpose: IssuerPurpose,
+    issuer_id: &StableId,
+) -> Result<IssuerRecord, AuthBusAuthorityError> {
+    let row = sqlx::query(
+        "SELECT issuer_id, purpose, key_epoch, public_key, state, revision
+         FROM authbus_issuer_registry WHERE issuer_id = ? AND purpose = ?
+         ORDER BY key_epoch DESC LIMIT 1",
     )
     .bind(issuer_id.as_str())
     .bind(purpose_text(purpose))

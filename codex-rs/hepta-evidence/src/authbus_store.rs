@@ -1,5 +1,5 @@
 use codex_hepta_authbus::AuthenticatedMessage;
-use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::VerificationReceipt;
 use codex_hepta_types::Digest32;
@@ -24,17 +24,13 @@ pub enum AuthBusAdmissionError {
 }
 
 impl HeptaEvidenceStore {
-    /// Verify a host-registered issuer and atomically consume its message
-    /// sequence in the existing durable evidence database. Competing handles
-    /// and processes serialize through BEGIN IMMEDIATE, including capacity
-    /// admission. No receipt escapes before COMMIT succeeds.
-    ///
-    /// The host must supply current issuer registration and expected routing
-    /// subject/scope/payload. This authenticates a message, not an external effect:
-    /// adapters still require their separate final-use authority check.
+    /// Resolve the claimed issuer from the persistent AuthBus registry, verify
+    /// the message and atomically consume its durable replay sequence. The
+    /// authenticated value retains the issuer lifecycle read fence through the
+    /// SQLite commit, so rotation/revocation cannot race the admission.
     pub async fn admit_authbus_message(
         &self,
-        issuer: &IssuerRegistration,
+        authority: &AuthBusAuthorityHost,
         message: &SignedMessage,
         expected_subject: &StableId,
         expected_scope: Digest32,
@@ -52,7 +48,9 @@ impl HeptaEvidenceStore {
         if &message.claims.subject_id != expected_subject {
             return Err(codex_hepta_authbus::Error::SubjectMismatch.into());
         }
-        let authenticated = message.authenticate(issuer, expected_scope, expected_payload, now)?;
+        let authenticated = authority
+            .authenticate_message(message, expected_scope, expected_payload, now)
+            .await?;
         advance_replay(&mut transaction, &authenticated).await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
         Ok(authenticated.receipt().clone())

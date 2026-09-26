@@ -67,7 +67,7 @@ pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
     let trust = host.trust(state)?;
-    let issuer = trust.issuer()?;
+    let issuer = trust.reconcile(&host.authority).await?;
     if issuer.revoked {
         host.evidence
             .quarantine_authbus_issuer(&issuer)
@@ -93,13 +93,13 @@ pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     };
     let client = connect(state).await?;
     require_ready(state)?;
-    let issuer = host.trust(state)?.issuer()?;
+    host.trust(state)?.reconcile(&host.authority).await?;
     let worker = StableId::new(format!("agentd:{}", state.identity().spawn_generation))
         .map_err(|error| invalid(&error.to_string()))?;
     let delivery = host
         .evidence
         .claim_authbus_delivery(
-            &issuer,
+            &host.authority,
             AuthBusClaimRequest {
                 delivery_id: status.delivery_id,
                 subject_id: &host.subject,
@@ -151,12 +151,12 @@ async fn deliver<Q: TextQueueTransport>(
     delivery: AuthBusDelivery,
 ) -> Result<(), AgentdError> {
     let trust = host.trust(state)?;
-    let issuer = trust.issuer()?;
+    let issuer = trust.reconcile(&host.authority).await?;
     let body = serde_json::from_slice::<AuthBusTextBody>(&delivery.payload);
     let Ok(body) = body else {
         return host
             .evidence
-            .quarantine_authbus_delivery(&issuer, &delivery.lease)
+            .quarantine_authbus_delivery(&host.authority, &delivery.lease)
             .await
             .map_err(|error| invalid(&error.to_string()));
     };
@@ -166,7 +166,7 @@ async fn deliver<Q: TextQueueTransport>(
     {
         return host
             .evidence
-            .quarantine_authbus_delivery(&issuer, &delivery.lease)
+            .quarantine_authbus_delivery(&host.authority, &delivery.lease)
             .await
             .map_err(|error| invalid(&error.to_string()));
     }
@@ -180,20 +180,20 @@ async fn deliver<Q: TextQueueTransport>(
             now_ms()?,
         )
         .map_err(|error| invalid(&error.to_string()))?;
-    // Renew immediately before the transport boundary to reject a stolen/expired
-    // lease. A process crash after this point always recovers with lookup only.
+    // Renew immediately before the transport boundary to reject a stolen or
+    // expired lease. A process crash after this point recovers with lookup only.
     let lease = host
         .evidence
-        .renew_authbus_delivery(&issuer, &delivery.lease, /*lease_ms*/ 30_000)
+        .renew_authbus_delivery(&host.authority, &delivery.lease, /*lease_ms*/ 30_000)
         .await
         .map_err(|error| invalid(&error.to_string()))?;
     require_ready(state)?;
     let fresh = host.trust(state)?;
-    let fresh_issuer = fresh.issuer()?;
+    let fresh_issuer = fresh.reconcile(&host.authority).await?;
     if !fresh.permits(&body.thread_id) {
         return host
             .evidence
-            .quarantine_authbus_delivery(&fresh_issuer, &lease)
+            .quarantine_authbus_delivery(&host.authority, &lease)
             .await
             .map_err(|error| invalid(&error.to_string()));
     }
@@ -230,11 +230,11 @@ async fn deliver<Q: TextQueueTransport>(
     .await;
     require_ready(state)?;
     let current = host.trust(state)?;
-    let issuer = current.issuer()?;
+    current.reconcile(&host.authority).await?;
     if !current.permits(&body.thread_id) {
         return host
             .evidence
-            .quarantine_authbus_delivery(&issuer, &lease)
+            .quarantine_authbus_delivery(&host.authority, &lease)
             .await
             .map_err(|error| invalid(&error.to_string()));
     }
@@ -242,12 +242,12 @@ async fn deliver<Q: TextQueueTransport>(
         Ok(Ok(response)) => match receipt(&response, &client_id, &expected, mode) {
             Ok(digest) => host
                 .evidence
-                .ack_authbus_delivery(&issuer, &lease, digest)
+                .ack_authbus_delivery(&host.authority, &lease, digest)
                 .await
                 .map_err(|error| invalid(&error.to_string())),
             Err(_) => host
                 .evidence
-                .quarantine_authbus_delivery(&issuer, &lease)
+                .quarantine_authbus_delivery(&host.authority, &lease)
                 .await
                 .map_err(|error| invalid(&error.to_string())),
         },
@@ -255,7 +255,7 @@ async fn deliver<Q: TextQueueTransport>(
         // the same client ID and payload; Missing/Cancelled never recreate it.
         Ok(Err(_)) | Err(_) => host
             .evidence
-            .retry_authbus_delivery(&issuer, &lease, /*delay_ms*/ 1000)
+            .retry_authbus_delivery(&host.authority, &lease, /*delay_ms*/ 1000)
             .await
             .map_err(|error| invalid(&error.to_string())),
     }

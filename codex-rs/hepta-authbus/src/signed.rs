@@ -1,24 +1,21 @@
+use std::borrow::Borrow;
+use std::sync::Arc;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
+use tokio::sync::OwnedRwLockReadGuard;
 
 use crate::Error;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
 use crate::PreverifiedAuthEnvelope;
 use crate::ReplayWindow;
 use crate::TrustedReplayContext;
 use crate::VerificationReceipt;
+use crate::VerifiedIssuerHandle;
 use crate::push_id;
-
-/// Registration obtained from the host's trusted identity/policy store, never
-/// from the message being admitted. Revocation must be refreshed for each call.
-pub struct IssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
-}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedMessageClaims {
@@ -55,39 +52,55 @@ pub struct SignedMessage {
     pub signature: [u8; 64],
 }
 
-/// Cryptographically admitted message. Construction is private; admission alone
-/// does not consume a durable replay sequence or grant effect authority.
+/// Cryptographically admitted message. Construction is private. The embedded
+/// registry read guard keeps issuer rotation/revocation fenced until all clones
+/// of the proof are dropped after durable commit or rollback.
 pub struct AuthenticatedMessage {
     claims: SignedMessageClaims,
     receipt: VerificationReceipt,
+    issuer_key_digest: Digest32,
+    issuer_revision: u64,
+    _registry_guard: Arc<OwnedRwLockReadGuard<()>>,
 }
 
 impl SignedMessage {
-    pub fn authenticate(
+    /// Verify against a sealed handle minted by `AuthBusAuthorityHost`.
+    /// Supplying issuer bytes or an untrusted trust-file object is impossible.
+    pub fn authenticate<I>(
         &self,
-        issuer: &IssuerRegistration,
+        issuer: I,
         expected_scope: Digest32,
         expected_payload: Digest32,
         now_ms: u64,
-    ) -> Result<AuthenticatedMessage, Error> {
-        if self.claims.issuer_id != issuer.issuer_id || self.claims.key_epoch != issuer.key_epoch {
+    ) -> Result<AuthenticatedMessage, Error>
+    where
+        I: Borrow<VerifiedIssuerHandle>,
+    {
+        let issuer = issuer.borrow();
+        if issuer.purpose() != IssuerPurpose::Message
+            || self.claims.issuer_id != *issuer.issuer_id()
+            || self.claims.key_epoch != issuer.key_epoch()
+        {
             return Err(Error::IssuerMismatch);
         }
+        if issuer.state() != IssuerLifecycleState::Active {
+            return Err(Error::Revoked);
+        }
         issuer
-            .verifying_key
+            .verifying_key()
             .verify_strict(
                 &self.claims.signing_bytes(),
                 &Signature::from_bytes(&self.signature),
             )
             .map_err(|_| Error::InvalidSignature)?;
-        // Reuse the structural/expiry/scope checks, but do not represent this
-        // temporary single-message model as durable replay protection.
+        // Structural, expiry and route checks are shared with the legacy replay
+        // verifier. Durable replay consumption remains the caller's transaction.
         let receipt = ReplayWindow::new(/*maximum_replay_keys*/ 1).verify(
             TrustedReplayContext {
-                issuer_id: issuer.issuer_id.clone(),
-                key_epoch: issuer.key_epoch,
+                issuer_id: issuer.issuer_id().clone(),
+                key_epoch: issuer.key_epoch(),
                 now_ms,
-                revoked: issuer.revoked,
+                revoked: false,
             },
             PreverifiedAuthEnvelope {
                 message_id: self.claims.message_id.clone(),
@@ -104,6 +117,9 @@ impl SignedMessage {
         Ok(AuthenticatedMessage {
             claims: self.claims.clone(),
             receipt,
+            issuer_key_digest: issuer.verifying_key_digest(),
+            issuer_revision: issuer.revision(),
+            _registry_guard: issuer.registry_guard(),
         })
     }
 }
@@ -115,6 +131,14 @@ impl AuthenticatedMessage {
 
     pub fn receipt(&self) -> &VerificationReceipt {
         &self.receipt
+    }
+
+    pub fn issuer_key_digest(&self) -> Digest32 {
+        self.issuer_key_digest
+    }
+
+    pub fn issuer_revision(&self) -> u64 {
+        self.issuer_revision
     }
 }
 
