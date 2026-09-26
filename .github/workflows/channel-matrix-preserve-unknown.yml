@@ -1,4 +1,4 @@
-name: channel.matrix preserve unknown effect
+name: channel.matrix final send closure
 
 on:
   push:
@@ -11,259 +11,254 @@ permissions:
   contents: write
 
 concurrency:
-  group: channel-matrix-preserve-unknown-${{ github.ref }}
+  group: channel-matrix-final-closure-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  BRANCH_NAME: codex/channel-matrix-convergence-20260925
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
 jobs:
-  patch:
+  close:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 90
     steps:
       - name: Check out exact branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: codex/channel-matrix-convergence-20260925
+          ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Preserve prior indeterminate effects
+      - name: Bind trigger identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git diff --quiet
+          git diff --cached --quiet
+          mkdir -p "$RUNNER_TEMP/channel-matrix-closure"
+
+      - name: Prepare native Matrix prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Decode and apply bounded closure patch
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
+          import base64
+          import gzip
           from pathlib import Path
 
-          def replace_once(path: str, old: str, new: str) -> None:
-              target = Path(path)
-              text = target.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{path}: expected one replacement, found {count}")
-              target.write_text(text.replace(old, new), encoding="utf-8")
-
-          dispatch = "codex-rs/hepta-matrix-store/src/dispatch.rs"
-          replace_once(
-              dispatch,
-              """        if matches!(
-              existing.state,
-              MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
-          ) {
-              return Err(MatrixDurableError::Conflict);
-          }
-          """,
-              """        if matches!(
-              existing.state,
-              MatrixDispatchState::Succeeded
-                  | MatrixDispatchState::ObservedUnqualified
-                  | MatrixDispatchState::Redacted
-          ) {
-              return Err(MatrixDurableError::Conflict);
-          }
-          """,
-          )
-          replace_once(
-              dispatch,
-              """        if existing.accepted_event_id.is_some() {
-              // A prior request already crossed the transport boundary. A later
-              // permanent rejection of a retry cannot prove the original event
-              // was absent, so preserve Accepted until homeserver reconciliation.
-              sqlx::query(
-                  \"UPDATE matrix_dispatch_ledger
-                   SET state = 'accepted', transport_observation_sha256 = ?,
-                       updated_at_ms = ?
-                   WHERE stable_txn_id = ?\",
+          payload = gzip.decompress(
+              base64.b64decode(
+                  Path("scripts/channel_matrix_full_patch.py.gz.b64").read_bytes()
               )
-              .bind(&digest)
-              .bind(to_i64(now_ms)?)
-              .bind(txn_id.as_str())
-              .execute(&mut *transaction)
-              .await
-              .map_err(unavailable)?;
-              let record = MatrixDispatchRecord {
-                  state: MatrixDispatchState::Accepted,
-                  transport_observation_digest: Some(digest),
-                  updated_at_ms: now_ms,
-                  ..existing
-              };
-              transaction.commit().await.map_err(unavailable)?;
-              return Ok(record);
-          }
-          """,
-              """        if existing.accepted_event_id.is_some()
-              || existing.state == MatrixDispatchState::Indeterminate
-          {
-              // A prior request already crossed the transport boundary or had an
-              // unknown post-entry result. A later permanent rejection of a retry
-              // cannot prove the original event was absent, so preserve the
-              // strongest prior uncertainty until homeserver reconciliation.
-              let preserved_state = if existing.accepted_event_id.is_some() {
-                  MatrixDispatchState::Accepted
-              } else {
-                  MatrixDispatchState::Indeterminate
-              };
-              sqlx::query(
-                  \"UPDATE matrix_dispatch_ledger
-                   SET state = ?, transport_observation_sha256 = ?,
-                       updated_at_ms = ?
-                   WHERE stable_txn_id = ?\",
-              )
-              .bind(preserved_state.as_str())
-              .bind(&digest)
-              .bind(to_i64(now_ms)?)
-              .bind(txn_id.as_str())
-              .execute(&mut *transaction)
-              .await
-              .map_err(unavailable)?;
-              let record = MatrixDispatchRecord {
-                  state: preserved_state,
-                  transport_observation_digest: Some(digest),
-                  updated_at_ms: now_ms,
-                  ..existing
-              };
-              transaction.commit().await.map_err(unavailable)?;
-              return Ok(record);
-          }
-          """,
           )
-
-          outbound = "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs"
-          replace_once(
-              outbound,
-              """                if observed.state == MatrixDispatchState::Accepted {
-          """,
-              """                if matches!(
-                      observed.state,
-                      MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate
-                  ) {
-          """,
-          )
-
-          test = Path("codex-rs/hepta-matrix-store/tests/indeterminate_rejection.rs")
-          test.parent.mkdir(parents=True, exist_ok=True)
-          test.write_text(r'''use std::error::Error;
-use std::fs;
-
-use codex_hepta_contracts::AgentId;
-use codex_hepta_matrix_protocol::MatrixRoomId;
-use codex_hepta_matrix_protocol::MatrixUserId;
-use codex_hepta_matrix_protocol::outbox_id;
-use codex_hepta_matrix_protocol::transaction_id;
-use codex_hepta_matrix_store::MatrixAttemptFailureClass;
-use codex_hepta_matrix_store::MatrixDispatchState;
-use codex_hepta_matrix_store::MatrixDurableConfig;
-use codex_hepta_matrix_store::MatrixDurableStore;
-use codex_hepta_matrix_store::OutboxDisposition;
-use codex_hepta_matrix_store::OutboxDraft;
-use codex_hepta_matrix_store::OutboxKind;
-use codex_hepta_matrix_store::OutboxState;
-use codex_hepta_matrix_store::RoomBindingDraft;
-use codex_hepta_paths::HeptaFleetRoot;
-use tempfile::TempDir;
-
-#[tokio::test]
-async fn later_rejection_preserves_prior_indeterminate_effect() -> Result<(), Box<dyn Error>> {
-    let temp = TempDir::new()?;
-    let fleet_root = temp.path().join("fleet");
-    fs::create_dir_all(&fleet_root)?;
-    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
-    let layout = HeptaFleetRoot::parse(fleet_root.canonicalize()?)?
-        .layout()
-        .agent(&agent_id);
-    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
-    let room_id = MatrixRoomId::parse("!allowed:example.test")?;
-    store
-        .bind_room(&RoomBindingDraft {
-            room_id: room_id.clone(),
-            agent_user_id: MatrixUserId::parse("@agent:example.test")?,
-            expected_revision: None,
-            generation: 1,
-            changed_at_ms: 1,
-        })
-        .await?;
-
-    let logical_id = outbox_id(&agent_id, &room_id, "thread", "turn", "item", "final");
-    let stable_txn_id = transaction_id(&logical_id, 1)?;
-    let disposition = store
-        .enqueue_outbox(&OutboxDraft {
-            logical_outbox_id: logical_id,
-            revision: 1,
-            txn_id: stable_txn_id.clone(),
-            room_id,
-            kind: OutboxKind::Final,
-            payload: b"complete".to_vec(),
-            binding_revision: 1,
-            generation: 1,
-            created_at_ms: 2,
-        })
-        .await?;
-    assert!(matches!(disposition, OutboxDisposition::Enqueued(_)));
-
-    let mut claims = store.claim_outbox_fenced(10, 100, 1).await?;
-    let claim = claims.pop().ok_or("missing fenced claim")?;
-    store.prepare_outbox_dispatch(&claim.record, 10).await?;
-    let unknown = store
-        .record_outbox_transport_indeterminate(
-            &stable_txn_id,
-            claim.record.attempts,
-            11,
-        )
-        .await?;
-    assert_eq!(unknown.state, MatrixDispatchState::Indeterminate);
-
-    let rejected = store
-        .record_outbox_transport_rejected(
-            &stable_txn_id,
-            claim.record.attempts,
-            12,
-        )
-        .await?;
-    assert_eq!(rejected.state, MatrixDispatchState::Indeterminate);
-    store
-        .finish_outbox_indeterminate(
-            &claim,
-            MatrixAttemptFailureClass::Permanent,
-            None,
-            12,
-            1_000,
-        )
-        .await?;
-
-    let dispatch = store
-        .dispatch_for_txn(&stable_txn_id)
-        .await?
-        .ok_or("dispatch disappeared")?;
-    assert_eq!(dispatch.state, MatrixDispatchState::Indeterminate);
-    let outbox = store
-        .outbox_for_txn(&stable_txn_id)
-        .await?
-        .ok_or("outbox disappeared")?;
-    assert_eq!(outbox.state, OutboxState::RetryScheduled);
-    store.close().await;
-    Ok(())
-}
-''', encoding="utf-8")
+          target = Path("scripts/channel_matrix_preserve_unknown_patch.py")
+          target.write_bytes(payload)
+          target.chmod(0o755)
           PY
-
-      - name: Validate bounded patch
-        shell: bash
-        run: |
-          set -euo pipefail
+          python3 scripts/channel_matrix_preserve_unknown_patch.py apply
           git diff --check
-          grep -q "existing.state == MatrixDispatchState::Indeterminate" codex-rs/hepta-matrix-store/src/dispatch.rs
-          grep -q "MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate" codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
-          test -s codex-rs/hepta-matrix-store/tests/indeterminate_rejection.rs
 
-      - name: Commit patch and remove one-shot workflow
+      - name: Refresh Cargo lock and format exact owners
+        shell: bash
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_v8.py
+          cd codex-rs
+          cargo metadata --format-version 1 >"$RUNNER_TEMP/channel-matrix-closure/cargo-metadata.json"
+          cargo fmt \
+            --package codex-hepta-matrix-store \
+            --package codex-hepta-matrix-sdk \
+            --package codex-hepta-matrixd
+          cargo fmt \
+            --package codex-hepta-matrix-store \
+            --package codex-hepta-matrix-sdk \
+            --package codex-hepta-matrixd \
+            -- --check
+          cd ..
+          git diff --check
+
+      - name: Test durable state machine
+        working-directory: codex-rs
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/channel-matrix-target
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-matrix-store --test indeterminate_rejection \
+            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/matrix-store-test.log"
+
+      - name: Test SDK authorization and reconciliation
+        working-directory: codex-rs
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/channel-matrix-target
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-matrix-sdk --test durable_transport \
+            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/matrix-sdk-test.log"
+
+      - name: Test matrixd owner and strict lint
+        working-directory: codex-rs
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/channel-matrix-target
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-matrixd --lib \
+            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/matrixd-test.log"
+          cargo clippy --locked \
+            -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/channel-matrix-closure/clippy.log"
+
+      - name: Commit source and executable documentation
+        id: source
         shell: bash
         run: |
           set -euo pipefail
-          rm .github/workflows/channel-matrix-preserve-unknown.yml
           git config user.name "Hepta Matrix CI"
           git config user.email "hepta-matrix-ci@users.noreply.github.com"
-          git add codex-rs/hepta-matrix-store/src/dispatch.rs \
-                  codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs \
-                  codex-rs/hepta-matrix-store/tests/indeterminate_rejection.rs \
-                  .github/workflows/channel-matrix-preserve-unknown.yml
-          git commit -s -m "channel.matrix: preserve indeterminate effects across rejection"
-          git push origin HEAD:codex/channel-matrix-convergence-20260925
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-matrix-sdk \
+            codex-rs/hepta-matrix-store \
+            codex-rs/hepta-matrixd/src/final_use.rs \
+            docs/modules/channel.matrix/*.md \
+            scripts/verify_channel_matrix_candidate.py
+          git diff --cached --check
+          git commit -s -m "channel.matrix: persist final-use entry evidence"
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          echo "sha=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
+
+      - name: Bind implementation map to tested source and retire one-shot machinery
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ steps.source.outputs.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/channel_matrix_preserve_unknown_patch.py refresh-map \
+            --source-commit "$SOURCE_COMMIT"
+          python3 scripts/hepta-module-docs.py refresh-derived
+          rm .github/workflows/channel-matrix-preserve-unknown.yml
+          rm scripts/channel_matrix_preserve_unknown_patch.py
+          rm scripts/channel_matrix_full_patch.py.gz.b64
+          git add -A
+          git diff --cached --check
+          git commit -s -m "docs(channel.matrix): bind durable send closure to source"
+
+      - name: Verify exact final candidate and construct receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          FINAL_COMMIT="$(git rev-parse HEAD)"
+          FINAL_TREE="$(git rev-parse 'HEAD^{tree}')"
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "$FINAL_COMMIT" \
+            --output "$RUNNER_TEMP/channel-matrix-closure/exact-candidate.json"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          SOURCE_COMMIT="${{ steps.source.outputs.sha }}" \
+          FINAL_COMMIT="$FINAL_COMMIT" \
+          FINAL_TREE="$FINAL_TREE" \
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "channel-matrix-closure"
+          logs = {}
+          for item in sorted(root.glob("*.log")):
+              logs[item.name] = hashlib.sha256(item.read_bytes()).hexdigest()
+          qualification = {
+              "schema": "hepta.channel-matrix-closure-receipt.v1",
+              "source_commit": os.environ["SOURCE_COMMIT"],
+              "final_commit": os.environ["FINAL_COMMIT"],
+              "final_tree": os.environ["FINAL_TREE"],
+              "cargo_lock_sha256": hashlib.sha256(
+                  Path("codex-rs/Cargo.lock").read_bytes()
+              ).hexdigest(),
+              "migration_0008_sha256": hashlib.sha256(
+                  Path(
+                      "codex-rs/hepta-matrix-store/migrations/"
+                      "0008_matrix_authority_entry.sql"
+                  ).read_bytes()
+              ).hexdigest(),
+              "configuration": {
+                  "matrix_store_test": "indeterminate_rejection",
+                  "matrix_sdk_test": "durable_transport",
+                  "matrixd_test": "lib",
+                  "strict_clippy": True,
+              },
+              "log_sha256": logs,
+              "external_qualification": {
+                  "real_synapse_executed": False,
+                  "encrypted_room_rotation": False,
+                  "authenticated_backup_restore": False,
+                  "sustained_capacity": False,
+                  "independent_acceptance": False,
+              },
+          }
+          config_bytes = json.dumps(
+              qualification["configuration"], sort_keys=True, separators=(",", ":")
+          ).encode()
+          qualification["configuration_sha256"] = hashlib.sha256(config_bytes).hexdigest()
+          receipt = root / "closure-receipt.json"
+          receipt.write_text(json.dumps(qualification, indent=2) + "\n")
+          payloads = [receipt, root / "exact-candidate.json", *sorted(root.glob("*.log"))]
+          digest = hashlib.sha256()
+          for payload in payloads:
+              digest.update(payload.name.encode())
+              digest.update(b"\0")
+              digest.update(payload.read_bytes())
+              digest.update(b"\0")
+          (root / "artifact-payload.sha256").write_text(digest.hexdigest() + "\n")
+          PY
+
+      - name: Push reviewed branch without overwriting concurrent work
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push \
+            --force-with-lease="refs/heads/$BRANCH_NAME:${{ github.sha }}" \
+            origin "HEAD:refs/heads/$BRANCH_NAME"
+
+      - name: Retain exact source, logs, and payload digest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-final-closure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-closure
+          if-no-files-found: warn
+          retention-days: 30
