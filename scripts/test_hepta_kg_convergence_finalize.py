@@ -66,3 +66,5 @@ class FinalizeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# Candidate-branch trigger: execute the retained convergence workflow on this exact source head.
