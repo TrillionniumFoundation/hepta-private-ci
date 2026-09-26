@@ -1,10 +1,9 @@
 //! Signed admission, replay fencing and durable authorization policy state.
 //!
-//! The signed admission API verifies issuer-bound Ed25519 messages. The durable
-//! authority store evaluates revision-bound policy against a persisted trusted-
-//! time floor. Policy decisions and replay receipts do not reserve quota,
-//! dispatch an effect or mint final-use authority. Successful receipts retain
-//! `AuthorityPosture::DENY_ALL`.
+//! Public signed admission is available only through `AuthBusAuthorityHost`,
+//! which resolves issuer identity from the persistent registry and holds the
+//! issuer lifecycle fence through the consuming transaction. Policy decisions
+//! and replay receipts never mint final-use authority.
 
 #![forbid(unsafe_code)]
 
@@ -12,6 +11,7 @@ mod authority;
 mod authority_schema;
 mod authority_store;
 mod host;
+mod owner_lock;
 mod quota;
 mod quota_store;
 mod recovery;
@@ -26,8 +26,9 @@ pub use authority::PolicyDecision;
 pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
-pub use authority_store::AuthBusAuthorityStore;
+pub(crate) use authority_store::AuthBusAuthorityStore;
 pub use host::AuthBusAuthorityHost;
+pub use quota::ExpiredReservationSweep;
 pub use quota::QuotaReservation;
 pub use quota::QuotaSnapshot;
 pub use quota::QuotaSpec;
@@ -36,11 +37,11 @@ pub use quota::ReservationState;
 pub use recovery::AuthorityCheckpoint;
 pub use settlement::Settlement;
 pub use settlement::SettlementEvidenceClaims;
-pub use settlement::SettlementIssuerRegistration;
+pub(crate) use settlement::SettlementIssuerRegistration;
 pub use settlement::SettlementStatus;
 pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;
-pub use signed::IssuerRegistration;
+pub(crate) use signed::IssuerRegistration;
 pub use signed::SignedMessage;
 pub use signed::SignedMessageClaims;
 pub use trust::IssuerLifecycleState;
@@ -50,6 +51,7 @@ pub use trust::IssuerRetirement;
 pub use trust::IssuerSpec;
 pub use trust::SignedTrustedTimeAttestation;
 pub use trust::TrustedTimeAttestationClaims;
+pub use trust::VerifiedIssuerHandle;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -79,9 +81,8 @@ pub struct PreverifiedAuthEnvelope {
 
 /// Trusted host context kept outside the untrusted envelope.
 ///
-/// `issuer_id`, `key_epoch`, current time and revocation state must come from
-/// the authenticated host boundary. Constructing this value does not itself
-/// perform authentication.
+/// This compatibility verifier does not consult the durable issuer registry.
+/// Product callers must use `AuthBusAuthorityHost::authenticate_message`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedReplayContext {
     pub issuer_id: StableId,
@@ -115,6 +116,7 @@ pub enum Error {
     CapacityExceeded,
     InvalidSignature,
     IssuerMismatch,
+    RegistryUnavailable,
 }
 
 impl fmt::Display for Error {
