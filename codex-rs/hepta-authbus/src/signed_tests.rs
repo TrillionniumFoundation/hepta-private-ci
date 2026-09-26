@@ -1,16 +1,44 @@
+use std::sync::Arc;
+
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use tokio::sync::RwLock;
 
 use super::*;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
+use crate::VerifiedIssuerHandle;
 
-fn fixture() -> (IssuerRegistration, SignedMessage) {
+async fn issuer(
+    key: &SigningKey,
+    epoch: u64,
+    state: IssuerLifecycleState,
+    purpose: IssuerPurpose,
+) -> VerifiedIssuerHandle {
+    let guard = Arc::new(RwLock::new(())).read_owned().await;
+    VerifiedIssuerHandle::from_record(
+        IssuerRecord {
+            issuer_id: StableId::new("issuer:one").unwrap(),
+            purpose,
+            key_epoch: Generation::new(epoch).unwrap(),
+            verifying_key: key.verifying_key(),
+            state,
+            revision: 1,
+        },
+        guard,
+    )
+}
+
+async fn fixture() -> (SigningKey, VerifiedIssuerHandle, SignedMessage) {
     let key = SigningKey::from_bytes(&[7; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:one").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = issuer(
+        &key,
+        1,
+        IssuerLifecycleState::Active,
+        IssuerPurpose::Message,
+    )
+    .await;
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -22,12 +50,12 @@ fn fixture() -> (IssuerRegistration, SignedMessage) {
         expires_at_ms: 2_000,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    (key, issuer, SignedMessage { claims, signature })
 }
 
-#[test]
-fn signed_admission_rejects_payload_and_replay_identity_substitution() {
-    let (issuer, message) = fixture();
+#[tokio::test]
+async fn signed_admission_rejects_payload_and_replay_identity_substitution() {
+    let (_key, issuer, message) = fixture().await;
     let scope = message.claims.scope_digest;
     let payload = message.claims.payload_digest;
     assert!(
@@ -36,7 +64,7 @@ fn signed_admission_rejects_payload_and_replay_identity_substitution() {
             .is_ok()
     );
     for field in 0..7 {
-        let (_, mut substituted) = fixture();
+        let (_key, _unused, mut substituted) = fixture().await;
         match field {
             0 => substituted.claims.payload_digest = Digest32::of_bytes(b"other"),
             1 => substituted.claims.scope_digest = Digest32::of_bytes(b"other"),
@@ -54,30 +82,68 @@ fn signed_admission_rejects_payload_and_replay_identity_substitution() {
     }
 }
 
-#[test]
-fn trusted_registration_and_current_expiry_are_required() {
-    let (mut issuer, message) = fixture();
+#[tokio::test]
+async fn registry_sealed_handle_rejects_forged_revoked_epoch_and_purpose_substitution() {
+    let (key, valid, message) = fixture().await;
     let scope = message.claims.scope_digest;
     let payload = message.claims.payload_digest;
-    issuer.key_epoch = Generation::new(2).unwrap();
+
+    let epoch_substitution = issuer(
+        &key,
+        2,
+        IssuerLifecycleState::Active,
+        IssuerPurpose::Message,
+    )
+    .await;
     assert!(matches!(
-        message.authenticate(&issuer, scope, payload, /*now_ms*/ 1_000),
+        message.authenticate(&epoch_substitution, scope, payload, 1_000),
         Err(Error::IssuerMismatch)
     ));
-    issuer.key_epoch = message.claims.key_epoch;
-    issuer.revoked = true;
+
+    let revoked = issuer(
+        &key,
+        1,
+        IssuerLifecycleState::Revoked,
+        IssuerPurpose::Message,
+    )
+    .await;
     assert!(matches!(
-        message.authenticate(&issuer, scope, payload, /*now_ms*/ 1_000),
+        message.authenticate(&revoked, scope, payload, 1_000),
         Err(Error::Revoked)
     ));
-    issuer.revoked = false;
+
+    let wrong_purpose = issuer(
+        &key,
+        1,
+        IssuerLifecycleState::Active,
+        IssuerPurpose::Settlement,
+    )
+    .await;
     assert!(matches!(
-        message.authenticate(&issuer, scope, payload, /*now_ms*/ 2_000),
+        message.authenticate(&wrong_purpose, scope, payload, 1_000),
+        Err(Error::IssuerMismatch)
+    ));
+
+    let forged_key = SigningKey::from_bytes(&[8; 32]);
+    let forged = issuer(
+        &forged_key,
+        1,
+        IssuerLifecycleState::Active,
+        IssuerPurpose::Message,
+    )
+    .await;
+    assert!(matches!(
+        message.authenticate(&forged, scope, payload, 1_000),
+        Err(Error::InvalidSignature)
+    ));
+
+    assert!(matches!(
+        message.authenticate(&valid, scope, payload, /*now_ms*/ 2_000),
         Err(Error::Expired)
     ));
     assert!(matches!(
         message.authenticate(
-            &issuer,
+            &valid,
             Digest32::of_bytes(b"other"),
             payload,
             /*now_ms*/ 1_000
