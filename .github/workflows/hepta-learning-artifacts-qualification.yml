@@ -1,0 +1,116 @@
+name: Hepta learning.artifacts qualification
+
+on:
+  push:
+    branches:
+      - main
+      - work/learning-artifacts-remediation-20260927
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-artifacts-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source and retain closure findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p .hepta-evidence/learning-artifacts
+          git rev-parse HEAD HEAD^{tree} > .hepta-evidence/learning-artifacts/source.txt
+          set +e
+          python3 scripts/hepta-lane-e-closure.py verify > .hepta-evidence/learning-artifacts/closure.json 2>&1
+          result=$?
+          set -e
+          cat .hepta-evidence/learning-artifacts/closure.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('.hepta-evidence/learning-artifacts/closure.json')
+          try:
+              findings = json.loads(path.read_text()).get('findings', [])
+          except (ValueError, OSError):
+              findings = [{'message': 'Closure verifier failed before emitting JSON; inspect closure.json'}]
+          for finding in findings:
+              message = str(finding.get('message', finding))
+              message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error title=Lane E closure::' + message)
+          PY
+          exit "$result"
+      - name: Retain exact-source review bundle
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-artifacts
+          git archive --format=tar "$SOURCE_SHA" codex-rs/hepta-learning-artifacts codex-rs/hepta-types codex-rs/hepta-agentd/src/cognitive_ranker.rs codex-rs/Cargo.toml codex-rs/Cargo.lock scripts docs/modules/learning.artifacts docs/lane-e qualification/lane-e .github/workflows/hepta-lane-e-gap-closure.yml > .hepta-evidence/learning-artifacts/source-review.tar
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: learning-artifacts-metadata-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-artifacts
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Exact-head all-target build
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-learning-artifacts --all-targets
+      - name: Strict artifact lint
+        if: ${{ !cancelled() }}
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+      - name: Artifact owner and boundary regressions
+        if: ${{ !cancelled() }}
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-learning-artifacts --all-targets -- --nocapture
+
+  required:
+    name: learning.artifacts exact-head required
+    if: always()
+    needs: [metadata, native]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reject missing, failed, cancelled or skipped lanes
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          results = json.loads(os.environ['RESULTS'])
+          expected = {'metadata', 'native'}
+          ok = set(results) == expected and all(results[k]['result'] == 'success' for k in expected)
+          print(json.dumps({'sourceSha': os.environ['SOURCE_SHA'], 'jobs': results, 'passed': ok, 'productionActivation': False}, indent=2))
+          sys.exit(0 if ok else 1)
+          PY
