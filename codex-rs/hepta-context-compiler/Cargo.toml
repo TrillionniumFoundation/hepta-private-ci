@@ -17,5 +17,6 @@ workspace = true
 codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
+ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

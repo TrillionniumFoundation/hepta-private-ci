@@ -14,16 +14,41 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod candidate_bound;
+mod error_code;
+mod qualified_codec;
+mod redacted;
 mod requirements;
+mod signed_admission;
+mod snapshot_lineage;
 mod v2;
 mod wire;
 
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
 pub use candidate_bound::compile_candidate_bound_with_requirements;
+pub use error_code::ContextCompilerV2ErrorExt;
+pub use error_code::ContextCompilerV2RetryClass;
+pub use qualified_codec::CanonicalContextSegmentKindV2;
+pub use qualified_codec::CanonicalContextSegmentV2;
+pub use qualified_codec::CanonicalContextSerializerV2;
+pub use qualified_codec::CanonicalSerializedPayloadV2;
+pub use qualified_codec::CanonicalSerializerIdentityV2;
+pub use qualified_codec::ExactTokenCounterV2;
+pub use qualified_codec::QualifiedContextProfileV2;
+pub use qualified_codec::QualifiedExactTokenizerV2;
+pub use qualified_codec::TokenizerIdentityV2;
+pub use redacted::RedactedRealizedItemV2;
+pub use redacted::RedactedSerializedContextV2;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
+pub use signed_admission::SignedAdmissionAuthorityErrorV2;
+pub use signed_admission::SignedAdmissionRecordV2;
+pub use signed_admission::SignedAdmissionSnapshotV2;
+pub use signed_admission::SignedAdmissionVerifierV2;
+pub use signed_admission::admission_record_signing_payload_v2;
+pub use signed_admission::admission_snapshot_signing_payload_v2;
+pub use snapshot_lineage::VerifiedSnapshotLineageV2;
 pub use v2::CompiledContextV2;
 pub use v2::ContextAdmissionBindingV2;
 pub use v2::ContextAdmissionRecordV2;
@@ -213,7 +238,7 @@ fn compile_internal(
         .iter()
         .filter(|item| mandatory_ids.contains(&item.item_id))
         .map(|item| u128::from(item.token_count))
-        .sum::<u128>(); // At most 4096 u64 costs; the exact sum fits u128.
+        .sum::<u128>();
     if required_tokens > u128::from(request.token_budget) {
         return Err(Error::InsufficientContext {
             required_tokens,
