@@ -1,0 +1,23 @@
+[package]
+name = "codex-hepta-intuition-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+codex-hepta-intuition = { path = "..", default-features = false }
+codex-hepta-types = { path = "../../hepta-types" }
+
+[[bin]]
+name = "production_contract"
+path = "fuzz_targets/production_contract.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]
+members = ["."]
