@@ -1,0 +1,51 @@
+name: automation-taskflow-map-rebind
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-v19-runtime-closure
+    paths:
+      - .github/workflows/automation-taskflow-map-rebind.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-map-rebind
+  cancel-in-progress: true
+
+jobs:
+  rebind:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-v19-runtime-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+
+      - name: Rebind exact automation source observation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Automation CI"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+          python3 scripts/hepta-implementation-maps.py migrate --module automation.taskflow
+          git diff --check
+          git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(automation): rebind exact v19 source observation"
+          fi
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
