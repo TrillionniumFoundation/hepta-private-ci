@@ -160,3 +160,6 @@ replace_once(
     "                    && self.encoded_request_body_observer.is_none()\n",
     "                    && exact_encoded_body_observer.is_none()\n",
 )
+
+product_patch = Path("scripts/_context_compiler_product_patch.py")
+exec(compile(product_patch.read_text(), str(product_patch), "exec"))
