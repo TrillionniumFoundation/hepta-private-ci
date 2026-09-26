@@ -36,7 +36,6 @@ pub use legacy::RetrievalChannelV1;
 pub use legacy::RetrievalChannelWeightV1;
 pub use legacy::RetrievalPolicyV1;
 pub use legacy::adapt_generation_bound_recall_to_canonical_shadow_v1;
-pub use legacy::build_candidate_union;
 
 /// Proposition-relative evidence direction.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -99,6 +98,32 @@ const fn polarity_for_channel(channel: RetrievalChannelV1) -> ContradictionPolar
     } else {
         ContradictionPolarityV1::Supports
     }
+}
+
+/// Builds the decision union after removing candidates from explicitly
+/// zero-weight channels. The filter happens before record/channel merging so a
+/// zero-weight contradiction digest cannot lose its provenance and later be
+/// reinterpreted through a positive-weight channel on the same record.
+pub fn build_candidate_union(
+    cue: &MemoryCueV1,
+    policy: &RetrievalPolicyV1,
+    candidates: Vec<RetrievalChannelCandidateV1>,
+) -> Result<CandidateUnionV1, RecallErrorV1> {
+    policy.validate()?;
+    let weights = policy
+        .channel_weights
+        .iter()
+        .map(|row| (row.channel, row.weight))
+        .collect::<BTreeMap<_, _>>();
+    let candidates = candidates
+        .into_iter()
+        .filter(|candidate| {
+            weights
+                .get(&candidate.channel)
+                .is_none_or(|weight| *weight > FixedQ32::ZERO)
+        })
+        .collect();
+    legacy::build_candidate_union(cue, policy, candidates)
 }
 
 pub fn recall(
@@ -181,23 +206,11 @@ pub(crate) fn policy_admitted_union(
 ) -> Result<CandidateUnionV1, RecallErrorV1> {
     union.validate()?;
     policy.validate()?;
-    let positive_channels = policy
-        .channel_weights
-        .iter()
-        .filter(|row| row.weight > FixedQ32::ZERO)
-        .map(|row| row.channel)
-        .collect::<BTreeSet<_>>();
     let entries = union
         .entries
         .iter()
         .filter(|entry| entry.weighted_score >= policy.minimum_total_score)
-        .filter_map(|entry| {
-            let mut entry = entry.clone();
-            entry
-                .channels
-                .retain(|channel| positive_channels.contains(channel));
-            (!entry.channels.is_empty()).then_some(entry)
-        })
+        .cloned()
         .collect::<Vec<_>>();
     let channels = entries
         .iter()
