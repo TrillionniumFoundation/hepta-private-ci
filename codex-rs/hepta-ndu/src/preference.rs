@@ -278,7 +278,11 @@ pub fn solve_preference_target(
 
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    let mut maximum_residual_raw = initial_residual_raw;
+    // Once at least one solver step exists, maximum residual is an aggregate
+    // over emitted iteration receipts. The pre-solve residual is represented
+    // only by the zero-iteration termination path above and must not be
+    // re-labelled as iteration evidence.
+    let mut maximum_residual_raw = FixedQ32::ZERO.raw();
 
     for iteration in 1..=MAX_ITERATIONS {
         let (next, receipt) = update_once(&state, &target, eta, iteration)?;
