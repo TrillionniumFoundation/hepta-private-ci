@@ -9,11 +9,15 @@
 
 #![forbid(unsafe_code)]
 
+mod attempt;
 mod codec;
 mod credential;
 mod protocol;
 mod replay;
 
+pub use attempt::AttemptRegistryError;
+pub use attempt::FederationAttemptRegistryV1;
+pub use attempt::MAX_FEDERATION_ATTEMPTS;
 pub use codec::AUTHENTICATED_FRAME_FORMAT_VERSION_V1;
 pub use codec::AUTHENTICATED_FRAME_SCHEMA_V1;
 pub use codec::AuthenticatedFrameCodecV1;
