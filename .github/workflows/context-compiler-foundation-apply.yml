@@ -43,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           base64 --decode scripts/apply-context-compiler-foundation.py.gz.b64 | gzip --decompress > /tmp/apply-context-compiler-foundation.py
-          test "$(sha256sum /tmp/apply-context-compiler-foundation.py | cut -d' ' -f1)" = "83dc4808dd94700d4ef8ba4a555bd8e19a9b7f27b63c649e285c1e4e801c6ff2"
+          test "$(sha256sum /tmp/apply-context-compiler-foundation.py | cut -d' ' -f1)" = "51dbb42646c026a34be733cd387992e7307a7854f169c5ebe5219431e3f494fe"
           python3 -m py_compile /tmp/apply-context-compiler-foundation.py
       - name: Apply guarded source edits
         run: python3 /tmp/apply-context-compiler-foundation.py
