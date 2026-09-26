@@ -1,0 +1,200 @@
+name: automation-taskflow-qualification-resume
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-v19-runtime-closure
+    paths:
+      - .github/workflows/automation-taskflow-qualification-resume.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-qualification-resume
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 150
+    steps:
+      - name: Check out exact work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-v19-runtime-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+
+      - name: Set up CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Configure qualification identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Automation CI"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+          mkdir -p "$RUNNER_TEMP/automation-taskflow-qualification"
+
+      - name: Regenerate authoritative Lane B projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-truth.py generate \
+            2>&1 | tee "$RUNNER_TEMP/automation-taskflow-qualification/lane-b-generate.log"
+          git diff --check
+          git add \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(automation): regenerate Lane B TaskFlow projections"
+          fi
+          printf 'QUALIFIED_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'QUALIFIED_TREE=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
+
+      - name: Verify schema, implementation maps, callers and Lane B truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            python3 scripts/check_automation_taskflow_schema.py
+            python3 -m unittest scripts/test_automation_taskflow_schema.py
+            python3 scripts/hepta-implementation-maps.py verify \
+              --expected-sha "$QUALIFIED_SHA" \
+              --expected-tree "$QUALIFIED_TREE"
+            python3 scripts/verify_hepta_callers.py self-test
+            python3 scripts/verify_hepta_callers.py verify
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py
+            python3 scripts/hepta-lane-b-truth.py verify
+            git diff --check
+            test -z "$(git status --porcelain --untracked-files=no)"
+          } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-qualification/source-verification.log"
+
+      - name: Format, compile and strict clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+            cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+            cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings
+          } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-qualification/rust-qualification.log"
+
+      - name: Test migration, runtime, Neural Circuit and Agentd product paths
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            cargo test -p codex-hepta-operations
+            cargo test -p codex-hepta-automation --test durable_causal_chain
+            cargo test -p codex-hepta-automation --test runtime_reliability
+            cargo test -p codex-hepta-automation --test runtime_crash_points
+            cargo test -p codex-hepta-automation --test runtime_state_machine_fuzz
+            cargo test -p codex-hepta-automation --test neural_circuit_runtime
+            cargo test -p codex-hepta-automation
+            cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+            cargo test -p codex-hepta-agentd --lib automation
+            cargo test -p codex-hepta-agentd --lib automation_effect_host
+          } 2>&1 | tee "$RUNNER_TEMP/automation-taskflow-qualification/tests.log"
+
+      - name: Verify TaskFlow Bazel qualification targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel test --test_output=errors \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test \
+            2>&1 | tee "$RUNNER_TEMP/automation-taskflow-qualification/bazel.log"
+
+      - name: Create exact-head command receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$QUALIFIED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$QUALIFIED_TREE"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = {
+              "schema": "hepta.automation-taskflow.qualification-receipt.v1",
+              "commit": os.environ["QUALIFIED_SHA"],
+              "tree": os.environ["QUALIFIED_TREE"],
+              "storeSchemaVersion": 19,
+              "commands": {
+                  "schemaAndDocumentDrift": "pass",
+                  "implementationMaps": "pass",
+                  "closedWorldCallers": "pass",
+                  "laneBTruth": "pass",
+                  "rustfmt": "pass",
+                  "cargoCheck": "pass",
+                  "strictClippy": "pass",
+                  "migrationAndPackageTests": "pass",
+                  "runtimeReliability": "pass",
+                  "crashPoints": "pass",
+                  "stateMachineFuzz": "pass",
+                  "neuralCircuitRuntime": "pass",
+                  "agentdProductEffect": "pass",
+                  "bazelQualification": "pass"
+              },
+              "sourceClaims": {
+                  "boundedAdmissionBatch": True,
+                  "separateRecoveryAdmissionBudgets": True,
+                  "failureDisposition": True,
+                  "backlogAgeAndFairness": True,
+                  "minimalNeuralCircuitRuntime": True,
+                  "v1CompatibilityPreserved": True,
+                  "secondScheduler": False,
+                  "secondStore": False
+              },
+              "externalEvidence": {
+                  "selectedHost": False,
+                  "authenticCurrentIanaTzdb": False,
+                  "independentAcceptance": False,
+                  "activation": False,
+                  "promotion": False,
+                  "release": False
+              },
+              "result": "pass"
+          }
+          target = Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-qualification" / "receipt.json"
+          target.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Push qualified projection commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
+
+      - name: Preserve projection commit on failure
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git reset --hard HEAD
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
+
+      - name: Retain qualification diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-qualification-${{ github.run_id }}
+          path: ${{ runner.temp }}/automation-taskflow-qualification
+          if-no-files-found: warn
+          retention-days: 30
