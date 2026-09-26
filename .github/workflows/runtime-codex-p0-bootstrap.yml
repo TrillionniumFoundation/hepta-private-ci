@@ -1,0 +1,118 @@
+name: runtime.codex P0 bootstrap
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-full-hardening-20260926
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-p0-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-test-commit:
+    if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-bootstrap-complete]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: 0
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.sha }}
+
+      - name: Prepare repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install native build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential pkg-config libcap-dev
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Resolve verified sandboxed V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Apply exact P0 source transformation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_runtime_codex_p0.py
+          python3 scripts/fix_runtime_codex_p0.py
+          git diff --check
+
+      - name: Format changed Rust packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-agent-protocol \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-worker-host
+          git diff --check
+
+      - name: Test inference durable control
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-core -- --test-threads=1
+
+      - name: Test Agentd control protocol
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agent-protocol -- --test-threads=1
+
+      - name: Test exact Agentd run lifecycle
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd lane_b_runtime --lib -- --test-threads=1
+
+      - name: Test runtime.codex worker host
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host -- --test-threads=1
+
+      - name: Strict lint changed packages
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-infer-core
+          -p codex-hepta-agent-protocol
+          -p codex-hepta-agentd
+          -p codex-hepta-infer-worker-host
+          --all-targets -- -D warnings
+
+      - name: Verify exact transformation scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no | grep -vE '^ [MD?]{1,2} (scripts/apply_runtime_codex_p0.py|scripts/fix_runtime_codex_p0.py|.github/workflows/runtime-codex-p0-bootstrap.yml)$' || true)" || true
+          git diff --stat
+
+      - name: Commit tested P0 closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/apply_runtime_codex_p0.py scripts/fix_runtime_codex_p0.py
+          rm .github/workflows/runtime-codex-p0-bootstrap.yml
+          git add -A
+          git diff --cached --check
+          git config user.name "OpenAI Codex"
+          git config user.email "noreply@openai.com"
+          git commit -m "runtime.codex: close exact pre-effect abort [runtime-codex-bootstrap-complete]" \
+            -m "Bind Agentd dispatch to the exact runtime.codex request digest, durably stage local abort before owner reconciliation, and recover unknown dispatch acknowledgements without replay or owner-state divergence." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          git push origin "HEAD:codex/runtime-codex-full-hardening-20260926"
