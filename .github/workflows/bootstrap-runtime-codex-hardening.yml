@@ -80,6 +80,37 @@ jobs:
           path.write_text(value)
           PY
           python3 scripts/bootstrap_runtime_codex_hardening.py
+          # Historical native-v1 AbortBeforeEffect events did not carry an
+          # opening. Keep them readable, but only new Some(proof) records may
+          # participate in exact cross-owner compensation.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/hepta-infer-core/src/native_control.rs')
+          value = path.read_text()
+          value = value.replace(
+              '        proof: NativePreEffectAbortProof,\n    },\n    Observe {',
+              '        #[serde(default)]\n        proof: Option<NativePreEffectAbortProof>,\n    },\n    Observe {',
+              1,
+          )
+          value = value.replace(
+              '                proof: proof.clone(),\n            },',
+              '                proof: Some(proof.clone()),\n            },',
+              1,
+          )
+          old = '''                validate_pre_effect_abort_proof(record, &proof)?;
+                record.pre_dispatch_stop = Some(reason);
+                record.pre_effect_abort_proof = Some(proof);
+                record.state = NativeReservationState::Released;'''
+          new = '''                if let Some(proof) = proof {
+                    validate_pre_effect_abort_proof(record, &proof)?;
+                    record.pre_effect_abort_proof = Some(proof);
+                }
+                record.pre_dispatch_stop = Some(reason);
+                record.state = NativeReservationState::Released;'''
+          if value.count(old) != 1:
+              raise SystemExit('legacy abort compatibility anchor mismatch')
+          path.write_text(value.replace(old, new, 1))
+          PY
           cargo fmt --all
           git diff --check
 
