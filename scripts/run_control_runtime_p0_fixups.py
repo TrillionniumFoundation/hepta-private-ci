@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# This launcher keeps regex replacement semantics literal and is the shared
+# exact-head trigger for the ARM and macOS P0 source gates.
 ROOT = Path(__file__).resolve().parents[1]
 PATCH = ROOT / "scripts/control_runtime_p0_fixups.py"
 source = PATCH.read_text(encoding="utf-8")
@@ -12,6 +14,7 @@ if old in source:
     source = source.replace(old, new, 1)
 elif new not in source:
     raise RuntimeError("control_runtime_p0_fixups.py has an unknown sub_once implementation")
+compile(source, str(PATCH), "exec")
 PATCH.write_text(source, encoding="utf-8")
 namespace = {"__name__": "__main__", "__file__": str(PATCH)}
 exec(compile(source, str(PATCH), "exec"), namespace)
