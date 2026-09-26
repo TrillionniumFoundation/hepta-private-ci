@@ -10,6 +10,7 @@ import {
 } from "./agentd-service.js";
 import { EffectScopedNetworkDriver } from "./effect-network-driver.js";
 import { FileBrowserOperationJournal } from "./journal.js";
+import { RedactingObservationBrowserDriver } from "./observation-redactor.js";
 import { BrowserProfileHost } from "./runtime.js";
 import { createFilePersistedEffectReconciler } from "./persisted-reconciler.js";
 import {
@@ -137,8 +138,11 @@ const networkDriver = new EffectScopedNetworkDriver({
     32 * 1024 * 1024,
   ),
 });
-const driver = new EffectAdmissionBrowserDriver({
+const redactingDriver = new RedactingObservationBrowserDriver({
   driver: networkDriver,
+});
+const driver = new EffectAdmissionBrowserDriver({
+  driver: redactingDriver,
   containmentTimeoutMs: optionalPositiveInteger(
     "HEPTA_BROWSER_CONTAINMENT_TIMEOUT_MS",
     10_000,
