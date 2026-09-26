@@ -1,21 +1,22 @@
 {
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
+  "storeSchemaVersion": 19,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "bf56b93b2435fd404711fa8a694e9ef9dbcca636",
+    "tree": "2388c51e96528447c7c93d8ced7a2fc0a7f06610"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
-  "sourceMaturity": "native_durable_taskflow_execution_boundary",
+  "sourceMaturity": "native_durable_taskflow_runtime_v19",
   "declaredRoots": [
     "codex-rs/hepta-automation"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-automation"
   ],
-  "stateOwnerDisposition": "Owns durable legacy and Calendar V2 schedule revisions, deterministic occurrence identity, claim, TaskFlow run/step orchestration, provider-attempt/reconciliation evidence, and terminal occurrence projection without owning downstream domain effects.",
-  "terminalObserverDisposition": "Agentd observes the existing App Server persisted-turn terminal state for Codex activity; registered external effect owners supply their own terminal/reconciliation receipts through the final-use-authorized durable step seam.",
+  "stateOwnerDisposition": "Owns schema-v19 durable legacy and Calendar V2 schedule revisions, deterministic occurrence identity, claim, bounded admission, TaskFlow run/step orchestration, provider-attempt/reconciliation evidence, timer writer lifecycle, Neural Circuit boundary execution, and terminal occurrence projection without owning downstream domain effects or release authority.",
+  "terminalObserverDisposition": "Agentd observes the existing App Server persisted-turn terminal state for Codex activity; the configured AgentdAutomationEffectHost supplies provider execution and reconciliation receipts through the final-use-authorized durable step seam. Independently selected deployment providers and terminal observers remain separately qualified.",
   "operations": [
     {
       "designOperation": "register_schedule",
@@ -71,10 +72,18 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
-        "symbol": "pub async fn tick(",
+        "symbol": "pub async fn tick_batch",
         "buildTarget": "codex-hepta-automation"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "durable_v1_unit_operation",
+          "path": "codex-rs/hepta-automation/src/scheduler.rs",
+          "symbol": "pub async fn tick(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -82,17 +91,35 @@
           "command": "cargo test -p codex-hepta-automation"
         },
         {
+          "path": "codex-rs/hepta-automation/tests/scheduler_batch.rs",
+          "kind": "bounded_batch_budget_and_unknown_stop",
+          "command": "cargo test -p codex-hepta-automation --test scheduler_batch"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation.rs",
+          "kind": "separate_recovery_and_admission_budgets",
+          "command": "cargo test -p codex-hepta-agentd --lib"
+        },
+        {
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
           "kind": "calendar_due_materialization",
           "command": "cargo test -p codex-hepta-automation"
         }
       ],
-      "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives canonical UTC occurrence identity from the authoritative schedule profile, and commits TaskFlow step intent before App Server or external-provider contact.",
+      "sourceSemantics": "Runs a bounded sequential admission batch over the unchanged V1 durable tick operation, samples a fresh clock for each occurrence, freezes schedule revision, derives canonical occurrence and client identity, persists TaskFlow step intent before contact, and stops immediately on an unknown outcome so exact-identity reconciliation runs first in the next cycle.",
       "operation": "materialize_due",
-      "nativeSymbol": "pub async fn tick(",
+      "nativeSymbol": "pub async fn tick_batch",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
       "sourcePathExists": true,
-      "sourceBlob": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "productCallers": [
+        {
+          "role": "product_scheduler_loop",
+          "path": "codex-rs/hepta-agentd/src/automation.rs",
+          "symbol": "scheduler.tick_batch(&policy, unix_time_ms).await",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "sourceBlob": "04e2604b38a9a01744245cce8df29e463147f97c"
     },
     {
       "designOperation": "claim_occurrence",
@@ -110,6 +137,13 @@
           "symbol": "pub async fn claim_due(",
           "ownerModule": "automation.taskflow",
           "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "cross_host_target_fence",
+          "path": "codex-rs/hepta-automation/src/cross_host_recovery.rs",
+          "symbol": "pub fn admit_target(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
         }
       ],
       "tests": [
@@ -122,9 +156,14 @@
           "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
           "kind": "restart_reconciliation_identity",
           "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/cross_host_recovery.rs",
+          "kind": "checkpoint_external_fence_and_next_writer_epoch",
+          "command": "cargo test -p codex-hepta-automation cross_host_manifest"
         }
       ],
-      "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/token fence; safe reclaim preserves occurrence/client identity, while unresolved provider contact remains quarantined.",
+      "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/timer-writer fence; safe reclaim preserves occurrence/client identity, unresolved provider contact remains quarantined, and cross-host target admission requires a checkpoint digest, external host-fence receipt, schema 19 and exactly the next writer epoch.",
       "operation": "claim_occurrence",
       "nativeSymbol": "pub async fn materialize_occurrence(",
       "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -154,6 +193,13 @@
           "symbol": "pub async fn execute_authorized_taskflow_effect_async",
           "ownerModule": "automation.taskflow",
           "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "neural_circuit_boundary_adapter",
+          "path": "codex-rs/hepta-automation/src/neural_circuit_runtime/runtime.rs",
+          "symbol": "pub fn run_neural_circuit_v1",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
         }
       ],
       "tests": [
@@ -176,23 +222,53 @@
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/neural_circuit_runtime/tests.rs",
+          "kind": "event_decision_choice_organ_wait_budget_feedback_cancellation_terminal_vertical_slice",
+          "command": "cargo test -p codex-hepta-automation neural_circuit_runtime"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "kind": "configured_final_use_authority_http_provider_execute_and_reconcile",
+          "command": "cargo test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends immutable provider-attempt evidence before contact, derives a provider-stable logical key, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch. Neural Circuit execution records bounded decisions, organ/wait observations and terminal receipts but returns Effect nodes to this same authorized seam.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
-      "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
+      "productCallers": [
+        {
+          "role": "agentd_product_effect_host",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "pub(crate) async fn execute(",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "agentd_product_effect_reconciliation",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "AgentdAutomationEffectReconcileOutcome",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AutomationEffect",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "productCompositionState": "agentd_host_source_composed_independent_authority_provider_and_selected_host_acceptance_pending",
       "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
     }
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
-    "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
-    "real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification",
+    "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus an attested downstream provider and trusted terminal/reconciliation evidence for every activated external effect",
+    "authentic current IANA timezone-profile provenance, tzdb refresh, deployed-zone DST vectors and multi-scheduler target qualification",
+    "external host-fence and checkpoint-transfer evidence for cross-host recovery",
     "independent acceptance, activation, promotion and release evidence"
   ],
   "claimBoundary": {
@@ -200,6 +276,22 @@
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
     "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledProductCompositionGapsClosed": true,
+    "calendarV2ProductControlComplete": true,
+    "externalEffectProductCompositionComplete": true,
+    "boundedAdmissionBatchComplete": true,
+    "separateRecoveryBudgetComplete": true,
+    "runtimeFailureDispositionComplete": true,
+    "runtimeSloContractComplete": true,
+    "neuralCircuitRuntimeVerticalSliceComplete": true,
+    "crossHostRecoveryContractComplete": true,
+    "agedTurnRecoveryLivenessGapClosed": true,
+    "terminalObserverPerPassBounded": true,
+    "terminalObserverDurableContinuation": true,
+    "externalEffectAsyncBridgeComplete": true,
+    "externalEffectExactWireBindingComplete": true,
+    "externalEffectDurableRecoveryIdentityComplete": true,
+    "implementedOperationMappingComplete": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -208,22 +300,13 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false,
-    "repositoryControlledProductCompositionGapsClosed": false,
-    "calendarV2ProductControlComplete": true,
-    "externalEffectProductCompositionComplete": false,
-    "agedTurnRecoveryLivenessGapClosed": true,
-    "terminalObserverPerPassBounded": true,
-    "terminalObserverDurableContinuation": true,
-    "externalEffectAsyncBridgeComplete": true,
-    "externalEffectExactWireBindingComplete": true,
-    "externalEffectDurableRecoveryIdentityComplete": true,
-    "implementedOperationMappingComplete": true
+    "promotion": false,
+    "release": false
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
-  "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
+  "productCallerState": "agentd_app_server_calendar_v2_and_configured_external_effect_host_source_composed_selected_host_and_independent_acceptance_pending",
+  "productionWriterState": "schema_v19_automation_store_durable_schedule_occurrence_taskflow_timer_effect_evidence_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",
@@ -231,8 +314,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "bf56b93b2435fd404711fa8a694e9ef9dbcca636",
+    "tree": "2388c51e96528447c7c93d8ced7a2fc0a7f06610"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -244,7 +327,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
-        "blobSha": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+        "blobSha": "04e2604b38a9a01744245cce8df29e463147f97c"
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -253,10 +336,32 @@
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
         "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/runtime_policy.rs",
+        "blobSha": "34e882785272e11fb5bcf139630852ab612d0aa0"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/cross_host_recovery.rs",
+        "blobSha": "8003670a0f42d168e8fdcd80373218a5f1e6f420"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/neural_circuit_runtime/runtime.rs",
+        "blobSha": "a856a69b0b4ec83fd183d5a5234add27ded43b4a"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/automation.rs",
+        "blobSha": "c59d351f5592574f955f9c055b154e30cd4ca1f2"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "blobSha": "691f54836f2114bebcd58acd0af50961349d52ae"
       }
     ]
   },
   "observedSourcePaths": [
+    ".github/workflows/automation-taskflow-focused.yml",
+    ".github/workflows/blocking-ci.yml",
     "CALLERS.toml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
@@ -264,7 +369,10 @@
     "codex-rs/app-server/src/request_processors/thread_processor.rs",
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_service.rs",
+    "codex-rs/hepta-agentd/src/automation_service_tests.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
@@ -274,11 +382,20 @@
     "codex-rs/hepta-automation",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "docs/modules/automation.taskflow/MIGRATION_V19_RUNBOOK.md",
+    "docs/modules/automation.taskflow/RELEASE_QUALIFICATION.md",
+    "docs/modules/automation.taskflow/SCHEMA_CONTRACT.json",
+    "docs/modules/automation.taskflow/SLO.md",
+    "docs/modules/automation.taskflow/TECHNICAL.md",
+    "docs/readiness/LANE_B_NATIVE_HOST.md",
+    "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md",
+    "qualification/lane-b/LANE_B_NATIVE_CLOSURE.md",
+    "qualification/module-execution-dossiers/detail/automation.taskflow.md",
+    "scripts/automation_taskflow_contract.py",
+    "scripts/test_automation_taskflow_contract.py"
   ],
-  "repositoryControlledProductCompositionGaps": [
-    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
-  ],
+  "repositoryControlledProductCompositionGaps": [],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",
     "rustWorkspaceBuildInputs": [
@@ -298,13 +415,22 @@
     {
       "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
       "nativeSymbol": "run_automation_scheduler",
-      "state": "existing_app_server_queue_owner_consumer"
+      "state": "bounded_recovery_and_admission_product_loop"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "AgentdAutomationEffectHost::execute",
+      "state": "configured_final_use_authority_and_http_provider_product_host"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
-      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+      "object": "c59d351f5592574f955f9c055b154e30cd4ca1f2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "691f54836f2114bebcd58acd0af50961349d52ae"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
@@ -316,11 +442,15 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "b159960b6c1738572c9ff128b283e651e8292e70"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/cross_host_recovery.rs",
+      "object": "8003670a0f42d168e8fdcd80373218a5f1e6f420"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
@@ -331,12 +461,32 @@
       "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
     },
     {
+      "path": "codex-rs/hepta-automation/src/neural_circuit_runtime/mod.rs",
+      "object": "cf2880b62c1433fd5e9b096900c7a994f2711163"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/neural_circuit_runtime/runtime.rs",
+      "object": "a856a69b0b4ec83fd183d5a5234add27ded43b4a"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/neural_circuit_runtime/tests.rs",
+      "object": "99ff2ccbeeffec7447498e6ce24b60b2e0260e17"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/neural_circuit_runtime/types.rs",
+      "object": "11be8357e249e4727a65c7b751976b51b7cc77b9"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/runtime_policy.rs",
+      "object": "34e882785272e11fb5bcf139630852ab612d0aa0"
+    },
+    {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
       "object": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
     },
     {
       "path": "codex-rs/hepta-automation/src/scheduler.rs",
-      "object": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "object": "04e2604b38a9a01744245cce8df29e463147f97c"
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
@@ -359,8 +509,12 @@
       "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
     },
     {
+      "path": "codex-rs/hepta-automation/tests/scheduler_batch.rs",
+      "object": "c4dee25ebbbbd14a4e8646c032684518a3d58fad"
+    },
+    {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+      "object": "66fb2789b48ae482680e652ea13c4072f33ac254"
     }
   ]
 }
