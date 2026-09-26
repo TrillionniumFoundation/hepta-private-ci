@@ -41,6 +41,16 @@ export class OperationLedger {
     );
   }
 
+  completedViews() {
+    return Object.freeze(
+      [...this.#completed.values()]
+        .map(publicOperation)
+        .sort((left, right) =>
+          right.updatedAt - left.updatedAt || left.operationId.localeCompare(right.operationId),
+        ),
+    );
+  }
+
   async submit(request, signal, dispatch) {
     const completed = this.#completed.get(request.operationId);
     if (completed) {
@@ -95,6 +105,10 @@ export class OperationLedger {
       const error = asUiControlError(cause);
       const definitelyNotAccepted =
         error.code === UI_CONTROL_ERROR_CODES.BACKEND_REJECTED ||
+        error.code === UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT ||
+        error.code === UI_CONTROL_ERROR_CODES.STALE_REVISION ||
+        error.code === UI_CONTROL_ERROR_CODES.PERMISSION_DENIED ||
+        error.code === UI_CONTROL_ERROR_CODES.SESSION_EXPIRED ||
         (error.code === UI_CONTROL_ERROR_CODES.ABORTED &&
           error.details.requestDispatched === false);
       if (definitelyNotAccepted) {
