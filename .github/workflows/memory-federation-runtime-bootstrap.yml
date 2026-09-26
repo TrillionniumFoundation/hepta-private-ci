@@ -18,8 +18,6 @@ concurrency:
 
 jobs:
   apply:
-    # Architecture-neutral source generation only. Rust formatting, compilation,
-    # tests, and qualification remain in the exact-head and synthetic-merge lanes.
     runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
@@ -44,13 +42,11 @@ jobs:
           if text.count(regex_needle) != 1:
               raise SystemExit("unexpected replace_re helper shape")
           text = text.replace(regex_needle, regex_replacement)
-
           lane_count = "    expected=2,\n"
           if text.count(lane_count) != 2:
               raise SystemExit("unexpected expected=2 cardinality")
           head, tail = text.rsplit(lane_count, 1)
-          text = head + "    expected=1,\n" + tail
-          path.write_text(text, encoding="utf-8")
+          path.write_text(head + "    expected=1,\n" + tail, encoding="utf-8")
           PY
           python3 -m py_compile \
             scripts/apply_memory_federation_runtime_closure.py \
@@ -72,14 +68,17 @@ jobs:
           required = {
               "codex-rs/hepta-memory-federation/src/legacy_v1.rs": "#![allow(deprecated)]",
               "codex-rs/hepta-memory/src/cognitive_runtime.rs": "buffer_unordered(host_profile.attempt_concurrency())",
+              "codex-rs/hepta-memory/src/cognitive_runtime.rs": "with_federation_sources_profile",
               "codex-rs/hepta-memory/src/cognitive_runtime_identity.rs": "host_profile: left_host_profile",
-              "codex-rs/hepta-agentd/src/runtime.rs": "HEPTA_MEMORY_FEDERATION_TOTAL_BUDGET_MS",
               "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": "partial_peers",
           }
           for name, marker in required.items():
               text = Path(name).read_text(encoding="utf-8")
               if marker not in text:
                   raise SystemExit(f"generated source missing {marker!r} in {name}")
+          agentd = Path("codex-rs/hepta-agentd/src/runtime.rs").read_text(encoding="utf-8")
+          if "HEPTA_MEMORY_FEDERATION_TOTAL_BUDGET_MS" in agentd:
+              raise SystemExit("memory closure must not modify shared Agentd profile wiring")
           PY
           git diff --check
           test -n "$(git status --porcelain)"
@@ -96,11 +95,12 @@ jobs:
           git add -A
           git commit -m "memory.federation: bound product concurrency and V1 surface
 
-          - bind validated target-host limits into V2 runtime identity
+          - bind validated host-profile limits into V2 runtime identity
           - stream owner discovery, peer attempts, and capability revalidation with independent bounds
           - preserve partial retrieval while keeping final-use all-current
           - separate partial peer coverage from known item truncation
           - move V1 receipt compatibility behind an opt-in feature
+          - leave shared Agentd configuration wiring to its independently qualified owner
 
           Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
 
@@ -110,24 +110,16 @@ jobs:
           git fetch --no-tags --unshallow origin feat/memory-federation-production-closure-20260926
           test "$(git rev-parse --is-shallow-repository)" = "false"
           git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
-
           python3 scripts/hepta-implementation-maps.py migrate \
             --module memory.federation \
-            --module kernel.operations \
-            --module runtime.supervisor \
-            --module runtime.agentd \
-            --module cognitive.store \
-            --module cognitive.read \
-            --module memory.retrieval \
-            --module knowledge.graph \
-            --module automation.taskflow
-
+            --module knowledge.graph
           git diff --check
-          git add docs/modules/*/IMPLEMENTATION_MAP.json
+          git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json \
+            docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
-            git commit -m "docs(memory-federation): rebind shared runtime consumers
+            git commit -m "docs(memory-federation): rebind memory source consumers
 
-            Rebind only modules whose implementation maps consume the Agentd or Memory source changed by this closure. Preserve execution, independent acceptance, activation, and release claims until their own qualification gates pass.
+            Rebind the federation owner and the existing knowledge.graph map that consumes the changed Memory extension/public surface. Preserve execution, acceptance, activation, and release claims until qualification passes.
 
             Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
           fi
