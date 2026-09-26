@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: hepta-ndu-lock-refresh-${{ github.ref }}
@@ -26,13 +26,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Check out exact candidate without credentials
+      - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          persist-credentials: false
           fetch-depth: 0
-      - name: Generate diagnostics
+      - name: Generate diagnostics and exact lock refresh
         shell: bash
         run: |
           set -euo pipefail
@@ -58,7 +57,14 @@ jobs:
           sha256sum "$OUT/Cargo.lock.before" "$OUT/Cargo.lock" \
             "$OUT/Cargo.lock.patch" "$OUT/closed-world-map.log" \
             > "$OUT/SHA256SUMS"
-          test -s "$OUT/Cargo.lock.patch"
+          if ! git diff --quiet -- codex-rs/Cargo.lock; then
+            test "$(git diff --name-only)" = "codex-rs/Cargo.lock"
+            git config user.name hepta-qualification
+            git config user.email qualification@invalid
+            git add codex-rs/Cargo.lock
+            git commit -m 'chore(ndu): refresh Cargo.lock for versioned admission'
+            git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+          fi
       - name: Retain generated lockfile, patch, hashes and map log
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
