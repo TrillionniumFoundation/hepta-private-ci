@@ -1,4 +1,3 @@
-
 # automation.taskflow schema-v19 migration and recovery runbook
 
 **Automation store schema: v19.** This runbook is operational guidance for the
@@ -10,9 +9,9 @@ final-use grant, transfer ownership to a second scheduler or certify a host.
 | Store cut | Durable addition | Recovery rule |
 |---|---|---|
 | v16 | terminal-observer cursor | Preserve the exact opaque App Server cursor and resume by CAS. |
-| v17 | `destination_operation_dedupe` | Immutable destination/scope/operation receipts are committed with the destination mutation. |
-| v18 | `automation_timer_lifecycle` | One writer epoch owns `active -> draining -> active/retired`; unresolved dispatches block epoch transfer. |
-| v19 | converged owner schema | Recognize only the reviewed displaced v17/v18 SQLx version/checksum pairs, remap those known histories, then validate normal migrations. |
+| v17 — `0017_kernel_operation_dedupe.sql` | `destination_operation_dedupe` | Immutable destination/scope/operation receipts are committed with the destination mutation. |
+| v18 — `0018_timer_lifecycle.sql` | `automation_timer_lifecycle` | One writer epoch owns `active -> draining -> active/retired`; unresolved dispatches block epoch transfer. |
+| v19 — `0019_converged_owner_schema.sql` | converged owner schema | Recognize only the reviewed displaced v17/v18 SQLx version/checksum pairs, remap those known histories, then validate normal migrations. |
 
 `AUTOMATION_SCHEMA_VERSION`, the highest migration number and this document must
 remain equal. Unknown checksums, duplicate semantic migrations, a dirty SQLx row,
