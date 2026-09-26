@@ -189,11 +189,7 @@ impl ProviderBoundDeliveryReceiptV2 {
     ) -> Result<(), ProviderBoundDeliveryErrorV2> {
         serialization.validate_for(compiled, profile, realizations)?;
         attachment.validate_for(compiled, serialization.serialized_context(), profile)?;
-        preparation.validate_for(
-            attachment,
-            serialization.serialized_context(),
-            profile,
-        )?;
+        preparation.validate_for(attachment, serialization.serialized_context(), profile)?;
         provider_request.validate(serialization.canonical_payload(), framing_policy)?;
         tokenization.validate_for(profile, provider_request)?;
         for (name, digest) in [
@@ -211,10 +207,7 @@ impl ProviderBoundDeliveryReceiptV2 {
             ),
             ("wire_semantic", self.wire_semantic_digest),
             ("tokenizer_identity", self.tokenizer_identity_digest),
-            (
-                "tokenizer_attestation",
-                self.tokenizer_attestation_digest,
-            ),
+            ("tokenizer_attestation", self.tokenizer_attestation_digest),
             (
                 "provider_request_binding",
                 self.provider_request_binding_digest,
@@ -235,7 +228,10 @@ impl ProviderBoundDeliveryReceiptV2 {
             || self.attachment_digest != attachment.attachment_digest()
             || self.canonical_serialization_proof_digest != serialization.proof_digest()
             || self.canonical_payload_digest
-                != serialization.canonical_payload().coverage().payload_digest()
+                != serialization
+                    .canonical_payload()
+                    .coverage()
+                    .payload_digest()
             || self.provider_request_digest != provider_request.request_digest()
             || self.provider_request_coverage_digest != provider_request.coverage_digest()
             || self.wire_semantic_digest != tokenization.wire_semantic_digest()
@@ -320,11 +316,7 @@ pub fn observe_provider_bound_delivery_v2(
 ) -> Result<ProviderBoundDeliveryReceiptV2, ProviderBoundDeliveryErrorV2> {
     serialization.validate_for(compiled, profile, realizations)?;
     attachment.validate_for(compiled, serialization.serialized_context(), profile)?;
-    preparation.validate_for(
-        attachment,
-        serialization.serialized_context(),
-        profile,
-    )?;
+    preparation.validate_for(attachment, serialization.serialized_context(), profile)?;
     provider_request.validate(serialization.canonical_payload(), framing_policy)?;
     tokenization.validate_for(profile, provider_request)?;
     provider_receipt
@@ -368,9 +360,7 @@ pub fn observe_provider_bound_delivery_v2(
         ProviderTerminal::Completed { .. } | ProviderTerminal::CompletedUnary { .. } => {
             (true, ContextDeliveryDispositionV2::Delivered)
         }
-        ProviderTerminal::Rejected { .. } => {
-            (true, ContextDeliveryDispositionV2::Rejected)
-        }
+        ProviderTerminal::Rejected { .. } => (true, ContextDeliveryDispositionV2::Rejected),
         ProviderTerminal::NotDispatched { .. } => {
             (true, ContextDeliveryDispositionV2::NotDispatched)
         }
@@ -399,7 +389,10 @@ pub fn observe_provider_bound_delivery_v2(
         preparation_digest: preparation.preparation_digest(),
         attachment_digest: attachment.attachment_digest(),
         canonical_serialization_proof_digest: serialization.proof_digest(),
-        canonical_payload_digest: serialization.canonical_payload().coverage().payload_digest(),
+        canonical_payload_digest: serialization
+            .canonical_payload()
+            .coverage()
+            .payload_digest(),
         provider_request_digest: provider_request.request_digest(),
         provider_request_coverage_digest: provider_request.coverage_digest(),
         wire_semantic_digest: tokenization.wire_semantic_digest(),
@@ -455,10 +448,7 @@ fn decode_hex(value: u8) -> Result<u8, ProviderBoundDeliveryErrorV2> {
     }
 }
 
-fn ensure_digest(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), ProviderBoundDeliveryErrorV2> {
+fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), ProviderBoundDeliveryErrorV2> {
     if digest.is_zero() {
         return Err(ProviderBoundDeliveryErrorV2::EmptyDigest(name));
     }

@@ -72,14 +72,8 @@ fn register_strict_realization(
     };
     let actor = id("publisher:prompt:provider-bound");
     let scope = digest("scope:realization:provider-bound");
-    let binding = final_use_realization_binding(
-        &factor,
-        &actor,
-        scope,
-        &realization,
-        None,
-    )
-    .expect("provider-bound realization authority binding");
+    let binding = final_use_realization_binding(&factor, &actor, scope, &realization, None)
+        .expect("provider-bound realization authority binding");
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
@@ -417,9 +411,7 @@ fn unclassified_trailing_provider_bytes_fail_closed() {
     .expect_err("uncovered suffix must fail");
     assert!(matches!(
         error,
-        ProviderBoundPromptErrorV2::ProviderBound(
-            ProviderBoundContextErrorV2::SegmentGapOrOverlap
-        )
+        ProviderBoundPromptErrorV2::ProviderBound(ProviderBoundContextErrorV2::SegmentGapOrOverlap)
     ));
 }
 
@@ -457,7 +449,6 @@ fn pre_dispatch_snapshot_reset_fails_closed() {
     .expect_err("snapshot reset must fail");
     assert!(matches!(
         error,
-        ProviderBoundPromptErrorV2::ProviderBound(_)
-            | ProviderBoundPromptErrorV2::Context(_)
+        ProviderBoundPromptErrorV2::ProviderBound(_) | ProviderBoundPromptErrorV2::Context(_)
     ));
 }

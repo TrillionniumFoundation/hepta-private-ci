@@ -38,14 +38,10 @@ const CANONICAL_SERIALIZER_DOMAIN: &[u8] = b"hepta.context-canonical-serializer.
 const CANONICAL_COVERAGE_DOMAIN: &[u8] = b"hepta.context-canonical-coverage.v2\0";
 const CANONICAL_SERIALIZATION_PROOF_DOMAIN: &[u8] =
     b"hepta.context-canonical-serialization-proof.v2\0";
-const SNAPSHOT_SUCCESSOR_DOMAIN: &[u8] =
-    b"hepta.context-verified-snapshot-successor.v2\0";
-const PROVIDER_REQUEST_COVERAGE_DOMAIN: &[u8] =
-    b"hepta.context-provider-request-coverage.v2\0";
-const PROVIDER_TOKENIZER_IDENTITY_DOMAIN: &[u8] =
-    b"hepta.context-provider-tokenizer-identity.v2\0";
-const FINAL_REQUEST_TOKENIZATION_DOMAIN: &[u8] =
-    b"hepta.context-final-request-tokenization.v2\0";
+const SNAPSHOT_SUCCESSOR_DOMAIN: &[u8] = b"hepta.context-verified-snapshot-successor.v2\0";
+const PROVIDER_REQUEST_COVERAGE_DOMAIN: &[u8] = b"hepta.context-provider-request-coverage.v2\0";
+const PROVIDER_TOKENIZER_IDENTITY_DOMAIN: &[u8] = b"hepta.context-provider-tokenizer-identity.v2\0";
+const FINAL_REQUEST_TOKENIZATION_DOMAIN: &[u8] = b"hepta.context-final-request-tokenization.v2\0";
 
 pub const MAX_PROVIDER_REQUEST_SEGMENTS_V2: usize = 8_192;
 pub const MAX_PROVIDER_REQUEST_BYTES_V2: usize = 32 * 1024 * 1024;
@@ -71,10 +67,7 @@ pub enum ProviderBoundContextErrorV2 {
     TokenizerIdentityMismatch,
     TokenizerFailure(String),
     InvalidFinalTokenCount,
-    FinalTokenBudgetExceeded {
-        token_count: u64,
-        token_limit: u64,
-    },
+    FinalTokenBudgetExceeded { token_count: u64, token_limit: u64 },
     AuthorityGranted,
     Arithmetic,
 }
@@ -434,8 +427,7 @@ pub fn verify_typed_admission_snapshot_successor_v2(
     predecessor: &VerifiedAdmissionSnapshotV2,
     verifier: &impl ContextAdmissionVerifierV2,
 ) -> Result<VerifiedAdmissionSnapshotSuccessorV2, ProviderBoundContextErrorV2> {
-    let current_snapshot =
-        verify_admission_snapshot_successor_v2(snapshot, predecessor, verifier)?;
+    let current_snapshot = verify_admission_snapshot_successor_v2(snapshot, predecessor, verifier)?;
     let mut successor = VerifiedAdmissionSnapshotSuccessorV2 {
         predecessor_snapshot_digest: predecessor.snapshot_digest(),
         current_snapshot,
@@ -638,9 +630,7 @@ pub fn verify_provider_request_coverage_v2(
         match &segment.kind {
             ProviderRequestSegmentKindV2::CanonicalContext => {
                 if canonical_context_seen {
-                    return Err(
-                        ProviderBoundContextErrorV2::DuplicateCanonicalContextSegment,
-                    );
+                    return Err(ProviderBoundContextErrorV2::DuplicateCanonicalContextSegment);
                 }
                 if segment_bytes != canonical_context.payload() {
                     return Err(ProviderBoundContextErrorV2::CanonicalContextSegmentMismatch);
@@ -984,10 +974,8 @@ fn canonical_segment(
         item_id,
         role,
         content_digest,
-        start_offset: u64::try_from(start)
-            .map_err(|_| ProviderBoundContextErrorV2::Arithmetic)?,
-        end_offset: u64::try_from(end)
-            .map_err(|_| ProviderBoundContextErrorV2::Arithmetic)?,
+        start_offset: u64::try_from(start).map_err(|_| ProviderBoundContextErrorV2::Arithmetic)?,
+        end_offset: u64::try_from(end).map_err(|_| ProviderBoundContextErrorV2::Arithmetic)?,
         segment_digest: Digest32::of_bytes(segment),
     })
 }
@@ -1034,10 +1022,7 @@ fn compute_canonical_coverage_digest(coverage: &CanonicalContextCoverageV2) -> D
     Digest32::of_bytes(&bytes)
 }
 
-fn ensure_digest(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), ProviderBoundContextErrorV2> {
+fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), ProviderBoundContextErrorV2> {
     if digest.is_zero() {
         return Err(ProviderBoundContextErrorV2::EmptyDigest(name));
     }

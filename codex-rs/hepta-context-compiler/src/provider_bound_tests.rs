@@ -53,10 +53,7 @@ fn profile(maximum_context_tokens: u64) -> ContextModelProfileV2 {
         provider_id_digest: identity.provider_id_digest,
         provider_model_digest: identity.provider_model_digest,
         tokenizer_digest: identity.digest(),
-        serializer_digest: canonical_context_serializer_digest(
-            template_digest,
-            tool_schema_digest,
-        ),
+        serializer_digest: canonical_context_serializer_digest(template_digest, tool_schema_digest),
         template_digest,
         tool_schema_digest,
         maximum_context_tokens,
@@ -98,9 +95,7 @@ impl ProviderRequestFramingPolicyV2 for FramingPolicy {
     }
 }
 
-fn verified_provider_request(
-    canonical: &CanonicalContextPayloadV2,
-) -> VerifiedProviderRequestV2 {
+fn verified_provider_request(canonical: &CanonicalContextPayloadV2) -> VerifiedProviderRequestV2 {
     let prefix = b"{\"input\":";
     let suffix = b"}";
     let mut bytes = prefix.to_vec();
@@ -169,7 +164,10 @@ fn canonical_serializer_has_complete_typed_byte_coverage() {
         panic!("coverage validation: {error:?}");
     }
 
-    assert_eq!(canonical.coverage().selected_item_ids().len(), realized.len());
+    assert_eq!(
+        canonical.coverage().selected_item_ids().len(),
+        realized.len()
+    );
     assert_eq!(
         canonical.coverage().segments().len(),
         1 + realized.len() * 2
@@ -375,24 +373,18 @@ fn typed_snapshot_successor_rejects_reset_and_rollback() {
         authority,
         101,
         8,
-        vec![
-            id("admission:revoked:one"),
-            id("admission:revoked:two"),
-        ],
+        vec![id("admission:revoked:one"), id("admission:revoked:two")],
         true,
         Some(initial.snapshot_digest()),
     ) {
         Ok(value) => value,
         Err(error) => panic!("successor snapshot: {error:?}"),
     };
-    let successor = match verify_typed_admission_snapshot_successor_v2(
-        successor_raw,
-        &initial,
-        &verifier,
-    ) {
-        Ok(value) => value,
-        Err(error) => panic!("verify successor: {error:?}"),
-    };
+    let successor =
+        match verify_typed_admission_snapshot_successor_v2(successor_raw, &initial, &verifier) {
+            Ok(value) => value,
+            Err(error) => panic!("verify successor: {error:?}"),
+        };
     if let Err(error) = successor.validate(&initial) {
         panic!("typed successor: {error:?}");
     }
@@ -403,19 +395,14 @@ fn typed_snapshot_successor_rejects_reset_and_rollback() {
         authority,
         102,
         9,
-        vec![
-            id("admission:revoked:one"),
-            id("admission:revoked:two"),
-        ],
+        vec![id("admission:revoked:one"), id("admission:revoked:two")],
         true,
         None,
     ) {
         Ok(value) => value,
         Err(error) => panic!("reset snapshot: {error:?}"),
     };
-    assert!(
-        verify_typed_admission_snapshot_successor_v2(reset_raw, &initial, &verifier).is_err()
-    );
+    assert!(verify_typed_admission_snapshot_successor_v2(reset_raw, &initial, &verifier).is_err());
 
     let rollback_raw = match ContextAdmissionSnapshotV2::new(
         id("snapshot:rollback"),

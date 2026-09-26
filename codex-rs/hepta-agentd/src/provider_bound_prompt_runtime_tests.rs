@@ -278,10 +278,9 @@ fn corrupt_request_bytes_are_rejected_on_reopen() {
     }
 
     let state_path = temporary.path().join(STATE_FILE);
-    let mut value: serde_json::Value = serde_json::from_slice(
-        &std::fs::read(&state_path).expect("read state"),
-    )
-    .expect("decode state");
+    let mut value: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&state_path).expect("read state"))
+            .expect("decode state");
     value["entries"][0]["stage"]["exact_request_base64"] =
         serde_json::Value::String(STANDARD_NO_PAD.encode(b"tampered-request"));
     std::fs::write(
@@ -301,15 +300,14 @@ fn corrupt_request_bytes_are_rejected_on_reopen() {
 #[test]
 fn a_second_process_owner_cannot_open_the_same_state_directory() {
     let temporary = tempfile::tempdir().expect("tempdir");
-    let first = AgentdProviderBoundPromptRuntimeV2::open_state_dir(temporary.path())
-        .expect("first owner");
+    let first =
+        AgentdProviderBoundPromptRuntimeV2::open_state_dir(temporary.path()).expect("first owner");
     assert!(matches!(
         AgentdProviderBoundPromptRuntimeV2::open_state_dir(temporary.path()),
         Err(AgentdProviderBoundPromptRuntimeErrorV2::StateLocked)
     ));
     drop(first);
-    AgentdProviderBoundPromptRuntimeV2::open_state_dir(temporary.path())
-        .expect("lock released");
+    AgentdProviderBoundPromptRuntimeV2::open_state_dir(temporary.path()).expect("lock released");
 }
 
 #[test]
