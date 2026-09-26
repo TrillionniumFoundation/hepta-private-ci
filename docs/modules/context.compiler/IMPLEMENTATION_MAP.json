@@ -24,6 +24,7 @@
   "productCallerState": "verified_v2_compile_serialization_attachment_partially_composed_pre_dispatch_preparation_and_delivery_receipt_not_composed",
   "productionWriterState": "runtime_dispatch_and_terminal_records_present_canonical_context_delivery_receipt_not_established",
   "legacyPathState": "v1_compatibility_only_not_v2_proof",
+  "adapterSourceState": "signed_verification_only_admission_authority_typed_lineage_canonical_serializer_and_exact_tokenizer_capability_implemented_not_yet_product_composed_or_independently_qualified",
   "operations": [
     {
       "operation": "compile",
@@ -71,10 +72,11 @@
       "operation": "verify_admission_snapshot_v2",
       "nativeSymbol": "verify_admission_snapshot_v2",
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_product_composed_with_provisional_in_process_verifier_not_independently_qualified",
+      "state": "source_implemented_product_composed_with_provisional_in_process_verifier_signed_verifier_available_not_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "codex-rs/hepta-context-compiler/src/signed_admission.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
@@ -85,10 +87,11 @@
       "operation": "verify_admission_snapshot_successor_v2",
       "nativeSymbol": "verify_admission_snapshot_successor_v2",
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_typed_lineage_available_not_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "codex-rs/hepta-context-compiler/src/snapshot_lineage.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
@@ -99,10 +102,11 @@
       "operation": "verify_admission_v2",
       "nativeSymbol": "verify_admission_v2",
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_product_composed_with_provisional_in_process_verifier_not_independently_qualified",
+      "state": "source_implemented_product_composed_with_provisional_in_process_verifier_signed_verifier_available_not_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "codex-rs/hepta-context-compiler/src/signed_admission.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "compile_context",
@@ -127,10 +131,11 @@
       "operation": "record_serialization",
       "nativeSymbol": "record_serialization",
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_product_composed_with_provisional_codec_not_independently_qualified",
+      "state": "source_implemented_product_composed_with_provisional_codec_canonical_serializer_and_exact_tokenizer_capability_available_not_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "codex-rs/hepta-context-compiler/src/qualified_codec.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "compile_context",
@@ -141,10 +146,11 @@
       "operation": "build_attachment",
       "nativeSymbol": "build_attachment",
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_product_composed_with_provisional_admission_snapshot_not_independently_qualified",
+      "state": "source_implemented_product_composed_with_provisional_admission_snapshot_signed_lineage_available_not_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "codex-rs/hepta-context-compiler/src/snapshot_lineage.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
@@ -202,12 +208,12 @@
     },
     {
       "stage": "serialize",
-      "state": "product_composed_provisional_codec",
+      "state": "product_composed_provisional_codec_qualified_codec_source_available",
       "owner": "hepta-intelligence prompt pipeline"
     },
     {
       "stage": "attachment",
-      "state": "product_composed_provisional_admission_authority",
+      "state": "product_composed_provisional_admission_authority_signed_lineage_source_available",
       "owner": "hepta-intelligence prompt pipeline"
     },
     {
@@ -227,8 +233,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Replace the in-process registry admission verifier with independently signed admission records and cumulative successor snapshots whose signing capability is absent from Agentd.",
-    "Replace registry token-cost lookup and caller-prepared serialization with a canonical serializer and the exact provider/model tokenizer over final provider-visible bytes.",
+    "Compose and qualify the verification-only signed admission authority and cumulative typed successor lineage; keep all signing capability outside Agentd and context.compiler.",
+    "Compose the canonical serializer and a concrete provider/model ExactTokenCounterV2 over final provider-visible bytes; registry token costs and estimates remain ineligible.",
     "Invoke prepare_delivery_v2 in the same pre-send effect-bound callback that records the durable dispatch claim and consumes current final-use authority.",
     "Resolve the physical attempt into a canonical ProviderInvocationReceipt, independently verify the provider-owned witness, call observe_delivery and durably retain ContextDeliveryReceiptV2.",
     "Qualify role-specific provider slots, crash/retry reconciliation, target-host performance and independent security review before changing productExecutionProved, activation or release."
@@ -281,8 +287,8 @@
       "object": "a4a755a5adc6005cd917b3e8ccc3995d6d34fd67"
     },
     {
-      "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "path": "codex-rs/hepta-context-compiler/Cargo.toml",
+      "object": "cd5d15baf11dc1f6a7e30d7ae236c7492b47f13b"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
@@ -293,12 +299,24 @@
       "object": "28c5a29b1dd4108c3570c3189a8a414ae5728795"
     },
     {
+      "path": "codex-rs/hepta-context-compiler/src/error_code.rs",
+      "object": "ef6ebc7652cbfd93f08f5e6d76368856fbd3cedf"
+    },
+    {
       "path": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "object": "da1711e6575e0921ec4d2ae7b305fe8013f2e775"
+      "object": "9ec21e26bf9d50073f63705170736ebc27571a16"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/lib_tests.rs",
       "object": "c9350dda2d75a4937fd77b1310cfaa2edafa8c59"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/qualified_codec.rs",
+      "object": "218ffc6b50b843529c83402e1ba154753ac0e844"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/redacted.rs",
+      "object": "118410d5468d7c4ef7476aba63ea99ac9ada9142"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/requirements.rs",
@@ -307,6 +325,14 @@
     {
       "path": "codex-rs/hepta-context-compiler/src/requirements_tests.rs",
       "object": "c0b88410e0738246004ec7c9aac01da4ffc13fde"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/signed_admission.rs",
+      "object": "cae2f8866a18bdc4cdb926a46600b06f68a909cf"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/snapshot_lineage.rs",
+      "object": "b17b84f2396598de65fd28737c8c3638c6a4158a"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2.rs",
@@ -331,6 +357,10 @@
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
       "object": "1e247f40bb8156357cf6d6274891d09e8b88570e"
+    },
+    {
+      "path": "docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md",
+      "object": "6ae556a447ca25633eb5c0036a88534a1898e0ae"
     },
     {
       "path": "docs/modules/context.compiler/TECHNICAL.md",
