@@ -1,4 +1,6 @@
 use std::path::PathBuf;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_agentd::EvidenceProductionAdmissionFiles;
 use codex_hepta_agentd::EvidenceRecoveryFrontierV2;
@@ -21,6 +23,16 @@ fn snapshot() -> EvidenceRecoverySnapshotV1 {
     }
 }
 
+fn current_time_millis() -> u64 {
+    u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("test clock must be after Unix epoch")
+            .as_millis(),
+    )
+    .expect("test clock must fit u64")
+}
+
 fn frontier() -> EvidenceRecoveryFrontierV2 {
     let snapshot = snapshot();
     EvidenceRecoveryFrontierV2 {
@@ -39,7 +51,7 @@ fn frontier() -> EvidenceRecoveryFrontierV2 {
         backend_identity_sha256: Sha256Digest::for_bytes(b"backend"),
         source_commit: "a".repeat(40),
         source_tree: "b".repeat(40),
-        created_at_unix_ms: 1,
+        created_at_unix_ms: current_time_millis(),
         signer_principal_id: "issuer:evidence-frontier".to_string(),
         signer_key_epoch: 3,
         signature_hex: "00".repeat(64),
