@@ -25,251 +25,12 @@ jobs:
         with:
           ref: codex/intuition-policy-production-hardening-20260926
           fetch-depth: 0
-      - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           components: rustfmt,clippy
-      - name: Compose and harden authenticated intuition serving
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          def read(path: str) -> str:
-              return Path(path).read_text(encoding="utf-8")
-
-          def write(path: str, text: str) -> None:
-              Path(path).write_text(text, encoding="utf-8")
-
-          def replace_one(path: str, old: str, new: str) -> None:
-              text = read(path)
-              count = text.count(old)
-              if count == 0 and new in text:
-                  return
-              if count != 1:
-                  raise SystemExit(f"{path}: expected one replacement anchor, found {count}")
-              write(path, text.replace(old, new, 1))
-
-          lib = "codex-rs/hepta-agentd/src/lib.rs"
-          text = read(lib)
-          if "mod intuition_policy_serving;" not in text:
-              replace_one(
-                  lib,
-                  "mod intuition_policy_service;\n",
-                  "mod intuition_policy_service;\nmod intuition_policy_serving;\n",
-              )
-          text = read(lib)
-          if "pub use intelligence_ingress::AgentdIntuitionProductInvocationV1;" not in text:
-              replace_one(
-                  lib,
-                  "pub use intelligence_ingress::AgentdIntelligenceInvocationV1;\n",
-                  "pub use intelligence_ingress::AgentdIntelligenceInvocationV1;\n"
-                  "pub use intelligence_ingress::AgentdIntuitionProductInvocationV1;\n",
-              )
-
-          state = "codex-rs/hepta-agentd/src/state.rs"
-          if "crate::intuition_policy_serving::authenticate_canonical_intuition(" not in read(state):
-              replace_one(
-                  state,
-                  "        let invocation = provider.build(&self.identity, record)?;\n"
-                  "        invocation.validate(&self.identity, record)?;\n\n"
-                  "        // Freeze only the small immutable composition while holding the run\n",
-                  "        let invocation = provider.build(&self.identity, record)?;\n"
-                  "        invocation.validate(&self.identity, record)?;\n"
-                  "        let crate::AgentdIntelligenceInvocationV1 {\n"
-                  "            request,\n"
-                  "            inputs,\n"
-                  "            intuition_product,\n"
-                  "        } = invocation;\n"
-                  "        let episode_id = request.run_id.clone();\n"
-                  "        let run_snapshot_digest = request.snapshot.digest();\n"
-                  "        let intuition_request = inputs.intuition_request.clone();\n\n"
-                  "        // Freeze only the small immutable composition while holding the run\n",
-              )
-              replace_one(
-                  state,
-                  "            .prepare_for_composition(&composition, invocation.request, invocation.inputs)\n",
-                  "            .prepare_for_composition(&composition, request, inputs)\n",
-              )
-              replace_one(
-                  state,
-                  "            })?;\n\n"
-                  "        match outcome {\n",
-                  "            })?;\n\n"
-                  "        // The compatibility advisory stage is not a product decision. A\n"
-                  "        // configured product host must independently authenticate the\n"
-                  "        // current profile/runtime evidence and commit any selected Decision\n"
-                  "        // before the outcome can cross run admission.\n"
-                  "        let policy_now = self.require_current_run_start(record)?;\n"
-                  "        let _authenticated_intuition =\n"
-                  "            crate::intuition_policy_serving::authenticate_canonical_intuition(\n"
-                  "                self,\n"
-                  "                intuition_product,\n"
-                  "                intuition_request,\n"
-                  "                episode_id,\n"
-                  "                run_snapshot_digest,\n"
-                  "                &outcome,\n"
-                  "                policy_now,\n"
-                  "            )?;\n\n"
-                  "        match outcome {\n",
-              )
-
-          product = "codex-rs/hepta-agentd/src/intelligence_product.rs"
-          replace_one(
-              product,
-              "use codex_hepta_intuition::decide_calibrated_v2;\n",
-              "use codex_hepta_intuition::calibrated::decide_calibrated_v2;\n",
-          )
-
-          cargo = "codex-rs/hepta-intuition/Cargo.toml"
-          replace_one(
-              cargo,
-              'default = ["legacy-intuition-api"]\n',
-              "default = []\n",
-          )
-
-          host = "codex-rs/hepta-agentd/src/intuition_policy.rs"
-          retry_old = '''                let record_id = production.record_id.clone();
-                let receipt = product.learning.append_decision(
-                    expected_ledger_head,
-                    production,
-                    evidence,
-                    now,
-                )?;
-                (Some(record_id), Some(receipt))
-'''
-          retry_new = '''                let record_id = production.record_id.clone();
-                let retry_production = production.clone();
-                let retry_evidence = evidence.clone();
-                let receipt = match product.learning.append_decision(
-                    expected_ledger_head,
-                    production,
-                    evidence,
-                    now,
-                ) {
-                    Ok(receipt) => receipt,
-                    Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { .. }) => {
-                        // One bounded exact replay reconciles the only admitted
-                        // uncertain state: ledger committed, witness not advanced.
-                        // The ledger rejects any record/evidence/predecessor drift.
-                        product.learning.append_decision(
-                            expected_ledger_head,
-                            retry_production,
-                            retry_evidence,
-                            now,
-                        )?
-                    }
-                    Err(error) => return Err(error),
-                };
-                (Some(record_id), Some(receipt))
-'''
-          replace_one(host, retry_old, retry_new)
-
-          gate = "codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs"
-          gate_text = read(gate)
-          if "decide_authenticated_intuition_v2" in gate_text:
-              replacements = [
-                  ("decide_authenticated_intuition_v2", "decide_authenticated_intuition_v3"),
-                  ("AssignmentCommitmentV1", "AssignmentCommitmentV2"),
-                  ("ScoringCommitmentV1", "ScoringCommitmentV2"),
-                  ("canonical_runtime_commitment_payload_v1", "canonical_runtime_commitment_payload_v2"),
-                  ("canonical_scored_outputs_digest_v1", "canonical_scored_outputs_digest_v2"),
-              ]
-              for old, new in replacements:
-                  gate_text = gate_text.replace(old, new)
-              gate_text = gate_text.replace(
-                  "use codex_hepta_intuition::OodArtifactV1;\n",
-                  "use codex_hepta_intuition::OodArtifactV1;\n"
-                  "use codex_hepta_intuition::PolicyGeneration;\n",
-                  1,
-              )
-              gate_text = gate_text.replace(
-                  "use codex_hepta_intuition::canonical_candidate_order_digest_v1;\n",
-                  "use codex_hepta_intuition::canonical_assignment_distribution_digest_v2;\n"
-                  "use codex_hepta_intuition::canonical_candidate_identity_digest_v2;\n"
-                  "use codex_hepta_intuition::canonical_candidate_order_digest_v1;\n",
-                  1,
-              )
-              old_scoring = '''        candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v2(&request).expect("scores"),
-        policy_digest,
-        policy_generation: 1,
-    };
-    let assignment = AssignmentCommitmentV2::Deterministic;
-'''
-              new_scoring = '''        candidate_identity_digest: canonical_candidate_identity_digest_v2(
-            &request.candidates,
-        )
-        .expect("identity"),
-        scored_outputs_digest: canonical_scored_outputs_digest_v2(&request).expect("scores"),
-        policy_digest,
-        policy_generation: PolicyGeneration::new(1).expect("generation"),
-    };
-    let assignment = AssignmentCommitmentV2::Deterministic {
-        distribution_digest: canonical_assignment_distribution_digest_v2(&request)
-            .expect("distribution"),
-    };
-'''
-              if old_scoring not in gate_text:
-                  raise SystemExit("authenticated fast gate scoring anchor missing")
-              gate_text = gate_text.replace(old_scoring, new_scoring, 1)
-              write(gate, gate_text)
-
-          technical = "docs/modules/intuition.policy/TECHNICAL.md"
-          technical_text = read(technical)
-          heading = "## Current production qualification candidate (2026-09-26)"
-          if heading not in technical_text:
-              marker = "<!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->"
-              if technical_text.count(marker) != 1:
-                  raise SystemExit("TECHNICAL.md generated projection marker missing or duplicated")
-              section = r'''
-## Current production qualification candidate (2026-09-26)
-
-The current native contract is a source-integrated qualification candidate, not an activated or released policy. `codex-hepta-intuition` owns a pure, authority-free selector. Candidate generation, scoring, calibration-artifact production, OOD-artifact production, evaluation, random-stream ownership and durable learning remain with their registered owners.
-
-### Product contract and commitment ownership
-
-Product selection uses `decide_calibrated_v4`. `Ppm` bounds probability-quality fields to `[0, 1_000_000]`, `PolicyGeneration` rejects zero, and profile-forced routing preserves the original request risk while emitting an explicit slow-path reason. Candidate identity, scorer outputs and assignment/RNG facts have separate canonical V2 digests; the final runtime payload combines them with the exact request and profile to prevent substitution without mixing owner responsibilities.
-
-Historical `decide_calibrated` and `decide_calibrated_v2` remain behind the non-default `legacy-intuition-api` feature for replay and migration. The canonical intelligence pipeline may compute the V2 result only as a compatibility advisory. It cannot cross product admission unless the independently authenticated V3 result agrees on disposition, selected candidate and propensity.
-
-### Three-party authentication and complete Agentd pins
-
-`codex-hepta-intelligence::decide_authenticated_intuition_v3` requires independent Generator, Evaluator and Observer evidence over, respectively, candidate completeness, profile/calibration/OOD qualification, and exact scorer/assignment commitments. Stable error codes are returned at module and Agentd boundaries.
-
-`AgentdIntuitionPolicyPinsV2` fixes the policy-profile digest, policy digest, nonzero generation, objective class, model artifact, scorer contract, calibration artifact, OOD artifact, risk rule and optional RNG owner. A trusted evaluator signature therefore cannot silently replace host-selected policy semantics.
-
-### Actual serving sequence
-
-```text
-signed ObjectiveStart and durable RunStart
-  -> host-owned AgentdIntelligenceInvocationV1
-  -> seven-owner canonical advisory pipeline
-  -> authenticated V3 Generator/Evaluator/Observer verification
-  -> V4 disposition and complete Agentd pin validation
-  -> canonical/authenticated parity check
-  -> selected-only durable ProductionDecisionV2 append
-  -> final generation/current-run fence
-  -> run and context admission
-```
-
-`AgentdState::start_canonical_intelligence` is the product composition point. A configured policy host without authenticated product material, or product material without a configured host, fails closed. Abstain and slow-path append no selected Decision and never become effect authority. Every receipt retains `AuthorityPosture::DENY_ALL`.
-
-### Durability, retry and recovery
-
-`IntuitionPolicyLearningSink` owns the sole `LedgerWriter` used by this composition. A selected result cannot return success without a witnessed append. Ordinary append rejection returns a stable failure code. The only uncertain state is `IndeterminateAfterLedgerCommit`, meaning the ledger commit succeeded while the independent witness did not advance. Agentd performs one bounded replay of the exact same deterministic record, signed evidence and original predecessor; the ledger accepts only idempotent equality and rejects drift. A second uncertain result remains explicit and is never interpreted as permission to dispatch. Generation is checked before preparation, before commit and after commit; a post-commit generation change yields an indeterminate service result rather than execution authority.
-
-### Qualification and claim boundary
-
-The dedicated `.github/workflows/hepta-intuition-qualification.yml` independently runs exact-source and deterministic synthetic-merge formatting, all-target compilation, strict Clippy, policy/intelligence tests, Agentd product tests, kernel and authenticated V3 p50/p95/p99 gates, learning-ledger append/reopen measurements, patch hygiene, and an exact-SHA command record. Property-style mutation tests, canonical Rust/JSON golden vectors and a standard `cargo-fuzz` target cover the digest boundary.
-
-A green workflow proves repository qualification only. `qualification/intuition.policy/ACCEPTANCE_TEMPLATE.json` deliberately leaves independent evaluator acceptance, operator target-host acceptance, canary authorization, promotion and release unsigned and pending. This branch cannot self-issue those authorities.
-
-'''
-              technical_text = technical_text.replace(marker, section + marker, 1)
-              write(technical, technical_text)
-          PY
+      - name: Apply deterministic serving patch
+        run: python3 scripts/intuition_finalize_branch.py
       - name: Format product surfaces
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-agentd
@@ -279,7 +40,7 @@ A green workflow proves repository qualification only. `qualification/intuition.
       - name: Strict Clippy for composed surfaces
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
-      - name: Test intuition and Agentd serving gate
+      - name: Test composed intuition surfaces
         working-directory: codex-rs
         run: |
           cargo test --locked -p codex-hepta-intuition
@@ -290,9 +51,7 @@ A green workflow proves repository qualification only. `qualification/intuition.
         working-directory: codex-rs
         run: cargo run --locked --release -p codex-hepta-intelligence --example intuition_authenticated_fast_gate
       - name: Commit composed serving source
-        shell: bash
         run: |
-          set -euo pipefail
           git config user.name "Hepta Intuition Integrator"
           git config user.email "hepta-intuition-ci@users.noreply.github.com"
           git add codex-rs/hepta-agentd codex-rs/hepta-intuition codex-rs/hepta-intelligence docs/modules/intuition.policy/TECHNICAL.md
@@ -301,9 +60,7 @@ A green workflow proves repository qualification only. `qualification/intuition.
             git push origin HEAD:codex/intuition-policy-production-hardening-20260926
           fi
       - name: Rebind exact implementation-map provenance
-        shell: bash
         run: |
-          set -euo pipefail
           python3 scripts/hepta-implementation-maps.py migrate --module intuition.policy
           python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
           git add docs/modules/intuition.policy/IMPLEMENTATION_MAP.json
