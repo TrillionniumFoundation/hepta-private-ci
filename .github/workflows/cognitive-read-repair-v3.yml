@@ -1,0 +1,152 @@
+# Temporary self-removing repair for cognitive.read qualification plumbing.
+name: Cognitive read qualification repair v3
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - .github/workflows/cognitive-read-repair-v3.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-repair-v3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Repair qualification commands and bounded legacy allowlists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git config user.name 'hepta-ci-convergence'
+          git config user.email 'hepta-ci-convergence@users.noreply.github.com'
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_exact(path: Path, old: str, new: str, expected: int = 1) -> None:
+              text = path.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != expected:
+                  raise SystemExit(
+                      f'{path}: expected {expected} occurrences, found {count}: {old!r}'
+                  )
+              path.write_text(text.replace(old, new), encoding='utf-8')
+
+          qualification = Path('.github/workflows/cognitive-read-qualification.yml')
+          replace_exact(
+              qualification,
+              "'cargo run --locked -p codex-hepta-cognitive-read --example cognitive_read_bench --quiet'",
+              "'cargo run --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-read --example cognitive_read_bench --quiet'",
+          )
+          replace_exact(
+              qualification,
+              '            cargo run --locked -p codex-hepta-cognitive-read \\\n',
+              '            cargo run --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-read \\\n',
+          )
+          replace_exact(
+              qualification,
+              '            cargo test --locked -p codex-hepta-cognitive-read --lib\n',
+              '            cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-read --lib\n',
+              expected=2,
+          )
+          replace_exact(
+              qualification,
+              '            cargo test --locked -p codex-hepta-agentd \\\n',
+              '            cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd \\\n',
+              expected=2,
+          )
+
+          manifest_policy = Path('.github/scripts/verify_cargo_workspace_manifests.py')
+          replace_exact(
+              manifest_policy,
+              'MANIFEST_FEATURE_EXCEPTIONS = {\n    "codex-rs/v8-poc/Cargo.toml": {"sandbox": ("v8/v8_enable_sandbox",)},\n',
+              'MANIFEST_FEATURE_EXCEPTIONS = {\n'
+              '    "codex-rs/v8-poc/Cargo.toml": {"sandbox": ("v8/v8_enable_sandbox",)},\n'
+              '    # Pre-existing fixture-only surfaces. These exact defaults-off allowlists\n'
+              '    # preserve current source behavior while their helpers move to dedicated\n'
+              '    # qualification crates; they do not establish Bazel feature coverage.\n'
+              '    "codex-rs/app-server-client/Cargo.toml": {\n'
+              '        "test-support": (),\n'
+              '    },\n'
+              '    "codex-rs/hepta-intelligence-eval/Cargo.toml": {\n'
+              '        "default": (),\n'
+              '        "trusted-inprocess-eval": (),\n'
+              '    },\n'
+              '    "codex-rs/hepta-learning-ledger/Cargo.toml": {\n'
+              '        "default": (),\n'
+              '        "qualification-legacy-write": (),\n'
+              '    },\n'
+              '    "codex-rs/hepta-objective/Cargo.toml": {\n'
+              '        "default": (),\n'
+              '        "qualification-legacy-compile": (),\n'
+              '    },\n',
+          )
+          replace_exact(
+              manifest_policy,
+              '    "codex-rs/hepta-supervisor/Cargo.toml": {\n        "default": (),\n        "production-authority": (),\n    },\n',
+              '    "codex-rs/hepta-supervisor/Cargo.toml": {\n'
+              '        "default": (),\n'
+              '        "qualification": (),\n'
+              '        "production-authority": (),\n'
+              '    },\n',
+          )
+          replace_exact(
+              manifest_policy,
+              'INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {}\n',
+              'INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {\n'
+              '    (\n'
+              '        "codex-rs/hepta-codex-adapter/Cargo.toml",\n'
+              '        "dev-dependencies",\n'
+              '        "codex-app-server-client",\n'
+              '    ): ("test-support",),\n'
+              '    (\n'
+              '        "codex-rs/hepta-infer-worker-host/Cargo.toml",\n'
+              '        "dev-dependencies",\n'
+              '        "codex-app-server-client",\n'
+              '    ): ("test-support",),\n'
+              '    (\n'
+              '        "codex-rs/hepta-shadow-qualification/Cargo.toml",\n'
+              '        "dev-dependencies",\n'
+              '        "codex-hepta-learning-ledger",\n'
+              '    ): ("qualification-legacy-write",),\n'
+              '    (\n'
+              '        "codex-rs/hepta-shadow-qualification/Cargo.toml",\n'
+              '        "dev-dependencies",\n'
+              '        "codex-hepta-objective",\n'
+              '    ): ("qualification-legacy-compile",),\n'
+              '}\n',
+          )
+
+          materializer = Path('.github/workflows/cognitive-read-map-materialize-v2.yml')
+          text = materializer.read_text(encoding='utf-8')
+          marker = '# qualification plumbing repaired; connector retrigger required\n'
+          if marker not in text:
+              materializer.write_text(text + '\n' + marker, encoding='utf-8')
+          PY
+
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          python3 scripts/verify-cognitive-read-constants.py
+          git diff --check
+
+          git rm .github/workflows/cognitive-read-ci-repair-once.yml
+          git rm .github/workflows/cognitive-read-repair-v3.yml
+          git add \
+            .github/scripts/verify_cargo_workspace_manifests.py \
+            .github/workflows/cognitive-read-qualification.yml \
+            .github/workflows/cognitive-read-map-materialize-v2.yml
+          git commit -m 'ci(cognitive.read): repair exact qualification execution'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
