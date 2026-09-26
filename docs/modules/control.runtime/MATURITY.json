@@ -8,12 +8,12 @@
   "sourceObservation": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "historicalBaseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateBranch": "codex/control-runtime-production-closure-2026-09-27",
+    "candidateBranch": "codex/control-runtime-full-closure-2026-09-27",
     "exactHeadDerivedByQualification": true,
     "selfAuthenticatingTrackedShaClaim": false
   },
-  "productCallerState": "read_only_agentd_source_composed_candidate_global_planner_not_composed",
-  "productionWriterState": "planner_store_source_candidate_named_product_writer_not_composed",
+  "productCallerState": "read_only_agentd_source_composed_request_integrity_v2_global_planner_not_composed",
+  "productionWriterState": "planner_store_source_candidate_unqualified_named_product_writer_not_composed",
   "subsystems": {
     "plannerKernel": {
       "state": "source_candidate_implemented",
@@ -25,7 +25,8 @@
       "productionComposed": false,
       "controls": [
         "exact_required_owner_set",
-        "duplicate_final_payload_rejection"
+        "duplicate_final_payload_rejection",
+        "sealed_candidate_and_policy_revalidation"
       ]
     },
     "plannerStore": {
@@ -46,16 +47,30 @@
         "external_checkpoint_anchor"
       ]
     },
+    "plannerExecutionCoordinator": {
+      "state": "source_candidate_implemented_not_product_composed",
+      "productionComposed": false,
+      "controls": [
+        "deny_all_request_set_admission",
+        "independent_authority_port",
+        "final_payload_and_expiry_revalidation",
+        "durable_authority_request_and_grant_evidence",
+        "signed_terminal_observation_validation",
+        "indeterminate_stop_and_signed_reconciliation"
+      ]
+    },
     "readOnlyAgentdContextCaller": {
-      "state": "source_composed_candidate",
+      "state": "source_composed_candidate_request_integrity_v2",
       "productionComposed": true,
       "scope": "authenticated_bounded_read_only_context_delivery",
-      "remaining": [
-        "final_use_plan_receipt_binding",
-        "canonical_authenticated_observation_v2",
+      "controls": [
+        "final_use_plan_receipt_delivery_seal",
+        "canonical_authenticated_record_set",
         "request_query_retrieval_ranker_binding",
-        "monotonic_lease_domain"
-      ]
+        "monotonic_process_generation_lease",
+        "bounded_issued_seal_registry"
+      ],
+      "remaining": []
     },
     "globalPlannerCaller": {
       "state": "not_composed",
@@ -75,24 +90,25 @@
       "productionComposed": false
     },
     "authorityConsumer": {
-      "state": "not_composed",
+      "state": "typed_port_and_validation_source_candidate_no_named_product_consumer",
       "productionComposed": false
     },
     "effectExecutor": {
-      "state": "not_composed",
+      "state": "typed_port_and_signed_terminal_validation_source_candidate_no_named_product_executor",
       "productionComposed": false
     },
     "terminalReconciliation": {
-      "state": "not_composed",
+      "state": "typed_port_and_signed_receipt_validation_source_candidate_no_named_product_reconciler",
       "productionComposed": false
     }
   },
   "qualification": {
     "exactHead": "pending_current_candidate_runs",
     "syntheticMerge": "pending_current_candidate_runs",
-    "packageTests": "pending_current_candidate_runs",
-    "strictClippy": "pending_current_candidate_runs",
-    "formatting": "pending_current_candidate_runs",
+    "packageTests": "passed_on_predecessor_2f5ae97_rerun_required_current_candidate",
+    "allTargetCompilation": "passed_on_predecessor_2f5ae97_rerun_required_current_candidate",
+    "strictClippy": "passed_on_predecessor_2f5ae97_rerun_required_current_candidate",
+    "formatting": "canonical_rustfmt_applied_current_candidate_run_required",
     "nduCallerRegression": "pending_current_candidate_runs",
     "namedHost": "pending_current_candidate_runs"
   },
@@ -105,13 +121,17 @@
   },
   "completion": {
     "specification": "complete",
-    "nativePlanningKernel": "candidate_implemed",
+    "nativePlanningKernel": "candidate_implemented",
     "publicBoundaryGuards": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
     "productionDurabilityCandidate": "candidate_implemented_unqualified",
-    "readOnlyAgentdProductCaller": "source_composed_candidate",
+    "readOnlyAgentdProductCaller": "source_composed_candidate_request_integrity_v2",
+    "plannerExecutionCoordinator": "source_candidate_implemented_not_product_composed",
     "globalPlannerProductCaller": "not_established",
     "productionWriter": "not_established",
+    "authorityConsumer": "not_established",
+    "effectExecutor": "not_established",
+    "terminalReconciler": "not_established",
     "canonicalExternalProtocolAdmission": "not_established",
     "exactHeadQualification": "pending",
     "independentAcceptanceState": "not_established",
@@ -120,9 +140,11 @@
   },
   "nonClaims": [
     "No planner output is a capability.",
-    "No source candidate establishes operator acceptance or activation.",
+    "The generic execution coordinator is not a named activated Agentd global-planner caller.",
+    "Source-level authority, executor and reconciler ports are not production implementations.",
+    "No source candidate establishes operator acceptance, canary promotion or activation.",
     "No tracked manifest self-authenticates the commit that contains it.",
     "The Unix durability profile is not a Windows durability qualification.",
-    "A read-only Agentd caller is not a global planner production caller."
+    "A read-only Agentd context caller is not a global planner production caller."
   ]
 }
