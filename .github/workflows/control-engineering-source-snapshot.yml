@@ -4,31 +4,52 @@ on:
   push:
     branches:
       - codex/control-engineering-final-convergence-20260926
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tools/hepta-engineering-control/**'
+      - 'docs/modules/control.engineering/**'
+      - 'docs/modules/MODULES.json'
+      - 'docs/modules/SOURCE_BINDINGS.json'
+      - 'docs/modules/MODULE_DOCS.json'
+      - 'docs/delivery/WORK_PACKAGES.json'
+      - 'qualification/module-execution-dossiers/**'
+      - 'scripts/hepta-implementation-maps.py'
+      - 'scripts/test_hepta_implementation_maps.py'
+      - 'scripts/hepta-gap-closure.py'
+      - '.github/workflows/hepta-consolidated-source.yml'
+      - '.github/workflows/control-engineering-*.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: control-engineering-source-snapshot-${{ github.ref }}
+  group: control-engineering-source-snapshot-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   snapshot:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
       - name: Bind exact source and package review surface
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git branch --show-current)" = "codex/control-engineering-final-convergence-20260926"
-          SOURCE_SHA="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
           printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/source-sha.txt"
           printf '%s\n' "$SOURCE_TREE" > "$RUNNER_TEMP/source-tree.txt"
           tar \
@@ -64,7 +85,7 @@ jobs:
       - name: Retain exact source snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: control-engineering-source-${{ github.sha }}
+          name: control-engineering-source-${{ env.SOURCE_SHA }}
           path: |
             ${{ runner.temp }}/control-engineering-source.tgz
             ${{ runner.temp }}/control-engineering-source.SHA256
