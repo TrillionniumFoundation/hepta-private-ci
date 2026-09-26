@@ -134,16 +134,16 @@ id = "http_provider_effect_adapter"
 symbol = "HttpProviderEffectAdapter::new"
 definition_path = "codex-rs/model-provider/src/provider_effect.rs"
 definition_markers = ["pub struct HttpProviderEffectAdapter", "pub fn new", "ProviderEffectAdapter"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractAttestation::verify_signed", "AgentdAutomationEffectHost"]
 
 [[boundary]]
 id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"]
-caller_markers = ["FinalUseAuthority::open_state_dir", "authority_state_dir", "SignedFinalUseGrant"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"]
+caller_markers = ["FinalUseAuthority::open_state_dir", "SignedFinalUseGrant"]
 
 [[boundary]]
 id = "final_use_claim"
@@ -489,8 +489,8 @@ id = "final_use_async_dispatch_fence"
 symbol = "FinalUseAuthority::with_verified_use_async"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub async fn with_verified_use_async", "DispatchInProgress", "active_dispatches"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
+caller_markers = ["with_verified_use_async", "execute_authorized_taskflow_effect_async", "begin_effect_dispatch_attempt"]
 
 
 [[boundary]]
@@ -498,8 +498,8 @@ id = "automation_taskflow_provider_effect_bridge"
 symbol = "ProviderEffectTaskFlowDriver::new"
 definition_path = "codex-rs/hepta-automation/src/authorized_effect.rs"
 definition_markers = ["pub struct ProviderEffectTaskFlowDriver", "pub async fn execute_authorized_taskflow_effect_async", "ProviderEffectKey::for_logical_effect"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+caller_markers = ["ProviderEffectTaskFlowDriver::new", "execute_authorized_taskflow_effect_async", "FinalUseAuthority"]
 
 
 [[boundary]]
