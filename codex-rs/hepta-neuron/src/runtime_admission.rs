@@ -1,6 +1,12 @@
 //! Admission checks for the existing durable owner. A prepared operation is a
 //! committed recovery obligation; current-use checks never rewrite its history.
 use super::*;
+use crate::AbstainReasonV1;
+use crate::CalibrationExpiryPolicyV1;
+use crate::CalibrationWindowDecisionV1;
+use crate::DegradationReasonV1;
+use crate::NeuronCommitDispositionV1;
+use crate::SparseError;
 use crate::sparse_tick;
 
 /// Host-owned live checks. Implementations must use authenticated current owners
@@ -34,23 +40,46 @@ impl NeuronAdmissionGuard for MechanismOnly {
 }
 
 impl<W: AnchorWitnessStore> NeuronRuntime<W> {
-    /// Mechanism/qualification entry. Product callers use `tick_guarded`.
+    /// Mechanism/qualification entry retaining the V1 state-advance/abstain
+    /// policy. Product callers must use `tick_guarded`, not this legacy entry.
     pub fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
-        self.tick_guarded(model, input, &mut MechanismOnly)
+        self.tick_with_policy(
+            model,
+            input,
+            &mut MechanismOnly,
+            CalibrationExpiryPolicyV1::StateAdvanceAbstainLegacy,
+        )
     }
 
-    /// Check live admission before execution, before durable preparation and
-    /// before exposing the result (including historical retries). Once prepared,
-    /// reconciliation completes the same operation; it never invokes the model.
+    /// Product entry: expired calibration and impossible fixed-size resource
+    /// envelopes reject before model invocation and before any state mutation.
+    /// Live admission is checked again before durable preparation and delivery.
+    /// A historical result is reconciled before applying new-work-only checks;
+    /// the original receipt is never recalibrated or rewritten on retry.
     pub fn tick_guarded(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
         guard: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        self.tick_with_policy(
+            model,
+            input,
+            guard,
+            CalibrationExpiryPolicyV1::RejectBeforeMutation,
+        )
+    }
+
+    fn tick_with_policy(
+        &mut self,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+        guard: &mut dyn NeuronAdmissionGuard,
+        expiry_policy: CalibrationExpiryPolicyV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         guard
             .check(&self.config, &input)
@@ -89,7 +118,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             sequence: checkpoint.sequence(),
             checkpoint_digest: checkpoint.digest(),
         });
-
+        self.preflight_new_tick(&input, expiry_policy)?;
         self.witness.admit_new_anchor(expected_anchor)?;
 
         let started = Instant::now();
@@ -138,4 +167,110 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .map_err(NeuronRuntimeError::Admission)?;
         Ok(output)
     }
+
+    fn preflight_new_tick(
+        &self,
+        input: &NeuronTickInputV1,
+        expiry_policy: CalibrationExpiryPolicyV1,
+    ) -> Result<(), NeuronRuntimeError> {
+        if self.operations.latest()?.is_some_and(|previous| {
+            input.monotonic_time_micros <= previous.sparse_tick.monotonic_micros
+        }) {
+            return Err(JournalError::Mechanism(SparseError::Clock).into());
+        }
+        let calibration = &self.config.calibration;
+        let decision = expiry_policy
+            .decide(
+                input.logical_sequence,
+                calibration.valid_from_sequence,
+                calibration.expires_after_sequence,
+            )
+            .map_err(|_| NeuronRuntimeError::InvalidCalibration)?;
+        if decision == CalibrationWindowDecisionV1::RejectNoUpdate {
+            return Err(NeuronRuntimeError::CalibrationExpired);
+        }
+        if expiry_policy == CalibrationExpiryPolicyV1::RejectBeforeMutation {
+            // V1 has five same-width vectors. This is the exact existing
+            // bounded_encoded_bytes profile, not an estimate of model memory
+            // or a claim about operation-WAL/witness physical amplification.
+            let bound = 6 * std::mem::size_of::<Digest32>()
+                + 7 * std::mem::size_of::<u64>()
+                + 5 * self.config.state_width * std::mem::size_of::<i64>();
+            let checkpoint_bytes =
+                u64::try_from(bound).map_err(|_| NeuronRuntimeError::Arithmetic)?;
+            let journal_bytes = u64::try_from(304 + 16 * self.config.state_width)
+                .map_err(|_| NeuronRuntimeError::Arithmetic)?;
+            if checkpoint_bytes > self.config.resource_envelope.checkpoint_bytes
+                || write_amplification(journal_bytes, checkpoint_bytes)?
+                    > self.config.resource_envelope.write_amplification_ppm
+            {
+                return Err(NeuronRuntimeError::InvalidConfig);
+            }
+        }
+        Ok(())
+    }
+
+    /// Read a versioned disposition derived only from the immutable complete
+    /// stored result and frozen configuration. This does not rewrite V1 bytes,
+    /// perform inference, grant authority, or report post-commit I/O as measured
+    /// latency. A degraded commit remains committed and must not be retried as
+    /// an unexecuted tick.
+    pub fn query_committed_disposition(
+        &mut self,
+        tick_id: &codex_hepta_types::StableId,
+        input_digest: Digest32,
+    ) -> Result<Option<NeuronCommitDispositionV1>, NeuronRuntimeError> {
+        let Some(output) = self.query_result(tick_id, input_digest)? else {
+            return Ok(None);
+        };
+        let record = self
+            .operations
+            .find_tick(tick_id)?
+            .ok_or(NeuronRuntimeError::CheckpointMismatch)?;
+        let profile = &self.config.calibration;
+        let tick = &output.tick;
+        let mut abstention = Vec::new();
+        if record.sparse_tick.sequence < profile.valid_from_sequence
+            || record.sparse_tick.sequence > profile.expires_after_sequence
+        {
+            abstention.push(AbstainReasonV1::CalibrationExpiredLegacy);
+        } else {
+            for (condition, reason) in [
+                (tick.confidence_ppm < profile.minimum_confidence_ppm, AbstainReasonV1::LowConfidence),
+                (tick.ood_ppm > profile.maximum_ood_ppm, AbstainReasonV1::OutOfDomain),
+                (tick.sparsity_ppm < profile.minimum_active_ppm, AbstainReasonV1::SparseCollapse),
+                (tick.sparsity_ppm > profile.maximum_active_ppm, AbstainReasonV1::DenseCollapse),
+                (tick.resource_receipt.saturation_count > profile.maximum_projection_count, AbstainReasonV1::ProjectionLimit),
+            ] {
+                if condition {
+                    abstention.push(reason);
+                }
+            }
+        }
+        let resource = &tick.resource_receipt;
+        let envelope = &self.config.resource_envelope;
+        let mut degradation = Vec::new();
+        for (condition, reason) in [
+            (resource.execution_micros > envelope.p99_latency_micros, DegradationReasonV1::LatencyEnvelope),
+            (resource.transient_allocation_bytes > envelope.transient_allocation_bytes, DegradationReasonV1::AllocationEnvelope),
+            (resource.checkpoint_bytes > envelope.checkpoint_bytes, DegradationReasonV1::CheckpointEnvelope),
+            (resource.write_amplification_ppm > envelope.write_amplification_ppm, DegradationReasonV1::WriteAmplificationEnvelope),
+        ] {
+            if condition {
+                degradation.push(reason);
+            }
+        }
+        let disposition = if !degradation.is_empty() {
+            NeuronCommitDispositionV1::degraded(degradation, abstention)
+        } else if !abstention.is_empty() {
+            NeuronCommitDispositionV1::abstained(abstention)
+        } else {
+            Ok(NeuronCommitDispositionV1::CommittedReady)
+        };
+        disposition.map(Some).map_err(|_| NeuronRuntimeError::InvalidInput)
+    }
 }
+
+#[cfg(test)]
+#[path = "runtime_admission_tests.rs"]
+mod tests;
