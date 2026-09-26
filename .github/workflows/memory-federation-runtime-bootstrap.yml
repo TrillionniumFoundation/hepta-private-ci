@@ -72,7 +72,7 @@ jobs:
           required = {
               "codex-rs/hepta-memory-federation/src/legacy_v1.rs": "#![allow(deprecated)]",
               "codex-rs/hepta-memory/src/cognitive_runtime.rs": "buffer_unordered(host_profile.attempt_concurrency())",
-              "codex-rs/hepta-memory/src/cognitive_runtime_identity.rs": "MemoryFederationHostProfile",
+              "codex-rs/hepta-memory/src/cognitive_runtime_identity.rs": "host_profile: left_host_profile",
               "codex-rs/hepta-agentd/src/runtime.rs": "HEPTA_MEMORY_FEDERATION_TOTAL_BUDGET_MS",
               "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": "partial_peers",
           }
