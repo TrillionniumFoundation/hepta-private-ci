@@ -276,6 +276,14 @@ pub use intelligence_product::AgentdEvaluationBindingV1;''',
     hard_timeout_process_exit_grace: Option<Duration>,
 }''',
     )
+    replace_once(
+        product,
+        '''    InvalidAuthorityVerifier,
+    Run(crate::AgentRunError),''',
+        '''    InvalidAuthorityVerifier,
+    InvalidWorkerPolicy,
+    Run(crate::AgentRunError),''',
+    )
 
     runtime = "codex-rs/hepta-agentd/src/runtime.rs"
     replace_once(
@@ -293,6 +301,58 @@ pub use intelligence_product::AgentdEvaluationBindingV1;''',
             runner.telemetry().set_provider_configured(true);
         }
     }''',
+    )
+
+    config = "codex-rs/hepta-agentd/src/config.rs"
+    replace_once(
+        config,
+        '''    pub(crate) fn intelligence_invocation_provider(
+        &self,
+    ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
+        self.intelligence_invocation_provider.clone()
+    }
+
+    pub fn identity(&self) -> &AgentdIdentity {''',
+        '''    pub(crate) fn intelligence_invocation_provider(
+        &self,
+    ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
+        self.intelligence_invocation_provider.clone()
+    }
+
+    /// Atomically install the canonical product runner and the host-owned source
+    /// that derives all seven owner inputs. This is the preferred product
+    /// composition API: a partial profile is never observable from the returned
+    /// configuration and therefore cannot accidentally advertise capability.
+    pub fn with_canonical_intelligence_profile<F>(
+        mut self,
+        runner: std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>,
+        factory: F,
+    ) -> Result<Self, AgentdError>
+    where
+        F: Fn(
+                &crate::AgentdIdentity,
+                &codex_hepta_learning_ledger::RunStartRecordV1,
+            ) -> Result<crate::AgentdIntelligenceInvocationV1, AgentdError>
+            + Send
+            + Sync
+            + 'static,
+    {
+        if self.intelligence_product_runner.is_some()
+            || self.intelligence_invocation_provider.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence profile already or partially configured".to_string(),
+            ));
+        }
+        runner.telemetry().set_provider_configured(true);
+        self.intelligence_product_runner = Some(runner);
+        self.intelligence_invocation_provider = Some(std::sync::Arc::new(
+            crate::HostOwnedAgentdIntelligenceInvocationProviderV1::new(factory),
+        ));
+        Ok(self)
+    }
+
+    pub fn identity(&self) -> &AgentdIdentity {''',
     )
 
 
