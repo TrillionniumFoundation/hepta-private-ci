@@ -21,11 +21,13 @@ jobs:
   apply-and-prove:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.sha }}
     steps:
-      - name: Check out exact feature branch
+      - name: Check out exact event source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: control-runtime-production-closure-v1
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -33,6 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git rev-parse HEAD HEAD^{tree}
 
       - name: Apply literal-safe P0 source closure
@@ -79,7 +82,7 @@ jobs:
             -p codex-hepta-agentd \
             -- -D warnings
 
-      - name: Formatting and no accidental files
+      - name: Formatting and no accidental generated files
         working-directory: codex-rs
         run: cargo fmt --all -- --check
 
@@ -90,7 +93,6 @@ jobs:
           git config user.name hepta-control-runtime-bot
           git config user.email control-runtime-bot@invalid
           git add \
-            scripts/control_runtime_p0_fixups.py \
             codex-rs/hepta-control-plane/src/planner_store.rs \
             codex-rs/hepta-agent-protocol/src/lib.rs \
             codex-rs/hepta-agentd/src/cognitive_context.rs \
