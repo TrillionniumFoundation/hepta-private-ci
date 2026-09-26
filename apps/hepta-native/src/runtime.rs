@@ -29,6 +29,7 @@ pub struct NativeShellRuntime {
     journal: OperationJournal,
     session: Option<SessionIncarnation>,
     view: Option<RuntimeView>,
+    last_snapshot_generation: Option<u64>,
 }
 
 impl NativeShellRuntime {
@@ -45,6 +46,7 @@ impl NativeShellRuntime {
             journal,
             session: None,
             view: None,
+            last_snapshot_generation: None,
         }
     }
 
@@ -54,19 +56,42 @@ impl NativeShellRuntime {
     ) -> Result<SessionIncarnation, ShellError> {
         self.journal.ensure_healthy()?;
         manifest.validate()?;
+        // Invalidate presentation before a fallible close; no stale view may
+        // survive a failed reconnect and appear to belong to the next session.
+        self.view = None;
+        self.last_snapshot_generation = None;
         if let Some(previous) = self.session.take() {
             self.backend.close(&previous)?;
         }
-        self.view = None;
         let session = self.backend.connect(manifest)?;
-        session.validate()?;
-        if session.endpoint_id != manifest.endpoint_id {
-            return Err(ShellError::Backend(
-                "backend session endpoint identity does not match manifest".to_owned(),
-            ));
+        let validation = session.validate().and_then(|()| {
+            if session.endpoint_id != manifest.endpoint_id {
+                return Err(ShellError::Backend(
+                    "backend session endpoint identity does not match manifest".to_owned(),
+                ));
+            }
+            Ok(())
+        });
+        if let Err(error) = validation {
+            if let Err(close_error) = self.backend.close(&session) {
+                return Err(ShellError::Backend(format!(
+                    "{error}; rejected session cleanup failed: {close_error}"
+                )));
+            }
+            return Err(error);
         }
         self.session = Some(session.clone());
-        let _ = self.reconcile_pending()?;
+        if let Err(error) = self.reconcile_pending() {
+            self.session = None;
+            self.view = None;
+            self.last_snapshot_generation = None;
+            if let Err(close_error) = self.backend.close(&session) {
+                return Err(ShellError::Backend(format!(
+                    "{error}; failed recovery session cleanup failed: {close_error}"
+                )));
+            }
+            return Err(error);
+        }
         Ok(session)
     }
 
@@ -84,7 +109,7 @@ impl NativeShellRuntime {
                     "runtime view generation regressed".to_owned(),
                 ));
             }
-            if view.generation == previous.generation && view.revision <= previous.revision {
+            if view.revision <= previous.revision {
                 return Err(ShellError::State(
                     "runtime view revision did not advance".to_owned(),
                 ));
@@ -117,9 +142,21 @@ impl NativeShellRuntime {
                     "authenticated runtime status lacks runtime_snapshot_generation".to_owned(),
                 )
             })?;
+        if self
+            .last_snapshot_generation
+            .is_some_and(|previous| observed_generation < previous)
+        {
+            return Err(ShellError::State(
+                "authenticated runtime snapshot generation regressed".to_owned(),
+            ));
+        }
+        // The owner permits generation zero at genesis. Presentation uses a
+        // positive generation, but fencing compares the unmodified owner value.
         let generation = observed_generation.max(1);
+        // Grants bind displayed_revision. Never reuse a revision when the
+        // upstream generation changes within the same session incarnation.
         let revision = match &self.view {
-            Some(previous) if previous.generation == generation => previous
+            Some(previous) => previous
                 .revision
                 .checked_add(1)
                 .ok_or_else(|| ShellError::State("runtime view revision overflow".to_owned()))?,
@@ -134,6 +171,7 @@ impl NativeShellRuntime {
             modules: vec!["runtime.agentd".to_owned(), "ui.native".to_owned()],
         };
         let presentation = self.accept_runtime_view(view)?;
+        self.last_snapshot_generation = Some(observed_generation);
         Ok((presentation, observed.value))
     }
 
@@ -157,11 +195,6 @@ impl NativeShellRuntime {
         let view = self.require_view()?.clone();
         validate_stable_id(&request.subject_id, "subject_id")?;
         validate_stable_id(&request.operation_id, "operation_id")?;
-        if request.displayed_revision != view.revision {
-            return Err(ShellError::State(
-                "platform request was confirmed against a stale runtime view".to_owned(),
-            ));
-        }
         request.payload.validate()?;
         let action = request.payload.action();
         let payload_digest = request.payload.digest()?;
@@ -200,27 +233,11 @@ impl NativeShellRuntime {
             }
         }
 
-        let permission = self.platform.permission(&request.payload)?;
-        validate_digest(&permission.outcome_digest, "permission.outcome_digest")?;
-        if !permission.allowed {
-            let record = OperationRecord {
-                endpoint_id: session.endpoint_id,
-                key,
-                subject_id: request.subject_id.clone(),
-                displayed_revision: request.displayed_revision,
-                action,
-                payload_digest,
-                binding_digest: binding_digest.clone(),
-                grant_digest: grant_digest.clone(),
-                phase: OperationPhase::Terminal,
-                terminal_status: Some(TerminalStatus::Rejected),
-                outcome_digest: Some(permission.outcome_digest),
-            };
-            let receipt = record.receipt();
-            self.journal.upsert(record)?;
-            return Ok(receipt);
+        if request.displayed_revision != view.revision {
+            return Err(ShellError::State(
+                "platform request was confirmed against a stale runtime view".to_owned(),
+            ));
         }
-
         let prepared = OperationRecord {
             endpoint_id: session.endpoint_id.clone(),
             key: key.clone(),
@@ -234,7 +251,27 @@ impl NativeShellRuntime {
             terminal_status: None,
             outcome_digest: None,
         };
+        // Reserve the immutable operation identity before even asking the
+        // platform for permission. Recovery can now explain this boundary.
         self.journal.upsert(prepared.clone())?;
+        let permission = match self.platform.permission(&request.payload) {
+            Ok(permission) => permission,
+            Err(error) => return self.reject_without_dispatch(prepared, &error.to_string()),
+        };
+        if let Err(error) = validate_digest(&permission.outcome_digest, "permission.outcome_digest") {
+            return self.reject_without_dispatch(prepared, &error.to_string());
+        }
+        if !permission.allowed {
+            let terminal = OperationRecord {
+                phase: OperationPhase::Terminal,
+                terminal_status: Some(TerminalStatus::Rejected),
+                outcome_digest: Some(permission.outcome_digest),
+                ..prepared
+            };
+            let receipt = terminal.receipt();
+            self.journal.upsert(terminal)?;
+            return Ok(receipt);
+        }
 
         let Some(final_use) = self.final_use.clone() else {
             return self.reject_without_dispatch(
@@ -287,7 +324,8 @@ impl NativeShellRuntime {
             match record.phase {
                 OperationPhase::Prepared => {
                     let belongs_to_current = self.session.as_ref().is_some_and(|session| {
-                        record.key.session_id == session.session_id
+                        record.endpoint_id == session.endpoint_id
+                            && record.key.session_id == session.session_id
                             && record.key.session_generation == session.generation
                     });
                     if belongs_to_current {
@@ -354,10 +392,12 @@ impl NativeShellRuntime {
     }
 
     pub fn close(&mut self) -> Result<(), ShellError> {
+        // Presentation is invalid even when transport cleanup cannot finish.
+        self.view = None;
+        self.last_snapshot_generation = None;
         if let Some(session) = self.session.take() {
             self.backend.close(&session)?;
         }
-        self.view = None;
         Ok(())
     }
 
