@@ -86,11 +86,11 @@ impl LockedFileCasCompactionReceiptV1 {
         {
             return Err(LockedFileCasErrorV1::Corrupt);
         }
-        if self.record_count == 0 {
-            if self.fence_generation != 0 || !self.state_digest.is_zero() {
+        if self.fence_generation == 0 {
+            if self.record_count != 0 || !self.state_digest.is_zero() {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
-        } else if self.fence_generation == 0 || self.state_digest.is_zero() {
+        } else if self.state_digest.is_zero() {
             return Err(LockedFileCasErrorV1::Corrupt);
         }
         Ok(())
