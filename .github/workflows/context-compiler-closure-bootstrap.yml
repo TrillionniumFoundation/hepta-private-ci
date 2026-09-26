@@ -1,0 +1,45 @@
+name: context.compiler closure bootstrap
+
+on:
+  push:
+    branches:
+      - revision/context-compiler-v2-provider-closure-2026-09-27
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-closure-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    if: ${{ !contains(github.event.head_commit.message || '', '[context-closure-applied]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: revision/context-compiler-v2-provider-closure-2026-09-27
+          fetch-depth: 0
+      - name: Apply construction-closed V2 patch
+        run: python3 scripts/_context_compiler_closure_bootstrap.py
+      - name: Format
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Test context compiler
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-context-compiler
+      - name: Reject whitespace errors
+        run: git diff --check
+      - name: Commit verified patch
+        shell: bash
+        run: |
+          rm scripts/_context_compiler_closure_bootstrap.py
+          rm .github/workflows/context-compiler-closure-bootstrap.yml
+          git config user.name "hepta-ci-bot"
+          git config user.email "hepta-ci-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "context.compiler: close typed snapshot and final request proof [context-closure-applied]"
+          git push origin HEAD:revision/context-compiler-v2-provider-closure-2026-09-27
