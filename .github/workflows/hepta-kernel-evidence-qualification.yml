@@ -38,7 +38,6 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
       HEPTA_CI_LANE: source-head
-      KERNEL_EVIDENCE_RECORDS: ${{ runner.temp }}/kernel-evidence/source
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -51,6 +50,14 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
+      - name: Initialize exact-source diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/kernel-evidence/source"
+          mkdir -p "$records"
+          printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+
       - name: Bind exact source identity
         shell: bash
         run: |
@@ -60,7 +67,6 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
 
       - name: Test kernel evidence crate
         shell: bash
@@ -73,7 +79,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
@@ -82,7 +87,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/lane-a-truth.json" -- \
             python3 scripts/verify_lane_a_foundation.py verify
@@ -91,7 +95,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/docs.json" -- \
             python3 scripts/hepta-docs.py verify
@@ -100,7 +103,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/implementation-maps.json" -- \
             python3 scripts/hepta-implementation-maps.py verify
@@ -109,7 +111,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/build_kernel_evidence_status.py \
             --records "$KERNEL_EVIDENCE_RECORDS" \
             --kind kernel_evidence_exact_source \
@@ -159,7 +160,6 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEPTA_CI_LANE: base-merge
-      KERNEL_EVIDENCE_RECORDS: ${{ runner.temp }}/kernel-evidence/merge
     steps:
       - name: Check out source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -183,6 +183,17 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
+      - name: Initialize deterministic-merge diagnostics
+        env:
+          TESTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/kernel-evidence/merge"
+          mkdir -p "$records"
+          printf 'KERNEL_EVIDENCE_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+
       - name: Bind deterministic merge identity
         env:
           TESTED_SHA: ${{ steps.merge.outputs.sha }}
@@ -195,8 +206,6 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
-          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
 
       - name: Test kernel evidence crate
         shell: bash
@@ -209,7 +218,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
@@ -218,7 +226,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/lane-a-truth.json" -- \
             python3 scripts/verify_lane_a_foundation.py verify
@@ -227,7 +234,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/docs.json" -- \
             python3 scripts/hepta-docs.py verify
@@ -236,18 +242,14 @@ jobs:
         if: always()
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/hepta_ci_exec.py \
             --output "$KERNEL_EVIDENCE_RECORDS/implementation-maps.json" -- \
             python3 scripts/hepta-implementation-maps.py verify
 
       - name: Build deterministic-merge machine-readable status
         if: always()
-        env:
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
         shell: bash
         run: |
-          mkdir -p "$KERNEL_EVIDENCE_RECORDS"
           python3 scripts/build_kernel_evidence_status.py \
             --records "$KERNEL_EVIDENCE_RECORDS" \
             --kind kernel_evidence_synthetic_merge \
@@ -266,7 +268,6 @@ jobs:
       - name: Record deterministic-merge artifact digest
         if: always() && steps.merge-artifact.outcome == 'success'
         env:
-          TESTED_SHA: ${{ steps.merge.outputs.sha }}
           ARTIFACT_ID: ${{ steps.merge-artifact.outputs.artifact-id }}
           ARTIFACT_URL: ${{ steps.merge-artifact.outputs.artifact-url }}
           ARTIFACT_DIGEST: ${{ steps.merge-artifact.outputs.artifact-digest }}
@@ -288,3 +289,27 @@ jobs:
           path: ${{ runner.temp }}/kernel-evidence/merge/STATUS.with-artifact.json
           if-no-files-found: error
           retention-days: 90
+
+  required:
+    name: Kernel evidence required
+    if: always()
+    needs:
+      - source-head
+      - merge-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every applicable qualification lane
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SOURCE_RESULT: ${{ needs.source-head.result }}
+          MERGE_RESULT: ${{ needs.merge-candidate.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$SOURCE_RESULT" = success
+          if [ "$EVENT_NAME" = pull_request ]; then
+            test "$MERGE_RESULT" = success
+          else
+            test "$MERGE_RESULT" = skipped
+          fi
