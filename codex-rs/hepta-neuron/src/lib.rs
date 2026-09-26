@@ -15,7 +15,9 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod artifact_binding;
 mod deletion;
+mod generation_store_v2;
 mod inference_control;
 mod journal;
 mod journal_lock;
@@ -27,13 +29,25 @@ mod protocol;
 mod qualification;
 mod runtime;
 mod runtime_types;
+mod semantic_v2;
 mod sparse;
+mod store_manifest;
 mod witness;
+mod witness_v2;
 
+pub use artifact_binding::NEURON_CALIBRATION_SUMMARY_SCHEMA_V1;
+pub use artifact_binding::NEURON_OOD_SUMMARY_SCHEMA_V1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
 pub use deletion::validate_deletion_rebuild;
+pub use generation_store_v2::FileNeuronGenerationStoreV2;
+pub use generation_store_v2::GenerationStoreError;
+pub use generation_store_v2::NeuronGenerationAdmissionV2;
+pub use generation_store_v2::NeuronGenerationCommitResultV2;
+pub use generation_store_v2::NeuronGenerationCommitV2;
+pub use generation_store_v2::NeuronGenerationRecordV2;
+pub use generation_store_v2::NeuronGenerationStoreContextV2;
 pub use inference_control::InferenceControlModelPort;
 pub use inference_control::NeuronInferenceControlPort;
 pub use journal::JournalAnchor;
@@ -85,6 +99,8 @@ pub use qualification::ablate_parameter_groups;
 pub use qualification::ablate_sparse_config;
 pub use qualification::requires_external_replay_ablation;
 pub use qualification::summarize_resource_samples;
+pub use runtime::NeuronAdmissionError;
+pub use runtime::NeuronAdmissionGuard;
 pub use runtime::NeuronRuntime;
 pub use runtime_types::AnchorWitnessStore;
 pub use runtime_types::LocalModelRuntimeReceiptV1;
@@ -104,6 +120,16 @@ pub use runtime_types::NeuronTickReceiptV1;
 pub use runtime_types::WitnessStoreError;
 pub use runtime_types::canonical_feature_vector_digest_v1;
 pub use runtime_types::canonical_model_output_digest_v1;
+pub use semantic_v2::AbstainReasonV1;
+pub use semantic_v2::CalibrationExpiryPolicyV1;
+pub use semantic_v2::CalibrationWindowDecisionV1;
+pub use semantic_v2::DegradationReasonV1;
+pub use semantic_v2::ModelExecutionObservationV1;
+pub use semantic_v2::ModelSemanticIdentityV2;
+pub use semantic_v2::NeuronBodyBundleIdentityV1;
+pub use semantic_v2::NeuronCommitDispositionV1;
+pub use semantic_v2::NeuronOperationKeyV2;
+pub use semantic_v2::NeuronSemanticV2Error;
 pub use sparse::InhibitoryEdge;
 pub use sparse::SparseCheckpoint;
 pub use sparse::SparseConfig;
@@ -111,7 +137,24 @@ pub use sparse::SparseError;
 pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
+pub use store_manifest::NEURON_JOURNAL_ROOT_FORMAT_V1;
+pub use store_manifest::NEURON_JOURNAL_SUCCESSOR_FORMAT_V1;
+pub use store_manifest::NEURON_OPERATION_FORMAT_V1;
+pub use store_manifest::NEURON_STORE_MANIFEST_SCHEMA_V1;
+pub use store_manifest::NEURON_WITNESS_ROOT_FORMAT_V1;
+pub use store_manifest::NEURON_WITNESS_SUCCESSOR_FORMAT_V1;
+pub use store_manifest::NeuronStoreBootstrapV1;
+pub use store_manifest::NeuronStoreManifestError;
+pub use store_manifest::NeuronStoreManifestV1;
+pub use store_manifest::NeuronStoreMigrationV1;
+pub use store_manifest::NeuronStoreReplayPlanV1;
+pub use store_manifest::NeuronStoreSegmentKindV1;
+pub use store_manifest::NeuronStoreSegmentV1;
+pub use store_manifest::read_neuron_store_manifest_v1;
+pub use store_manifest::write_neuron_store_manifest_v1;
 pub use witness::FileAnchorWitnessStore;
+pub use witness_v2::FileNeuronWitnessStoreV2;
+pub use witness_v2::NeuronWitnessContextV2;
 
 const MAX_FEATURES: usize = 4_096;
 
@@ -276,3 +319,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "generation_store_v2_process_tests.rs"]
+mod generation_store_v2_process_tests;

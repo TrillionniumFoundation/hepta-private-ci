@@ -1,0 +1,180 @@
+name: Neuron runtime exact qualification (read-only)
+
+on:
+  push:
+    branches:
+      - work/neuron-runtime-recovery-20260925
+    paths:
+      - 'codex-rs/hepta-neuron/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-learning-artifacts/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'docs/modules/neuron.runtime/**'
+      - 'scripts/ci/*neuron*'
+      - '.github/workflows/neuron-runtime-source-synthesis.yml'
+      - justfile
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-neuron/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-learning-artifacts/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'docs/modules/neuron.runtime/**'
+      - 'scripts/ci/*neuron*'
+      - '.github/workflows/neuron-runtime-source-synthesis.yml'
+      - justfile
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-exact-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      source: ${{ steps.identity.outputs.source }}
+      base: ${{ steps.identity.outputs.base }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Freeze exact source and actual integration base
+        id: identity
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          source=$(git rev-parse HEAD)
+          base=${PR_BASE:-$(git rev-parse refs/remotes/origin/work/product-convergence-20260923)}
+          git cat-file -e "$base^{commit}"
+          printf 'source=%s\nbase=%s\n' "$source" "$base" >> "$GITHUB_OUTPUT"
+          mkdir -p "$RUNNER_TEMP/neuron-source"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/neuron-source/source.tar.gz" "$source"
+          SOURCE="$source" BASE="$base" python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          source = os.environ['SOURCE']
+          value = {
+              'schema': 'hepta.neuron.source-snapshot.v1',
+              'source_commit': source,
+              'source_tree': subprocess.check_output(['git', 'rev-parse', source + '^{tree}'], text=True).strip(),
+              'base_commit': os.environ['BASE'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'qualification_passed': False,
+              'production_activation': False,
+              'independent_acceptance': False,
+          }
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'neuron-source' / 'identity.json'
+          path.write_text(json.dumps(value, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neuron-exact-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuron-source/
+          if-no-files-found: error
+          retention-days: 3
+
+  native:
+    needs: source-snapshot
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        candidate: [source-head, synthetic-merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source-snapshot.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct candidate without rewriting source
+        env:
+          BASE: ${{ needs.source-snapshot.outputs.base }}
+          SOURCE: ${{ needs.source-snapshot.outputs.source }}
+          CANDIDATE: ${{ matrix.candidate }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/neuron-evidence"
+          if [ "$CANDIDATE" = synthetic-merge ]; then
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            git -c user.name=neuron-qualification -c user.email=qualification@invalid.local merge --no-ff --no-edit "$BASE"
+          fi
+          printf 'source=%s\nbase=%s\ncandidate=%s\ntree=%s\n' "$SOURCE" "$BASE" "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" | tee "$RUNNER_TEMP/neuron-evidence/identity.txt"
+          git diff --exit-code
+      - name: Install repository test runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v just >/dev/null || cargo install --locked just
+          cargo nextest --version || cargo install --locked cargo-nextest
+      - name: Compile all affected targets
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc -Vv | tee "$RUNNER_TEMP/neuron-evidence/toolchain.txt"
+          just --version | tee -a "$RUNNER_TEMP/neuron-evidence/toolchain.txt"
+          cargo nextest --version | tee -a "$RUNNER_TEMP/neuron-evidence/toolchain.txt"
+          cargo check --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets 2>&1 | tee "$RUNNER_TEMP/neuron-evidence/check.log"
+      - name: Execute Neuron and Agentd regression suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-neuron 2>&1 | tee "$RUNNER_TEMP/neuron-evidence/neuron-tests.log"
+          just test --locked -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/neuron-evidence/agentd-tests.log"
+      - name: Strict lint and committed-format check
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/neuron-evidence/clippy.log"
+          cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd -- --check 2>&1 | tee "$RUNNER_TEMP/neuron-evidence/format.log"
+          git diff --exit-code
+      - name: Retain executed lane result, never activation evidence
+        if: always()
+        env:
+          LANE_STATUS: ${{ job.status }}
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/neuron-evidence"
+          printf 'lane_status=%s\nproduction_activation=false\nindependent_acceptance=false\nrelease=false\n' "$LANE_STATUS" > "$RUNNER_TEMP/neuron-evidence/result.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neuron-exact-${{ matrix.os }}-${{ matrix.candidate }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuron-evidence/
+          if-no-files-found: error
+          retention-days: 7
+
+  qualification-result:
+    if: always()
+    needs: [source-snapshot, native]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed on failed, cancelled or skipped lanes
+        env:
+          SNAPSHOT: ${{ needs.source-snapshot.result }}
+          NATIVE: ${{ needs.native.result }}
+        run: |
+          test "$SNAPSHOT" = success
+          test "$NATIVE" = success

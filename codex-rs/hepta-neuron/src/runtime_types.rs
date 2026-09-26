@@ -100,7 +100,7 @@ pub struct NeuronCalibrationProfileV1 {
 }
 
 impl NeuronCalibrationProfileV1 {
-    fn validate(&self, generation: Generation) -> Result<(), NeuronRuntimeError> {
+    pub(crate) fn validate(&self, generation: Generation) -> Result<(), NeuronRuntimeError> {
         if self.calibration_artifact_digest.is_zero() {
             return Err(NeuronRuntimeError::EmptyDigest("calibration artifact"));
         }
@@ -290,6 +290,16 @@ pub struct NeuronTickInputV1 {
 }
 
 impl NeuronTickInputV1 {
+    /// Canonical journal ownership scope; hosts must not invent a different
+    /// subject hashing dialect when composing the durable owner.
+    pub fn journal_scope(&self) -> Result<crate::JournalScope, NeuronRuntimeError> {
+        validate_tick_input(self)?;
+        Ok(crate::JournalScope {
+            scope_digest: subject_scope_digest(&self.subject_id)?,
+            objective_digest: self.objective_digest,
+        })
+    }
+
     pub fn semantic_digest(&self) -> Result<Digest32, NeuronRuntimeError> {
         validate_tick_input(self)?;
         let mut bytes = b"hepta.neuron.tick-input.v1".to_vec();
@@ -413,6 +423,12 @@ impl From<io::Error> for WitnessStoreError {
 pub trait AnchorWitnessStore {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
 
+    /// Check the current predecessor and reserve availability under this owner's
+    /// exclusive writer lifetime before model execution or operation prepare.
+    /// Implementations must reject a full or poisoned store. Historical result
+    /// lookup and reconciliation of an already written anchor do not call this.
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError>;
+
     fn compare_and_swap(
         &mut self,
         expected: Option<JournalAnchor>,
@@ -469,6 +485,7 @@ pub struct NeuronRuntimeOutputV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NeuronRuntimeError {
+    Admission(crate::NeuronAdmissionError),
     EmptyDigest(&'static str),
     InvalidConfig,
     InvalidCalibration,
