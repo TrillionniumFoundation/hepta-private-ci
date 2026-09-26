@@ -87,7 +87,9 @@ fn input(prompt: &str) -> RuntimeCodexExecutionInputV1 {
         prompt.to_string(),
         Some("context query".to_string()),
         "fake-model".to_string(),
-        unix_time_ms().expect("clock") + 30_000,
+        // The deadline is part of semantic identity. A retry must carry the
+        // original immutable deadline rather than manufacture a new one.
+        u64::MAX,
     )
     .expect("input")
 }
