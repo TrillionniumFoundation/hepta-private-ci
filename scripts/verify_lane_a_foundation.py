@@ -9,6 +9,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lane_a_foundation_lib import *  # noqa: F403
+from platform_types_public_api import PublicApiInventoryError
+from platform_types_public_api import verify_repository as verify_platform_types_public_api
 
 
 def main() -> int:
@@ -19,9 +21,21 @@ def main() -> int:
     for name in ("source-receipt", "native-receipt"):
         command = commands.add_parser(name)
         command.add_argument("--output", type=Path, required=True)
-        command.add_argument("--expected-sha")
+        command.add_argument("--expected-sha", required=True)
+        command.add_argument(
+            "--candidate-kind",
+            choices=sorted(CANDIDATE_KINDS),  # noqa: F405
+            required=True,
+        )
+        command.add_argument("--source-sha", required=True)
+        command.add_argument("--base-sha")
+        command.add_argument("--pr-number", type=int)
     args = parser.parse_args()
     try:
+        # This is deliberately invoked for every command, including receipt
+        # emission. A static anchor list may not stand in for the closed-world
+        # `platform.types` public export and operation inventory.
+        verify_platform_types_public_api()
         if args.command == "verify":
             validate_matrix(read_json(MATRIX_PATH))  # noqa: F405
         elif args.command == "self-test":
@@ -31,8 +45,12 @@ def main() -> int:
                 args.output,
                 args.expected_sha,
                 native=args.command == "native-receipt",
+                candidate_kind=args.candidate_kind,
+                source_sha=args.source_sha,
+                base_sha=args.base_sha,
+                pull_request_number=args.pr_number,
             )
-    except VerificationError as error:  # noqa: F405
+    except (VerificationError, PublicApiInventoryError) as error:  # noqa: F405
         print(f"lane-a-foundation verification failed: {error}", file=sys.stderr)
         return 1
     print(f"lane-a-foundation {args.command}: ok")

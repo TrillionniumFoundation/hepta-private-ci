@@ -22,17 +22,25 @@ class LaneAFoundationTruthTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.matrix = verify.read_json(verify.MATRIX_PATH)
         cls.capability_map = verify.read_json(verify.CAPABILITY_MAP_PATH)
-        cls.operations_capability_map = verify.read_json(verify.OPS_CAPABILITY_MAP_PATH)
 
     def test_exact_repository_truth_is_valid(self) -> None:
         verify.validate_matrix(self.matrix)
 
     def test_closed_world_module_set(self) -> None:
-        self.assertEqual(
-            [row["module"] for row in self.matrix["modules"]],
-            verify.EXPECTED_MODULES,
-        )
+        module_names = [row["module"] for row in self.matrix["modules"]]
+        self.assertEqual(len(module_names), len(set(module_names)))
+        self.assertCountEqual(module_names, verify.EXPECTED_MODULES)
         self.assertEqual(self.matrix["moduleCoverage"], 7)
+
+    def test_matrix_validation_is_order_independent(self) -> None:
+        value = deepcopy(self.matrix)
+        value["modules"] = list(reversed(value["modules"]))
+        verify.validate_matrix(value)
+
+    def test_capability_evidence_map_validation_is_order_independent(self) -> None:
+        value = deepcopy(self.capability_map)
+        value["entries"] = list(reversed(value["entries"]))
+        verify.validate_capability_map(self.matrix, value)
 
     def test_every_current_capability_has_one_evidence_mapping(self) -> None:
         verify.validate_capability_map(self.matrix, self.capability_map)
@@ -44,26 +52,17 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         mapped = [
             (entry["module"], entry["summary"])
             for entry in self.capability_map["entries"]
-            if entry["module"] != "kernel.operations"
         ]
-        mapped.extend(
-            ("kernel.operations", entry["summary"])
-            for entry in self.operations_capability_map["entries"]
-        )
-        mapped.append(
-            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
-        )
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(len(mapped), len(set(mapped)))
         self.assertCountEqual(mapped, declared)
-        self.assertEqual(
-            self.operations_capability_map["entryCount"],
-            len(self.operations_capability_map["entries"]),
-        )
+        self.assertEqual(self.capability_map["entryCount"], len(mapped))
 
     def test_operations_cannot_claim_unimplemented_durability(self) -> None:
         value = deepcopy(self.matrix)
-        value["modules"][3]["states"]["durability"] = "durable"
+        next(
+            row for row in value["modules"] if row["module"] == "kernel.operations"
+        )["states"]["durability"] = "durable"
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
@@ -75,13 +74,17 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         ):
             with self.subTest(capability=capability):
                 value = deepcopy(self.matrix)
-                value["modules"][5]["currentCapabilities"].append(capability)
+                next(
+                    row for row in value["modules"] if row["module"] == "auth.authbus"
+                )["currentCapabilities"].append(capability)
                 with self.assertRaises(verify.VerificationError):
                     verify.validate_matrix(value)
 
     def test_authbus_cannot_claim_all_replay_paths_are_durable(self) -> None:
         value = deepcopy(self.matrix)
-        value["modules"][5]["states"]["durability"] = "durable"
+        next(
+            row for row in value["modules"] if row["module"] == "auth.authbus"
+        )["states"]["durability"] = "durable"
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
@@ -134,9 +137,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             receipt = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(receipt["moduleCoverage"], 7)
         self.assertEqual(
-            receipt["capabilityCoverage"],
-            self.capability_map["entryCount"]
-            + self.operations_capability_map["entryCount"],
+            receipt["capabilityCoverage"], self.capability_map["entryCount"]
         )
         self.assertEqual(
             receipt["currentImplementationTruth"], "source_and_test_anchored"
@@ -210,11 +211,12 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(registry["schemaVersion"], 1)
         self.assertEqual(registry["lane"], "LANE-A-FOUNDATION")
         self.assertEqual(registry["authority"], "none")
-        self.assertEqual(
-            [row["module"] for row in registry["protocols"]],
-            verify.EXPECTED_MODULES,
-        )
-        self.assertEqual(len(registry["protocols"]), 7)
+        observed_modules = []
+        for row in registry["protocols"]:
+            if row["module"] not in observed_modules:
+                observed_modules.append(row["module"])
+        self.assertEqual(observed_modules, verify.EXPECTED_MODULES)
+        self.assertGreaterEqual(len(registry["protocols"]), len(verify.EXPECTED_MODULES))
         for row in registry["protocols"]:
             self.assertTrue(row["protocolId"].startswith("hepta."))
             self.assertTrue(row["source"])

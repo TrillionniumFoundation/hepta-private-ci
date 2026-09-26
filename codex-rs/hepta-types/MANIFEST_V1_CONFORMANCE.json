@@ -1,0 +1,258 @@
+{
+  "schema": "hepta.platform-types.manifest-conformance.v1",
+  "schemaVersion": 1,
+  "transport": {
+    "format": "strict-json-object-v1",
+    "integerPolicy": "u64 and i64 values are canonical base-10 strings to preserve cross-language precision",
+    "unknownFieldPolicy": "reject",
+    "schemas": [
+      "schemas/random-stream-manifest-v1.schema.json",
+      "schemas/external-system-manifest-v1.schema.json",
+      "schemas/sensor-calibration-manifest-v1.schema.json"
+    ]
+  },
+  "semanticCommitment": {
+    "format": "HPTC",
+    "encodingVersion": 1,
+    "schemaVersion": 1,
+    "domain": "hepta.platform.types.canonical-digest.v1",
+    "rule": "JSON field order is irrelevant; validated values are projected into the contract-specific HPTC field map before hashing"
+  },
+  "validVectors": [
+    {
+      "id": "random-stream-manifest-v1",
+      "kind": "random_stream_manifest_v1",
+      "json": {
+        "kind": "random_stream_manifest_v1",
+        "manifest_id": "random-manifest-1",
+        "root_seed_digest": "a5978c92c7a21f959ecc1526de7f8734891254dea2763d66e86a5cdd5cd7f0fc",
+        "algorithm_namespace": "utility.ndu",
+        "episode_id": "episode-1",
+        "decision_id": "decision-1",
+        "stream_id": "stream-1",
+        "counter_start": "10",
+        "counter_end_exclusive": "20",
+        "generator_id": "chacha20-counter",
+        "generator_version": "1.0.0"
+      },
+      "expectedHptcSha256": "a8a00fe2c0048b836e154cebaea1aef59b019a1c0c24f5cf516617cdd1c7ac1b"
+    },
+    {
+      "id": "external-system-manifest-v1",
+      "kind": "external_system_manifest_v1",
+      "json": {
+        "kind": "external_system_manifest_v1",
+        "system_id": "external-system-1",
+        "system_class": "debian_host",
+        "host_identity_digest": "4740ae6347b0172c01254ff55bae5aff5199f4446e7f6d643d40185b3f475145",
+        "os_release_digest": "840a8dcfeae95966a870b0b5257997ce94cbc19dd979409d1671d2e93a9e0de6",
+        "package_inventory_digest": "b28b1ed9821f38c64524ea13e19264bb0772f8376afffd5d8a1f8277621833eb",
+        "service_graph_digest": "ef1c4b45f2ed763283f8de890730defb2e7d1f8f0cc4214b740dd8cc5f10364d",
+        "filesystem_scope_digest": "cbf61858f3260072d96d9b1d2e037fc35824944b9c94d0087b1a53385eccaead",
+        "identity_map_digest": "13c7351360f0032d02f4aafa524e669afec7079584fd02a2a6f7171f5abf365d",
+        "network_surface_digest": "3009be769fb8f956e8413ee9f3e0836e34968bc40457d0a10c549d2edcf00cc1",
+        "secret_reference_digest": "20e8cdb5b4093e18eb565f0a0c148e44da1f0b8c5447f27c47881675bfa86c10",
+        "observed_at": "2026-09-25T01:02:03.123456Z",
+        "authorization_witness": "cbb82ebec6051b780ad26655ee48b5b42658c4ac49438888aac829e82195584f"
+      },
+      "expectedHptcSha256": "db5f95ec92bf5bb483bb8b327cb2c757c290c0a93233fa000948e81622d93df8"
+    },
+    {
+      "id": "sensor-calibration-manifest-v1",
+      "kind": "sensor_calibration_manifest_v1",
+      "json": {
+        "kind": "sensor_calibration_manifest_v1",
+        "sensor_id": "sensor-1",
+        "sensor_class": "physical_sensor",
+        "hardware_or_adapter_digest": "26787dd2f72cc993706ee8209c6c8b2e77b8b6c7bbc8d168550dcfc1c8b28818",
+        "calibration_generation": "7",
+        "clock_domain": "monotonic-host-clock",
+        "valid_from": "2026-09-25T00:00:00Z",
+        "valid_until": "2026-10-25T00:00:00Z",
+        "uncertainty_profile": {
+          "distribution_class": "bounded_interval",
+          "lower_q32": "-100",
+          "upper_q32": "100",
+          "confidence_ppm": 950000
+        },
+        "operating_range": {
+          "unit": "metres-per-second",
+          "minimum_q32": "-1000",
+          "maximum_q32": "1000"
+        },
+        "failure_policy": "reflex_stop"
+      },
+      "expectedHptcSha256": "4ead32a5b6c4207749e08a0ec855b02497fe0f203e44ec5afadd02e6e6492fde"
+    }
+  ],
+  "invalidVectors": [
+    {
+      "id": "random-unknown-field",
+      "expectedError": "unknown field",
+      "json": {
+        "kind": "random_stream_manifest_v1",
+        "manifest_id": "random-manifest-1",
+        "root_seed_digest": "a5978c92c7a21f959ecc1526de7f8734891254dea2763d66e86a5cdd5cd7f0fc",
+        "algorithm_namespace": "utility.ndu",
+        "episode_id": "episode-1",
+        "decision_id": "decision-1",
+        "stream_id": "stream-1",
+        "counter_start": "10",
+        "counter_end_exclusive": "20",
+        "generator_id": "chacha20-counter",
+        "generator_version": "1.0.0",
+        "unexpected": "forbidden"
+      }
+    },
+    {
+      "id": "random-zero-seed",
+      "expectedError": "zero digest",
+      "json": {
+        "kind": "random_stream_manifest_v1",
+        "manifest_id": "random-manifest-1",
+        "root_seed_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "algorithm_namespace": "utility.ndu",
+        "episode_id": "episode-1",
+        "decision_id": "decision-1",
+        "stream_id": "stream-1",
+        "counter_start": "10",
+        "counter_end_exclusive": "20",
+        "generator_id": "chacha20-counter",
+        "generator_version": "1.0.0"
+      }
+    },
+    {
+      "id": "random-counter-range",
+      "expectedError": "counter range",
+      "json": {
+        "kind": "random_stream_manifest_v1",
+        "manifest_id": "random-manifest-1",
+        "root_seed_digest": "a5978c92c7a21f959ecc1526de7f8734891254dea2763d66e86a5cdd5cd7f0fc",
+        "algorithm_namespace": "utility.ndu",
+        "episode_id": "episode-1",
+        "decision_id": "decision-1",
+        "stream_id": "stream-1",
+        "counter_start": "10",
+        "counter_end_exclusive": "10",
+        "generator_id": "chacha20-counter",
+        "generator_version": "1.0.0"
+      }
+    },
+    {
+      "id": "external-unknown-class",
+      "expectedError": "system_class",
+      "json": {
+        "kind": "external_system_manifest_v1",
+        "system_id": "external-system-1",
+        "system_class": "container_host",
+        "host_identity_digest": "4740ae6347b0172c01254ff55bae5aff5199f4446e7f6d643d40185b3f475145",
+        "os_release_digest": "840a8dcfeae95966a870b0b5257997ce94cbc19dd979409d1671d2e93a9e0de6",
+        "package_inventory_digest": "b28b1ed9821f38c64524ea13e19264bb0772f8376afffd5d8a1f8277621833eb",
+        "service_graph_digest": "ef1c4b45f2ed763283f8de890730defb2e7d1f8f0cc4214b740dd8cc5f10364d",
+        "filesystem_scope_digest": "cbf61858f3260072d96d9b1d2e037fc35824944b9c94d0087b1a53385eccaead",
+        "identity_map_digest": "13c7351360f0032d02f4aafa524e669afec7079584fd02a2a6f7171f5abf365d",
+        "network_surface_digest": "3009be769fb8f956e8413ee9f3e0836e34968bc40457d0a10c549d2edcf00cc1",
+        "secret_reference_digest": "20e8cdb5b4093e18eb565f0a0c148e44da1f0b8c5447f27c47881675bfa86c10",
+        "observed_at": "2026-09-25T01:02:03.123456Z",
+        "authorization_witness": "cbb82ebec6051b780ad26655ee48b5b42658c4ac49438888aac829e82195584f"
+      }
+    },
+    {
+      "id": "external-invalid-timestamp",
+      "expectedError": "timestamp",
+      "json": {
+        "kind": "external_system_manifest_v1",
+        "system_id": "external-system-1",
+        "system_class": "debian_host",
+        "host_identity_digest": "4740ae6347b0172c01254ff55bae5aff5199f4446e7f6d643d40185b3f475145",
+        "os_release_digest": "840a8dcfeae95966a870b0b5257997ce94cbc19dd979409d1671d2e93a9e0de6",
+        "package_inventory_digest": "b28b1ed9821f38c64524ea13e19264bb0772f8376afffd5d8a1f8277621833eb",
+        "service_graph_digest": "ef1c4b45f2ed763283f8de890730defb2e7d1f8f0cc4214b740dd8cc5f10364d",
+        "filesystem_scope_digest": "cbf61858f3260072d96d9b1d2e037fc35824944b9c94d0087b1a53385eccaead",
+        "identity_map_digest": "13c7351360f0032d02f4aafa524e669afec7079584fd02a2a6f7171f5abf365d",
+        "network_surface_digest": "3009be769fb8f956e8413ee9f3e0836e34968bc40457d0a10c549d2edcf00cc1",
+        "secret_reference_digest": "20e8cdb5b4093e18eb565f0a0c148e44da1f0b8c5447f27c47881675bfa86c10",
+        "observed_at": "2026-02-30T00:00:00Z",
+        "authorization_witness": "cbb82ebec6051b780ad26655ee48b5b42658c4ac49438888aac829e82195584f"
+      }
+    },
+    {
+      "id": "sensor-invalid-window",
+      "expectedError": "validity window",
+      "json": {
+        "kind": "sensor_calibration_manifest_v1",
+        "sensor_id": "sensor-1",
+        "sensor_class": "physical_sensor",
+        "hardware_or_adapter_digest": "26787dd2f72cc993706ee8209c6c8b2e77b8b6c7bbc8d168550dcfc1c8b28818",
+        "calibration_generation": "7",
+        "clock_domain": "monotonic-host-clock",
+        "valid_from": "2026-09-25T00:00:00Z",
+        "valid_until": "2026-09-24T00:00:00Z",
+        "uncertainty_profile": {
+          "distribution_class": "bounded_interval",
+          "lower_q32": "-100",
+          "upper_q32": "100",
+          "confidence_ppm": 950000
+        },
+        "operating_range": {
+          "unit": "metres-per-second",
+          "minimum_q32": "-1000",
+          "maximum_q32": "1000"
+        },
+        "failure_policy": "reflex_stop"
+      }
+    },
+    {
+      "id": "sensor-invalid-confidence",
+      "expectedError": "confidence",
+      "json": {
+        "kind": "sensor_calibration_manifest_v1",
+        "sensor_id": "sensor-1",
+        "sensor_class": "physical_sensor",
+        "hardware_or_adapter_digest": "26787dd2f72cc993706ee8209c6c8b2e77b8b6c7bbc8d168550dcfc1c8b28818",
+        "calibration_generation": "7",
+        "clock_domain": "monotonic-host-clock",
+        "valid_from": "2026-09-25T00:00:00Z",
+        "valid_until": "2026-10-25T00:00:00Z",
+        "uncertainty_profile": {
+          "distribution_class": "bounded_interval",
+          "lower_q32": "-100",
+          "upper_q32": "100",
+          "confidence_ppm": 1000001
+        },
+        "operating_range": {
+          "unit": "metres-per-second",
+          "minimum_q32": "-1000",
+          "maximum_q32": "1000"
+        },
+        "failure_policy": "reflex_stop"
+      }
+    },
+    {
+      "id": "sensor-i64-overflow",
+      "expectedError": "i64",
+      "json": {
+        "kind": "sensor_calibration_manifest_v1",
+        "sensor_id": "sensor-1",
+        "sensor_class": "physical_sensor",
+        "hardware_or_adapter_digest": "26787dd2f72cc993706ee8209c6c8b2e77b8b6c7bbc8d168550dcfc1c8b28818",
+        "calibration_generation": "7",
+        "clock_domain": "monotonic-host-clock",
+        "valid_from": "2026-09-25T00:00:00Z",
+        "valid_until": "2026-10-25T00:00:00Z",
+        "uncertainty_profile": {
+          "distribution_class": "bounded_interval",
+          "lower_q32": "-100",
+          "upper_q32": "100",
+          "confidence_ppm": 950000
+        },
+        "operating_range": {
+          "unit": "metres-per-second",
+          "minimum_q32": "-1000",
+          "maximum_q32": "9223372036854775808"
+        },
+        "failure_policy": "reflex_stop"
+      }
+    }
+  ]
+}

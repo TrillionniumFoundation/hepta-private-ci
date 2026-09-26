@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.platform-types.consumer-qualification.v1",
+  "schemaVersion": 1,
+  "module": "platform.types",
+  "claimBoundary": "source consumers and cross-language conformance; not product activation",
+  "consumers": [
+    {
+      "id": "generated.python",
+      "kind": "generated_runtime_binding",
+      "path": "codex-rs/hepta-types/bindings/verify_generated.py",
+      "mustContain": [
+        "unknown numeric profile",
+        "__proto__"
+      ]
+    },
+    {
+      "id": "generated.javascript",
+      "kind": "generated_runtime_binding",
+      "path": "codex-rs/hepta-types/bindings/verify_generated.mjs",
+      "mustContain": [
+        "admitted unknown numeric profile",
+        "admitted unknown ID profile"
+      ]
+    },
+    {
+      "id": "canonical.python-node",
+      "kind": "cross_language_canonical_conformance",
+      "path": "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
+      "mustContain": [
+        "unicode-nfc-is-not-normalized-v1",
+        "invalid-value-tag-v1"
+      ]
+    },
+    {
+      "id": "manifest.python",
+      "kind": "strict_json_to_hptc_conformance",
+      "path": "codex-rs/hepta-types/conformance/verify_manifest_vectors.py",
+      "mustContain": [
+        "strict-JSON -> HPTC",
+        "unknown field",
+        "expectedHptcSha256"
+      ]
+    },
+    {
+      "id": "manifest.javascript",
+      "kind": "strict_json_to_hptc_conformance",
+      "path": "codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs",
+      "mustContain": [
+        "strict-JSON -> HPTC",
+        "BigInt",
+        "expectedHptcSha256"
+      ]
+    },
+    {
+      "id": "manifest.rust-public-api",
+      "kind": "external_crate_manifest_codec_consumer",
+      "path": "codex-rs/hepta-types/tests/manifest_protocol_consumer.rs",
+      "mustContain": [
+        "strict_json_transport_matches_native_manifest_semantics",
+        "RandomStreamManifestV1::new",
+        "ExternalSystemManifestV1::new",
+        "SensorCalibrationManifestV1::new"
+      ]
+    },
+    {
+      "id": "utility.ndu.registered-numeric",
+      "kind": "registered_owner_evaluation_source_consumer",
+      "path": "codex-rs/hepta-ndu/src/owner.rs",
+      "mustContain": [
+        "pub fn evaluate(",
+        "let admitted = registry",
+        ".admit_utility_axes(",
+        "admitted.admission.admission_digest",
+        "production_policy_digest_with_numeric_registry"
+      ]
+    },
+    {
+      "id": "runtime.codex.prompt-delivery",
+      "kind": "runtime_observation_producer",
+      "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+      "mustContain": [
+        "PromptDeliveryObservationV1"
+      ]
+    },
+    {
+      "id": "learning.ledger.prompt-delivery",
+      "kind": "durable_observation_consumer",
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "mustContain": [
+        "append_runtime_prompt_delivery_v1",
+        "semantic_digest"
+      ]
+    },
+    {
+      "id": "runtime.supervisor.topology",
+      "kind": "topology_admission_consumer",
+      "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+      "mustContain": [
+        "register_selected_topology_candidate",
+        "candidate.validate()"
+      ]
+    }
+  ],
+  "qualificationScript": "scripts/run_platform_types_consumer_qualification.sh",
+  "requiredExecution": [
+    "complete_hepta_types_all_targets",
+    "complete_utility_ndu_library_tests",
+    "manifest_cross_language_conformance",
+    "manifest_rust_public_api_consumer",
+    "prompt_delivery_producer_tests",
+    "prompt_delivery_ledger_tests",
+    "runtime_topology_admission_tests",
+    "strict_utility_ndu_library_lint"
+  ]
+}

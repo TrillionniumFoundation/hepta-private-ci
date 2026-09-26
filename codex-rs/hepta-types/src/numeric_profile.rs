@@ -285,6 +285,7 @@ pub enum NumericConversionError {
     InvalidRange,
     OutOfRange,
     Overflow,
+    RegistryAdmission,
     CanonicalEncoding,
 }
 

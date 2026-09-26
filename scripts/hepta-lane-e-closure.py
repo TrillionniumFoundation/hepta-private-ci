@@ -33,7 +33,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 14)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 13)),
 }
@@ -93,6 +93,12 @@ EXPECTED_OPERATIONS = {
         "admit_operator_regularity",
         "fit_transition_model",
         "predict_transition",
+        "validate_applicability_with_signed_evidence_v2",
+        "admit_operator_regularity_with_signed_evidence_v2",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
     },
     "learning.eval": {
         "estimate_ope",
@@ -571,7 +577,7 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
     for token in (
         "trusted-inprocess-eval = []",
         "pub mod trusted_inprocess",
-        "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;",
+        "pub use signed_evaluation::decide_with_signed_evidence_v2;",
         "pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;",
     ):
         findings.require(

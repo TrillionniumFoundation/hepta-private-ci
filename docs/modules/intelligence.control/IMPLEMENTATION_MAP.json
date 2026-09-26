@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "bcdbf90328aa2d9fe4881561ea8f73c5e8072147",
+    "tree": "9abe815ed7ed20a3676556a8425b216eb22de1f8"
   },
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "bcdbf90328aa2d9fe4881561ea8f73c5e8072147",
+    "tree": "9abe815ed7ed20a3676556a8425b216eb22de1f8"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -543,7 +543,7 @@
   },
   "repositoryControlledGaps": [
     "Complete durable product Decision/Outcome append and process-loss reconciliation, then exercise the daemon-prepared binding through the physical App Server caller; the authenticated ObjectiveStart-to-canonical-run route is now source-wired.",
-    "Make ambiguous Decision/Outcome append recovery survive Agentd process loss; PendingIntelligenceLedgerAppendV1 is currently only an in-memory replay object.",
+    "Compose authenticated LedgerWriter Decision/Outcome persistence and process-loss reconciliation; the historical raw-V1 pending replay seam is qualification-only and not a product path.",
     "Obtain current exact-head and deterministic synthetic-merge green receipts for this candidate; prior candidate receipts are provenance only.",
     "Run the real Agentd/App Server intelligence-bound product E2E, including turn/start lost-ack, dependency outage, restart and revocation races.",
     "Qualify target-host hard resource termination; the pure in-process cognition worker discards late results but spawn_blocking cannot terminate a running blocking stage."
@@ -569,7 +569,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "d65e70ea932a5869817047acc1b56a23c379ff8c"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
@@ -581,7 +581,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "object": "77831cd53712246ee2f469ae126269ec697283da"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -593,7 +593,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "2102533eee6214683242a263aa7e5bc89574ba0b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
@@ -693,7 +693,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "9fa58df6551c707a7a3fcb773495628ddcc1b9f5"
     },
     {
       "path": "codex-rs/hepta-neuron",
@@ -701,7 +701,7 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "b189ee1fa70517ff43d860ee80c392f57f1c94b2"
+      "object": "58404ddb3aa74424b85fab5808f7caf699e3d7f7"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",
@@ -709,7 +709,7 @@
     },
     {
       "path": "docs/modules/intelligence.control/TECHNICAL.md",
-      "object": "255133762234bb470a3ee24e1c7c84554f2688c0"
+      "object": "4a6be1f9551635d54ec3bf21c4c2aff2ea106e31"
     }
   ]
 }

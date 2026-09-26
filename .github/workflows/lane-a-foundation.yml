@@ -11,7 +11,13 @@ on:
       - "qualification/module-execution-dossiers/**"
       - "scripts/lane_a_foundation_core.py"
       - "scripts/lane_a_foundation_lib.py"
+      - "scripts/lane_a_candidate_evidence.py"
+      - "scripts/platform_types_public_api.py"
       - "scripts/verify_lane_a_foundation.py"
+      - "scripts/run_lane_a_native_qualification.sh"
+      - "scripts/run_platform_types_consumer_qualification.sh"
+      - "scripts/verify_platform_types_consumers.py"
+      - "scripts/test_platform_types_consumer_qualification.py"
       - "scripts/verify_lane_a_pr_tuple.py"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_kernel_authority_map_freshness.py"
@@ -48,15 +54,25 @@ jobs:
         shell: bash
         run: python3 scripts/verify_lane_a_pr_tuple.py --event "$GITHUB_EVENT_PATH"
 
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Verify current implementation, traceability and nonclaims
+        id: source_truth
+        continue-on-error: true
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest scripts/test_platform_types_consumer_qualification.py
+          python3 scripts/lane_a_candidate_evidence.py self-test
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/platform_types_public_api.py
           python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
           python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
@@ -65,6 +81,8 @@ jobs:
           node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts
           python3 codex-rs/hepta-types/conformance/verify_rejections.py
           node codex-rs/hepta-types/conformance/verify_rejections.mjs
+          python3 codex-rs/hepta-types/conformance/verify_manifest_vectors.py
+          node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs
           python3 codex-rs/hepta-types/bindings/generate_bindings.py --check
           python3 codex-rs/hepta-types/bindings/verify_generated.py
           node codex-rs/hepta-types/bindings/verify_generated.mjs
@@ -72,26 +90,93 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Run Lane A native tests and strict lint
+        id: source_native
+        if: ${{ !cancelled() }}
+        continue-on-error: true
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
 
-      - name: Write exact-source and native receipts
+      - name: Run platform.types independent consumer matrix (source-head)
+        id: source_consumers
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        shell: bash
+        run: scripts/run_platform_types_consumer_qualification.sh
+
+      - name: Retain platform.types consumer execution (source-head)
+        id: source_consumer_artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-consumers-source-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/platform-types-consumers/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Write exact source-head diagnostics
+        id: source_diagnostics
+        if: ${{ always() }}
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TRUTH_OUTCOME: ${{ steps.source_truth.outcome }}
+          NATIVE_OUTCOME: ${{ steps.source_native.outcome }}
+          CONSUMER_OUTCOME: ${{ steps.source_consumers.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/lane_a_candidate_evidence.py diagnostics \
+            --candidate-kind source-head \
+            --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$EXPECTED_SHA" \
+            --truth-outcome "$TRUTH_OUTCOME" \
+            --native-outcome "$NATIVE_OUTCOME" \
+            --consumer-outcome "$CONSUMER_OUTCOME" \
+            --output .hepta-evidence/diagnostics/lane-a-source-head.json
+
+      - name: Retain source-head diagnostics
+        id: source_diagnostic_artifacts
+        if: ${{ always() && steps.source_diagnostics.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-a-source-head-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/diagnostics/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Write and independently verify exact-source receipts
+        id: source_receipts
+        if: ${{ steps.source_truth.outcome == 'success' && steps.source_native.outcome == 'success' && steps.source_consumers.outcome == 'success' && steps.source_diagnostics.outcome == 'success' }}
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/verify_lane_a_foundation.py source-receipt \
+            --candidate-kind source-head \
             --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-source-head.json
           python3 scripts/verify_lane_a_foundation.py native-receipt \
+            --candidate-kind source-head \
             --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-native-head.json
           python3 scripts/verify_kernel_authority_map_freshness.py \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-kernel-authority-map-head.json
+          python3 scripts/lane_a_candidate_evidence.py verify-receipts \
+            --candidate-kind source-head \
+            --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$EXPECTED_SHA" \
+            --source-receipt .hepta-evidence/lane-a-source-head.json \
+            --native-receipt .hepta-evidence/lane-a-native-head.json \
+            --output .hepta-evidence/lane-a-receipt-pair-head.json
 
       - name: Retain exact source receipts
+        id: source_artifacts
+        if: ${{ steps.source_receipts.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: lane-a-source-native-${{ github.event.pull_request.head.sha || github.sha }}
@@ -99,6 +184,29 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
+
+      - name: Require complete source-head qualification
+        if: ${{ always() }}
+        env:
+          TRUTH_OUTCOME: ${{ steps.source_truth.outcome }}
+          NATIVE_OUTCOME: ${{ steps.source_native.outcome }}
+          CONSUMER_OUTCOME: ${{ steps.source_consumers.outcome }}
+          CONSUMER_ARTIFACT_OUTCOME: ${{ steps.source_consumer_artifacts.outcome }}
+          DIAGNOSTIC_OUTCOME: ${{ steps.source_diagnostics.outcome }}
+          DIAGNOSTIC_ARTIFACT_OUTCOME: ${{ steps.source_diagnostic_artifacts.outcome }}
+          RECEIPT_OUTCOME: ${{ steps.source_receipts.outcome }}
+          ARTIFACT_OUTCOME: ${{ steps.source_artifacts.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$TRUTH_OUTCOME" = success
+          test "$NATIVE_OUTCOME" = success
+          test "$CONSUMER_OUTCOME" = success
+          test "$CONSUMER_ARTIFACT_OUTCOME" = success
+          test "$DIAGNOSTIC_OUTCOME" = success
+          test "$DIAGNOSTIC_ARTIFACT_OUTCOME" = success
+          test "$RECEIPT_OUTCOME" = success
+          test "$ARTIFACT_OUTCOME" = success
 
   merge-candidate:
     name: Verify synthetic Lane A merge candidate and native contracts
@@ -124,15 +232,25 @@ jobs:
           author-email: hepta-lane-a-ci@users.noreply.github.com
           message: Synthetic Lane A merge
 
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Verify synthetic merge truth
+        id: merge_truth
+        continue-on-error: true
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest scripts/test_platform_types_consumer_qualification.py
+          python3 scripts/lane_a_candidate_evidence.py self-test
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/platform_types_public_api.py
           python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
           python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
@@ -141,6 +259,8 @@ jobs:
           node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts
           python3 codex-rs/hepta-types/conformance/verify_rejections.py
           node codex-rs/hepta-types/conformance/verify_rejections.mjs
+          python3 codex-rs/hepta-types/conformance/verify_manifest_vectors.py
+          node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs
           python3 codex-rs/hepta-types/bindings/generate_bindings.py --check
           python3 codex-rs/hepta-types/bindings/verify_generated.py
           node codex-rs/hepta-types/bindings/verify_generated.mjs
@@ -148,26 +268,107 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Run Lane A native tests and strict lint on merge candidate
+        id: merge_native
+        if: ${{ !cancelled() }}
+        continue-on-error: true
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
 
-      - name: Write synthetic-merge receipts
+      - name: Run platform.types independent consumer matrix (synthetic-merge)
+        id: merge_consumers
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        shell: bash
+        run: scripts/run_platform_types_consumer_qualification.sh
+
+      - name: Retain platform.types consumer execution (synthetic-merge)
+        id: merge_consumer_artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-consumers-synthetic-merge-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/platform-types-consumers/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Write exact synthetic-merge diagnostics
+        id: merge_diagnostics
+        if: ${{ always() }}
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          TRUTH_OUTCOME: ${{ steps.merge_truth.outcome }}
+          NATIVE_OUTCOME: ${{ steps.merge_native.outcome }}
+          CONSUMER_OUTCOME: ${{ steps.merge_consumers.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/lane_a_candidate_evidence.py diagnostics \
+            --candidate-kind synthetic-merge \
+            --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --pr-number "$PR_NUMBER" \
+            --truth-outcome "$TRUTH_OUTCOME" \
+            --native-outcome "$NATIVE_OUTCOME" \
+            --consumer-outcome "$CONSUMER_OUTCOME" \
+            --output .hepta-evidence/diagnostics/lane-a-synthetic-merge.json
+
+      - name: Retain synthetic-merge diagnostics
+        id: merge_diagnostic_artifacts
+        if: ${{ always() && steps.merge_diagnostics.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-a-synthetic-merge-diagnostics-${{ steps.merge.outputs.sha }}
+          path: .hepta-evidence/diagnostics/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Write and independently verify synthetic-merge receipts
+        id: merge_receipts
+        if: ${{ steps.merge_truth.outcome == 'success' && steps.merge_native.outcome == 'success' && steps.merge_consumers.outcome == 'success' && steps.merge_diagnostics.outcome == 'success' }}
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/verify_lane_a_foundation.py source-receipt \
+            --candidate-kind synthetic-merge \
             --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --pr-number "$PR_NUMBER" \
             --output .hepta-evidence/lane-a-merge-candidate.json
           python3 scripts/verify_lane_a_foundation.py native-receipt \
+            --candidate-kind synthetic-merge \
             --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --pr-number "$PR_NUMBER" \
             --output .hepta-evidence/lane-a-native-merge-candidate.json
           python3 scripts/verify_kernel_authority_map_freshness.py \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-kernel-authority-map-merge-candidate.json
+          python3 scripts/lane_a_candidate_evidence.py verify-receipts \
+            --candidate-kind synthetic-merge \
+            --expected-sha "$EXPECTED_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --pr-number "$PR_NUMBER" \
+            --source-receipt .hepta-evidence/lane-a-merge-candidate.json \
+            --native-receipt .hepta-evidence/lane-a-native-merge-candidate.json \
+            --output .hepta-evidence/lane-a-receipt-pair-merge-candidate.json
 
       - name: Retain synthetic merge receipts
+        id: merge_artifacts
+        if: ${{ steps.merge_receipts.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: lane-a-merge-native-${{ steps.merge.outputs.sha }}
@@ -175,3 +376,26 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
+
+      - name: Require complete synthetic-merge qualification
+        if: ${{ always() }}
+        env:
+          TRUTH_OUTCOME: ${{ steps.merge_truth.outcome }}
+          NATIVE_OUTCOME: ${{ steps.merge_native.outcome }}
+          CONSUMER_OUTCOME: ${{ steps.merge_consumers.outcome }}
+          CONSUMER_ARTIFACT_OUTCOME: ${{ steps.merge_consumer_artifacts.outcome }}
+          DIAGNOSTIC_OUTCOME: ${{ steps.merge_diagnostics.outcome }}
+          DIAGNOSTIC_ARTIFACT_OUTCOME: ${{ steps.merge_diagnostic_artifacts.outcome }}
+          RECEIPT_OUTCOME: ${{ steps.merge_receipts.outcome }}
+          ARTIFACT_OUTCOME: ${{ steps.merge_artifacts.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$TRUTH_OUTCOME" = success
+          test "$NATIVE_OUTCOME" = success
+          test "$CONSUMER_OUTCOME" = success
+          test "$CONSUMER_ARTIFACT_OUTCOME" = success
+          test "$DIAGNOSTIC_OUTCOME" = success
+          test "$DIAGNOSTIC_ARTIFACT_OUTCOME" = success
+          test "$RECEIPT_OUTCOME" = success
+          test "$ARTIFACT_OUTCOME" = success

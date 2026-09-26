@@ -3,6 +3,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MANIFEST="$ROOT/codex-rs/Cargo.toml"
+# Honor the same Cargo and Clippy configuration as ordinary workspace commands.
+cd "$ROOT/codex-rs"
 PACKAGES=(
   codex-hepta-types
   codex-hepta-wire
@@ -41,3 +43,6 @@ cargo clippy --locked --manifest-path "$MANIFEST" \
   --features production-authority \
   "${BIN_ARGS[@]}" \
   -- -D warnings
+
+# Consumer qualification is a separate required workflow step. A failure in
+# any foundation package must not suppress the platform.types consumer matrix.

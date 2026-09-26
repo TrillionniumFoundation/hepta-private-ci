@@ -33,7 +33,7 @@
       "implementationDetail": "docs/lane-a-foundation/platform.types/PRIMITIVES_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "native_protocol_primitives_generated_bindings",
+        "implementation": "native_protocol_primitives_manifests_generated_bindings",
         "durability": "none",
         "qualification": "candidate_workflow_required",
         "activation": "library_only",
@@ -44,15 +44,17 @@
         "sealed non-authorizing posture with raw one-byte grant-bit rejection",
         "canonical HPTC V1 encode/digest/raw-byte validation with accepted/rejected cross-language conformance",
         "immutable schema/normalization and numeric-profile admission registry",
-        "checked numeric conversion with registered profiles and explicit Q32 arithmetic split",
-        "deterministically generated Python/JavaScript runtime bindings and TypeScript declarations"
+        "checked numeric conversion with distinct registry-admission receipt and explicit Q32 arithmetic split",
+        "deterministically generated Python/JavaScript runtime bindings and TypeScript declarations with own-property lookup",
+        "bounded PromptDeliveryObservationV1 with exact semantic digest and current runtime/ledger callsites",
+        "digest-bound RuntimeTopologyCandidateV1 with current supervisor admission callsite",
+        "bounded RandomStream, ExternalSystem and SensorCalibration manifest contracts with stable semantic digests"
       ],
       "targetOnlyCapabilities": [
-        "RandomStreamManifestV1 native source",
-        "ExternalSystemManifestV1 native source",
-        "SensorCalibrationManifestV1 native source",
-        "named authenticated product composition and registry-generation provisioning",
-        "full consumer compile matrix, independent semantic review and target-host qualification"
+        "authenticated product registry-generation provisioning and rotation",
+        "external canonical JSON or wire codecs beyond the frozen foundational generated bindings",
+        "random stream execution host inventory collection and physical sensor calibration drivers",
+        "full consumer target-host qualification independent acceptance and release"
       ],
       "sourceAnchors": [
         {
@@ -82,7 +84,7 @@
           ]
         }
       ],
-      "productCallerState": "not_composed"
+      "productCallerState": "capability_specific_source_consumers_composed_product_qualification_pending"
     },
     {
       "module": "platform.wire",
@@ -227,7 +229,7 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use("
+            "dispatch_authority_lease_with_witness"
           ]
         }
       ]
@@ -336,7 +338,8 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler",
+            "tasks.spawn_required("
           ]
         }
       ]
@@ -511,7 +514,7 @@
           "path": "codex-rs/hepta-bao-adapter/README.md",
           "mustContain": [
             "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
+            "It deliberately does not dispatch provider mutation APIs"
           ]
         }
       ]

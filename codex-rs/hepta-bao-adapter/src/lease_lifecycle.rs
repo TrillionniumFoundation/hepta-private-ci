@@ -239,12 +239,22 @@ impl DurableLeaseRegistryV1 {
             return Err(LeaseRegistryErrorV1::InvalidTransition);
         }
         operation.state = LeaseOperationStateV1::Unknown;
-        if let Some(lease_id) = operation.lease_id.as_ref() {
-            if let Some(lease) = next.leases.get_mut(lease_id) {
+        if let Some(lease_id) = operation.lease_id.as_ref()
+            && let Some(lease) = next.leases.get_mut(lease_id)
+        {
+            // Late uncertainty adds an operation fact; it never revives a lease.
+            if !matches!(
+                lease.state,
+                SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+            ) {
                 lease.state = match operation.kind {
-                    LeaseOperationKindV1::Renew => SecretLeaseStateV1::RenewUnknown,
+                    LeaseOperationKindV1::Renew
+                        if lease.state != SecretLeaseStateV1::RevokeUnknown =>
+                    {
+                        SecretLeaseStateV1::RenewUnknown
+                    }
                     LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
-                    LeaseOperationKindV1::Issue => lease.state,
+                    LeaseOperationKindV1::Issue | LeaseOperationKindV1::Renew => lease.state,
                 };
             }
         }
@@ -275,7 +285,11 @@ impl DurableLeaseRegistryV1 {
         let mut next = self.state.clone();
         match (&current.kind, observation) {
             (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
-                validate_lease(&lease)?;
+                validate_lease_metadata(&lease)?;
+                // Issuance has a narrower admission shape than stored lifecycle facts.
+                if lease.state != SecretLeaseStateV1::Active {
+                    return Err(LeaseRegistryErrorV1::InvalidInput);
+                }
                 if next.leases.contains_key(&lease.lease_id) {
                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
                 }
@@ -303,6 +317,14 @@ impl DurableLeaseRegistryV1 {
                     .leases
                     .get_mut(&lease_id)
                     .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+                if !matches!(
+                    lease.state,
+                    SecretLeaseStateV1::Active | SecretLeaseStateV1::RenewUnknown
+                ) || observed_at_unix_ms < lease.issued_at_unix_ms
+                    || observed_at_unix_ms >= lease.expires_at_unix_ms
+                {
+                    return Err(LeaseRegistryErrorV1::InvalidTransition);
+                }
                 lease.expires_at_unix_ms = expires_at_unix_ms;
                 lease.renewable = renewable;
                 lease.provider_metadata_sha256 = provider_metadata_sha256;
@@ -361,7 +383,12 @@ impl DurableLeaseRegistryV1 {
         let mut next = self.state.clone();
         let mut changed = 0usize;
         for lease in next.leases.values_mut() {
-            if lease.state == SecretLeaseStateV1::Active && now_unix_ms >= lease.expires_at_unix_ms
+            if matches!(
+                lease.state,
+                SecretLeaseStateV1::Active
+                    | SecretLeaseStateV1::RenewUnknown
+                    | SecretLeaseStateV1::RevokeUnknown
+            ) && now_unix_ms >= lease.expires_at_unix_ms
             {
                 lease.state = SecretLeaseStateV1::Expired;
                 changed += 1;
@@ -446,7 +473,22 @@ fn restore_unknown_lease_state(
         lease.state,
         SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
     ) {
-        lease.state = SecretLeaseStateV1::Active;
+        // Resolve only this operation. Other pending revocation/renewal facts remain.
+        let mut next_state = SecretLeaseStateV1::Active;
+        for pending in state.operations.values().filter(|pending| {
+            pending.lease_id.as_ref() == Some(lease_id)
+                && pending.state == LeaseOperationStateV1::Unknown
+        }) {
+            match pending.kind {
+                LeaseOperationKindV1::Revoke => {
+                    next_state = SecretLeaseStateV1::RevokeUnknown;
+                    break;
+                }
+                LeaseOperationKindV1::Renew => next_state = SecretLeaseStateV1::RenewUnknown,
+                LeaseOperationKindV1::Issue => {}
+            }
+        }
+        lease.state = next_state;
     }
     Ok(())
 }
@@ -474,12 +516,28 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
         if id != &lease.lease_id {
             return Err(LeaseRegistryErrorV1::CorruptState);
         }
-        validate_lease(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
+        validate_lease_metadata(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
+        let unknown_kind = match lease.state {
+            SecretLeaseStateV1::RenewUnknown => Some(LeaseOperationKindV1::Renew),
+            SecretLeaseStateV1::RevokeUnknown => Some(LeaseOperationKindV1::Revoke),
+            SecretLeaseStateV1::Active
+            | SecretLeaseStateV1::Revoked
+            | SecretLeaseStateV1::Expired => None,
+        };
+        if let Some(kind) = unknown_kind
+            && !state.operations.values().any(|operation| {
+                operation.lease_id.as_ref() == Some(id)
+                    && operation.kind == kind
+                    && operation.state == LeaseOperationStateV1::Unknown
+            })
+        {
+            return Err(LeaseRegistryErrorV1::CorruptState);
+        }
     }
     Ok(())
 }
 
-fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
+fn validate_lease_metadata(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
     if !identifier(&lease.lease_id)
         || !identifier(&lease.secret_reference_id)
         || !identifier(&lease.consumer_id)
@@ -487,7 +545,6 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
         || lease.provider_metadata_sha256 == [0; 32]
         || lease.generation == 0
         || lease.expires_at_unix_ms <= lease.issued_at_unix_ms
-        || lease.state != SecretLeaseStateV1::Active
     {
         return Err(LeaseRegistryErrorV1::InvalidInput);
     }

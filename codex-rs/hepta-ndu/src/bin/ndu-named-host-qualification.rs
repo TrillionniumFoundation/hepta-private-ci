@@ -102,15 +102,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     if journal.entries().len() != JOURNAL_CAPACITY {
         return Err("journal capacity underfilled".into());
     }
-    let overflow = journal
-        .append_projection(
-            NduProjectionKindV1::Preference,
-            digest("capacity-overflow-identity"),
-            objective,
-            subject,
-            digest("capacity-overflow-payload"),
-        )
-        .expect_err("4097th record must reject");
+    let overflow = match journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("capacity-overflow-identity"),
+        objective,
+        subject,
+        digest("capacity-overflow-payload"),
+    ) {
+        Err(error) => error,
+        Ok(_) => return Err("4097th record must reject".into()),
+    };
     if overflow != NduProjectionJournalError::RecordLimitExceeded {
         return Err("journal capacity boundary mismatch".into());
     }
@@ -406,7 +407,7 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn percentile(values: &[u128], percentile: usize) -> u128 {
-    let index = ((values.len() - 1) * percentile + 99) / 100;
+    let index = ((values.len() - 1) * percentile).div_ceil(100);
     values[index.min(values.len() - 1)]
 }
 

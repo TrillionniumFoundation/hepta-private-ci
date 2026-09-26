@@ -1,142 +1,144 @@
-# platform.types: implementation design
+# platform.types: implementation and qualification dossier
 
-Parent: `docs/modules/platform.types/TECHNICAL.md`. Lane:
-`LANE-A-FOUNDATION`.
+Parent guides:
 
-Status: bounded/profiled primitives, sealed non-authorizing posture, canonical
-HPTC V1 encoding/validation, immutable schema/normalization and numeric-profile
-registry, deterministic numeric conversion, conformance suite and generated
-Python/JavaScript/TypeScript bindings are source implemented. Three
-registry-owned target protocols remain source-pending. Named product composition,
-candidate qualification and independent acceptance are separate gates.
+- `docs/modules/platform.types/TECHNICAL.md`
+- `docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md`
 
-## 1. Source and work envelope
+Lane: `LANE-A-FOUNDATION`.
 
-Root: `codex-rs/hepta-types`. Bootstrap package:
-`PLATFORM-0-TYPE-BOUNDARY`. The module is stateless and authority-free.
+Status: native foundational contracts, registry-bound numeric evidence,
+prompt-delivery/topology contracts, three manifest contracts, strict manifest
+JSON codecs and cross-language semantic vectors are source implemented.
+Exact-candidate source-head and synthetic-merge qualification remain separate
+until their retained receipts pass for the current candidate.
 
-`productCallerState = not_composed`. Source-level interoperability or generated
-bindings do not count as production execution.
+## 1. Source and ownership envelope
 
-## 2. Public operations and contract details
+Root: `codex-rs/hepta-types`. The crate is stateless and authority-free. It
+owns validation and deterministic semantic commitments, not collection,
+execution, authentication, deployment or release.
 
-- `validate_id(raw, profile)` validates bounded V1 ID grammar before owned
-  construction. Schema, normalization, execution, receipt and artifact profiles
-  bind explicit namespaces.
-- `AuthorityPosture::try_from_wire_bytes(raw)` is a one-byte negative ingress:
-  zero produces deny-all; every nonzero grant bit rejects. `AuthorityPosture`
-  and `NonAuthorizingPosture` cannot encode authority.
-- `canonical_encode_v1` / `canonical_digest_v1` produce the frozen HPTC V1
-  representation. `canonical_validate_v1` independently validates supplied V1
-  bytes and rejects invalid tags/bools, ordering, depth, size, truncation and
-  trailing data.
-- `ContractRegistryV1` holds one immutable bounded caller-owned definition
-  generation. Definition kind is bound to ID namespace.
-- `NumericProfileDefinitionV1` binds profile identity, definition version,
-  scale and rounding to a canonical digest.
-- `rescale_signal_registered` requires source profile, target profile and
-  normalization definition in the same registry generation before checked
-  numeric conversion.
-- generated Python/JavaScript runtime bindings and TypeScript declarations are
-  deterministically emitted from `PLATFORM_TYPES_BINDINGS_V1.json`.
+The closed-world public API inventory is
+`docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json`; the module-scoped
+truth matrix is
+`docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json`. The inventory is
+regenerated from `src/lib.rs`, and every public export has one source module
+and one operation owner. Unregistered exports fail qualification.
 
-## 3. State, authority and transaction design
+## 2. Protocol contracts
 
-There is no authoritative state, clock, credential, filesystem handle, global
-registry, migration or transaction. All values are immutable or caller-owned.
+### Runtime topology
 
-The only authority-related operation is rejection: untrusted raw authority bits
-cannot become a trusted shared type. Real authority belongs to
-`kernel.authority`.
+`RuntimeTopologyCandidateV1::content_digest()` uses HPTC V1 and commits:
 
-Authentication and distribution of a registry generation are product-owner
-responsibilities. `platform.types` proves semantic identity of definitions, not
-who approved them.
+- proposal and candidate identity;
+- baseline and candidate generation;
+- selected topology, evaluation and rollback predecessor digests;
+- changed state;
+- every delta and every delta semantic field.
 
-## 4. Deterministic algorithms
+`candidate_digest` is derived and excluded from its own preimage. Candidate
+`deltas` and each delta's `related_module_ids` are set semantics encoded as a
+strictly increasing `StableId` order. Duplicate, self or non-canonical order
+fails closed. Mutation-completeness tests cover every semantic field.
 
-ID validation performs no case folding or normalization. Canonical V1 binds
-domain, namespaced type ID, schema version, type tags, integer widths, lengths
-and canonical ordering. Arrays preserve semantic order. V1 deliberately does no
-Unicode normalization.
+### Registered numeric conversion
 
-Numeric conversion uses checked i128 intermediates and target profile rounding;
-there is no saturation. Numeric profile admission refuses scale/rounding drift
-under an existing V1 identity.
+`RegisteredNumericConversionReceiptV1` binds the immutable registry generation
+and digest, source/target profile definitions, normalizer definition and base
+conversion evidence. It cannot be substituted with a pure
+`NumericConversionReceiptV1`.
 
-`FixedQ32` compatibility multiply/divide is
-`fixed-q32-toward-zero-v1`. `signed-q32-nearest-ties-even-v1` shares the raw
-2^32 scale but is explicitly not arithmetic-compatible.
+### Manifest protocols
 
-## 5. Enforced bounds
-
-- stable identifier: <= 128 encoded bytes;
-- canonical HPTC V1: <= 256 KiB;
-- canonical array/map/field collection: <= 4096 entries;
-- canonical nesting: <= 16;
-- immutable registry: <= 256 total ordinary/profile definitions;
-- ordinary registry definition: <= 4096 UTF-8 bytes;
-- aggregate ordinary registry definition bytes: <= 256 KiB;
-- numeric signal elements: <= 4096.
-
-These are source-enforced limits, not target-host latency measurements.
-
-## 6. Concrete verification
-
-- TYPES-01: positive and negative half ties follow target profile rounding.
-- TYPES-02: conversion digests bind source/output profile, normalization,
-  shape/range/unit and exact rational error bound.
-- TYPES-03: overflow, unit/shape/range/normalization mismatch and unregistered
-  profile fail closed.
-- TYPES-04: all eight raw authority grant bits reject before trusted posture
-  construction.
-- TYPES-05: five canonical accepted vectors agree across Rust/Python/Node,
-  including integer boundaries and NFC/NFD non-normalization.
-- TYPES-06: seven rejection vectors cover duplicate field/key, zero schema,
-  oversize, depth overflow, invalid bool and invalid tag.
-- TYPES-07: generated bindings regenerate without drift and Python/JavaScript
-  consumers agree on ID, authority, profile and Q32 semantics.
-- TYPES-08: registry definition kind/namespace, duplicate identity/profile and
-  aggregate byte bounds reject.
-
-Exact-head and deterministic synthetic-merge workflow success are required
-candidate receipts. Static test identities are not pass receipts.
-
-## 7. Completion vocabulary
-
-`implementedOperationMappingComplete` means every operation claimed as
-implemented in this candidate maps to public source and tests.
-
-`ownedTargetProtocolSourceComplete` means every protocol canonically owned by
-`platform.types` has native source. It remains false while
 `RandomStreamManifestV1`, `ExternalSystemManifestV1` and
-`SensorCalibrationManifestV1` are source-pending.
+`SensorCalibrationManifestV1` use private fields, bounded constructors,
+validation and HPTC semantic digests. Their schemas define strict JSON
+transport; unknown fields and non-canonical integers reject. JSON bytes are not
+hashed as semantic evidence. The validated projection is the HPTC semantic
+commitment.
 
-The legacy broad `nativeSourceMappingComplete` must not be interpreted as full
-module source completion and is false for this candidate.
+i64/u64 fields are canonical decimal strings in JSON. This prevents silent
+JavaScript precision loss while keeping transport distinct from native numeric
+semantics.
 
-## 8. Current native implementation
+## 3. Public API truth closure
 
-Implemented source surfaces:
+`scripts/platform_types_public_api.py` parses every `pub use` in
+`codex-rs/hepta-types/src/lib.rs`. It rejects:
 
-- `src/bounded.rs`: bounded text/bytes;
-- `src/identity.rs`: IDs, monotonic values, raw authority rejection and sealed
-  postures;
-- `src/digest.rs`: Digest32;
-- `src/canonical_digest.rs`: HPTC V1 encode/digest/validate;
-- `src/fixed.rs`: FixedQ32/ProbabilityQ32 and explicit arithmetic profile;
-- `src/registry.rs`: immutable contract/profile registry;
-- `src/numeric_profile.rs`: native profile semantics and
-  `NumericProfileDefinitionV1`;
-- `src/numeric_conversion.rs`: native and registry-admitted conversion;
-- `bindings/**`, `generated/**`, `conformance/**`: generated language
-  surfaces and independent compatibility oracles.
+- unsupported export syntax;
+- duplicate exports;
+- a new public symbol without explicit operation ownership;
+- a removed registered symbol;
+- a symbol moved between source modules without an ownership change;
+- inventory drift;
+- missing operation owners in the implementation map;
+- stale inventory counts in the truth matrix;
+- missing protocol and provenance statements in current documentation.
 
-Remaining repository-controlled source work for full target ownership:
-`RandomStreamManifestV1`, `ExternalSystemManifestV1`,
-`SensorCalibrationManifestV1`.
+The inventory currently records 78 exports, 11 source modules and 17 operation
+owners. These counts are computed, not manually asserted.
 
-Remaining integration/evidence work: named product composition, authenticated
-registry-generation provisioning, full consumer compile matrix, independent
-semantic review, target-host/product qualification, then activation/operator
-acceptance/promotion/release.
+## 4. Verification matrix
+
+Shared manifest evidence:
+
+- `codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json`;
+- three strict JSON schemas under `codex-rs/hepta-types/schemas/`;
+- `conformance/verify_manifest_vectors.py`;
+- `conformance/verify_manifest_vectors.mjs`;
+- `tests/manifest_protocol_consumer.rs`.
+
+The consumer qualification runs 19 independent checks. A failing command does
+not suppress later diagnostics. The aggregate remains failed if any command
+fails. The evidence record includes each exit code, duration and log SHA-256.
+
+The selected matrix covers canonical vectors, rejection vectors, generated
+binding drift, Python/Node generated bindings, Python/Node manifest codecs,
+Rust external manifest consumption, multi-crate consumer compile, complete
+types and NDU tests, prompt producer, prompt ledger, topology consumer and
+strict Clippy.
+
+## 5. Candidate identity and receipts
+
+Committed documentation cannot truthfully embed the SHA of the commit that
+contains itself. The repository therefore uses two non-interchangeable layers:
+
+1. the implementation map observes the immediately preceding content commit;
+2. Lane A injects the exact checked-out candidate SHA and tree into provenance,
+   diagnostics and authoritative receipts.
+
+Source-head and synthetic-merge receipts must name their candidate kind and
+exact SHA/tree. Neither receipt class can qualify the other candidate. A
+receipt is authoritative only when truth, native, consumer and final-gate
+outcomes all passed in the same job.
+
+Diagnostics are retained on failure, but a failure diagnostic is never promoted
+to a qualification receipt.
+
+## 6. Durability, authority and non-claims
+
+There is no authoritative mutable state, transaction log, recovery protocol or
+effect owner in `platform.types`. No manifest executes randomness, inventories
+a host or drives a sensor. No observation or candidate grants authority.
+
+Production activation, target-host qualification, independent acceptance,
+promotion and release remain false. External registry provisioning and the
+runtime owners of described systems remain separate.
+
+## 7. Reproduction commands
+
+```text
+python3 scripts/verify_lane_a_foundation.py verify
+python3 scripts/platform_types_public_api.py
+python3 codex-rs/hepta-types/conformance/verify_manifest_vectors.py
+node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs
+bash scripts/run_platform_types_consumer_qualification.sh
+```
+
+Topology producers must supply all set-valued IDs in strictly increasing
+`StableId` order. Manifest producers must treat JSON transport as strict
+transport only and preserve the HPTC semantic commitment at every durable or
+cross-owner boundary.

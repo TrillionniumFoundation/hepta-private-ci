@@ -1,6 +1,7 @@
 """Behavioral regressions for repository-control observations; no live authority."""
 from copy import deepcopy
 import io
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -111,80 +112,116 @@ class CheckSourceTests(unittest.TestCase):
         self.assertEqual(out.getvalue(), "")
 
 
-class TransportObservationTests(unittest.TestCase):
-    def observe(self, status=403, body=b"Write access to repository not granted.\n", read_error=None):
-        with patch.object(controls, "api", return_value={"full_name": REPO, "id": 1},
-                          side_effect=read_error), \
-             patch.object(controls.http.client, "HTTPSConnection") as connect:
+class RepositoryPermissionObservationTests(unittest.TestCase):
+    @staticmethod
+    def payload(**overrides):
+        permissions = {
+            "admin": False,
+            "maintain": False,
+            "push": False,
+            "triage": False,
+            "pull": True,
+        }
+        permissions.update(overrides)
+        return {"full_name": REPO, "id": 1, "permissions": permissions}
+
+    def observe(self, status=200, payload=None):
+        body = json.dumps(payload if payload is not None else self.payload()).encode()
+        with patch.object(controls.http.client, "HTTPSConnection") as connect:
             connection = connect.return_value
             connection.getresponse.return_value.status = status
             connection.getresponse.return_value.read.return_value = body
-            result = controls.observe_write_transport_denial(REPO, "fixture-token")
+            result = controls.observe_repository_push_denial(REPO, "fixture-token")
         connection.close.assert_called_once()
         connect.assert_called_once()
-        self.assertEqual(connect.call_args.args, ("github.com",))
+        self.assertEqual(connect.call_args.args, ("api.github.com",))
         self.assertIsNotNone(connect.call_args.kwargs["context"])
         args, kwargs = connection.request.call_args
-        self.assertEqual(args[:2], ("GET", f"/{REPO}.git/info/refs?service=git-receive-pack"))
-        self.assertNotIn("fixture-token", repr(args))
+        self.assertEqual(args[:2], ("GET", f"/repos/{REPO}"))
         self.assertIsNone(kwargs.get("body"))
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer fixture-token")
         return result
 
-    def test_explicit_authenticated_write_denial_is_narrow_observation(self):
+    def test_exact_read_only_repository_role_denial_is_narrow_observation(self):
         result = self.observe()
-        self.assertIs(result["write_transport_denied"], True)
+        self.assertIs(result["repository_push_permission_denied"], True)
         self.assertIs(result["activation_authorized"], False)
         self.assertIs(result["credential_separation_proven"], False)
 
-    def test_auth_network_policy_and_success_are_not_permission_denial(self):
-        cases = [(200, b"Write access to repository not granted."),
-                 (401, b"Bad credentials"), (404, b"Not found"),
-                 (301, b"Moved permanently"), (429, b"Rate limit exceeded"),
-                 (403, b"API rate limit exceeded"), (403, b"Bad credentials"),
-                 (403, b""), (500, b"Write access to repository not granted.")]
-        for status, body in cases:
-            with self.subTest(status=status, body=body):
-                with self.assertRaises(controls.ControlError): self.observe(status, body)
+    def test_allowed_or_unknown_repository_write_roles_fail_closed(self):
+        cases = [
+            self.payload(push=True),
+            self.payload(admin=True),
+            self.payload(maintain=True),
+            self.payload(push=None),
+            self.payload(push=0),
+            {"full_name": REPO, "id": 1},
+        ]
+        for payload in cases:
+            with self.subTest(payload=payload):
+                with self.assertRaises(controls.ControlError):
+                    self.observe(payload=payload)
 
-    def test_read_api_failure_does_not_probe_or_pass(self):
-        with patch.object(controls, "api", side_effect=OSError("offline")), \
-             patch.object(controls.http.client, "HTTPSConnection") as connect:
-            with self.assertRaises(OSError): controls.observe_write_transport_denial(REPO, "fixture-token")
-        connect.assert_not_called()
+    def test_http_and_payload_failures_are_not_permission_denial(self):
+        cases = [
+            (401, self.payload()),
+            (403, self.payload()),
+            (404, self.payload()),
+            (429, self.payload()),
+            (500, self.payload()),
+            (200, []),
+            (200, {"full_name": "other/repository", "id": 1, "permissions": {}}),
+            (200, {"full_name": REPO, "id": 0, "permissions": {}}),
+        ]
+        for status, payload in cases:
+            with self.subTest(status=status, payload=payload):
+                with self.assertRaises(controls.ControlError):
+                    self.observe(status=status, payload=payload)
 
-    def test_repository_identity_mismatch_rejected(self):
-        with patch.object(controls, "api", return_value={"full_name": "other/repository", "id": 1}), \
-             patch.object(controls.http.client, "HTTPSConnection") as connect:
-            with self.assertRaises(controls.ControlError): controls.observe_write_transport_denial(REPO, "fixture-token")
-        connect.assert_not_called()
-
-    def test_timeout_is_not_denial_and_closes_connection(self):
-        with patch.object(controls, "api", return_value={"full_name": REPO, "id": 1}), \
-             patch.object(controls.http.client, "HTTPSConnection") as connect:
+    def test_timeout_is_unknown_and_closes_connection(self):
+        with patch.object(controls.http.client, "HTTPSConnection") as connect:
             connect.return_value.getresponse.side_effect = TimeoutError("timed out")
-            with self.assertRaises(controls.ControlError): controls.observe_write_transport_denial(REPO, "fixture-token")
+            with self.assertRaises(controls.ControlError):
+                controls.observe_repository_push_denial(REPO, "fixture-token")
         connect.return_value.close.assert_called_once()
 
     def test_response_size_is_bounded(self):
-        with self.assertRaises(controls.ControlError): self.observe(403, b"x" * 65537)
+        with patch.object(controls.http.client, "HTTPSConnection") as connect:
+            connection = connect.return_value
+            connection.getresponse.return_value.status = 200
+            connection.getresponse.return_value.read.return_value = b"x" * 65537
+            with self.assertRaises(controls.ControlError):
+                controls.observe_repository_push_denial(REPO, "fixture-token")
+        connection.close.assert_called_once()
 
     def test_missing_token_and_bad_repository_never_access_network(self):
         for repo, token in [(REPO, ""), ("../repository", "fixture"), ("a/b/c", "fixture")]:
-            with self.subTest(repo=repo), patch.object(controls, "api") as api:
-                with self.assertRaises(controls.ControlError): controls.observe_write_transport_denial(repo, token)
-                api.assert_not_called()
+            with self.subTest(repo=repo), patch.object(
+                controls.http.client, "HTTPSConnection"
+            ) as connect:
+                with self.assertRaises(controls.ControlError):
+                    controls.observe_repository_push_denial(repo, token)
+                connect.assert_not_called()
 
-    def test_cli_discards_control_success_when_transport_is_unknown(self):
-        with patch.object(sys, "argv", ["controls", "--repo", REPO, "--expected-sha", SHA,
-                                       "--probe-write-denial"]), \
-             patch.dict(controls.os.environ, {"HEPTA_EVALUATOR_APP_ID": str(APP), "GH_TOKEN": "fixture-token"}), \
-             patch.object(controls, "observe", return_value={"repository_control_profile_passed": True}), \
-             patch.object(controls, "observe_write_transport_denial", side_effect=controls.ControlError("unknown")), \
-             patch("sys.stdout", new_callable=io.StringIO) as out, \
-             patch("sys.stderr", new_callable=io.StringIO):
+    def test_cli_discards_control_success_when_permission_is_unknown(self):
+        with patch.object(
+            sys,
+            "argv",
+            ["controls", "--repo", REPO, "--expected-sha", SHA, "--probe-write-denial"],
+        ), patch.dict(
+            controls.os.environ,
+            {"HEPTA_EVALUATOR_APP_ID": str(APP), "GH_TOKEN": "fixture-token"},
+        ), patch.object(
+            controls, "observe", return_value={"repository_control_profile_passed": True}
+        ), patch.object(
+            controls,
+            "observe_repository_push_denial",
+            side_effect=controls.ControlError("unknown"),
+        ), patch("sys.stdout", new_callable=io.StringIO) as out, patch(
+            "sys.stderr", new_callable=io.StringIO
+        ):
             self.assertEqual(controls.main(), 1)
         self.assertEqual(out.getvalue(), "")
-
 
 class FormattingCommandTests(unittest.TestCase):
     def run_format_step(self, exit_code):

@@ -1,3 +1,8 @@
+#![expect(
+    deprecated,
+    reason = "these regressions intentionally exercise the retained V1 compatibility API"
+)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;

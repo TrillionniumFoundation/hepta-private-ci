@@ -13,7 +13,7 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
+  "productCallerState": "request_local_read_only_and_registered_numeric_admission_established_authenticated_owner_source_candidate_not_product_composed",
   "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
   "operations": [
     {
@@ -44,8 +44,7 @@
       "designOperation": "evaluate_candidates",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -87,8 +86,7 @@
       "designOperation": "evaluate_candidates_with_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "canonical_evaluation_policy_digest",
@@ -112,8 +110,7 @@
       "designOperation": "canonical_evaluation_policy_digest",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_preference_target",
@@ -161,8 +158,7 @@
       "designOperation": "solve_preference_target",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "sourcePathExists": true
     },
     {
       "operation": "bind_solver_iteration_receipt_v1",
@@ -194,8 +190,7 @@
       "designOperation": "bind_solver_iteration_receipt_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_backward_regression",
@@ -219,8 +214,7 @@
       "designOperation": "solve_backward_regression",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "985df3333fc8b7664ac867c53a9f7111e6dd999f"
+      "sourcePathExists": true
     },
     {
       "operation": "convert_z_to_original_q24",
@@ -262,8 +256,7 @@
       "designOperation": "convert_z_to_original_q24",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "91e51909b9231686e8218e1f5564c3025859418b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionJournalV1",
@@ -308,8 +301,7 @@
       "designOperation": "NduProjectionJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "3cc7db74bac5014b1ed5a8c50c4e8da7f98bc75f"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionStoreV1",
@@ -357,8 +349,7 @@
       "designOperation": "NduProjectionStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "sourcePathExists": true
     },
     {
       "operation": "admit_ndu_coefficient_profile",
@@ -384,8 +375,7 @@
       "designOperation": "admit_ndu_coefficient_profile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "project_z_estimate_to_coefficient_q24",
@@ -422,8 +412,7 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduAuthenticatedOwnerV1",
@@ -433,13 +422,16 @@
         "FinalUseAuthority",
         "NduOwnerContextV1 principal/owner/host generation/fence/revocation frontier",
         "frozen NduProductionPolicyV1",
-        "NduProjectionStoreV1"
+        "NduProjectionStoreV1",
+        "optional frozen NduNumericRegistryV1 generation"
       ],
       "outputs": [
         "authenticated owner-local evaluation",
-        "final-use-bound durable projection mutations"
+        "final-use-bound durable projection mutations",
+        "registry-admitted utility signals with distinct admission receipts",
+        "ordinary evaluation binds registry-admitted utility into source support and V2 receipt"
       ],
-      "state": "source_implemented_authenticated_owner_candidate_not_product_activated",
+      "state": "source_implemented_authenticated_owner_and_registered_numeric_admission_candidate_not_product_activated",
       "authority": "consumes_external_final_use_only",
       "nonClaim": "utility.ndu never mints authority; named product bootstrap, selected writer enrollment and target-host activation remain external",
       "tests": [
@@ -454,6 +446,26 @@
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
           "symbol": "live_revocation_frontier_blocks_previously_signed_write"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "authenticated_owner_freezes_and_consumes_registered_numeric_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "unconfigured_owner_cannot_claim_registry_admission"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "ordinary_owner_evaluate_consumes_registered_admission_and_binds_support"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "ordinary_owner_evaluate_rejects_missing_registry_definition"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "ordinary_owner_admission_does_not_launder_empty_support_or_wrong_axes"
         }
       ],
       "designOperation": "NduAuthenticatedOwnerV1",
@@ -473,10 +485,68 @@
           "path": "codex-rs/hepta-ndu/src/projection_store.rs",
           "symbol": "NduProjectionStoreV1",
           "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+          "symbol": "NduNumericRegistryV1::admit_utility_signal",
+          "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "b178fa45920c465d038d57569c4f6556a2dabc84"
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_registered_utility_signal",
+      "nativeSymbol": "codex_hepta_ndu::NduNumericRegistryV1::admit_utility_signal",
+      "sourcePath": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "inputs": [
+        "immutable ContractRegistryV1 generation",
+        "UtilityProfile normalization and ordered axes",
+        "bounded NumericSignalV1"
+      ],
+      "outputs": [
+        "NduRegisteredUtilitySignalV1",
+        "RegisteredNumericConversionReceiptV1 with registry and admission digest"
+      ],
+      "state": "source_implemented_authenticated_owner_registry_admission_not_product_activated",
+      "authority": "none_registry_authentication_external",
+      "nonClaim": "pure conversion receipt alone is not registry admission; registry selection authentication and activation remain external",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+          "symbol": "registered_utility_signal_binds_registry_normalization_and_axis_order"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+          "symbol": "registry_generation_changes_admission_but_not_pure_arithmetic"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+          "symbol": "normalization_unit_and_axis_mismatch_reject_before_owner_use"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "authenticated_owner_freezes_and_consumes_registered_numeric_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "unconfigured_owner_cannot_claim_registry_admission"
+        }
+      ],
+      "designOperation": "admit_registered_utility_signal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+          "symbol": "rescale_signal_registered",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-types/src/registry.rs",
+          "symbol": "ContractRegistryV1::registry_digest",
+          "role": "source_declaration"
+        }
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -537,18 +607,21 @@
     "independentDecisionSourceImplemented": true,
     "independentDecisionEvidenceProved": false,
     "namedHostQualificationReceiptProved": false,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": true,
+    "registeredNumericAdmissionSourceImplemented": true,
+    "registeredNumericAdmissionProductExecutionProved": false
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "bcdbf90328aa2d9fe4881561ea8f73c5e8072147",
+    "tree": "9abe815ed7ed20a3676556a8425b216eb22de1f8"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
     "Compose NduAuthenticatedOwnerV1 in a named authenticated product bootstrap with a selected NduProjectionStoreV1 and host-managed current fence/revocation feed before changing authenticated production product execution or writer activation claims.",
     "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
     "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
-    "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
+    "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated.",
+    "Run current exact-head and deterministic synthetic-merge qualification for the registered numeric admission consumer."
   ],
   "externalEvidenceGates": [
     "independent semantic/security review",
@@ -601,7 +674,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "d65e70ea932a5869817047acc1b56a23c379ff8c"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
@@ -609,7 +682,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "9fa58df6551c707a7a3fcb773495628ddcc1b9f5"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -629,23 +702,31 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "object": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "object": "00122abed42c7c1d12cd689f34efb4a04361e4da"
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "645d13e169f5ad849aa8dc7d83213bb888ebd0cb"
+      "object": "837e737a8dd3fa464214b638ca8cbda0d4970b28"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "object": "913e4dbf839960642b7dd3f356f590af7d1870df"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+      "object": "2019c772f362c78658032b50b438077c88efb53d"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
-      "object": "b178fa45920c465d038d57569c4f6556a2dabc84"
+      "object": "db9df54ccb0ac05a1d5fae8280d648d0a3f0ff4e"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "776d6aa24763b35de925be2670586798156803f2"
+      "object": "e7dfd4fbe0058310b854e75de9756935c8123ccc"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
-      "object": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "object": "50da9fe3413f6e43430c7754a196d4f0ef16d17b"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -684,8 +765,16 @@
       "object": "69664c267c19eb7c0204367a949e45e66b033f1b"
     },
     {
+      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "object": "2d02a068adde324e5e68e2a6edd4ce1efcb5d474"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/registry.rs",
+      "object": "b9af7af31f2eb6dda29f78701ccc608563920f87"
+    },
+    {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
-      "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
+      "object": "989bdea5c73fd9f7f15d45cc66e996e8424a53fe"
     }
   ]
 }

@@ -314,9 +314,18 @@ fn numeric_and_digest_grammar_remains_exact() {
 #[test]
 fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
+
+    let mut empty_legal_actions = original.clone();
+    *empty_legal_actions
+        .pointer_mut("/structuredIntent/legalActionClasses")
+        .unwrap() = json!([]);
+    let decoded =
+        decode_source_envelope_json_v1(&serde_json::to_vec(&empty_legal_actions).unwrap())
+            .expect("empty legal action set is the valid intrinsic-abstention shape");
+    assert!(decoded.structured_intent.legal_action_classes.is_empty());
+
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),

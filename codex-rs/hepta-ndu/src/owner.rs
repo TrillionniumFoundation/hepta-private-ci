@@ -6,17 +6,24 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_types::CanonicalFieldV1;
+use codex_hepta_types::CanonicalValueV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::NumericSignalV1;
 use codex_hepta_types::StableId;
+use codex_hepta_types::canonical_digest_v1;
 
 use crate::ContributionSet;
 use crate::EvaluationPolicyV1;
 use crate::NduError;
 use crate::NduEvaluationReceiptV2;
+use crate::NduNumericAdmissionErrorV1;
+use crate::NduNumericRegistryV1;
 use crate::NduProjectionEntryV1;
 use crate::NduProjectionKindV1;
 use crate::NduProjectionStoreError;
 use crate::NduProjectionStoreV1;
+use crate::NduRegisteredUtilitySignalV1;
 use crate::ScalarizationProfile;
 use crate::UtilityProfile;
 use crate::canonical_evaluation_policy_digest;
@@ -128,6 +135,7 @@ impl NduOwnerMutationV1 {
 pub enum NduOwnerError {
     InvalidContext(&'static str),
     Ndu(NduError),
+    NumericAdmission(NduNumericAdmissionErrorV1),
     Authority(FinalUseError),
     Store(NduProjectionStoreError),
 }
@@ -143,6 +151,12 @@ impl StdError for NduOwnerError {}
 impl From<NduError> for NduOwnerError {
     fn from(error: NduError) -> Self {
         Self::Ndu(error)
+    }
+}
+
+impl From<NduNumericAdmissionErrorV1> for NduOwnerError {
+    fn from(error: NduNumericAdmissionErrorV1) -> Self {
+        Self::NumericAdmission(error)
     }
 }
 
@@ -168,6 +182,7 @@ pub struct NduAuthenticatedOwnerV1 {
     context: NduOwnerContextV1,
     policy: NduProductionPolicyV1,
     production_policy_digest: Digest32,
+    numeric_registry: Option<NduNumericRegistryV1>,
     authority: FinalUseAuthority,
     store: NduProjectionStoreV1,
 }
@@ -179,13 +194,42 @@ impl NduAuthenticatedOwnerV1 {
         context: NduOwnerContextV1,
         policy: NduProductionPolicyV1,
     ) -> Result<Self, NduOwnerError> {
+        Self::open_inner(root, authority, context, policy, None)
+    }
+
+    /// Open an owner with one immutable, caller-provisioned platform.types
+    /// registry generation.  The registry digest is frozen into the production
+    /// policy identity before any signal admission or durable mutation occurs.
+    pub fn open_with_numeric_registry(
+        root: impl AsRef<Path>,
+        authority: FinalUseAuthority,
+        context: NduOwnerContextV1,
+        policy: NduProductionPolicyV1,
+        numeric_registry: NduNumericRegistryV1,
+    ) -> Result<Self, NduOwnerError> {
+        Self::open_inner(root, authority, context, policy, Some(numeric_registry))
+    }
+
+    fn open_inner(
+        root: impl AsRef<Path>,
+        authority: FinalUseAuthority,
+        context: NduOwnerContextV1,
+        policy: NduProductionPolicyV1,
+        numeric_registry: Option<NduNumericRegistryV1>,
+    ) -> Result<Self, NduOwnerError> {
         validate_context(&context)?;
-        let production_policy_digest = production_policy_digest(&policy)?;
+        let production_policy_digest = match numeric_registry.as_ref() {
+            Some(registry) => {
+                production_policy_digest_with_numeric_registry(&policy, registry.registry_digest())?
+            }
+            None => production_policy_digest(&policy)?,
+        };
         let store = NduProjectionStoreV1::open(root)?;
         Ok(Self {
             context,
             policy,
             production_policy_digest,
+            numeric_registry,
             authority,
             store,
         })
@@ -201,10 +245,65 @@ impl NduAuthenticatedOwnerV1 {
         self.production_policy_digest
     }
 
+    #[must_use]
+    pub fn numeric_registry_digest(&self) -> Option<Digest32> {
+        self.numeric_registry
+            .as_ref()
+            .map(NduNumericRegistryV1::registry_digest)
+    }
+
+    pub fn admit_utility_signal(
+        &self,
+        source: &NumericSignalV1,
+    ) -> Result<NduRegisteredUtilitySignalV1, NduOwnerError> {
+        let registry = self
+            .numeric_registry
+            .as_ref()
+            .ok_or(NduNumericAdmissionErrorV1::RegistryNotConfigured)?;
+        registry
+            .admit_utility_signal(&self.policy.utility_profile, source)
+            .map_err(NduOwnerError::NumericAdmission)
+    }
+
+    /// The ordinary owner evaluation path cannot bypass its configured registry.
+    /// Legacy owners opened without one retain advisory-only V2 compatibility;
+    /// their receipt does not acquire registered-admission evidence.
     pub fn evaluate(
         &self,
-        contributions: ContributionSet,
+        mut contributions: ContributionSet,
     ) -> Result<NduEvaluationReceiptV2, NduOwnerError> {
+        if contributions.contributions.len() > crate::evaluator::MAX_CONTRIBUTIONS {
+            return Err(NduError::ContributionLimitExceeded.into());
+        }
+        if let Some(registry) = &self.numeric_registry {
+            let support_type = StableId::new("utility.ndu:registered-contribution-support-v1")
+                .map_err(|_| NduOwnerError::InvalidContext("numeric support type"))?;
+            for contribution in &mut contributions.contributions {
+                // Never turn an absent source proof into a nonzero generated digest.
+                if contribution.support_digest.is_zero() {
+                    return Err(NduError::EmptySupportDigest {
+                        candidate: contribution.candidate_id.to_string(),
+                        organ: contribution.organ_id.to_string(),
+                    }
+                    .into());
+                }
+                let admitted = registry
+                    .admit_utility_axes(&self.policy.utility_profile, &contribution.utility)?;
+                let fields = [
+                    CanonicalFieldV1 {
+                        name: "source_support",
+                        value: CanonicalValueV1::Digest(contribution.support_digest),
+                    },
+                    CanonicalFieldV1 {
+                        name: "numeric_admission",
+                        value: CanonicalValueV1::Digest(admitted.admission.admission_digest),
+                    },
+                ];
+                contribution.support_digest = canonical_digest_v1(&support_type, 1, &fields)
+                    .map_err(|_| NduOwnerError::InvalidContext("numeric support encoding"))?;
+                contribution.utility = admitted.axis_values;
+            }
+        }
         evaluate_candidates_with_policy(
             contributions,
             self.policy.utility_profile.clone(),
@@ -344,6 +443,23 @@ fn production_policy_digest(policy: &NduProductionPolicyV1) -> Result<Digest32, 
         None => bytes.push(0),
     }
     Ok(Digest32::of_bytes(&bytes))
+}
+
+fn production_policy_digest_with_numeric_registry(
+    policy: &NduProductionPolicyV1,
+    registry_digest: Digest32,
+) -> Result<Digest32, NduOwnerError> {
+    if registry_digest.is_zero() {
+        return Err(NduOwnerError::NumericAdmission(
+            NduNumericAdmissionErrorV1::EmptyRegistryDigest,
+        ));
+    }
+    let base = production_policy_digest(policy)?;
+    Ok(Digest32::of_parts(&[
+        b"hepta.ndu.production-policy.numeric-registry.v1\0",
+        base.as_array(),
+        registry_digest.as_array(),
+    ]))
 }
 
 fn owner_scope_digest(

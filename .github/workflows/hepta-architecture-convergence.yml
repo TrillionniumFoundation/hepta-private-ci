@@ -164,14 +164,14 @@ jobs:
             echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
           fi
           exit "$locked_status"
-      - name: Inference owner regressions and streaming digest
+      - name: Inference owner recovery, writer exclusion and journal bounds
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-recovery.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core reopens_exact_committed_state -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-writer-exclusion.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core one_writer_is_held_until_owner_drop -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-journal-budget.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes -- --nocapture --test-threads=1
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
@@ -191,7 +191,8 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
+          # Exercise the registered V2 producer, canary and registry. There is no compiled V3 producer in this candidate.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology
       - name: Objective and prompt policy convergence
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
         run: |
@@ -227,9 +228,9 @@ jobs:
           set -euo pipefail
           # Independent owner lanes remain in force; do not repeat their gates.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/derived.json" -- python3 scripts/hepta-module-docs.py refresh-derived --check
-      - name: Observe candidate Git write denial without mutating repository state
+      - name: Observe candidate repository push denial without mutating repository state
         # Native diagnostics must run even when external credential observation fails.
-        # The same required lane STILL fails on an allowed or unknown transport.
+        # The same required lane STILL fails on an allowed or unknown permission observation.
         if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.scope.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}
@@ -238,17 +239,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # GET of receive-pack advertisement performs no ref, PR or settings
-          # write. Do not test a credential by attempting same-value PATCHes:
-          # concurrent owner changes can make a supposed no-op destructive.
-          # This bounded observation is NOT proof of admin/PR-write denial or
+          # The authenticated repository metadata GET performs no ref, PR or
+          # settings write and must report admin/maintain/push as exactly false.
+          # Do not test a credential by attempting same-value PATCHes or pushes.
+          # This bounded observation is NOT proof of PR-write denial or
           # independent credential custody. The strict activation observer
           # remains a separate gate; no missing protection is waived here.
-          python3 - <<'PYCODE' | tee "$RUNNER_TEMP/hepta-command-records/candidate-transport.json"
+          python3 - <<'PYCODE' | tee "$RUNNER_TEMP/hepta-command-records/candidate-permission.json"
           import json
           import os
-          from hepta_repository_controls import observe_write_transport_denial
-          observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
+          from hepta_repository_controls import observe_repository_push_denial
+          observation = observe_repository_push_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
           observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
           print(json.dumps(observation, sort_keys=True))
           PYCODE

@@ -18,7 +18,11 @@
         "codex-rs/hepta-types/src/numeric_profile.rs",
         "codex-rs/hepta-types/src/numeric_conversion.rs",
         "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
-        "codex-rs/hepta-types/bindings/PLATFORM_TYPES_BINDINGS_V1.json"
+        "codex-rs/hepta-types/bindings/PLATFORM_TYPES_BINDINGS_V1.json",
+        "codex-rs/hepta-types/src/prompt_delivery.rs",
+        "codex-rs/hepta-types/src/topology.rs",
+        "codex-rs/hepta-types/src/manifests.rs",
+        "codex-rs/hepta-ndu/src/numeric_admission.rs"
       ],
       "invariants": [
         "bounded values and identifiers enforce encoded-byte and profile bounds before owned construction",
@@ -26,10 +30,12 @@
         "AuthorityPosture and NonAuthorizingPosture cannot represent runtime or effect authority",
         "HPTC V1 canonical bytes are domain-separated typed length-framed bounded and raw-byte validated fail closed",
         "V1 performs no Unicode normalization and NFC/NFD remain distinct commitments",
-        "schema/normalization definitions bind kind-specific ID namespaces in an immutable caller-owned registry generation",
-        "numeric profile definitions bind profile identity version scale and rounding and cannot drift in place",
-        "FixedQ32 toward-zero arithmetic is distinct from the signed-q32-nearest-ties-even conversion profile",
-        "generated Python JavaScript and TypeScript bindings are deterministic outputs of one checked source spec"
+        "schema normalization and numeric profiles bind one immutable caller-owned registry generation",
+        "registered numeric admission uses a distinct receipt binding registry normalization profiles and exact conversion evidence",
+        "FixedQ32 toward-zero arithmetic is distinct from signed-q32-nearest-ties-even conversion",
+        "PromptDeliveryObservationV1 and RuntimeTopologyCandidateV1 bind every semantic field and reject invalid structure",
+        "RandomStream ExternalSystem and SensorCalibration manifests are bounded authority-free validated values with stable semantic digests",
+        "generated JavaScript profile lookups accept own registered properties only and reject inherited names"
       ]
     },
     {

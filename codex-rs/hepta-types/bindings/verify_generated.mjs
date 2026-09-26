@@ -39,6 +39,16 @@ for (const value of [1, 128]) {
   try { admitAuthorityWireV1(new Uint8Array([value])); } catch (_) { rejected = true; }
   if (!rejected) throw new Error("generated JavaScript binding admitted authority grant bits");
 }
+for (const profileId of ["constructor", "toString", "__proto__", "unknown-profile"]) {
+  let rejected = false;
+  try { numericProfile(profileId); } catch (_) { rejected = true; }
+  if (!rejected) throw new Error(`generated JavaScript binding admitted unknown numeric profile: ${profileId}`);
+}
+for (const variant of ["constructor", "toString", "__proto__", "Unknown"]) {
+  let rejected = false;
+  try { validateIdProfile("stable-id", variant); } catch (_) { rejected = true; }
+  if (!rejected) throw new Error(`generated JavaScript binding admitted unknown ID profile: ${variant}`);
+}
 const profile = numericProfile("signed-q32-nearest-ties-even-v1");
 if (BigInt(profile.scale) !== (1n << 32n)) throw new Error("numeric profile scale drift");
 if (profile.rounding !== "nearest-ties-even") throw new Error("numeric profile rounding drift");

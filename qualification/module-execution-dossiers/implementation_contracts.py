@@ -250,6 +250,8 @@ def verify_bundle(root: Path) -> dict[str, Any]:
                 raise Invalid(mid+': missing concrete '+key)
         allowed_implementation_states = {
             'specified_not_product_evidence',
+            'source_owner_implemented_not_product_evidence',
+            'durable_source_implemented_product_execution_pending',
             'source_implemented_product_composed_requires_candidate_evidence',
         }
         if row['implementationState'] not in allowed_implementation_states or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
@@ -354,7 +356,11 @@ def verify_repository(root: Path) -> dict[str,Any]:
             if not isinstance(entry, dict) or set(entry) != {'path', 'symbol'}:
                 raise Invalid(mid+': malformed native entrypoint')
             path = inside(root, entry['path'])
-            if not path.is_file() or entry['symbol'] not in identifiers(path, path.read_bytes()):
+            native_identifiers = identifiers(path, path.read_bytes()) if path.is_file() else set()
+            symbol_parts = entry['symbol'].split('::')
+            if not path.is_file() or not symbol_parts or any(
+                part not in native_identifiers for part in symbol_parts
+            ):
                 raise Invalid(mid+': missing native entrypoint '+str(entry))
             native_references['entrypoints'] += 1
         for key in ('testFiles', 'runtimeDocuments'):
