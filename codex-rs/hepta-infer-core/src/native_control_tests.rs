@@ -40,6 +40,10 @@ fn dispatch() -> NativeDispatch {
         codex_revocation_revision: Some(3),
         codex_revocation_head_sha256: Some("3".repeat(64)),
         codex_authority_witness_sha256: Some("2".repeat(64)),
+        pre_effect_abort_digest: None,
+        agent_run_id: None,
+        agent_dispatch_binding_digest: None,
+        agent_expected_dispatch_revision: None,
     }
 }
 

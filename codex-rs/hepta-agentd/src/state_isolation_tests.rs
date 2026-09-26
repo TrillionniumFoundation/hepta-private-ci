@@ -315,6 +315,8 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
             crate::AgentdMethod::RunMarkDispatched {
                 run_id: snapshot.run_id.clone(),
                 expected_revision: attached.revision,
+                dispatch_binding_digest: None,
+                pre_effect_abort_digest: None,
             },
         )
         .await

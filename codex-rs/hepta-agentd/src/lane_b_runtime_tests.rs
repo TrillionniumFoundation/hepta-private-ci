@@ -165,6 +165,91 @@ fn cancellation_preserves_the_dispatch_boundary_and_reason() {
 }
 
 #[test]
+fn exact_bound_dispatch_can_close_only_with_matching_pre_effect_proof() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+    let binding = digest('a');
+    let abort_nonce = digest('c');
+    let abort_digest = Digest32::of_bytes(&[0xcc; 32]).to_string();
+    let dispatched = coordinator
+        .mark_dispatched_bound(300, "run.1", 2, &binding, &abort_digest)
+        .expect("bound dispatch");
+    assert_eq!(dispatched.revision, 3);
+    assert_eq!(
+        dispatched.dispatch_binding_digest.as_deref(),
+        Some(binding.as_str())
+    );
+    assert!(!dispatched.pre_effect_aborted);
+
+    assert_eq!(
+        coordinator.abort_before_effect(
+            "run.1",
+            3,
+            &digest('b'),
+            &abort_nonce,
+            "final_use_fence_changed",
+        ),
+        Err(AgentRunError::Conflict)
+    );
+    let aborted = coordinator
+        .abort_before_effect(
+            "run.1",
+            3,
+            &binding,
+            &abort_nonce,
+            "final_use_fence_changed",
+        )
+        .expect("exact pre-effect abort");
+    assert_eq!(aborted.0, CancellationDisposition::CancelledBeforeEffect);
+    assert_receipt(
+        &aborted.1,
+        4,
+        RunPhase::Cancelled,
+        Some("final_use_fence_changed"),
+    );
+    assert!(aborted.1.pre_effect_aborted);
+    assert_eq!(
+        aborted.1.dispatch_binding_digest.as_deref(),
+        Some(binding.as_str())
+    );
+
+    let repeated = coordinator
+        .abort_before_effect(
+            "run.1",
+            3,
+            &binding,
+            &abort_nonce,
+            "final_use_fence_changed",
+        )
+        .expect("idempotent exact abort");
+    assert!(repeated.1.idempotent);
+    assert_eq!(repeated.1.revision, 4);
+    assert_eq!(
+        coordinator.abort_before_effect("run.1", 3, &binding, &abort_nonce, "different_reason",),
+        Err(AgentRunError::Conflict)
+    );
+}
+
+#[test]
+fn unbound_dispatch_cannot_claim_pre_effect_abort() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+    coordinator
+        .mark_dispatched(300, "run.1", 2)
+        .expect("legacy dispatch");
+    assert_eq!(
+        coordinator.abort_before_effect("run.1", 3, &digest('a'), &digest('c'), "no_effect",),
+        Err(AgentRunError::Conflict)
+    );
+}
+
+#[test]
 fn operation_identity_is_idempotent_only_for_equal_semantics() {
     let mut coordinator =
         AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
@@ -298,6 +383,8 @@ fn recovery_rehydrates_only_an_indeterminate_non_redispatchable_run() {
         revision: 9,
         context_digest: digest('7'),
         compilation_receipt_digest: digest('8'),
+        dispatch_binding_digest: Some(digest('a')),
+        pre_effect_abort_digest: Some(digest('b')),
         cancel_reason: Some("process_restart".to_string()),
     };
     let recovered = coordinator

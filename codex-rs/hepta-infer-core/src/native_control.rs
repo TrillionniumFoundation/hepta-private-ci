@@ -4,6 +4,7 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -161,6 +162,21 @@ pub struct NativeDispatch {
     /// revocation head witness claimed for this dispatch before physical turn/start.
     #[serde(default)]
     pub codex_authority_witness_sha256: Option<String>,
+    /// Digest of a process-local random nonce retained only by the one-shot
+    /// pre-effect token. Agentd binds this digest to the same product dispatch;
+    /// the nonce itself is disclosed only when compensating a definitely-unsent
+    /// effect.
+    #[serde(default)]
+    pub pre_effect_abort_digest: Option<String>,
+    /// Optional exact Agentd intelligence run paired with this dispatch.
+    #[serde(default)]
+    pub agent_run_id: Option<String>,
+    /// The request digest Agentd records for the same physical effect.
+    #[serde(default)]
+    pub agent_dispatch_binding_digest: Option<String>,
+    /// Agentd revision expected before the `Dispatched` transition.
+    #[serde(default)]
+    pub agent_expected_dispatch_revision: Option<u64>,
 }
 
 /// In-memory proof that this live process has durably prepared one dispatch but
@@ -171,6 +187,22 @@ pub struct NativeDispatch {
 pub struct NativePreEffectAbortToken {
     request_id: String,
     dispatch_revision: u64,
+    nonce: [u8; 32],
+}
+
+impl NativePreEffectAbortToken {
+    /// Digest safe to persist and bind in the remote owner. It does not reveal
+    /// the process-local compensation secret.
+    pub fn proof_digest(&self) -> String {
+        Digest32::of_bytes(&self.nonce).to_string()
+    }
+
+    /// One-time proof material sent only to the exact owner abort transition.
+    /// The token itself remains non-cloneable and is consumed by the local
+    /// journal transition after the owner acknowledges the same abort.
+    pub fn proof_nonce_hex(&self) -> String {
+        encode_hex(&self.nonce)
+    }
 }
 
 impl std::fmt::Debug for NativePreEffectAbortToken {
@@ -325,14 +357,25 @@ impl DurableInferenceControl {
     pub fn dispatch_native_with_pre_effect_abort(
         &mut self,
         request_id: &str,
-        dispatch: NativeDispatch,
+        mut dispatch: NativeDispatch,
     ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        if dispatch.pre_effect_abort_digest.is_some() {
+            return Err(Error::Conflict);
+        }
+        let nonce = loop {
+            let candidate = rand::random::<[u8; 32]>();
+            if candidate.iter().any(|byte| *byte != 0) {
+                break candidate;
+            }
+        };
+        dispatch.pre_effect_abort_digest = Some(Digest32::of_bytes(&nonce).to_string());
         let record = self.dispatch_native(request_id, dispatch)?;
         Ok((
             record.clone(),
             NativePreEffectAbortToken {
                 request_id: request_id.to_string(),
                 dispatch_revision: record.revision,
+                nonce,
             },
         ))
     }
@@ -358,6 +401,14 @@ impl DurableInferenceControl {
             || record.cancel_requested
         {
             return Err(Error::InvalidTransition);
+        }
+        let stored_abort_digest = record
+            .dispatch
+            .as_ref()
+            .and_then(|dispatch| dispatch.pre_effect_abort_digest.as_deref())
+            .ok_or(Error::InvalidTransition)?;
+        if stored_abort_digest != token.proof_digest() {
+            return Err(Error::AssignmentMismatch);
         }
         self.commit_native(
             &token.request_id,
@@ -661,6 +712,29 @@ impl NativeJournal {
                 if let Some(digest) = &dispatch.codex_authority_witness_sha256 {
                     validate_digest(digest, "native codex authority witness")?;
                 }
+                if let Some(digest) = &dispatch.pre_effect_abort_digest {
+                    validate_digest(digest, "native pre-effect abort proof")?;
+                }
+                let agent_fields = [
+                    dispatch.agent_run_id.is_some(),
+                    dispatch.agent_dispatch_binding_digest.is_some(),
+                    dispatch.agent_expected_dispatch_revision.is_some(),
+                ];
+                if agent_fields.iter().any(|present| *present)
+                    && (!agent_fields.iter().all(|present| *present)
+                        || dispatch.pre_effect_abort_digest.is_none())
+                {
+                    return Err(Error::InvalidIdentity("native Agentd dispatch binding"));
+                }
+                if let Some(run_id) = &dispatch.agent_run_id {
+                    validate_identity(run_id, "native Agentd run")?;
+                }
+                if let Some(digest) = &dispatch.agent_dispatch_binding_digest {
+                    validate_digest(digest, "native Agentd dispatch")?;
+                }
+                if dispatch.agent_expected_dispatch_revision == Some(0) {
+                    return Err(Error::InvalidIdentity("native Agentd dispatch revision"));
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -850,6 +924,16 @@ fn apply_observation(
     };
     record.observation = Some(output);
     Ok(())
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut encoded = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        encoded.push(char::from(HEX[usize::from(byte >> 4)]));
+        encoded.push(char::from(HEX[usize::from(byte & 0x0f)]));
+    }
+    encoded
 }
 
 #[cfg(test)]

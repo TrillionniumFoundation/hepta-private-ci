@@ -217,6 +217,8 @@ async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observat
             crate::AgentdMethod::RunMarkDispatched {
                 run_id: snapshot.run_id.clone(),
                 expected_revision: attached.revision,
+                dispatch_binding_digest: None,
+                pre_effect_abort_digest: None,
             },
         )
         .await

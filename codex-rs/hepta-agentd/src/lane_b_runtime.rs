@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_types::Digest32;
 
 const MAX_SUPPORTED_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
@@ -82,6 +83,8 @@ pub struct RunRecovery {
     pub revision: u64,
     pub context_digest: String,
     pub compilation_receipt_digest: String,
+    pub dispatch_binding_digest: Option<String>,
+    pub pre_effect_abort_digest: Option<String>,
     pub cancel_reason: Option<String>,
 }
 
@@ -98,6 +101,9 @@ pub struct RunReceipt {
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
     pub compilation_receipt_digest: Option<String>,
+    pub dispatch_binding_digest: Option<String>,
+    pub pre_effect_abort_digest: Option<String>,
+    pub pre_effect_aborted: bool,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -105,6 +111,7 @@ pub struct RunReceipt {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CancellationDisposition {
     CancelledBeforeDispatch,
+    CancelledBeforeEffect,
     CancellingAfterDispatch,
     AlreadyTerminal,
 }
@@ -137,6 +144,9 @@ struct RunRecord {
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    dispatch_binding_digest: Option<String>,
+    pre_effect_abort_digest: Option<String>,
+    pre_effect_aborted: bool,
     cancel_reason: Option<String>,
     cancel_ack_deadline_ms: Option<u64>,
 }
@@ -211,6 +221,9 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            dispatch_binding_digest: None,
+            pre_effect_abort_digest: None,
+            pre_effect_aborted: false,
             cancel_reason: None,
             cancel_ack_deadline_ms: None,
         };
@@ -310,12 +323,51 @@ impl AgentRunCoordinator {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
+        self.mark_dispatched_with_binding(now_ms, run_id, expected_revision, None, None)
+    }
+
+    pub fn mark_dispatched_bound(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: &str,
+        pre_effect_abort_digest: &str,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_digest(dispatch_binding_digest, "dispatch binding")?;
+        validate_digest(pre_effect_abort_digest, "pre-effect abort")?;
+        self.mark_dispatched_with_binding(
+            now_ms,
+            run_id,
+            expected_revision,
+            Some(dispatch_binding_digest),
+            Some(pre_effect_abort_digest),
+        )
+    }
+
+    fn mark_dispatched_with_binding(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: Option<&str>,
+        pre_effect_abort_digest: Option<&str>,
+    ) -> Result<RunReceipt, AgentRunError> {
+        if dispatch_binding_digest.is_some() != pre_effect_abort_digest.is_some() {
+            return Err(AgentRunError::Conflict);
+        }
         validate_identity(run_id, "run")?;
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == RunPhase::Dispatched {
+            if record.dispatch_binding_digest.as_deref() != dispatch_binding_digest {
+                return Err(AgentRunError::Conflict);
+            }
+            if record.pre_effect_abort_digest.as_deref() != pre_effect_abort_digest {
+                return Err(AgentRunError::Conflict);
+            }
             return Ok(receipt(record, /*idempotent*/ true));
         }
         require_revision(record, expected_revision)?;
@@ -326,9 +378,66 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
+        record.dispatch_binding_digest = dispatch_binding_digest.map(str::to_string);
+        record.pre_effect_abort_digest = pre_effect_abort_digest.map(str::to_string);
+        record.pre_effect_aborted = false;
         record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Close an exact bound dispatch only while the caller still has proof
+    /// that physical effect entry has not occurred. This is deliberately a
+    /// separate transition from ordinary cancellation: once the effect-entry
+    /// proof is gone, a dispatched run remains reconcile-only.
+    pub fn abort_before_effect(
+        &mut self,
+        run_id: &str,
+        expected_revision: u64,
+        dispatch_binding_digest: &str,
+        pre_effect_abort_nonce: &str,
+        reason: &str,
+    ) -> Result<(CancellationDisposition, RunReceipt), AgentRunError> {
+        validate_identity(run_id, "run")?;
+        validate_digest(dispatch_binding_digest, "dispatch binding")?;
+        let nonce = decode_hex_32(pre_effect_abort_nonce, "pre-effect abort nonce")?;
+        let supplied_abort_digest = Digest32::of_bytes(&nonce).to_string();
+        validate_cancel_reason(reason)?;
+        let record = self
+            .runs
+            .get_mut(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
+        if record.phase == RunPhase::Cancelled && record.pre_effect_aborted {
+            if record.dispatch_binding_digest.as_deref() == Some(dispatch_binding_digest)
+                && record.pre_effect_abort_digest.as_deref() == Some(supplied_abort_digest.as_str())
+                && record.cancel_reason.as_deref() == Some(reason)
+            {
+                return Ok((
+                    CancellationDisposition::CancelledBeforeEffect,
+                    receipt(record, /*idempotent*/ true),
+                ));
+            }
+            return Err(AgentRunError::Conflict);
+        }
+        require_revision(record, expected_revision)?;
+        if record.phase != RunPhase::Dispatched {
+            return Err(AgentRunError::InvalidTransition);
+        }
+        if record.dispatch_binding_digest.as_deref() != Some(dispatch_binding_digest) {
+            return Err(AgentRunError::Conflict);
+        }
+        if record.pre_effect_abort_digest.as_deref() != Some(supplied_abort_digest.as_str()) {
+            return Err(AgentRunError::Conflict);
+        }
+        record.phase = RunPhase::Cancelled;
+        record.pre_effect_aborted = true;
+        record.cancel_reason = Some(reason.to_string());
+        record.cancel_ack_deadline_ms = None;
+        advance_revision(record)?;
+        Ok((
+            CancellationDisposition::CancelledBeforeEffect,
+            receipt(record, /*idempotent*/ false),
+        ))
     }
 
     pub fn cancel_run(
@@ -440,6 +549,9 @@ impl AgentRunCoordinator {
                 && current.context_digest.as_deref() == Some(recovery.context_digest.as_str())
                 && current.compilation_receipt_digest.as_deref()
                     == Some(recovery.compilation_receipt_digest.as_str())
+                && current.dispatch_binding_digest == recovery.dispatch_binding_digest
+                && current.pre_effect_abort_digest == recovery.pre_effect_abort_digest
+                && !current.pre_effect_aborted
                 && current.cancel_reason == recovery.cancel_reason;
             if same {
                 return Ok(receipt(current, /*idempotent*/ true));
@@ -455,6 +567,9 @@ impl AgentRunCoordinator {
             phase: RunPhase::Indeterminate,
             context_digest: Some(recovery.context_digest),
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
+            dispatch_binding_digest: recovery.dispatch_binding_digest,
+            pre_effect_abort_digest: recovery.pre_effect_abort_digest,
+            pre_effect_aborted: false,
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
         };
@@ -617,6 +732,15 @@ fn validate_recovery(value: &RunRecovery) -> Result<(), AgentRunError> {
     }
     validate_digest(&value.context_digest, "context")?;
     validate_digest(&value.compilation_receipt_digest, "compilation receipt")?;
+    if let Some(dispatch_binding_digest) = value.dispatch_binding_digest.as_deref() {
+        validate_digest(dispatch_binding_digest, "dispatch binding")?;
+    }
+    if let Some(pre_effect_abort_digest) = value.pre_effect_abort_digest.as_deref() {
+        validate_digest(pre_effect_abort_digest, "pre-effect abort")?;
+    }
+    if value.dispatch_binding_digest.is_some() != value.pre_effect_abort_digest.is_some() {
+        return Err(AgentRunError::Conflict);
+    }
     if let Some(reason) = value.cancel_reason.as_deref() {
         validate_cancel_reason(reason)?;
     }
@@ -645,6 +769,25 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), AgentRunError
         return Err(AgentRunError::InvalidDigest(field));
     }
     Ok(())
+}
+
+fn decode_hex_32(value: &str, field: &'static str) -> Result<[u8; 32], AgentRunError> {
+    validate_digest(value, field)?;
+    let mut decoded = [0_u8; 32];
+    for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
+        let high = decode_hex_nibble(pair[0]).ok_or(AgentRunError::InvalidDigest(field))?;
+        let low = decode_hex_nibble(pair[1]).ok_or(AgentRunError::InvalidDigest(field))?;
+        decoded[index] = (high << 4) | low;
+    }
+    Ok(decoded)
+}
+
+fn decode_hex_nibble(value: u8) -> Option<u8> {
+    match value {
+        b'0'..=b'9' => Some(value - b'0'),
+        b'a'..=b'f' => Some(value - b'a' + 10),
+        _ => None,
+    }
 }
 
 fn validate_cancel_reason(reason: &str) -> Result<(), AgentRunError> {
@@ -735,6 +878,9 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         cancel_reason: record.cancel_reason.clone(),
         cancel_ack_deadline_ms: record.cancel_ack_deadline_ms,
         compilation_receipt_digest: record.compilation_receipt_digest.clone(),
+        dispatch_binding_digest: record.dispatch_binding_digest.clone(),
+        pre_effect_abort_digest: record.pre_effect_abort_digest.clone(),
+        pre_effect_aborted: record.pre_effect_aborted,
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
     }

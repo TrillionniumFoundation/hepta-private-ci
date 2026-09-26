@@ -473,15 +473,55 @@ impl AgentdState {
             crate::AgentdMethod::RunMarkDispatched {
                 run_id,
                 expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_digest,
             } => {
                 require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                let receipt = self
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let receipt = match (
+                    dispatch_binding_digest.as_deref(),
+                    pre_effect_abort_digest.as_deref(),
+                ) {
+                    (Some(binding), Some(abort_digest)) => runs.mark_dispatched_bound(
+                        now_ms()?,
+                        &run_id,
+                        expected_revision,
+                        binding,
+                        abort_digest,
+                    ),
+                    (None, None) => runs.mark_dispatched(now_ms()?, &run_id, expected_revision),
+                    _ => Err(crate::AgentRunError::Conflict),
+                }
+                .map_err(run_error)?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_nonce,
+                reason,
+            } => {
+                // This transition consumes a proof that no external effect was
+                // entered. It must remain available during drain/fencing so a
+                // definitely-unsent run does not leak owner capacity.
+                require_pre_effect_compensation_ready(lifecycle)?;
+                let (disposition, receipt) = self
                     .runs
                     .lock()
                     .map_err(poisoned_state)?
-                    .mark_dispatched(now_ms()?, &run_id, expected_revision)
+                    .abort_before_effect(
+                        &run_id,
+                        expected_revision,
+                        &dispatch_binding_digest,
+                        &pre_effect_abort_nonce,
+                        &reason,
+                    )
                     .map_err(run_error)?;
-                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+                AgentdPayload::RunCancellation(crate::AgentRunCancellation {
+                    disposition: wire_cancellation_disposition(disposition),
+                    receipt: wire_run_receipt(receipt),
+                })
             }
             crate::AgentdMethod::RunCancel {
                 run_id,
@@ -1251,6 +1291,20 @@ fn require_run_reconciliation_ready(
     }
 }
 
+fn require_pre_effect_compensation_ready(lifecycle: AgentLifecycle) -> Result<(), AgentdError> {
+    if matches!(
+        lifecycle,
+        AgentLifecycle::Running | AgentLifecycle::Draining
+    ) {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(
+            "pre-effect compensation is unavailable outside a live Running/Draining generation"
+                .to_string(),
+        ))
+    }
+}
+
 fn require_current_run_identity(
     identity: &crate::AgentdIdentity,
     current_generation: u64,
@@ -1338,12 +1392,15 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         phase: wire_run_phase(value.phase),
         context_digest: value.context_digest,
         compilation_receipt_digest: value.compilation_receipt_digest,
+        dispatch_binding_digest: value.dispatch_binding_digest,
+        pre_effect_abort_digest: value.pre_effect_abort_digest,
         authority_epoch: value.authority_epoch,
         generation: value.generation,
         fence_digest: value.fence_digest,
         deadline_ms: value.deadline_ms,
         cancel_reason: value.cancel_reason,
         cancel_ack_deadline_ms: value.cancel_ack_deadline_ms,
+        pre_effect_aborted: value.pre_effect_aborted,
         terminal_observed: value.terminal_observed,
         idempotent: value.idempotent,
     }
@@ -1355,6 +1412,9 @@ fn wire_cancellation_disposition(
     match value {
         crate::CancellationDisposition::CancelledBeforeDispatch => {
             crate::AgentCancellationDisposition::CancelledBeforeDispatch
+        }
+        crate::CancellationDisposition::CancelledBeforeEffect => {
+            crate::AgentCancellationDisposition::CancelledBeforeEffect
         }
         crate::CancellationDisposition::CancellingAfterDispatch => {
             crate::AgentCancellationDisposition::CancellingAfterDispatch

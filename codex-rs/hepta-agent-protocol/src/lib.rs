@@ -59,7 +59,11 @@ pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_ID: &str = "run.lifecycle";
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR: u16 = 1;
-pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 1;
+/// Minor 2 adds an exact dispatch-binding digest and a fail-closed
+/// `run_abort_before_effect` transition. A minor-1 caller may continue to use
+/// the legacy unbound dispatch method, but it cannot claim a definitely-unsent
+/// rollback after Agentd has recorded `Dispatched`.
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 2;
 pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
 pub const AGENTD_OVERLOAD_RETRY_AFTER_MS: u64 = 50;
 pub const AGENTD_CONTROL_OVERLOAD_FRAME: &[u8] =
@@ -170,6 +174,7 @@ pub struct AgentContextAttachment {
 #[serde(rename_all = "snake_case")]
 pub enum AgentCancellationDisposition {
     CancelledBeforeDispatch,
+    CancelledBeforeEffect,
     CancellingAfterDispatch,
     AlreadyTerminal,
 }
@@ -183,12 +188,24 @@ pub struct AgentRunReceipt {
     pub context_digest: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compilation_receipt_digest: Option<String>,
+    /// Exact digest of the product dispatch that Agentd admitted. It is absent
+    /// only for legacy minor-1 callers and never acts as authority by itself.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dispatch_binding_digest: Option<String>,
+    /// Digest of the one-shot, process-local pre-effect compensation nonce.
+    /// The nonce itself is never persisted in Agentd receipts.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pre_effect_abort_digest: Option<String>,
     pub authority_epoch: u64,
     pub generation: u64,
     pub fence_digest: String,
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
+    /// True only when Agentd consumed the exact pre-effect compensation for a
+    /// bound dispatch before any physical effect-entry permit was consumed.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub pre_effect_aborted: bool,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -497,6 +514,52 @@ impl AgentdRequest {
             method: AgentdMethod::RunMarkDispatched {
                 run_id,
                 expected_revision,
+                dispatch_binding_digest: None,
+                pre_effect_abort_digest: None,
+            },
+        }
+    }
+
+    pub fn run_mark_dispatched_bound(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_digest: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest: Some(dispatch_binding_digest),
+                pre_effect_abort_digest: Some(pre_effect_abort_digest),
+            },
+        }
+    }
+
+    pub fn run_abort_before_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_nonce: String,
+        reason: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_nonce,
+                reason,
             },
         }
     }
@@ -620,6 +683,17 @@ pub enum AgentdMethod {
     RunMarkDispatched {
         run_id: String,
         expected_revision: u64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        dispatch_binding_digest: Option<String>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pre_effect_abort_digest: Option<String>,
+    },
+    RunAbortBeforeEffect {
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_nonce: String,
+        reason: String,
     },
     RunCancel {
         run_id: String,
@@ -772,6 +846,10 @@ pub enum AgentdPayload {
         code: String,
         message: String,
     },
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 /// A bounded read from the owning Agent's canonical SQLite store. The digest
@@ -1318,8 +1396,41 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
+        let dispatch_digest = "a".repeat(64);
+        let abort_digest = "b".repeat(64);
+        let dispatch = AgentdRequest::run_mark_dispatched_bound(
             14,
+            3,
+            snapshot.run_id.clone(),
+            2,
+            dispatch_digest.clone(),
+            abort_digest,
+        );
+        let dispatch_bytes = serde_json::to_vec(&dispatch).expect("serialize bound dispatch");
+        assert!(dispatch_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&dispatch_bytes).expect("parse bound dispatch"),
+            dispatch
+        );
+
+        let abort = AgentdRequest::run_abort_before_effect(
+            15,
+            3,
+            snapshot.run_id.clone(),
+            3,
+            dispatch_digest,
+            "c".repeat(64),
+            "final_use_fence_changed".to_string(),
+        );
+        let abort_bytes = serde_json::to_vec(&abort).expect("serialize pre-effect abort");
+        assert!(abort_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&abort_bytes).expect("parse pre-effect abort"),
+            abort
+        );
+
+        let cancel = AgentdRequest::run_cancel(
+            16,
             3,
             snapshot.run_id.clone(),
             2,
@@ -1332,7 +1443,7 @@ mod tests {
             cancel
         );
 
-        let release = AgentdRequest::run_release_closed(16, 4, "run.1".to_string(), 10);
+        let release = AgentdRequest::run_release_closed(17, 4, "run.1".to_string(), 10);
         let release_bytes = serde_json::to_vec(&release).expect("serialize release");
         assert!(release_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

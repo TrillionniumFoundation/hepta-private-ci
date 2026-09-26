@@ -37,7 +37,12 @@ use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
+use codex_hepta_agentd::AGENTD_RUN_LIFECYCLE_CAPABILITY_ID;
+use codex_hepta_agentd::AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR;
+use codex_hepta_agentd::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR;
+use codex_hepta_agentd::AgentCancellationDisposition;
 use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentRunReceipt;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
@@ -63,6 +68,7 @@ use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionStatus;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+use codex_hepta_infer_core::durable_control::native::NativePreEffectAbortToken;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
@@ -438,14 +444,26 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        if context_query.is_some() {
+        if context_query.is_some() || intelligence.is_some() {
             let capabilities = owner.capabilities().await?;
             let supports_revalidation = capabilities.capabilities.iter().any(|capability| {
                 capability.id == COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY && capability.major == 1
             });
-            if !supports_revalidation {
+            if context_query.is_some() && !supports_revalidation {
                 return Err(
                     "owning Agent does not support final-use cognitive revalidation".into(),
+                );
+            }
+            let supports_bound_pre_effect_abort =
+                capabilities.capabilities.iter().any(|capability| {
+                    capability.id == AGENTD_RUN_LIFECYCLE_CAPABILITY_ID
+                        && capability.major == AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR
+                        && capability.minor >= AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR
+                });
+            if intelligence.is_some() && !supports_bound_pre_effect_abort {
+                return Err(
+                    "owning Agent does not support exact runtime.codex pre-effect compensation"
+                        .into(),
                 );
             }
         }
@@ -616,6 +634,7 @@ impl AppServerModelDriver {
             Digest32::from_array(verified_use.claimed_revocation_head_sha256()).to_string();
         let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
 
+        let dispatch_binding_digest = request_receipt.request_digest.to_string();
         let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
             request_id,
             NativeDispatch {
@@ -626,7 +645,7 @@ impl AppServerModelDriver {
                 )?),
                 owner_context_digest,
                 codex_payload_digest: Some(payload_digest.to_string()),
-                codex_request_digest: Some(request_receipt.request_digest.to_string()),
+                codex_request_digest: Some(dispatch_binding_digest.clone()),
                 app_server_version: Some(app_server_version.clone()),
                 protocol_id: Some(APP_SERVER_V2_PROTOCOL_ID.to_string()),
                 codex_source_admission_digest: Some(source_admission_digest.to_string()),
@@ -638,8 +657,15 @@ impl AppServerModelDriver {
                 codex_revocation_revision: Some(revocation_revision),
                 codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
                 codex_authority_witness_sha256: Some(authority_witness.clone()),
+                pre_effect_abort_digest: None,
+                agent_run_id: intelligence.map(|binding| binding.run_id.clone()),
+                agent_dispatch_binding_digest: intelligence
+                    .map(|_| dispatch_binding_digest.clone()),
+                agent_expected_dispatch_revision: intelligence
+                    .map(|binding| binding.expected_revision),
             },
         )?;
+        let pre_effect_abort_digest = pre_effect_abort.proof_digest();
         verify_persisted_dispatch_binding(
             control,
             request_id,
@@ -655,50 +681,71 @@ impl AppServerModelDriver {
             &revocation_head_digest,
             &authority_witness,
             &app_server_version,
+            &pre_effect_abort_digest,
+            intelligence,
         )?;
 
         if let Some(binding) = intelligence {
-            let dispatched = match owner
-                .run_mark_dispatched(binding.run_id.clone(), binding.expected_revision)
-                .await
-            {
-                Ok(receipt) => receipt,
+            let owner_commit = commit_bound_owner_dispatch(
+                &owner,
+                binding,
+                &dispatch_binding_digest,
+                &pre_effect_abort_digest,
+                self.config.generation,
+            )
+            .await;
+            let owner_commit = match owner_commit {
+                Ok(commit) => commit,
                 Err(error) => {
+                    // Neither owner can safely claim "unsent" after an
+                    // acknowledgement-unknown commit. Keep the local record in
+                    // Dispatching so startup reconciliation can inspect Agentd.
                     let reason: String = format!(
-                        "Agentd dispatch acknowledgement unknown before physical send: {error}"
+                        "Agentd exact dispatch acknowledgement unresolved before physical send: {error}"
                     )
                     .chars()
                     .take(1024)
                     .collect();
-                    control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     return Err(reason.into());
                 }
             };
-            // Idempotent acknowledgement is reconciliation, not a second
-            // physical-send permit. A competing worker must not redispatch.
-            if dispatched.phase != AgentRunPhase::Dispatched
-                || dispatched.idempotent
-                || dispatched.generation != self.config.generation
-                || dispatched.terminal_observed
-                || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
-                || dispatched.compilation_receipt_digest.as_deref()
-                    != Some(binding.envelope_digest.as_str())
-            {
+            intelligence_revision = Some(owner_commit.receipt.revision);
+            if owner_commit.receipt.idempotent && !owner_commit.reconciled_after_transport_error {
                 let reason =
-                    "Agentd did not newly commit this exact intelligence dispatch".to_string();
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                    "Agentd reported a pre-existing exact dispatch to a fresh worker attempt"
+                        .to_string();
+                abort_bound_dispatch_before_effect(
+                    &owner,
+                    intelligence,
+                    intelligence_revision,
+                    self.config.generation,
+                    &dispatch_binding_digest,
+                    control,
+                    pre_effect_abort,
+                    reason.clone(),
+                )
+                .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
-            intelligence_revision = Some(dispatched.revision);
         }
 
         let post_health = match owner.health().await {
             Ok(health) => health,
             Err(error) => {
                 let reason = format!("owner health failed before final-use entry: {error}");
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                abort_bound_dispatch_before_effect(
+                    &owner,
+                    intelligence,
+                    intelligence_revision,
+                    self.config.generation,
+                    &dispatch_binding_digest,
+                    control,
+                    pre_effect_abort,
+                    reason.clone(),
+                )
+                .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
@@ -707,7 +754,17 @@ impl AppServerModelDriver {
             Ok(ingress) => ingress,
             Err(error) => {
                 let reason = format!("owner ingress failed before final-use entry: {error}");
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                abort_bound_dispatch_before_effect(
+                    &owner,
+                    intelligence,
+                    intelligence_revision,
+                    self.config.generation,
+                    &dispatch_binding_digest,
+                    control,
+                    pre_effect_abort,
+                    reason.clone(),
+                )
+                .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
@@ -721,7 +778,17 @@ impl AppServerModelDriver {
             adapter_intent.deadline_ms,
         ) {
             let reason: String = error.to_string().chars().take(1024).collect();
-            control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+            abort_bound_dispatch_before_effect(
+                &owner,
+                intelligence,
+                intelligence_revision,
+                self.config.generation,
+                &dispatch_binding_digest,
+                control,
+                pre_effect_abort,
+                reason.clone(),
+            )
+            .await?;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(reason.into());
         }
@@ -738,7 +805,17 @@ impl AppServerModelDriver {
                             .chars()
                             .take(1024)
                             .collect();
-                    let stopped = control.abort_native_before_effect(pre_effect_abort, reason);
+                    let stopped = abort_bound_dispatch_before_effect(
+                        &owner,
+                        intelligence,
+                        intelligence_revision,
+                        self.config.generation,
+                        &dispatch_binding_digest,
+                        control,
+                        pre_effect_abort,
+                        reason,
+                    )
+                    .await;
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     stopped?;
                     return Err(error.into());
@@ -748,10 +825,17 @@ impl AppServerModelDriver {
                 || revalidated.read_digest != snapshot.read_digest
                 || usize::from(revalidated.verified_item_count) != snapshot.items.len()
             {
-                let stopped = control.abort_native_before_effect(
+                let stopped = abort_bound_dispatch_before_effect(
+                    &owner,
+                    intelligence,
+                    intelligence_revision,
+                    self.config.generation,
+                    &dispatch_binding_digest,
+                    control,
                     pre_effect_abort,
                     "cognitive final-use revalidation returned a mismatched receipt".to_string(),
-                );
+                )
+                .await;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 stopped?;
                 return Err(
@@ -760,10 +844,17 @@ impl AppServerModelDriver {
             }
         }
         if cancellation.is_cancelled() {
-            let stopped = control.abort_native_before_effect(
+            let stopped = abort_bound_dispatch_before_effect(
+                &owner,
+                intelligence,
+                intelligence_revision,
+                self.config.generation,
+                &dispatch_binding_digest,
+                control,
                 pre_effect_abort,
                 "cancelled before model dispatch".to_string(),
-            );
+            )
+            .await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             stopped?;
             return Err("cancelled before model dispatch".into());
@@ -774,13 +865,33 @@ impl AppServerModelDriver {
             Ok(entered) if entered.matches(&authority_binding) => entered,
             Ok(_) => {
                 let reason = "kernel.authority final-use binding mismatch at entry".to_string();
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                abort_bound_dispatch_before_effect(
+                    &owner,
+                    intelligence,
+                    intelligence_revision,
+                    self.config.generation,
+                    &dispatch_binding_digest,
+                    control,
+                    pre_effect_abort,
+                    reason.clone(),
+                )
+                .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
             Err(error) => {
                 let reason = format!("kernel.authority final-use entry denied: {error}");
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                abort_bound_dispatch_before_effect(
+                    &owner,
+                    intelligence,
+                    intelligence_revision,
+                    self.config.generation,
+                    &dispatch_binding_digest,
+                    control,
+                    pre_effect_abort,
+                    reason.clone(),
+                )
+                .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
@@ -1058,6 +1169,164 @@ impl AppServerModelDriver {
     }
 }
 
+struct BoundOwnerDispatchCommit {
+    receipt: AgentRunReceipt,
+    reconciled_after_transport_error: bool,
+}
+
+async fn commit_bound_owner_dispatch(
+    owner: &AgentdClient,
+    binding: &NativeIntelligenceRunBinding,
+    dispatch_binding_digest: &str,
+    pre_effect_abort_digest: &str,
+    generation: u64,
+) -> Result<BoundOwnerDispatchCommit> {
+    let first = owner
+        .run_mark_dispatched_bound(
+            binding.run_id.clone(),
+            binding.expected_revision,
+            dispatch_binding_digest.to_string(),
+            pre_effect_abort_digest.to_string(),
+        )
+        .await;
+    match first {
+        Ok(receipt) => {
+            validate_bound_owner_dispatch_receipt(
+                &receipt,
+                binding,
+                dispatch_binding_digest,
+                pre_effect_abort_digest,
+                generation,
+            )?;
+            return Ok(BoundOwnerDispatchCommit {
+                receipt,
+                reconciled_after_transport_error: false,
+            });
+        }
+        Err(first_error) => {
+            // The state transition is owner-local and idempotent for this
+            // exact binding. Retrying once is reconciliation of the same
+            // operation, not a second provider effect.
+            let second = owner
+                .run_mark_dispatched_bound(
+                    binding.run_id.clone(),
+                    binding.expected_revision,
+                    dispatch_binding_digest.to_string(),
+                    pre_effect_abort_digest.to_string(),
+                )
+                .await;
+            let second_error = match second {
+                Ok(receipt) => {
+                    validate_bound_owner_dispatch_receipt(
+                        &receipt,
+                        binding,
+                        dispatch_binding_digest,
+                        pre_effect_abort_digest,
+                        generation,
+                    )?;
+                    return Ok(BoundOwnerDispatchCommit {
+                        receipt,
+                        reconciled_after_transport_error: true,
+                    });
+                }
+                Err(error) => error,
+            };
+            if let Ok(Some(receipt)) = owner.run_status(binding.run_id.clone()).await
+                && validate_bound_owner_dispatch_receipt(
+                    &receipt,
+                    binding,
+                    dispatch_binding_digest,
+                    pre_effect_abort_digest,
+                    generation,
+                )
+                .is_ok()
+            {
+                return Ok(BoundOwnerDispatchCommit {
+                    receipt,
+                    reconciled_after_transport_error: true,
+                });
+            }
+            Err(format!(
+                "exact Agentd dispatch remained unresolved after retry/status: first={first_error}; second={second_error}"
+            )
+            .into())
+        }
+    }
+}
+
+fn validate_bound_owner_dispatch_receipt(
+    receipt: &AgentRunReceipt,
+    binding: &NativeIntelligenceRunBinding,
+    dispatch_binding_digest: &str,
+    pre_effect_abort_digest: &str,
+    generation: u64,
+) -> Result<()> {
+    if receipt.run_id != binding.run_id
+        || receipt.phase != AgentRunPhase::Dispatched
+        || receipt.generation != generation
+        || receipt.terminal_observed
+        || receipt.pre_effect_aborted
+        || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
+        || receipt.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
+        || receipt.dispatch_binding_digest.as_deref() != Some(dispatch_binding_digest)
+        || receipt.pre_effect_abort_digest.as_deref() != Some(pre_effect_abort_digest)
+    {
+        return Err("Agentd did not bind the exact runtime.codex dispatch".into());
+    }
+    Ok(())
+}
+
+async fn abort_bound_dispatch_before_effect(
+    owner: &AgentdClient,
+    intelligence: Option<&NativeIntelligenceRunBinding>,
+    intelligence_revision: Option<u64>,
+    generation: u64,
+    dispatch_binding_digest: &str,
+    control: &mut DurableInferenceControl,
+    pre_effect_abort: NativePreEffectAbortToken,
+    reason: String,
+) -> Result<()> {
+    let reason: String = reason.chars().take(512).collect();
+    if reason.trim().is_empty() {
+        return Err("pre-effect abort reason is empty".into());
+    }
+    if let Some(binding) = intelligence {
+        let revision = intelligence_revision
+            .ok_or("Agentd dispatch revision missing during pre-effect compensation")?;
+        let proof_digest = pre_effect_abort.proof_digest();
+        let cancellation = owner
+            .run_abort_before_effect(
+                binding.run_id.clone(),
+                revision,
+                dispatch_binding_digest.to_string(),
+                pre_effect_abort.proof_nonce_hex(),
+                reason.clone(),
+            )
+            .await
+            .map_err(|error| {
+                format!("Agentd exact pre-effect compensation acknowledgement unresolved: {error}")
+            })?;
+        let receipt = &cancellation.receipt;
+        if cancellation.disposition != AgentCancellationDisposition::CancelledBeforeEffect
+            || receipt.run_id != binding.run_id
+            || receipt.phase != AgentRunPhase::Cancelled
+            || receipt.generation != generation
+            || !receipt.terminal_observed
+            || !receipt.pre_effect_aborted
+            || receipt.cancel_reason.as_deref() != Some(reason.as_str())
+            || receipt.dispatch_binding_digest.as_deref() != Some(dispatch_binding_digest)
+            || receipt.pre_effect_abort_digest.as_deref() != Some(proof_digest.as_str())
+            || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
+            || receipt.compilation_receipt_digest.as_deref()
+                != Some(binding.envelope_digest.as_str())
+        {
+            return Err("Agentd returned a mismatched pre-effect compensation receipt".into());
+        }
+    }
+    control.abort_native_before_effect(pre_effect_abort, reason)?;
+    Ok(())
+}
+
 fn final_use_binding(
     agent_id: &AgentId,
     intent: &CodexOperationIntent,
@@ -1161,6 +1430,8 @@ fn verify_persisted_dispatch_binding(
     revocation_head_digest: &str,
     authority_witness: &str,
     app_server_version: &str,
+    pre_effect_abort_digest: &str,
+    intelligence: Option<&NativeIntelligenceRunBinding>,
 ) -> Result<()> {
     let dispatch = control
         .native_record(request_id)
@@ -1170,6 +1441,19 @@ fn verify_persisted_dispatch_binding(
     let request_digest = request_digest.to_string();
     let source_admission_digest = source_admission_digest.to_string();
     let codex_home_digest = codex_home_digest.to_string();
+    let agent_exact = match intelligence {
+        Some(binding) => {
+            dispatch.agent_run_id.as_deref() == Some(binding.run_id.as_str())
+                && dispatch.agent_dispatch_binding_digest.as_deref()
+                    == Some(request_digest.as_str())
+                && dispatch.agent_expected_dispatch_revision == Some(binding.expected_revision)
+        }
+        None => {
+            dispatch.agent_run_id.is_none()
+                && dispatch.agent_dispatch_binding_digest.is_none()
+                && dispatch.agent_expected_dispatch_revision.is_none()
+        }
+    };
     let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
         && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
         && dispatch.codex_source_admission_digest.as_deref()
@@ -1182,8 +1466,10 @@ fn verify_persisted_dispatch_binding(
         && dispatch.codex_revocation_revision == Some(revocation_revision)
         && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
         && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
+        && dispatch.pre_effect_abort_digest.as_deref() == Some(pre_effect_abort_digest)
         && dispatch.app_server_version.as_deref() == Some(app_server_version)
-        && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
+        && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID)
+        && agent_exact;
     if !exact {
         return Err("durable runtime.codex dispatch binding changed before physical send".into());
     }
