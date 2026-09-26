@@ -1,0 +1,115 @@
+name: bootstrap-runtime-codex-hardening
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-hardening-20260927
+    paths:
+      - scripts/bootstrap_runtime_codex_hardening.py
+      - .github/workflows/bootstrap-runtime-codex-hardening.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-runtime-codex-hardening-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact hardening branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/runtime-codex-hardening-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prepare native build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+
+      - name: Install focused test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Apply exact pre-effect compensation patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The source re-export uses `pub use`; normalize the bootstrap anchor
+          # without weakening its one-occurrence assertions.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/bootstrap_runtime_codex_hardening.py')
+          value = path.read_text()
+          value = value.replace(
+              '"use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;\\n",',
+              '"pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;\\n",',
+          )
+          value = value.replace(
+              '"use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;\\nuse codex_hepta_infer_core',
+              '"pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;\\nuse codex_hepta_infer_core',
+          )
+          path.write_text(value)
+          PY
+          python3 scripts/bootstrap_runtime_codex_hardening.py
+          cargo fmt --all
+          git diff --check
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Test durable proof owner
+        run: cargo test -p codex-hepta-infer-core
+
+      - name: Test Agentd wire contract
+        run: cargo test -p codex-hepta-agent-protocol
+
+      - name: Test Agentd exact owner transition
+        run: cargo test -p codex-hepta-agentd lane_b_runtime
+
+      - name: Test runtime.codex product caller
+        run: cargo test -p codex-hepta-infer-worker-host
+
+      - name: Strict focused lint
+        run: >-
+          cargo clippy -p codex-hepta-infer-core -p codex-hepta-agent-protocol
+          -p codex-hepta-agentd -p codex-hepta-infer-worker-host --tests -- -D warnings
+
+      - name: Publish verified source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm scripts/bootstrap_runtime_codex_hardening.py
+          git rm .github/workflows/bootstrap-runtime-codex-hardening.yml
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "runtime.codex: close exact pre-effect owner compensation"
+          git push origin HEAD:codex/runtime-codex-hardening-20260927
