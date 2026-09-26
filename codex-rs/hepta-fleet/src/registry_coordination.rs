@@ -77,7 +77,13 @@ pub(super) fn persist_workspace_reservations(
         content_sha256,
     };
     write_index_atomically(state_root, &index)?;
-    Ok(index)
+    let loaded = load_workspace_reservations(state_root)?;
+    if loaded != index {
+        return Err(FleetRegistryError::Corrupt(
+            "published workspace reservation index differs from its candidate".to_string(),
+        ));
+    }
+    Ok(loaded)
 }
 
 pub(super) fn load_workspace_reservations(
