@@ -10,10 +10,15 @@ from typing import Any
 
 try:
     from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from scripts.hepta_workflow_commands import (
+        declared_commands,
+        verify_synthetic_merge,
+    )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from hepta_workflow_commands import declared_commands, verify_synthetic_merge
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -553,19 +558,91 @@ def verify() -> int:
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
-    for command in [
-        "python3 scripts/hepta-hnmf.py verify",
-        "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
-        "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
-        "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
-        "python3 qualification/cognitive-types-v1/verify_vectors.py",
-        "cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check",
-        "cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
-        "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
-        "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
-        "cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
-    ]:
-        need(command in workflow, f"workflow command {command}")
+    commands = declared_commands(workflow, ROOT)
+    required_commands = [
+        ["python3", "scripts/hepta-hnmf.py", "verify"],
+        [
+            "cargo",
+            "fmt",
+            "--manifest-path",
+            "qualification/hnmf-reference/Cargo.toml",
+            "--",
+            "--check",
+        ],
+        [
+            "cargo",
+            "check",
+            "--manifest-path",
+            "qualification/hnmf-reference/Cargo.toml",
+            "--all-targets",
+            "--locked",
+        ],
+        [
+            "cargo",
+            "test",
+            "--manifest-path",
+            "qualification/hnmf-reference/Cargo.toml",
+            "--locked",
+        ],
+        ["python3", "qualification/cognitive-types-v1/verify_vectors.py"],
+        [
+            "cargo",
+            "fmt",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--package",
+            "codex-hepta-cognitive-types",
+            "--",
+            "--check",
+        ],
+        [
+            "cargo",
+            "check",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--locked",
+            "-p",
+            "codex-hepta-cognitive-types",
+            "--all-targets",
+        ],
+        [
+            "cargo",
+            "clippy",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--locked",
+            "-p",
+            "codex-hepta-cognitive-types",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings",
+        ],
+        [
+            "cargo",
+            "test",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--locked",
+            "-p",
+            "codex-hepta-cognitive-types",
+        ],
+        [
+            "cargo",
+            "check",
+            "--manifest-path",
+            "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+            "--all-targets",
+        ],
+        ["test", "$(git rev-parse HEAD)", "=", "$SOURCE_SHA"],
+        ["test", "$(git rev-parse HEAD)", "=", "$TESTED_SHA"],
+    ]
+    for command in required_commands:
+        need(command in commands, f"workflow command {command!r}")
+    try:
+        verify_synthetic_merge(workflow, ROOT)
+    except ValueError as error:
+        fail(f"workflow synthetic merge: {error}")
 
     print(
         json.dumps(
