@@ -17,7 +17,7 @@ jobs:
   apply-compile-and-commit:
     if: ${{ !contains(github.event.head_commit.message || '', '[context-v2-integrated]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,6 +33,7 @@ jobs:
           python3 scripts/_context_compiler_agentd_patch.py
           python3 scripts/_context_compiler_framing_policy_patch.py
           python3 scripts/_context_compiler_crash_safety_patch.py
+          python3 scripts/_context_compiler_property_patch.py
 
       - name: Format sources
         working-directory: codex-rs
