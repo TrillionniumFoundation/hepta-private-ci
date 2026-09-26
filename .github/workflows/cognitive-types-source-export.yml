@@ -1,0 +1,55 @@
+name: cognitive-types-source-export
+
+on:
+  push:
+    branches:
+      - codex/cognitive-types-production-hardening-20260926
+    paths:
+      - .github/workflows/cognitive-types-source-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - name: Stage review sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cognitive-types-source
+          cp --parents \
+            Cargo.toml Cargo.lock rust-toolchain.toml \
+            codex-rs/Cargo.toml \
+            codex-rs/hepta-cognitive-types/BUILD.bazel \
+            codex-rs/hepta-cognitive-types/Cargo.toml \
+            codex-rs/hepta-cognitive-types/src/*.rs \
+            codex-rs/hepta-cognitive-types/fuzz/Cargo.toml \
+            codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/*.rs \
+            codex-rs/hepta-cognitive-store/Cargo.toml \
+            codex-rs/hepta-cognitive-store/src/v2.rs \
+            codex-rs/hepta-cognitive-store/src/v2_tests.rs \
+            codex-rs/hepta-cognitive-read/Cargo.toml \
+            codex-rs/hepta-cognitive-read/src/authoritative.rs \
+            codex-rs/hepta-operations/src/destination_dedupe.rs \
+            codex-rs/hepta-operations/src/durable_store.rs \
+            codex-rs/state/src/*.rs \
+            docs/modules/cognitive.types/TECHNICAL.md \
+            docs/modules/cognitive.types/IMPLEMENTATION_MAP.json \
+            qualification/module-execution-dossiers/detail/cognitive.types.md \
+            scripts/hepta-hnmf.py \
+            .github/workflows/hnmf-qualification.yml \
+            /tmp/cognitive-types-source/
+          git rev-parse HEAD > /tmp/cognitive-types-source/EXACT_HEAD
+          git rev-parse HEAD^{tree} > /tmp/cognitive-types-source/EXACT_TREE
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-source-${{ github.sha }}
+          path: /tmp/cognitive-types-source
+          if-no-files-found: error
+          retention-days: 1
