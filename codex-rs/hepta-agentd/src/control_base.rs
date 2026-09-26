@@ -27,6 +27,9 @@ use crate::control_budget::FRAME_IO_TIMEOUT;
 use crate::control_budget::operation_timeout;
 use crate::error::io_context;
 
+#[path = "control_connection_lifecycle.rs"]
+mod connection_lifecycle;
+
 const CONNECTION_CAPACITY: usize = 32;
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
@@ -60,14 +63,22 @@ impl AgentdControlServer {
 
     pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
         let mut connections = JoinSet::new();
-        loop {
+        let result = loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => {
-                    connections.shutdown().await;
-                    return Ok(());
+                biased;
+                _ = self.cancellation.cancelled() => break Ok(()),
+                joined = connections.join_next(), if !connections.is_empty() => {
+                    if let Some(result) = joined
+                        && let Err(error) = connection_lifecycle::observe(result)
+                    {
+                        break Err(error);
+                    }
+                    continue;
                 },
-                _ = connections.join_next(), if !connections.is_empty() => continue,
-                accepted = self.listener.accept() => accepted?,
+                accepted = self.listener.accept() => match accepted {
+                    Ok(stream) => stream,
+                    Err(error) => break Err(error.into()),
+                },
             };
             // Reject an untrusted operating-system user before it can consume
             // one of the bounded connection permits or any protocol bytes.
@@ -86,9 +97,13 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             connections.spawn(async move {
                 let _permit = permit;
-                let _ = serve_connection(stream, state).await;
+                serve_connection(stream, state).await
             });
-        }
+        };
+        // No accepted task outlives this owner, even on accept failure. A
+        // bounded grace period precedes abort; timeout is not successful drain.
+        let drained = connection_lifecycle::drain(&mut connections, FRAME_IO_TIMEOUT).await;
+        result.and(drained)
     }
 }
 
