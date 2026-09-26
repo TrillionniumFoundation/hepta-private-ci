@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.kernel-authority-dossier-status.v1",
+  "schemaVersion": 1,
+  "generatedFrom": "qualification/kernel-authority/status_manifest.json",
+  "generatedBy": "qualification/kernel-authority/generate_status.py",
+  "sourceBase": {
+    "commit": "3b3ba0a4bbba4218fdd12ebce18946967daf0288",
+    "tree": "c40caf00b37e94adac1189eaf0971a6f806387ca"
+  },
+  "module": "kernel.authority",
+  "laneId": "LANE-A-FOUNDATION",
+  "status": "source-hardened-repository-qualified-execution-pending",
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "implementedOperationMappingComplete": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "operationIds": [
+    "authority_lease_registry",
+    "authority_dispatch_binding",
+    "final_use_authority",
+    "final_use_control",
+    "production_trust_bundle",
+    "verified_use_witness",
+    "agentd_external_trust_host",
+    "agentd_effect_owner",
+    "candidate_product_pilot",
+    "performance_qualification",
+    "storage_scaling_model"
+  ],
+  "productCallerIds": [
+    "runtime.fleet.issue",
+    "browser.servo.agentd",
+    "automation.taskflow.agentd",
+    "secrets.heptabao.registered_host"
+  ],
+  "evidencePrograms": [
+    {
+      "id": "kernel-authority-convergence",
+      "path": ".github/workflows/kernel-authority-convergence.yml",
+      "modes": [
+        "exact-head",
+        "synthetic-merge"
+      ],
+      "state": "required_repository_qualification_defined_current_candidate_execution_pending"
+    },
+    {
+      "id": "kernel-authority-production-closure",
+      "path": ".github/workflows/kernel-authority-production-closure.yml",
+      "modes": [
+        "exact-head",
+        "synthetic-merge"
+      ],
+      "state": "trust_product_pilot_and_performance_lanes_defined_current_candidate_execution_pending"
+    },
+    {
+      "id": "kernel-authority-status",
+      "path": ".github/workflows/kernel-authority-status.yml",
+      "modes": [
+        "exact-source"
+      ],
+      "state": "generated_truth_and_closed_extension_api_check_defined"
+    }
+  ],
+  "externalEvidenceGates": [
+    "independently protected or attested time source and measured maximum uncertainty",
+    "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
+    "KMS or HSM custody for issuer, approval and revocation roles with staged rotation and compromise-response receipts",
+    "deployed revocation fanout under normal delay partition restart and recovery scenarios",
+    "target-host filesystem mount backup identity and boot rollback-detection qualification",
+    "target-host p50 p95 p99 throughput lock-wait fsync snapshot and restart measurements with approved SLOs",
+    "verifier-only topology evidence and independent semantic review",
+    "operator acceptance canary promotion and release"
+  ],
+  "activationGranted": false,
+  "releaseGranted": false
+}

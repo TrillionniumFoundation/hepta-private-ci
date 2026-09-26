@@ -1,27 +1,31 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
-  "sourceBase": {
+  "schema": "hepta.kernel-authority-status-manifest.v1",
+  "schemaVersion": 1,
+  "sourceAnchor": {
     "commit": "3b3ba0a4bbba4218fdd12ebce18946967daf0288",
     "tree": "c40caf00b37e94adac1189eaf0971a6f806387ca"
   },
-  "mappingSourceIdentityMode": "path_only",
-  "exactSourceEvidenceMode": "lane_a_runtime_wiring_only_no_product_execution_claim",
-  "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
+  "laneId": "LANE-A-FOUNDATION",
   "owner": "security-authority",
   "deputy": "kernel-contracts",
+  "status": "source-hardened-repository-qualified-execution-pending",
   "technicalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
   "declaredRoots": [
     "codex-rs/hepta-contracts"
   ],
-  "resolvedRoots": [
-    "codex-rs/hepta-contracts"
-  ],
-  "sourceRootPresent": true,
-  "productionImplementation": false,
   "productCallerState": "fleet-browser-agentd-and-bao-source-composed-candidate-pilots-defined-not-product-activated",
   "productionWriterState": "authority-owner-and-agentd-effect-owner-source-implemented-not-activated",
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "implementedOperationMappingComplete": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
   "operations": [
     {
       "operation": "authority_lease_registry",
@@ -35,8 +39,7 @@
       ],
       "designOperation": "put_verify_revoke_prune_advance_epoch",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "authority_dispatch_binding",
@@ -51,8 +54,7 @@
       ],
       "designOperation": "bind_exact_lease_and_consume_at_irreversible_boundary",
       "mappingClass": "owner_native_capability",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "final_use_authority",
@@ -66,8 +68,7 @@
       ],
       "designOperation": "claim_enter_dispatch_recover_and_revoke",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "final_use_control",
@@ -81,8 +82,7 @@
       ],
       "designOperation": "verify_approval_ingest_revocation_and_verify_convergence",
       "mappingClass": "owner_native_verifier",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "production_trust_bundle",
@@ -96,8 +96,7 @@
       ],
       "designOperation": "fail_closed_production_open_with_live_trust_domain_and_key_set_validation",
       "mappingClass": "owner_native_trust_contract",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "verified_use_witness",
@@ -112,8 +111,7 @@
       ],
       "designOperation": "serialize_exact_consumer_or_dispatch_entry_evidence",
       "mappingClass": "owner_native_evidence",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "agentd_external_trust_host",
@@ -126,8 +124,7 @@
       ],
       "designOperation": "persist_host_clock_floor_and_external_final_use_frontier",
       "mappingClass": "product_host_adapter",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "agentd_effect_owner",
@@ -141,8 +138,7 @@
       ],
       "designOperation": "dispatch_reconcile_and_settle_authorized_provider_effect",
       "mappingClass": "product_effect_owner",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "candidate_product_pilot",
@@ -159,8 +155,7 @@
       ],
       "designOperation": "run_candidate_bound_dual_product_failure_and_recovery_pilot",
       "mappingClass": "qualification_harness",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "performance_qualification",
@@ -173,8 +168,7 @@
       ],
       "designOperation": "measure_p50_p95_p99_throughput_lock_contention_snapshot_and_restart",
       "mappingClass": "qualification_benchmark",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     },
     {
       "operation": "storage_scaling_model",
@@ -187,48 +181,9 @@
       ],
       "designOperation": "model_hash_chained_wal_checkpoint_sharding_and_lifetime",
       "mappingClass": "non_authorizing_reference_model",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": []
     }
   ],
-  "repositoryControlledGaps": [
-    "Obtain green required exact-head and deterministic synthetic-merge receipts for the current candidate SHA.",
-    "Keep the canonical B4 and extension API inventories exhaustive as authority APIs and product callers change.",
-    "Retain candidate identity, command, log digest and result in every product-pilot and performance receipt.",
-    "Keep production constructors mandatory and fail closed; compatibility clocks, local frontiers or evidence-only key claims must not satisfy them.",
-    "Do not replace the current authority spine with the WAL/checkpoint reference model without preserving linearization and anti-rollback proofs."
-  ],
-  "externalEvidenceGates": [
-    "independently protected or attested time source and measured maximum uncertainty",
-    "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
-    "KMS or HSM custody for issuer, approval and revocation roles with staged rotation and compromise-response receipts",
-    "deployed revocation fanout under normal delay partition restart and recovery scenarios",
-    "target-host filesystem mount backup identity and boot rollback-detection qualification",
-    "target-host p50 p95 p99 throughput lock-wait fsync snapshot and restart measurements with approved SLOs",
-    "verifier-only topology evidence and independent semantic review",
-    "operator acceptance canary promotion and release"
-  ],
-  "claimBoundary": {
-    "nativeSourceMappingComplete": true,
-    "sourceRootPresent": true,
-    "implementedOperationMappingComplete": true,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false
-  },
-  "sourceRoot": [
-    "codex-rs/hepta-contracts"
-  ],
-  "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
-  "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
-  "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md",
-  "productionTrustProfile": "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
-  "productionClosure": "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md",
-  "capacityQualification": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
-  "statusManifest": "qualification/kernel-authority/status_manifest.json",
-  "statusGenerator": "qualification/kernel-authority/generate_status.py",
   "productCallers": [
     {
       "id": "runtime.fleet.issue",
@@ -268,6 +223,41 @@
       ]
     }
   ],
+  "repositoryControlledGaps": [
+    "Obtain green required exact-head and deterministic synthetic-merge receipts for the current candidate SHA.",
+    "Keep the canonical B4 and extension API inventories exhaustive as authority APIs and product callers change.",
+    "Retain candidate identity, command, log digest and result in every product-pilot and performance receipt.",
+    "Keep production constructors mandatory and fail closed; compatibility clocks, local frontiers or evidence-only key claims must not satisfy them.",
+    "Do not replace the current authority spine with the WAL/checkpoint reference model without preserving linearization and anti-rollback proofs."
+  ],
+  "externalEvidenceGates": [
+    "independently protected or attested time source and measured maximum uncertainty",
+    "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
+    "KMS or HSM custody for issuer, approval and revocation roles with staged rotation and compromise-response receipts",
+    "deployed revocation fanout under normal delay partition restart and recovery scenarios",
+    "target-host filesystem mount backup identity and boot rollback-detection qualification",
+    "target-host p50 p95 p99 throughput lock-wait fsync snapshot and restart measurements with approved SLOs",
+    "verifier-only topology evidence and independent semantic review",
+    "operator acceptance canary promotion and release"
+  ],
+  "trackedPaths": [
+    ".github/workflows/kernel-authority-convergence.yml",
+    ".github/workflows/kernel-authority-production-closure.yml",
+    ".github/workflows/kernel-authority-status.yml",
+    "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md",
+    "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
+    "docs/modules/kernel.authority/LINEARIZATION.md",
+    "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
+    "qualification/kernel-authority/generate_status.py",
+    "qualification/kernel-authority/prepare_candidate.py",
+    "qualification/kernel-authority/runtime_qualification.py",
+    "qualification/kernel-authority/storage_model.py",
+    "qualification/kernel-authority/verify.py",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+    "qa/b4-no-bypass/test_kernel_authority_extension_api.py"
+  ],
   "evidencePrograms": [
     {
       "id": "kernel-authority-convergence",
@@ -295,5 +285,40 @@
       ],
       "state": "generated_truth_and_closed_extension_api_check_defined"
     }
-  ]
+  ],
+  "productionTrustBundle": {
+    "sourceImplemented": true,
+    "mandatoryComponents": [
+      "production clock",
+      "rollback-independent CAS frontier",
+      "live KMS/HSM key custody",
+      "deployment and disaster-recovery receipts"
+    ],
+    "liveKeySetDigestBound": true,
+    "keyGenerationAndRevocationFloorBound": true,
+    "privateKeyExportRejected": true,
+    "targetDeploymentQualified": false
+  },
+  "productPilots": {
+    "fleet": "candidate-bound process pilot defined; current candidate receipt pending",
+    "browserAgentd": "candidate-bound process pilot defined; current candidate receipt pending",
+    "restartRevocationRollbackRotation": "covered by named repository tests and harness; target deployment drill external",
+    "deploymentActivationProved": false
+  },
+  "qualification": {
+    "exactHead": "workflow defined; current candidate receipt pending",
+    "syntheticMerge": "workflow defined; current candidate receipt pending",
+    "staleArtifactReuseRejected": true,
+    "differentShaReuseRejected": true,
+    "currentCandidateGreen": false
+  },
+  "performanceAndScale": {
+    "latencyPercentiles": "qualification benchmark emits min mean p50 p95 p99 max",
+    "throughputAndContention": "qualification benchmark defined",
+    "snapshotAndRestart": "qualification benchmark defined",
+    "walCheckpoint": "executable reference model only",
+    "registrySharding": "deterministic reference model only",
+    "capacityLifetime": "bounded reserve projections defined",
+    "productionSloGranted": false
+  }
 }
