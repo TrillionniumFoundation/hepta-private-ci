@@ -1,0 +1,56 @@
+name: Cognitive store macOS compile preflight
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-convergence-20260927
+
+concurrency:
+  group: cognitive-store-macos-preflight
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Verify architecture, map and bootstrap
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_architecture.py
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "${{ github.sha }}" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Check formatting
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd -- --check
+      - name: Compile cognitive store and memory tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --no-run
+      - name: Compile Agentd cognitive product test
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --features qualification-cognitive-write --no-run
+      - name: Strict Clippy relevant crates
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --features codex-hepta-agentd/qualification-cognitive-write -- -D warnings
