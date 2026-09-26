@@ -118,11 +118,14 @@ impl PeerCredentialRegistryV1 {
         Self::default()
     }
 
+    /// Enrolls the first generation for one directional key identity.
+    /// Subsequent generations must use `rotate`; direct enrollment may not
+    /// create two simultaneously-current generations for the same key.
     pub fn enroll(&mut self, credential: PeerCredentialV1) -> Result<(), CredentialError> {
-        let identity = credential.identity.clone();
-        if self.credentials.contains_key(&identity) {
+        if self.has_directional_key(&credential) {
             return Err(CredentialError::DuplicateCredential);
         }
+        let identity = credential.identity.clone();
         if self.revoked.contains(&identity) {
             return Err(CredentialError::Revoked);
         }
@@ -137,20 +140,23 @@ impl PeerCredentialRegistryV1 {
         let prior = self
             .credentials
             .keys()
-            .filter(|identity| {
-                identity.sender_peer_id == *credential.sender_peer_id()
-                    && identity.receiver_peer_id == *credential.receiver_peer_id()
-                    && identity.key_id == *credential.key_id()
-            })
+            .filter(|identity| same_directional_key(identity, &credential.identity))
             .cloned()
             .collect::<Vec<_>>();
+        if prior.is_empty() {
+            return Err(CredentialError::MissingCredential);
+        }
         if prior
             .iter()
             .any(|identity| identity.generation >= generation)
         {
             return Err(CredentialError::NonIncreasingGeneration);
         }
-        self.enroll(credential)?;
+        let identity = credential.identity.clone();
+        if self.revoked.contains(&identity) || self.credentials.contains_key(&identity) {
+            return Err(CredentialError::Revoked);
+        }
+        self.credentials.insert(identity, credential);
         self.revoked.extend(prior);
         Ok(())
     }
@@ -204,6 +210,18 @@ impl PeerCredentialRegistryV1 {
         }
         Ok(credential)
     }
+
+    fn has_directional_key(&self, credential: &PeerCredentialV1) -> bool {
+        self.credentials
+            .keys()
+            .any(|identity| same_directional_key(identity, &credential.identity))
+    }
+}
+
+fn same_directional_key(left: &CredentialIdentity, right: &CredentialIdentity) -> bool {
+    left.sender_peer_id == right.sender_peer_id
+        && left.receiver_peer_id == right.receiver_peer_id
+        && left.key_id == right.key_id
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -227,7 +245,9 @@ impl fmt::Display for CredentialError {
             Self::ZeroGeneration => "credential generation must be non-zero",
             Self::InvalidLifetime => "credential lifetime is invalid",
             Self::ZeroSecret => "credential secret cannot be all zero",
-            Self::DuplicateCredential => "credential identity is already enrolled",
+            Self::DuplicateCredential => {
+                "directional credential is already enrolled; use explicit rotation"
+            }
             Self::MissingCredential => "credential identity is not enrolled",
             Self::NonIncreasingGeneration => "rotated credential generation must strictly increase",
             Self::Revoked => "credential is revoked",
