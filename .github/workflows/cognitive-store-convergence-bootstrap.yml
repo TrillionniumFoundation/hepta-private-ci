@@ -1,4 +1,4 @@
-name: Cognitive store convergence bootstrap
+name: Cognitive store convergence finalizer
 
 on:
   push:
@@ -6,86 +6,83 @@ on:
       - codex/cognitive-store-full-convergence-20260927
 
 concurrency:
-  group: cognitive-store-convergence-bootstrap
+  group: cognitive-store-convergence-finalizer
   cancel-in-progress: true
 
 permissions:
   contents: write
 
 jobs:
-  apply:
-    if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-bootstrap]') }}
-    runs-on: macos-15
-    timeout-minutes: 30
+  finalize:
+    if: ${{ !contains(github.event.head_commit.message, '[cognitive-store-finalize]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: codex/cognitive-store-full-convergence-20260927
           fetch-depth: 0
           persist-credentials: true
-      - name: Bind bootstrap source
+      - name: Bind exact source
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.sha }}"
           git diff --quiet
           git diff --cached --quiet
-      - name: Isolate permanent workflow from one-shot token
-        run: python3 scripts/cognitive_store_bootstrap_workflow_permission_patch.py
-      - name: Apply convergence source
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Finalize source and documentation tree
         run: |
           set -euo pipefail
-          python3 scripts/cognitive_store_convergence_bootstrap.py
-          python3 scripts/cognitive_store_convergence_postpatch.py
-      - name: Format changed Rust crates
-        working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-agentd
-      - name: Verify generated Python and retain architecture diagnostic
-        run: |
-          set -euo pipefail
+          python3 scripts/cognitive_store_finalize.py
           python3 -m py_compile \
             scripts/cognitive_store_architecture.py \
+            scripts/cognitive_store_map_verify.py \
             scripts/cognitive_store_qualification_manifest.py \
             tools/cognitive-store-host-bootstrap/bootstrap.py \
             tools/cognitive-store-host-bootstrap/test_bootstrap.py
+          python3 scripts/cognitive_store_architecture.py
           python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
-          set +e
-          python3 scripts/cognitive_store_architecture.py > cognitive-store-bootstrap-architecture.txt 2>&1
-          status=$?
-          set -e
-          cat cognitive-store-bootstrap-architecture.txt
-          printf 'exit_code=%s\n' "$status" >> cognitive-store-bootstrap-architecture.txt
-      - name: Commit implementation source
+      - name: Commit finalized source
         run: |
           set -euo pipefail
           git config user.name "Hepta Cognitive Store CI"
           git config user.email "hepta-cognitive-ci@users.noreply.github.com"
           git add -A
           git diff --cached --check
-          git commit -m "cognitive.store: close architecture, capability, qualification, bootstrap, and lifecycle gaps [cognitive-store-bootstrap]"
-      - name: Rebind machine implementation map
+          git commit -m "cognitive.store: finalize workflow, map verifier, and clean tree [cognitive-store-finalize]"
+      - name: Rebind cognitive and shared-callsite maps
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module cognitive.store
-          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module cognitive.store \
+            --module kernel.operations \
+            --module runtime.supervisor \
+            --module runtime.agentd \
+            --module intelligence.control \
+            --module memory.retrieval \
+            --module memory.federation \
+            --module knowledge.graph \
+            --module learning.operator
+      - name: Commit exact map observations
+        run: |
+          set -euo pipefail
+          git add docs/modules/*/IMPLEMENTATION_MAP.json
           git diff --cached --check
-          git commit -m "docs(cognitive.store): bind convergence map to exact source [cognitive-store-bootstrap]"
-      - name: Retain exact verifier diagnostic
+          if git diff --cached --quiet; then
+            echo "No map observation changed."
+          else
+            git commit -m "docs(cognitive-store): rebind affected implementation maps [cognitive-store-finalize]"
+          fi
+      - name: Verify final candidate
         run: |
           set -euo pipefail
-          set +e
-          python3 scripts/hepta-implementation-maps.py verify \
+          python3 scripts/cognitive_store_architecture.py
+          python3 scripts/cognitive_store_map_verify.py \
             --expected-sha "$(git rev-parse HEAD)" \
-            --expected-tree "$(git rev-parse HEAD^{tree})" \
-            > cognitive-store-bootstrap-map-verify.txt 2>&1
-          status=$?
-          set -e
-          cat cognitive-store-bootstrap-map-verify.txt
-          printf 'exit_code=%s\n' "$status" >> cognitive-store-bootstrap-map-verify.txt
-          git add cognitive-store-bootstrap-map-verify.txt
-          git diff --cached --check
-          git commit -m "ci(cognitive-store): retain exact map verifier diagnostic [cognitive-store-bootstrap]"
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Push converged branch
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Push finalized branch
         run: git push origin HEAD:codex/cognitive-store-full-convergence-20260927
