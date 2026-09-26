@@ -1,15 +1,13 @@
-//! Product-owned currentness, lease, rotation, revocation and recovery for
-//! generation-bound memory retrieval contexts.
+//! Atomic product reader/control capabilities. No storage or release authority.
 //!
-//! This provider owns no model or memory data. It seals an externally composed
-//! `RetrievalExecutionContextV1` to one Agent/body generation and exposes it
-//! through the `CurrentMemoryRetrievalContext` capability. Every read validates
-//! the lease and the full context binding again, so rotation and revocation fail
-//! closed for in-flight requests.
+//! Recovery requires an independently current witness from the trusted owner.
+//! The witness adapter and durable checkpoint publication must be composed by
+//! that owner; this in-process provider is not itself a durable registry.
 
-use std::error::Error as StdError;
-use std::fmt;
+use std::sync::Arc;
 use std::sync::RwLock;
+use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -19,7 +17,8 @@ use codex_hepta_types::Digest32;
 
 use super::CurrentMemoryRetrievalContext;
 
-const PRODUCT_CONTEXT_DOMAIN: &[u8] = b"hepta.agentd.product-retrieval-context.v1";
+const PRODUCT_CONTEXT_DOMAIN: &[u8] = b"hepta.agentd.product-retrieval-context.v2";
+const MAX_LEASE_MS: u64 = 300_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductRetrievalContextSnapshotV1 {
@@ -33,106 +32,79 @@ pub struct ProductRetrievalContextSnapshotV1 {
 }
 
 impl ProductRetrievalContextSnapshotV1 {
-    pub fn validate(&self) -> Result<(), ProductRetrievalContextErrorV1> {
+    pub fn validate(&self) -> Result<(), String> {
         if self.body_generation == 0 || self.epoch == 0 {
-            return Err(ProductRetrievalContextErrorV1::InvalidGeneration);
+            return Err("invalid product generation".to_string());
         }
-        if self.revoked != self.context.is_none() {
-            return Err(ProductRetrievalContextErrorV1::InvalidState);
+        if self.revoked != self.context.is_none()
+            || (self.revoked && self.lease_expires_unix_ms != 0)
+            || (!self.revoked && self.lease_expires_unix_ms == 0)
+        {
+            return Err("invalid product lifecycle state".to_string());
         }
         if let Some(context) = &self.context {
-            context
-                .validate()
-                .map_err(|error| ProductRetrievalContextErrorV1::InvalidContext(error.to_string()))?;
+            context.validate().map_err(|error| error.to_string())?;
         }
         if self.state_digest != self.compute_state_digest() {
-            return Err(ProductRetrievalContextErrorV1::DigestMismatch);
+            return Err("product state digest mismatch".to_string());
         }
         Ok(())
     }
 
     #[must_use]
     pub fn compute_state_digest(&self) -> Digest32 {
-        state_digest(
-            &self.owner,
-            self.body_generation,
-            self.epoch,
-            self.lease_expires_unix_ms,
-            self.context.as_ref(),
-            self.revoked,
-        )
+        let mut bytes = PRODUCT_CONTEXT_DOMAIN.to_vec();
+        let owner = self.owner.as_str().as_bytes();
+        bytes.extend_from_slice(&u64::try_from(owner.len()).unwrap_or(u64::MAX).to_be_bytes());
+        bytes.extend_from_slice(owner);
+        bytes.extend_from_slice(&self.body_generation.to_be_bytes());
+        bytes.extend_from_slice(&self.epoch.to_be_bytes());
+        bytes.extend_from_slice(&self.lease_expires_unix_ms.to_be_bytes());
+        bytes.push(u8::from(self.revoked));
+        match &self.context {
+            Some(context) => {
+                bytes.push(1);
+                bytes.extend_from_slice(context.binding_digest().as_array());
+            }
+            None => bytes.push(0),
+        }
+        Digest32::of_bytes(&bytes)
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-struct ProductRetrievalContextStateV1 {
-    epoch: u64,
-    lease_expires_unix_ms: u64,
-    context: Option<RetrievalExecutionContextV1>,
-    revoked: bool,
-    state_digest: Digest32,
-}
-
-pub struct ProductMemoryRetrievalContextV1 {
-    owner: AgentId,
-    body_generation: u64,
-    state: RwLock<ProductRetrievalContextStateV1>,
-}
-
-impl ProductMemoryRetrievalContextV1 {
-    pub fn new(
-        owner: AgentId,
+/// Trusted composition boundary, not authentication by a caller-supplied hash.
+/// Implementations must read a separately protected, current durable owner state.
+pub trait RetrievalRecoveryWitnessV1: Send + Sync {
+    fn latest_state(
+        &self,
+        owner: &AgentId,
         body_generation: u64,
-        context: RetrievalExecutionContextV1,
-        lease_expires_unix_ms: u64,
-    ) -> Result<Self, ProductRetrievalContextErrorV1> {
-        if body_generation == 0 {
-            return Err(ProductRetrievalContextErrorV1::InvalidGeneration);
-        }
-        context
-            .validate()
-            .map_err(|error| ProductRetrievalContextErrorV1::InvalidContext(error.to_string()))?;
-        require_future_lease(lease_expires_unix_ms)?;
-        let epoch = 1;
-        let state_digest = state_digest(
-            &owner,
-            body_generation,
-            epoch,
-            lease_expires_unix_ms,
-            Some(&context),
-            false,
-        );
-        Ok(Self {
-            owner,
-            body_generation,
-            state: RwLock::new(ProductRetrievalContextStateV1 {
-                epoch,
-                lease_expires_unix_ms,
-                context: Some(context),
-                revoked: false,
-                state_digest,
-            }),
-        })
+    ) -> Result<(u64, Digest32), String>;
+}
+
+struct ProductState {
+    snapshot: ProductRetrievalContextSnapshotV1,
+    acquired_wall_ms: u64,
+    monotonic_deadline: Instant,
+}
+
+pub(super) struct ProductMemoryRetrievalContextV1 {
+    state: RwLock<ProductState>,
+}
+
+/// Unforgeable by struct literal: its provider field is private. Keep this at
+/// the protected composition root; request handlers receive only the reader.
+pub struct ProductRetrievalContextControlV1 {
+    provider: Arc<ProductMemoryRetrievalContextV1>,
+}
+
+impl ProductRetrievalContextControlV1 {
+    pub(super) fn from_provider(provider: Arc<ProductMemoryRetrievalContextV1>) -> Self {
+        Self { provider }
     }
 
-    pub fn recover(
-        snapshot: ProductRetrievalContextSnapshotV1,
-    ) -> Result<Self, ProductRetrievalContextErrorV1> {
-        snapshot.validate()?;
-        if !snapshot.revoked {
-            require_future_lease(snapshot.lease_expires_unix_ms)?;
-        }
-        Ok(Self {
-            owner: snapshot.owner,
-            body_generation: snapshot.body_generation,
-            state: RwLock::new(ProductRetrievalContextStateV1 {
-                epoch: snapshot.epoch,
-                lease_expires_unix_ms: snapshot.lease_expires_unix_ms,
-                context: snapshot.context,
-                revoked: snapshot.revoked,
-                state_digest: snapshot.state_digest,
-            }),
-        })
+    pub fn snapshot(&self) -> Result<ProductRetrievalContextSnapshotV1, String> {
+        self.provider.snapshot()
     }
 
     pub fn rotate(
@@ -140,302 +112,184 @@ impl ProductMemoryRetrievalContextV1 {
         expected_epoch: u64,
         context: RetrievalExecutionContextV1,
         lease_expires_unix_ms: u64,
-    ) -> Result<u64, ProductRetrievalContextErrorV1> {
-        context
-            .validate()
-            .map_err(|error| ProductRetrievalContextErrorV1::InvalidContext(error.to_string()))?;
-        require_future_lease(lease_expires_unix_ms)?;
-        let mut state = self
-            .state
-            .write()
-            .map_err(|_| ProductRetrievalContextErrorV1::LockPoisoned)?;
-        verify_locked_state(&self.owner, self.body_generation, &state)?;
-        if state.epoch != expected_epoch {
-            return Err(ProductRetrievalContextErrorV1::EpochMismatch {
-                expected: expected_epoch,
-                actual: state.epoch,
-            });
+    ) -> Result<u64, String> {
+        context.validate().map_err(|error| error.to_string())?;
+        let mut state = self.provider.state.write().map_err(|_| "poisoned provider lock")?;
+        require_live(&state)?;
+        require_epoch(&state, expected_epoch)?;
+        let previous = state.snapshot.context.as_ref().ok_or("revoked context")?;
+        if context.generation_vector.authority_epoch < previous.generation_vector.authority_epoch {
+            return Err("authority epoch regression".to_string());
         }
-        if state.revoked {
-            return Err(ProductRetrievalContextErrorV1::Revoked);
-        }
-        let next_epoch = state
-            .epoch
-            .checked_add(1)
-            .ok_or(ProductRetrievalContextErrorV1::EpochOverflow)?;
-        state.epoch = next_epoch;
-        state.lease_expires_unix_ms = lease_expires_unix_ms;
-        state.context = Some(context);
-        state.state_digest = state_digest(
-            &self.owner,
-            self.body_generation,
-            state.epoch,
-            state.lease_expires_unix_ms,
-            state.context.as_ref(),
-            false,
-        );
-        Ok(next_epoch)
+        let (wall, deadline) = lease_window(lease_expires_unix_ms)?;
+        let next = state.snapshot.epoch.checked_add(1).ok_or("epoch overflow")?;
+        state.snapshot.context = Some(context);
+        state.snapshot.epoch = next;
+        state.snapshot.lease_expires_unix_ms = lease_expires_unix_ms;
+        state.snapshot.state_digest = state.snapshot.compute_state_digest();
+        state.acquired_wall_ms = wall;
+        state.monotonic_deadline = deadline;
+        Ok(next)
     }
 
-    pub fn renew(
-        &self,
-        expected_epoch: u64,
+    pub fn renew(&self, expected_epoch: u64, lease_expires_unix_ms: u64) -> Result<u64, String> {
+        let mut state = self.provider.state.write().map_err(|_| "poisoned provider lock")?;
+        require_live(&state)?;
+        require_epoch(&state, expected_epoch)?;
+        let (wall, deadline) = lease_window(lease_expires_unix_ms)?;
+        let next = state.snapshot.epoch.checked_add(1).ok_or("epoch overflow")?;
+        state.snapshot.epoch = next;
+        state.snapshot.lease_expires_unix_ms = lease_expires_unix_ms;
+        state.snapshot.state_digest = state.snapshot.compute_state_digest();
+        state.acquired_wall_ms = wall;
+        state.monotonic_deadline = deadline;
+        Ok(next)
+    }
+
+    pub fn revoke(&self, expected_epoch: u64) -> Result<u64, String> {
+        let mut state = self.provider.state.write().map_err(|_| "poisoned provider lock")?;
+        state.snapshot.validate()?;
+        if state.snapshot.revoked
+            && (expected_epoch == state.snapshot.epoch
+                || expected_epoch.checked_add(1) == Some(state.snapshot.epoch))
+        {
+            return Ok(state.snapshot.epoch);
+        }
+        require_epoch(&state, expected_epoch)?;
+        let next = state.snapshot.epoch.checked_add(1).ok_or("epoch overflow")?;
+        state.snapshot.epoch = next;
+        state.snapshot.lease_expires_unix_ms = 0;
+        state.snapshot.context = None;
+        state.snapshot.revoked = true;
+        state.snapshot.state_digest = state.snapshot.compute_state_digest();
+        state.monotonic_deadline = Instant::now();
+        Ok(next)
+    }
+}
+
+impl ProductMemoryRetrievalContextV1 {
+    pub(super) fn new(
+        owner: AgentId,
+        body_generation: u64,
+        context: RetrievalExecutionContextV1,
         lease_expires_unix_ms: u64,
-    ) -> Result<u64, ProductRetrievalContextErrorV1> {
-        require_future_lease(lease_expires_unix_ms)?;
-        let context = {
-            let state = self
-                .state
-                .read()
-                .map_err(|_| ProductRetrievalContextErrorV1::LockPoisoned)?;
-            verify_locked_state(&self.owner, self.body_generation, &state)?;
-            if state.epoch != expected_epoch {
-                return Err(ProductRetrievalContextErrorV1::EpochMismatch {
-                    expected: expected_epoch,
-                    actual: state.epoch,
-                });
-            }
-            state
-                .context
-                .clone()
-                .ok_or(ProductRetrievalContextErrorV1::Revoked)?
+    ) -> Result<Self, String> {
+        let mut snapshot = ProductRetrievalContextSnapshotV1 {
+            owner,
+            body_generation,
+            epoch: 1,
+            lease_expires_unix_ms,
+            context: Some(context),
+            revoked: false,
+            state_digest: Digest32::ZERO,
         };
-        self.rotate(expected_epoch, context, lease_expires_unix_ms)
-    }
-
-    pub fn revoke(
-        &self,
-        expected_epoch: u64,
-    ) -> Result<u64, ProductRetrievalContextErrorV1> {
-        let mut state = self
-            .state
-            .write()
-            .map_err(|_| ProductRetrievalContextErrorV1::LockPoisoned)?;
-        verify_locked_state(&self.owner, self.body_generation, &state)?;
-        if state.epoch != expected_epoch {
-            return Err(ProductRetrievalContextErrorV1::EpochMismatch {
-                expected: expected_epoch,
-                actual: state.epoch,
-            });
-        }
-        let next_epoch = state
-            .epoch
-            .checked_add(1)
-            .ok_or(ProductRetrievalContextErrorV1::EpochOverflow)?;
-        state.epoch = next_epoch;
-        state.lease_expires_unix_ms = 0;
-        state.context = None;
-        state.revoked = true;
-        state.state_digest = state_digest(
-            &self.owner,
-            self.body_generation,
-            state.epoch,
-            state.lease_expires_unix_ms,
-            None,
-            true,
-        );
-        Ok(next_epoch)
-    }
-
-    pub fn snapshot(
-        &self,
-    ) -> Result<ProductRetrievalContextSnapshotV1, ProductRetrievalContextErrorV1> {
-        let state = self
-            .state
-            .read()
-            .map_err(|_| ProductRetrievalContextErrorV1::LockPoisoned)?;
-        verify_locked_state(&self.owner, self.body_generation, &state)?;
-        Ok(ProductRetrievalContextSnapshotV1 {
-            owner: self.owner.clone(),
-            body_generation: self.body_generation,
-            epoch: state.epoch,
-            lease_expires_unix_ms: state.lease_expires_unix_ms,
-            context: state.context.clone(),
-            revoked: state.revoked,
-            state_digest: state.state_digest,
+        snapshot.state_digest = snapshot.compute_state_digest();
+        snapshot.validate()?;
+        let (acquired_wall_ms, monotonic_deadline) = lease_window(lease_expires_unix_ms)?;
+        Ok(Self {
+            state: RwLock::new(ProductState { snapshot, acquired_wall_ms, monotonic_deadline }),
         })
     }
 
-    #[must_use]
-    pub fn owner(&self) -> &AgentId {
-        &self.owner
+    pub(super) fn recover(
+        snapshot: ProductRetrievalContextSnapshotV1,
+        witness: &dyn RetrievalRecoveryWitnessV1,
+    ) -> Result<Self, String> {
+        snapshot.validate()?;
+        let latest = witness.latest_state(&snapshot.owner, snapshot.body_generation)?;
+        if latest != (snapshot.epoch, snapshot.state_digest) {
+            return Err("checkpoint is not the independently current owner state".to_string());
+        }
+        let (acquired_wall_ms, monotonic_deadline) = if snapshot.revoked {
+            (now_unix_ms()?, Instant::now())
+        } else {
+            lease_window(snapshot.lease_expires_unix_ms)?
+        };
+        Ok(Self {
+            state: RwLock::new(ProductState { snapshot, acquired_wall_ms, monotonic_deadline }),
+        })
     }
 
-    #[must_use]
-    pub const fn body_generation(&self) -> u64 {
-        self.body_generation
+    fn snapshot(&self) -> Result<ProductRetrievalContextSnapshotV1, String> {
+        let state = self.state.read().map_err(|_| "poisoned provider lock")?;
+        state.snapshot.validate()?;
+        Ok(state.snapshot.clone())
     }
 }
 
 impl CurrentMemoryRetrievalContext for ProductMemoryRetrievalContextV1 {
-    fn current(
+    fn current(&self, owner: &AgentId, body_generation: u64) -> Result<RetrievalExecutionContextV1, String> {
+        self.acquire_context(owner, body_generation).map(|(context, _, _)| context)
+    }
+
+    fn acquire_context(
         &self,
         owner: &AgentId,
         body_generation: u64,
-    ) -> Result<RetrievalExecutionContextV1, String> {
-        if owner != &self.owner || body_generation != self.body_generation {
-            return Err(ProductRetrievalContextErrorV1::IdentityMismatch.to_string());
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+        let state = self.state.read().map_err(|_| "poisoned provider lock")?;
+        if owner != &state.snapshot.owner || body_generation != state.snapshot.body_generation {
+            return Err("retrieval owner/body mismatch".to_string());
         }
-        let state = self
-            .state
-            .read()
-            .map_err(|_| ProductRetrievalContextErrorV1::LockPoisoned.to_string())?;
-        verify_locked_state(&self.owner, self.body_generation, &state)
-            .map_err(|error| error.to_string())?;
-        if state.revoked {
-            return Err(ProductRetrievalContextErrorV1::Revoked.to_string());
-        }
-        let now = now_unix_ms().map_err(|error| error.to_string())?;
-        if now >= state.lease_expires_unix_ms {
-            return Err(ProductRetrievalContextErrorV1::LeaseExpired.to_string());
-        }
-        let context = state
-            .context
-            .clone()
-            .ok_or_else(|| ProductRetrievalContextErrorV1::InvalidState.to_string())?;
-        context
-            .validate()
-            .map_err(|error| ProductRetrievalContextErrorV1::InvalidContext(error.to_string()).to_string())?;
-        Ok(context)
+        require_live(&state)?;
+        let context = state.snapshot.context.clone().ok_or("revoked context")?;
+        Ok((context, state.snapshot.state_digest, Some(state.snapshot.lease_expires_unix_ms)))
     }
 
     fn lifecycle_epoch(&self) -> Result<u64, String> {
-        self.snapshot()
-            .map(|snapshot| snapshot.epoch)
-            .map_err(|error| error.to_string())
+        self.snapshot().map(|snapshot| snapshot.epoch)
     }
 
     fn lease_expires_unix_ms(&self) -> Result<u64, String> {
-        self.snapshot()
-            .map(|snapshot| snapshot.lease_expires_unix_ms)
-            .map_err(|error| error.to_string())
+        self.snapshot().map(|snapshot| snapshot.lease_expires_unix_ms)
     }
 
     fn context_state_digest(&self) -> Result<Digest32, String> {
-        self.snapshot()
-            .map(|snapshot| snapshot.state_digest)
-            .map_err(|error| error.to_string())
+        self.snapshot().map(|snapshot| snapshot.state_digest)
     }
 
     fn revoked(&self) -> Result<bool, String> {
-        self.snapshot()
-            .map(|snapshot| snapshot.revoked)
-            .map_err(|error| error.to_string())
-    }
-
-    fn rotate_context(
-        &self,
-        expected_epoch: u64,
-        context: RetrievalExecutionContextV1,
-        lease_expires_unix_ms: u64,
-    ) -> Result<u64, String> {
-        self.rotate(expected_epoch, context, lease_expires_unix_ms)
-            .map_err(|error| error.to_string())
-    }
-
-    fn renew_context(
-        &self,
-        expected_epoch: u64,
-        lease_expires_unix_ms: u64,
-    ) -> Result<u64, String> {
-        self.renew(expected_epoch, lease_expires_unix_ms)
-            .map_err(|error| error.to_string())
-    }
-
-    fn revoke_context(&self, expected_epoch: u64) -> Result<u64, String> {
-        self.revoke(expected_epoch).map_err(|error| error.to_string())
+        self.snapshot().map(|snapshot| snapshot.revoked)
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum ProductRetrievalContextErrorV1 {
-    InvalidGeneration,
-    InvalidState,
-    InvalidContext(String),
-    IdentityMismatch,
-    LeaseExpired,
-    LeaseNotFuture,
-    Revoked,
-    EpochMismatch { expected: u64, actual: u64 },
-    EpochOverflow,
-    DigestMismatch,
-    Clock,
-    LockPoisoned,
-}
-
-impl fmt::Display for ProductRetrievalContextErrorV1 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl StdError for ProductRetrievalContextErrorV1 {}
-
-fn verify_locked_state(
-    owner: &AgentId,
-    body_generation: u64,
-    state: &ProductRetrievalContextStateV1,
-) -> Result<(), ProductRetrievalContextErrorV1> {
-    if state.epoch == 0 || state.revoked != state.context.is_none() {
-        return Err(ProductRetrievalContextErrorV1::InvalidState);
-    }
-    let expected = state_digest(
-        owner,
-        body_generation,
-        state.epoch,
-        state.lease_expires_unix_ms,
-        state.context.as_ref(),
-        state.revoked,
-    );
-    if expected != state.state_digest {
-        return Err(ProductRetrievalContextErrorV1::DigestMismatch);
+fn require_epoch(state: &ProductState, expected: u64) -> Result<(), String> {
+    if state.snapshot.epoch != expected {
+        return Err("retrieval lifecycle epoch mismatch".to_string());
     }
     Ok(())
 }
 
-fn require_future_lease(lease_expires_unix_ms: u64) -> Result<(), ProductRetrievalContextErrorV1> {
-    if lease_expires_unix_ms <= now_unix_ms()? {
-        return Err(ProductRetrievalContextErrorV1::LeaseNotFuture);
+fn require_live(state: &ProductState) -> Result<(), String> {
+    state.snapshot.validate()?;
+    if state.snapshot.revoked {
+        return Err("retrieval context revoked".to_string());
+    }
+    let now = now_unix_ms()?;
+    if now < state.acquired_wall_ms
+        || now >= state.snapshot.lease_expires_unix_ms
+        || Instant::now() >= state.monotonic_deadline
+    {
+        return Err("retrieval lease expired or clock regressed".to_string());
     }
     Ok(())
 }
 
-fn now_unix_ms() -> Result<u64, ProductRetrievalContextErrorV1> {
-    u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|_| ProductRetrievalContextErrorV1::Clock)?
-            .as_millis(),
-    )
-    .map_err(|_| ProductRetrievalContextErrorV1::Clock)
-}
-
-fn state_digest(
-    owner: &AgentId,
-    body_generation: u64,
-    epoch: u64,
-    lease_expires_unix_ms: u64,
-    context: Option<&RetrievalExecutionContextV1>,
-    revoked: bool,
-) -> Digest32 {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(PRODUCT_CONTEXT_DOMAIN);
-    push_bytes(&mut bytes, owner.as_str().as_bytes());
-    bytes.extend_from_slice(&body_generation.to_be_bytes());
-    bytes.extend_from_slice(&epoch.to_be_bytes());
-    bytes.extend_from_slice(&lease_expires_unix_ms.to_be_bytes());
-    bytes.push(u8::from(revoked));
-    match context {
-        Some(context) => {
-            bytes.push(1);
-            bytes.extend_from_slice(context.binding_digest().as_array());
-        }
-        None => bytes.push(0),
+fn lease_window(expires: u64) -> Result<(u64, Instant), String> {
+    let now = now_unix_ms()?;
+    let duration = expires.checked_sub(now).ok_or("lease is not in the future")?;
+    if duration == 0 || duration > MAX_LEASE_MS {
+        return Err("lease is outside the bounded product window".to_string());
     }
-    Digest32::of_bytes(&bytes)
+    let deadline = Instant::now().checked_add(Duration::from_millis(duration)).ok_or("lease overflow")?;
+    Ok((now, deadline))
 }
 
-fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) {
-    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
-    bytes.extend_from_slice(value);
+fn now_unix_ms() -> Result<u64, String> {
+    let duration = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| "invalid wall clock")?;
+    u64::try_from(duration.as_millis()).map_err(|_| "wall clock overflow".to_string())
 }
+
+#[cfg(test)]
+#[path = "product_retrieval_context_tests.rs"]
+mod tests;

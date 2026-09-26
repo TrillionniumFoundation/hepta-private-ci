@@ -1,8 +1,7 @@
-//! Explicit host-owned current context for generation-bound memory retrieval.
+//! Host-owned currentness for generation-bound memory retrieval.
 //!
-//! The provider authenticates and freezes generations owned outside the SQLite
-//! memory store. Agentd never fabricates model, prompt, encoder, compact,
-//! authority, retrieval-profile, or engram generations.
+//! Payload hashes identify content; product read bindings additionally identify
+//! the lease and lifecycle epoch. Provider composition is a trusted host task.
 
 use std::sync::Arc;
 
@@ -13,12 +12,11 @@ use codex_hepta_types::Digest32;
 #[path = "product_retrieval_context.rs"]
 mod product;
 
-/// Host-owned currentness boundary for HNMF retrieval composition.
-///
-/// Implementations must authenticate their registry/source independently,
-/// return the exact current context for the requested Agent generation, bound
-/// any blocking I/O, and fail closed after revocation. Agentd compares the
-/// returned context digest again immediately before response publication.
+pub use product::ProductRetrievalContextControlV1;
+pub use product::ProductRetrievalContextSnapshotV1;
+pub use product::RetrievalRecoveryWitnessV1;
+
+/// Read capability. Possession does not confer product lifecycle write access.
 pub trait CurrentMemoryRetrievalContext: Send + Sync {
     fn current(
         &self,
@@ -26,32 +24,44 @@ pub trait CurrentMemoryRetrievalContext: Send + Sync {
         body_generation: u64,
     ) -> Result<RetrievalExecutionContextV1, String>;
 
-    /// Product lifecycle methods default to unsupported so test doubles and
-    /// externally managed providers remain source compatible. The product-owned
-    /// provider overrides every method and fences mutations by epoch.
+    /// Return one atomic observation: payload, lifecycle binding and lease.
+    /// Legacy providers retain their payload-only contract; None is not proof
+    /// of a durable product lease. Product implementations override this method.
+    fn acquire_context(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+        let context = self.current(owner, body_generation)?;
+        context.validate().map_err(|error| error.to_string())?;
+        let binding = context.binding_digest();
+        Ok((context, binding, None))
+    }
+
     fn lifecycle_epoch(&self) -> Result<u64, String> {
-        Err("retrieval context provider has no product lifecycle epoch".to_string())
+        Err("provider has no product lifecycle epoch".to_string())
     }
 
     fn lease_expires_unix_ms(&self) -> Result<u64, String> {
-        Err("retrieval context provider has no product lease".to_string())
+        Err("provider has no product lease".to_string())
     }
 
     fn context_state_digest(&self) -> Result<Digest32, String> {
-        Err("retrieval context provider has no product state digest".to_string())
+        Err("provider has no product state digest".to_string())
     }
 
     fn revoked(&self) -> Result<bool, String> {
-        Err("retrieval context provider has no product revocation state".to_string())
+        Err("provider has no product revocation state".to_string())
     }
 
+    // Kept for source compatibility. The product reader does not override these.
     fn rotate_context(
         &self,
         _expected_epoch: u64,
         _context: RetrievalExecutionContextV1,
         _lease_expires_unix_ms: u64,
     ) -> Result<u64, String> {
-        Err("retrieval context provider does not support rotation".to_string())
+        Err("rotation requires the protected product control capability".to_string())
     }
 
     fn renew_context(
@@ -59,59 +69,62 @@ pub trait CurrentMemoryRetrievalContext: Send + Sync {
         _expected_epoch: u64,
         _lease_expires_unix_ms: u64,
     ) -> Result<u64, String> {
-        Err("retrieval context provider does not support lease renewal".to_string())
+        Err("renewal requires the protected product control capability".to_string())
     }
 
     fn revoke_context(&self, _expected_epoch: u64) -> Result<u64, String> {
-        Err("retrieval context provider does not support revocation".to_string())
+        Err("revocation requires the protected product control capability".to_string())
     }
 }
 
 impl dyn CurrentMemoryRetrievalContext {
-    /// Construct the Agentd-owned provider around a fully validated generation
-    /// identity. The returned trait object exposes epoch-fenced rotation,
-    /// renewal, revocation and state-digest receipts through the methods above.
     pub fn product(
         owner: AgentId,
         body_generation: u64,
         context: RetrievalExecutionContextV1,
         lease_expires_unix_ms: u64,
     ) -> Result<Arc<dyn CurrentMemoryRetrievalContext>, String> {
-        product::ProductMemoryRetrievalContextV1::new(
+        Self::product_with_control(owner, body_generation, context, lease_expires_unix_ms)
+            .map(|(reader, _control)| reader)
+    }
+
+    /// The composition root must retain the control handle outside request code.
+    pub fn product_with_control(
+        owner: AgentId,
+        body_generation: u64,
+        context: RetrievalExecutionContextV1,
+        lease_expires_unix_ms: u64,
+    ) -> Result<(Arc<dyn CurrentMemoryRetrievalContext>, ProductRetrievalContextControlV1), String> {
+        let provider = Arc::new(product::ProductMemoryRetrievalContextV1::new(
             owner,
             body_generation,
             context,
             lease_expires_unix_ms,
-        )
-        .map(|provider| Arc::new(provider) as Arc<dyn CurrentMemoryRetrievalContext>)
-        .map_err(|error| error.to_string())
+        )?);
+        let control = ProductRetrievalContextControlV1::from_provider(Arc::clone(&provider));
+        Ok((provider, control))
     }
 
-    /// Recover the product provider from an independently retained state
-    /// receipt. A live recovery still requires a future lease and a context
-    /// whose full model/encoder/tokenizer/policy/engram binding validates.
+    /// A self-consistent historical hash is not an anti-rollback witness.
     #[allow(clippy::too_many_arguments)]
     pub fn recover_product(
-        owner: AgentId,
-        body_generation: u64,
-        epoch: u64,
-        lease_expires_unix_ms: u64,
-        context: Option<RetrievalExecutionContextV1>,
-        revoked: bool,
-        state_digest: Digest32,
+        _owner: AgentId,
+        _body_generation: u64,
+        _epoch: u64,
+        _lease_expires_unix_ms: u64,
+        _context: Option<RetrievalExecutionContextV1>,
+        _revoked: bool,
+        _state_digest: Digest32,
     ) -> Result<Arc<dyn CurrentMemoryRetrievalContext>, String> {
-        product::ProductMemoryRetrievalContextV1::recover(
-            product::ProductRetrievalContextSnapshotV1 {
-                owner,
-                body_generation,
-                epoch,
-                lease_expires_unix_ms,
-                context,
-                revoked,
-                state_digest,
-            },
-        )
-        .map(|provider| Arc::new(provider) as Arc<dyn CurrentMemoryRetrievalContext>)
-        .map_err(|error| error.to_string())
+        Err("recovery requires an independently current owner witness".to_string())
+    }
+
+    pub fn recover_product_with_witness(
+        snapshot: ProductRetrievalContextSnapshotV1,
+        witness: &dyn RetrievalRecoveryWitnessV1,
+    ) -> Result<(Arc<dyn CurrentMemoryRetrievalContext>, ProductRetrievalContextControlV1), String> {
+        let provider = Arc::new(product::ProductMemoryRetrievalContextV1::recover(snapshot, witness)?);
+        let control = ProductRetrievalContextControlV1::from_provider(Arc::clone(&provider));
+        Ok((provider, control))
     }
 }
