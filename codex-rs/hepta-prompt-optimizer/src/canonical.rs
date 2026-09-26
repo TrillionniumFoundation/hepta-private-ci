@@ -8,6 +8,8 @@
 mod raw;
 #[path = "canonical_error.rs"]
 mod error;
+#[path = "canonical_types.rs"]
+mod types;
 #[path = "canonical_enumeration.rs"]
 mod enumeration;
 #[path = "canonical_pricing.rs"]
