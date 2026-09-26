@@ -36,7 +36,7 @@ Before activation, retain exact digests for:
 - Agentd Browser service binary;
 - Browser host config;
 - Browser service closure manifest;
-- all thirteen JavaScript modules named by that manifest;
+- every JavaScript module enumerated by that manifest;
 - Servo worker binary and committed `Cargo.lock`;
 - Bubblewrap and `prlimit` executables;
 - SPDX-2.3 SBOM;
@@ -66,7 +66,7 @@ The selected host configuration must stay inside source ceilings:
 | Retained terminal operations in memory | 256 |
 | Parent/worker frame | 1 MiB |
 | Page observation | 1 MiB API budget plus bounded semantic fields |
-| Journal | bounded segmented/compacted owner storage |
+| Journal | 64 MiB JSONL owner file; compaction at 48 MiB; 65,536 live records |
 | Worker address space | 8 GiB default `prlimit` |
 | Worker CPU | 300 seconds default `prlimit` |
 | Worker file descriptors | 4,096 default `prlimit` |
@@ -99,7 +99,7 @@ Required derived signals:
 - reconciliation latency and indeterminate-operation age;
 - active profile and worker count;
 - worker restart/containment count;
-- journal bytes, segments, compaction duration and fenced-owner state;
+- journal bytes, live index size, compaction duration and fenced-owner state;
 - egress decisions by non-sensitive disposition;
 - RSS, FD and descendant-process counts;
 - revocation-feed revision and refresh failure age.
@@ -246,3 +246,72 @@ Promotion remains false until all of the following are true on the exact candida
 - trusted main-only target qualification succeeds;
 - all open indeterminate operations are reconciled or explicitly quarantined;
 - independent operator acceptance, activation, promotion and release are issued by their designated owners.
+
+## 12. Operation-scoped egress and immutable recovery invariants
+
+Only `.hepta-egress.sock` is worker-visible. The underlying profile policy socket
+must live in a fresh owner-private sibling directory outside the writable profile
+mount. A second policy socket inside the profile directory bypasses operation
+admission and is forbidden, irrespective of its filename or Unix mode.
+
+Every accepted connection belongs to the operation that accepted it, including
+connections still waiting for their first complete header. Revalidate that same
+identity after asynchronous header/connect work and before forwarding bytes.
+Enforce both wall-clock expiry and a monotonic deadline. Expiry closes partial
+headers, active tunnels and upstream peers without waiting for another RPC.
+Completion closes the operation's sockets; a late settlement returns its original
+receipt and cannot affect a newer operation. Completed identities cannot reopen
+network authority; the bounded identity set does not evict old entries to admit
+more effects. Rotate the profile generation when its identity capacity is reached.
+
+For plaintext HTTP, check every request on a persistent or pipelined connection,
+not just its first header. Bind the absolute target and Host to the effect origin,
+parse bounded Content-Length/chunked framing, and reject ambiguous framing,
+authority-bearing trailers and protocol upgrades. HTTPS uses the existing frozen
+DNS/IP and CONNECT/SNI broker. A network receipt establishes a bounded transport
+observation, not a remote business outcome or durable post-crash proof.
+
+Journal transitions compare all immutable scalar fields, not only caller-supplied
+request and semantic hashes. Principal, process, document, origin, action, grant,
+epoch, deadline and witness cannot change during observation or replay. Retirement
+is checked under the writer lock at dispatch admission as well as at profile open.
+Retirement serialization must round-trip case-sensitive, punctuation and numeric
+identifiers without locale-dependent ordering.
+
+The Browser parent validates the admission semantic digest against the exact
+request semantics plus this invocation's verified-use witness. In-process host and
+driver capability objects may have prototype methods; wire requests and authority
+messages remain plain JSON objects with exact key sets. Failure of gate cleanup
+must not skip the underlying worker stop or containment operation.
+
+## 13. Required source verification and evidence limits
+
+`blocking-ci.yml` invokes the Browser source lane independently of Cargo scope and
+includes it as a non-skippable dependency of `CI required`. Pull requests execute
+both their exact source head and a deterministic base-merge candidate. Main pushes
+execute the merged head. This does not alter or waive branch-protection rules.
+
+The source lane checks generated source blobs, all JavaScript syntax, the complete
+Browser Node suite and committed lock/pin identity. Original TAP output and a
+tracked-source archive are retained even when a test fails. It does not generate
+a lock in CI. Reproduce the source checks from the selected checkout:
+
+```sh
+node apps/hepta-browser/scripts/browser-source-registry.js --check
+node --test --test-concurrency=4 apps/hepta-browser/test/*.test.js
+```
+
+The following remain distinct obligations, not facts established by a Node pass:
+
+- locked native Servo and Agentd compilation, lint and real WebView execution;
+- a worker-originated, durable admission receipt and verified post-process-loss
+  recovery, rather than treating a host-generated admission wrapper as that proof;
+- cgroup/seccomp enforcement and complete descendant containment on the target;
+- durable retention of operation egress receipts and independently issued remote
+  business terminal observations;
+- isolated multi-builder reproducibility and verified signed SBOM/provenance;
+- real public HTTPS, hostile DOM drift, cookie/cache/storage isolation and soak;
+- the trusted target run, independent operator acceptance and release decisions.
+
+Do not infer any of these from a workflow definition, an uploaded partial artifact,
+a source-registry substring check, a merged history edge or a prior-head pass.

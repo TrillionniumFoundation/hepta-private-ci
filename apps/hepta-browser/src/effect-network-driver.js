@@ -1,10 +1,12 @@
 import {
   lstat,
+  mkdtemp,
+  realpath,
+  rm,
   readdir,
   rename,
-  unlink,
 } from "node:fs/promises";
-import { isAbsolute, join } from "node:path";
+import { isAbsolute, join, resolve } from "node:path";
 
 import { EffectScopedEgressBroker } from "./effect-egress-gate.js";
 
@@ -33,20 +35,16 @@ function positiveInteger(value, name) {
   return value;
 }
 
-async function removeSocket(path) {
-  await unlink(path).catch((error) => {
-    if (error?.code !== "ENOENT") throw error;
-  });
-}
-
 /**
  * Inserts a one-operation egress gate in front of the existing profile policy
  * broker without changing the worker-visible socket path.
  *
  * The underlying driver creates `.hepta-egress.sock`. After worker startup and
  * before any admitted navigation, this wrapper atomically renames that socket
- * to `.hepta-egress-policy.sock` and installs the effect gate at the original
- * path. The existing DNS/IP/SNI broker remains the upstream policy authority.
+ * into a fresh host-private directory OUTSIDE the writable profile bind and
+ * installs the effect gate at the original path. The worker must never see the
+ * upstream endpoint, otherwise it could bypass operation-scoped admission.
+ * The existing DNS/IP/SNI broker remains the upstream policy authority.
  */
 export class EffectScopedNetworkDriver {
   supportsAbort = true;
@@ -108,20 +106,20 @@ export class EffectScopedNetworkDriver {
       "effect network start observation",
     );
     let gate = null;
+    let policyDir = null;
     try {
       const profileDir = await this.#findProfileDirectory(profileId, generation);
       const publicSocketPath = join(profileDir, ".hepta-egress.sock");
-      const policySocketPath = join(
-        profileDir,
-        ".hepta-egress-policy.sock",
-      );
+      // Only profileDir is mounted into Servo. This sibling is host-private;
+      // keeping the policy socket inside profileDir defeats the effect gate.
+      policyDir = await mkdtemp(join(this.#profileRoot, ".egress-"));
+      const policySocketPath = join(policyDir, "policy.sock");
       const metadata = await lstat(publicSocketPath);
       if (!metadata.isSocket() || metadata.isSymbolicLink()) {
         throw new TypeError(
           "Browser profile egress endpoint is not a non-symlink Unix socket",
         );
       }
-      await removeSocket(policySocketPath);
       await rename(publicSocketPath, policySocketPath);
       gate = new EffectScopedEgressBroker({
         socketPath: publicSocketPath,
@@ -139,6 +137,7 @@ export class EffectScopedNetworkDriver {
         profileDir,
         publicSocketPath,
         policySocketPath,
+        policyDir,
         gate,
         closed: false,
       });
@@ -153,11 +152,14 @@ export class EffectScopedNetworkDriver {
           reason: "effect_network_composition_failed",
         })
         .catch(() => {});
+      if (policyDir !== null) {
+        await rm(policyDir, { recursive: true, force: true });
+      }
       throw error;
     }
   }
 
-  observe(input, options = {}) {
+  async observe(input, options = {}) {
     this.#session(input);
     return this.#driver.observe(input, options);
   }
@@ -201,7 +203,7 @@ export class EffectScopedNetworkDriver {
     return this.#settle(session, input.operationId, observed);
   }
 
-  reconcilePersisted(input, options = {}) {
+  async reconcilePersisted(input, options = {}) {
     return this.#driver.reconcilePersisted(input, options);
   }
 
@@ -211,11 +213,19 @@ export class EffectScopedNetworkDriver {
       allowClosed: true,
     });
     if (session === null) return this.#driver.contain(input);
-    await this.#closeGate(session, "contained");
+    let gateError = null;
     try {
-      return await this.#driver.contain(input);
+      await this.#closeGate(session, "contained");
+    } catch (error) {
+      gateError = error;
+    }
+    // Gate cleanup errors must never prevent the underlying process kill.
+    try {
+      const observed = await this.#driver.contain(input);
+      if (gateError !== null) throw gateError;
+      return observed;
     } finally {
-      await removeSocket(session.policySocketPath).catch(() => {});
+      await rm(session.policyDir, { recursive: true, force: true });
     }
   }
 
@@ -225,15 +235,21 @@ export class EffectScopedNetworkDriver {
       allowClosed: true,
     });
     if (session === null) return this.#driver.stop(input, options);
-    await this.#closeGate(session, "profile_stopped");
+    let gateError = null;
     try {
-      return await this.#driver.stop(input, options);
-    } finally {
+      await this.#closeGate(session, "profile_stopped");
+    } catch (error) {
+      gateError = error;
+    }
+    try {
+      const observed = await this.#driver.stop(input, options);
+      // Retain a closed session if process stop fails: a later cleanup retry
+      // must not lose the ownership record or admit a new worker implicitly.
       this.#sessions.delete(session.profileId);
-      await Promise.all([
-        removeSocket(session.publicSocketPath).catch(() => {}),
-        removeSocket(session.policySocketPath).catch(() => {}),
-      ]);
+      if (gateError !== null) throw gateError;
+      return observed;
+    } finally {
+      await rm(session.policyDir, { recursive: true, force: true });
     }
   }
 
@@ -280,6 +296,9 @@ export class EffectScopedNetworkDriver {
   }
 
   async #findProfileDirectory(profileId, generation) {
+    if (await realpath(this.#profileRoot) !== resolve(this.#profileRoot)) {
+      throw new TypeError("effect network profile root contains a symlink");
+    }
     const prefix = `${profileId}.${generation}.`;
     const entries = await readdir(this.#profileRoot, { withFileTypes: true });
     const matches = entries.filter(

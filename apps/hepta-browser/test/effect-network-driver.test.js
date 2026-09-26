@@ -4,6 +4,8 @@ import test from "node:test";
 import {
   mkdir,
   mkdtemp,
+  readdir,
+  lstat,
   rm,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -52,7 +54,7 @@ test(
   "production wrapper inserts an operation gate at the worker-visible socket",
   { skip: process.platform === "win32" },
   async (t) => {
-    const root = await mkdtemp(join(tmpdir(), "hepta-effect-network-driver-"));
+    const root = await mkdtemp(join(tmpdir(), "hepta-en-"));
     t.after(() => rm(root, { recursive: true, force: true }));
     const profileRoot = join(root, "profiles");
     await mkdir(profileRoot, { mode: 0o700 });
@@ -129,6 +131,13 @@ test(
       allowedOrigins: [origin],
     });
 
+    const visible = await readdir(profileDir);
+    assert.equal(visible.includes(".hepta-egress-policy.sock"), false);
+    const privateDirectories = (await readdir(profileRoot)).filter((name) => name.startsWith(".egress-"));
+    assert.equal(privateDirectories.length, 1);
+    const privateDirectory = join(profileRoot, privateDirectories[0]);
+    assert.equal((await lstat(privateDirectory)).mode & 0o077, 0);
+    assert.equal((await lstat(join(privateDirectory, "policy.sock"))).isSocket(), true);
     const before = await proxyRequest(workerSocket, `${origin}/before`);
     assert.equal(before.length, 0);
 
@@ -171,5 +180,50 @@ test(
       generation: 1,
     });
     assert.equal(stopped.stopped, true);
+    await assert.rejects(lstat(privateDirectory), { code: "ENOENT" });
   },
 );
+
+for (const method of ["contain", "stop"]) {
+  test(`network cleanup failure cannot skip worker ${method}`, async (t) => {
+    const { EffectScopedEgressBroker } = await import("../src/effect-egress-gate.js");
+    const root = await mkdtemp(join(tmpdir(), "hepta-fault-"));
+    const profileRoot = join(root, "p");
+    const profileDir = join(profileRoot, "profile.1.1.fixture");
+    await mkdir(profileRoot, { mode: 0o700 });
+    const policy = net.createServer();
+    let stopped = false;
+    const finish = async () => {
+      stopped = true;
+      await close(policy);
+    };
+    t.after(async () => {
+      if (!stopped) await finish();
+      await rm(root, { recursive: true, force: true });
+    });
+    const inner = {
+      supportsAbort: true, maxActiveProfiles: 1, maxOutstandingOperations: 1,
+      async start() {
+        await mkdir(profileDir, { mode: 0o700 });
+        await listen(policy, join(profileDir, ".hepta-egress.sock"));
+        return { started: true, processId: PROCESS_ID };
+      },
+      async observe() { return {}; }, async dispatch() { return {}; },
+      async reconcile() { return {}; }, async reconcilePersisted() { return {}; },
+      async contain() { await finish(); return { contained: true }; },
+      async stop() { await finish(); return { stopped: true }; },
+    };
+    const driver = new EffectScopedNetworkDriver({ driver: inner, profileRoot });
+    await driver.start({ profileId: "profile.1", generation: 1, grantDigest: D1,
+      allowedOrigins: ["https://example.com"] });
+    const original = EffectScopedEgressBroker.prototype.close;
+    t.mock.method(EffectScopedEgressBroker.prototype, "close", async function (options) {
+      await original.call(this, options);
+      throw new Error("injected network cleanup failure");
+    });
+    await assert.rejects(driver[method]({ profileId: "profile.1", generation: 1,
+      processId: PROCESS_ID }), /injected network cleanup failure/);
+    assert.equal(stopped, true, "gate error must not prevent the process boundary cleanup");
+    assert.equal((await readdir(profileRoot)).some((name) => name.startsWith(".egress-")), false);
+  });
+}

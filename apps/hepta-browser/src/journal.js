@@ -52,6 +52,13 @@ const RECORD_KEYS = [
   "verifiedUseTokenWitnessDigest",
 ].sort();
 
+// Outcomes may advance; every other stored field is immutable even when a
+// caller repeats a valid request/semantic digest while substituting metadata.
+const OBSERVATION_KEYS = new Set([
+  "observationReason", "outcomeDigest", "status", "terminalEvidenceDigest", "terminalObserved",
+]);
+const IMMUTABLE_RECORD_KEYS = RECORD_KEYS.filter((key) => !OBSERVATION_KEYS.has(key));
+
 class JournalSemanticError extends TypeError {}
 class JournalBusyError extends Error {}
 
@@ -237,10 +244,7 @@ function sameRecord(left, right) {
 }
 
 function assertSameSemantics(prior, next, message) {
-  if (
-    prior.requestDigest !== next.requestDigest ||
-    prior.semanticDigest !== next.semanticDigest
-  ) {
+  if (IMMUTABLE_RECORD_KEYS.some((key) => prior[key] !== next[key])) {
     throw new JournalSemanticError(message);
   }
 }
@@ -460,6 +464,7 @@ export class MemoryBrowserOperationJournal {
 
   async recordDispatch(record) {
     const snapshot = validateDurableRecord(record, "dispatch");
+    assertGenerationAvailable(this.#retired, snapshot.profileId, snapshot.generation);
     applyTransition(this.#records, "dispatch", snapshot);
   }
 
@@ -533,6 +538,9 @@ export class FileBrowserOperationJournal {
   async recordDispatch(record) {
     const snapshot = validateDurableRecord(record, "dispatch");
     return this.#serialize(async () => {
+      // Check retirement under the same interprocess writer lock as append.
+      const retired = await this.#loadRetired();
+      assertGenerationAvailable(retired, snapshot.profileId, snapshot.generation);
       const records = await this.#load();
       if (!applyTransition(records, "dispatch", snapshot)) return;
       const size = await this.#append({ type: "dispatch", record: snapshot });
@@ -846,7 +854,11 @@ export class FileBrowserOperationJournal {
     if (profileIds.length > MAX_RETIRED_PROFILES) {
       throw new TypeError("retired profile generation ledger exceeds capacity");
     }
-    const sorted = [...profileIds].sort();
+    // JSON object enumeration places integer-index names first. Match the
+    // writer's code-unit sorting plus that specified enumeration order.
+    const sorted = Object.keys(
+      Object.fromEntries([...profileIds].sort().map((profileId) => [profileId, null])),
+    );
     if (profileIds.some((profileId, index) => profileId !== sorted[index])) {
       throw new TypeError("retired profile generation ledger is not canonical");
     }
@@ -887,7 +899,7 @@ export class FileBrowserOperationJournal {
     }
     const profiles = Object.fromEntries(
       [...retired.entries()]
-        .sort(([left], [right]) => left.localeCompare(right))
+        .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)
         .map(([profileId, generation]) => {
           stableId(profileId, "retired profileId");
           return [profileId, positiveInteger(generation, "retired generation")];
@@ -1079,7 +1091,7 @@ export class FileBrowserOperationJournal {
   async #rewrite(records) {
     await ensureCanonicalPrivateParent(this.#path);
     const body = [...records.entries()]
-      .sort(([left], [right]) => left.localeCompare(right))
+      .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)
       .map(([, record]) => envelopeLine("snapshot", record))
       .join("");
     const bytes = UTF8.encode(body);

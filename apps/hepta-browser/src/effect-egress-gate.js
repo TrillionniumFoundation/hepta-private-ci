@@ -1,8 +1,9 @@
 import { createHash } from "node:crypto";
 import net from "node:net";
-import { lstat, unlink } from "node:fs/promises";
+import { lstat, mkdtemp, rm, unlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { Transform } from "node:stream";
+import { performance } from "node:perf_hooks";
 
 import { GrantScopedEgressBroker } from "./egress-broker.js";
 
@@ -11,6 +12,8 @@ const DEFAULT_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
 const MAX_HEADER_BYTES = 64 * 1024;
 const HEADER_TIMEOUT_MS = 5_000;
 const MAX_RECEIPTS = 256;
+const MAX_COMPLETED_OPERATIONS = 65_536;
+const MAX_CONNECTIONS = 64;
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 
@@ -99,6 +102,146 @@ function requestOriginFromHeader(header) {
   return url.origin;
 }
 
+// A stream is not an authority scope: HTTP keep-alive/pipelining may contain
+// multiple requests. Buffer each header until its origin and framing are checked.
+class HttpOperationScopeGuard extends Transform {
+  #origin;
+  #assertLease;
+  #maximum;
+  #buffer = Buffer.alloc(0);
+  #phase = "header";
+  #remaining = 0;
+
+  constructor(origin, assertLease, maximum) {
+    super();
+    this.#origin = origin;
+    this.#assertLease = assertLease;
+    this.#maximum = maximum;
+  }
+
+  #emit(length) {
+    this.push(this.#buffer.subarray(0, length));
+    this.#buffer = this.#buffer.subarray(length);
+  }
+
+  _transform(chunk, _encoding, callback) {
+    try {
+      this.#assertLease();
+      this.#buffer = Buffer.concat([this.#buffer, chunk]);
+      while (this.#buffer.length > 0) {
+        this.#assertLease();
+        if (this.#phase === "body" || this.#phase === "chunk-body") {
+          const length = Math.min(this.#remaining, this.#buffer.length);
+          this.#emit(length);
+          this.#remaining -= length;
+          if (this.#remaining > 0) break;
+          this.#phase = this.#phase === "body" ? "header" : "chunk-end";
+        } else if (this.#phase === "chunk-end") {
+          if (this.#buffer.length < 2) break;
+          if (this.#buffer.subarray(0, 2).toString("ascii") !== "\r\n") {
+            throw new Error("egress chunk terminator is invalid");
+          }
+          this.#emit(2);
+          this.#phase = "chunk-size";
+        } else if (this.#phase === "chunk-size") {
+          const end = this.#buffer.indexOf("\r\n");
+          if (end < 0) {
+            if (this.#buffer.length > 128) throw new Error("egress chunk size line is too large");
+            break;
+          }
+          const line = this.#buffer.subarray(0, end).toString("latin1");
+          if (end > 128 || !/^[0-9a-fA-F]+(?:;[\x20-\x7e]*)?$/.test(line)) {
+            throw new Error("egress chunk size is invalid");
+          }
+          const length = Number.parseInt(line.split(";")[0], 16);
+          if (!Number.isSafeInteger(length) || length > this.#maximum) {
+            throw new Error("egress chunk exceeds request budget");
+          }
+          this.#emit(end + 2);
+          this.#remaining = length;
+          this.#phase = length === 0 ? "trailers" : "chunk-body";
+        } else if (this.#phase === "trailers") {
+          if (this.#buffer.length < 2) break;
+          if (this.#buffer.subarray(0, 2).toString("ascii") === "\r\n") {
+            this.#emit(2);
+            this.#phase = "header";
+            continue;
+          }
+          const end = this.#buffer.indexOf("\r\n\r\n");
+          if (end < 0) {
+            if (this.#buffer.length > MAX_HEADER_BYTES) throw new Error("egress trailers exceed limit");
+            break;
+          }
+          if (end > MAX_HEADER_BYTES) throw new Error("egress trailers exceed limit");
+          for (const line of this.#buffer.subarray(0, end).toString("latin1").split("\r\n")) {
+            const match = /^([!#$%&'*+.^_`|~0-9A-Za-z-]+):[\t\x20-\x7e]*$/.exec(line);
+            if (!match || /^(host|content-length|transfer-encoding|connection|upgrade|authorization|proxy-authorization)$/i.test(match[1])) {
+              throw new Error("egress trailer may not change request authority or framing");
+            }
+          }
+          this.#emit(end + 4);
+          this.#phase = "header";
+        } else {
+          const end = this.#buffer.indexOf("\r\n\r\n");
+          if (end < 0) {
+            if (this.#buffer.length > MAX_HEADER_BYTES) throw new Error("egress request header exceeds limit");
+            break;
+          }
+          if (end + 4 > MAX_HEADER_BYTES) throw new Error("egress request header exceeds limit");
+          const header = this.#buffer.subarray(0, end + 4).toString("latin1");
+          if (header.startsWith("CONNECT ") || requestOriginFromHeader(header) !== this.#origin) {
+            throw new Error("pipelined request origin drifted from the admitted effect");
+          }
+          const headers = new Map();
+          for (const line of header.split("\r\n").slice(1, -2)) {
+            const match = /^([!#$%&'*+.^_`|~0-9A-Za-z-]+):[\t ]*([\t\x20-\x7e]*)$/.exec(line);
+            if (!match) throw new Error("egress request header is malformed");
+            const name = match[1].toLowerCase();
+            const value = match[2].trim();
+            if (headers.has(name) && ["host", "content-length", "transfer-encoding"].includes(name)) {
+              throw new Error("egress request contains ambiguous framing");
+            }
+            headers.set(name, value);
+          }
+          const target = new URL(this.#origin);
+          const host = headers.get("host");
+          if (host !== target.host) throw new Error("egress Host drifted from the admitted effect");
+          if (headers.has("upgrade") || /(?:^|,)\s*upgrade\s*(?:,|$)/i.test(headers.get("connection") ?? "")) {
+            throw new Error("HTTP protocol upgrade is not an admitted egress capability");
+          }
+          const transfer = headers.get("transfer-encoding");
+          const lengthText = headers.get("content-length");
+          if (transfer !== undefined) {
+            if (transfer.toLowerCase() !== "chunked" || lengthText !== undefined) {
+              throw new Error("egress request contains ambiguous transfer framing");
+            }
+            this.#phase = "chunk-size";
+          } else {
+            if (lengthText !== undefined && !/^[0-9]+$/.test(lengthText)) {
+              throw new Error("egress Content-Length is invalid");
+            }
+            const length = Number(lengthText ?? 0);
+            if (!Number.isSafeInteger(length) || length > this.#maximum) {
+              throw new Error("egress body exceeds request budget");
+            }
+            this.#remaining = length;
+            this.#phase = length === 0 ? "header" : "body";
+          }
+          this.#emit(end + 4);
+        }
+      }
+      callback();
+    } catch (error) {
+      callback(error);
+    }
+  }
+
+  _flush(callback) {
+    callback(this.#phase === "header" && this.#buffer.length === 0
+      ? null : new Error("egress HTTP request ended with incomplete framing"));
+  }
+}
+
 class ByteLimitTransform extends Transform {
   #maximum;
   #onBytes;
@@ -114,7 +257,13 @@ class ByteLimitTransform extends Transform {
 
   _transform(chunk, _encoding, callback) {
     this.#total += chunk.length;
-    const aggregate = this.#onBytes(chunk.length);
+    let aggregate;
+    try {
+      aggregate = this.#onBytes(chunk.length);
+    } catch (error) {
+      callback(error);
+      return;
+    }
     if (this.#total > this.#maximum || aggregate > this.#maximum) {
       this.#onExceeded(Math.max(this.#total, aggregate));
       const error = new Error("egress byte budget exceeded");
@@ -142,6 +291,10 @@ export class EffectScopedEgressBroker {
   #contexts = new Set();
   #active = null;
   #receipts = [];
+  #completed = new Set();
+  #expiryTimer = null;
+  #innerPrivateDir = null;
+  #starting = false;
 
   constructor({
     socketPath,
@@ -166,9 +319,7 @@ export class EffectScopedEgressBroker {
     }
     this.#socketPath = socketPath;
     this.#manageInner = upstreamSocketPath === undefined;
-    this.#innerSocketPath =
-      upstreamSocketPath ??
-      join(dirname(socketPath), ".hepta-egress-policy.sock");
+    this.#innerSocketPath = upstreamSocketPath ?? null;
     if (this.#innerSocketPath === this.#socketPath) {
       throw new TypeError(
         "effect egress public and policy socket paths must differ",
@@ -211,57 +362,80 @@ export class EffectScopedEgressBroker {
   }
 
   async start() {
-    if (this.#server !== null) {
+    if (this.#server !== null || this.#starting) {
       throw new TypeError("effect egress broker is already started");
     }
-    await unlink(this.#socketPath).catch((error) => {
-      if (error?.code !== "ENOENT") throw error;
-    });
-
-    let inner = null;
-    if (this.#manageInner) {
-      await unlink(this.#innerSocketPath).catch((error) => {
+    this.#starting = true;
+    try {
+      await unlink(this.#socketPath).catch((error) => {
         if (error?.code !== "ENOENT") throw error;
       });
-      const options = {
-        socketPath: this.#innerSocketPath,
-        grantDigest: this.#profileGrantDigest,
-        allowedOrigins: this.#allowedOrigins,
-        allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
-      };
-      if (this.#resolver !== undefined) options.resolver = this.#resolver;
-      inner = new GrantScopedEgressBroker(options);
-      await inner.start();
-    } else {
-      const metadata = await lstat(this.#innerSocketPath);
-      if (!metadata.isSocket() || metadata.isSymbolicLink()) {
-        throw new TypeError(
-          "effect egress policy endpoint must be a non-symlink Unix socket",
-        );
-      }
-    }
 
-    const server = net.createServer((client) => {
-      this.#sockets.add(client);
-      client.once("close", () => this.#sockets.delete(client));
-      this.#accept(client).catch((error) => {
-        if (!client.destroyed) client.destroy(error);
-      });
-    });
-    try {
-      await new Promise((resolve, reject) => {
-        server.once("error", reject);
-        server.listen(this.#socketPath, () => {
-          server.off("error", reject);
-          resolve();
+      let inner = null;
+      if (this.#manageInner) {
+        // Only the public socket belongs inside the worker's profile bind.
+        // The policy socket must not be another route around operation admission.
+        this.#innerPrivateDir = await mkdtemp(
+          join(dirname(dirname(this.#socketPath)), ".hepta-egress-"),
+        );
+        this.#innerSocketPath = join(this.#innerPrivateDir, "policy.sock");
+        await unlink(this.#innerSocketPath).catch((error) => {
+          if (error?.code !== "ENOENT") throw error;
+        });
+        const options = {
+          socketPath: this.#innerSocketPath,
+          grantDigest: this.#profileGrantDigest,
+          allowedOrigins: this.#allowedOrigins,
+          allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
+        };
+        if (this.#resolver !== undefined) options.resolver = this.#resolver;
+        inner = new GrantScopedEgressBroker(options);
+        await inner.start();
+      } else {
+        const metadata = await lstat(this.#innerSocketPath);
+        if (!metadata.isSocket() || metadata.isSymbolicLink()) {
+          throw new TypeError(
+            "effect egress policy endpoint must be a non-symlink Unix socket",
+          );
+        }
+      }
+
+      const server = net.createServer({ allowHalfOpen: true }, (client) => {
+        client.on("error", () => {});
+        if (this.#contexts.size >= MAX_CONNECTIONS) {
+          client.destroy();
+          return;
+        }
+        this.#sockets.add(client);
+        client.once("close", () => this.#sockets.delete(client));
+        this.#accept(client).catch((error) => {
+          if (!client.destroyed) client.destroy(error);
         });
       });
+      server.maxConnections = MAX_CONNECTIONS;
+      try {
+        await new Promise((resolve, reject) => {
+          server.once("error", reject);
+          server.listen(this.#socketPath, () => {
+            server.off("error", reject);
+            resolve();
+          });
+        });
+      } catch (error) {
+        await inner?.close().catch(() => {});
+        throw error;
+      }
+      this.#inner = inner;
+      this.#server = server;
     } catch (error) {
-      await inner?.close().catch(() => {});
+      if (this.#innerPrivateDir !== null) {
+        await rm(this.#innerPrivateDir, { recursive: true, force: true });
+        this.#innerPrivateDir = null;
+      }
       throw error;
+    } finally {
+      this.#starting = false;
     }
-    this.#inner = inner;
-    this.#server = server;
   }
 
   admitOperation({
@@ -303,7 +477,18 @@ export class EffectScopedEgressBroker {
       }
       throw new TypeError("another browser effect owns the egress gate");
     }
-    this.#active = { ...next };
+    if (this.#completed.has(next.operationId)) {
+      throw new TypeError("completed egress identity cannot be readmitted; reconcile the original operation");
+    }
+    if (this.#completed.size >= MAX_COMPLETED_OPERATIONS) {
+      throw new TypeError("egress operation identity capacity exhausted");
+    }
+    this.#active = {
+      ...next,
+      connectionAttempts: 0,
+      monotonicDeadline: performance.now() + (next.deadlineMs - Date.now()),
+    };
+    this.#armExpiry(this.#active);
   }
 
   completeOperation(operationId, { status = "completed" } = {}) {
@@ -311,13 +496,17 @@ export class EffectScopedEgressBroker {
     const prior = [...this.#receipts]
       .reverse()
       .find((receipt) => receipt.operationId === id);
+    // A delayed settlement belongs to its original operation, never to the
+    // currently active replacement. Preserve the first terminal network receipt.
+    if (prior) return prior;
     if (this.#active === null) {
-      if (prior) return prior;
       throw new TypeError("effect egress operation is not active");
     }
     if (this.#active.operationId !== id) {
       throw new TypeError("effect egress operation identity mismatch");
     }
+    clearTimeout(this.#expiryTimer);
+    this.#expiryTimer = null;
     for (const context of [...this.#contexts]) {
       if (context.operationId !== id) continue;
       context.client.destroy();
@@ -343,6 +532,7 @@ export class EffectScopedEgressBroker {
       ...unsigned,
       receiptDigest: receiptDigest(unsigned),
     });
+    this.#completed.add(id);
     this.#receipts.push(receipt);
     if (this.#receipts.length > MAX_RECEIPTS) this.#receipts.shift();
     this.#active = null;
@@ -350,6 +540,8 @@ export class EffectScopedEgressBroker {
   }
 
   async close({ status = "profile_closed" } = {}) {
+    clearTimeout(this.#expiryTimer);
+    this.#expiryTimer = null;
     if (this.#active !== null) {
       this.completeOperation(this.#active.operationId, { status });
     }
@@ -367,72 +559,117 @@ export class EffectScopedEgressBroker {
     const inner = this.#inner;
     this.#inner = null;
     await inner?.close();
+    if (this.#innerPrivateDir !== null) {
+      await rm(this.#innerPrivateDir, { recursive: true, force: true });
+      this.#innerPrivateDir = null;
+    }
     await unlink(this.#socketPath).catch((error) => {
       if (error?.code !== "ENOENT") throw error;
     });
   }
 
-  async #accept(client) {
-    const active = this.#active;
-    if (active === null) {
-      throw new Error("browser network request has no admitted effect operation");
+  #assertActive(active) {
+    if (active === null || this.#active !== active || active.boundedAbort) {
+      throw new Error("browser network request has no live admitted effect operation");
     }
-    if (Date.now() >= active.deadlineMs) {
+    if (Date.now() >= active.deadlineMs || performance.now() >= active.monotonicDeadline) {
       throw new Error("browser effect network grant has expired");
     }
-    const initial = await this.#readHeader(client);
-    if (this.#active !== active) {
-      throw new Error("browser effect egress ownership changed during admission");
-    }
-    const headerEnd = initial.indexOf("\r\n\r\n");
-    const origin = requestOriginFromHeader(
-      initial.subarray(0, headerEnd + 4).toString("latin1"),
-    );
-    if (origin !== active.destinationOrigin) {
-      throw new Error(
-        "browser network request origin drifted from the admitted effect",
-      );
-    }
+  }
 
-    active.connectionCount += 1;
-    const context = {
-      operationId: active.operationId,
-      client,
-      upstream: null,
-      finished: false,
+  #armExpiry(active) {
+    const expire = () => {
+      if (this.#active !== active) return;
+      const remaining = Math.min(
+        active.deadlineMs - Date.now(),
+        active.monotonicDeadline - performance.now(),
+      );
+      if (remaining <= 0) {
+        active.boundedAbort = true;
+        this.completeOperation(active.operationId, { status: "lease_expired" });
+        return;
+      }
+      this.#expiryTimer = setTimeout(expire, Math.min(Math.ceil(remaining), 2_147_000_000));
+      this.#expiryTimer.unref?.();
     };
+    expire();
+  }
+
+  async #accept(client) {
+    const active = this.#active;
+    this.#assertActive(active);
+    if (active.connectionAttempts >= MAX_CONNECTIONS) {
+      throw new Error("effect egress connection budget exhausted");
+    }
+    active.connectionAttempts += 1;
+    // Register even partial-header connections so expiry closes every socket.
+    const context = { operationId: active.operationId, client, upstream: null, finished: false };
     this.#contexts.add(context);
     const finish = () => {
       if (context.finished) return;
       context.finished = true;
       this.#contexts.delete(context);
+      client.destroy();
+      context.upstream?.destroy();
     };
     client.once("close", finish);
+    const initial = await this.#readHeader(client);
+    this.#assertActive(active);
+    const headerEnd = initial.indexOf("\r\n\r\n");
+    const origin = requestOriginFromHeader(
+      initial.subarray(0, headerEnd + 4).toString("latin1"),
+    );
+    if (origin !== active.destinationOrigin) {
+      throw new Error("browser network request origin drifted from the admitted effect");
+    }
 
+    active.connectionCount += 1;
     const upstream = net.createConnection(this.#innerSocketPath);
     context.upstream = upstream;
     this.#sockets.add(upstream);
+    upstream.on("error", finish);
     upstream.once("close", () => {
       this.#sockets.delete(upstream);
       finish();
     });
     await new Promise((resolve, reject) => {
-      upstream.once("connect", resolve);
-      upstream.once("error", reject);
+      let timer;
+      const settle = (error) => {
+        clearTimeout(timer);
+        upstream.off("connect", connected);
+        upstream.off("error", failed);
+        upstream.off("close", closed);
+        if (error) reject(error); else resolve();
+      };
+      const connected = () => settle();
+      const failed = (error) => settle(error);
+      const closed = () => settle(new Error("policy channel closed before forwarding"));
+      upstream.once("connect", connected);
+      upstream.once("error", failed);
+      upstream.once("close", closed);
+      timer = setTimeout(() => {
+        settle(new Error("policy channel connect deadline exceeded"));
+        finish();
+      }, HEADER_TIMEOUT_MS);
     });
-    if (this.#active !== active) {
-      upstream.destroy();
-      throw new Error("browser effect egress ownership changed before forwarding");
+    this.#assertActive(active);
+    if (client.destroyed) {
+      finish();
+      throw new Error("worker connection closed before forwarding");
     }
 
     const exceeded = () => {
       active.boundedAbort = true;
-      client.destroy();
-      upstream.destroy();
+      for (const current of this.#contexts) {
+        if (current.operationId !== active.operationId) continue;
+        current.client.destroy();
+        current.upstream?.destroy();
+      }
     };
     const requests = new ByteLimitTransform({
       maximum: this.#maxRequestBytes,
       onBytes: (bytes) => {
+        this.#assertActive(active);
         active.requestBytes += bytes;
         return active.requestBytes;
       },
@@ -441,6 +678,7 @@ export class EffectScopedEgressBroker {
     const responses = new ByteLimitTransform({
       maximum: this.#maxResponseBytes,
       onBytes: (bytes) => {
+        this.#assertActive(active);
         active.responseBytes += bytes;
         return active.responseBytes;
       },
@@ -453,8 +691,22 @@ export class EffectScopedEgressBroker {
       });
     }
 
-    requests.write(initial);
-    client.pipe(requests).pipe(upstream);
+    const isConnect = initial.subarray(0, 8).toString("ascii") === "CONNECT ";
+    if (isConnect) {
+      requests.write(initial);
+      client.pipe(requests).pipe(upstream);
+    } else {
+      const scope = new HttpOperationScopeGuard(
+        active.destinationOrigin, () => this.#assertActive(active), this.#maxRequestBytes,
+      );
+      scope.on("error", finish);
+      scope.write(initial);
+      client.pipe(scope).pipe(requests).pipe(upstream, { end: false });
+    }
+    if (isConnect) {
+      client.once("end", finish);
+      if (client.readableEnded) finish();
+    }
     upstream.pipe(responses).pipe(client);
     client.resume();
   }
@@ -480,12 +732,17 @@ export class EffectScopedEgressBroker {
       const onData = (chunk) => {
         client.pause();
         buffer = Buffer.concat([buffer, chunk]);
-        if (buffer.length > MAX_HEADER_BYTES) {
-          finish(new Error("egress proxy header exceeds byte limit"));
+        const headerEnd = buffer.indexOf("\r\n\r\n");
+        if (headerEnd >= 0) {
+          if (headerEnd + 4 > MAX_HEADER_BYTES) {
+            finish(new Error("egress proxy header exceeds byte limit"));
+          } else {
+            finish(null, buffer);
+          }
           return;
         }
-        if (buffer.indexOf("\r\n\r\n") >= 0) {
-          finish(null, buffer);
+        if (buffer.length > MAX_HEADER_BYTES) {
+          finish(new Error("egress proxy header exceeds byte limit"));
           return;
         }
         client.resume();

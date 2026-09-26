@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { PassThrough } from "node:stream";
+import { canonicalDigest } from "../src/runtime-contract.js";
 
 import {
   AgentdBrowserChannel,
@@ -18,11 +19,18 @@ const D1 = "1".repeat(64);
 const W1 = "a".repeat(64);
 const PROCESS_ID = "servo.pid.2147483000.00000000-0000-4000-8000-000000000001";
 
-function admission(operationId, pageRevision = 0) {
+function admission(operationId, pageRevision = 0, typedAction = undefined) {
   return {
     kind: "BrowserEffectAdmissionV1",
     operationId,
-    semanticDigest: D1,
+    semanticDigest: canonicalDigest({
+      authorityEpoch: 7,
+      operationId,
+      profileGeneration: 1,
+      pageGeneration: pageRevision,
+      typedAction,
+      verifiedUseTokenWitnessDigest: W1,
+    }),
     workerGeneration: 1,
     pageRevision,
     admittedAt: 1_000,
@@ -61,7 +69,7 @@ function fakeHost(authority, events) {
             kind: "BrowserEffectObservationV1",
             status: "indeterminate",
             terminalObserved: false,
-            admission: admission(input.operationId),
+            admission: admission(input.operationId, 0, input.typedAction),
           };
         },
       );

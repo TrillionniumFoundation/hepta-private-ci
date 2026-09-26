@@ -34,6 +34,16 @@ function requireRecord(value, name) {
   return value;
 }
 
+// Trusted in-process capability objects are not wire records. Production
+// drivers/hosts have prototype methods and private state; only JSON payloads
+// must have Object.prototype. Do not relax wire validation to admit DI objects.
+function requireCapability(value, name) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError(`${name} must be a capability object`);
+  }
+  return value;
+}
+
 function boundedError(error) {
   return String(error?.message ?? error ?? "browser service error").slice(0, 512);
 }
@@ -191,7 +201,7 @@ function containmentDigest(identities) {
     .digest("hex");
 }
 
-function validateBrowserEffectAdmission(admission, request) {
+function validateBrowserEffectAdmission(admission, request, witnessDigest) {
   const value = requireRecord(admission, "Browser effect admission");
   exactKeys(
     value,
@@ -215,7 +225,15 @@ function validateBrowserEffectAdmission(admission, request) {
   ) {
     throw new TypeError("Browser effect admission operation identity drifted");
   }
-  digest(value.semanticDigest, "admission.semanticDigest");
+  const semantics = { ...request };
+  delete semantics.requestDigest;
+  const expectedSemanticDigest = canonicalDigest({
+    ...semantics,
+    verifiedUseTokenWitnessDigest: witnessDigest,
+  });
+  if (digest(value.semanticDigest, "admission.semanticDigest") !== expectedSemanticDigest) {
+    throw new TypeError("Browser effect admission semantic digest does not bind the request and witness");
+  }
   if (
     positiveInteger(value.workerGeneration, "admission.workerGeneration") !==
     positiveInteger(
@@ -264,7 +282,7 @@ export class EffectAdmissionBrowserDriver {
     clock = () => Date.now(),
     containmentTimeoutMs = DEFAULT_CONTAINMENT_TIMEOUT_MS,
   }) {
-    requireRecord(driver, "effect admission driver");
+    requireCapability(driver, "effect admission driver");
     for (const method of [
       "start",
       "observe",
@@ -309,7 +327,7 @@ export class EffectAdmissionBrowserDriver {
     return observed;
   }
 
-  observe(input, options = {}) {
+  async observe(input, options = {}) {
     this.#session(input);
     return this.#driver.observe(input, options);
   }
@@ -351,12 +369,12 @@ export class EffectAdmissionBrowserDriver {
     }
   }
 
-  reconcile(input, options = {}) {
+  async reconcile(input, options = {}) {
     this.#session(input);
     return this.#driver.reconcile(input, options);
   }
 
-  reconcilePersisted(input, options = {}) {
+  async reconcilePersisted(input, options = {}) {
     return this.#driver.reconcilePersisted(input, options);
   }
 
@@ -621,6 +639,8 @@ export class ParentFinalUseAuthority {
       throw new TypeError("Agentd did not enter the matching final-use fence");
     }
     const payload = requireRecord(enter.payload, "authority enter payload");
+    exactKeys(payload, ["authorized", "witnessDigest", "authorityEpoch", "requestDigest"],
+      "authority enter payload");
     if (payload.authorized !== true) {
       throw new TypeError("Agentd final-use authority denied browser dispatch");
     }
@@ -644,7 +664,7 @@ export class ParentFinalUseAuthority {
         await consumer(witness),
         "Browser verified-use result",
       );
-      validateBrowserEffectAdmission(result.admission, request);
+      validateBrowserEffectAdmission(result.admission, request, witness.witnessDigest);
     } catch (error) {
       if (error?.code === "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
         await this.#channel.send("dispatch_rejected", requestId, {
@@ -680,7 +700,7 @@ export class BrowserAgentdService {
   #authority;
 
   constructor({ host, channel, authority }) {
-    requireRecord(host, "browser host");
+    requireCapability(host, "browser host");
     for (const method of [
       "openProfile",
       "admitEffectGrant",
@@ -722,6 +742,7 @@ export class BrowserAgentdService {
         frame.payload,
         "Browser service request payload",
       );
+      exactKeys(payload, ["method", "input"], "Browser service request payload");
       if (!SERVICE_METHODS.has(payload.method)) {
         throw new TypeError("Browser service method is not registered");
       }
