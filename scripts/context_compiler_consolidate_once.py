@@ -132,28 +132,10 @@ def patch_manifest() -> None:
     path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
-def patch_workflow_paths() -> None:
-    path = ROOT / ".github/workflows/context-compiler-qualification.yml"
-    text = path.read_text(encoding="utf-8")
-    anchor = "      - codex-rs/core/src/model_provider_policy/**\n"
-    additions = (
-        anchor
-        + "      - codex-rs/codex-api/src/dispatch_metadata.rs\n"
-        + "      - codex-rs/codex-api/src/endpoint/responses.rs\n"
-        + "      - codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs\n"
-        + "      - codex-rs/hepta-agentd/src/provider_bound_prompt_runtime.rs\n"
-        + "      - codex-rs/hepta-agentd/src/provider_bound_prompt_runtime_tests.rs\n"
-    )
-    if anchor not in text:
-        raise SystemExit("qualification workflow path anchor missing")
-    path.write_text(text.replace(anchor, additions, 1), encoding="utf-8")
-
-
 def main() -> int:
     patch_source()
     patch_qualification()
     patch_manifest()
-    patch_workflow_paths()
     return 0
 
 
