@@ -34,6 +34,7 @@ jobs:
       - name: Resolve and package checksum-verified V8 archive and binding
         env:
           PYTHONPATH: scripts
+          CODEX_REPO_ROOT: ${{ github.workspace }}
         run: |
           set -eu
           mkdir -p "$RUNNER_TEMP/prompt-v8"
