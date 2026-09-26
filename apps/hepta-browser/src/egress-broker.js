@@ -7,9 +7,13 @@ import { unlink } from "node:fs/promises";
 const MAX_DNS_ANSWERS = 16;
 const MAX_PROXY_CONNECTIONS = 64;
 const CONNECT_TIMEOUT_MS = 10_000;
+const TUNNEL_IDLE_TIMEOUT_MS = 30_000;
 const TLS_CLIENT_HELLO_TIMEOUT_MS = 5_000;
 const MAX_TLS_CLIENT_HELLO_BYTES = 65_536;
 const MAX_TLS_RECORD_BYTES = 18_432;
+const MAX_HTTP_REQUEST_BYTES = 1 * 1024 * 1024;
+const MAX_HTTP_RESPONSE_BYTES = 16 * 1024 * 1024;
+const MAX_TUNNEL_BYTES_PER_DIRECTION = 64 * 1024 * 1024;
 const DIGEST = /^[0-9a-f]{64}$/;
 
 const blocked = new net.BlockList();
@@ -341,6 +345,66 @@ function readBoundTlsClientHello(client, head, hostname) {
   });
 }
 
+function bridgeBoundedTunnel(client, upstream, hello) {
+  let clientToUpstreamBytes = hello.length;
+  let upstreamToClientBytes = 0;
+  let closed = false;
+  const fail = (message) => {
+    if (closed) return;
+    closed = true;
+    const error = message instanceof Error ? message : new Error(message);
+    if (!client.destroyed) client.destroy(error);
+    if (!upstream.destroyed) upstream.destroy(error);
+  };
+  const refreshTimeout = (socket) => {
+    socket.setTimeout(TUNNEL_IDLE_TIMEOUT_MS, () => {
+      fail("egress tunnel idle timeout");
+    });
+  };
+
+  refreshTimeout(client);
+  refreshTimeout(upstream);
+
+  client.on("data", (chunk) => {
+    clientToUpstreamBytes += chunk.length;
+    if (clientToUpstreamBytes > MAX_TUNNEL_BYTES_PER_DIRECTION) {
+      fail("egress tunnel request bytes exceed limit");
+      return;
+    }
+    if (!upstream.write(chunk)) client.pause();
+  });
+  upstream.on("drain", () => client.resume());
+
+  upstream.on("data", (chunk) => {
+    upstreamToClientBytes += chunk.length;
+    if (upstreamToClientBytes > MAX_TUNNEL_BYTES_PER_DIRECTION) {
+      fail("egress tunnel response bytes exceed limit");
+      return;
+    }
+    if (!client.write(chunk)) upstream.pause();
+  });
+  client.on("drain", () => upstream.resume());
+
+  client.on("end", () => upstream.end());
+  upstream.on("end", () => client.end());
+  client.on("error", (error) => fail(error));
+  upstream.on("error", (error) => fail(error));
+  client.on("close", () => {
+    closed = true;
+    if (!upstream.destroyed) upstream.destroy();
+  });
+  upstream.on("close", () => {
+    closed = true;
+    if (!client.destroyed) client.end();
+  });
+
+  if (!upstream.write(hello)) {
+    client.pause();
+  } else {
+    client.resume();
+  }
+}
+
 export class GrantScopedEgressBroker {
   #socketPath;
   #grantDigest;
@@ -500,14 +564,41 @@ export class GrantScopedEgressBroker {
       createConnection: () => socket,
     });
     upstream.on("response", (upstreamResponse) => {
-      response.writeHead(upstreamResponse.statusCode ?? 502, stripHopByHop(upstreamResponse.headers));
-      upstreamResponse.pipe(response);
+      response.writeHead(
+        upstreamResponse.statusCode ?? 502,
+        stripHopByHop(upstreamResponse.headers),
+      );
+      let responseBytes = 0;
+      upstreamResponse.on("data", (chunk) => {
+        responseBytes += chunk.length;
+        if (responseBytes > MAX_HTTP_RESPONSE_BYTES) {
+          upstreamResponse.destroy(new Error("HTTP response exceeds egress limit"));
+          response.destroy();
+          return;
+        }
+        response.write(chunk);
+      });
+      upstreamResponse.on("end", () => response.end());
+      upstreamResponse.on("error", () => response.destroy());
     });
     upstream.on("error", () => {
       if (!response.headersSent) response.writeHead(502);
       response.end();
     });
-    request.pipe(upstream);
+
+    let requestBytes = 0;
+    request.on("data", (chunk) => {
+      requestBytes += chunk.length;
+      if (requestBytes > MAX_HTTP_REQUEST_BYTES) {
+        request.destroy(new Error("HTTP request exceeds egress limit"));
+        upstream.destroy();
+        return;
+      }
+      if (!upstream.write(chunk)) request.pause();
+    });
+    upstream.on("drain", () => request.resume());
+    request.on("end", () => upstream.end());
+    request.on("error", () => upstream.destroy());
   }
 
   async #handleConnect(request, client, head) {
@@ -533,12 +624,7 @@ export class GrantScopedEgressBroker {
       const hello = await readBoundTlsClientHello(client, head, target.hostname);
       const { socket: upstream, address } = await connectPinned(binding.answers, port);
       this.#record(binding, target.hostname, port, address, "connect");
-      upstream.write(hello);
-      client.pipe(upstream);
-      upstream.pipe(client);
-      upstream.on("error", () => client.destroy());
-      client.on("error", () => upstream.destroy());
-      client.resume();
+      bridgeBoundedTunnel(client, upstream, hello);
     } catch (error) {
       client.destroy();
       throw error;
