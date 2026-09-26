@@ -34,7 +34,8 @@ fn context() -> RetrievalExecutionContextV1 {
         template_digest: external,
         tool_schema_digest: external,
     };
-    let snapshot = EngramSnapshotV1::new(vector.digest(), external, Vec::new(), Vec::new()).unwrap();
+    let snapshot =
+        EngramSnapshotV1::new(vector.digest(), external, Vec::new(), Vec::new()).unwrap();
     let context = RetrievalExecutionContextV1 {
         generation_vector: vector,
         objective_digest: external,
@@ -48,8 +49,17 @@ fn context() -> RetrievalExecutionContextV1 {
     context
 }
 
-fn product() -> (Arc<dyn CurrentMemoryRetrievalContext>, ProductRetrievalContextControlV1) {
-    <dyn CurrentMemoryRetrievalContext>::product_with_control(owner(), 1, context(), now_unix_ms().unwrap() + 120_000).unwrap()
+fn product() -> (
+    Arc<dyn CurrentMemoryRetrievalContext>,
+    ProductRetrievalContextControlV1,
+) {
+    <dyn CurrentMemoryRetrievalContext>::product_with_control(
+        owner(),
+        1,
+        context(),
+        now_unix_ms().unwrap() + 120_000,
+    )
+    .unwrap()
 }
 
 struct Witness(ProductRetrievalContextSnapshotV1);
@@ -65,8 +75,16 @@ impl RetrievalRecoveryWitnessV1 for Witness {
 #[test]
 fn product_reader_has_no_lifecycle_write_capability() {
     let (reader, _) = product();
-    assert!(reader.rotate_context(1, context(), now_unix_ms().unwrap() + 120_000).is_err());
-    assert!(reader.renew_context(1, now_unix_ms().unwrap() + 120_000).is_err());
+    assert!(
+        reader
+            .rotate_context(1, context(), now_unix_ms().unwrap() + 120_000)
+            .is_err()
+    );
+    assert!(
+        reader
+            .renew_context(1, now_unix_ms().unwrap() + 120_000)
+            .is_err()
+    );
     assert!(reader.revoke_context(1).is_err());
     assert!(reader.current(&owner(), 1).is_ok());
 }
@@ -101,7 +119,11 @@ fn revoke_is_terminal_and_retry_is_idempotent() {
     assert_eq!(control.revoke(1).unwrap(), 2);
     assert_eq!(control.revoke(2).unwrap(), 2);
     assert!(reader.current(&owner(), 1).is_err());
-    assert!(control.rotate(2, context(), now_unix_ms().unwrap() + 120_000).is_err());
+    assert!(
+        control
+            .rotate(2, context(), now_unix_ms().unwrap() + 120_000)
+            .is_err()
+    );
     assert!(control.renew(2, now_unix_ms().unwrap() + 120_000).is_err());
     assert!(control.snapshot().unwrap().revoked);
 }
@@ -129,8 +151,22 @@ fn historical_self_hash_does_not_authorize_recovery() {
     let old = control.snapshot().unwrap();
     control.revoke(1).unwrap();
     let witness = Witness(control.snapshot().unwrap());
-    assert!(<dyn CurrentMemoryRetrievalContext>::recover_product_with_witness(old.clone(), &witness).is_err());
-    assert!(<dyn CurrentMemoryRetrievalContext>::recover_product(old.owner, old.body_generation, old.epoch, old.lease_expires_unix_ms, old.context, old.revoked, old.state_digest).is_err());
+    assert!(
+        <dyn CurrentMemoryRetrievalContext>::recover_product_with_witness(old.clone(), &witness)
+            .is_err()
+    );
+    assert!(
+        <dyn CurrentMemoryRetrievalContext>::recover_product(
+            old.owner,
+            old.body_generation,
+            old.epoch,
+            old.lease_expires_unix_ms,
+            old.context,
+            old.revoked,
+            old.state_digest
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -139,21 +175,33 @@ fn recovery_preserves_current_revocation_and_validates_exact_state() {
     control.revoke(1).unwrap();
     let snapshot = control.snapshot().unwrap();
     let witness = Witness(snapshot.clone());
-    let (reader, recovered_control) = <dyn CurrentMemoryRetrievalContext>::recover_product_with_witness(snapshot.clone(), &witness).unwrap();
+    let (reader, recovered_control) =
+        <dyn CurrentMemoryRetrievalContext>::recover_product_with_witness(
+            snapshot.clone(),
+            &witness,
+        )
+        .unwrap();
     assert!(reader.current(&owner(), 1).is_err());
     assert_eq!(recovered_control.snapshot().unwrap(), snapshot);
     let mut tampered = snapshot;
     tampered.epoch += 1;
-    assert!(<dyn CurrentMemoryRetrievalContext>::recover_product_with_witness(tampered, &witness).is_err());
+    assert!(
+        <dyn CurrentMemoryRetrievalContext>::recover_product_with_witness(tampered, &witness)
+            .is_err()
+    );
 }
 
 #[test]
 fn lease_bounds_and_invalid_generations_fail_before_publication() {
     let now = now_unix_ms().unwrap();
     for deadline in [0, now, now + MAX_LEASE_MS + 10_000] {
-        assert!(<dyn CurrentMemoryRetrievalContext>::product(owner(), 1, context(), deadline).is_err());
+        assert!(
+            <dyn CurrentMemoryRetrievalContext>::product(owner(), 1, context(), deadline).is_err()
+        );
     }
-    assert!(<dyn CurrentMemoryRetrievalContext>::product(owner(), 0, context(), now + 120_000).is_err());
+    assert!(
+        <dyn CurrentMemoryRetrievalContext>::product(owner(), 0, context(), now + 120_000).is_err()
+    );
 }
 
 #[test]
@@ -170,7 +218,10 @@ fn concurrent_control_writers_have_one_epoch_winner() {
             control.renew(1, now_unix_ms().unwrap() + 120_000).is_ok()
         }));
     }
-    let winners = threads.into_iter().map(|thread| usize::from(thread.join().unwrap())).sum::<usize>();
+    let winners = threads
+        .into_iter()
+        .map(|thread| usize::from(thread.join().unwrap()))
+        .sum::<usize>();
     assert_eq!(winners, 1);
     assert_eq!(reader.lifecycle_epoch().unwrap(), 2);
 }

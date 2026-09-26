@@ -17,7 +17,8 @@ impl AcquiredRetrievalContext {
     }
 
     pub(super) fn bound_deadline(&self, proposed: u64) -> u64 {
-        self.lease_expires_unix_ms.map_or(proposed, |lease| proposed.min(lease))
+        self.lease_expires_unix_ms
+            .map_or(proposed, |lease| proposed.min(lease))
     }
 }
 

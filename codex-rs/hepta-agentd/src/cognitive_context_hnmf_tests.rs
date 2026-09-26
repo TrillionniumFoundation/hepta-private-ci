@@ -299,3 +299,77 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
         ))
     ));
 }
+
+#[tokio::test]
+async fn same_payload_product_epoch_invalidates_final_use() {
+    let (_temp, store, owner, context, _memory_id) = fixture(963).await;
+    let lease = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+    )
+    .unwrap()
+        + 120_000;
+    let (reader, control) =
+        <dyn CurrentMemoryRetrievalContext>::product_with_control(owner.clone(), 1, context, lease)
+            .unwrap();
+    let response = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&reader))
+        .await
+        .unwrap();
+    assert!(!response.items.is_empty());
+    control.renew(1, lease).unwrap();
+    let current = crate::cognitive_context::revalidate_with_retrieval_context(
+        &store,
+        &owner,
+        &response.snapshot_digest,
+        &response.read_digest,
+        response.omitted_records,
+        &response.items,
+        response.plan.as_ref(),
+        None,
+        1,
+        Some(&reader),
+    )
+    .await;
+    assert!(
+        current.is_err(),
+        "same payload with another lease epoch must invalidate the old read"
+    );
+}
+
+#[tokio::test]
+async fn revoked_product_context_invalidates_final_use() {
+    let (_temp, store, owner, context, _memory_id) = fixture(964).await;
+    let lease = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+    )
+    .unwrap()
+        + 120_000;
+    let (reader, control) =
+        <dyn CurrentMemoryRetrievalContext>::product_with_control(owner.clone(), 1, context, lease)
+            .unwrap();
+    let response = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&reader))
+        .await
+        .unwrap();
+    control.revoke(1).unwrap();
+    assert!(
+        crate::cognitive_context::revalidate_with_retrieval_context(
+            &store,
+            &owner,
+            &response.snapshot_digest,
+            &response.read_digest,
+            response.omitted_records,
+            &response.items,
+            response.plan.as_ref(),
+            None,
+            1,
+            Some(&reader),
+        )
+        .await
+        .is_err()
+    );
+}

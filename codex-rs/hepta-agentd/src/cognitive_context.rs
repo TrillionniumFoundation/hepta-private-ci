@@ -19,7 +19,6 @@ use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalCandidateIdentityV1;
-use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory::execute_owner_observation;
@@ -32,6 +31,10 @@ use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
+
+#[path = "cognitive_retrieval_lease.rs"]
+mod retrieval_lease;
+use retrieval_lease::AcquiredRetrievalContext;
 
 const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
@@ -128,7 +131,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     };
     let expected_retrieval_context_digest = retrieval_context
         .as_ref()
-        .map(RetrievalExecutionContextV1::binding_digest);
+        .map(AcquiredRetrievalContext::binding_digest);
     if learning_sink.is_some() && retrieval_context.is_none() {
         return Err(CognitiveContextError::RetrievalLearningUnavailable);
     }
@@ -170,6 +173,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let lease_expires_unix_ms = acquired_at_unix_ms.checked_add(5_000).ok_or_else(|| {
             CognitiveStoreError::Unavailable("retrieval context lease overflow".to_string())
         })?;
+        let lease_expires_unix_ms = context.bound_deadline(lease_expires_unix_ms);
+        if lease_expires_unix_ms <= acquired_at_unix_ms {
+            return Err(CognitiveContextError::RetrievalContextUnavailable);
+        }
         let execution = execute_owner_observation(
             &observation,
             &cut,
@@ -475,6 +482,21 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
     }
+    // Append completion is not a freshness fence. A prepared assignment does
+    // not prove native consumption; publication still requires current owners.
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
+    if let (Some(current), Some(expected)) = (current_retrieval, expected_retrieval_context_digest)
+    {
+        if load_retrieval_context(current, owner, body_generation)
+            .await?
+            .binding_digest()
+            != expected
+        {
+            return Err(CognitiveContextError::RetrievalContextUnavailable);
+        }
+    }
     Ok(response)
 }
 
@@ -629,6 +651,19 @@ pub(crate) async fn revalidate_with_retrieval_context(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
 
+    // The optional ranker above may await. Recheck both owners after that gap.
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
+    if let (Some(current), Some(expected)) = (current_retrieval, retrieval_context_digest) {
+        if load_retrieval_context(current, owner, body_generation)
+            .await?
+            .binding_digest()
+            != expected
+        {
+            return Err(CognitiveContextError::RetrievalContextUnavailable);
+        }
+    }
     Ok(CognitiveContextRevalidation {
         snapshot_digest: expected_snapshot.to_string(),
         read_digest: current_read_binding.to_string(),
@@ -702,17 +737,34 @@ async fn load_retrieval_context(
     current: &std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>,
     owner: &AgentId,
     body_generation: u64,
-) -> Result<RetrievalExecutionContextV1, CognitiveContextError> {
+) -> Result<AcquiredRetrievalContext, CognitiveContextError> {
     let current = std::sync::Arc::clone(current);
     let owner = owner.clone();
-    let context = tokio::task::spawn_blocking(move || current.current(&owner, body_generation))
-        .await
-        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?
-        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;
+    let (context, lifecycle_binding, lease_expires_unix_ms) =
+        tokio::task::spawn_blocking(move || current.acquire_context(&owner, body_generation))
+            .await
+            .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?
+            .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;
     context
         .validate()
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;
-    Ok(context)
+    if lifecycle_binding.is_zero() {
+        return Err(CognitiveContextError::RetrievalContextUnavailable);
+    }
+    if let Some(lease) = lease_expires_unix_ms {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?
+            .as_millis();
+        if u128::from(lease) <= now {
+            return Err(CognitiveContextError::RetrievalContextUnavailable);
+        }
+    }
+    Ok(AcquiredRetrievalContext {
+        context,
+        lifecycle_binding,
+        lease_expires_unix_ms,
+    })
 }
 
 fn now_seconds() -> Result<i64, CognitiveStoreError> {

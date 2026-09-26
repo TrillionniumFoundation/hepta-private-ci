@@ -94,7 +94,13 @@ impl dyn CurrentMemoryRetrievalContext {
         body_generation: u64,
         context: RetrievalExecutionContextV1,
         lease_expires_unix_ms: u64,
-    ) -> Result<(Arc<dyn CurrentMemoryRetrievalContext>, ProductRetrievalContextControlV1), String> {
+    ) -> Result<
+        (
+            Arc<dyn CurrentMemoryRetrievalContext>,
+            ProductRetrievalContextControlV1,
+        ),
+        String,
+    > {
         let provider = Arc::new(product::ProductMemoryRetrievalContextV1::new(
             owner,
             body_generation,
@@ -122,8 +128,16 @@ impl dyn CurrentMemoryRetrievalContext {
     pub fn recover_product_with_witness(
         snapshot: ProductRetrievalContextSnapshotV1,
         witness: &dyn RetrievalRecoveryWitnessV1,
-    ) -> Result<(Arc<dyn CurrentMemoryRetrievalContext>, ProductRetrievalContextControlV1), String> {
-        let provider = Arc::new(product::ProductMemoryRetrievalContextV1::recover(snapshot, witness)?);
+    ) -> Result<
+        (
+            Arc<dyn CurrentMemoryRetrievalContext>,
+            ProductRetrievalContextControlV1,
+        ),
+        String,
+    > {
+        let provider = Arc::new(product::ProductMemoryRetrievalContextV1::recover(
+            snapshot, witness,
+        )?);
         let control = ProductRetrievalContextControlV1::from_provider(Arc::clone(&provider));
         Ok((provider, control))
     }

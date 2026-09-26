@@ -114,7 +114,11 @@ impl ProductRetrievalContextControlV1 {
         lease_expires_unix_ms: u64,
     ) -> Result<u64, String> {
         context.validate().map_err(|error| error.to_string())?;
-        let mut state = self.provider.state.write().map_err(|_| "poisoned provider lock")?;
+        let mut state = self
+            .provider
+            .state
+            .write()
+            .map_err(|_| "poisoned provider lock")?;
         require_live(&state)?;
         require_epoch(&state, expected_epoch)?;
         let previous = state.snapshot.context.as_ref().ok_or("revoked context")?;
@@ -122,7 +126,11 @@ impl ProductRetrievalContextControlV1 {
             return Err("authority epoch regression".to_string());
         }
         let (wall, deadline) = lease_window(lease_expires_unix_ms)?;
-        let next = state.snapshot.epoch.checked_add(1).ok_or("epoch overflow")?;
+        let next = state
+            .snapshot
+            .epoch
+            .checked_add(1)
+            .ok_or("epoch overflow")?;
         state.snapshot.context = Some(context);
         state.snapshot.epoch = next;
         state.snapshot.lease_expires_unix_ms = lease_expires_unix_ms;
@@ -133,11 +141,19 @@ impl ProductRetrievalContextControlV1 {
     }
 
     pub fn renew(&self, expected_epoch: u64, lease_expires_unix_ms: u64) -> Result<u64, String> {
-        let mut state = self.provider.state.write().map_err(|_| "poisoned provider lock")?;
+        let mut state = self
+            .provider
+            .state
+            .write()
+            .map_err(|_| "poisoned provider lock")?;
         require_live(&state)?;
         require_epoch(&state, expected_epoch)?;
         let (wall, deadline) = lease_window(lease_expires_unix_ms)?;
-        let next = state.snapshot.epoch.checked_add(1).ok_or("epoch overflow")?;
+        let next = state
+            .snapshot
+            .epoch
+            .checked_add(1)
+            .ok_or("epoch overflow")?;
         state.snapshot.epoch = next;
         state.snapshot.lease_expires_unix_ms = lease_expires_unix_ms;
         state.snapshot.state_digest = state.snapshot.compute_state_digest();
@@ -147,7 +163,11 @@ impl ProductRetrievalContextControlV1 {
     }
 
     pub fn revoke(&self, expected_epoch: u64) -> Result<u64, String> {
-        let mut state = self.provider.state.write().map_err(|_| "poisoned provider lock")?;
+        let mut state = self
+            .provider
+            .state
+            .write()
+            .map_err(|_| "poisoned provider lock")?;
         state.snapshot.validate()?;
         if state.snapshot.revoked
             && (expected_epoch == state.snapshot.epoch
@@ -156,7 +176,11 @@ impl ProductRetrievalContextControlV1 {
             return Ok(state.snapshot.epoch);
         }
         require_epoch(&state, expected_epoch)?;
-        let next = state.snapshot.epoch.checked_add(1).ok_or("epoch overflow")?;
+        let next = state
+            .snapshot
+            .epoch
+            .checked_add(1)
+            .ok_or("epoch overflow")?;
         state.snapshot.epoch = next;
         state.snapshot.lease_expires_unix_ms = 0;
         state.snapshot.context = None;
@@ -187,7 +211,11 @@ impl ProductMemoryRetrievalContextV1 {
         snapshot.validate()?;
         let (acquired_wall_ms, monotonic_deadline) = lease_window(lease_expires_unix_ms)?;
         Ok(Self {
-            state: RwLock::new(ProductState { snapshot, acquired_wall_ms, monotonic_deadline }),
+            state: RwLock::new(ProductState {
+                snapshot,
+                acquired_wall_ms,
+                monotonic_deadline,
+            }),
         })
     }
 
@@ -206,7 +234,11 @@ impl ProductMemoryRetrievalContextV1 {
             lease_window(snapshot.lease_expires_unix_ms)?
         };
         Ok(Self {
-            state: RwLock::new(ProductState { snapshot, acquired_wall_ms, monotonic_deadline }),
+            state: RwLock::new(ProductState {
+                snapshot,
+                acquired_wall_ms,
+                monotonic_deadline,
+            }),
         })
     }
 
@@ -218,8 +250,13 @@ impl ProductMemoryRetrievalContextV1 {
 }
 
 impl CurrentMemoryRetrievalContext for ProductMemoryRetrievalContextV1 {
-    fn current(&self, owner: &AgentId, body_generation: u64) -> Result<RetrievalExecutionContextV1, String> {
-        self.acquire_context(owner, body_generation).map(|(context, _, _)| context)
+    fn current(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<RetrievalExecutionContextV1, String> {
+        self.acquire_context(owner, body_generation)
+            .map(|(context, _, _)| context)
     }
 
     fn acquire_context(
@@ -233,7 +270,11 @@ impl CurrentMemoryRetrievalContext for ProductMemoryRetrievalContextV1 {
         }
         require_live(&state)?;
         let context = state.snapshot.context.clone().ok_or("revoked context")?;
-        Ok((context, state.snapshot.state_digest, Some(state.snapshot.lease_expires_unix_ms)))
+        Ok((
+            context,
+            state.snapshot.state_digest,
+            Some(state.snapshot.lease_expires_unix_ms),
+        ))
     }
 
     fn lifecycle_epoch(&self) -> Result<u64, String> {
@@ -241,7 +282,8 @@ impl CurrentMemoryRetrievalContext for ProductMemoryRetrievalContextV1 {
     }
 
     fn lease_expires_unix_ms(&self) -> Result<u64, String> {
-        self.snapshot().map(|snapshot| snapshot.lease_expires_unix_ms)
+        self.snapshot()
+            .map(|snapshot| snapshot.lease_expires_unix_ms)
     }
 
     fn context_state_digest(&self) -> Result<Digest32, String> {
@@ -277,16 +319,22 @@ fn require_live(state: &ProductState) -> Result<(), String> {
 
 fn lease_window(expires: u64) -> Result<(u64, Instant), String> {
     let now = now_unix_ms()?;
-    let duration = expires.checked_sub(now).ok_or("lease is not in the future")?;
+    let duration = expires
+        .checked_sub(now)
+        .ok_or("lease is not in the future")?;
     if duration == 0 || duration > MAX_LEASE_MS {
         return Err("lease is outside the bounded product window".to_string());
     }
-    let deadline = Instant::now().checked_add(Duration::from_millis(duration)).ok_or("lease overflow")?;
+    let deadline = Instant::now()
+        .checked_add(Duration::from_millis(duration))
+        .ok_or("lease overflow")?;
     Ok((now, deadline))
 }
 
 fn now_unix_ms() -> Result<u64, String> {
-    let duration = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| "invalid wall clock")?;
+    let duration = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| "invalid wall clock")?;
     u64::try_from(duration.as_millis()).map_err(|_| "wall clock overflow".to_string())
 }
 
