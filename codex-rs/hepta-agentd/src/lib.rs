@@ -13,6 +13,7 @@ mod automation;
 mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
+pub mod cognitive_bootstrap;
 mod client;
 mod cognitive_context;
 mod cognitive_ranker;
@@ -237,7 +238,3 @@ pub use topology_plasticity_host::reopen_agentd_topology_writer_v1;
 pub use topology_plasticity_host::resolve_agentd_topology_admission_v1;
 pub use topology_plasticity_host::resume_agentd_topology_writer_v1;
 pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
-
-use control::AgentdControlServer;
-use event_buffer::EventBuffer;
-use state::AgentdState;
