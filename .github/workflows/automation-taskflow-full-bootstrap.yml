@@ -1,0 +1,216 @@
+name: automation-taskflow-full-bootstrap
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-v19-runtime-closure
+    paths:
+      - .github/workflows/automation-taskflow-full-bootstrap.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-full-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  staged-closure:
+    if: ${{ !contains(github.event.head_commit.message || '', '[automation-full-generated]') }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out latest work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-v19-runtime-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Configure generated-branch author
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Automation CI"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+          python3 -m py_compile \
+            scripts/apply_automation_taskflow_p0.py \
+            scripts/apply_automation_taskflow_runtime.py \
+            scripts/apply_automation_taskflow_neural_runtime.py
+
+      - name: Stage 1 - schema v19 and product-effect closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_automation_taskflow_p0.py source
+          (cd codex-rs && cargo fmt -p codex-hepta-automation -p codex-hepta-agentd)
+          git diff --check
+          git add \
+            CALLERS.toml \
+            codex-rs/hepta-agentd/src/automation_effect_host.rs \
+            docs/modules/automation.taskflow \
+            docs/readiness/LANE_B_NATIVE_HOST.md \
+            qualification/module-execution-dossiers/detail/automation.taskflow.md \
+            scripts/check_automation_taskflow_schema.py \
+            scripts/test_automation_taskflow_schema.py
+          git commit -m "automation.taskflow: close schema-v19 product effect path [automation-full-generated]"
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          python3 scripts/apply_automation_taskflow_p0.py metadata --source-sha "$SOURCE_SHA"
+          python3 scripts/hepta-lane-b-truth.py generate
+          git diff --check
+          git add \
+            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            qualification/lane-b/IMPLEMENTATION_TRUTH.json
+          git commit -m "docs(automation): bind schema-v19 product truth [automation-full-generated]"
+
+      - name: Stage 2 - bounded runtime reliability and capacity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_automation_taskflow_runtime.py source
+          (cd codex-rs && cargo fmt -p codex-hepta-automation -p codex-hepta-agentd)
+          git diff --check
+          git add \
+            codex-rs/hepta-automation/src \
+            codex-rs/hepta-automation/tests/runtime_reliability.rs \
+            codex-rs/hepta-agentd/src/automation.rs \
+            codex-rs/hepta-agentd/src/automation_recovery.rs \
+            docs/modules/automation.taskflow \
+            qualification/module-execution-dossiers/detail/automation.taskflow.md
+          git commit -m "automation.taskflow: add bounded recovery and admission lanes [automation-full-generated]"
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          python3 scripts/apply_automation_taskflow_runtime.py metadata --source-sha "$SOURCE_SHA"
+          python3 scripts/hepta-lane-b-truth.py generate
+          git diff --check
+          git add \
+            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            qualification/lane-b/IMPLEMENTATION_TRUTH.json
+          git commit -m "docs(automation): bind bounded runtime truth [automation-full-generated]"
+
+      - name: Stage 3 - durable Neural Circuit vertical slice
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_automation_taskflow_neural_runtime.py source
+          (cd codex-rs && cargo fmt -p codex-hepta-automation)
+          git diff --check
+          git add \
+            codex-rs/hepta-automation/src \
+            codex-rs/hepta-automation/tests/neural_circuit_runtime.rs \
+            docs/modules/automation.taskflow/TECHNICAL.md \
+            qualification/module-execution-dossiers/detail/automation.taskflow.md
+          git commit -m "automation.taskflow: add durable Neural Circuit runtime slice [automation-full-generated]"
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          printf 'FINAL_SOURCE_SHA=%s\n' "$SOURCE_SHA" >> "$GITHUB_ENV"
+          python3 scripts/apply_automation_taskflow_neural_runtime.py metadata --source-sha "$SOURCE_SHA"
+          python3 scripts/hepta-lane-b-truth.py generate
+          git diff --check
+          git add \
+            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            qualification/lane-b/IMPLEMENTATION_TRUTH.json
+          git commit -m "docs(automation): bind Neural Circuit runtime truth [automation-full-generated]"
+
+      - name: Verify schema, callers and generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/check_automation_taskflow_schema.py
+          python3 -m unittest scripts/test_automation_taskflow_schema.py
+          python3 scripts/verify_hepta_callers.py self-test
+          python3 scripts/verify_hepta_callers.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-truth.py verify
+          git diff --check
+
+      - name: Format, compile and strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+          cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+          cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings
+
+      - name: Test schema, migrations, runtime and Agentd product path
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-operations
+          cargo test -p codex-hepta-automation --test durable_causal_chain
+          cargo test -p codex-hepta-automation --test runtime_reliability
+          cargo test -p codex-hepta-automation --test neural_circuit_runtime
+          cargo test -p codex-hepta-automation
+          cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+          cargo test -p codex-hepta-agentd --lib automation
+
+      - name: Create exact-head command receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/automation-taskflow-full"
+          export RECEIPT_SHA="$(git rev-parse HEAD)"
+          export RECEIPT_TREE="$(git rev-parse HEAD^{tree})"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = {
+              "schema": "hepta.automation-taskflow.full-source-receipt.v1",
+              "commit": os.environ["RECEIPT_SHA"],
+              "tree": os.environ["RECEIPT_TREE"],
+              "finalSourceObservation": os.environ["FINAL_SOURCE_SHA"],
+              "storeSchemaVersion": 19,
+              "sourceClaims": {
+                  "providerEffectProductCaller": True,
+                  "boundedAdmissionBatch": True,
+                  "separateRecoveryAdmissionBudgets": True,
+                  "failureDisposition": True,
+                  "backlogAgeAndFairness": True,
+                  "minimalNeuralCircuitRuntime": True,
+                  "v1CompatibilityPreserved": True,
+                  "secondScheduler": False,
+                  "secondStore": False,
+              },
+              "externalEvidence": {
+                  "selectedHost": False,
+                  "authenticCurrentIanaTzdb": False,
+                  "independentAcceptance": False,
+                  "activation": False,
+                  "release": False,
+              },
+              "result": "pass",
+          }
+          target = Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-full" / "receipt.json"
+          target.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Push qualified staged commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
+
+      - name: Retain exact-head receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-full-${{ github.sha }}
+          path: ${{ runner.temp }}/automation-taskflow-full/receipt.json
+          if-no-files-found: error
+          retention-days: 30
