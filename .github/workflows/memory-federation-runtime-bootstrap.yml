@@ -17,9 +17,9 @@ concurrency:
 
 jobs:
   apply:
-    runs-on:
-      group: trillionnium-android-gpu
-      labels: [self-hosted, linux, x64]
+    # This job only rewrites source, formats it, and regenerates implementation
+    # metadata. It does not provide product qualification evidence.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
     steps:
       - name: Check out exact feature head
@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Normalize generated regex literals
+      - name: Normalize and apply runtime closure
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -45,37 +45,9 @@ jobs:
           path.write_text(text.replace(needle, replacement), encoding="utf-8")
           PY
           python3 -m py_compile scripts/apply_memory_federation_runtime_closure.py
+          python3 scripts/apply_memory_federation_runtime_closure.py
 
-      - name: Apply runtime closure patch
-        id: apply-runtime
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          python3 scripts/apply_memory_federation_runtime_closure.py 2>&1 | tee /tmp/memory-federation-bootstrap.log
-
-      - name: Persist bootstrap failure diagnostics
-        if: steps.apply-runtime.outcome == 'failure'
-        run: |
-          set -euo pipefail
-          mkdir -p qualification/memory-federation
-          {
-            printf '%s\n' '# memory.federation runtime bootstrap failure'
-            printf '\n- source commit: `%s`\n' "$(git rev-parse HEAD)"
-            printf '\n```text\n'
-            cat /tmp/memory-federation-bootstrap.log
-            printf '\n```\n'
-          } > qualification/memory-federation/BOOTSTRAP_FAILURE.md
-          git config user.name "Hepta Memory Federation Automation"
-          git config user.email "hepta-memory-federation@users.noreply.github.com"
-          git add qualification/memory-federation/BOOTSTRAP_FAILURE.md
-          git commit -m "chore(memory-federation): retain bootstrap failure diagnostic
-
-          Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
-          git push origin HEAD:feat/memory-federation-production-closure-20260926
-          exit 1
-
-      - name: Harden generated runtime semantics
-        if: steps.apply-runtime.outcome == 'success'
+      - name: Harden generated semantics
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -85,13 +57,10 @@ jobs:
           legacy_text = legacy.read_text(encoding="utf-8")
           if "#![allow(deprecated)]" not in legacy_text:
               head, tail = legacy_text.split("\n\n", 1)
-              legacy.write_text(
-                  head + "\n\n#![allow(deprecated)]\n\n" + tail,
-                  encoding="utf-8",
-              )
+              legacy.write_text(head + "\n\n#![allow(deprecated)]\n\n" + tail, encoding="utf-8")
 
           runtime = Path("codex-rs/hepta-memory/src/cognitive_runtime.rs")
-          runtime_text = runtime.read_text(encoding="utf-8")
+          text = runtime.read_text(encoding="utf-8")
           unconditional = (
               "    aggregate.partial_peers = aggregate\n"
               "        .partial_peers\n"
@@ -108,100 +77,64 @@ jobs:
               "            .saturating_add(attempt.partial_peers);\n"
               "        aggregate.completed_peers = aggregate\n"
           )
-          if runtime_text.count(unconditional) != 1:
-              raise SystemExit("unexpected partial peer aggregation shape")
-          if runtime_text.count(valid_branch) != 1:
-              raise SystemExit("unexpected valid coverage branch shape")
-          runtime_text = runtime_text.replace(unconditional, "", 1)
-          runtime_text = runtime_text.replace(valid_branch, valid_replacement, 1)
-          runtime.write_text(runtime_text, encoding="utf-8")
+          if text.count(unconditional) != 1 or text.count(valid_branch) != 1:
+              raise SystemExit("unexpected generated partial-peer aggregation shape")
+          text = text.replace(unconditional, "", 1).replace(valid_branch, valid_replacement, 1)
+          runtime.write_text(text, encoding="utf-8")
 
           tests = Path("codex-rs/hepta-memory/src/cognitive_runtime_identity_tests.rs")
-          tests_text = tests.read_text(encoding="utf-8")
+          text = tests.read_text(encoding="utf-8")
           marker = "fn federation_host_profile_rejects_zero_and_architecture_widening()"
-          if marker not in tests_text:
-              tests_text += r'''
+          if marker not in text:
+              text += r'''
 
           #[test]
           fn federation_host_profile_rejects_zero_and_architecture_widening() {
               use std::time::Duration;
 
-              assert!(MemoryFederationHostProfile::try_new(
-                  Duration::ZERO,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1,
-              )
-              .is_err());
+              assert!(MemoryFederationHostProfile::try_new(Duration::ZERO, 1, 1, 1, 1, 1).is_err());
               assert!(MemoryFederationHostProfile::try_new(
                   crate::MAX_PRODUCT_FEDERATION_TOTAL_BUDGET + Duration::from_millis(1),
-                  1,
-                  1,
-                  1,
-                  1,
-                  1,
-              )
-              .is_err());
+                  1, 1, 1, 1, 1,
+              ).is_err());
               assert!(MemoryFederationHostProfile::try_new(
                   Duration::from_millis(1),
                   crate::MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS + 1,
-                  1,
-                  1,
-                  1,
-                  1,
-              )
-              .is_err());
+                  1, 1, 1, 1,
+              ).is_err());
               assert!(MemoryFederationHostProfile::try_new(
-                  Duration::from_millis(1),
-                  1,
-                  1,
-                  2,
-                  1,
-                  1,
-              )
-              .is_err());
+                  Duration::from_millis(1), 1, 1, 2, 1, 1,
+              ).is_err());
+
               let constrained = MemoryFederationHostProfile::try_new(
-                  Duration::from_millis(250),
-                  4,
-                  2,
-                  2,
-                  2,
-                  2,
-              )
-              .expect("bounded profile");
+                  Duration::from_millis(250), 4, 2, 2, 2, 2,
+              ).expect("bounded profile");
               assert_eq!(constrained.total_budget(), Duration::from_millis(250));
               assert_eq!(constrained.max_owner_candidates(), 4);
               assert_eq!(constrained.max_admitted_peers(), 2);
           }
           '''
-              tests.write_text(tests_text, encoding="utf-8")
+              tests.write_text(text, encoding="utf-8")
           PY
 
-      - name: Format changed Rust
-        if: steps.apply-runtime.outcome == 'success'
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-memory-extension
-
-      - name: Validate generated source shape
-        if: steps.apply-runtime.outcome == 'success'
+      - name: Format and validate generated source
         run: |
           set -euo pipefail
+          cd codex-rs
+          cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-memory-extension
+          cd ..
           python3 -m py_compile scripts/memory_federation_attestation.py
           git diff --check
-          git status --short
           test -n "$(git status --porcelain)"
 
-      - name: Commit generated runtime source
-        if: steps.apply-runtime.outcome == 'success'
+      - name: Commit source and rebind implementation map
         run: |
           set -euo pipefail
+          git config user.name "Hepta Memory Federation Automation"
+          git config user.email "hepta-memory-federation@users.noreply.github.com"
           git rm .github/workflows/memory-federation-runtime-bootstrap.yml
           git rm scripts/apply_memory_federation_runtime_closure.py
           git rm -f qualification/memory-federation/BOOTSTRAP_FAILURE.md || true
-          git config user.name "Hepta Memory Federation Automation"
-          git config user.email "hepta-memory-federation@users.noreply.github.com"
           git add -A
           git commit -m "memory.federation: bound product concurrency and V1 surface
 
@@ -213,25 +146,16 @@ jobs:
 
           Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
 
-      - name: Rebind memory federation implementation map
-        if: steps.apply-runtime.outcome == 'success'
-        run: |
-          set -euo pipefail
           python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
           git diff --check
           git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
             git commit -m "docs(memory.federation): rebind runtime closure source
 
-            Preserve execution, independent-acceptance, activation, and release claims as false until exact-head and deterministic-merge receipts pass.
+            Preserve execution, independent acceptance, activation, and release claims as false until exact-head and deterministic-merge receipts pass.
 
             Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
           fi
           python3 scripts/hepta-implementation-maps.py verify
           test -z "$(git status --porcelain)"
-
-      - name: Push generated closure commits
-        if: steps.apply-runtime.outcome == 'success'
-        run: |
-          set -euo pipefail
           git push origin HEAD:feat/memory-federation-production-closure-20260926
