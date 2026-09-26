@@ -1,0 +1,81 @@
+name: Apply cognitive.store full convergence
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-convergence-20260926
+    paths:
+      - '.github/workflows/cognitive-store-convergence-apply.yml'
+      - 'scripts/cognitive_store_convergence_apply.py.zlib.b64'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-convergence-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-store-full-convergence-20260926
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind exact source baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base a126987b84737dbc2ee2592442a314117bddb4a2 HEAD)" = a126987b84737dbc2ee2592442a314117bddb4a2
+          test -z "$(git status --porcelain)"
+      - name: Decode and apply convergence migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import zlib
+          from pathlib import Path
+          payload = Path('scripts/cognitive_store_convergence_apply.py.zlib.b64').read_text(encoding='utf-8')
+          source = zlib.decompress(base64.b64decode(payload))
+          target = Path('scripts/cognitive_store_convergence_apply.py')
+          target.write_bytes(source)
+          target.chmod(0o755)
+          PY
+          python3 scripts/cognitive_store_convergence_apply.py
+          rm scripts/cognitive_store_convergence_apply.py
+      - name: Commit source convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta Cognitive Convergence'
+          git config user.email 'hepta-cognitive-ci@users.noreply.github.com'
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m 'cognitive.store: converge product boundary and qualification'
+      - name: Rebind exact implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module cognitive.store
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'docs(cognitive.store): rebind exact implementation map'
+          fi
+      - name: Verify committed candidate and push
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          python3 scripts/hepta-cognitive-store-guard.py --json
+          git log --oneline --decorate -3
+          git push origin HEAD:codex/cognitive-store-full-convergence-20260926
+          {
+            printf 'Applied cognitive.store convergence at `%s`.\n\n' "$(git rev-parse HEAD)"
+            printf 'Tree: `%s`.\n' "$(git rev-parse HEAD^{tree})"
+          } >> "$GITHUB_STEP_SUMMARY"
