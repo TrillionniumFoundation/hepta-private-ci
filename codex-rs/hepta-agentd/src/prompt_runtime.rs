@@ -40,7 +40,8 @@ use codex_hepta_prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
 use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
-use codex_hepta_prompt_optimizer::canonical::enumerate_factors_v1;
+use codex_hepta_prompt_optimizer::consumer::PromptConsumerCapabilitiesV1;
+use codex_hepta_prompt_optimizer::consumer::enumerate_factors_for_consumer_v1;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_types::Digest32;
@@ -49,6 +50,12 @@ use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
+
+use crate::prompt_final_use::PromptFinalUseLeaseError;
+use crate::prompt_final_use::PromptFinalUseLeaseV1;
+use crate::prompt_final_use_store::PromptFinalUseKeyV1;
+use crate::prompt_final_use_store::PromptFinalUseLeaseStore;
+use crate::prompt_final_use_store::PromptFinalUseStoreError;
 
 pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
@@ -495,6 +502,8 @@ pub enum AgentdPromptPipelineError {
     CandidateSource(String),
     Compilation(String),
     Stage(AgentdPromptRuntimeError),
+    FinalUseLease(PromptFinalUseLeaseError),
+    FinalUseStore(PromptFinalUseStoreError),
 }
 
 impl fmt::Display for AgentdPromptPipelineError {
@@ -515,6 +524,7 @@ impl std::error::Error for AgentdPromptPipelineError {}
 pub struct AgentdPromptPipelineOwner {
     registry: Mutex<DurablePromptRegistry>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
+    final_use: Arc<PromptFinalUseLeaseStore>,
 }
 
 impl fmt::Debug for AgentdPromptPipelineOwner {
@@ -522,6 +532,7 @@ impl fmt::Debug for AgentdPromptPipelineOwner {
         formatter
             .debug_struct("AgentdPromptPipelineOwner")
             .field("runtime", &self.runtime)
+            .field("final_use", &self.final_use)
             .finish_non_exhaustive()
     }
 }
@@ -537,15 +548,46 @@ impl AgentdPromptPipelineOwner {
                 .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
+        let final_use = PromptFinalUseLeaseStore::open(runtime_directory)
+            .map_err(AgentdPromptPipelineError::FinalUseStore)?;
         Ok(Self {
             registry: Mutex::new(registry),
             runtime: Arc::new(runtime),
+            final_use: Arc::new(final_use),
         })
     }
 
     #[must_use]
     pub fn runtime_owner(&self) -> Arc<AgentdPromptRuntimeOwner> {
         Arc::clone(&self.runtime)
+    }
+
+    /// Product host that enforces the durable registry lease both when
+    /// exposing staged bytes and immediately before provider dispatch.
+    pub fn host(self: &Arc<Self>) -> Result<PromptRuntimeHost, AgentdPromptPipelineError> {
+        let prepare_owner = Arc::clone(self);
+        let dispatch_owner = Arc::clone(self);
+        let record_owner = Arc::clone(self);
+        PromptRuntimeHost::new(
+            PROMPT_RUNTIME_CAPABILITY_ID,
+            move |request: PromptRuntimePrepareRequest| -> PromptRuntimePrepareFuture {
+                let owner = Arc::clone(&prepare_owner);
+                Box::pin(async move { owner.prepare_final_use(request) })
+            },
+            move |record: PromptRuntimeDispatchRecordV1| -> PromptRuntimeDispatchFuture {
+                let owner = Arc::clone(&dispatch_owner);
+                Box::pin(async move { owner.record_dispatch_final_use(record) })
+            },
+            move |record: PromptRuntimeTerminalRecordV1| -> PromptRuntimeRecordFuture {
+                let owner = Arc::clone(&record_owner);
+                Box::pin(async move { owner.record_terminal_final_use(record) })
+            },
+        )
+        .map_err(|error| {
+            AgentdPromptPipelineError::Stage(AgentdPromptRuntimeError::Adapter(
+                error.to_string(),
+            ))
+        })
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.
@@ -560,8 +602,12 @@ impl AgentdPromptPipelineOwner {
         let current = registry
             .registry()
             .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))?;
-        enumerate_factors_v1(current, request)
-            .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
+        enumerate_factors_for_consumer_v1(
+            current,
+            request,
+            &PromptConsumerCapabilitiesV1::developer_instruction_runtime(),
+        )
+        .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -575,6 +621,7 @@ impl AgentdPromptPipelineOwner {
         exercise_request: &PromptExerciseRequestV1,
         compilation_request: PromptRegistryCompilationRequestV2,
     ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {
+        let issued_unix_ms = compilation_request.now_unix_ms;
         let compiled = {
             let registry = self
                 .registry
@@ -583,7 +630,15 @@ impl AgentdPromptPipelineOwner {
             compile_prompt_registry_v2(&registry, portfolio, exercise_request, compilation_request)
                 .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
         };
-        self.runtime
+        let lease = PromptFinalUseLeaseV1::from_compiled(
+            portfolio,
+            &compiled,
+            issued_unix_ms,
+            requested_deadline_ms,
+        )
+        .map_err(AgentdPromptPipelineError::FinalUseLease)?;
+        let disposition = self
+            .runtime
             .stage_compiled_prompt_context(
                 thread_id,
                 turn_id,
@@ -591,8 +646,135 @@ impl AgentdPromptPipelineOwner {
                 requested_deadline_ms,
                 &compiled,
             )
-            .map_err(AgentdPromptPipelineError::Stage)
+            .map_err(AgentdPromptPipelineError::Stage)?;
+        let key = PromptFinalUseKeyV1::new(thread_id, turn_id)
+            .map_err(AgentdPromptPipelineError::FinalUseStore)?;
+        if let Err(error) = self.final_use.put(key, lease) {
+            if disposition == PromptRuntimeStageDisposition::Inserted {
+                let _ = self.runtime.clear_turn(thread_id, turn_id);
+            }
+            return Err(AgentdPromptPipelineError::FinalUseStore(error));
+        }
+        Ok(disposition)
     }
+
+    pub fn clear_turn(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+    ) -> Result<bool, AgentdPromptPipelineError> {
+        let cleared = self
+            .runtime
+            .clear_turn(thread_id, turn_id)
+            .map_err(AgentdPromptPipelineError::Stage)?;
+        let key = PromptFinalUseKeyV1::new(thread_id, turn_id)
+            .map_err(AgentdPromptPipelineError::FinalUseStore)?;
+        self.final_use
+            .remove(&key)
+            .map_err(AgentdPromptPipelineError::FinalUseStore)?;
+        Ok(cleared)
+    }
+
+    fn prepare_final_use(
+        &self,
+        request: PromptRuntimePrepareRequest,
+    ) -> Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError> {
+        let key = PromptFinalUseKeyV1::new(&request.thread_id, &request.turn_id)
+            .map_err(final_use_store_host_error)?;
+        let attachment = self.runtime.prepare(request)?;
+        let Some(attachment) = attachment else {
+            let _ = self.final_use.remove(&key);
+            return Ok(None);
+        };
+        let lease = self
+            .final_use
+            .get(&key)
+            .map_err(final_use_store_host_error)?
+            .ok_or_else(|| {
+                PromptRuntimeHostError::new(
+                    "agentd_prompt_final_use_missing",
+                    "staged prompt context has no durable final-use lease",
+                )
+            })?;
+        lease.validate_shape().map_err(final_use_lease_host_error)?;
+        if lease.compilation_id != attachment.compilation_id
+            || lease.context_attachment_digest != attachment.context_attachment_digest
+            || lease.context_payload_digest != attachment.context_payload_digest
+        {
+            return Err(PromptRuntimeHostError::new(
+                "agentd_prompt_final_use_binding_mismatch",
+                "staged prompt context does not match its durable final-use lease",
+            ));
+        }
+        Ok(Some(attachment))
+    }
+
+    fn record_dispatch_final_use(
+        &self,
+        record: PromptRuntimeDispatchRecordV1,
+    ) -> Result<(), PromptRuntimeHostError> {
+        let key = PromptFinalUseKeyV1::new(&record.thread_id, &record.turn_id)
+            .map_err(final_use_store_host_error)?;
+        let lease = self
+            .final_use
+            .get(&key)
+            .map_err(final_use_store_host_error)?
+            .ok_or_else(|| {
+                PromptRuntimeHostError::new(
+                    "agentd_prompt_final_use_missing",
+                    "provider dispatch has no durable prompt final-use lease",
+                )
+            })?;
+        if lease.compilation_id != record.compilation_id
+            || lease.context_attachment_digest != record.context_attachment_digest
+            || lease.context_payload_digest != record.context_payload_digest
+        {
+            return Err(PromptRuntimeHostError::new(
+                "agentd_prompt_final_use_binding_mismatch",
+                "provider dispatch does not match its prompt final-use lease",
+            ));
+        }
+        let registry = self.registry.lock().map_err(|_| {
+            PromptRuntimeHostError::new(
+                "agentd_prompt_registry_state_poisoned",
+                "prompt registry owner lock is poisoned",
+            )
+        })?;
+        lease
+            .validate_current(&registry, record.dispatched_unix_ms)
+            .map_err(final_use_lease_host_error)?;
+        self.runtime.record_dispatch(record)
+    }
+
+    fn record_terminal_final_use(
+        &self,
+        record: PromptRuntimeTerminalRecordV1,
+    ) -> Result<(), PromptRuntimeHostError> {
+        let key = PromptFinalUseKeyV1::new(&record.thread_id, &record.turn_id)
+            .map_err(final_use_store_host_error)?;
+        let clear = terminal_clears_stage(&record);
+        self.runtime.record(record)?;
+        if clear {
+            self.final_use
+                .remove(&key)
+                .map_err(final_use_store_host_error)?;
+        }
+        Ok(())
+    }
+}
+
+fn final_use_store_host_error(error: PromptFinalUseStoreError) -> PromptRuntimeHostError {
+    PromptRuntimeHostError::new(
+        "agentd_prompt_final_use_store_error",
+        error.to_string(),
+    )
+}
+
+fn final_use_lease_host_error(error: PromptFinalUseLeaseError) -> PromptRuntimeHostError {
+    PromptRuntimeHostError::new(
+        "agentd_prompt_final_use_lease_error",
+        error.to_string(),
+    )
 }
 
 fn terminal_clears_stage(record: &PromptRuntimeTerminalRecordV1) -> bool {
