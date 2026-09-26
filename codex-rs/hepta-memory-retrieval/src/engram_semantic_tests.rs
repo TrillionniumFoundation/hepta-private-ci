@@ -116,11 +116,7 @@ fn support(number: u64) -> EngramSupportV1 {
     }
 }
 
-fn node(
-    name: &str,
-    number: u64,
-    confidence: ProbabilityQ32,
-) -> EngramNodeV1 {
+fn node(name: &str, number: u64, confidence: ProbabilityQ32) -> EngramNodeV1 {
     EngramNodeV1 {
         node_id: id(name),
         population: EngramPopulationV1::SemanticConcept,
@@ -131,12 +127,7 @@ fn node(
     }
 }
 
-fn synapse(
-    source: &str,
-    target: &str,
-    relation: SynapseRelationV1,
-    weight: FixedQ32,
-) -> SynapseV1 {
+fn synapse(source: &str, target: &str, relation: SynapseRelationV1, weight: FixedQ32) -> SynapseV1 {
     SynapseV1 {
         source_node_id: id(source),
         target_node_id: id(target),
@@ -228,8 +219,8 @@ fn zero_weight_contradiction_edge_is_semantically_inert() {
     dynamics.maximum_graph_hops = 0;
     dynamics.leak = FixedQ32::ZERO;
     dynamics.lateral_inhibition = FixedQ32::ZERO;
-    let packet = recall_with_engram(&cue, &policy, candidates, &snapshot, &dynamics)
-        .expect("recall");
+    let packet =
+        recall_with_engram(&cue, &policy, candidates, &snapshot, &dynamics).expect("recall");
     assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
     assert_eq!(packet.selections.len(), 2);
     let receipt = packet.engram.expect("engram");
@@ -295,10 +286,7 @@ fn rejected_ood_and_opposing_candidate_never_enters_hnmf_receipt() {
     let proposition = digest("proposition:hnmf-admission");
     let mut policy = retrieval_policy(vec![
         (RetrievalChannelV1::Lexical, FixedQ32::ONE),
-        (
-            RetrievalChannelV1::ContradictionSupport,
-            FixedQ32::ONE,
-        ),
+        (RetrievalChannelV1::ContradictionSupport, FixedQ32::ONE),
     ]);
     policy.minimum_total_score = FixedQ32::from_raw(1_i64 << 31);
     policy.maximum_ood = ProbabilityQ32::from_raw(1_u64 << 30).expect("probability");
@@ -333,8 +321,8 @@ fn rejected_ood_and_opposing_candidate_never_enters_hnmf_receipt() {
     dynamics.maximum_graph_hops = 0;
     dynamics.leak = FixedQ32::ZERO;
     dynamics.lateral_inhibition = FixedQ32::ZERO;
-    let packet = recall_with_engram(&cue, &policy, candidates, &snapshot, &dynamics)
-        .expect("recall");
+    let packet =
+        recall_with_engram(&cue, &policy, candidates, &snapshot, &dynamics).expect("recall");
     assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
     assert_eq!(packet.selections.len(), 1);
     assert_eq!(packet.selections[0].record_id, id("memory:1"));

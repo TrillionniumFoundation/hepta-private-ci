@@ -331,14 +331,15 @@ impl EngramDynamicsPolicyV1 {
         if maximum_activation_paths == 0 || maximum_activation_paths > MAX_ACTIVATION_PATHS {
             return Err(EngramErrorV1::ActivationPathLimitExceeded);
         }
-        for (name, value) in [("leak", self.leak), ("lateral_inhibition", self.lateral_inhibition)] {
+        for (name, value) in [
+            ("leak", self.leak),
+            ("lateral_inhibition", self.lateral_inhibition),
+        ] {
             if value < FixedQ32::ZERO || value > FixedQ32::ONE {
                 return Err(EngramErrorV1::ScoreOutOfRange(name));
             }
         }
-        if self.minimum_activation <= FixedQ32::ZERO
-            || self.minimum_activation > FixedQ32::ONE
-        {
+        if self.minimum_activation <= FixedQ32::ZERO || self.minimum_activation > FixedQ32::ONE {
             return Err(EngramErrorV1::ScoreOutOfRange("minimum_activation"));
         }
         Ok(())
@@ -1206,24 +1207,24 @@ fn active_confidence(active_nodes: &[ActiveEngramNodeV1]) -> Result<ProbabilityQ
     if active_nodes.is_empty() {
         return Ok(ProbabilityQ32::ZERO);
     }
-    let (weighted, activation) = active_nodes.iter().try_fold(
-        (0_u128, 0_u128),
-        |(weighted, activation), node| {
-            let node_activation = u128::try_from(node.activation.raw())
-                .map_err(|_| EngramErrorV1::Arithmetic)?;
-            let contribution = node_activation
-                .checked_mul(u128::from(node.confidence.raw()))
-                .ok_or(EngramErrorV1::Arithmetic)?;
-            Ok::<_, EngramErrorV1>((
-                weighted
-                    .checked_add(contribution)
-                    .ok_or(EngramErrorV1::Arithmetic)?,
-                activation
-                    .checked_add(node_activation)
-                    .ok_or(EngramErrorV1::Arithmetic)?,
-            ))
-        },
-    )?;
+    let (weighted, activation) =
+        active_nodes
+            .iter()
+            .try_fold((0_u128, 0_u128), |(weighted, activation), node| {
+                let node_activation =
+                    u128::try_from(node.activation.raw()).map_err(|_| EngramErrorV1::Arithmetic)?;
+                let contribution = node_activation
+                    .checked_mul(u128::from(node.confidence.raw()))
+                    .ok_or(EngramErrorV1::Arithmetic)?;
+                Ok::<_, EngramErrorV1>((
+                    weighted
+                        .checked_add(contribution)
+                        .ok_or(EngramErrorV1::Arithmetic)?,
+                    activation
+                        .checked_add(node_activation)
+                        .ok_or(EngramErrorV1::Arithmetic)?,
+                ))
+            })?;
     if activation == 0 {
         return Ok(ProbabilityQ32::ZERO);
     }

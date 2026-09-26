@@ -851,6 +851,8 @@ pub fn build_candidate_union(
     Ok(result)
 }
 
+// The historical algorithm is retained solely as a test reference.
+#[cfg(test)]
 pub fn recall(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
@@ -952,6 +954,8 @@ impl UnionBuilder {
     }
 }
 
+// The historical algorithm is retained solely as a test reference.
+#[cfg(test)]
 fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
     let mut populations = BTreeMap::<Digest32, usize>::new();
     for entry in entries {

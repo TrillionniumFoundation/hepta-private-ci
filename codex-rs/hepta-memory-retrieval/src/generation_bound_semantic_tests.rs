@@ -143,10 +143,7 @@ fn opposite_polarities_for_one_proposition_force_abstention() {
         &cue(),
         &policy(vec![
             (RetrievalChannelV1::Lexical, FixedQ32::ONE),
-            (
-                RetrievalChannelV1::ContradictionSupport,
-                FixedQ32::ONE,
-            ),
+            (RetrievalChannelV1::ContradictionSupport, FixedQ32::ONE),
         ]),
         vec![
             candidate(
@@ -201,7 +198,10 @@ fn low_score_high_ood_candidate_cannot_poison_admitted_result() {
     assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
     assert_eq!(packet.selections.len(), 1);
     assert_eq!(packet.selections[0].record_id, id("memory:1"));
-    assert_eq!(packet.omitted_count, 0);
+    // The rejected low-score candidate is still in the validated union.
+    // It cannot poison selection, but must remain in omission accounting.
+    assert_eq!(packet.omitted_count, 1);
+    assert_eq!(packet.selections.len() + packet.omitted_count as usize, 2);
 }
 
 #[test]
@@ -209,10 +209,7 @@ fn low_score_opposing_candidate_cannot_poison_admitted_result() {
     let proposition = digest("proposition:gamma");
     let mut retrieval_policy = policy(vec![
         (RetrievalChannelV1::Lexical, FixedQ32::ONE),
-        (
-            RetrievalChannelV1::ContradictionSupport,
-            FixedQ32::ONE,
-        ),
+        (RetrievalChannelV1::ContradictionSupport, FixedQ32::ONE),
     ]);
     retrieval_policy.minimum_total_score = FixedQ32::from_raw(1_i64 << 31);
     let packet = recall(
@@ -248,10 +245,7 @@ fn zero_weight_contradiction_channel_has_no_semantic_effect() {
         &cue(),
         &policy(vec![
             (RetrievalChannelV1::Lexical, FixedQ32::ONE),
-            (
-                RetrievalChannelV1::ContradictionSupport,
-                FixedQ32::ZERO,
-            ),
+            (RetrievalChannelV1::ContradictionSupport, FixedQ32::ZERO),
         ]),
         vec![
             candidate(
@@ -306,10 +300,7 @@ fn property_permutations_preserve_proposition_aware_recall() {
     let mut retrieval_policy = policy(vec![
         (RetrievalChannelV1::Lexical, FixedQ32::ONE),
         (RetrievalChannelV1::Entity, FixedQ32::ONE),
-        (
-            RetrievalChannelV1::ContradictionSupport,
-            FixedQ32::ONE,
-        ),
+        (RetrievalChannelV1::ContradictionSupport, FixedQ32::ONE),
     ]);
     retrieval_policy.minimum_total_score = FixedQ32::from_raw(1_i64 << 31);
     retrieval_policy.maximum_ood = ProbabilityQ32::from_raw(1_u64 << 30).expect("probability");
@@ -351,4 +342,48 @@ fn next_permutation(values: &mut [usize]) -> bool {
     values.swap(pivot, swap);
     values[pivot + 1..].reverse();
     true
+}
+
+#[test]
+fn disabled_channel_cannot_bypass_raw_candidate_capacity() {
+    let p = policy(vec![
+        (RetrievalChannelV1::Lexical, FixedQ32::ONE),
+        (RetrievalChannelV1::ContradictionSupport, FixedQ32::ZERO),
+    ]);
+    let c = candidate(
+        1,
+        RetrievalChannelV1::ContradictionSupport,
+        FixedQ32::ONE,
+        ProbabilityQ32::ZERO,
+        None,
+    );
+    assert_eq!(
+        build_candidate_union(&cue(), &p, vec![c; MAX_GENERATION_BOUND_CANDIDATES + 1]),
+        Err(RecallErrorV1::CandidateLimitExceeded)
+    );
+}
+
+#[test]
+fn disabled_channel_does_not_bypass_generation_or_duplicate_validation() {
+    let p = policy(vec![
+        (RetrievalChannelV1::Lexical, FixedQ32::ONE),
+        (RetrievalChannelV1::ContradictionSupport, FixedQ32::ZERO),
+    ]);
+    let c = candidate(
+        1,
+        RetrievalChannelV1::ContradictionSupport,
+        FixedQ32::ONE,
+        ProbabilityQ32::ZERO,
+        None,
+    );
+    let mut stale = c.clone();
+    stale.generation_vector_digest = digest("stale-zero-weight-generator");
+    assert!(matches!(
+        build_candidate_union(&cue(), &p, vec![stale]),
+        Err(RecallErrorV1::GenerationVectorMismatch(_))
+    ));
+    assert!(matches!(
+        build_candidate_union(&cue(), &p, vec![c.clone(), c]),
+        Err(RecallErrorV1::DuplicateChannelCandidate(_))
+    ));
 }

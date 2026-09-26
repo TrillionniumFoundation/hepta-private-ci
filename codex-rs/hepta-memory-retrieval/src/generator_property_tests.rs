@@ -96,15 +96,13 @@ fn batch(count: usize) -> RetrievalGeneratorBatchV1 {
 #[test]
 fn property_receipt_count_matches_candidates_at_all_representative_bounds() {
     for count in [0_usize, 1, 2, 7, 16, 31, 32, 127, 255, 511, 512] {
-        let input = GeneratedCandidateInputV1::new(vec![batch(count)])
-            .expect("matching receipt");
+        let input = GeneratedCandidateInputV1::new(vec![batch(count)]).expect("matching receipt");
         assert_eq!(
             input.flattened_candidates().expect("flattened").len(),
             count
         );
         assert_eq!(
-            usize::try_from(input.batches[0].receipt.candidate_count)
-                .expect("receipt count"),
+            usize::try_from(input.batches[0].receipt.candidate_count).expect("receipt count"),
             count
         );
     }

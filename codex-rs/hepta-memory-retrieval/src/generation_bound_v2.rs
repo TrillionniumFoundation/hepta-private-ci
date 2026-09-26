@@ -70,10 +70,12 @@ impl CandidateUnionEntryV1 {
             .contradiction_group_digests
             .iter()
             .flat_map(|proposition_digest| {
-                polarities.iter().map(move |polarity| ContradictionEvidenceV1 {
-                    proposition_digest: *proposition_digest,
-                    polarity: *polarity,
-                })
+                polarities
+                    .iter()
+                    .map(move |polarity| ContradictionEvidenceV1 {
+                        proposition_digest: *proposition_digest,
+                        polarity: *polarity,
+                    })
             })
             .collect::<Vec<_>>();
         evidence.sort();
@@ -124,8 +126,7 @@ pub fn recall(
 ) -> Result<RecallPacketV1, RecallErrorV1> {
     let union = build_candidate_union(cue, policy, candidates)?;
     let admitted = policy_admitted_union(&union, policy)?;
-    let minimum_channels =
-        usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
+    let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
     let observed_channels = usize::try_from(admitted.distinct_channels).unwrap_or(0);
     let maximum_ood = admitted
         .entries
@@ -166,9 +167,8 @@ pub fn recall(
                 0,
             )
         } else {
-            let omitted_count =
-                u32::try_from(union.entries.len().saturating_sub(selections.len()))
-                    .unwrap_or(u32::MAX);
+            let omitted_count = u32::try_from(union.entries.len().saturating_sub(selections.len()))
+                .unwrap_or(u32::MAX);
             (RecallDispositionV1::Recalled, selections, omitted_count)
         }
     };

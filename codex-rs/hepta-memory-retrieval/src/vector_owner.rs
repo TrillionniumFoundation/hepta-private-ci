@@ -79,8 +79,8 @@ impl VectorIndexSnapshotV1 {
         ensure_digest("generation vector", self.generation_vector_digest)?;
         ensure_digest("owner generation", self.owner_generation_digest)?;
         ensure_digest("model", self.model_digest)?;
-        let dimensions = usize::try_from(self.dimensions)
-            .map_err(|_| VectorOwnerErrorV1::InvalidDimensions)?;
+        let dimensions =
+            usize::try_from(self.dimensions).map_err(|_| VectorOwnerErrorV1::InvalidDimensions)?;
         if dimensions == 0 || dimensions > MAX_VECTOR_DIMENSIONS {
             return Err(VectorOwnerErrorV1::InvalidDimensions);
         }
@@ -223,12 +223,7 @@ pub fn generate_vector_batch_v1(
         .records
         .iter()
         .filter(|row| row.ood <= query.maximum_ood)
-        .map(|row| {
-            Ok((
-                row,
-                similarity_score(&query.embedding, &row.embedding)?,
-            ))
-        })
+        .map(|row| Ok((row, similarity_score(&query.embedding, &row.embedding)?)))
         .collect::<Result<Vec<_>, VectorOwnerErrorV1>>()?;
     scored.sort_by(|left, right| {
         right
@@ -248,8 +243,8 @@ pub fn generate_vector_batch_v1(
     } else {
         RetrievalSourceCompletenessV1::Exhausted
     };
-    let candidate_count = u32::try_from(scored.len())
-        .map_err(|_| VectorOwnerErrorV1::InvalidCandidateLimit)?;
+    let candidate_count =
+        u32::try_from(scored.len()).map_err(|_| VectorOwnerErrorV1::InvalidCandidateLimit)?;
     let receipt = RetrievalGeneratorReceiptV1::new(
         RetrievalGeneratorOwnerV1::EncoderVector,
         snapshot.generation_vector_digest,
@@ -263,8 +258,8 @@ pub fn generate_vector_batch_v1(
         .into_iter()
         .enumerate()
         .map(|(index, (row, score))| {
-            let rank = u32::try_from(index + 1)
-                .map_err(|_| VectorOwnerErrorV1::InvalidCandidateLimit)?;
+            let rank =
+                u32::try_from(index + 1).map_err(|_| VectorOwnerErrorV1::InvalidCandidateLimit)?;
             Ok(RetrievalChannelCandidateV1 {
                 record: row.record.clone(),
                 channel: RetrievalChannelV1::Vector,
