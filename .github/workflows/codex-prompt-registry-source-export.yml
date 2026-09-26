@@ -1,0 +1,54 @@
+name: Codex prompt registry source export
+
+on:
+  push:
+    branches:
+      - codex/prompt-registry-v4-production-closure-20260926
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Package prompt registry workset
+        shell: bash
+        run: |
+          set -euo pipefail
+          paths=(
+            codex-rs/hepta-prompt-registry
+            codex-rs/hepta-prompt-optimizer
+            codex-rs/hepta-agentd
+            codex-rs/hepta-prompt
+            codex-rs/hepta-codex-adapter
+            codex-rs/hepta-types
+            docs/modules/prompt.registry
+            .github/workflows
+            scripts
+            codex-rs/Cargo.toml
+            codex-rs/Cargo.lock
+            codex-rs/rust-toolchain.toml
+            Cargo.toml
+          )
+          existing=()
+          for path in "${paths[@]}"; do
+            if [[ -e "$path" ]]; then
+              existing+=("$path")
+            fi
+          done
+          tar -czf "$RUNNER_TEMP/prompt-registry-workset.tar.gz" "${existing[@]}"
+          sha256sum "$RUNNER_TEMP/prompt-registry-workset.tar.gz" > "$RUNNER_TEMP/prompt-registry-workset.tar.gz.sha256"
+      - name: Upload prompt registry workset
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: codex-prompt-registry-workset
+          path: |
+            ${{ runner.temp }}/prompt-registry-workset.tar.gz
+            ${{ runner.temp }}/prompt-registry-workset.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
