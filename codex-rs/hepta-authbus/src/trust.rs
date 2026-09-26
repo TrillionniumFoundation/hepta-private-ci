@@ -1,4 +1,6 @@
 use std::fmt;
+use std::ops::Deref;
+use std::sync::Arc;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -84,26 +86,34 @@ impl IssuerRecord {
     }
 }
 
+/// Read-only compatibility projection. It is exposed only through `Deref` from
+/// a sealed handle; possessing or constructing an equal snapshot never creates
+/// verification authority.
+pub struct IssuerRegistrationView {
+    pub issuer_id: StableId,
+    pub key_epoch: Generation,
+    pub verifying_key: VerifyingKey,
+    pub revoked: bool,
+}
+
 /// Opaque, registry-resolved issuer capability. Only `AuthBusAuthorityHost` can
 /// construct one. The owned read guard fences issuer rotation/revocation until
-/// the consuming transaction has committed or rolled back.
+/// every consuming transaction has committed or rolled back.
 pub struct VerifiedIssuerHandle {
-    issuer_id: StableId,
+    view: IssuerRegistrationView,
     purpose: IssuerPurpose,
-    key_epoch: Generation,
-    verifying_key: VerifyingKey,
     state: IssuerLifecycleState,
     revision: u64,
-    registry_guard: OwnedRwLockReadGuard<()>,
+    registry_guard: Arc<OwnedRwLockReadGuard<()>>,
 }
 
 impl fmt::Debug for VerifiedIssuerHandle {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("VerifiedIssuerHandle")
-            .field("issuer_id", &self.issuer_id)
+            .field("issuer_id", &self.view.issuer_id)
             .field("purpose", &self.purpose)
-            .field("key_epoch", &self.key_epoch)
+            .field("key_epoch", &self.view.key_epoch)
             .field("verifying_key_digest", &self.verifying_key_digest())
             .field("state", &self.state)
             .field("revision", &self.revision)
@@ -111,9 +121,17 @@ impl fmt::Debug for VerifiedIssuerHandle {
     }
 }
 
+impl Deref for VerifiedIssuerHandle {
+    type Target = IssuerRegistrationView;
+
+    fn deref(&self) -> &Self::Target {
+        &self.view
+    }
+}
+
 impl VerifiedIssuerHandle {
     pub fn issuer_id(&self) -> &StableId {
-        &self.issuer_id
+        &self.view.issuer_id
     }
 
     pub fn purpose(&self) -> IssuerPurpose {
@@ -121,11 +139,11 @@ impl VerifiedIssuerHandle {
     }
 
     pub fn key_epoch(&self) -> Generation {
-        self.key_epoch
+        self.view.key_epoch
     }
 
     pub fn verifying_key_digest(&self) -> Digest32 {
-        Digest32::of_bytes(self.verifying_key.as_bytes())
+        Digest32::of_bytes(self.view.verifying_key.as_bytes())
     }
 
     pub fn state(&self) -> IssuerLifecycleState {
@@ -140,23 +158,27 @@ impl VerifiedIssuerHandle {
         record: IssuerRecord,
         registry_guard: OwnedRwLockReadGuard<()>,
     ) -> Self {
+        let state = record.state;
         Self {
-            issuer_id: record.issuer_id,
+            view: IssuerRegistrationView {
+                issuer_id: record.issuer_id,
+                key_epoch: record.key_epoch,
+                verifying_key: record.verifying_key,
+                revoked: state != IssuerLifecycleState::Active,
+            },
             purpose: record.purpose,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            state: record.state,
+            state,
             revision: record.revision,
-            registry_guard,
+            registry_guard: Arc::new(registry_guard),
         }
     }
 
     pub(crate) fn verifying_key(&self) -> &VerifyingKey {
-        &self.verifying_key
+        &self.view.verifying_key
     }
 
-    pub(crate) fn into_registry_guard(self) -> OwnedRwLockReadGuard<()> {
-        self.registry_guard
+    pub(crate) fn registry_guard(&self) -> Arc<OwnedRwLockReadGuard<()>> {
+        Arc::clone(&self.registry_guard)
     }
 }
 
