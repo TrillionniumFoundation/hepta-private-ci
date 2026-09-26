@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.learning-eval.current-state.v1",
+  "module": "learning.eval",
+  "owner": "learning-platform",
+  "deputy": "qualification-plane",
+  "authority": "deny_all",
+  "sourceState": {
+    "sourceRootPresent": true,
+    "coreEstimatorsImplemented": true,
+    "productEvaluationCompositionImplemented": true,
+    "rawSignedDecisionPrimitivesCratePrivate": true,
+    "repositoryAdmissionSealed": true,
+    "auditedProductRunnerImplemented": true,
+    "idempotentEvidenceSinkImplemented": true,
+    "evaluationAttemptJournalImplemented": true,
+    "checkpointCasAndCompactionImplemented": true,
+    "productionImplementation": false
+  },
+  "repositoryConsumers": [
+    {
+      "id": "evaluated-shadow",
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+      "surface": "ProductQualificationReceiptV1",
+      "authority": "deny_all"
+    },
+    {
+      "id": "agentd",
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "surface": "RepositoryEvaluationAdmissionV1::Agentd",
+      "authority": "deny_all"
+    },
+    {
+      "id": "plasticity",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "surface": "RepositoryEvaluationAdmissionV1::Plasticity",
+      "authority": "deny_all"
+    }
+  ],
+  "qualification": {
+    "exactHead": "workflow_evidence_required",
+    "orderedParentSyntheticMerge": "workflow_evidence_required",
+    "lineCoverageThresholdPct": 85,
+    "compileFailPrivateApi": "workflow_evidence_required",
+    "faultInjection": "workflow_evidence_required",
+    "checkpointCapacity": "workflow_evidence_required",
+    "artifactAttestation": "workflow_evidence_required"
+  },
+  "externalEvidenceGates": {
+    "targetHostAuthentication": false,
+    "durableEvidenceNamespaceBinding": false,
+    "crossHostLockAndFsyncQualification": false,
+    "realFutureCalendarWindows": false,
+    "independentOutcomeAndSnapshotEvidence": false,
+    "retentionChangePointPrivacyPower": false,
+    "unlearningNonResurrection": false,
+    "independentSemanticOperatorAcceptance": false,
+    "selection": false,
+    "canary": false,
+    "promotion": false,
+    "activation": false,
+    "release": false
+  },
+  "normativeDocuments": [
+    "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+    "codex-rs/hepta-intelligence-eval/RECOVERY_CONTRACT.md",
+    "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
+    "codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md",
+    "docs/modules/learning.eval/TARGET_HOST_ACCEPTANCE.md"
+  ],
+  "generatedStatus": "docs/modules/learning.eval/CURRENT_STATUS.md",
+  "generator": "scripts/hepta-learning-eval-status.py"
+}
