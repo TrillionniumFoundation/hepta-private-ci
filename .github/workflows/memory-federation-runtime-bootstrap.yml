@@ -65,14 +65,14 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          required = {
-              "codex-rs/hepta-memory-federation/src/legacy_v1.rs": "#![allow(deprecated)]",
-              "codex-rs/hepta-memory/src/cognitive_runtime.rs": "buffer_unordered(host_profile.attempt_concurrency())",
-              "codex-rs/hepta-memory/src/cognitive_runtime.rs": "with_federation_sources_profile",
-              "codex-rs/hepta-memory/src/cognitive_runtime_identity.rs": "host_profile: left_host_profile",
-              "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": "partial_peers",
-          }
-          for name, marker in required.items():
+          required = [
+              ("codex-rs/hepta-memory-federation/src/legacy_v1.rs", "#![allow(deprecated)]"),
+              ("codex-rs/hepta-memory/src/cognitive_runtime.rs", "buffer_unordered(host_profile.attempt_concurrency())"),
+              ("codex-rs/hepta-memory/src/cognitive_runtime.rs", "with_federation_sources_profile"),
+              ("codex-rs/hepta-memory/src/cognitive_runtime_identity.rs", "host_profile: left_host_profile"),
+              ("codex-rs/ext/hepta-memory/src/cognitive/federation.rs", "partial_peers"),
+          ]
+          for name, marker in required:
               text = Path(name).read_text(encoding="utf-8")
               if marker not in text:
                   raise SystemExit(f"generated source missing {marker!r} in {name}")
@@ -104,7 +104,7 @@ jobs:
 
           Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
 
-      - name: Rebind implementation maps
+      - name: Rebind and verify touched implementation maps
         run: |
           set -euo pipefail
           git fetch --no-tags --unshallow origin feat/memory-federation-production-closure-20260926
@@ -123,7 +123,12 @@ jobs:
 
             Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
           fi
-          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module memory.federation \
+            --module knowledge.graph
+          git diff --exit-code -- \
+            docs/modules/memory.federation/IMPLEMENTATION_MAP.json \
+            docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json
           test -z "$(git status --porcelain)"
 
       - name: Push generated commits
