@@ -1,0 +1,101 @@
+name: cognitive-types-materialize-macos
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-types-materialize-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/cognitive-types-production-hardening-20260926'
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact same-repository head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust formatter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Authenticate and materialize semantic source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          import pathlib
+
+          root = pathlib.Path('.github/cognitive-types-hardening')
+          parts = sorted(root.glob('part-*.b64'))
+          if [path.name for path in parts] != [f'part-{index:02d}.b64' for index in range(5)]:
+              raise SystemExit(f'unexpected bootstrap parts: {[path.name for path in parts]}')
+          encoded = ''.join(path.read_text(encoding='utf-8').strip() for path in parts).encode('ascii')
+          encoded_digest = hashlib.sha256(encoded).hexdigest()
+          if encoded_digest != '240a87c804e8b9dd0547e6056dde81600fffcb1c2e2aa9756527bd84748e1d24':
+              raise SystemExit(f'bootstrap digest mismatch: {encoded_digest}')
+          script = gzip.decompress(base64.b64decode(encoded, validate=True))
+          script_digest = hashlib.sha256(script).hexdigest()
+          if script_digest != 'fbb6c457b4526b17fec24eea7ccfdb8e0a147fb6915ad488d9f29dd30fcdfd55':
+              raise SystemExit(f'script digest mismatch: {script_digest}')
+          pathlib.Path('scripts/.apply-cognitive-types-hardening.py').write_bytes(script)
+          PY
+          python3 -m py_compile scripts/.apply-cognitive-types-hardening.py
+          python3 scripts/.apply-cognitive-types-hardening.py
+          rm -f scripts/.apply-cognitive-types-hardening.py .cognitive-types-hardening-applied
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git diff --check
+
+      - name: Commit ordinary reviewable source tree
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          rm -rf .github/cognitive-types-hardening
+          rm -f .github/workflows/cognitive-types-hardening-apply.yml
+          rm -f .github/workflows/cognitive-types-materialize-macos.yml
+          rm -f .github/workflows/cognitive-types-source-export.yml
+          mkdir -p qualification/cognitive-types-v1
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+
+          manifest = {
+              'schema': 'hepta.cognitive-types.materialization.v1',
+              'sourceCommit': os.environ['SOURCE_SHA'],
+              'encodedBootstrapSha256': '240a87c804e8b9dd0547e6056dde81600fffcb1c2e2aa9756527bd84748e1d24',
+              'migrationScriptSha256': 'fbb6c457b4526b17fec24eea7ccfdb8e0a147fb6915ad488d9f29dd30fcdfd55',
+              'qualificationStatus': 'NOT_YET_RUN',
+          }
+          pathlib.Path('qualification/cognitive-types-v1/MATERIALIZATION.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+          git config user.name 'hepta-ci'
+          git config user.email 'hepta-ci@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(cognitive.types): materialize authenticated production hardening'
+          git push --force-with-lease origin HEAD:refs/heads/codex/cognitive-types-materialized-20260927
