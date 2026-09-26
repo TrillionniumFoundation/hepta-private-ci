@@ -12,6 +12,10 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::LinuxProcfsCapacityObserverV1;
 use codex_hepta_fleet::SystemFleetClock;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_supervisor::H7H89ProductionGrantVerifier;
+use codex_hepta_supervisor::SupervisorError;
+use codex_hepta_supervisor::run_supervisord;
+use codex_hepta_supervisor::run_supervisord_with_grant_verifier;
 use sha2::Digest;
 use sha2::Sha256;
 use std::path::Path;
@@ -21,11 +25,6 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 use tokio::time::MissedTickBehavior;
 use tokio_util::sync::CancellationToken;
-
-use crate::H7H89ProductionGrantVerifier;
-use crate::SupervisorError;
-use crate::run_supervisord;
-use crate::run_supervisord_with_grant_verifier;
 
 const CAPACITY_TTL_MS: u64 = 60_000;
 const CAPACITY_REFRESH_INTERVAL: Duration = Duration::from_secs(20);
