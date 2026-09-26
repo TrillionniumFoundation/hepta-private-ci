@@ -84,9 +84,7 @@ impl NeuronStoreMigrationV1 {
     pub const fn durable_version(&self) -> u8 {
         match self {
             Self::V1ToV2Committed { .. } => 2,
-            Self::NativeV1
-            | Self::V1ToV2Prepared { .. }
-            | Self::V1ToV2Aborted { .. } => 1,
+            Self::NativeV1 | Self::V1ToV2Prepared { .. } | Self::V1ToV2Aborted { .. } => 1,
         }
     }
 }
@@ -281,9 +279,11 @@ impl NeuronStoreManifestV1 {
         witness_header_digest: Digest32,
         witness_header_bytes: u64,
     ) -> Result<Self, NeuronStoreManifestError> {
-        let frontier = self.coherent_frontier()?.ok_or(
-            NeuronStoreManifestError::Invalid("rollover requires committed frontier"),
-        )?;
+        let frontier = self
+            .coherent_frontier()?
+            .ok_or(NeuronStoreManifestError::Invalid(
+                "rollover requires committed frontier",
+            ))?;
         let journal_ordinal = self
             .current_journal_ordinal
             .checked_add(1)
@@ -294,8 +294,7 @@ impl NeuronStoreManifestV1 {
             .ok_or(NeuronStoreManifestError::Capacity)?;
         if usize::try_from(journal_ordinal).map_err(|_| NeuronStoreManifestError::Capacity)?
             >= MAX_SEGMENTS_PER_KIND
-            || usize::try_from(witness_ordinal)
-                .map_err(|_| NeuronStoreManifestError::Capacity)?
+            || usize::try_from(witness_ordinal).map_err(|_| NeuronStoreManifestError::Capacity)?
                 >= MAX_SEGMENTS_PER_KIND
         {
             return Err(NeuronStoreManifestError::Capacity);
@@ -411,8 +410,7 @@ impl NeuronStoreManifestV1 {
         }
         let journals = self.segments_of_kind(NeuronStoreSegmentKindV1::Journal);
         let witnesses = self.segments_of_kind(NeuronStoreSegmentKindV1::Witness);
-        if journals.len() > maximum_segments_per_kind
-            || witnesses.len() > maximum_segments_per_kind
+        if journals.len() > maximum_segments_per_kind || witnesses.len() > maximum_segments_per_kind
         {
             return Err(NeuronStoreManifestError::ReplayBound);
         }
@@ -466,7 +464,9 @@ impl NeuronStoreManifestV1 {
             || self.deletion_epoch == 0
             || self.key_receipt_digest.is_some_and(Digest32::is_zero)
             || self.deletion_receipt_digest.is_some_and(Digest32::is_zero)
-            || self.predecessor_manifest_digest.is_some_and(Digest32::is_zero)
+            || self
+                .predecessor_manifest_digest
+                .is_some_and(Digest32::is_zero)
             || (self.key_epoch > 1 && self.key_receipt_digest.is_none())
             || (self.deletion_epoch > 1 && self.deletion_receipt_digest.is_none())
             || self.segments.is_empty()
@@ -486,7 +486,11 @@ impl NeuronStoreManifestV1 {
         let journals = self.segments_of_kind(NeuronStoreSegmentKindV1::Journal);
         let witnesses = self.segments_of_kind(NeuronStoreSegmentKindV1::Witness);
         let operations = self.segments_of_kind(NeuronStoreSegmentKindV1::Operation);
-        validate_chain(&journals, NEURON_JOURNAL_ROOT_FORMAT_V1, NEURON_JOURNAL_SUCCESSOR_FORMAT_V1)?;
+        validate_chain(
+            &journals,
+            NEURON_JOURNAL_ROOT_FORMAT_V1,
+            NEURON_JOURNAL_SUCCESSOR_FORMAT_V1,
+        )?;
         validate_chain(
             &witnesses,
             NEURON_WITNESS_ROOT_FORMAT_V1,
@@ -559,10 +563,7 @@ impl NeuronStoreManifestV1 {
             .ok_or(NeuronStoreManifestError::Invalid("current segment"))
     }
 
-    fn segments_of_kind(
-        &self,
-        kind: NeuronStoreSegmentKindV1,
-    ) -> Vec<&NeuronStoreSegmentV1> {
+    fn segments_of_kind(&self, kind: NeuronStoreSegmentKindV1) -> Vec<&NeuronStoreSegmentV1> {
         let mut values = self
             .segments
             .iter()
@@ -957,7 +958,9 @@ fn manifest_to_dto(value: &NeuronStoreManifestV1) -> ManifestDto {
     }
 }
 
-fn manifest_from_dto(value: ManifestDto) -> Result<NeuronStoreManifestV1, NeuronStoreManifestError> {
+fn manifest_from_dto(
+    value: ManifestDto,
+) -> Result<NeuronStoreManifestV1, NeuronStoreManifestError> {
     if value.schema_version != NEURON_STORE_MANIFEST_SCHEMA_V1 {
         return Err(NeuronStoreManifestError::Invalid("manifest schema"));
     }
@@ -1069,7 +1072,9 @@ fn migration_to_dto(value: &NeuronStoreMigrationV1) -> MigrationDto {
     }
 }
 
-fn migration_from_dto(value: MigrationDto) -> Result<NeuronStoreMigrationV1, NeuronStoreManifestError> {
+fn migration_from_dto(
+    value: MigrationDto,
+) -> Result<NeuronStoreMigrationV1, NeuronStoreManifestError> {
     match value.state.as_str() {
         "native_v1"
             if value.target_config_digest.is_none()
@@ -1092,9 +1097,7 @@ fn migration_from_dto(value: MigrationDto) -> Result<NeuronStoreMigrationV1, Neu
         }
         "v1_to_v2_committed" => Ok(NeuronStoreMigrationV1::V1ToV2Committed {
             target_config_digest: parse_required_digest(value.target_config_digest)?,
-            transformer_receipt_digest: parse_required_digest(
-                value.transformer_receipt_digest,
-            )?,
+            transformer_receipt_digest: parse_required_digest(value.transformer_receipt_digest)?,
             migrated_checkpoint_digest: parse_required_digest(value.migrated_checkpoint_digest)?,
             commit_receipt_digest: parse_required_digest(value.terminal_receipt_digest)?,
         }),

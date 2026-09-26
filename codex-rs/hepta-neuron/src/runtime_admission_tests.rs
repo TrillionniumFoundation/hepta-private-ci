@@ -96,7 +96,11 @@ impl Fixture {
                 write_amplification_ppm: 4_000_000,
             },
         };
-        Self { path, native, config }
+        Self {
+            path,
+            native,
+            config,
+        }
     }
 
     fn file(&self, name: &str) -> File {
@@ -197,12 +201,9 @@ impl NeuronModelPort for Model {
         let mut drive_q24 = vec![0; request.expected_output_width];
         drive_q24[0] = Q;
         let prediction_q24 = vec![0; request.expected_output_width];
-        let output_digest = canonical_model_output_digest_v1(
-            &drive_q24,
-            &prediction_q24,
-            &runtime_receipt,
-        )
-        .expect("fixture output digest");
+        let output_digest =
+            canonical_model_output_digest_v1(&drive_q24, &prediction_q24, &runtime_receipt)
+                .expect("fixture output digest");
         Ok(NeuronModelOutputV1 {
             encoder_digest: request.encoder_digest,
             head_digest: request.head_digest,
@@ -278,7 +279,9 @@ fn clock_regression_rejects_before_model_and_leaves_all_stores_unchanged() {
     let before = fixture.bytes();
     assert_eq!(
         runtime.tick_guarded(&mut model, second, &mut MechanismOnly),
-        Err(NeuronRuntimeError::Journal(JournalError::Mechanism(SparseError::Clock)))
+        Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+            SparseError::Clock
+        )))
     );
     assert_eq!(model.calls, 1);
     assert_eq!(fixture.bytes(), before);
@@ -304,7 +307,10 @@ fn impossible_checkpoint_envelope_rejects_without_model_or_state_update() {
 fn measured_allocation_overrun_is_a_replayable_committed_degraded_result() {
     let fixture = Fixture::new();
     let mut runtime = fixture.bootstrap();
-    let mut model = Model { calls: 0, allocation: 2 << 20 };
+    let mut model = Model {
+        calls: 0,
+        allocation: 2 << 20,
+    };
     let tick = input(1, Digest32::ZERO);
     let input_digest = tick.semantic_digest().expect("input digest");
     let result = runtime
@@ -316,13 +322,17 @@ fn measured_allocation_overrun_is_a_replayable_committed_degraded_result() {
         abstain_reasons: vec![],
     });
     assert_eq!(
-        runtime.query_committed_disposition(&tick.tick_id, input_digest).expect("disposition"),
+        runtime
+            .query_committed_disposition(&tick.tick_id, input_digest)
+            .expect("disposition"),
         expected
     );
     drop(runtime);
     let mut reopened = fixture.recover();
     assert_eq!(
-        reopened.query_committed_disposition(&tick.tick_id, input_digest).expect("recovered disposition"),
+        reopened
+            .query_committed_disposition(&tick.tick_id, input_digest)
+            .expect("recovered disposition"),
         expected
     );
     assert_eq!(
@@ -338,14 +348,27 @@ fn legacy_expired_calibration_remains_explicit_state_advance_abstention() {
     fixture.config.calibration.expires_after_sequence = 1;
     let mut runtime = fixture.bootstrap();
     let mut model = Model::default();
-    let first = runtime.tick(&mut model, input(1, Digest32::ZERO)).expect("first");
+    let first = runtime
+        .tick(&mut model, input(1, Digest32::ZERO))
+        .expect("first");
     let second = input(2, first.tick.checkpoint_after);
     let key = second.semantic_digest().expect("key");
-    let output = runtime.tick(&mut model, second.clone()).expect("legacy tick");
+    let output = runtime
+        .tick(&mut model, second.clone())
+        .expect("legacy tick");
     assert!(output.tick.abstain);
-    assert_eq!(runtime.current_anchor().expect("anchor").expect("committed").sequence, 2);
     assert_eq!(
-        runtime.query_committed_disposition(&second.tick_id, key).expect("legacy disposition"),
+        runtime
+            .current_anchor()
+            .expect("anchor")
+            .expect("committed")
+            .sequence,
+        2
+    );
+    assert_eq!(
+        runtime
+            .query_committed_disposition(&second.tick_id, key)
+            .expect("legacy disposition"),
         Some(NeuronCommitDispositionV1::CommittedAbstained {
             reasons: vec![AbstainReasonV1::CalibrationExpiredLegacy],
         })

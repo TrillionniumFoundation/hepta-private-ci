@@ -112,7 +112,10 @@ fn commit(sequence: u64) -> NeuronGenerationCommitV2 {
 #[test]
 fn commit_duplicate_and_reopen_return_exact_full_result() {
     let fixture = Fixture::new();
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     let value = commit(1);
     let committed = match checked(store.commit_result(value.clone())) {
         NeuronGenerationCommitResultV2::Committed(record) => record,
@@ -142,7 +145,10 @@ fn commit_duplicate_and_reopen_return_exact_full_result() {
 #[test]
 fn same_tick_with_changed_input_or_receipt_conflicts() {
     let fixture = Fixture::new();
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     let value = commit(1);
     checked(store.commit_result(value.clone()));
 
@@ -164,7 +170,10 @@ fn same_tick_with_changed_input_or_receipt_conflicts() {
 #[test]
 fn witness_pending_and_ack_are_durable() {
     let fixture = Fixture::new();
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     let value = commit(1);
     let record = match checked(store.commit_result(value.clone())) {
         NeuronGenerationCommitResultV2::Committed(record) => record,
@@ -193,7 +202,10 @@ fn witness_pending_and_ack_are_durable() {
 #[test]
 fn admission_returns_history_before_model_and_conflicts_on_payload_drift() {
     let fixture = Fixture::new();
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     let value = commit(1);
     let record = match checked(store.commit_result(value.clone())) {
         NeuronGenerationCommitResultV2::Committed(record) => record,
@@ -201,7 +213,7 @@ fn admission_returns_history_before_model_and_conflicts_on_payload_drift() {
     };
     assert_eq!(
         checked(store.admit_operation(&value.key, None, 100, 100)),
-        NeuronGenerationAdmissionV2::Historical(record)
+        NeuronGenerationAdmissionV2::Historical(Box::new(record))
     );
     let changed = NeuronOperationKeyV2 {
         tick_id: value.key.tick_id,
@@ -216,7 +228,10 @@ fn admission_returns_history_before_model_and_conflicts_on_payload_drift() {
 #[test]
 fn partial_tail_is_truncated_without_fabricated_success() {
     let fixture = Fixture::new();
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     let first = commit(1);
     checked(store.commit_result(first.clone()));
     drop(store);
@@ -242,7 +257,10 @@ fn partial_tail_is_truncated_without_fabricated_success() {
 #[test]
 fn complete_checksum_corruption_fails_closed() {
     let fixture = Fixture::new();
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     checked(store.commit_result(commit(1)));
     drop(store);
 
@@ -267,7 +285,10 @@ fn complete_checksum_corruption_fails_closed() {
 fn post_sync_uncertainty_recovers_as_one_commit() {
     let fixture = Fixture::new();
     let value = commit(1);
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     store.fail_next_append(GenerationStoreFailpointV2::AfterFrameSync);
     assert_eq!(
         store.commit_result(value.clone()),
@@ -291,7 +312,10 @@ fn post_sync_uncertainty_recovers_as_one_commit() {
 fn during_write_uncertainty_does_not_fabricate_success() {
     let fixture = Fixture::new();
     let value = commit(1);
-    let mut store = checked(FileNeuronGenerationStoreV2::create(&fixture.file, context()));
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
     store.fail_next_append(GenerationStoreFailpointV2::DuringFrameWrite);
     assert_eq!(
         store.commit_result(value.clone()),

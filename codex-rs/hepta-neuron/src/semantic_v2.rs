@@ -301,9 +301,7 @@ pub enum NeuronCommitDispositionV1 {
 }
 
 impl NeuronCommitDispositionV1 {
-    pub fn abstained(
-        reasons: Vec<AbstainReasonV1>,
-    ) -> Result<Self, NeuronSemanticV2Error> {
+    pub fn abstained(reasons: Vec<AbstainReasonV1>) -> Result<Self, NeuronSemanticV2Error> {
         let reasons = canonical_reasons(reasons)?;
         Ok(Self::CommittedAbstained { reasons })
     }
@@ -405,9 +403,7 @@ impl NeuronOperationKeyV2 {
     }
 }
 
-fn validate_digests(
-    values: &[(&'static str, Digest32)],
-) -> Result<(), NeuronSemanticV2Error> {
+fn validate_digests(values: &[(&'static str, Digest32)]) -> Result<(), NeuronSemanticV2Error> {
     for &(name, digest) in values {
         if digest.is_zero() {
             return Err(NeuronSemanticV2Error::EmptyDigest(name));
