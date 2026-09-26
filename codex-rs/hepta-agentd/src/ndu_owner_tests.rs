@@ -3,6 +3,10 @@ use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_agent_protocol::NduControlRequestV1;
+use codex_hepta_agent_protocol::NduControlResultV1;
+use codex_hepta_agent_protocol::NduMutationOperationV1;
+use codex_hepta_agent_protocol::NduMutationV1;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_ndu::AggregationOperator;
@@ -178,6 +182,37 @@ fn select(
     }
 }
 
+fn external_admission(
+    host: &AgentdNduOwnerHostV1,
+    inner: NduControlRequestV1,
+    request_id: &str,
+    idempotency_key: &str,
+) -> TestResult<NduControlRequestV1> {
+    let context = host.context()?;
+    let now = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)?
+            .as_millis(),
+    )?;
+    let payload_digest = inner
+        .canonical_payload_digest_v2()
+        .map_err(std::io::Error::other)?;
+    Ok(NduControlRequestV1::ExternalAdmissionV2 {
+        schema_version: NduControlRequestV1::EXTERNAL_ADMISSION_SCHEMA_VERSION_V2,
+        request_id: request_id.to_string(),
+        idempotency_key: idempotency_key.to_string(),
+        caller_id: "control-plane".to_string(),
+        issued_at_unix_ms: now.saturating_sub(1),
+        deadline_unix_ms: now.saturating_add(60_000),
+        host_generation: context.host_generation,
+        fence_digest: *context.fence_digest.as_array(),
+        revocation_head_digest: *context.revocation_frontier_digest.as_array(),
+        payload_digest,
+        request: Box::new(inner),
+        extensions: Vec::new(),
+    })
+}
+
 #[test]
 fn named_host_has_one_writer_and_recovers_selection() -> TestResult<()> {
     let mut fixture = fixture()?;
@@ -285,6 +320,109 @@ fn named_host_rejects_stale_selection_and_live_revocation() -> TestResult<()> {
         Err(AgentdNduOwnerErrorV1::Owner(NduOwnerError::Authority(
             FinalUseError::Revoked
         )))
+    ));
+    Ok(())
+}
+
+#[test]
+fn external_admission_binds_live_owner_and_replay_identity() -> TestResult<()> {
+    let fixture = fixture()?;
+    let inner = NduControlRequestV1::Selection {
+        objective: *digest("objective").as_array(),
+        subject: *digest("subject").as_array(),
+    };
+    let admitted = external_admission(&fixture.host, inner, "read-selection", "idem-read")?;
+    let duplicate = admitted.clone();
+    let first = fixture.host.control(admitted, || Ok(()))?;
+    assert!(matches!(
+        first,
+        NduControlResultV1::Selection {
+            projection: None,
+            ..
+        }
+    ));
+    assert_eq!(fixture.host.control(duplicate, || Ok(()))?, first);
+
+    let conflict = external_admission(
+        &fixture.host,
+        NduControlRequestV1::Outcome {
+            identity: *digest("other-operation").as_array(),
+        },
+        "read-outcome",
+        "idem-read",
+    )?;
+    assert!(matches!(
+        fixture.host.control(conflict, || Ok(())),
+        Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-008"))
+    ));
+
+    let mut wrong_fence = external_admission(
+        &fixture.host,
+        NduControlRequestV1::Selection {
+            objective: *digest("objective").as_array(),
+            subject: *digest("subject").as_array(),
+        },
+        "wrong-fence",
+        "idem-wrong-fence",
+    )?;
+    if let NduControlRequestV1::ExternalAdmissionV2 { fence_digest, .. } = &mut wrong_fence {
+        *fence_digest = *digest("different-live-fence").as_array();
+    }
+    assert!(matches!(
+        fixture.host.control(wrong_fence, || Ok(())),
+        Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-005"))
+    ));
+
+    let mut payload_drift = external_admission(
+        &fixture.host,
+        NduControlRequestV1::Selection {
+            objective: *digest("objective").as_array(),
+            subject: *digest("subject").as_array(),
+        },
+        "payload-drift",
+        "idem-payload-drift",
+    )?;
+    if let NduControlRequestV1::ExternalAdmissionV2 { request, .. } = &mut payload_drift {
+        *request = Box::new(NduControlRequestV1::Outcome {
+            identity: *digest("substituted-payload").as_array(),
+        });
+    }
+    assert!(matches!(
+        fixture.host.control(payload_drift, || Ok(())),
+        Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))
+    ));
+    Ok(())
+}
+
+#[test]
+fn admitted_failure_requires_reconciliation_before_retry() -> TestResult<()> {
+    let fixture = fixture()?;
+    let failed = external_admission(
+        &fixture.host,
+        NduControlRequestV1::Prepare {
+            mutation: NduMutationV1 {
+                operation: NduMutationOperationV1::AppendPreference,
+                identity: *digest("prepare-identity").as_array(),
+                objective: *digest("objective").as_array(),
+                subject: *digest("subject").as_array(),
+                projection: *digest("prepare-projection").as_array(),
+                expected_predecessor: None,
+            },
+            expected_head: *digest("wrong-journal-head").as_array(),
+        },
+        "failed-prepare",
+        "idem-failed-prepare",
+    )?;
+    let retry = failed.clone();
+    assert!(matches!(
+        fixture.host.control(failed, || Ok(())),
+        Err(AgentdNduOwnerErrorV1::Owner(
+            NduOwnerError::JournalHeadMismatch
+        ))
+    ));
+    assert!(matches!(
+        fixture.host.control(retry, || Ok(())),
+        Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"))
     ));
     Ok(())
 }

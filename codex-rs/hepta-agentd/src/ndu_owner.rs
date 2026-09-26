@@ -9,6 +9,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 
+use codex_hepta_agent_protocol::NduControlResultV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
@@ -31,6 +32,7 @@ const MAX_NDU_EXTERNAL_REPLAY_ENTRIES_V2: usize = 4096;
 struct NduExternalReplayBindingV2 {
     binding_digest: Digest32,
     deadline_unix_ms: u64,
+    result: Option<NduControlResultV1>,
 }
 
 #[derive(Debug, Default)]

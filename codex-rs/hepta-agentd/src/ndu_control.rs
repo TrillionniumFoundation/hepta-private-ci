@@ -34,7 +34,7 @@ impl AgentdNduOwnerHostV1 {
         }
         owner.refresh_revocation_frontier(current_frontier(&self.authority)?)?;
 
-        let request = match request {
+        let (request, replay_key) = match request {
             NduControlRequestV1::ExternalAdmissionV2 {
                 request_id,
                 idempotency_key,
@@ -67,36 +67,47 @@ impl AgentdNduOwnerHostV1 {
                     &extensions,
                 ))
                 .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))?;
-                let binding = NduExternalReplayBindingV2 {
-                    binding_digest: Digest32::of_parts(&[
-                        b"hepta.agentd.ndu-external-replay.v2\0",
-                        &binding_bytes,
-                    ]),
-                    deadline_unix_ms,
-                };
+                let binding_digest = Digest32::of_parts(&[
+                    b"hepta.agentd.ndu-external-replay.v2\0",
+                    &binding_bytes,
+                ]);
                 let key = (caller_id, idempotency_key);
                 let mut replay = self.lock_admission_replay()?;
                 replay
                     .entries
                     .retain(|_, existing| existing.deadline_unix_ms >= now);
                 if let Some(existing) = replay.entries.get(&key) {
-                    if existing.binding_digest != binding.binding_digest {
+                    if existing.binding_digest != binding_digest {
                         return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-008"));
                     }
-                } else {
-                    if replay.entries.len() >= MAX_NDU_EXTERNAL_REPLAY_ENTRIES_V2 {
-                        return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-009"));
+                    if let Some(result) = &existing.result {
+                        return Ok(result.clone());
                     }
-                    replay.entries.insert(key, binding);
+                    // A prior attempt crossed admission but did not produce a
+                    // cacheable success. The caller must reconcile by mutation
+                    // identity/outcome instead of replaying a possibly committed
+                    // effect or reusing the key for another payload.
+                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"));
                 }
+                if replay.entries.len() >= MAX_NDU_EXTERNAL_REPLAY_ENTRIES_V2 {
+                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-009"));
+                }
+                replay.entries.insert(
+                    key.clone(),
+                    NduExternalReplayBindingV2 {
+                        binding_digest,
+                        deadline_unix_ms,
+                        result: None,
+                    },
+                );
                 drop(replay);
-                *request
+                (*request, Some(key))
             }
-            ordinary => ordinary,
+            ordinary => (ordinary, None),
         };
 
         let head = owner.journal_head_digest()?;
-        match request {
+        let result = match request {
             NduControlRequestV1::Context => Ok(NduControlResultV1::Context {
                 journal_head: *head.as_array(),
                 revocation_head: *owner.context().revocation_frontier_digest.as_array(),
@@ -110,14 +121,15 @@ impl AgentdNduOwnerHostV1 {
             } => {
                 let expected_head = Digest32::from_array(expected_head);
                 if head != expected_head {
-                    return Err(NduOwnerError::JournalHeadMismatch.into());
+                    Err(NduOwnerError::JournalHeadMismatch.into())
+                } else {
+                    let binding = owner
+                        .final_use_binding_at_head(&native_mutation(mutation)?, expected_head)?;
+                    Ok(NduControlResultV1::Prepared {
+                        journal_head: *head.as_array(),
+                        binding,
+                    })
                 }
-                let binding =
-                    owner.final_use_binding_at_head(&native_mutation(mutation)?, expected_head)?;
-                Ok(NduControlResultV1::Prepared {
-                    journal_head: *head.as_array(),
-                    binding,
-                })
             }
             NduControlRequestV1::Apply {
                 mutation,
@@ -166,7 +178,17 @@ impl AgentdNduOwnerHostV1 {
             NduControlRequestV1::ExternalAdmissionV2 { .. } => {
                 Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))
             }
+        };
+
+        if let (Some(key), Ok(value)) = (replay_key, &result) {
+            let mut replay = self.lock_admission_replay()?;
+            let entry = replay
+                .entries
+                .get_mut(&key)
+                .ok_or(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"))?;
+            entry.result = Some(value.clone());
         }
+        result
     }
 }
 
