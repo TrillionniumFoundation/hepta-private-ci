@@ -56,6 +56,36 @@ impl EvidenceRecoveryFrontierV2 {
         {
             return Err(invalid("frontier snapshot lineage is not supported"));
         }
+        for (label, digest) in [
+            ("snapshot migration set", &self.snapshot.migration_set_sha256),
+            (
+                "snapshot qualification frontier",
+                &self.snapshot.qualification_frontier_sha256,
+            ),
+            (
+                "snapshot replay frontier",
+                &self.snapshot.authbus_replay_frontier_sha256,
+            ),
+            ("ledger root", &self.ledger_root_sha256),
+            ("issuer trust registry", &self.issuer_trust_registry_sha256),
+            (
+                "frontier signer registry",
+                &self.frontier_signer_registry_sha256,
+            ),
+            ("backend identity", &self.backend_identity_sha256),
+            ("build artifact", &self.build_artifact_sha256),
+            (
+                "qualification receipt set",
+                &self.qualification_receipt_sha256,
+            ),
+            ("backup publication", &self.backup_publication_sha256),
+        ] {
+            if !valid_sha256(digest) {
+                return Err(invalid(format!(
+                    "frontier {label} digest is not canonical lowercase SHA-256"
+                )));
+            }
+        }
         if self.ledger_root_sha256 != evidence_recovery_ledger_root_v2(&self.snapshot) {
             return Err(invalid("frontier ledger root does not match the snapshot"));
         }
@@ -84,7 +114,7 @@ impl EvidenceRecoveryFrontierV2 {
                 || !signature
                     .signature_hex
                     .bytes()
-                    .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+                    .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
             {
                 return Err(invalid("frontier contains an invalid signer binding"));
             }
@@ -193,11 +223,19 @@ pub fn evidence_recovery_ledger_root_v2(
     Sha256Digest::for_bytes(&bytes)
 }
 
+fn valid_sha256(value: &Sha256Digest) -> bool {
+    value.as_str().len() == 64
+        && value
+            .as_str()
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+}
+
 fn valid_git_id(value: &str) -> bool {
     matches!(value.len(), 40 | 64)
         && value
             .bytes()
-            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
 fn push_part(target: &mut Vec<u8>, part: &[u8]) {

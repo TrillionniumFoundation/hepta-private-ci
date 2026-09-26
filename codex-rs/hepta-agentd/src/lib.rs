@@ -25,6 +25,10 @@ mod event_buffer;
 mod evidence_frontier;
 mod evidence_frontier_signers;
 mod evidence_host;
+#[cfg(unix)]
+mod evidence_production;
+#[cfg(not(unix))]
+#[path = "evidence_production_unsupported.rs"]
 mod evidence_production;
 mod evidence_trust;
 mod intelligence_ingress;
