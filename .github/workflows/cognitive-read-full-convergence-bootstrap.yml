@@ -43,6 +43,23 @@ jobs:
           fi
           "${PYTHON}" scripts/cognitive-read-agentd-hardening.py
           "${PYTHON}" scripts/cognitive-read-agentd-finalize.py
+          "${PYTHON}" - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          changed = subprocess.run(
+              ["git", "diff", "--name-only", "-z"],
+              check=True,
+              capture_output=True,
+          ).stdout.split(b"\0")
+          for raw in changed:
+              if not raw:
+                  continue
+              path = Path(raw.decode("utf-8"))
+              data = path.read_bytes()
+              if b"\r\n" in data:
+                  path.write_bytes(data.replace(b"\r\n", b"\n"))
+          PY
           "${PYTHON}" tests/test_cognitive_read_agentd_hardening.py
           "${PYTHON}" scripts/verify-cognitive-read-constants.py
           git diff --check
