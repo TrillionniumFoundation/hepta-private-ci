@@ -1,3 +1,5 @@
+mod fleet_runtime_product;
+
 use std::path::PathBuf;
 
 use codex_hepta_memory::H7ArtifactVerifier;
@@ -9,17 +11,12 @@ async fn main() -> anyhow::Result<()> {
     let options = parse_options()?;
     let cancellation = CancellationToken::new();
     spawn_shutdown_signal(cancellation.clone());
-    match options.grant_verifier {
-        Some(verifier) => {
-            codex_hepta_supervisor::run_supervisord_with_grant_verifier(
-                options.fleet_root,
-                cancellation,
-                verifier,
-            )
-            .await?;
-        }
-        None => codex_hepta_supervisor::run_supervisord(options.fleet_root, cancellation).await?,
-    }
+    fleet_runtime_product::run_supervisord_product(
+        options.fleet_root,
+        cancellation,
+        options.grant_verifier,
+    )
+    .await?;
     Ok(())
 }
 
