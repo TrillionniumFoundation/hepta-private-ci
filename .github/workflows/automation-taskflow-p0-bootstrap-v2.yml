@@ -38,33 +38,37 @@ jobs:
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
 
-      - name: Bind exact source metadata and generated truth
+      - name: Commit exact source metadata
         shell: bash
         env:
           P0_SOURCE_SHA: fdcc0a457fdf608ef186e7ff4e7608a9720521ff
         run: |
-          set -uo pipefail
+          set -euo pipefail
           git config user.name "Hepta Automation CI"
           git config user.email "hepta-automation-ci@users.noreply.github.com"
+          python3 scripts/apply_automation_taskflow_p0_wrapper.py metadata \
+            --source-sha "$P0_SOURCE_SHA"
+          rm -f qualification/automation-taskflow-p0-diagnostic.txt
+          git diff --check
+          git add \
+            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
+            qualification/automation-taskflow-p0-diagnostic.txt
+          git commit -m "docs(automation): bind schema-v19 source observation [automation-p0-v2]"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
+
+      - name: Generate and commit Lane B truth from clean metadata commit
+        shell: bash
+        run: |
+          set -uo pipefail
           LOG="qualification/automation-taskflow-p0-diagnostic.txt"
           TMP_LOG="$(mktemp)"
-
           set +e
-          python3 scripts/apply_automation_taskflow_p0_wrapper.py metadata \
-            --source-sha "$P0_SOURCE_SHA" > "$TMP_LOG" 2>&1
-          metadata_status=$?
-          truth_status=99
-          if [ "$metadata_status" -eq 0 ]; then
-            python3 scripts/hepta-lane-b-truth.py generate >> "$TMP_LOG" 2>&1
-            truth_status=$?
-          fi
+          python3 scripts/hepta-lane-b-truth.py generate > "$TMP_LOG" 2>&1
+          truth_status=$?
           set -e
-
-          if [ "$metadata_status" -ne 0 ] || [ "$truth_status" -ne 0 ]; then
+          if [ "$truth_status" -ne 0 ]; then
             {
               echo "candidate_head=$(git rev-parse HEAD)"
-              echo "source_sha=$P0_SOURCE_SHA"
-              echo "metadata_status=$metadata_status"
               echo "truth_status=$truth_status"
               cat "$TMP_LOG"
               echo "--- git status ---"
@@ -73,20 +77,16 @@ jobs:
               git diff --check || true
             } > "$LOG"
             git add "$LOG"
-            git commit -m "ci(automation): record P0 qualification diagnostic" || true
+            git commit -m "ci(automation): record generated-truth diagnostic" || true
             git push origin HEAD:work/automation-taskflow-v19-runtime-closure
             exit 1
           fi
-
-          rm -f "$LOG"
           git diff --check
           git add \
-            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
             qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
             qualification/lane-b/TEST_TRACEABILITY.json \
-            qualification/lane-b/IMPLEMENTATION_TRUTH.json \
-            qualification/automation-taskflow-p0-diagnostic.txt
-          git commit -m "docs(automation): bind schema-v19 product truth [automation-p0-v2]"
+            qualification/lane-b/IMPLEMENTATION_TRUTH.json
+          git commit -m "docs(automation): regenerate Lane B truth [automation-p0-v2]"
           git push origin HEAD:work/automation-taskflow-v19-runtime-closure
 
       - name: Verify P0 truth and privileged callers
