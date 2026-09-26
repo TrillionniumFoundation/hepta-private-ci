@@ -10,13 +10,13 @@ use std::fmt;
 
 use codex_hepta_codex_adapter::PromptRuntimeTerminalOutcomeV1;
 use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
-use codex_hepta_kg::KnowledgeGenerationV2;
 use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::LearningLedger;
 use codex_hepta_learning_ledger::PromptDeliveryLineageV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_prompt_optimizer::canonical::KnowledgeGenerationV2;
 use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptPairUtilityEvidenceV1;
