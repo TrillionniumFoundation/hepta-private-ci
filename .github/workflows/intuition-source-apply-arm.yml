@@ -1,0 +1,50 @@
+name: Intuition source apply
+
+on:
+  push:
+    branches:
+      - codex/intuition-policy-production-hardening-20260926
+    paths:
+      - ".github/workflows/intuition-source-apply-arm.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intuition-source-apply
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out hardening branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/intuition-policy-production-hardening-20260926
+          fetch-depth: 0
+      - name: Apply deterministic product composition
+        run: |
+          python3 scripts/intuition_finalize_branch.py
+          python3 scripts/intuition_legacy_imports.py
+      - name: Commit composed source
+        run: |
+          git config user.name "Hepta Intuition Integrator"
+          git config user.email "hepta-intuition-ci@users.noreply.github.com"
+          git add codex-rs/hepta-agentd codex-rs/hepta-intuition codex-rs/hepta-intelligence docs/modules/intuition.policy/TECHNICAL.md
+          if ! git diff --cached --quiet; then
+            git commit -m "feat(intuition): enforce authenticated product gate in Agentd serving"
+          fi
+      - name: Rebind implementation-map provenance
+        run: |
+          python3 scripts/hepta-implementation-maps.py migrate --module intuition.policy
+          git add docs/modules/intuition.policy/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(intuition): bind composed source objects"
+          fi
+      - name: Verify exact committed map and push
+        run: |
+          python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
+          git push origin HEAD:codex/intuition-policy-production-hardening-20260926

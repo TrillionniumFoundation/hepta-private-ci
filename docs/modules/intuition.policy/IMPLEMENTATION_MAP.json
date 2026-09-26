@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "c3a9d0e49fba11f7160ad3e1204e6eeddcc50a9a",
+    "tree": "9eff84d8761e52e20dd6bb32c3bdca192f0c04b8"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "intuition.policy",
@@ -18,42 +18,216 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed_agentd_canonical_intelligence_pending_exact_head",
+  "productionWriterState": "sole_agentd_learning_ledger_writer_composed_pending_exact_head",
+  "productCallers": [
+    {
+      "name": "authenticated intuition qualification",
+      "sourcePath": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
+    },
+    {
+      "name": "Agentd exact-generation policy host",
+      "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs"
+    },
+    {
+      "name": "Agentd canonical ObjectiveStart serving gate",
+      "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+    },
+    {
+      "name": "Agentd canonical serving composition",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs"
+    }
+  ],
   "operations": [
     {
       "operation": "decide_calibrated",
       "nativeSymbol": "decide_calibrated",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "legacy_replay_only_feature_gated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "decide_calibrated",
+      "designOperation": "legacy calibrated selection",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
       "operation": "decide_calibrated_v2",
       "nativeSymbol": "decide_calibrated_v2",
-      "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
-      "state": "source_implemented_not_product_composed",
+      "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
+      "state": "legacy_advisory_compatibility_only_feature_gated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "decide_calibrated_v2",
+      "designOperation": "legacy bound calibrated selection",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "decide_calibrated_v3",
+      "nativeSymbol": "decide_calibrated_v3",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
+      "state": "source_implemented_profile_qualified_compatibility_substrate",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical profile-qualified selection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_calibrated_v4",
+      "nativeSymbol": "decide_calibrated_v4",
+      "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
+      "state": "source_composed_product_contract_pending_exact_head",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs",
+        "codex-rs/hepta-intuition/testdata/production_contract_v2.json",
+        "codex-rs/hepta-intuition/fuzz/fuzz_targets/production_contract.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bounded production disposition with explicit risk reason",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_candidate_identity_digest_v2",
+      "nativeSymbol": "canonical_candidate_identity_digest_v2",
+      "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
+      "state": "source_implemented_generator_owned_commitment",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "generator-owned candidate identity digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_scored_outputs_digest_v2",
+      "nativeSymbol": "canonical_scored_outputs_digest_v2",
+      "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
+      "state": "source_implemented_scorer_owned_commitment",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "scorer-owned output digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_assignment_commitment_digest_v2",
+      "nativeSymbol": "canonical_assignment_commitment_digest_v2",
+      "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
+      "state": "source_implemented_assignment_owner_commitment",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "assignment distribution, stream, counter and draw digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_runtime_commitment_payload_v2",
+      "nativeSymbol": "canonical_runtime_commitment_payload_v2",
+      "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
+      "state": "source_implemented_non_overlapping_owner_envelope",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "per-decision anti-substitution payload",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_authenticated_intuition_v3",
+      "nativeSymbol": "decide_authenticated_intuition_v3",
+      "sourcePath": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
+      "state": "source_composed_three_party_admission_pending_exact_head",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "generator evaluator observer authenticated admission",
+      "mappingClass": "delegated_product_admission",
+      "delegatedCallees": [
+        "codex-rs/hepta-intuition/src/production.rs"
+      ]
+    },
+    {
+      "operation": "AgentdIntuitionPolicyHostV1::prepare_v3",
+      "nativeSymbol": "prepare_v3",
+      "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs",
+      "state": "source_composed_full_profile_pins_pending_exact_head",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/intuition_policy_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "exact-generation authenticated policy preparation",
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
+      ]
+    },
+    {
+      "operation": "AgentdIntuitionPolicyHostV1::commit_v3",
+      "nativeSymbol": "commit_v3",
+      "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs",
+      "state": "source_composed_selected_only_durable_append_pending_exact_head",
+      "authority": "learning_ledger_writer_only",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/intuition_policy_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "selected-only sole LedgerWriter append and generation fence",
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        "codex-rs/hepta-learning-ledger/src/production.rs"
+      ]
+    },
+    {
+      "operation": "AgentdState::start_canonical_intelligence",
+      "nativeSymbol": "start_canonical_intelligence",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
+      "state": "source_composed_actual_serving_path_pending_exact_head",
+      "authority": "run_admission_after_authenticated_decision",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ObjectiveStart canonical serving composition",
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
+        "codex-rs/hepta-agentd/src/intuition_policy_service.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain a successful exact-head and deterministic synthetic-merge qualification for the composed Agentd serving path.",
+    "Retain exact-SHA command, host-profile and latency artifacts from the dedicated workflow.",
+    "Complete process-level crash/reopen and rollback qualification without self-issuing independent acceptance."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "independent semantic evaluator acceptance",
+    "operator target-host acceptance and canary authorization",
+    "promotion and release approval"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
