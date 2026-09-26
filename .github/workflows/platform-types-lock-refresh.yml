@@ -33,25 +33,26 @@ jobs:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           set -euo pipefail
+          repo_root="$(git rev-parse --show-toplevel)"
           git config user.name "Hepta platform.types lock bot"
           git config user.email "hepta-platform-types-ci@users.noreply.github.com"
 
           (
-            cd codex-rs
+            cd "$repo_root/codex-rs"
             cargo check -p codex-hepta-types --tests
           )
 
-          unexpected="$(git status --porcelain --untracked-files=no | awk '{print $2}' | grep -v '^codex-rs/Cargo.lock$' || true)"
+          unexpected="$(git -C "$repo_root" -c status.relativePaths=false status --porcelain --untracked-files=no | cut -c4- | grep -v '^codex-rs/Cargo.lock$' || true)"
           if [[ -n "$unexpected" ]]; then
             printf 'lock refresh changed unexpected tracked paths:\n%s\n' "$unexpected" >&2
             exit 1
           fi
 
-          if git diff --quiet -- codex-rs/Cargo.lock; then
+          if git -C "$repo_root" diff --quiet -- codex-rs/Cargo.lock; then
             echo "Cargo.lock is already current"
             exit 0
           fi
 
-          git add codex-rs/Cargo.lock
-          git commit -m "platform.types: refresh Cargo lock for qualification"
-          git push origin "HEAD:${HEAD_REF}"
+          git -C "$repo_root" add -- codex-rs/Cargo.lock
+          git -C "$repo_root" commit -m "platform.types: refresh Cargo lock for qualification"
+          git -C "$repo_root" push origin "HEAD:${HEAD_REF}"
