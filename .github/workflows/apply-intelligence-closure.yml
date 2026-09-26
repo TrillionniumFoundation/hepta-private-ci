@@ -7,10 +7,15 @@ on:
     paths:
       - scripts/apply-intelligence-control-product-closure.py
       - scripts/apply-intelligence-control-product-closure-tests.py
+      - scripts/apply-intelligence-control-product-closure-learning.py
       - .github/workflows/apply-intelligence-closure.yml
       - codex-rs/hepta-agentd/src/intelligence_invocation_registry.rs
+      - codex-rs/hepta-agentd/src/intelligence_learning_host.rs
       - codex-rs/hepta-agentd/src/intelligence_learning_outbox.rs
       - codex-rs/hepta-agentd/src/intelligence_learning_outbox_tests.rs
+      - codex-rs/hepta-agentd/src/intelligence_observability.rs
+      - codex-rs/hepta-agentd/src/intelligence_outcome_registry.rs
+      - codex-rs/hepta-agentd/src/intelligence_profile.rs
       - codex-rs/hepta-agentd/src/lane_b_identity_tests.rs
 
 permissions:
@@ -38,6 +43,7 @@ jobs:
           set -euo pipefail
           python3 scripts/apply-intelligence-control-product-closure.py
           python3 scripts/apply-intelligence-control-product-closure-tests.py
+          python3 scripts/apply-intelligence-control-product-closure-learning.py
 
       - name: Format and verify source hygiene
         shell: bash
@@ -54,9 +60,10 @@ jobs:
           set -euo pipefail
           rm scripts/apply-intelligence-control-product-closure.py
           rm scripts/apply-intelligence-control-product-closure-tests.py
+          rm scripts/apply-intelligence-control-product-closure-learning.py
           rm .github/workflows/apply-intelligence-closure.yml
           git add -A
           git config user.name "hepta-ci-bot"
           git config user.email "hepta-ci-bot@users.noreply.github.com"
-          git commit -m "intelligence.control: bind canonical product identity"
+          git commit -m "intelligence.control: close canonical product control plane"
           git push origin HEAD:codex/intelligence-control-product-closure
