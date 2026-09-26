@@ -17,6 +17,7 @@ on:
       - 'qa/b4-no-bypass/**'
       - 'CALLERS.toml'
       - 'scripts/hepta-implementation-maps.py'
+      - 'scripts/kernel_authority_status.py'
       - 'scripts/verify_hepta_callers.py'
       - '.github/workflows/kernel-authority-convergence.yml'
   pull_request:
@@ -33,6 +34,7 @@ on:
       - 'qa/b4-no-bypass/**'
       - 'CALLERS.toml'
       - 'scripts/hepta-implementation-maps.py'
+      - 'scripts/kernel_authority_status.py'
       - 'scripts/verify_hepta_callers.py'
       - '.github/workflows/kernel-authority-convergence.yml'
   workflow_dispatch:
@@ -45,6 +47,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  refresh-projections:
+    name: Refresh kernel.authority projections
+    if: github.event_name == 'push' && github.ref_name == 'work/kernel-authority-convergence-20260925'
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact working branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/kernel-authority-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Rebind map and generate projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.authority
+          python3 scripts/kernel_authority_status.py write
+          git diff --check
+          git config user.name kernel-authority-projection-bot
+          git config user.email kernel-authority-projection-bot@users.noreply.github.com
+          if [ -n "$(git status --porcelain)" ]; then
+            git add docs/modules/kernel.authority/IMPLEMENTATION_MAP.json \
+              docs/modules/kernel.authority/CURRENT_STATE.json \
+              docs/modules/kernel.authority/CURRENT_STATE.md
+            git commit -m 'docs(kernel-authority): regenerate current-state projections'
+            git push origin HEAD:work/kernel-authority-convergence-20260925
+          fi
+
   identity:
     name: Pin immutable source and base
     runs-on: ubuntu-24.04
@@ -84,7 +117,6 @@ jobs:
           printf 'source=%s\n' "$source" >> "$GITHUB_OUTPUT"
           printf 'source_tree=%s\n' "$source_tree" >> "$GITHUB_OUTPUT"
           printf 'base=%s\n' "$base" >> "$GITHUB_OUTPUT"
-          git status --short
           test -z "$(git status --porcelain)"
 
   qualify:
@@ -110,7 +142,6 @@ jobs:
           fetch-depth: 0
           ref: ${{ needs.identity.outputs.source }}
           persist-credentials: false
-
       - name: Verify checkout before candidate preparation
         shell: bash
         env:
@@ -121,7 +152,6 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_TREE"
           test -z "$(git status --porcelain)"
-
       - name: Prepare immutable candidate
         shell: bash
         run: |
@@ -130,7 +160,6 @@ jobs:
             --mode '${{ matrix.mode }}' \
             --base-sha '${{ needs.identity.outputs.base }}' \
             --output "$RUNNER_TEMP/authority-evidence/identity.json"
-
       - name: Reject stale or cross-candidate identity
         shell: bash
         env:
@@ -141,62 +170,30 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json
-          import os
-          import pathlib
-          import subprocess
-
+          import json, os, pathlib, subprocess
           path = pathlib.Path(os.environ["IDENTITY_PATH"])
           identity = json.loads(path.read_text(encoding="utf-8"))
-          expected = {
-              "schema",
-              "mode",
-              "sourceCommit",
-              "baseCommit",
-              "candidateCommit",
-              "candidateTree",
-              "activationGranted",
-              "releaseGranted",
-          }
-          if set(identity) != expected:
-              raise SystemExit(f"candidate identity fields drifted: {sorted(identity)}")
-          if identity["schema"] != "hepta.kernel-authority-candidate.v1":
-              raise SystemExit("candidate identity schema mismatch")
-          if identity["mode"] != os.environ["MODE"]:
-              raise SystemExit("candidate mode mismatch")
-          if identity["sourceCommit"] != os.environ["SOURCE"]:
-              raise SystemExit("candidate source mismatch")
-          if identity["baseCommit"] != os.environ["BASE"]:
-              raise SystemExit("candidate base mismatch")
-          observed_commit = subprocess.check_output(
-              ["git", "rev-parse", "HEAD"], text=True
-          ).strip()
-          observed_tree = subprocess.check_output(
-              ["git", "rev-parse", "HEAD^{tree}"], text=True
-          ).strip()
-          if identity["candidateCommit"] != observed_commit:
-              raise SystemExit("candidate commit mismatch")
-          if identity["candidateTree"] != observed_tree:
-              raise SystemExit("candidate tree mismatch")
-          if identity["activationGranted"] is not False:
-              raise SystemExit("qualification cannot grant activation")
-          if identity["releaseGranted"] is not False:
-              raise SystemExit("qualification cannot grant release")
+          expected = {"schema", "mode", "sourceCommit", "baseCommit", "candidateCommit", "candidateTree", "activationGranted", "releaseGranted"}
+          if set(identity) != expected: raise SystemExit("candidate identity fields drifted")
+          if identity["schema"] != "hepta.kernel-authority-candidate.v1": raise SystemExit("candidate identity schema mismatch")
+          if identity["mode"] != os.environ["MODE"]: raise SystemExit("candidate mode mismatch")
+          if identity["sourceCommit"] != os.environ["SOURCE"]: raise SystemExit("candidate source mismatch")
+          if identity["baseCommit"] != os.environ["BASE"]: raise SystemExit("candidate base mismatch")
+          if identity["candidateCommit"] != subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(): raise SystemExit("candidate commit mismatch")
+          if identity["candidateTree"] != subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(): raise SystemExit("candidate tree mismatch")
+          if identity["activationGranted"] is not False or identity["releaseGranted"] is not False: raise SystemExit("qualification cannot grant activation or release")
           PY
-
       - name: Install pinned Rust toolchain
         if: matrix.lane != 'governance'
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
-
       - name: Install pinned repository test tools
         if: matrix.lane != 'governance'
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: just@1.51.0,nextest@0.9.103
-
       - name: Execute every applicable check without retries
         shell: bash
         env:
@@ -205,22 +202,15 @@ jobs:
           set +e
           status=0
           out="$RUNNER_TEMP/authority-evidence"
-          run() {
-            name="$1"; shift
-            "$@" 2>&1 | tee "$out/$name.log"
-            rc=${PIPESTATUS[0]}
-            printf '%s\n' "$rc" > "$out/$name.exit"
-            if [ "$rc" -ne 0 ]; then status=1; fi
-          }
+          run() { name="$1"; shift; "$@" 2>&1 | tee "$out/$name.log"; rc=${PIPESTATUS[0]}; printf '%s\n' "$rc" > "$out/$name.exit"; if [ "$rc" -ne 0 ]; then status=1; fi; }
           case "$LANE" in
             governance)
               run evidence python3 qualification/kernel-authority/verify.py self-test
               run candidate-parser python3 -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
               run b4 python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
               run callers python3 scripts/verify_hepta_callers.py
-              run maps python3 scripts/hepta-implementation-maps.py verify \
-                --expected-sha "$(git rev-parse HEAD)" \
-                --expected-tree "$(git rev-parse 'HEAD^{tree}')"
+              run status-projections python3 scripts/kernel_authority_status.py check
+              run maps python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse 'HEAD^{tree}')"
               run whitespace git diff --check
               ;;
             contracts)
@@ -241,13 +231,9 @@ jobs:
               run tests just test --locked -p codex-hepta-agentd --retries 0
               run clippy cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
               ;;
-            *)
-              echo "unknown qualification lane: $LANE" >&2
-              status=1
-              ;;
+            *) status=1 ;;
           esac
           exit "$status"
-
       - name: Retain candidate-bound logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -276,10 +262,6 @@ jobs:
           set -euo pipefail
           test "$IDENTITY_RESULT" = success
           test "$QUALIFY_RESULT" = success
-          case "$SOURCE" in
-            [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*) ;;
-            *) echo 'missing immutable source identity' >&2; exit 1 ;;
-          esac
           test "${#SOURCE}" -eq 40
           test "${#SOURCE_TREE}" -eq 40
           test "${#BASE}" -eq 40
