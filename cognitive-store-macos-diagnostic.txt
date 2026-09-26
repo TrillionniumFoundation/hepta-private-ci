@@ -1,0 +1,9 @@
+$ cargo test --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --no-run
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+    Updating git repository `https://github.com/openai-oss-forks/crossterm`
+    Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+    Updating crates.io index
+    Updating git repository `https://github.com/dzbarsky/rules_rust`
+    Updating git repository `https://github.com/helix-editor/nucleo.git`
+error: cannot update the lock file /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/Cargo.lock because --locked was passed to prevent this
+help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
