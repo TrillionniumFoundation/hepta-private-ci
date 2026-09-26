@@ -1,0 +1,38 @@
+name: Bootstrap control.engineering phase 1
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-p0-p2-convergence-20260927
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply exact identity and status patches
+        run: python3 scripts/bootstrap_control_engineering_phase1.py
+      - name: Run focused source-identity tests
+        run: python3 -m unittest -v scripts/test_hepta_implementation_maps.py
+      - name: Verify generated status
+        run: python3 scripts/control_engineering_status.py verify
+      - name: Verify repository gap closure
+        run: python3 scripts/hepta-gap-closure.py verify
+      - name: Commit final phase-one source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Control Engineering Bot"
+          git config user.email "hepta-control-engineering@users.noreply.github.com"
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "control.engineering: make exact observations squash-stable"
+          git push origin HEAD:codex/control-engineering-p0-p2-convergence-20260927
