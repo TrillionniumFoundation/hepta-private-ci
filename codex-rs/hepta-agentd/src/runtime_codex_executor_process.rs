@@ -35,6 +35,10 @@ pub(super) async fn spawn_worker(
     cancellation: CancellationToken,
 ) -> Result<RuntimeCodexExecutionReceiptV1, AgentdError> {
     validate_manifest_owner(manifest, owner, executor.worker_artifact_digest)?;
+    // The constructor pin is not sufficient: an administrator or compromised
+    // same-user process may replace either path after durable admission. Observe
+    // both byte identities at the last boundary before process creation.
+    super::persistence::revalidate_external_files(executor)?;
     let reconciled = fresh_input.is_none();
     let mut command = Command::new(&executor.worker_executable);
     command
