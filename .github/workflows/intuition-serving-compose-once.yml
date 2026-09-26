@@ -3,7 +3,7 @@ name: Intuition serving composition once
 on:
   push:
     branches:
-      - codex/intuition-policy-production-hardening-20260926
+      - codex/intuition-policy-production-closure-20260927
     paths:
       - ".github/workflows/intuition-serving-compose-once.yml"
   workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: intuition-serving-compose-once
+  group: intuition-autoformat-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     steps:
-      - name: Check out hardening branch
+      - name: Check out closure branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: codex/intuition-policy-production-hardening-20260926
+          ref: codex/intuition-policy-production-closure-20260927
           fetch-depth: 0
       - name: Install Rust
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -59,14 +59,15 @@ jobs:
           git add codex-rs/hepta-agentd codex-rs/hepta-intuition codex-rs/hepta-intelligence docs/modules/intuition.policy/TECHNICAL.md
           if ! git diff --cached --quiet; then
             git commit -m "feat(intuition): enforce authenticated product gate in Agentd serving"
-            git push origin HEAD:codex/intuition-policy-production-hardening-20260926
+            git push origin HEAD:codex/intuition-policy-production-closure-20260927
           fi
       - name: Rebind and verify exact implementation-map provenance
         run: |
+          git pull --ff-only origin codex/intuition-policy-production-closure-20260927
           python3 scripts/hepta-implementation-maps.py migrate --module intuition.policy
           git add docs/modules/intuition.policy/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
             git commit -m "docs(intuition): bind composed source objects"
           fi
           python3 scripts/hepta-implementation-maps.py verify --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
-          git push origin HEAD:codex/intuition-policy-production-hardening-20260926
+          git push origin HEAD:codex/intuition-policy-production-closure-20260927
