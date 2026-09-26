@@ -9,7 +9,15 @@ use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ProviderRequestSegmentKindV2;
 use codex_hepta_context_compiler::ProviderTokenizerIdentityV2;
 use codex_hepta_context_compiler::canonical_context_serializer_digest;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::PromptModelTupleV2;
+use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+use codex_hepta_prompt_registry::final_use_realization_binding;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
@@ -28,6 +36,79 @@ fn tokenizer_identity(tuple: &PromptModelTupleV2) -> ProviderTokenizerIdentityV2
         vocabulary_digest: digest("tokenizer-vocabulary:fixture"),
         normalization_policy_digest: digest("tokenizer-normalization:none"),
     }
+}
+
+fn register_strict_realization(
+    registry: &mut DurablePromptRegistry,
+    base_tuple: &PromptModelTupleV2,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+    grant_now: u64,
+    payload: &[u8],
+) -> PromptModelTupleV2 {
+    let mut tuple = base_tuple.clone();
+    tuple.tokenizer_digest = tokenizer_identity(base_tuple).digest();
+    let factor = registry
+        .registry()
+        .expect("registry")
+        .factor(&id("factor:verify"))
+        .cloned()
+        .expect("admitted factor");
+    let realization = PromptRealizationBindingV2 {
+        realization_id: id("realization:verify:provider-bound"),
+        factor_id: factor.factor_id.clone(),
+        model_id: tuple.model_id.clone(),
+        model_version: tuple.model_version.clone(),
+        model_digest: tuple.model_digest,
+        tokenizer_digest: tuple.tokenizer_digest,
+        template_digest: tuple.template_digest,
+        tool_schema_digest: tuple.tool_schema_digest,
+        context_profile_digest: tuple.context_profile_digest,
+        locale_id: tuple.locale_id.clone(),
+        role: PromptRoleV2::DeveloperInstruction,
+        payload_digest: Digest32::of_bytes(payload),
+        token_cost: 4,
+        expires_unix_ms: None,
+    };
+    let actor = id("publisher:prompt:provider-bound");
+    let scope = digest("scope:realization:provider-bound");
+    let binding = final_use_realization_binding(
+        &factor,
+        &actor,
+        scope,
+        &realization,
+        None,
+    )
+    .expect("provider-bound realization authority binding");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "realization:prompt:provider-bound:1".to_owned(),
+        nonce: [41; 32],
+        binding,
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes().expect("provider-bound signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry
+        .register_realization_payload_final_use_v2(
+            authority,
+            &signed,
+            &actor,
+            scope,
+            realization,
+            payload.to_vec(),
+            None,
+        )
+        .expect("register provider-bound realization");
+    tuple
 }
 
 #[derive(Clone)]
@@ -165,7 +246,16 @@ fn compiled_source() -> (
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("prompt-registry-provider-bound");
     let payload = b"Inspect evidence before mutation.";
-    let (registry, tuple, _authority, _signing_key, _grant_now) = admitted_registry(&root, payload);
+    let (mut registry, base_tuple, authority, signing_key, grant_now) =
+        admitted_registry(&root, payload);
+    let tuple = register_strict_realization(
+        &mut registry,
+        &base_tuple,
+        &authority,
+        &signing_key,
+        grant_now,
+        payload,
+    );
     let selected = canonical_selection(&registry, &tuple, 100);
     let serializer_digest =
         canonical_context_serializer_digest(tuple.template_digest, tuple.tool_schema_digest);
