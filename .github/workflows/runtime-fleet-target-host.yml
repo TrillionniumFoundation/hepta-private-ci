@@ -3,10 +3,6 @@ name: runtime.fleet selected-host qualification
 on:
   workflow_dispatch:
     inputs:
-      candidate_sha:
-        description: Exact committed candidate to qualify
-        required: true
-        type: string
       host_profile:
         description: Reviewed selected-host profile identifier
         required: true
@@ -25,10 +21,13 @@ jobs:
     runs-on: [self-hosted, linux, x64, hepta-fleet-target]
     timeout-minutes: 90
     steps:
-      - name: Check out exact candidate
+      # Physical qualification intentionally runs only against the protected
+      # default branch. A workflow-dispatch input must never select executable
+      # source on a privileged self-hosted runner.
+      - name: Check out protected main candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ inputs.candidate_sha }}
+          ref: main
           persist-credentials: false
           fetch-depth: 0
 
@@ -36,7 +35,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ inputs.candidate_sha }}"
+          test "$(git branch --show-current)" = "main"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse refs/remotes/origin/main^{commit})"
           test -r /etc/machine-id
           test -r /proc/sys/kernel/random/boot_id
           test -r /proc/meminfo
@@ -87,7 +87,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: runtime-fleet-target-${{ inputs.host_profile }}-${{ inputs.candidate_sha }}
+          name: runtime-fleet-target-${{ inputs.host_profile }}-${{ github.run_id }}
           path: ${{ runner.temp }}/runtime-fleet-target-evidence
           if-no-files-found: error
           retention-days: 30
