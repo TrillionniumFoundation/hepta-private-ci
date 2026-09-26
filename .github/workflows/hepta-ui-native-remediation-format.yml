@@ -2,111 +2,68 @@ name: ui.native remediation branch formatter
 
 on:
   push:
-    branches: [work/ui-native-remediation-20260927]
+    branches: [work/ui-native-closure-20260927]
     paths:
+      - apps/hepta-native/**/*.rs
+      - codex-rs/hepta-native-gateway/**/*.rs
+      - codex-rs/hepta-contracts/**/*.rs
+      - codex-rs/hepta-private-state/**/*.rs
       - .github/workflows/hepta-ui-native-remediation-format.yml
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: ui-native-remediation-branch-format-${{ github.ref }}
-  cancel-in-progress: false
-
-env:
-  HEPTA_UI_NATIVE_WRITE_BRANCH: work/ui-native-remediation-20260927
+  group: ui-native-format-proposal-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  format-and-freeze:
-    name: format and freeze remediation source
+  proposal:
+    name: exact-source Rust formatting proposal (not qualification)
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: work/ui-native-remediation-20260927
+          ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
-      - name: Bind intended remediation branch
+          persist-credentials: false
+      - name: Bind immutable input and install pinned formatter
+        env:
+          EXPECTED: ${{ github.sha }}
         run: |
           set -euo pipefail
-          test "$(git branch --show-current)" = "$HEPTA_UI_NATIVE_WRITE_BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED"
           test -z "$(git status --porcelain)"
-      - name: Install pinned Rust toolchain
-        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-      - name: Make metadata writes explicit for stacked continuation branches
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path('apps/hepta-native/tools/prepare_current_source.py')
-          text = path.read_text(encoding='utf-8')
-          replacements = [
-              ('import json\nfrom pathlib import Path', 'import json\nimport os\nfrom pathlib import Path'),
-              (
-                  'BRANCH = "work/ui-native-current-source-20260925"',
-                  'CANONICAL_BRANCH = "work/ui-native-current-source-20260925"\n'
-                  'WRITE_BRANCH = os.environ.get("HEPTA_UI_NATIVE_WRITE_BRANCH", CANONICAL_BRANCH)',
-              ),
-              ('if branch == BRANCH:', 'if branch == WRITE_BRANCH:'),
-              ('f"refs/remotes/origin/{BRANCH}"', 'f"refs/remotes/origin/{WRITE_BRANCH}"'),
-              ('"canonicalBranch": BRANCH,', '"canonicalBranch": CANONICAL_BRANCH,'),
-          ]
-          for old, new in replacements:
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'expected one metadata-branch pattern, found {count}: {old!r}')
-              text = text.replace(old, new)
-          path.write_text(text, encoding='utf-8')
-          PY
-      - name: Apply pinned Rust formatting
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Produce a scoped patch, never mutate a live branch
         run: |
           set -euo pipefail
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
           cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-native-gateway \
-            -p codex-hepta-contracts \
-            -p codex-hepta-private-state
-      - name: Commit formatted source boundary
-        run: |
-          set -euo pipefail
-          git config user.name ui-native-remediation
-          git config user.email ui-native-remediation@users.noreply.github.com
-          git add -- \
-            apps/hepta-native \
-            codex-rs/hepta-native-gateway \
-            codex-rs/hepta-contracts \
-            codex-rs/hepta-private-state
-          if git diff --cached --quiet; then
-            echo "Pinned formatter produced no source changes."
-          else
-            git commit -m "style(ui.native): apply pinned Rust 1.95 formatting"
-          fi
-      - name: Refresh committed identity and implementation metadata
-        run: |
-          set -euo pipefail
-          python3 apps/hepta-native/tools/prepare_current_source.py --sync-metadata
-          python3 apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
-          git add --all
-          if git diff --cached --quiet; then
-            echo "Identity metadata already matched the formatted source."
-          else
-            git commit -m "chore(ui.native): bind remediation metadata to formatted source"
-          fi
-      - name: Verify frozen remediation candidate before push
-        run: |
-          set -euo pipefail
-          python3 apps/hepta-native/tools/prepare_current_source.py --prepare
-          python3 apps/hepta-native/tools/prepare_current_source.py
-          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml -- --check
-          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-native-gateway \
-            -p codex-hepta-contracts \
-            -p codex-hepta-private-state -- --check
-          test -z "$(git status --porcelain)"
-      - name: Push audited remediation commits
-        run: |
-          set -euo pipefail
-          git push origin HEAD:"$HEPTA_UI_NATIVE_WRITE_BRANCH"
+            -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state
+          mkdir -p native-format-proposal
+          git diff --binary --exit-code > native-format-proposal/format.patch || test "$?" = 1
+          git rev-parse HEAD HEAD^{tree} > native-format-proposal/source.txt
+          python3 - <<'PYTHON'
+          import hashlib, json, pathlib, subprocess
+          roots = ('apps/hepta-native/', 'codex-rs/hepta-native-gateway/',
+                   'codex-rs/hepta-contracts/', 'codex-rs/hepta-private-state/')
+          names = subprocess.check_output(['git', 'diff', '--name-only', '-z']).decode().split('\0')
+          if any(p and (not p.startswith(roots) or not p.endswith('.rs')) for p in names):
+              raise SystemExit('formatter changed an unapproved path')
+          patch = pathlib.Path('native-format-proposal/format.patch')
+          report = {'schema': 'hepta.ui.native.format-proposal.v1',
+                    'sourceSha': subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(),
+                    'patchSha256': hashlib.sha256(patch.read_bytes()).hexdigest(),
+                    'changesRequired': bool(patch.stat().st_size),
+                    'qualificationPassed': False, 'releaseAuthorized': False}
+          patch.with_name('proposal.json').write_text(json.dumps(report, indent=2) + '\n')
+          PYTHON
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-format-proposal-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: native-format-proposal
+          if-no-files-found: error
+          retention-days: 7

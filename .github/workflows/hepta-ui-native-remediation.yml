@@ -2,7 +2,7 @@ name: ui.native remediation qualification
 
 on:
   push:
-    branches: [work/ui-native-remediation-20260927]
+    branches: [main, work/ui-native-remediation-20260927, work/ui-native-closure-20260927]
   pull_request:
     paths:
       - apps/hepta-native/**
@@ -14,8 +14,13 @@ on:
       - codex-rs/Cargo.lock
       - CALLERS.toml
       - docs/modules/ui.native/**
-      - scripts/hepta_ui_native_evidence.py
-      - scripts/test_hepta_ui_native_evidence.py
+      - scripts/hepta_ui_native_*.py
+      - scripts/test_hepta_ui_native_*.py
+      - docs/modules/SOURCE_BINDINGS.json
+      - docs/modules/MODULE_DOCS.json
+      - docs/ci/native-product-source-bindings.v1.json
+      - codex-rs/rust-toolchain.toml
+      - .github/workflows/hepta-ui-native-remediation-format.yml
       - .github/workflows/hepta-ui-native-remediation.yml
       - .github/workflows/hepta-ui-native-current-source.yml
   workflow_dispatch:
@@ -67,7 +72,7 @@ jobs:
           python3 -c 'from pathlib import Path; import hashlib; p=Path("source-snapshot/source.tar.gz"); print(hashlib.sha256(p.read_bytes()).hexdigest())' > source-snapshot/source.sha256
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ui-native-source-${{ steps.identity.outputs.candidate }}
+          name: ui-native-source-${{ steps.identity.outputs.candidate }}-attempt-${{ github.run_attempt }}
           path: source-snapshot
           if-no-files-found: error
           retention-days: 3
@@ -135,7 +140,7 @@ jobs:
           check() { python3 scripts/hepta_ui_native_evidence.py run --out native-evidence/checks --label "$1" -- "${@:2}"; }
           check identity python3 apps/hepta-native/tools/prepare_current_source.py
           check registry python3 scripts/test_hepta_module_registry.py
-          check python_tests python3 -m unittest discover -s scripts -p test_hepta_ui_native_evidence.py -v
+          check python_tests python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
           python3 scripts/hepta_ui_native_evidence.py inventory --out native-evidence/inventory.json
       - name: Strict Rust formatting and lint
         run: |
@@ -196,7 +201,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: ui-native-qualification-${{ matrix.runner }}-${{ matrix.kind }}-${{ needs.subject.outputs.candidate }}
+          name: ui-native-qualification-${{ matrix.runner }}-${{ matrix.kind }}-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
           path: |
             native-evidence
             native-package/*.zip
@@ -209,7 +214,7 @@ jobs:
     if: always()
     needs: [subject, qualify]
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Missing, cancelled and skipped matrices are not success
         env:
@@ -218,3 +223,29 @@ jobs:
         run: |
           test "$SUBJECT" = success
           test "$QUALIFICATION" = success
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: ui-native-qualification-*-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: qualification-bundles
+          merge-multiple: false
+      - name: Revalidate six exact-subject receipts, retained logs and package bytes
+        env:
+          CANDIDATE: ${{ needs.subject.outputs.candidate }}
+          BASE: ${{ needs.subject.outputs.base }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ui_native_aggregate.py \
+            --bundles qualification-bundles --candidate "$CANDIDATE" --base "$BASE" \
+            --workflow-sha "$WORKFLOW_SHA" --out native-aggregate/qualification-result.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-qualification-result-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: native-aggregate/qualification-result.json
+          if-no-files-found: error
+          retention-days: 30
