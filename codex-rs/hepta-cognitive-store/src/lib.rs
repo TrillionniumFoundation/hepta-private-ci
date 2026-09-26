@@ -31,6 +31,10 @@ pub use durable::DURABLE_SINGLE_WRITER;
 pub use durable::DurableCognitiveSnapshot;
 pub use durable::DurableCognitiveSnapshotCursor;
 pub use durable::DurableCognitiveSnapshotPage;
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
 pub use durable::DurableCognitiveStore;
 pub use durable::DurableCognitiveStoreError;
 pub use durable::ForgetMemoryDraft;
@@ -52,7 +56,6 @@ pub use durable::ProductionCognitiveMutation;
 pub use durable::ProductionCognitiveMutationCapability;
 pub use durable::ProductionCognitiveMutationError;
 pub use durable::ProductionCognitiveMutationFuture;
-pub use durable::ProductionCognitiveMutationReceiptV1;
 pub use durable::ProductionDispatchFuture;
 pub use durable::ProductionDispatchReceipt;
 pub use durable::ProductionDispatchRequest;
