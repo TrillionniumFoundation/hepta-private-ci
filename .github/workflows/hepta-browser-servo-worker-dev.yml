@@ -12,10 +12,9 @@ on:
       - 'qualification/module-execution-dossiers/detail/browser.servo.md'
       - '.github/workflows/hepta-browser-servo-worker-dev.yml'
       - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
+      - '.github/workflows/hepta-browser-worker-reproducibility.yml'
   push:
-    branches:
-      - main
-      - codex/browser-servo-product-closure-20260919
+    branches: [main]
     paths:
       - 'apps/hepta-browser/servo-worker/**'
       - 'apps/hepta-browser/src/**'
@@ -26,6 +25,7 @@ on:
       - 'qualification/module-execution-dossiers/detail/browser.servo.md'
       - '.github/workflows/hepta-browser-servo-worker-dev.yml'
       - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
+      - '.github/workflows/hepta-browser-worker-reproducibility.yml'
   workflow_dispatch:
 
 permissions:
@@ -43,6 +43,7 @@ env:
 
 jobs:
   worker-evidence:
+    name: Browser worker exact-head evidence
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -57,6 +58,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
           git rev-parse HEAD HEAD^{tree} | tee source-identity.txt
 
       - name: Install Rust 1.88.0
@@ -84,23 +87,17 @@ jobs:
           command -v prlimit
           prlimit --version | head -n 1
 
-      - name: Resolve or verify exact dependency lock
+      - name: Require reviewed committed dependency lock
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p worker-evidence
-          if test -s "$WORKER_LOCK" && grep -Fq "$SERVO_PIN" "$WORKER_LOCK"; then
-            printf 'committed\n' > worker-evidence/cargo-lock-source.txt
-          else
-            if test -e "$WORKER_LOCK"; then
-              cp "$WORKER_LOCK" worker-evidence/predecessor-Cargo.lock
-              rm -f "$WORKER_LOCK"
-            fi
-            cargo generate-lockfile --manifest-path "$WORKER_MANIFEST"
-            printf 'generated-candidate\n' > worker-evidence/cargo-lock-source.txt
-          fi
           test -s "$WORKER_LOCK"
+          test "$(git ls-files --error-unmatch "$WORKER_LOCK")" = "$WORKER_LOCK"
+          grep -F "$SERVO_PIN" "$WORKER_MANIFEST"
           grep -F "$SERVO_PIN" "$WORKER_LOCK"
+          git diff --exit-code -- "$WORKER_LOCK"
+          printf 'committed\n' > worker-evidence/cargo-lock-source.txt
           cp "$WORKER_LOCK" worker-evidence/Cargo.lock
           sha256sum "$WORKER_LOCK" | tee worker-evidence/Cargo.lock.sha256
 
@@ -108,33 +105,43 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo metadata --locked --format-version 1 --manifest-path "$WORKER_MANIFEST" > worker-evidence/cargo-metadata.json
-          cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features > worker-evidence/cargo-tree-features.txt
-          if grep -Eq '(^|[[:space:]])webdriver_server([[:space:]]|$)' worker-evidence/cargo-tree-features.txt; then
+          cargo metadata --locked --format-version 1 --manifest-path "$WORKER_MANIFEST" \
+            > worker-evidence/cargo-metadata.json
+          cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features \
+            > worker-evidence/cargo-tree-features.txt
+          if grep -Eq '(^|[[:space:]])webdriver_server([[:space:]]|$)' \
+            worker-evidence/cargo-tree-features.txt; then
             echo 'webdriver_server entered the worker dependency graph' >&2
             exit 1
           fi
           grep -F "$SERVO_PIN" worker-evidence/cargo-metadata.json
 
-      - name: Check current-pin worker
+      - name: Check and test current-pin worker
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/cargo-check.log
-          cargo test --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/cargo-test.log
+          cargo check --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee worker-evidence/cargo-check.log
+          cargo test --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee worker-evidence/cargo-test.log
 
       - name: Exercise Browser owner, protocol and isolation tests
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/*.test.js 2>&1 | tee worker-evidence/node-tests.log
-          node --check apps/hepta-browser/src/*.js
+          node apps/hepta-browser/scripts/browser-source-registry.js --check \
+            > worker-evidence/generated-source-registry.json
+          node --test apps/hepta-browser/test/*.test.js 2>&1 \
+            | tee worker-evidence/node-tests.log
+          find apps/hepta-browser/src apps/hepta-browser/scripts \
+            -type f -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
 
       - name: Probe real Bubblewrap namespace and egress denial
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/linux-sandbox-probe.js | tee worker-evidence/linux-sandbox-probe.json
+          node apps/hepta-browser/scripts/linux-sandbox-probe.js \
+            | tee worker-evidence/linux-sandbox-probe.json
           python3 - <<'PY'
           import json, pathlib
           probe = json.loads(pathlib.Path("worker-evidence/linux-sandbox-probe.json").read_text())
@@ -158,30 +165,43 @@ jobs:
           export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src -C debuginfo=0"
           export CARGO_TERM_COLOR=never
           printf '%s\n' "$SOURCE_DATE_EPOCH" > worker-evidence/source-date-epoch.txt
-          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-a" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-a.log
-          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-b" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-b.log
+          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-a" \
+            cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee worker-evidence/build-a.log
+          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-b" \
+            cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee worker-evidence/build-b.log
           first="$RUNNER_TEMP/servo-worker-build-a/release/hepta-servo-worker"
           second="$RUNNER_TEMP/servo-worker-build-b/release/hepta-servo-worker"
           test -x "$first"
           test -x "$second"
           sha256sum "$first" "$second" | tee worker-evidence/reproducible-sha256.txt
-          cmp --silent "$first" "$second" || { echo 'independent release builds are not byte-identical' >&2; exit 1; }
+          cmp --silent "$first" "$second" || {
+            echo 'same-host independent target directories are not byte-identical' >&2
+            exit 1
+          }
           install -m 0555 "$first" worker-evidence/hepta-servo-worker
-          sha256sum worker-evidence/hepta-servo-worker | tee worker-evidence/hepta-servo-worker.sha256
-          ldd worker-evidence/hepta-servo-worker | tee worker-evidence/hepta-servo-worker.ldd.txt
+          sha256sum worker-evidence/hepta-servo-worker \
+            | tee worker-evidence/hepta-servo-worker.sha256
+          ldd worker-evidence/hepta-servo-worker \
+            | tee worker-evidence/hepta-servo-worker.ldd.txt
           ! grep -F 'not found' worker-evidence/hepta-servo-worker.ldd.txt
 
       - name: Smoke the real worker through the real sandbox
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/real-worker-smoke.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-worker-smoke.json
+          node apps/hepta-browser/scripts/real-worker-smoke.js \
+            worker-evidence/hepta-servo-worker \
+            | tee worker-evidence/real-worker-smoke.json
 
       - name: Run real Servo Browser lifecycle and egress E2E
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/real-browser-e2e.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-browser-e2e.json
+          node apps/hepta-browser/scripts/real-browser-e2e.js \
+            worker-evidence/hepta-servo-worker \
+            | tee worker-evidence/real-browser-e2e.json
           python3 - <<'PY'
           import json, pathlib
           result = json.loads(pathlib.Path("worker-evidence/real-browser-e2e.json").read_text())
@@ -205,7 +225,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/real-browser-soak.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-browser-soak.json
+          node apps/hepta-browser/scripts/real-browser-soak.js \
+            worker-evidence/hepta-servo-worker \
+            | tee worker-evidence/real-browser-soak.json
           python3 - <<'PY'
           import json, pathlib
           result = json.loads(pathlib.Path("worker-evidence/real-browser-soak.json").read_text())
@@ -230,29 +252,39 @@ jobs:
             --source-date-epoch "$source_date_epoch" \
             --servo-pin "$SERVO_PIN" \
             --output worker-evidence/hepta-servo-worker.spdx.json
-          sha256sum worker-evidence/hepta-servo-worker.spdx.json | tee worker-evidence/hepta-servo-worker.spdx.json.sha256
+          sha256sum worker-evidence/hepta-servo-worker.spdx.json \
+            | tee worker-evidence/hepta-servo-worker.spdx.json.sha256
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess
           root = pathlib.Path('worker-evidence')
-          def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
           receipt = {
-              'schema': 'hepta.browser.servo-worker-build-receipt.v1',
+              'schema': 'hepta.browser.servo-worker-build-receipt.v2',
               'sourceSha': os.environ['SOURCE_SHA'],
-              'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'sourceTree': subprocess.check_output(
+                  ['git', 'rev-parse', 'HEAD^{tree}'], text=True
+              ).strip(),
               'servoPin': os.environ['SERVO_PIN'],
               'cargoLockSha256': digest(root / 'Cargo.lock'),
               'workerSha256': digest(root / 'hepta-servo-worker'),
               'sbomSha256': digest(root / 'hepta-servo-worker.spdx.json'),
-              'cargoLockCommitted': (root / 'cargo-lock-source.txt').read_text().strip() == 'committed',
-              'reproducibleIndependentBuilds': True,
+              'cargoLockCommitted': True,
+              'sameHostIndependentTargetBuilds': True,
+              'crossRunnerReproducibilityRequiredBy':
+                  '.github/workflows/hepta-browser-worker-reproducibility.yml',
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
               'realBrowserE2E': json.loads((root / 'real-browser-e2e.json').read_text()),
               'realBrowserSoak': json.loads((root / 'real-browser-soak.json').read_text()),
           }
-          (root / 'build-receipt.json').write_text(json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
+          (root / 'build-receipt.json').write_text(
+              json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
           PY
-          sha256sum worker-evidence/build-receipt.json | tee worker-evidence/build-receipt.json.sha256
+          sha256sum worker-evidence/build-receipt.json \
+            | tee worker-evidence/build-receipt.json.sha256
 
       - name: Preserve worker evidence
         if: always()
@@ -261,16 +293,7 @@ jobs:
           name: hepta-browser-servo-worker-evidence-${{ env.SOURCE_SHA }}
           path: worker-evidence
           if-no-files-found: error
-          retention-days: 7
-
-      - name: Restore predecessor tracked lock after candidate qualification
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          if test -f worker-evidence/cargo-lock-source.txt && grep -Fxq generated-candidate worker-evidence/cargo-lock-source.txt; then
-            git checkout -- "$WORKER_LOCK"
-          fi
+          retention-days: 30
 
       - name: Verify tracked source remains clean
         if: always()
