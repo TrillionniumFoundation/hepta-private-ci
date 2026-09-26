@@ -142,15 +142,14 @@ pub fn decide_authenticated_intuition_v3(
     verify_signed_role_separation(&generator, &observer, now)?;
     verify_independent_roles(evaluator.principal(), observer.principal(), now)?;
 
-    let profile_digest = canonical_policy_profile_digest_v1(&profile)
-        .map_err(ProductionPolicyError::Qualified)?;
+    let profile_digest =
+        canonical_policy_profile_digest_v1(&profile).map_err(ProductionPolicyError::Qualified)?;
     let scoring_commitment_digest = canonical_scoring_commitment_digest_v2(&scoring)?;
     let assignment_commitment_digest =
         canonical_assignment_commitment_digest_v2(&request, &assignment)?;
     let decision = decide_calibrated_v4(request, &profile)?;
     let completeness_payload_digest = Digest32::of_bytes(&completeness_payload);
-    let profile_qualification_payload_digest =
-        Digest32::of_bytes(&profile_qualification_payload);
+    let profile_qualification_payload_digest = Digest32::of_bytes(&profile_qualification_payload);
     let runtime_payload_digest = Digest32::of_bytes(&runtime_payload);
 
     let mut bytes = b"hepta.intelligence.authenticated-intuition.v3\0".to_vec();

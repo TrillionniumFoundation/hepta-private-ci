@@ -116,9 +116,7 @@ impl IntuitionPolicyLearningSink {
             Err(ProductionLedgerError::IndeterminateAfterLedgerCommit {
                 receipt,
                 witness_error: _,
-            }) => Err(
-                AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt },
-            ),
+            }) => Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }),
             Err(error) => Err(AgentdIntuitionPolicyError::Learning(error)),
         }
     }
@@ -163,9 +161,7 @@ impl PreparedAgentdIntuitionDecisionV3 {
         self.prepared_digest
     }
 
-    pub fn decision_signing_payload(
-        &self,
-    ) -> Result<Option<Vec<u8>>, AgentdIntuitionPolicyError> {
+    pub fn decision_signing_payload(&self) -> Result<Option<Vec<u8>>, AgentdIntuitionPolicyError> {
         self.production
             .as_ref()
             .map(decision_signing_payload_v2)
@@ -222,25 +218,17 @@ impl AgentdIntuitionPolicyError {
             Self::RngOwnerPinMismatch => "agentd.intuition.pin.rng_owner_mismatch",
             Self::ProfilePinMismatch => "agentd.intuition.pin.profile_mismatch",
             Self::PolicyPinMismatch => "agentd.intuition.pin.policy_mismatch",
-            Self::ObjectiveClassPinMismatch => {
-                "agentd.intuition.pin.objective_class_mismatch"
-            }
-            Self::CalibrationPinMismatch => {
-                "agentd.intuition.pin.calibration_mismatch"
-            }
+            Self::ObjectiveClassPinMismatch => "agentd.intuition.pin.objective_class_mismatch",
+            Self::CalibrationPinMismatch => "agentd.intuition.pin.calibration_mismatch",
             Self::OodPinMismatch => "agentd.intuition.pin.ood_mismatch",
             Self::RiskRulePinMismatch => "agentd.intuition.pin.risk_rule_mismatch",
             Self::ProductHostRequired => "agentd.intuition.product_host_required",
             Self::EmptyRunSnapshot => "agentd.intuition.empty_run_snapshot",
             Self::InvalidEpisode => "agentd.intuition.invalid_episode",
-            Self::SelectedPropensityMissing => {
-                "agentd.intuition.selected_propensity_missing"
-            }
+            Self::SelectedPropensityMissing => "agentd.intuition.selected_propensity_missing",
             Self::PreparedOwnerMismatch => "agentd.intuition.prepared_owner_mismatch",
             Self::MissingDecisionEvidence => "agentd.intuition.missing_decision_evidence",
-            Self::UnexpectedDecisionEvidence => {
-                "agentd.intuition.unexpected_decision_evidence"
-            }
+            Self::UnexpectedDecisionEvidence => "agentd.intuition.unexpected_decision_evidence",
             Self::Qualification(_) => "agentd.intuition.legacy_qualification_rejected",
             Self::QualificationV3(source) => source.code(),
             Self::LearningLockPoisoned => "agentd.intuition.learning_lock_poisoned",
@@ -554,8 +542,7 @@ fn production_decision_from_authenticated(
     run_snapshot_digest: Digest32,
     host_binding_digest: Digest32,
 ) -> Result<Option<ProductionDecisionV2>, AgentdIntuitionPolicyError> {
-    let ProductionDispositionV1::Selected(selected_candidate_id) =
-        &decision.decision.disposition
+    let ProductionDispositionV1::Selected(selected_candidate_id) = &decision.decision.disposition
     else {
         return Ok(None);
     };
@@ -637,11 +624,8 @@ pub fn intuition_policy_record_id_v1(
     bytes.extend_from_slice(decision);
     bytes.extend_from_slice(policy_digest.as_array());
     bytes.extend_from_slice(&sequence.to_be_bytes());
-    StableId::new(format!(
-        "intuition-decision:{}",
-        Digest32::of_bytes(&bytes)
-    ))
-    .map_err(|_| AgentdIntuitionPolicyError::InvalidHost("record id"))
+    StableId::new(format!("intuition-decision:{}", Digest32::of_bytes(&bytes)))
+        .map_err(|_| AgentdIntuitionPolicyError::InvalidHost("record id"))
 }
 
 #[must_use]

@@ -137,9 +137,7 @@ impl AgentdState {
             now,
         )?;
         if !self.automation_admission_ready()? {
-            return Err(
-                AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt },
-            );
+            return Err(AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt });
         }
         Ok(receipt)
     }

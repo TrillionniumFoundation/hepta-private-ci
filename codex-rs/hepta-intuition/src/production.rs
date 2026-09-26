@@ -203,17 +203,11 @@ impl ProductionPolicyError {
             Self::Bounded { source, .. } => source.code(),
             Self::EmptyDigest(_) => "intuition.policy.commitment.empty_digest",
             Self::Qualified(_) => "intuition.policy.qualification.rejected",
-            Self::ScoringIdentityMismatch(_) => {
-                "intuition.policy.scoring.identity_mismatch"
-            }
+            Self::ScoringIdentityMismatch(_) => "intuition.policy.scoring.identity_mismatch",
             Self::ScoringDigestMismatch => "intuition.policy.scoring.digest_mismatch",
             Self::AssignmentModeMismatch => "intuition.policy.assignment.mode_mismatch",
-            Self::AssignmentStreamMismatch => {
-                "intuition.policy.assignment.stream_mismatch"
-            }
-            Self::AssignmentCounterMismatch => {
-                "intuition.policy.assignment.counter_mismatch"
-            }
+            Self::AssignmentStreamMismatch => "intuition.policy.assignment.stream_mismatch",
+            Self::AssignmentCounterMismatch => "intuition.policy.assignment.counter_mismatch",
             Self::AssignmentDrawMismatch => "intuition.policy.assignment.draw_mismatch",
             Self::AssignmentDistributionMismatch => {
                 "intuition.policy.assignment.distribution_mismatch"
@@ -317,9 +311,8 @@ pub fn canonical_scored_outputs_digest_v2(
     request: &CalibratedDecisionRequestV1,
 ) -> Result<Digest32, ProductionPolicyError> {
     let mut bytes = b"hepta.intuition.scored-outputs.v2\0".to_vec();
-    bytes.extend_from_slice(
-        canonical_candidate_identity_digest_v2(&request.candidates)?.as_array(),
-    );
+    bytes
+        .extend_from_slice(canonical_candidate_identity_digest_v2(&request.candidates)?.as_array());
     push_len(&mut bytes, request.candidates.len())?;
     for candidate in &request.candidates {
         push_id(&mut bytes, &candidate.candidate_id)?;
@@ -336,9 +329,8 @@ pub fn canonical_assignment_distribution_digest_v2(
     request: &CalibratedDecisionRequestV1,
 ) -> Result<Digest32, ProductionPolicyError> {
     let mut bytes = b"hepta.intuition.assignment-distribution.v2\0".to_vec();
-    bytes.extend_from_slice(
-        canonical_candidate_identity_digest_v2(&request.candidates)?.as_array(),
-    );
+    bytes
+        .extend_from_slice(canonical_candidate_identity_digest_v2(&request.candidates)?.as_array());
     push_len(&mut bytes, request.candidates.len())?;
     for candidate in &request.candidates {
         push_id(&mut bytes, &candidate.candidate_id)?;
@@ -468,7 +460,10 @@ fn validate_bounded_request(
         "request maximum ood false acceptance",
         request.maximum_ood_false_acceptance_ppm,
     )?;
-    bounded_ppm("calibration measured ece", request.calibration.measured_ece_ppm)?;
+    bounded_ppm(
+        "calibration measured ece",
+        request.calibration.measured_ece_ppm,
+    )?;
     bounded_ppm(
         "ood measured false acceptance",
         request.ood.measured_false_acceptance_ppm,
@@ -596,9 +591,7 @@ fn bounded_generation(
     PolicyGeneration::new(value).map_err(|source| ProductionPolicyError::Bounded { field, source })
 }
 
-fn require_digests(
-    values: &[(&'static str, Digest32)],
-) -> Result<(), ProductionPolicyError> {
+fn require_digests(values: &[(&'static str, Digest32)]) -> Result<(), ProductionPolicyError> {
     for (name, digest) in values {
         if digest.is_zero() {
             return Err(ProductionPolicyError::EmptyDigest(name));
@@ -612,21 +605,17 @@ fn map_disposition(value: &CalibratedDispositionV1) -> ProductionDispositionV1 {
         CalibratedDispositionV1::Selected(candidate_id) => {
             ProductionDispositionV1::Selected(candidate_id.clone())
         }
-        CalibratedDispositionV1::SlowPath(reason) => ProductionDispositionV1::SlowPath(
-            match reason {
+        CalibratedDispositionV1::SlowPath(reason) => {
+            ProductionDispositionV1::SlowPath(match reason {
                 SlowPathReasonV1::HighRisk => ProductionSlowPathReasonV1::RequestHighRisk,
                 SlowPathReasonV1::OutOfDistribution => {
                     ProductionSlowPathReasonV1::OutOfDistribution
                 }
-                SlowPathReasonV1::LowConfidence => {
-                    ProductionSlowPathReasonV1::LowConfidence
-                }
+                SlowPathReasonV1::LowConfidence => ProductionSlowPathReasonV1::LowConfidence,
                 SlowPathReasonV1::Unsupported => ProductionSlowPathReasonV1::Unsupported,
-            },
-        ),
-        CalibratedDispositionV1::Abstained(reason) => {
-            ProductionDispositionV1::Abstained(*reason)
+            })
         }
+        CalibratedDispositionV1::Abstained(reason) => ProductionDispositionV1::Abstained(*reason),
     }
 }
 

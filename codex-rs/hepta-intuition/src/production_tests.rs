@@ -108,7 +108,10 @@ fn fixture(
 #[test]
 fn bounded_scalar_types_reject_invalid_wire_values() {
     assert_eq!(Ppm::new(0).expect("zero ppm").get(), 0);
-    assert_eq!(Ppm::new(PPM_SCALE).expect("one million ppm").get(), PPM_SCALE);
+    assert_eq!(
+        Ppm::new(PPM_SCALE).expect("one million ppm").get(),
+        PPM_SCALE
+    );
     assert_eq!(
         Ppm::new(PPM_SCALE + 1),
         Err(BoundedValueError::PpmOutOfRange)
@@ -125,8 +128,7 @@ fn assignment_drift_does_not_change_identity_or_scorer_digests() {
     let (request, _) = fixture(RiskClass::Low, CanonicalRiskRuleV1::HighOnlySlowPath);
     let identity = canonical_candidate_identity_digest_v2(&request.candidates).expect("identity");
     let scores = canonical_scored_outputs_digest_v2(&request).expect("scores");
-    let distribution =
-        canonical_assignment_distribution_digest_v2(&request).expect("distribution");
+    let distribution = canonical_assignment_distribution_digest_v2(&request).expect("distribution");
 
     let mut changed = request;
     changed.candidates[0].assignment_probability = ProbabilityQ32::ONE;
@@ -141,16 +143,14 @@ fn assignment_drift_does_not_change_identity_or_scorer_digests() {
     );
     assert_ne!(
         distribution,
-        canonical_assignment_distribution_digest_v2(&changed)
-            .expect("changed distribution")
+        canonical_assignment_distribution_digest_v2(&changed).expect("changed distribution")
     );
 }
 
 #[test]
 fn scorer_drift_does_not_change_assignment_distribution_digest() {
     let (request, _) = fixture(RiskClass::Low, CanonicalRiskRuleV1::HighOnlySlowPath);
-    let distribution =
-        canonical_assignment_distribution_digest_v2(&request).expect("distribution");
+    let distribution = canonical_assignment_distribution_digest_v2(&request).expect("distribution");
     let scores = canonical_scored_outputs_digest_v2(&request).expect("scores");
 
     let mut changed = request;
@@ -158,8 +158,7 @@ fn scorer_drift_does_not_change_assignment_distribution_digest() {
 
     assert_eq!(
         distribution,
-        canonical_assignment_distribution_digest_v2(&changed)
-            .expect("changed distribution")
+        canonical_assignment_distribution_digest_v2(&changed).expect("changed distribution")
     );
     assert_ne!(
         scores,
@@ -180,7 +179,12 @@ fn profile_forced_slow_path_has_an_explicit_reason() {
     );
     assert_eq!(receipt.original_risk_class, RiskClass::Elevated);
     assert_eq!(receipt.slow_path_probability, ProbabilityQ32::ONE);
-    assert!(receipt.propensities.iter().all(|item| item.probability == ProbabilityQ32::ZERO));
+    assert!(
+        receipt
+            .propensities
+            .iter()
+            .all(|item| item.probability == ProbabilityQ32::ZERO)
+    );
 }
 
 #[test]
@@ -201,24 +205,15 @@ fn runtime_v2_accepts_only_exact_split_commitments() {
         distribution_digest: canonical_assignment_distribution_digest_v2(&request)
             .expect("distribution"),
     };
-    let payload = canonical_runtime_commitment_payload_v2(
-        &request,
-        &profile,
-        &scoring,
-        &assignment,
-    )
-    .expect("runtime payload");
+    let payload =
+        canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)
+            .expect("runtime payload");
     assert!(!payload.is_empty());
 
     let mut drifted = scoring;
     drifted.scored_outputs_digest = d("wrong-scores");
     assert_eq!(
-        canonical_runtime_commitment_payload_v2(
-            &request,
-            &profile,
-            &drifted,
-            &assignment,
-        ),
+        canonical_runtime_commitment_payload_v2(&request, &profile, &drifted, &assignment,),
         Err(ProductionPolicyError::ScoringDigestMismatch)
     );
 }
