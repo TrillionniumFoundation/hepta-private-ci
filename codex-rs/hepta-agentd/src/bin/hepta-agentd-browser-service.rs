@@ -38,11 +38,13 @@ const MAX_CONFIG_BYTES: u64 = 65_536;
 const MAX_CLOSURE_MANIFEST_BYTES: u64 = 131_072;
 const MAX_CLOSURE_FILE_BYTES: u64 = 16 * 1024 * 1024;
 
-const REQUIRED_CLOSURE: [(&str, &str); 13] = [
+const REQUIRED_CLOSURE: [(&str, &str); 15] = [
     ("agentd_service_main", "agentd-service-main.js"),
     ("agentd_service", "agentd-service.js"),
     ("agentd_protocol", "agentd-protocol.js"),
     ("action", "action.js"),
+    ("effect_egress_gate", "effect-egress-gate.js"),
+    ("effect_network_driver", "effect-network-driver.js"),
     ("egress_broker", "egress-broker.js"),
     ("journal", "journal.js"),
     ("persisted_reconciler", "persisted-reconciler.js"),
