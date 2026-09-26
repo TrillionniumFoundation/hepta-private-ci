@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.intuition.acceptance.v1",
+  "module": "intuition.policy",
+  "candidate": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "pullRequest": 1013,
+    "branch": "codex/intuition-policy-production-hardening-20260926",
+    "sourceSha": null,
+    "treeSha": null,
+    "exactHeadWorkflowRun": null,
+    "syntheticMergeSha": null,
+    "commandRecordArtifact": null,
+    "performanceArtifact": null
+  },
+  "repositoryQualification": {
+    "status": "pending_exact_head",
+    "fmt": "pending",
+    "compileAllTargets": "pending",
+    "strictClippy": "pending",
+    "unitAndIntegrationTests": "pending",
+    "agentdProductE2E": "pending",
+    "kernelFastGate": "pending",
+    "authenticatedFastGate": "pending",
+    "crashReopenAndIdempotency": "pending",
+    "profileRollbackAndGenerationFence": "pending"
+  },
+  "independentEvaluator": {
+    "status": "pending_external_principal",
+    "principal": null,
+    "controller": null,
+    "reviewedSourceSha": null,
+    "reviewDigest": null,
+    "acceptedAt": null,
+    "signature": null
+  },
+  "operatorAcceptance": {
+    "status": "pending_external_operator",
+    "operator": null,
+    "targetHostProfileDigest": null,
+    "canaryPlanDigest": null,
+    "acceptedAt": null,
+    "signature": null
+  },
+  "promotion": {
+    "status": "not_authorized",
+    "promotionReceipt": null,
+    "authorizedAt": null,
+    "signature": null
+  },
+  "release": {
+    "status": "not_authorized",
+    "releaseReceipt": null,
+    "authorizedAt": null,
+    "signature": null
+  },
+  "claimBoundary": "This repository candidate may populate only repositoryQualification from exact CI artifacts. It may not self-populate independentEvaluator, operatorAcceptance, promotion, or release."
+}
