@@ -16,7 +16,6 @@ concurrency:
 
 jobs:
   materialize:
-    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): finalize exact source map' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -37,96 +36,59 @@ jobs:
 
           context_path = Path('codex-rs/hepta-agentd/src/cognitive_context.rs')
           context = context_path.read_text(encoding='utf-8')
-          old = '''fn planned_context_encoded_len(
-              response: &CognitiveContextSnapshot,
-          ) -> Result<usize, CognitiveStoreError> {
-              let zero = Digest32::ZERO.to_string();
-              [false, true]
-                  .into_iter()
-                  .map(|read_allowed| {
-                      let mut candidate = response.clone();
-                      candidate.snapshot_digest = zero.clone();
-                      candidate.read_digest = zero.clone();
-                      candidate.plan = Some(CognitiveContextPlan {
-                          evaluated_context_digest: zero.clone(),
-                          plan_receipt_digest: zero.clone(),
-                          read_allowed,
-                      });
-                      serde_json::to_vec(&candidate)
-                          .map(|encoded| encoded.len())
-                          .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
-                  })
-                  .collect::<Result<Vec<_>, _>>()?
-                  .into_iter()
-                  .max()
-                  .ok_or_else(|| CognitiveStoreError::Invalid("missing context plan shape".to_string()))
-          }
-          '''
-          new = '''fn planned_context_encoded_len(
-              response: &CognitiveContextSnapshot,
-          ) -> Result<usize, CognitiveStoreError> {
-              let zero = Digest32::ZERO.to_string();
-              let mut maximum = 0;
-              for read_allowed in [false, true] {
-                  let mut candidate = response.clone();
-                  candidate.snapshot_digest = zero.clone();
-                  candidate.read_digest = zero.clone();
-                  candidate.plan = Some(CognitiveContextPlan {
-                      evaluated_context_digest: zero.clone(),
-                      plan_receipt_digest: zero.clone(),
-                      read_allowed,
-                  });
-                  let encoded = serde_json::to_vec(&candidate)
-                      .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-                  maximum = maximum.max(encoded.len());
-              }
-              Ok(maximum)
-          }
-          '''
+          old = '\n'.join([
+              'fn planned_context_encoded_len(',
+              '    response: &CognitiveContextSnapshot,',
+              ') -> Result<usize, CognitiveStoreError> {',
+              '    let zero = Digest32::ZERO.to_string();',
+              '    [false, true]',
+              '        .into_iter()',
+              '        .map(|read_allowed| {',
+              '            let mut candidate = response.clone();',
+              '            candidate.snapshot_digest = zero.clone();',
+              '            candidate.read_digest = zero.clone();',
+              '            candidate.plan = Some(CognitiveContextPlan {',
+              '                evaluated_context_digest: zero.clone(),',
+              '                plan_receipt_digest: zero.clone(),',
+              '                read_allowed,',
+              '            });',
+              '            serde_json::to_vec(&candidate)',
+              '                .map(|encoded| encoded.len())',
+              '                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))',
+              '        })',
+              '        .collect::<Result<Vec<_>, _>>()?',
+              '        .into_iter()',
+              '        .max()',
+              '        .ok_or_else(|| CognitiveStoreError::Invalid("missing context plan shape".to_string()))',
+              '}',
+              '',
+          ])
+          new = '\n'.join([
+              'fn planned_context_encoded_len(',
+              '    response: &CognitiveContextSnapshot,',
+              ') -> Result<usize, CognitiveStoreError> {',
+              '    let zero = Digest32::ZERO.to_string();',
+              '    let mut maximum = 0;',
+              '    for read_allowed in [false, true] {',
+              '        let mut candidate = response.clone();',
+              '        candidate.snapshot_digest = zero.clone();',
+              '        candidate.read_digest = zero.clone();',
+              '        candidate.plan = Some(CognitiveContextPlan {',
+              '            evaluated_context_digest: zero.clone(),',
+              '            plan_receipt_digest: zero.clone(),',
+              '            read_allowed,',
+              '        });',
+              '        let encoded = serde_json::to_vec(&candidate)',
+              '            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;',
+              '        maximum = maximum.max(encoded.len());',
+              '    }',
+              '    Ok(maximum)',
+              '}',
+              '',
+          ])
           if context.count(old) != 1:
               raise SystemExit('planned_context_encoded_len source shape drifted')
           context_path.write_text(context.replace(old, new), encoding='utf-8')
-
-          Path('codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs').write_text('''use super::*;
-
-const CONTRACT_LIMITS: &str =
-    include_str!("../../../docs/modules/cognitive.read/CONTRACT_LIMITS.md");
-const AGENT_PROTOCOL_SOURCE: &str = include_str!("../../hepta-agent-protocol/src/lib.rs");
-const AGENTD_CONTEXT_SOURCE: &str = include_str!("../../hepta-agentd/src/cognitive_context.rs");
-
-#[test]
-fn documented_limits_match_compiled_contracts() {
-    assert!(CONTRACT_LIMITS.contains("MAX_READ_IDS_V1 = 512"));
-    assert!(CONTRACT_LIMITS.contains("MAX_ENCODED_READ_RESULT_BYTES_V2 = 1048576"));
-    assert!(CONTRACT_LIMITS.contains("MAX_COGNITIVE_CONTEXT_BYTES = 8192"));
-    assert!(CONTRACT_LIMITS.contains("MAX_SELECTED_CONTEXT_RECORDS = 4"));
-    assert_eq!(MAX_READ_IDS_V1, 512);
-    assert_eq!(MAX_ENCODED_READ_RESULT_BYTES_V2, 1_048_576);
-    assert!(AGENT_PROTOCOL_SOURCE.contains(
-        "pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;"
-    ));
-    assert!(AGENTD_CONTEXT_SOURCE.contains(
-        "const MAX_SELECTED_CONTEXT_RECORDS: u16 = 4;"
-    ));
-}
-
-#[test]
-fn byte_and_authority_semantics_are_documented() {
-    for required in [
-        "payload_encoded_bytes",
-        "total_encoded_bytes",
-        "AuthorityPosture::DENY_ALL",
-        "activation=false",
-        "TransientSnapshotProjectionV1",
-        "cognitive.context.revalidate@1",
-    ] {
-        assert!(
-            CONTRACT_LIMITS.contains(required),
-            "missing cognitive.read contract marker: {required}"
-        );
-    }
-}
-''', encoding='utf-8')
 
           map_path = Path('docs/modules/cognitive.read/IMPLEMENTATION_MAP.json')
           row = json.loads(map_path.read_text(encoding='utf-8'))
@@ -192,7 +154,6 @@ fn byte_and_authority_semantics_are_documented() {
           PY
           git diff --check
           git add codex-rs/hepta-agentd/src/cognitive_context.rs
-          git add codex-rs/hepta-cognitive-read/src/contract_docs_tests.rs
           git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
           git commit -m 'chore(cognitive.read): stage exact source observation'
 
