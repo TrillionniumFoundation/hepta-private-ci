@@ -3,7 +3,9 @@
 #![forbid(unsafe_code)]
 
 mod decision;
+#[path = "engram_v2.rs"]
 mod engram;
+#[path = "generation_bound_v2.rs"]
 mod generation_bound;
 mod generator;
 mod v2;
@@ -50,6 +52,7 @@ pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
 pub use generation_bound::CanonicalRecallShadowContextV1;
+pub use generation_bound::ContradictionPolarityV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
 pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
 pub use generation_bound::MemoryCueV1;
