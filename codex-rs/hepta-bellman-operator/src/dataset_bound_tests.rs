@@ -125,7 +125,6 @@ fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
             evidence_digest: records[1],
         },
     ];
-    // A frozen record with no corresponding model row is not silently ignored.
     assert!(matches!(
         verify_world_model_dataset_v2(id("world-model"), rows.clone(), &extra_support, 50),
         Err(OperatorDatasetBindingError::EvidenceSetMismatch)
@@ -134,4 +133,41 @@ fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
         verify_world_model_dataset_v2(id("world-model"), rows, &receipt, 50).expect("bind rows");
     let model = fit_transition_model_verified_v2(verified).expect("fit");
     assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
+}
+
+#[test]
+fn op_07_row_semantics_payload_binds_every_tabular_field() {
+    let records = [digest("record-a"), digest("record-b")];
+    let receipt = receipt(records.to_vec());
+    let mut plan = tabular_plan(receipt.snapshot.dataset_digest, records);
+    let baseline = canonical_tabular_row_semantics_v1(&plan, &receipt).expect("canonical");
+
+    plan.samples[0].target = FixedQ32::from_raw(11);
+    let changed_target = canonical_tabular_row_semantics_v1(&plan, &receipt).expect("canonical");
+    assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed_target));
+
+    plan.samples[0].target = FixedQ32::from_raw(10);
+    plan.samples[0].action_id = id("changed-action");
+    let changed_action = canonical_tabular_row_semantics_v1(&plan, &receipt).expect("canonical");
+    assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed_action));
+}
+
+#[test]
+fn op_07_world_model_payload_binds_transition_semantics() {
+    let records = [digest("record-a")];
+    let receipt = receipt(records.to_vec());
+    let mut rows = vec![WorldModelSampleV1 {
+        sample_id: id("sample-a"),
+        state_id: id("state"),
+        action_id: id("action"),
+        next_state_id: id("next"),
+        outcome: FixedQ32::from_raw(10),
+        evidence_digest: records[0],
+    }];
+    let baseline = canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt)
+        .expect("canonical");
+    rows[0].next_state_id = id("changed-next");
+    let changed = canonical_world_model_row_semantics_v1(&id("model"), &rows, &receipt)
+        .expect("canonical");
+    assert_ne!(Digest32::of_bytes(&baseline), Digest32::of_bytes(&changed));
 }
