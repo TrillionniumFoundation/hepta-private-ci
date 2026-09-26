@@ -22,6 +22,53 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # BEGIN ONE-SHOT KERNEL AUTHORITY REMEDIATION
+  bootstrap-remediation:
+    name: One-shot kernel.authority remediation
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'work/kernel-authority-convergence-20260925'
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout writable PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: work/kernel-authority-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Retire bootstrap from the local candidate before remediation
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/kernel-authority-convergence.yml')
+          content = path.read_text(encoding='utf-8')
+          begin = '  # BEGIN ONE-SHOT KERNEL AUTHORITY REMEDIATION\n'
+          end = '  # END ONE-SHOT KERNEL AUTHORITY REMEDIATION\n'
+          if content.count(begin) != 1 or content.count(end) != 1:
+              raise SystemExit('bootstrap markers are not exact')
+          start = content.index(begin)
+          stop = content.index(end, start) + len(end)
+          path.write_text(content[:start] + content[stop:], encoding='utf-8')
+          PY
+          git config user.name kernel-authority-remediator
+          git config user.email kernel-authority-remediator@users.noreply.github.com
+          git add .github/workflows/kernel-authority-convergence.yml
+          git commit -m 'ci(kernel-authority): retire one-shot bootstrap'
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Apply, validate, commit, rebind and push
+        env:
+          CARGO_TERM_COLOR: always
+        run: python3 .github/scripts/kernel_authority_remediate.py
+  # END ONE-SHOT KERNEL AUTHORITY REMEDIATION
   identity:
     runs-on: ubuntu-24.04
     outputs:
