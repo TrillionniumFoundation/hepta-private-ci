@@ -83,6 +83,7 @@ codex-utils-home-dir = { workspace = true }
 codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
 http = { workspace = true }
+rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
@@ -99,16 +100,8 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
-codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
-codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
-codex-hepta-infer-core = { path = "../hepta-infer-core" }
-app_test_support = { workspace = true }
-codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
-codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
-codex-hepta-supervisor = { workspace = true }
-codex-utils-cargo-bin = { workspace = true }
-core_test_support = { workspace = true }
-sqlx = { workspace = true }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = [
+    "qualification-legacy-write",
+] }
+pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
-wiremock = { workspace = true }
