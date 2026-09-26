@@ -16,6 +16,7 @@ on:
       - docs/modules/runtime.supervisor/**
       - qualification/module-execution-dossiers/detail/runtime.supervisor.md
       - scripts/hepta-implementation-maps.py
+      - scripts/hepta-supervisor-receipt-gate.py
       - scripts/hepta-supervisor-validation.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_ci_v8.py
@@ -37,6 +38,7 @@ on:
       - docs/modules/runtime.supervisor/**
       - qualification/module-execution-dossiers/detail/runtime.supervisor.md
       - scripts/hepta-implementation-maps.py
+      - scripts/hepta-supervisor-receipt-gate.py
       - scripts/hepta-supervisor-validation.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_ci_v8.py
@@ -60,16 +62,15 @@ env:
 
 jobs:
   qualification:
-    name: Runtime supervisor (${{ matrix.lane }}, ${{ matrix.lane == 'source-head' && '256' || '8' }} instances)
-    runs-on: ubuntu-24.04
+    name: Runtime supervisor (${{ matrix.os }}, ${{ matrix.lane }}, ${{ matrix.instances }} instances)
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 180
     strategy:
       fail-fast: false
-      matrix:
-        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
+      matrix: ${{ fromJSON(github.event_name == 'pull_request' && '{"include":[{"os":"ubuntu-24.04","lane":"source-head","instances":256},{"os":"ubuntu-24.04","lane":"merge-candidate","instances":8},{"os":"macos-15","lane":"source-head","instances":64},{"os":"macos-15","lane":"merge-candidate","instances":8}]}' || '{"include":[{"os":"ubuntu-24.04","lane":"source-head","instances":256},{"os":"macos-15","lane":"source-head","instances":64}]}') }}
     env:
       EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
-      HOST_INSTANCES: ${{ matrix.lane == 'source-head' && '256' || '8' }}
+      HOST_INSTANCES: ${{ matrix.instances }}
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -92,7 +93,8 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Prepare native process prerequisites
+      - name: Prepare Linux native process prerequisites
+        if: runner.os == 'Linux'
         run: |
           set -euo pipefail
           sudo apt-get update
@@ -111,7 +113,13 @@ jobs:
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
 
       - name: Expose DotSlash to native integration tests
-        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+        shell: bash
+        run: |
+          set -euo pipefail
+          install_root="$RUNNER_TEMP/hepta-tools"
+          mkdir -p "$install_root"
+          install -m 0755 "$(command -v dotslash)" "$install_root/dotslash"
+          echo "$install_root" >> "$GITHUB_PATH"
 
       - name: Resolve verified sandboxed V8 artifacts
         env:
@@ -123,7 +131,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-supervisor-validation.py \
-            --out "$RUNNER_TEMP/runtime-supervisor-${{ matrix.lane }}" \
+            --out "$RUNNER_TEMP/runtime-supervisor-${{ matrix.os }}-${{ matrix.lane }}" \
             --expected-sha "$EXPECTED_SHA" \
             --host-instances "$HOST_INSTANCES" \
             --command-timeout 5400
@@ -132,8 +140,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: runtime-supervisor-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
-          path: ${{ runner.temp }}/runtime-supervisor-${{ matrix.lane }}/**
+          name: runtime-supervisor-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/runtime-supervisor-${{ matrix.os }}-${{ matrix.lane }}/**
           if-no-files-found: error
           retention-days: 30
 
