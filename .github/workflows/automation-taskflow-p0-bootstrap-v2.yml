@@ -1,0 +1,111 @@
+name: automation-taskflow-p0-bootstrap-v2
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-v19-runtime-closure
+    paths:
+      - .github/workflows/automation-taskflow-p0-bootstrap-v2.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-full-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  p0:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out latest work branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-v19-runtime-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Configure author and validate applicators
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Automation CI"
+          git config user.email "hepta-automation-ci@users.noreply.github.com"
+          python3 -m py_compile \
+            scripts/apply_automation_taskflow_p0.py \
+            scripts/apply_automation_taskflow_p0_wrapper.py
+
+      - name: Apply schema-v19 and product-effect source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_automation_taskflow_p0_wrapper.py source
+          (cd codex-rs && cargo fmt -p codex-hepta-automation -p codex-hepta-agentd)
+          git diff --check
+          git add \
+            CALLERS.toml \
+            codex-rs/hepta-agentd/src/automation_effect_host.rs \
+            docs/modules/automation.taskflow \
+            docs/readiness/LANE_B_NATIVE_HOST.md \
+            qualification/module-execution-dossiers/detail/automation.taskflow.md \
+            scripts/check_automation_taskflow_schema.py \
+            scripts/test_automation_taskflow_schema.py
+          git commit -m "automation.taskflow: close schema-v19 product effect path [automation-p0-v2]"
+          printf 'P0_SOURCE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Bind exact source metadata and generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_automation_taskflow_p0_wrapper.py metadata \
+            --source-sha "$P0_SOURCE_SHA"
+          python3 scripts/hepta-lane-b-truth.py generate
+          git diff --check
+          git add \
+            docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            qualification/lane-b/IMPLEMENTATION_TRUTH.json
+          git commit -m "docs(automation): bind schema-v19 product truth [automation-p0-v2]"
+
+      - name: Verify P0 truth and privileged callers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/check_automation_taskflow_schema.py
+          python3 -m unittest scripts/test_automation_taskflow_schema.py
+          python3 scripts/verify_hepta_callers.py self-test
+          python3 scripts/verify_hepta_callers.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-truth.py verify
+          git diff --check
+
+      - name: Format compile lint and test P0 owners
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+          cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+          cargo clippy -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets -- -D warnings
+          cargo test -p codex-hepta-operations
+          cargo test -p codex-hepta-automation --test durable_causal_chain
+          cargo test -p codex-hepta-automation
+          cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+          cargo test -p codex-hepta-agentd --lib automation
+
+      - name: Push qualified P0 commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git push origin HEAD:work/automation-taskflow-v19-runtime-closure
