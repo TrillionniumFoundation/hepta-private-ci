@@ -1,4 +1,4 @@
-//! Storage-v3 payload extent file under the existing exclusive registry owner.
+//! Storage-v4 payload extent file under the existing exclusive registry owner.
 //!
 //! The atomic metadata snapshot selects the committed extents. New bytes are
 //! synced before publication; an unselected trailing write is never a fact.
@@ -78,7 +78,7 @@ impl PayloadState {
         directory: &File,
         mut stored: StoredV3,
     ) -> Result<(Self, StoredV2), DurableRegistryError> {
-        if stored.schema != 3
+        if !matches!(stored.schema, 3 | 4)
             || stored.state.schema != super::STORE_SCHEMA
             || !stored.state.payloads.is_empty()
             || stored.payload_references.len() > crate::MAX_RECORDS

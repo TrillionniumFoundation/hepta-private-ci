@@ -32,6 +32,8 @@ use crate::Lifecycle;
 use crate::LifecycleEvent;
 use crate::LifecycleEventKind;
 use crate::PromptFactor;
+use crate::PromptFactorRelation;
+use crate::PromptFactorRelationKind;
 use crate::PromptModelTupleV2;
 use crate::PromptRealization;
 use crate::PromptRealizationBindingV2;
@@ -138,6 +140,15 @@ impl DurablePromptRegistry {
         factor: PromptFactor,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.commit(|registry| registry.register_factor(factor))
+    }
+
+    /// Register one governed factor relation in the same durable image
+    /// as factors, realizations, lifecycle state and payload references.
+    pub fn register_factor_relation(
+        &mut self,
+        relation: PromptFactorRelation,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.commit(|registry| registry.register_factor_relation(relation))
     }
 
     #[cfg(test)]
@@ -436,6 +447,8 @@ struct StoredV2 {
     realizations: Vec<StoredRealization>,
     bindings: Vec<StoredBindingV2>,
     payloads: Vec<StoredPayload>,
+    #[serde(default)]
+    relations: Vec<StoredRelation>,
     supersessions: Vec<StoredSupersession>,
     lifecycle_events: Vec<StoredLifecycleEvent>,
 }
@@ -521,6 +534,16 @@ struct StoredBindingV1 {
 struct StoredPayload {
     realization_id: String,
     payload: Vec<u8>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredRelation {
+    relation_id: String,
+    left_factor_id: String,
+    right_factor_id: String,
+    kind: u8,
+    evidence_digest: [u8; 32],
 }
 
 #[derive(Deserialize, Serialize)]
@@ -621,6 +644,17 @@ fn stored_metadata(registry: &PromptRegistry) -> StoredV2 {
             })
             .collect(),
         payloads: Vec::new(),
+        relations: registry
+            .relations
+            .values()
+            .map(|relation| StoredRelation {
+                relation_id: relation.relation_id.to_string(),
+                left_factor_id: relation.left_factor_id.to_string(),
+                right_factor_id: relation.right_factor_id.to_string(),
+                kind: relation_kind_code(relation.kind),
+                evidence_digest: relation.evidence_digest.into_array(),
+            })
+            .collect(),
         supersessions: registry
             .realization_supersessions
             .iter()
@@ -723,6 +757,33 @@ fn restore_v2(
         }
     }
 
+    let mut relations = BTreeMap::new();
+    let mut relation_semantics = BTreeSet::new();
+    for stored_relation in stored.relations {
+        let relation = decode_relation(stored_relation)?;
+        if relation.evidence_digest.is_zero()
+            || relation.left_factor_id >= relation.right_factor_id
+            || !relation_semantics.insert((
+                relation.left_factor_id.clone(),
+                relation.right_factor_id.clone(),
+                relation.kind,
+            ))
+            || relations
+                .insert(relation.relation_id.clone(), relation)
+                .is_some()
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+    }
+    if factors
+        .len()
+        .saturating_add(realizations.len())
+        .saturating_add(relations.len())
+        > configured_maximum
+    {
+        return Err(DurableRegistryError::CapacityExceeded);
+    }
+
     let mut lifecycle_events = Vec::new();
     for stored_event in stored.lifecycle_events {
         let event = decode_event(stored_event)?;
@@ -738,7 +799,7 @@ fn restore_v2(
         realization_bindings,
         realization_payloads,
         realization_supersessions,
-        relations: BTreeMap::new(),
+        relations,
         lifecycle_events,
         revision,
         lifecycle_frontier: stored.lifecycle_frontier,
@@ -882,6 +943,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             .factors
             .len()
             .saturating_add(registry.realizations.len())
+            .saturating_add(registry.relations.len())
             > registry.maximum_records
     {
         return Err(DurableRegistryError::Corrupt);
@@ -1032,6 +1094,30 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         }
     }
 
+    let mut seen_relation_semantics = BTreeSet::new();
+    for relation in registry.relations.values() {
+        let Some(left) = registry.factors.get(&relation.left_factor_id) else {
+            return Err(DurableRegistryError::Corrupt);
+        };
+        let Some(right) = registry.factors.get(&relation.right_factor_id) else {
+            return Err(DurableRegistryError::Corrupt);
+        };
+        if relation.evidence_digest.is_zero()
+            || relation.left_factor_id >= relation.right_factor_id
+            || left.source != FactorSource::GovernedInternal
+            || right.source != FactorSource::GovernedInternal
+            || left.lifecycle != Lifecycle::Admitted
+            || right.lifecycle != Lifecycle::Admitted
+            || !seen_relation_semantics.insert((
+                relation.left_factor_id.clone(),
+                relation.right_factor_id.clone(),
+                relation.kind,
+            ))
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+    }
+
     let mut seen_predecessors = BTreeSet::new();
     for (successor, predecessor) in &registry.realization_supersessions {
         let Some(successor_record) = registry.realizations.get(successor) else {
@@ -1129,6 +1215,18 @@ fn decode_binding_v2(
     })
 }
 
+fn decode_relation(
+    stored: StoredRelation,
+) -> Result<PromptFactorRelation, DurableRegistryError> {
+    Ok(PromptFactorRelation {
+        relation_id: parse_id(stored.relation_id)?,
+        left_factor_id: parse_id(stored.left_factor_id)?,
+        right_factor_id: parse_id(stored.right_factor_id)?,
+        kind: decode_relation_kind(stored.kind)?,
+        evidence_digest: Digest32::from_array(stored.evidence_digest),
+    })
+}
+
 fn decode_event(stored: StoredLifecycleEvent) -> Result<LifecycleEvent, DurableRegistryError> {
     Ok(LifecycleEvent {
         revision: Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?,
@@ -1201,6 +1299,25 @@ fn decode_event_kind(value: u8) -> Result<LifecycleEventKind, DurableRegistryErr
         2 => Ok(LifecycleEventKind::Retired),
         3 => Ok(LifecycleEventKind::Revoked),
         4 => Ok(LifecycleEventKind::Imported),
+        _ => Err(DurableRegistryError::Corrupt),
+    }
+}
+
+const fn relation_kind_code(value: PromptFactorRelationKind) -> u8 {
+    match value {
+        PromptFactorRelationKind::Complements => 0,
+        PromptFactorRelationKind::Substitutes => 1,
+        PromptFactorRelationKind::Conflicts => 2,
+    }
+}
+
+fn decode_relation_kind(
+    value: u8,
+) -> Result<PromptFactorRelationKind, DurableRegistryError> {
+    match value {
+        0 => Ok(PromptFactorRelationKind::Complements),
+        1 => Ok(PromptFactorRelationKind::Substitutes),
+        2 => Ok(PromptFactorRelationKind::Conflicts),
         _ => Err(DurableRegistryError::Corrupt),
     }
 }
@@ -1283,7 +1400,7 @@ impl Store {
             2 => StoredAny::V2(
                 serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
             ),
-            3 => {
+            3 | 4 => {
                 let manifest =
                     serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
                 let (payloads, state) = payloads::PayloadState::hydrate(&store.root, manifest)?;
@@ -1298,7 +1415,7 @@ impl Store {
     fn persist(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
         let successor = self.payloads.successor(registry)?;
         let bytes = serde_json::to_vec(&payloads::StoredV3 {
-            schema: 3,
+            schema: 4,
             state: stored_metadata(registry),
             payload_references: successor.references(),
         })
