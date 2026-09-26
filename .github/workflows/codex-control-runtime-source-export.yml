@@ -1,0 +1,41 @@
+name: Codex control runtime source export
+
+on:
+  push:
+    branches:
+      - codex/control-runtime-production-hardening-20260927
+    paths:
+      - ".github/workflows/codex-control-runtime-source-export.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exported source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > SOURCE_SHA
+          git status --porcelain=v1 --untracked-files=all > SOURCE_STATUS
+          test ! -s SOURCE_STATUS
+      - name: Pack source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar --exclude=.git --exclude=target --exclude='**/target' -czf /tmp/hepta-control-runtime-source.tgz .
+      - name: Upload source tree
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-control-runtime-source
+          path: /tmp/hepta-control-runtime-source.tgz
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
