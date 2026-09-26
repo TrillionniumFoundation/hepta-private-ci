@@ -4,7 +4,16 @@ on:
   push:
     branches:
       - main
-  pull_request:
+  workflow_call:
+    inputs:
+      source_sha:
+        description: Exact source commit to qualify
+        required: true
+        type: string
+      base_sha:
+        description: Ordered first parent for the synthetic merge lane
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -12,12 +21,12 @@ permissions:
   attestations: write
 
 concurrency:
-  group: learning-artifacts-exact-head-${{ github.event.pull_request.number || github.ref }}
+  group: learning-artifacts-exact-head-${{ github.event.pull_request.number || inputs.source_sha || github.ref }}
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+  BASE_SHA: ${{ inputs.base_sha || github.event.before }}
 
 jobs:
   qualify:
@@ -124,10 +133,17 @@ jobs:
         id: security
         if: always()
         working-directory: codex-rs
-        run: >-
-          just test --locked -p codex-hepta-learning-artifacts
-          art_12_selection_rejects_self_selection_and_revoked_selector
-          --test-threads=1
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-learning-artifacts \
+            art_12_selection_rejects_self_selection_and_revoked_selector --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            signed_command_is_action_and_request_bound --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            host_keys_must_be_separate_from_owner_keys --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            audit_reopen_preserves_replay_fence --test-threads=1
 
       - name: Exhaustive small-state properties
         id: property
@@ -177,6 +193,8 @@ jobs:
             bytes_appearing_after_atomic_creation_are_indeterminate --test-threads=1
           just test --locked -p codex-hepta-learning-artifacts \
             create_replace_remove_syncs_directory_entries --test-threads=1
+          just test --locked -p codex-hepta-learning-artifacts \
+            fault_injector_fails_exactly_one_selected_effect --test-threads=1
 
       - name: Snapshot and old-backup fallback rejection
         id: snapshot_fallback
@@ -227,9 +245,13 @@ jobs:
             --check "format=${{ steps.format.outcome }}" \
             --source-object "codex-rs/hepta-learning-artifacts=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts")" \
             --source-object "codex-rs/hepta-learning-artifacts/src/lib.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/lib.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/owner=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/owner/reference_host.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner/reference_host.rs")" \
             --source-object "codex-rs/hepta-learning-artifacts/src/owner_host.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner_host.rs")" \
             --source-object "codex-rs/hepta-learning-artifacts/src/owner_service.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/owner_service.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/durability.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/durability.rs")" \
             --source-object "codex-rs/hepta-learning-artifacts/src/storage.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/storage.rs")" \
+            --source-object "codex-rs/hepta-learning-artifacts/src/stable.rs=$(git rev-parse "${SOURCE_SHA}:codex-rs/hepta-learning-artifacts/src/stable.rs")" \
             --output ".hepta-evidence/learning-artifacts/${{ matrix.mode }}.json"
           python3 scripts/hepta-learning-artifacts-receipt.py verify \
             ".hepta-evidence/learning-artifacts/${{ matrix.mode }}.json"
