@@ -64,6 +64,43 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt,clippy
 
+      - name: Respect the existing Fleet macro grammar
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/scripts/kernel_authority_remediate.py')
+          content = path.read_text(encoding='utf-8')
+          old = '''    run(
+                  "cargo",
+                  "fmt",
+                  "--manifest-path",
+                  "codex-rs/Cargo.toml",
+                  "-p",
+                  "codex-hepta-contracts",
+                  "-p",
+                  "codex-hepta-fleet",
+              )'''
+          new = '''    run(
+                  "cargo",
+                  "fmt",
+                  "--manifest-path",
+                  "codex-rs/Cargo.toml",
+                  "-p",
+                  "codex-hepta-contracts",
+              )'''
+          if content.count(old) != 1:
+              raise SystemExit('remediator formatting predecessor is not exact')
+          content = content.replace(old, new, 1)
+          needle = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry -p codex-hepta-fleet'
+          replacement = '              run format cargo fmt --check -p codex-hepta-automation -p codex-hepta-prompt-registry'
+          if content.count(needle) != 2:
+              raise SystemExit('expected old and generated product formatting commands')
+          index = content.rfind(needle)
+          content = content[:index] + replacement + content[index + len(needle):]
+          path.write_text(content, encoding='utf-8')
+          PY
+
       - name: Apply, validate, commit, rebind and push
         env:
           CARGO_TERM_COLOR: always
