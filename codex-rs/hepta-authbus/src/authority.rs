@@ -209,4 +209,8 @@ pub enum AuthBusAuthorityError {
     UnsafeCheckpoint,
     #[error("AuthBus policy cannot be retired while reservations still reference it")]
     PolicyInUse,
+    #[error("another AuthBus authority owner is already active")]
+    OwnerAlreadyActive,
+    #[error("AuthBus owner lock is unsafe or unavailable")]
+    OwnerLockUnavailable,
 }
