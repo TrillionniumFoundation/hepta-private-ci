@@ -36,6 +36,7 @@ jobs:
             codex-rs/hepta-cognitive-store/src/v2_tests.rs \
             codex-rs/hepta-cognitive-read/Cargo.toml \
             codex-rs/hepta-cognitive-read/src/authoritative.rs \
+            codex-rs/hepta-operations/Cargo.toml \
             codex-rs/hepta-operations/src/destination_dedupe.rs \
             codex-rs/hepta-operations/src/durable_store.rs \
             codex-rs/state/src/*.rs \
@@ -47,9 +48,11 @@ jobs:
             /tmp/cognitive-types-source/
           git rev-parse HEAD > /tmp/cognitive-types-source/EXACT_HEAD
           git rev-parse HEAD^{tree} > /tmp/cognitive-types-source/EXACT_TREE
+          sha256sum /tmp/cognitive-types-source/EXACT_HEAD /tmp/cognitive-types-source/EXACT_TREE \
+            > /tmp/cognitive-types-source/SOURCE_RECEIPT.sha256
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: cognitive-types-source-${{ github.sha }}
           path: /tmp/cognitive-types-source
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7
