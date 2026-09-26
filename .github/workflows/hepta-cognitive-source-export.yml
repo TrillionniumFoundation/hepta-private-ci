@@ -1,0 +1,46 @@
+name: Hepta cognitive source export (temporary)
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260926
+    paths:
+      - .github/workflows/hepta-cognitive-source-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+      - name: Package exact source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar --exclude=.git -czf "$RUNNER_TEMP/hepta-cognitive-source.tar.gz" .
+          sha256sum "$RUNNER_TEMP/hepta-cognitive-source.tar.gz" > "$RUNNER_TEMP/hepta-cognitive-source.tar.gz.sha256"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/source-sha.txt"
+      - name: Retain exact source tree
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cognitive-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-cognitive-source.tar.gz
+            ${{ runner.temp }}/hepta-cognitive-source.tar.gz.sha256
+            ${{ runner.temp }}/source-sha.txt
+          if-no-files-found: error
+          retention-days: 1
