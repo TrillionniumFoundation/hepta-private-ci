@@ -215,6 +215,47 @@
       ],
       "productCompositionState": "agentd_attested_provider_async_bridge_source_composed_external_qualification_pending",
       "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+    },
+    {
+      "designOperation": "execute_neural_circuit_v1",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
+        "symbol": "pub async fn admit_neural_circuit_activation_v1(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/taskflow.rs",
+          "symbol": "pub async fn create_taskflow_run(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+          "symbol": "pub async fn record_taskflow_step(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/neural_circuit_runtime.rs",
+          "kind": "recorded_choice_organ_join_budget_terminal_vertical_slice",
+          "command": "cargo test -p codex-hepta-automation --test neural_circuit_runtime"
+        }
+      ],
+      "sourceSemantics": "Compiles one immutable circuit into the existing TaskFlow owner; binds ingress and bounded budgets; records DecisionCell, organ and join receipts in the existing outbox; moves through fenced Wait/Resume events; hands effects to the existing final-use seam; and emits terminal receipts without creating another scheduler/store/authority.",
+      "operation": "execute_neural_circuit_v1",
+      "nativeSymbol": "pub async fn admit_neural_circuit_activation_v1(",
+      "sourcePath": "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "861584792d24f979e9c8b90bc27665689ac0083e",
+      "productCallers": [],
+      "productCompositionState": "owner_runtime_source_complete_product_activation_pending"
     }
   ],
   "repositoryControlledGaps": [],
@@ -252,7 +293,15 @@
     "separateRecoveryAdmissionBudgetsComplete": true,
     "failureDispositionComplete": true,
     "backlogAgeObservable": true,
-    "providerBackpressureBounded": true
+    "providerBackpressureBounded": true,
+    "minimalNeuralCircuitRuntimeComplete": true,
+    "recordedChoiceRecoveryComplete": true,
+    "boundedCircuitFeedbackComplete": true,
+    "v1TaskFlowCompatibilityPreserved": true,
+    "crossHostTransferQualified": false,
+    "crashPointQualificationComplete": true,
+    "propertyStateMachineQualificationComplete": true,
+    "selectedHostCrashQualificationComplete": false
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -265,8 +314,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "0d5d147ffbb441a88a37711f44361ecc54bf6b5e",
-    "tree": "f429d57563a5df92fea5c2f5e21788095e8d33a7"
+    "commit": "14c3311e8ac1eb218d9241a630a0f01c043c82de",
+    "tree": "d2f8c3f1575c4e3336250680133ef775d460c4ec"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -309,8 +358,12 @@
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
     "codex-rs/hepta-automation/src/failure_policy.rs",
+    "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
     "codex-rs/hepta-automation/src/runtime_status.rs",
+    "codex-rs/hepta-automation/tests/neural_circuit_runtime.rs",
+    "codex-rs/hepta-automation/tests/runtime_crash_points.rs",
     "codex-rs/hepta-automation/tests/runtime_reliability.rs",
+    "codex-rs/hepta-automation/tests/runtime_state_machine_fuzz.rs",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-types",
@@ -432,7 +485,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "18182c9d38471f73fc701c4d04812b03052f7eb6"
+      "object": "995df1d0eaaea12fe2ce784101e8b35c8c1446e4"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -449,6 +502,10 @@
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
       "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/neural_circuit_runtime.rs",
+      "object": "861584792d24f979e9c8b90bc27665689ac0083e"
     },
     {
       "path": "codex-rs/hepta-automation/src/runtime_status.rs",
@@ -483,8 +540,20 @@
       "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
     },
     {
+      "path": "codex-rs/hepta-automation/tests/neural_circuit_runtime.rs",
+      "object": "fbc03bbb114cf1086f98c4f4338ddad3904dca8a"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/runtime_crash_points.rs",
+      "object": "35163b1a768bde0e1eaf49c11b0f5a40890b7ae5"
+    },
+    {
       "path": "codex-rs/hepta-automation/tests/runtime_reliability.rs",
-      "object": "1f701d6ccdd72feacbd6b78f00cf1479fb8e28bb"
+      "object": "87910c97b9d0862d32f88b6f6ff22df5db91ea79"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/runtime_state_machine_fuzz.rs",
+      "object": "2e3d24d826957f8d70b5fa45e86d647c549893ac"
     },
     {
       "path": "codex-rs/hepta-contracts",
@@ -512,7 +581,7 @@
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "538d5e70452e373f3a6189a929b252df133ab40c"
+      "object": "156c430e44929dcf36d7eabc8c93f73c8870c6d8"
     },
     {
       "path": "docs/readiness/LANE_B_NATIVE_HOST.md",
@@ -520,7 +589,7 @@
     },
     {
       "path": "qualification/module-execution-dossiers/detail/automation.taskflow.md",
-      "object": "c4a0a738945dd7bfecd32741b8d382fb27333ffe"
+      "object": "35ecc95efc025eecbe914126916ffc9dbcb5b8ab"
     },
     {
       "path": "scripts/check_automation_taskflow_schema.py",
@@ -550,5 +619,30 @@
     "terminalTurnPagesPerPass": 16,
     "terminalTurnsPerPage": 100,
     "slo": "docs/modules/automation.taskflow/SLO.md"
-  }
+  },
+  "neuralCircuitRuntime": {
+    "schemaVersion": 1,
+    "owner": "existing TaskFlow definition/run/event/step ledgers",
+    "eventIngressBound": true,
+    "recordedDecisionReplay": true,
+    "typedOrganPort": true,
+    "durableWaitJoin": true,
+    "boundedDepth": true,
+    "boundedFeedbackCancellation": true,
+    "authorizedEffectHandoff": true,
+    "terminalReceipt": true,
+    "secondScheduler": false,
+    "secondStore": false,
+    "authorityGranted": false,
+    "crossHostAtomicityClaimed": false
+  },
+  "runtimeQualification": {
+    "crashPointMatrix": true,
+    "dispatchUnknownSurvivesReopen": true,
+    "preAdmissionFailureNotQuarantined": true,
+    "deterministicPropertyCases": 20000,
+    "failureStateMachineExhaustive": true,
+    "selectedHostCrashInjection": false
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }
