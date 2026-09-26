@@ -16,6 +16,7 @@ on:
       - "codex-rs/hepta-contracts/src/final_use*.rs"
       - "codex-rs/hepta-contracts/src/authority_trust.rs"
       - "scripts/hepta-ndu-qualification.py"
+      - "scripts/hepta-ndu-implementation-map-closed-world.py"
       - "scripts/test_hepta_ndu_qualification.py"
       - "scripts/hepta-implementation-maps.py"
       - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
@@ -57,6 +58,7 @@ on:
       - "codex-rs/hepta-contracts/src/final_use*.rs"
       - "codex-rs/hepta-contracts/src/authority_trust.rs"
       - "scripts/hepta-ndu-qualification.py"
+      - "scripts/hepta-ndu-implementation-map-closed-world.py"
       - "scripts/test_hepta_ndu_qualification.py"
       - "scripts/hepta-implementation-maps.py"
       - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
@@ -137,6 +139,9 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Validate closed-world implementation mapping
+        if: matrix.suite == 'source'
+        run: python3 scripts/hepta-ndu-implementation-map-closed-world.py
       - name: Execute independent suite and retain every exit status
         shell: bash
         run: |
