@@ -13,13 +13,30 @@ The runtime consumes `NeuronRuntimeConfigV1` and `NeuronTickInputV1`, emits `Neu
 ### DecisionCell host integration
 
 The existing runtime also hosts logical DecisionCell slots defined by
-`../learning/NEURAL_BIOMIMICRY_SPEC.md`. Laya is the initial backend candidate,
-not a required public protocol. The host supplies exact effective base/organ/cell
-parameters through existing inference admission; the cell does not call providers
-or install a model itself. Shared workers serve many logical cells; checkpoint
-ownership stays with the existing neuron owner and principal/subject scope.
-Prediction, action strategy and state-successor outputs remain typed and separate.
+`../learning/NEURAL_BIOMIMICRY_SPEC.md`. Laya is the retained source-reviewed
+choice/score baseline, not a required protocol or selected default. The host supplies
+one exact effective base/organ/cell/head/calibration bundle through existing inference
+admission; the cell does not call providers, choose its own artifact or install a
+model. Shared workers serve many logical cells; checkpoint ownership stays with the
+existing neuron owner and principal/subject scope. Prediction, action strategy,
+target selection, termination and state-successor outputs remain typed and separate.
 A model's raw probability is not automatically the behavior propensity.
+
+### Typed decision output and non-executable boundary
+
+A DecisionCell invocation freezes the complete legal action and candidate-target
+sets and records their digests. The selected backend emits typed opcode, target
+pointer, bounded argument, expected-postcondition, stop/abstain/slow-path,
+confidence/OOD, value/cost and state-successor fields. Deterministic host code applies
+masks, validates generation-bound targets and commits the receipt before a downstream
+owner prepares any effect.
+
+`neuron.runtime` never returns raw native machine code, shellcode, syscalls,
+unrestricted scripts, credentials, capability tokens or a trusted terminal outcome.
+A future compact `ComputerActionIR` frame is encoded only after semantic validation
+by a versioned deterministic codec and remains outside the learned checkpoint. MCP,
+tool or binary transport choice cannot bypass the same operation identity, authority,
+durable dispatch and terminal-observation owners.
 
 ## 2. Runtime state layout
 
@@ -27,13 +44,15 @@ One shard owns state for a bounded set of subject IDs. The DecisionCell target p
 
 ```text
 generation and logical sequence
-encoder/head/runtime tuple digests
+backend/runtime and complete effective parameter-bundle digests
+legal-action and candidate-target-set digests
 bounded temporal state h[d_h] in signed Q24
 previous sparse activation a[d_z] or sparse index/value form
 adaptive thresholds theta[d_z or groups]
 activation moving averages
 bounded eligibility summary or exact trace digest
 OOD/calibration state
+selected opcode/target/postcondition/disposition receipt digest
 checkpoint predecessor and expiry
 ```
 
@@ -93,7 +112,7 @@ owner through existing inference admission. Cell state commits under its own CAS
 the run owner records the exact returned receipt and selected branch before any
 downstream effect. Cross-owner acknowledgment loss reconciles the same activation;
 it is not an atomic transaction across owners or permission to update twice.
-Committed historical choices are read back, not recomputed with a new Laya version.
+Committed historical choices are read back, not recomputed with a new backend, teacher or parameter-bundle version.
 Reusable cell implementations do not imply shared mutable run state. The full
 execution contract is in `../modules/automation.taskflow/TECHNICAL.md`.
 
@@ -115,10 +134,11 @@ The sparse path is bounded by `O(d_h*k_f + |E_I| + k log k)` under registered fa
 
 Backpressure rejects ticks before mutation. A missed optional consolidation window is recorded degradation and does not create an unbounded catch-up queue.
 
-### Laya and training capacity are separate measured profiles
+### Backend, ActionIR and training capacity are separate measured profiles
 
-Sparse-tick timing above excludes full Laya inference, adapter misses and training.
-Measure those end to end through the real inference owner. Use bounded shared
+Sparse-tick timing above excludes full backend inference, target retrieval or
+visual grounding, ActionIR compilation, adapter misses, teacher calls and training.
+Measure those end to end through their real owners. Use bounded shared
 workers, per-scope queue fairness and explicit foreground/training reservations.
 Logical cell count and simultaneously active cells are separate variables. Shared
 weights do not remove question-conditioned encoder computation. No-data, rejected
@@ -127,12 +147,29 @@ their declared no-update/fallback results, not silent full-model reloads or CPU
 fallback that violates the current budget. Scaling experiment points and metrics
 are owned by `../learning/EXPERIMENTS.json`, not copied runtime capacity claims.
 
+### External teacher data is not runtime authority
+
+A provider-hosted frontier teacher may label frozen DecisionCell examples or student
+shadow states, but it is never a synchronous dependency of the selected local hot
+path and cannot issue capabilities or terminal results. Each retained teacher record
+binds provider/model/request/tool-schema identity, exact input/candidate digests,
+structured proposal, uncertainty, cost and downstream acceptance evidence. Teacher
+reasoning prose is not a required durable field.
+
+Training requires an offline replayable corpus, simulation/shadow rollout, legality
+oracle, independent outcomes and future-window evaluation even when one external
+teacher supplies all initial labels. Student-state aggregation must cover the states
+reached after student mistakes. A local teacher is optional at pilot start and may
+later provide offline/privacy/outage and disagreement coverage. Provider terms,
+training/output-use rights, data retention and privacy must be verified before any
+teacher output enters an artifact intended for distribution.
+
 ### Meta-network capacity profile admission target
 
 A future backend profile declares its input encoding/domain, target class, local
 parameter freedoms, representation and action output schemas, state/horizon,
-precision and error budget. A type-correct Laya result is not evidence of universal
-approximation. Preserve high-information non-authorizing outputs where required;
+precision and error budget. A type-correct backend result is not evidence of universal
+approximation, calibrated action selection or superiority over the retained baseline. Preserve high-information non-authorizing outputs where required;
 handle message exhaustion through declared compression/reread/abstain semantics.
 Report actual model computation separately from Cell depth and gradient reach.
 Selected artifacts and fixed Q24 pilot bounds remain unchanged; richer profiles
@@ -154,7 +191,7 @@ Ablations remove inhibition, homeostasis, eligibility, replay, temporal state or
 
 ## 9. Implementation sequence
 
-Implement config and tick types, scalar fixed-point primitives, checkpoint CAS, deterministic temporal cell, inhibition/top-k, homeostasis, eligibility, calibration/OOD, replay recovery, resource benchmarks and ablation fixtures. Attach a real local model only after exact weights, tokenizer, preprocessor, quantization, license/SBOM, runtime and device manifests are qualified.
+Implement config and tick types, scalar fixed-point primitives, checkpoint CAS, deterministic temporal cell, inhibition/top-k, homeostasis, eligibility, calibration/OOD, typed action/target/termination heads, replay recovery, resource benchmarks and ablation fixtures. Run the registered Laya-versus-encoder bakeoff under identical heads and target-host conditions. Attach a selected local model only after exact weights, tokenizer/preprocessor, adapters/heads/calibrator, quantization, license/SBOM, runtime and device manifests are qualified. External-teacher traces enter only through the offline accepted-corpus and student-state aggregation boundary.
 
 ## 10. Coding-entry checklist
 

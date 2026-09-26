@@ -15,8 +15,9 @@ This design is functional biomimicry, not anatomical identity. Biological names 
 
 The adaptive target is DecisionCell -> organ -> cooperating organs -> system.
 A cell is the backend-neutral Neuron/Intuition unit specified in
-`../learning/NEURAL_BIOMIMICRY_SPEC.md`, initially specialized from Laya. NDU
-supplies common state/preference, recursive-utility, resource and adaptation
+`../learning/NEURAL_BIOMIMICRY_SPEC.md`. Laya is the retained source-reviewed
+choice/score baseline, while exact bakeoff and artifact admission select any deployed
+backend. NDU supplies common state/preference, recursive-utility, resource and adaptation
 semantics; it does not mandate a separate heavy solver at every cell. Existing
 system/domain/agent/episode subjects own the scoped objective and boundary.
 
@@ -71,6 +72,32 @@ development:   days to releases, code/topology proposals and governed rollout
 ```
 
 No slow loop may block a faster safety loop. A missed consolidation window is observable degradation, not permission to create unbounded catch-up work. Local controllers bind the exact body, calibration, rule and artifact generations and fail closed on mismatch.
+
+### Cognitive control plane and binary motor data plane
+
+Codex, MCP, registered tools and equivalent typed remote protocols form the open
+cognitive control plane for capability discovery, remote services and long-tail
+work. A stable low-latency browser, desktop or device action may instead use a
+compact local binary motor data plane. Both paths begin with the same semantic
+action and end at the same operation/effect owner; transport format never grants
+additional scope or creates a second actuator.
+
+A DecisionCell or language model selects only admitted semantic fields: opcode,
+generation-bound target reference, bounded arguments, expected postcondition,
+uncertainty and stop/abstain/slow-path disposition. It does not generate native
+machine code, shellcode, raw syscalls, unrestricted scripts, credentials or
+capability tokens. Deterministic host code applies the legal mask, validates the
+exact target and final payload, persists the choice and encodes any canonical binary
+frame. Unknown version/opcode, stale body/session/document generation, oversized or
+non-canonical payload and digest drift reject before effect entry.
+
+A future `ComputerActionIR`/binary-frame profile remains a design target until it
+has a versioned schema, bounded decoder, producer/consumer admission, golden vectors,
+fuzzing and migration tests. Binary is an efficiency mechanism, not a safety proof.
+It cannot bypass App Server/Agentd ownership, final-use authority, reflex veto,
+operation deduplication, indeterminate reconciliation, terminal observation or human
+override. High-frequency trajectories remain deterministic controller work; learned
+cells select goals/targets/termination rather than every raw motor sample.
 
 ## 5. Organ manifest and body graph
 
@@ -311,7 +338,7 @@ Metacognition tracks capability limits, calibration, model and tool identity, fa
 
 ## 11. Action gating, motor planning and reflex safety
 
-The action gate receives the complete generator-relative legal set, propensities and hard vetoes. The no-op/abstain action is always legal. `motor.plan` converts a selected semantic action into `ActuationIntentV1`, binding objective, body generation, target actuator, final payload digest, safety envelope, deadline, idempotency key and authority witness.
+The action gate receives the complete generator-relative legal set, propensities and hard vetoes. The no-op/abstain action is always legal. `motor.plan` converts a selected semantic action into `ActuationIntentV1`, binding objective, body generation, target actuator, final payload digest, safety envelope, deadline, idempotency key and authority witness. For digital control, a future versioned `ComputerActionIR` projection may additionally bind opcode, session/document generation, target reference, preconditions and expected postcondition before deterministic binary encoding. That projection is not effect authority and is not a registered wire protocol merely because this document names the design.
 
 Before adapter entry, `spinal.reflex-safety` evaluates current body state and rule generation. Collision, force, speed, temperature, tilt, stale state, human stop or integrity breach produces `ReflexVetoV1`. The veto occurs before dispatch and remains independent of plan utility or model confidence.
 
@@ -326,6 +353,24 @@ Acknowledgement loss leaves an operation `indeterminate`. A fenced reconciler re
 The causal ledger records state, complete candidate set, chosen propensity, delivered intervention, authorized action, independent outcome, correction, credit and deletion lineage. A policy cannot label itself successful. Missing or delayed outcome is not zero reward.
 
 Sleep consolidation samples immutable eligible episodes with source quotas, surprise, coverage and retention priorities. Revoked rows are excluded before replay. Consolidation may propose semantic prototypes, procedures, predictive transitions, local parameter deltas or topology candidates, but only as immutable next-snapshot artifacts. Future-time holdout, old-task retention, subgroup, OOD, deletion non-resurrection and rollback are mandatory before any longitudinal claim.
+
+### Teacher separation and offline policy learning
+
+An external frontier model can propose demonstrations, alternatives, critiques and
+labels only against a frozen observation and legal candidate set. It has no direct
+actuator, tool, credential, capability or outcome-acceptance path. A teacher proposal
+is admitted to learning only after simulator/environment transition, deterministic
+legality checks, trusted terminal observation, human correction or independent
+evaluation. The same model cannot make an action, observe an ambiguous transport
+acknowledgement and certify its own success.
+
+Even when an external teacher supplies all initial labels, Hepta retains an offline
+replayable corpus, student shadow/simulation rollouts, student-state aggregation,
+future-time holdout, retention/unlearning tests and provider/data provenance. A local
+offline teacher is optional for the first pilot and useful later for outage,
+confidential evaluation, low-cost regression and disagreement analysis. Teacher
+provider or model changes create a new dataset generation and never alter current
+selected weights or historical action receipts in place.
 
 ### Capacity and training are distinct scalability contracts
 

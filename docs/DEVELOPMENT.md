@@ -3,7 +3,7 @@
 **Plan ID:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN`
 **Version:** `8.0.0`
 **Date:** 2026-09-23
-**Design amendment:** multiscale Cell/Circuit architecture, capacity/learning contracts, shared experience and isolated multi-Agent workspaces; runtime and capability claims unchanged.
+**Design amendment:** multiscale Cell/Circuit architecture, backend-neutral DecisionCell qualification, cognitive-control versus binary-motor data planes, external-teacher/offline-learning separation, shared experience and isolated multi-Agent workspaces; runtime and capability claims unchanged.
 **Status:** canonical policy and static registries are defined by this document set; live branch, pull-request, CI, selection and default-branch facts are resolved only from current exact-candidate receipts and are never cached here.
 
 This is the only global human-readable development authority in the working tree. Machine registries own bounded facts and `docs/STATUS.md` is generated. This document grants no runtime, model, provider, tool, network, filesystem, secret, Matrix, fleet, operator, promotion, or release authority.
@@ -257,12 +257,21 @@ Low-risk, read-only, reversible and supported decisions may use the fast path. H
 ### Unified DecisionCell and recursive organ composition
 
 The selected target architecture is a backend-neutral **DecisionCell** implemented
-inside the existing Neuron/Intuition modules. Laya is the initial open-weight,
-locally trainable implementation candidate, not a permanent framework dependency
-and not an already activated Hepta model. A cell owns a logical identity, bounded
-state, effective parameter identity, typed observation/action contract and learning
-history. It does not automatically own a process, database, model server, optimizer
-service or top-level module entry. The forty-module ownership model is unchanged.
+inside the existing Neuron/Intuition modules. Laya remains the current source-reviewed
+choice/score baseline and latency floor; it is not the selected default, a permanent
+framework dependency or an already activated Hepta model. The stable surface is the
+decision contract. Selection among Laya, multilingual bidirectional encoders,
+license-clean baselines, compact numerical policies or future compatible backends
+requires one exact-artifact bakeoff on the same data, heads, quantization, target
+hardware, candidate-set sizes and recovery tests.
+
+A cell owns a logical identity, bounded state, exact effective parameter-bundle
+identity, typed observation/decision contract and learning history. It does not
+automatically own a process, database, model server, optimizer service or top-level
+module entry. The forty-module ownership model is unchanged. Backend replacement
+must not rewrite the organ graph, authority kernel, historical decisions or consumer
+semantics; incompatible state, tokenizer, normalizer, calibration or head changes
+require an admitted migration or a fresh generation.
 
 Default effective parameters compose a shared base, an organ adapter and a cell
 adapter/head. Independent effective parameters are real trainable parameters, not
@@ -289,15 +298,96 @@ cadences with frozen reference versions, retention checks and compatible bundle
 publication. Lack of data permits no update; model count is not an efficacy metric.
 Authority, goals and observer criteria remain outside learned parameter blocks.
 
-Implementation is ordered through existing work packages: define the cell contract
-and measured Laya profile; run a read-only retrieval organ with deterministic and
-shared-model baselines; add node-local adaptation; add organ-level credit; then
-qualify structural surgery and slower shared-base consolidation. Count training,
-inference, evaluation and migration cost in every comparison. Existing source and
+#### Typed decision contract and backend profiles
+
+One admitted DecisionCell invocation freezes the objective and NDU revisions,
+body/session/document generation, observation frontier, complete legal action set,
+candidate-target set, effective parameter bundle, deadline and resource budget.
+The model emits typed heads rather than prose or executable bytes:
+
+```text
+opcode distribution
+pointer over the admitted target set
+bounded parameter slots and expected postcondition
+continue / stop / abstain / request-evidence / slow-path disposition
+calibrated confidence, OOD and value/cost estimates
+bounded state-successor proposal
+```
+
+The deterministic owner applies legal masks, verifies exact target identity, commits
+the decision receipt and only then maps the selected semantic action into an existing
+authorized operation. A DecisionCell never emits native machine code, shellcode,
+raw syscalls, an unrestricted script, credentials, capability tokens or a terminal
+success claim. Canonical binary encoding, checksums and framing belong to a versioned
+deterministic codec after semantic validation.
+
+Backend profiles remain separate: a low-latency encoder/policy profile supplies the
+shared representation and typed heads; Laya remains the choice/score baseline;
+target retrieval/grounding may use a separate embedding or perception owner; and an
+optional Action-IR compiler may normalize bounded arguments. Retrieval, perception
+or compiler models do not silently become the Cell state owner or effect authority.
+Every selected bundle binds exact base, organ/cell adapters, heads, tokenizer or
+preprocessor, normalizer, calibrator, quantization, runtime, device, license/SBOM
+and content digests.
+
+#### Cognitive control plane and binary motor data plane
+
+MCP, registered tools and equivalent typed remote protocols remain the open cognitive
+control plane for discovery, dynamic capabilities, remote services and long-tail
+work. Stable high-frequency local browser, desktop or device actions may use a
+compact binary motor data plane only after they share one typed semantic action,
+operation identity, final-payload digest, deadline, authority check, durable dispatch
+record and terminal observer with the ordinary tool path. Transport choice never
+creates a second effect owner.
+
+A future `ComputerActionIR`/binary-frame profile is a design target, not a registered
+wire contract or activation claim. DecisionCells select semantic fields and target
+references; deterministic host code canonicalizes and encodes them. Binary delivery
+is an optimization after validation, not permission to bypass Codex, Agentd,
+`kernel.operations`, final-use authority, reflex veto, reconciliation or human
+control. Unknown opcode/version, changed payload, stale generation, oversized frame
+or absent terminal evidence fails closed.
+
+#### External teacher and offline learning system
+
+A provider-hosted frontier model may act as a teacher, curriculum generator, critic
+or difficult-case adjudicator, but never as runtime authority or ground truth. Its
+structured proposal binds the frozen observation, complete legal candidates, exact
+provider/model/request/tool-schema identity, selected action, alternatives,
+postcondition, uncertainty and cost. Private reasoning text is neither required nor
+stored as a training contract.
+
+An external teacher can remove the early need to operate a second large local teacher,
+but it cannot remove the offline corpus, simulation twin, deterministic validators,
+independent outcome receipts, human review, future-window evaluation or student-state
+coverage. Training aggregates teacher proposals only after acceptance by those
+owners. DAgger-style iterations execute the current student in simulation/shadow,
+collect the states it actually reaches and request labels for those states; static
+successful demonstrations alone are insufficient for sequential control.
+
+A local open-weight/offline teacher is optional for the first pilot and recommended
+later for outage resilience, confidential/offline evaluation, low-cost replay and
+heterogeneous disagreement checks. Provider terms, output-training rights, data-use
+scope, retention and privacy are admission fields. A teacher change creates a new
+dataset generation; it never silently relabels prior outcomes or active weights.
+
+Implementation is ordered through existing work packages: freeze the typed Cell
+contract and exact bundle identity; implement the same heads for the current Laya
+baseline and at least one multilingual encoder candidate plus an independent
+license/supply-chain baseline; run the registered equal-budget bakeoff; collect
+MCP/tool and human traces into an accepted offline corpus; perform teacher-assisted
+shadow and DAgger iterations; then admit one read-only/low-risk binary motor consumer
+before expanding effect classes. Node-local adaptation, organ credit, structural
+surgery and slower shared-base consolidation follow only after recovery, calibration,
+retention and total lifecycle cost are qualified.
+
+Count teacher calls, data review, training, inference, evaluation, encoding,
+transport, recovery and migration cost in every comparison. Existing source and
 product claims do not advance from this design amendment. Detailed cell mechanics
-live in `docs/learning/NEURAL_BIOMIMICRY_SPEC.md`; organ mechanics live in
-`docs/cns/TECHNICAL.md`; rollout and experiments live in the existing learning
-specifications and registries. Do not create another global plan or per-cell gate.
+live in `docs/learning/NEURAL_BIOMIMICRY_SPEC.md`; organ and motor-plane mechanics
+live in `docs/cns/TECHNICAL.md`; rollout and experiments live in the existing
+learning specifications and registries. Do not create another global plan,
+per-backend roadmap, per-cell gate or duplicate executor.
 
 ### Neural Circuits and the Nervous System
 

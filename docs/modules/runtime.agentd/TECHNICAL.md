@@ -94,6 +94,14 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Compose cells through existing organ/Neuron/inference owners, not one service or database per node. Preserve cancellation, bounded task lifetime, generation fencing and terminal reconciliation. Attach the same product decision path rather than extending several bespoke main-loop branches per new backend.
 
+Agentd receives an opaque typed Cell invocation and committed result; it does not
+select a teacher, decode arbitrary model prose into authority or expose raw executable
+bytes. External frontier teachers participate only in the learning/evaluation owners'
+offline accepted corpus or shadow workflow. A selected semantic action may continue
+through Codex/MCP tools or a deterministic local binary Action-IR encoder, but both
+reuse the existing operation/effect owner, final-payload binding and reconciliation
+path. Transport selection never creates another executor.
+
 Compose the evolved TaskFlow owner, event ingress and existing cell/organ ports. Calendar wake-up and direct-event admission remain distinct; no fake occurrences or standalone duplicate runtime. See the
 [Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
 

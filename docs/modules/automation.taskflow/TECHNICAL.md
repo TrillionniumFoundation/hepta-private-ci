@@ -135,6 +135,26 @@ control-completion and derived learning feedback are distinct edge roles. Unknow
 critical roles/fields reject before registration. Public capability expansion
 requires its actual authority boundary; an edge cannot grant it by existence.
 
+### 4.2.1 Tool control plane and local binary action data plane
+
+A Circuit `Decide` activation selects a semantic action and generation-bound target,
+not transport bytes. Dynamic or remote capabilities continue through Codex/MCP or
+registered tool owners. Stable high-frequency local browser, desktop or device
+operations may compile the same semantic action into a bounded binary Action-IR
+frame only through deterministic host code. Both paths retain one run/activation,
+operation identity, final-payload digest, authority epoch, deadline and terminal
+observer.
+
+No Cell, routing policy or circuit definition may contain arbitrary machine code,
+shellcode, raw syscalls, unrestricted scripts, credentials or consumable capability
+tokens. Unknown frame version/opcode, changed payload, stale page/body/session
+identity or oversize/non-canonical encoding rejects before dispatch. Persist the
+selected branch and exact Action-IR digest before effect entry. A transport reply
+remains dispatched/accepted evidence, not success; restart reuses the committed
+choice and reconciles the original operation instead of regenerating bytes with a
+new model or retrying an uncertain effect.
+
+
 Initialization/fallback dependencies stay DAGs. Admitted runtime feedback can
 reactivate a node at a later round, subject to bounded event count, queue bytes,
 wall/monotonic horizon profile, activation depth and no-progress policy. A cycle

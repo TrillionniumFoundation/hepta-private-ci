@@ -87,6 +87,15 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Host scoped DecisionCell state, effective parameter identity and typed prediction signals using existing checkpoint CAS. Keep cells as organ-local instances, not new subjects or processes; delegate real model execution to inference.control. Support base/organ/cell bundle compatibility, state transformation and no-data/no-update.
 
+The base is not permanently fixed to Laya. Retain Laya as the current choice/score
+baseline and admit a replacement only through the registered equal-head/equal-data
+backend bakeoff and exact artifact bundle. The runtime output surface separates
+opcode, target pointer, bounded arguments, expected postcondition,
+stop/abstain/slow-path, calibration/OOD, value/cost and state successor. It never
+emits executable machine bytes, credentials or authority; deterministic owners apply
+masks and encode any downstream Action-IR representation after the Cell receipt.
+External-teacher labels are offline corpus inputs, not a runtime provider dependency.
+
 Circuit calls bind activation/round and causal input identity. Preserve cell-owned checkpoint CAS and return exact receipts for run-owner handoff; restoring a committed route must not re-infer its historical choice. See the
 [Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
 

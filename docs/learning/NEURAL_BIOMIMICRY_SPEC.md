@@ -15,9 +15,11 @@ The term “neuron” does not claim biological equivalence. NDU supplies prefer
 ### DecisionCell is the common trainable unit
 
 A Hepta DecisionCell is a logical, stateful decision unit within the existing
-Neuron/Intuition substrate. Laya is its initial trainable backend candidate;
-backend-neutral ports also admit qualified compact/distilled or numerical models.
-The stable unit is the decision contract, not the vendor model or Python API.
+Neuron/Intuition substrate. Laya is retained as the initial source-reviewed
+choice/score and latency baseline, not as the selected default. Backend-neutral
+ports admit qualified multilingual encoders, compact/distilled policies or numerical
+models. The stable unit is the decision contract, not a vendor model, Python API,
+transport encoding or teacher provider.
 A cell is not a biological neuron, top-level module, process, database or complete
 NDU subject. Its purpose is an uncertain semantic decision that can improve from
 experience. Exact arithmetic, schema checks, signature verification, truth
@@ -30,6 +32,40 @@ not each instantiate a heavy solver or an independently running trainer.
 `NDU_FBSDE_SPEC.md` owns that optimization semantics; `../cns/TECHNICAL.md` owns
 organ composition. This extension specifies a target and does not relabel native
 sparse kernels, model receipts or fixture tests as a trained cell implementation.
+
+### Typed DecisionCell contract and model-profile separation
+
+One invocation consumes an immutable `DecisionCellInput` projection containing the
+scoped objective/NDU/body revisions, causal observation frontier, bounded temporal
+state reference, complete legal action set, admitted target set, exact parameter
+bundle, budget and deadline. A compatible implementation produces distinct typed
+outputs for opcode distribution, target pointer, bounded arguments, expected
+postcondition, stop/abstain/request-evidence/slow-path, calibrated uncertainty/OOD,
+value/cost and a bounded state-successor proposal.
+
+Legal-action masking, target identity, operation authorization, state commit and
+effect dispatch remain deterministic owner responsibilities. A raw probability is
+not a behavior propensity until the deployed mask and exploration policy are known.
+The Cell never emits credentials, capability tokens, arbitrary host paths, native
+machine code, shellcode, raw syscalls, unrestricted scripts or a claimed terminal
+external result. A deterministic codec may serialize an already validated semantic
+action into compact binary form; serialization is not part of learned authority.
+
+Backend profiles are orthogonal. The hot-path encoder/policy profile supplies shared
+features and typed heads. Laya remains the choice/score baseline. Retrieval or
+reranking models reduce a large target universe to an owner-disclosed shortlist.
+Visual grounding remains a shared perception service. An optional Action-IR compiler
+normalizes bounded arguments. None of those auxiliary profiles inherits Cell state,
+organ membership or effect authority merely because it participates in one trace.
+
+The first selection panel compares the Laya baseline, at least one multilingual
+bidirectional encoder at a low-latency size, a higher-quality encoder profile and an
+independent license/supply-chain baseline. All arms use the same training episodes,
+heads, candidate sets, quantization constraints, target hosts and crash/replay tests.
+Report opcode and pointer accuracy, stop and abstention error, calibration/OOD,
+wrong-generation selection, duplicate/unknown effect behavior, p50/p95/p99 latency,
+RSS/accelerator memory, energy and lifecycle cost. No public benchmark substitutes
+for the registered Hepta task and recovery panel.
 
 ## 2. Symbols, dimensions, units and normalization
 
@@ -272,16 +308,18 @@ L=L_{task}+\lambda_pL_{prediction}+\lambda_cL_{calibration}
 
 A local three-factor rule is not assumed equivalent to backpropagation. Its cosine agreement, utility effect, stability and retention are measured. Candidates with high agreement but poor causal utility fail. Hyperparameters and replay mixture are immutable manifests and evaluated on future windows.
 
-### Local Laya adaptation and consolidation
+### Backend-neutral adaptation, Laya baseline and consolidation
 
-The source-review candidate is NandhaKishorM/laya at
+The retained source-review baseline is NandhaKishorM/laya at
 `c7527708f9f5220c669d8aa385077cd28d04708a`. Its `DecisionModel` exposes an encoder,
 typed head, scorer and act head; `Agent.system_one` is a no-gradient inference
 entry. Local training must use the underlying tensor model rather than returned
 JSON. The input sequence jointly contains question, options and state, so a
 state-only embedding cache cannot silently replace its question-conditioned
-encoder. These observations identify an integration surface, not an installed
-Hepta backend or a measured speed/calibration result.
+encoder. These observations identify a comparison surface, not an installed,
+selected or preferred Hepta backend and not a measured speed/calibration result.
+A replacement encoder/policy must satisfy the same typed heads, state/recovery and
+bundle-identity contract rather than adding a parallel DecisionCell API.
 
 Begin with a frozen base and registered trainable heads/adapters. A shared trainer
 serves bounded jobs with per-cell/organ scope; do not create a trainer service per
@@ -296,7 +334,7 @@ at the correlated episode and source-group level.
 Three-factor eligibility updates remain a candidate mechanism for bounded local
 heads. They are not the exact gradient of a full Transformer. Measure alignment
 with a bounded gradient oracle, organ utility and retention before use. Larger
-Laya updates use conventional local tensor training through learning.operator;
+backend-specific updates use conventional local tensor training through learning.operator;
 learning.plasticity bounds candidate parameter groups and structural proposals.
 NDU's stochastic Z is not a weight gradient. Selection remains outside the trainer.
 
@@ -307,6 +345,39 @@ interpret parameter averaging as knowledge transfer. Cell, organ and base update
 cadences are independently scheduled against named compatible reference bundles.
 Sharing updated parameters across principals requires explicit data-use policy;
 shared infrastructure does not authorize pooling private replay or gradients.
+
+### External teacher, offline corpus and student-state aggregation
+
+A frontier provider model may generate demonstrations, counterfactual alternatives,
+postconditions, critiques or hard-case labels, but every output is a teacher proposal.
+A `TeacherDecisionRecord` binds the frozen input and legal candidate digests,
+provider/model/request/tool-schema identity, selected action and target, alternatives,
+uncertainty class, expected postcondition, cost and acceptance state. Private chain
+of thought is neither required nor stored; bounded reason codes and verifiable
+input/output records are sufficient.
+
+Teacher agreement is not outcome truth. A proposal enters the training corpus only
+through the declared simulator/environment result, deterministic legality checks,
+trusted terminal receipt, human correction or independent evaluator. Missing or
+indeterminate outcomes remain censored rather than being relabelled as failure or
+success. The same provider cannot generate, observe and accept one training fact
+without an independent boundary.
+
+An external teacher can replace the initial operational need for a large local
+teacher model, but not the offline dataset, replayability, future-window holdout,
+retention/unlearning tests, simulation twin or evaluator. Sequential-policy training
+uses student-state aggregation: execute the current student in simulation or shadow,
+collect the states and mistakes it actually reaches, request bounded labels for those
+states and retain all failed or abstained trajectories. Static successful teacher
+traces alone do not establish recovery from the student's distribution shift.
+
+A local open-weight teacher is optional for the first pilot and recommended later
+for offline/confidential tasks, provider outage, low-cost regression replay and
+heterogeneous disagreement analysis. Teacher/model changes create new dataset and
+evaluation generations. Before any provider output trains a distributable artifact,
+record applicable contract, output-use/training rights, data-use scope, retention,
+privacy and provenance. Those checks are non-compensable and cannot be inferred from
+API access or ownership of a returned string.
 
 ### Shared weights with independent working memory
 

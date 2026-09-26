@@ -157,6 +157,46 @@
       ]
     },
     {
+      "id": "decision_cell_backend_bakeoff",
+      "unit": "frozen_task_candidate_set_target_host_profile",
+      "arms": [
+        "laya_source_review_choice_score_baseline",
+        "multilingual_bidirectional_encoder_low_latency_candidate",
+        "multilingual_bidirectional_encoder_quality_candidate",
+        "independent_license_supply_chain_baseline"
+      ],
+      "outcomes": [
+        "opcode_and_target_pointer_accuracy",
+        "stop_abstain_and_slow_path_error",
+        "calibration_brier_ece_and_ood",
+        "wrong_generation_or_illegal_action_rate",
+        "duplicate_indeterminate_and_recovery_behavior",
+        "p50_p95_p99_end_to_end_latency",
+        "rss_accelerator_memory_energy_and_batch_efficiency",
+        "training_serving_evaluation_migration_cost"
+      ]
+    },
+    {
+      "id": "decision_cell_teacher_distillation",
+      "unit": "student_rollout_state_or_future_window_task_cluster",
+      "arms": [
+        "accepted_human_environment_baseline",
+        "external_frontier_teacher_static_demonstrations",
+        "external_teacher_student_state_aggregation",
+        "external_plus_local_offline_teacher_disagreement_review"
+      ],
+      "outcomes": [
+        "future_window_task_utility",
+        "student_recovery_from_off_distribution_states",
+        "teacher_disagreement_and_human_correction_rate",
+        "calibration_ood_and_abstention",
+        "illegal_duplicate_or_unknown_effect_rate",
+        "retention_unlearning_and_non_resurrection",
+        "teacher_data_review_training_and_serving_cost",
+        "replayability_provenance_and_training_rights"
+      ]
+    },
+    {
       "id": "decision_cell_serving_scale",
       "unit": "target_host_workload_profile",
       "arms": [
