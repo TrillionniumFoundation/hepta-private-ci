@@ -1,0 +1,90 @@
+name: Learning artifacts exact-candidate qualification
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+permissions:
+  contents: read
+concurrency:
+  group: learning-artifacts-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+jobs:
+  qualification:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Bind source and ordered-parent merge candidate
+        env:
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$BASE_SHA" != 0000000000000000000000000000000000000000
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          if test "$LANE" = merge; then
+            tree=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            candidate=$(printf 'Artifact qualification synthetic merge\n' | git -c user.name='Qualification' -c user.email='qualification@users.noreply.github.com' commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            git checkout --detach "$candidate"
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+          fi
+      - name: Test receipt verifier
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_artifacts_*.py' -v
+      - name: Execute independent diagnostics and emit negative or positive receipt
+        env:
+          LANE: ${{ matrix.lane }}
+        run: |
+          python3 scripts/hepta_artifacts_evidence.py run \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
+            --output ".hepta-evidence/artifacts/$LANE"
+      - name: Retain logs even after failed diagnostics
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: learning-artifacts-${{ env.SOURCE_SHA }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/artifacts/${{ matrix.lane }}/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+  required:
+    name: learning.artifacts exact-head required
+    if: always()
+    needs: [qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: learning-artifacts-${{ env.SOURCE_SHA }}-*-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/received-artifacts
+      - name: Require successful execution and both exact receipts
+        env:
+          QUALIFICATION_NEEDS: ${{ toJSON(needs) }}
+        run: |
+          python3 scripts/hepta_artifacts_evidence.py aggregate \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" \
+            --output .hepta-evidence/received-artifacts
