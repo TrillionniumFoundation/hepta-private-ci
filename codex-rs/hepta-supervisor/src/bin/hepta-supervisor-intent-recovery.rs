@@ -14,6 +14,8 @@ use codex_hepta_supervisor::SignedIntentRecoveryDirective;
 use codex_hepta_supervisor::SignedIntentStatus;
 use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::SupervisordMethod;
+use codex_hepta_supervisor::SupervisordMutationAccepted;
+use codex_hepta_supervisor::SupervisordPayload;
 use codex_hepta_supervisor::SupervisordRequest;
 use codex_hepta_supervisor::read_signed_intent;
 use codex_hepta_supervisor::write_signed_intent_recovery_directive;
@@ -48,7 +50,10 @@ async fn main() -> Result<()> {
                 .next()
                 .and_then(|value| value.into_string().ok())
                 .context("abort requires the exact intent-sha256 shown by inspect")?;
-            ensure!(args.next().is_none(), "abort accepts <run-root> <intent-sha256>");
+            ensure!(
+                args.next().is_none(),
+                "abort accepts <run-root> <intent-sha256>"
+            );
             let intent = read_signed_intent(&root_or_socket)?
                 .context("no signed supervisor intent exists at this run root")?;
             if !matches!(
@@ -57,7 +62,10 @@ async fn main() -> Result<()> {
                     | SignedIntentStatus::Queued
                     | SignedIntentStatus::RecoveryRequired
             ) {
-                bail!("signed supervisor intent is already terminal: {:?}", intent.status);
+                bail!(
+                    "signed supervisor intent is already terminal: {:?}",
+                    intent.status
+                );
             }
             ensure!(
                 intent.intent_sha256.as_str() == expected_digest,
@@ -118,7 +126,10 @@ async fn observe(client: &SupervisordClient, agent: &AgentId) -> Result<serde_js
 fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
     ensure!(path.is_absolute(), "submission path must be absolute");
     let metadata = std::fs::symlink_metadata(path)?;
-    ensure!(metadata.file_type().is_file(), "submission must be a non-symlink regular file");
+    ensure!(
+        metadata.file_type().is_file(),
+        "submission must be a non-symlink regular file"
+    );
     let mut options = std::fs::OpenOptions::new();
     options.read(true);
     #[cfg(unix)]
@@ -128,7 +139,10 @@ fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
     }
     let file = options.open(path)?;
     let opened = file.metadata()?;
-    ensure!(opened.file_type().is_file(), "opened submission is not a regular file");
+    ensure!(
+        opened.file_type().is_file(),
+        "opened submission is not a regular file"
+    );
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
@@ -145,9 +159,12 @@ fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
     }
     let mut bytes = Vec::new();
     file.take(MAX_SUBMISSION_BYTES + 1).read_to_end(&mut bytes)?;
-    ensure!(bytes.len() as u64 <= MAX_SUBMISSION_BYTES, "submission exceeds frame budget");
-    let method: SupervisordMethod = serde_json::from_slice(&bytes)
-        .context("invalid typed supervisor method JSON")?;
+    ensure!(
+        bytes.len() as u64 <= MAX_SUBMISSION_BYTES,
+        "submission exceeds frame budget"
+    );
+    let method: SupervisordMethod =
+        serde_json::from_slice(&bytes).context("invalid typed supervisor method JSON")?;
     ensure!(
         matches!(
             &method,
@@ -163,16 +180,28 @@ fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
     Ok(method)
 }
 
+fn accepted(response: SupervisordMutationAccepted) -> Result<serde_json::Value> {
+    let payload = SupervisordPayload::MutationAccepted {
+        operation: response.operation,
+        accepted_state_digest: response.accepted_state_digest,
+        agent: response.agent,
+        production_receipt: response.production_receipt,
+    };
+    serde_json::to_value(payload).context("serialize canonical mutation acceptance")
+}
+
 async fn submit(client: &SupervisordClient, method: SupervisordMethod) -> Result<serde_json::Value> {
     match method {
-        SupervisordMethod::SignedUpgrade { fence, grant, h7_envelope } => {
-            let response = client.signed_upgrade(fence, grant, h7_envelope).await?;
-            Ok(json!({"operation": "signed_upgrade", "response": response}))
-        }
-        SupervisordMethod::SignedRollback { fence, grant, h7_envelope } => {
-            let response = client.signed_rollback(fence, grant, h7_envelope).await?;
-            Ok(json!({"operation": "signed_rollback", "response": response}))
-        }
+        SupervisordMethod::SignedUpgrade {
+            fence,
+            grant,
+            h7_envelope,
+        } => accepted(client.signed_upgrade(fence, grant, h7_envelope).await?),
+        SupervisordMethod::SignedRollback {
+            fence,
+            grant,
+            h7_envelope,
+        } => accepted(client.signed_rollback(fence, grant, h7_envelope).await?),
         SupervisordMethod::ResolveProductionRecovery { fence, decision } => {
             let digest = decision.digest().clone();
             let state = client.resolve_production_recovery(fence, decision).await?;
