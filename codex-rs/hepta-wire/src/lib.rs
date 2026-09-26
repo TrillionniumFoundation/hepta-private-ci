@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod directional_session;
 mod envelope;
 mod envelope_v2;
 mod frame;
@@ -19,6 +20,9 @@ mod session;
 mod stream;
 mod version;
 
+pub use directional_session::AuthenticatedWireSession;
+pub use directional_session::SessionEndpoint;
+pub use directional_session::SessionMacKey;
 pub use envelope::MAX_WIRE_PAYLOAD_BYTES;
 pub use envelope::WireEnvelope;
 pub use envelope::WireError;
@@ -52,13 +56,11 @@ pub use schema::SchemaRegistry;
 pub use schema::decode_typed;
 pub use schema::encode_typed;
 pub use secure_session::AuthenticatedSessionError;
-pub use secure_session::AuthenticatedWireSession;
 pub use secure_session::MAX_AUTHENTICATED_RECORD_BYTES;
 pub use secure_session::MAX_CHANNEL_BINDING_BYTES;
 pub use secure_session::MIN_CHANNEL_BINDING_BYTES;
 pub use secure_session::NegotiationTranscript;
 pub use secure_session::SessionErrorContext;
-pub use secure_session::SessionMacKey;
 pub use secure_session::WireSession;
 pub use secure_session::WireSessionError;
 pub use session::NegotiatedDecodeBatch;
