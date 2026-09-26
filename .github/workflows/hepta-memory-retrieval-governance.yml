@@ -1,6 +1,7 @@
 name: Memory retrieval source and review governance
 
 on:
+  workflow_call:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review, converted_to_draft, edited]
   pull_request_review:
