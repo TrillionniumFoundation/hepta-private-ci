@@ -569,3 +569,41 @@ age, pending counts and truncation without claiming work. Stable failure
 dispositions distinguish fail-stop, bounded retry, isolated invalid/conflict
 input and reconcile-only unknown outcomes. Source constants and target-host
 qualification requirements are in [SLO.md](SLO.md).
+
+
+## 21. Minimal durable Neural Circuit runtime
+
+`neural_circuit_runtime.rs` implements the first executable vertical
+slice on the existing TaskFlow owner:
+
+```text
+ingress binding
+-> DecisionCell request
+-> recorded route receipt
+-> typed observe/guard/organ port
+-> durable wait/join
+-> final-use-authorized effect handoff or terminal node
+-> terminal receipt
+```
+
+Circuit admission compiles and registers the immutable V1 definition,
+creates/claims/starts the existing TaskFlow run and binds activation,
+input, policy/parameter/resource digests and budget into one immutable
+run identity. Decision recovery checks the durable step receipt before
+invoking a cell; recorded routes are reconstructed from the receipt and
+are never re-inferred. Node movement uses fenced TaskFlow `Wait`/`Resume`
+events, and depth is counted from those existing events. Feedback is a
+bounded sequence of decision attempts; exhaustion cancels the same run.
+
+Observe, transform-guard and organ nodes call typed ports and append
+receipts to the existing step outbox. Wait/join retains an opaque token
+until an explicit receipt-bound resume. Effect nodes prepare the exact
+existing `AuthorizedEffectIntent` step and return `authority_granted=false`;
+Agentd's separately configured final-use/provider host remains the only
+product dispatch boundary and terminalizes this first-slice effect run.
+
+No new scheduler, SQL table, authority issuer, terminality oracle or
+provider transport is introduced. Existing V1 DAG definitions and
+schema-v19 databases remain byte/behavior compatible. Cross-host movement
+remains the fail-closed snapshot/exclusive-writer procedure in the
+migration runbook rather than synthetic distributed atomicity.

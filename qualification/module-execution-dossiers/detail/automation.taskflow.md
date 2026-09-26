@@ -88,3 +88,26 @@ Source implementation does not by itself authorize a concrete external provider,
 The repository-controlled source boundary is closed for the Agentd -> App Server durable causal spine, Calendar V2 owner plus capability-negotiated Agentd creation surface, producer-owned `kernel.operations::OperationIntentV1` composition, final-use admission, owner-local external-effect durability, at-most-once dispatch evidence and indeterminate restart reconciliation. External-effect **repository product composition is source-closed**: Agentd exposes `AutomationExecuteEffect`/`AutomationReconcileEffect`, loads an independently provisioned `FinalUseAuthority` and attested HTTP provider host, and calls the TaskFlow-owned `ProviderEffectTaskFlowDriver` async bridge.  The durable attempt is written before provider contact and restart lookup reuses the same destination + run + step identity.  This is source composition only: provider credentials, signed grants, authentic/current IANA tzdb material, target-host measurements, activation and independent acceptance remain external evidence gates.
 
 Product execution, target-host deployment, independent acceptance, activation, promotion and release remain false until their separate evidence gates pass.
+
+
+## 8. Neural Circuit vertical-slice qualification
+
+The executable slice reuses the TaskFlow definition/run/event/step
+ledgers. Qualification must demonstrate that a recorded DecisionCell
+route survives reopen without a second cell call, organ receipts precede
+edge advance, joins require the exact token/receipt, depth and feedback
+bounds cancel/fail closed, effect handoff grants no authority, and terminal
+receipts bind the final run state digest. `tests/neural_circuit_runtime.rs`
+covers deterministic replay and the organ -> wait/join -> terminal path.
+Selected-host effects and independent acceptance remain external gates.
+
+
+## 9. Crash and state-machine qualification
+
+`runtime_crash_points.rs` distinguishes proven pre-admission failure
+from a result that may have crossed the boundary and verifies that the
+latter survives close/reopen under the exact stable client identity.
+`runtime_state_machine_fuzz.rs` performs a deterministic 20,000-case
+property sweep over admission, depth, feedback and retry bounds and
+enumerates every public failure disposition. These tests supplement,
+rather than replace, selected-host crash injection and provider lookup.

@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "test assertions use explicit failure context"
+)]
+
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::time::Duration;
