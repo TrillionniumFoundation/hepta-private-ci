@@ -1,279 +1,125 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
-  "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
-  },
-  "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
-  "owner": "intelligence-platform",
-  "deputy": "security-authority",
-  "technicalGuide": "docs/modules/context.compiler/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-context-compiler"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-context-compiler"
-  ],
-  "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "legacy_v1_read_only_source_composed_verified_v2_not_composed",
-  "productionWriterState": "not_established",
-  "operations": [
-    {
-      "operation": "compile",
-      "nativeSymbol": "compile",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "state": "legacy_compatibility_source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/lib_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "compile",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "compile_with_requirements",
-      "nativeSymbol": "compile_with_requirements",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/requirements.rs",
-      "state": "legacy_compatibility_source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/requirements_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "compile_with_requirements",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "compile_candidate_bound",
-      "nativeSymbol": "compile_candidate_bound",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
-      "state": "legacy_compatibility_source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "compile_candidate_bound",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "verify_admission_snapshot_v2",
-      "nativeSymbol": "verify_admission_snapshot_v2",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "revalidate_attachment",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "verify_admission_snapshot_successor_v2",
-      "nativeSymbol": "verify_admission_snapshot_successor_v2",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "revalidate_attachment",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "verify_admission_v2",
-      "nativeSymbol": "verify_admission_v2",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "compile_context",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "compile_v2",
-      "nativeSymbol": "compile_v2",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "compile_context",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "record_serialization",
-      "nativeSymbol": "record_serialization",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "compile_context",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "build_attachment",
-      "nativeSymbol": "build_attachment",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "revalidate_attachment",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "operation": "prepare_delivery_v2",
-      "nativeSymbol": "prepare_delivery_v2",
-      "designOperation": "revalidate_attachment"
-    },
-    {
-      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "operation": "observe_delivery",
-      "nativeSymbol": "observe_delivery",
-      "designOperation": "compile_context"
-    },
-    {
-      "operation": "wire_v2_compatibility_receipt",
-      "nativeSymbol": "encode_compilation_receipt_wire_v2",
-      "sourcePath": "codex-rs/hepta-context-compiler/src/wire.rs",
-      "state": "legacy_v1_semantics_transport_boundary_canonical_producer_enforced",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-context-compiler/src/wire_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "compile_context",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    }
-  ],
-  "repositoryControlledGaps": [
-    "Compose the verified V2 operations into one authenticated named product caller with the authoritative admission verifier, exact tokenizer/serializer/template/tool-schema profile, and runtime provider owner.",
-    "At the real provider boundary consume current final-use authority in the same effect-bound ceremony that binds ContextDeliveryPreparationV2 to the exact serialized payload and canonical ProviderRequestBinding before physical send.",
-    "Persist and independently resolve provider attempt/terminal evidence, then exercise revoke race, adapter death, provider indeterminate, process death and retry reconciliation without converting uncertainty into success.",
-    "Run exact-head, deterministic synthetic-merge, capacity and target-host qualification before changing productExecutionProved, activation or release."
-  ],
-  "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
-  ],
-  "claimBoundary": {
-    "nativeSourceMappingComplete": true,
-    "sourceRootPresent": true,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false,
-    "implementedOperationMappingComplete": true
+  "generated": {
+    "manifest": "docs/modules/context.compiler/MODULE_MANIFEST.json",
+    "manifestSha256": "e17a47bffce932b36eac91d7d1a5a1160a6ffe83d8f5809c8e9bd5809a48f930",
+    "generator": "scripts/generate_context_compiler_module_docs.py",
+    "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "branch": "codex/context-compiler-v2-provider-closure-20260927"
   },
-  "sourceRoot": [
-    "codex-rs/hepta-context-compiler"
+  "status": {
+    "coreImplementation": "complete",
+    "productComposition": "partial",
+    "v2ProviderClosure": "incomplete",
+    "currentHeadQualification": "absent"
+  },
+  "statusRationale": {
+    "coreImplementation": "V2 compilation, verified admission, canonical byte coverage, typed snapshot successor, attachment, delivery preparation and provider evidence observation are implemented.",
+    "productComposition": "Prompt registry, hepta-intelligence, Agentd and the provider-policy extension consume context compiler outputs, but the strict provider-bound V2 preparation is not yet the only serving path.",
+    "v2ProviderClosure": "The provider host ABI exposes request digests but no qualified exact tokenizer over the final provider request bytes; strict attestation therefore fails closed until the host capability is supplied.",
+    "currentHeadQualification": "No immutable qualification receipt for the exact branch head may be claimed before the qualification workflow completes."
+  },
+  "sourceRoots": [
+    "codex-rs/hepta-context-compiler",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+    "codex-rs/ext/hepta-prompt/src/lib.rs",
+    "codex-rs/core/src/model_provider_policy"
   ],
-  "sourceBaseMode": "module_local_strict",
-  "productCallers": [
+  "publicSurface": [
+    "compile_v2",
+    "record_canonical_serialization_v2",
+    "build_attachment",
+    "verify_typed_admission_snapshot_successor_v2",
+    "prepare_delivery_from_successor_v2",
+    "verify_provider_request_coverage_v2",
+    "tokenize_verified_provider_request_v2",
+    "observe_delivery"
+  ],
+  "proofObjects": [
+    "CanonicalContextCoverageV2",
+    "CanonicalSerializedContextProofV2",
+    "VerifiedAdmissionSnapshotSuccessorV2",
+    "VerifiedProviderRequestV2",
+    "FinalProviderRequestTokenizationV2",
+    "ContextDeliveryPreparationV2",
+    "ContextDeliveryReceiptV2"
+  ],
+  "byteIdentities": [
     {
-      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "nativeSymbol": "compile_context",
-      "state": "compiled_legacy_owner_adapter_not_verified_v2_ingress"
+      "name": "canonical context bundle",
+      "owner": "context.compiler",
+      "material": "Selected realized context items plus canonical envelope and item headers.",
+      "digest": "CanonicalContextCoverageV2.payload_digest",
+      "securityMeaning": "Every byte is covered; selected item bytes are exact and framing is compiler-owned."
+    },
+    {
+      "name": "prompt fragments",
+      "owner": "hepta-intelligence / ext.hepta-prompt",
+      "material": "Developer-policy fragments projected from the canonical context for host composition.",
+      "digest": "PromptRuntimeAttachmentV1.source_binding_digest",
+      "securityMeaning": "Binds the product projection, but is not itself the complete provider request."
+    },
+    {
+      "name": "provider final request",
+      "owner": "provider host",
+      "material": "Exact bytes submitted after all provider/model framing and request construction.",
+      "digest": "VerifiedProviderRequestV2.request_digest",
+      "securityMeaning": "Exact-tokenizer input; must contain one canonical context segment and only approved typed framing."
+    },
+    {
+      "name": "provider wire semantic digest",
+      "owner": "core model-provider policy",
+      "material": "Secret-free canonical semantics of the physical provider send, excluding credentials and timing.",
+      "digest": "ModelProviderInvocationInput.wire_semantic_sha256",
+      "securityMeaning": "Binds transport semantics; it is not interchangeable with the final-request byte digest."
     }
   ],
-  "sourceObjects": [
-    {
-      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
-      "object": "52efe73b0da51c5cbb054e8cdcfe3e59e4b08ba6"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs",
-      "object": "28c5a29b1dd4108c3570c3189a8a414ae5728795"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "object": "da1711e6575e0921ec4d2ae7b305fe8013f2e775"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/lib_tests.rs",
-      "object": "c9350dda2d75a4937fd77b1310cfaa2edafa8c59"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/requirements.rs",
-      "object": "33f723317f83feec2b6e8be8c45d058f58288a7e"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/requirements_tests.rs",
-      "object": "c0b88410e0738246004ec7c9aac01da4ffc13fde"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "object": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
-      "object": "49232cf8eb81a64110a3ba23e6c0abaf54830438"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/wire.rs",
-      "object": "6e0583a81b064eec7ceb0b785bc9a48bd801a2f1"
-    },
-    {
-      "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
-      "object": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
-    },
-    {
-      "path": "docs/modules/context.compiler/TECHNICAL.md",
-      "object": "bba347eebcdf9a9e93afaf5ae26798dee368bd0e"
-    }
+  "targetSequence": [
+    "registry/admission snapshot",
+    "compile_v2",
+    "canonical context serialization + complete segment coverage",
+    "build_attachment",
+    "fresh typed snapshot successor",
+    "prepare_delivery_from_successor_v2",
+    "provider host constructs exact final request",
+    "provider request coverage verification",
+    "exact tokenizer over final request bytes",
+    "provider submit using the attested request",
+    "provider terminal evidence",
+    "observe_delivery",
+    "durable ContextDeliveryReceiptV2"
+  ],
+  "productComposition": {
+    "callers": [
+      "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "codex-rs/ext/hepta-prompt/src/lib.rs",
+      "codex-rs/core/src/model_provider_policy"
+    ],
+    "current": "partial",
+    "closureCondition": "The host supplies exact final request bytes and a qualified profile-bound tokenizer, dispatch consumes the attested request without reconstruction, and Agentd durably persists ContextDeliveryReceiptV2."
+  },
+  "qualification": {
+    "workflow": ".github/workflows/context-compiler-qualification.yml",
+    "receiptArtifact": "context-compiler-qualification-receipt",
+    "commands": [
+      "python3 scripts/generate_context_compiler_module_docs.py --check",
+      "cargo fmt --all -- --check",
+      "cargo test -p codex-hepta-context-compiler",
+      "cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings",
+      "cargo deny check",
+      "bazel test //codex-rs/hepta-context-compiler:all",
+      "python3 scripts/hepta-readiness.py verify",
+      "python3 scripts/hepta-docs.py verify"
+    ]
+  },
+  "knownOpenItems": [
+    "Supply a qualified host tokenizer implementation for each provider/model profile.",
+    "Bind the host-generated final request coverage and tokenization attestation into the live provider-policy ABI.",
+    "Make ContextDeliveryPreparationV2 and ContextDeliveryReceiptV2 the sole Agentd serving and durable terminal path.",
+    "Produce an immutable successful qualification receipt for the exact branch head."
   ]
 }
