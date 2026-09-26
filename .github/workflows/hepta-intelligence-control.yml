@@ -53,6 +53,8 @@ jobs:
     name: intelligence.control (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
     strategy:
       fail-fast: false
       matrix:
