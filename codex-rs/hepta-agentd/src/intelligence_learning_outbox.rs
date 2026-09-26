@@ -157,8 +157,8 @@ impl IntelligenceLearningIntentV1 {
             StableId::new(value)
                 .map_err(|_| IntelligenceLearningOutboxErrorV1::Invalid("identifier"))?;
         }
+        parse_digest_allow_zero(&self.expected_predecessor)?;
         for value in [
-            self.expected_predecessor.as_str(),
             self.run_snapshot_digest.as_str(),
             self.objective_digest.as_str(),
             self.support_digest.as_str(),
@@ -232,7 +232,7 @@ impl DurableIntelligenceLearningOutboxV1 {
     pub fn open(path: PathBuf) -> Result<Self, IntelligenceLearningOutboxErrorV1> {
         validate_outbox_path(&path)?;
         if !path.exists() {
-            let mut value = Self {
+            let value = Self {
                 path,
                 records: BTreeMap::new(),
             };
@@ -404,24 +404,17 @@ impl DurableIntelligenceLearningOutboxV1 {
             .map(|record| record.operation_id.clone())
             .collect::<Vec<_>>();
         for operation_id in unresolved {
-            let record_id = self
+            let intent = self
                 .records
                 .get(&operation_id)
                 .ok_or(IntelligenceLearningOutboxErrorV1::Missing)?
-                .record_id
                 .clone();
             let observed = records
                 .iter()
-                .find(|record| record.event.record_id().as_str() == record_id);
+                .find(|record| record.event.record_id().as_str() == intent.record_id);
             match observed {
                 Some(record) => {
-                    let expected = parse_digest(
-                        &self
-                            .records
-                            .get(&operation_id)
-                            .ok_or(IntelligenceLearningOutboxErrorV1::Missing)?
-                            .semantic_digest,
-                    )?;
+                    let expected = parse_digest(&intent.semantic_digest)?;
                     if durable_event_semantic_digest(&record.event) == Some(expected) {
                         self.transition_observed(
                             &operation_id,
@@ -445,26 +438,20 @@ impl DurableIntelligenceLearningOutboxV1 {
                         .checked_add(1)
                         .ok_or(IntelligenceLearningOutboxErrorV1::Capacity)?;
                 }
-                None => {
-                    let state = self
-                        .records
-                        .get(&operation_id)
-                        .ok_or(IntelligenceLearningOutboxErrorV1::Missing)?
-                        .state;
-                    if state == IntelligenceLearningAppendStateV1::Prepared {
-                        self.transition_observed(
-                            &operation_id,
-                            IntelligenceLearningAppendStateV1::Indeterminate,
-                            None,
-                            None,
-                            None,
-                            Some(reason_digest("record absent after process recovery")?),
-                        )?;
-                        changed = changed
-                            .checked_add(1)
-                            .ok_or(IntelligenceLearningOutboxErrorV1::Capacity)?;
-                    }
+                None if intent.state == IntelligenceLearningAppendStateV1::Prepared => {
+                    self.transition_observed(
+                        &operation_id,
+                        IntelligenceLearningAppendStateV1::Indeterminate,
+                        None,
+                        None,
+                        None,
+                        Some(reason_digest("record absent after process recovery")?),
+                    )?;
+                    changed = changed
+                        .checked_add(1)
+                        .ok_or(IntelligenceLearningOutboxErrorV1::Capacity)?;
                 }
+                None => {}
             }
         }
         Ok(changed)
@@ -480,38 +467,50 @@ impl DurableIntelligenceLearningOutboxV1 {
         chain_digest: Option<Digest32>,
         reason_digest: Option<Digest32>,
     ) -> Result<IntelligenceLearningIntentV1, IntelligenceLearningOutboxErrorV1> {
-        let current = self
-            .records
-            .get_mut(operation_id)
-            .ok_or(IntelligenceLearningOutboxErrorV1::Missing)?;
-        if current.state.terminal() {
+        let event_digest = event_digest.map(|value| value.to_string());
+        let chain_digest = chain_digest.map(|value| value.to_string());
+        let reason_digest = reason_digest.map(|value| value.to_string());
+        let result = {
+            let current = self
+                .records
+                .get_mut(operation_id)
+                .ok_or(IntelligenceLearningOutboxErrorV1::Missing)?;
+            if current.state.terminal() {
+                if current.state == next
+                    && current.observed_sequence == sequence
+                    && current.observed_event_digest == event_digest
+                    && current.observed_chain_digest == chain_digest
+                    && current.reason_digest == reason_digest
+                {
+                    return Ok(current.clone());
+                }
+                return Err(IntelligenceLearningOutboxErrorV1::Conflict);
+            }
             if current.state == next
                 && current.observed_sequence == sequence
-                && current.observed_event_digest.as_deref()
-                    == event_digest.as_ref().map(ToString::to_string).as_deref()
-                && current.observed_chain_digest.as_deref()
-                    == chain_digest.as_ref().map(ToString::to_string).as_deref()
+                && current.observed_event_digest == event_digest
+                && current.observed_chain_digest == chain_digest
+                && current.reason_digest == reason_digest
             {
                 return Ok(current.clone());
             }
-            return Err(IntelligenceLearningOutboxErrorV1::Conflict);
-        }
-        current.state = next;
-        current.revision = current
-            .revision
-            .checked_add(1)
-            .ok_or(IntelligenceLearningOutboxErrorV1::Capacity)?;
-        current.observed_sequence = sequence;
-        current.observed_event_digest = event_digest.map(|value| value.to_string());
-        current.observed_chain_digest = chain_digest.map(|value| value.to_string());
-        current.reason_digest = reason_digest.map(|value| value.to_string());
-        current.validate()?;
-        let result = current.clone();
+            current.state = next;
+            current.revision = current
+                .revision
+                .checked_add(1)
+                .ok_or(IntelligenceLearningOutboxErrorV1::Capacity)?;
+            current.observed_sequence = sequence;
+            current.observed_event_digest = event_digest;
+            current.observed_chain_digest = chain_digest;
+            current.reason_digest = reason_digest;
+            current.validate()?;
+            current.clone()
+        };
         self.persist()?;
         Ok(result)
     }
 
-    fn persist(&mut self) -> Result<(), IntelligenceLearningOutboxErrorV1> {
+    fn persist(&self) -> Result<(), IntelligenceLearningOutboxErrorV1> {
         let file = IntelligenceLearningOutboxFileV1 {
             schema_version: OUTBOX_SCHEMA_VERSION,
             records: self.records.values().cloned().collect(),
@@ -606,7 +605,10 @@ pub(crate) fn production_outcome_semantic_digest(
         &outcome.outcome_id,
         &outcome.episode_id,
         &outcome.observer.principal_id,
-        &outcome.observer.controllerless_digest(),
+        outcome.observer.credential_chain_digest,
+        outcome.observer.signing_key_digest,
+        outcome.observer.scope_digest,
+        outcome.observer.authority_epoch,
         outcome.observed_at,
         outcome.value,
         outcome.unit_profile_digest,
@@ -658,20 +660,15 @@ fn authenticated_decision_record_semantic_digest(
 fn authenticated_outcome_record_semantic_digest(
     value: &AuthenticatedOutcomeRecordV2,
 ) -> Digest32 {
-    let mut principal_bytes = b"hepta.agentd.intelligence-outcome-principal.v1\0".to_vec();
-    push_id(&mut principal_bytes, &value.observer_id);
-    push_id(&mut principal_bytes, &value.observer_controller_id);
-    principal_bytes.extend_from_slice(value.observer_credential_chain_digest.as_array());
-    principal_bytes.extend_from_slice(value.observer_signing_key_digest.as_array());
-    principal_bytes.extend_from_slice(value.observer_scope_digest.as_array());
-    principal_bytes.extend_from_slice(&value.observer_authority_epoch.to_be_bytes());
-    let principal_digest = Digest32::of_bytes(&principal_bytes);
     outcome_semantic_digest_fields(
         &value.record_id,
         &value.outcome_id,
         &value.episode_id,
         &value.observer_id,
-        &principal_digest,
+        value.observer_credential_chain_digest,
+        value.observer_signing_key_digest,
+        value.observer_scope_digest,
+        value.observer_authority_epoch,
         value.observed_at,
         value.value,
         value.unit_profile_digest,
@@ -725,7 +722,10 @@ fn outcome_semantic_digest_fields(
     outcome_id: &StableId,
     episode_id: &StableId,
     observer_id: &StableId,
-    observer_principal_digest: &Digest32,
+    observer_credential_chain_digest: Digest32,
+    observer_signing_key_digest: Digest32,
+    observer_scope_digest: Digest32,
+    observer_authority_epoch: u64,
     observed_at: Option<u64>,
     value: Option<FixedQ32>,
     unit_profile_digest: Digest32,
@@ -743,7 +743,10 @@ fn outcome_semantic_digest_fields(
     push_id(&mut bytes, outcome_id);
     push_id(&mut bytes, episode_id);
     push_id(&mut bytes, observer_id);
-    bytes.extend_from_slice(observer_principal_digest.as_array());
+    bytes.extend_from_slice(observer_credential_chain_digest.as_array());
+    bytes.extend_from_slice(observer_signing_key_digest.as_array());
+    bytes.extend_from_slice(observer_scope_digest.as_array());
+    bytes.extend_from_slice(&observer_authority_epoch.to_be_bytes());
     push_optional_u64(&mut bytes, observed_at);
     push_optional_fixed(&mut bytes, value);
     bytes.extend_from_slice(unit_profile_digest.as_array());
@@ -806,8 +809,17 @@ fn sync_parent(_parent: &Path) -> Result<(), std::io::Error> {
 }
 
 fn parse_digest(value: &str) -> Result<Digest32, IntelligenceLearningOutboxErrorV1> {
+    let digest = parse_digest_allow_zero(value)?;
+    if digest.is_zero() {
+        return Err(IntelligenceLearningOutboxErrorV1::Invalid("zero digest"));
+    }
+    Ok(digest)
+}
+
+fn parse_digest_allow_zero(
+    value: &str,
+) -> Result<Digest32, IntelligenceLearningOutboxErrorV1> {
     Digest32::from_str(value)
-        .filter(|digest| !digest.is_zero())
         .map_err(|_| IntelligenceLearningOutboxErrorV1::Invalid("digest"))
 }
 
@@ -855,29 +867,6 @@ fn push_optional_fixed(bytes: &mut Vec<u8>, value: Option<FixedQ32>) {
     }
 }
 
-trait ObserverPrincipalDigestV1 {
-    fn controllerless_digest(&self) -> Digest32;
-}
-
-impl ObserverPrincipalDigestV1 for codex_hepta_learning_ledger::AuthenticatedPrincipalV1 {
-    fn controllerless_digest(&self) -> Digest32 {
-        let mut bytes = b"hepta.agentd.intelligence-outcome-principal.v1\0".to_vec();
-        push_id(&mut bytes, &self.principal_id);
-        // The controller id is supplied by authenticated evidence and is not in
-        // the asserted principal. The authentication digest below closes that
-        // identity; durable reconciliation compares the full stored principal.
-        push_id(
-            &mut bytes,
-            &StableId::new("controller.from.evidence").expect("static id"),
-        );
-        bytes.extend_from_slice(self.credential_chain_digest.as_array());
-        bytes.extend_from_slice(self.signing_key_digest.as_array());
-        bytes.extend_from_slice(self.scope_digest.as_array());
-        bytes.extend_from_slice(&self.authority_epoch.to_be_bytes());
-        Digest32::of_bytes(&bytes)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -896,7 +885,7 @@ mod tests {
             &id("run.1"),
             &id("run.1"),
             &id("episode.1"),
-            digest("predecessor"),
+            Digest32::ZERO,
             digest("snapshot"),
             digest("objective"),
             digest("support"),
