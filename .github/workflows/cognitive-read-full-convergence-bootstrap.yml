@@ -1,4 +1,4 @@
-name: Cognitive read source hardening
+name: Cognitive read deterministic hardening materializer
 
 on:
   push:
@@ -9,30 +9,59 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-source-hardening-${{ github.ref }}
+  group: cognitive-read-deterministic-hardening-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   apply:
-    if: "${{ endsWith(github.event.head_commit.message, 'launch agentd hardening') }}"
-    runs-on: windows-latest
-    timeout-minutes: 15
+    if: "${{ github.event.head_commit.message == 'chore(cognitive.read): rerun deterministic hardening' }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-      - name: Apply asserted source migration
-        shell: pwsh
+          persist-credentials: true
+
+      - name: Materialize and validate asserted source migration
+        id: materialize
+        continue-on-error: true
+        shell: bash
         run: |
-          $ErrorActionPreference = 'Stop'
-          python scripts/cognitive-read-agentd-hardening.py
-          python .github/scripts/verify_cargo_workspace_manifests.py
-      - name: Commit materialized source
-        shell: pwsh
+          exec > >(tee "${RUNNER_TEMP}/cognitive-read-hardening.log") 2>&1
+          set -euxo pipefail
+          python3 scripts/cognitive-read-agentd-hardening.py
+          python3 tests/test_cognitive_read_agentd_hardening.py
+          python3 scripts/verify-cognitive-read-constants.py
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          git diff --check
+          git status --short
+
+      - name: Retain hardening diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-hardening-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-read-hardening.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Reject incomplete materialization
+        if: steps.materialize.outcome != 'success'
+        shell: bash
+        run: exit 1
+
+      - name: Commit complete materialized source
+        if: steps.materialize.outcome == 'success'
+        shell: bash
         run: |
-          $ErrorActionPreference = 'Stop'
+          set -euxo pipefail
           git config user.name 'hepta-ci-convergence'
           git config user.email 'hepta-ci-convergence@users.noreply.github.com'
-          git add codex-rs/hepta-agentd scripts/cognitive-read-agentd-hardening.py
-          git commit -m 'feat(cognitive.read): harden Agentd product path'
-          git push origin "HEAD:$env:GITHUB_REF_NAME"
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'hardening script produced no source changes' >&2
+            exit 1
+          fi
+          git commit -m 'fix(cognitive.read): apply deterministic Agentd convergence hardening'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
