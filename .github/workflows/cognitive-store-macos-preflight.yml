@@ -10,10 +10,11 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   compile:
+    if: ${{ !contains(github.event.head_commit.message, '[macos-diagnostic]') }}
     runs-on: macos-15
     timeout-minutes: 60
     steps:
@@ -21,7 +22,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
       - name: Bind exact source
         run: |
           set -euo pipefail
@@ -45,12 +46,40 @@ jobs:
       - name: Check formatting
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd -- --check
-      - name: Compile cognitive store and memory tests
+      - name: Run captured Rust preflight
+        id: rust
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --no-run
-      - name: Compile Agentd cognitive product test
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --features qualification-cognitive-write --no-run
-      - name: Strict Clippy relevant crates
-        working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --features codex-hepta-agentd/qualification-cognitive-write -- -D warnings
+        shell: bash
+        run: |
+          set +e
+          (
+            set -euo pipefail
+            echo '$ cargo test --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --no-run'
+            cargo test --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --no-run
+            echo '$ cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --features qualification-cognitive-write --no-run'
+            cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --features qualification-cognitive-write --no-run
+            echo '$ cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --features codex-hepta-agentd/qualification-cognitive-write -- -D warnings'
+            cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --features codex-hepta-agentd/qualification-cognitive-write -- -D warnings
+          ) > "$RUNNER_TEMP/cognitive-store-macos-full.txt" 2>&1
+          status=$?
+          set -e
+          tail -n 500 "$RUNNER_TEMP/cognitive-store-macos-full.txt" \
+            > "$GITHUB_WORKSPACE/cognitive-store-macos-diagnostic.txt"
+          cat "$GITHUB_WORKSPACE/cognitive-store-macos-diagnostic.txt"
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+      - name: Retain failed compiler diagnostic
+        if: steps.rust.outputs.status != '0'
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Cognitive Store CI"
+          git config user.email "hepta-cognitive-ci@users.noreply.github.com"
+          git add -f cognitive-store-macos-diagnostic.txt
+          git diff --cached --check
+          git commit -m "ci(cognitive-store): retain macOS compiler diagnostic [macos-diagnostic]"
+          git push origin HEAD:codex/cognitive-store-full-convergence-20260927
+      - name: Enforce preflight success
+        if: steps.rust.outputs.status != '0'
+        run: exit 1
+      - name: Clean successful diagnostic
+        if: steps.rust.outputs.status == '0'
+        run: rm -f cognitive-store-macos-diagnostic.txt
