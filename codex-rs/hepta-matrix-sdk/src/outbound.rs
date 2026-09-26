@@ -37,6 +37,22 @@ pub trait MatrixOutboundTransport: Send + Sync {
 pub enum MatrixTransportError {
     #[error("Matrix transport failed transiently or its effect is unknown")]
     Retryable,
+    #[error("Matrix homeserver rate limited the request for {retry_after_ms} ms")]
+    RateLimited { retry_after_ms: u64 },
+    #[error("Matrix DNS resolution failed")]
+    Dns,
+    #[error("Matrix TLS establishment failed")]
+    Tls,
+    #[error("Matrix connection timed out")]
+    ConnectTimeout,
+    #[error("Matrix response timed out")]
+    ReadTimeout,
+    #[error("Matrix connection reset after adapter entry")]
+    ConnectionReset,
+    #[error("Matrix response was lost after adapter entry")]
+    ResponseLost,
+    #[error("Matrix homeserver is temporarily unavailable")]
+    ServerUnavailable,
     #[error("Matrix transport rejected the outbound event permanently")]
     Permanent,
 }
@@ -76,7 +92,6 @@ impl OutboxDispatchConfig {
     }
 
     fn physical_send_deadline(&self) -> Duration {
-        // A network future is never allowed to outlive the durable claim lease.
         Duration::from_millis(self.lease_ms.saturating_sub(1))
     }
 }
@@ -84,11 +99,8 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
-    /// Terminal success already observed by the durable sync reconciler.
     pub sent: u64,
-    /// Matrix transport returned an event id, but terminality still waits for /sync.
     pub transport_accepted: u64,
-    /// Delivery crossed or may have crossed the boundary and is parked/retrying.
     pub indeterminate: u64,
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
@@ -129,9 +141,9 @@ pub async fn dispatch_outbox_once<
         claimed: records.len() as u64,
         ..OutboxDispatchStats::default()
     };
-    for record in records {
+    for (index, record) in records.iter().enumerate() {
         let prepared = store
-            .prepare_outbox_dispatch(&record, now_ms)
+            .prepare_outbox_dispatch(record, now_ms)
             .await
             .map_err(store_error)?;
         if prepared.state.is_terminal() {
@@ -145,6 +157,7 @@ pub async fn dispatch_outbox_once<
             continue;
         }
         if cancel.is_cancelled() {
+            release_pre_entry_claims(store, &records[index..], now_ms).await?;
             stats.cancelled = true;
             break;
         }
@@ -155,13 +168,14 @@ pub async fn dispatch_outbox_once<
         let request = build_matrix_final_use_request(
             store.owner_agent_id().as_str(),
             &prepared,
-            &record,
+            record,
             &identity,
         )
         .map_err(authority_error)?;
         let signed = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
+                release_pre_entry_claims(store, &records[index..], now_ms).await?;
                 stats.cancelled = true;
                 break;
             }
@@ -177,8 +191,6 @@ pub async fn dispatch_outbox_once<
             return Err(OutboxDispatchError::Authority);
         }
 
-        // The claim is durable before physical effect entry. No Matrix network
-        // future exists yet, so a crash here cannot cross the external boundary.
         let claimed_at_ms = system_time_ms()?;
         store
             .record_dispatch_authority_claim(
@@ -205,10 +217,11 @@ pub async fn dispatch_outbox_once<
             .await
             .map_err(store_error)?;
 
-        // Refresh after every asynchronous persistence boundary, then consume
-        // the exact-frontier token immediately before constructing/polling the
-        // lazy transport future. A changed or revoked head fails with zero
-        // Matrix network I/O and requires a fresh attempt/grant.
+        if cancel.is_cancelled() {
+            release_pre_entry_claims(store, &records[index..], now_ms).await?;
+            stats.cancelled = true;
+            break;
+        }
         authorizer
             .refresh_revocations()
             .map_err(authority_error)?;
@@ -220,17 +233,15 @@ pub async fn dispatch_outbox_once<
             return Err(OutboxDispatchError::Authority);
         }
 
-        // Once final-use entry succeeds, cancellation or timeout means the
-        // external effect may have crossed the boundary. Preserve the stable
-        // transaction and reconcile; never manufacture terminal failure.
-        let result = match tokio::time::timeout(
-            config.physical_send_deadline(),
-            transport.send(&record),
-        )
-        .await
-        {
-            Ok(result) => result,
-            Err(_) => Err(MatrixTransportError::Retryable),
+        let result = tokio::select! {
+            biased;
+            _ = cancel.cancelled() => Err(MatrixTransportError::ResponseLost),
+            result = tokio::time::timeout(config.physical_send_deadline(), transport.send(record)) => {
+                match result {
+                    Ok(result) => result,
+                    Err(_) => Err(MatrixTransportError::ReadTimeout),
+                }
+            }
         };
         match result {
             Ok(event_id) => {
@@ -248,7 +259,7 @@ pub async fn dispatch_outbox_once<
                     stats.sent += 1;
                     continue;
                 }
-                let next_attempt_at_ms = reconciliation_attempt_at(config, &record, now_ms)?;
+                let next_attempt_at_ms = reconciliation_attempt_at(config, record, now_ms)?;
                 store
                     .mark_outbox_retry(
                         &record.stable_txn_id,
@@ -258,13 +269,9 @@ pub async fn dispatch_outbox_once<
                     )
                     .await
                     .map_err(store_error)?;
-                if next_attempt_at_ms == PARKED_RECONCILIATION_AT_MS {
-                    stats.indeterminate += 1;
-                } else {
-                    stats.retry_scheduled += 1;
-                }
+                count_retry(&mut stats, next_attempt_at_ms);
             }
-            Err(MatrixTransportError::Retryable) => {
+            Err(error @ MatrixTransportError::RateLimited { .. }) => {
                 store
                     .record_outbox_transport_indeterminate(
                         &record.stable_txn_id,
@@ -273,7 +280,7 @@ pub async fn dispatch_outbox_once<
                     )
                     .await
                     .map_err(store_error)?;
-                let next_attempt_at_ms = reconciliation_attempt_at(config, &record, now_ms)?;
+                let next_attempt_at_ms = classified_retry_at(config, record, now_ms, error)?;
                 store
                     .mark_outbox_retry(
                         &record.stable_txn_id,
@@ -283,11 +290,37 @@ pub async fn dispatch_outbox_once<
                     )
                     .await
                     .map_err(store_error)?;
-                if next_attempt_at_ms == PARKED_RECONCILIATION_AT_MS {
-                    stats.indeterminate += 1;
-                } else {
-                    stats.retry_scheduled += 1;
-                }
+                count_retry(&mut stats, next_attempt_at_ms);
+            }
+            Err(
+                error @ (MatrixTransportError::Retryable
+                | MatrixTransportError::Dns
+                | MatrixTransportError::Tls
+                | MatrixTransportError::ConnectTimeout
+                | MatrixTransportError::ReadTimeout
+                | MatrixTransportError::ConnectionReset
+                | MatrixTransportError::ResponseLost
+                | MatrixTransportError::ServerUnavailable),
+            ) => {
+                store
+                    .record_outbox_transport_indeterminate(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                let next_attempt_at_ms = classified_retry_at(config, record, now_ms, error)?;
+                store
+                    .mark_outbox_retry(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                        next_attempt_at_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                count_retry(&mut stats, next_attempt_at_ms);
             }
             Err(MatrixTransportError::Permanent) => {
                 let observed = store
@@ -361,6 +394,25 @@ pub async fn run_outbox_sender<
     }
 }
 
+async fn release_pre_entry_claims(
+    store: &MatrixDurableStore,
+    records: &[OutboxRecord],
+    now_ms: u64,
+) -> Result<(), OutboxDispatchError> {
+    for record in records {
+        store
+            .mark_outbox_retry(
+                &record.stable_txn_id,
+                record.attempts,
+                now_ms,
+                now_ms,
+            )
+            .await
+            .map_err(store_error)?;
+    }
+    Ok(())
+}
+
 fn system_time_ms() -> Result<u64, OutboxDispatchError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -382,6 +434,39 @@ fn reconciliation_attempt_at(
         .ok_or(OutboxDispatchError::Invalid)
 }
 
+fn classified_retry_at(
+    config: &OutboxDispatchConfig,
+    record: &OutboxRecord,
+    now_ms: u64,
+    error: MatrixTransportError,
+) -> Result<u64, OutboxDispatchError> {
+    if record.attempts >= config.max_attempts {
+        return Ok(PARKED_RECONCILIATION_AT_MS);
+    }
+    let base = match error {
+        MatrixTransportError::RateLimited { retry_after_ms } => retry_after_ms
+            .max(config.retry_delay_ms)
+            .min(config.max_retry_delay_ms),
+        MatrixTransportError::Retryable => retry_delay_ms(config, record.attempts)?,
+        MatrixTransportError::Dns
+        | MatrixTransportError::Tls
+        | MatrixTransportError::ConnectTimeout
+        | MatrixTransportError::ReadTimeout
+        | MatrixTransportError::ConnectionReset
+        | MatrixTransportError::ResponseLost
+        | MatrixTransportError::ServerUnavailable => {
+            let delay = retry_delay_ms(config, record.attempts)?;
+            delay
+                .saturating_add(stable_jitter_ms(record, delay))
+                .min(config.max_retry_delay_ms)
+        }
+        MatrixTransportError::Permanent => return Err(OutboxDispatchError::Invalid),
+    };
+    now_ms
+        .checked_add(base)
+        .ok_or(OutboxDispatchError::Invalid)
+}
+
 fn retry_delay_ms(
     config: &OutboxDispatchConfig,
     attempts: u64,
@@ -392,6 +477,27 @@ fn retry_delay_ms(
         .retry_delay_ms
         .saturating_mul(1_u64.checked_shl(exponent).unwrap_or(u64::MAX))
         .min(config.max_retry_delay_ms))
+}
+
+fn stable_jitter_ms(record: &OutboxRecord, delay_ms: u64) -> u64 {
+    let ceiling = delay_ms.saturating_div(5).min(1_000);
+    if ceiling == 0 {
+        return 0;
+    }
+    let mut state = record.attempts ^ 0xcbf29ce484222325;
+    for byte in record.stable_txn_id.as_str().bytes() {
+        state ^= u64::from(byte);
+        state = state.wrapping_mul(0x100000001b3);
+    }
+    state % (ceiling + 1)
+}
+
+fn count_retry(stats: &mut OutboxDispatchStats, next_attempt_at_ms: u64) {
+    if next_attempt_at_ms == PARKED_RECONCILIATION_AT_MS {
+        stats.indeterminate += 1;
+    } else {
+        stats.retry_scheduled += 1;
+    }
 }
 
 fn authority_error(_: MatrixAuthorityError) -> OutboxDispatchError {
