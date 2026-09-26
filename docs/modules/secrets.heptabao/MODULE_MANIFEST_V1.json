@@ -1,0 +1,201 @@
+{
+  "schema": "hepta.module-manifest.v1",
+  "schemaVersion": 1,
+  "module": "secrets.heptabao",
+  "lane": "LANE-A-FOUNDATION",
+  "profile": "registered_exact_kv_v2_secret_consumer",
+  "owner": "secrets-platform",
+  "deputy": "security-authority",
+  "canonical": true,
+  "generatedTargets": {
+    "moduleTruthMatrix": "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+    "implementationMap": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+    "capabilityMatrix": "docs/modules/secrets.heptabao/CAPABILITY_MATRIX.json",
+    "nonclaims": "docs/modules/secrets.heptabao/NONCLAIMS.json",
+    "sourceAnchors": "docs/modules/secrets.heptabao/SOURCE_ANCHORS.json"
+  },
+  "documents": {
+    "technicalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+    "currentImplementation": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+    "durableSaga": "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+    "jsonReferenceOwner": "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
+    "legacyRawRead": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+    "evidenceHistory": "docs/modules/secrets.heptabao/evidence/HISTORY.md"
+  },
+  "states": {
+    "source": "implemented_candidate",
+    "implementation": "registered_read_saga_and_json_reference_owner",
+    "durability": "json_reference_owner_sqlite_production_owner_pending",
+    "qualification": "exact_source_and_synthetic_merge_required",
+    "activation": "not_product_activated",
+    "acceptance": "not_granted"
+  },
+  "currentCapabilities": [
+    "pinned-CA HTTPS read of one exact KV-v2 string field",
+    "independently signed final-use grant and operator approval",
+    "authenticated monotonic revocation-feed admission",
+    "closed consumer registry bound to an immutable configuration digest",
+    "explicit Claimed Reserved DispatchFenced durable consumption saga",
+    "operation-ID reservation lookup and restart reconciliation without blind redispatch",
+    "immutable provider-failure and proved consumer-NotApplied terminal evidence",
+    "metadata-only receipts and secret-buffer best-effort zeroization",
+    "bounded single-writer JSON reference owner with fsync and fencing"
+  ],
+  "targetOnlyCapabilities": [
+    "SQLite production owner activation and migration from the JSON reference model",
+    "selected Agentd or App Server production bootstrap",
+    "independently operated trusted-time settlement and key-rotation services",
+    "external anti-rollback checkpoint service and disaster-recovery ceremony",
+    "target-host power-loss and long-history archival qualification",
+    "independent operator acceptance promotion and release"
+  ],
+  "nonclaims": [
+    "The current fixed HeptaBao provider does not expose qualified generic dynamic issue renew or revoke endpoints.",
+    "No source or document enables provider mutation while the provider-contract blocker remains open.",
+    "The registered host is source-composed but not activated by a normal product process.",
+    "Local zeroization is not a locked-memory or no-copy guarantee for TLS HTTP or the operating system.",
+    "A legacy observer NotApplied value without immutable evidence is not a terminal refund proof.",
+    "Source tests and receipts do not grant independent acceptance promotion or release authority."
+  ],
+  "provider": {
+    "name": "HeptaBao",
+    "sourceCommit": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
+    "evidence": "codex-rs/hepta-bao-adapter/qa/evidence/dynamic-contract-probe-20260925.json",
+    "supportedProductionContract": "kv_v2_exact_read_only",
+    "dynamicLeaseExecutionProved": false,
+    "dynamicMutationGate": "fail_closed_blocked_provider_contract"
+  },
+  "recoveryStates": [
+    {
+      "state": "Claimed",
+      "meaning": "operation identity and exact semantics are durable; no reservation is implied",
+      "recovery": "look up AuthBus by operation ID; bind a matching reservation or close as no_reservation after authoritative absence"
+    },
+    {
+      "state": "Reserved",
+      "meaning": "the original AuthBus reservation is durable; dispatch has not been fenced",
+      "recovery": "query the reservation; cancel or expire Held reservations and record a terminal pre-dispatch abort"
+    },
+    {
+      "state": "DispatchFenced",
+      "meaning": "AuthBus committed mark_dispatch_attempted; provider or consumer outcome may be unknown",
+      "recovery": "never redispatch; reconcile provider/consumer evidence and the original reservation"
+    },
+    {
+      "state": "DeliveryPrepared",
+      "meaning": "validated metadata receipt is durable before final authority recheck; consumer entry is not proved",
+      "recovery": "query the original registered observer; accept only Succeeded or evidence-bound NotApplied"
+    },
+    {
+      "state": "Indeterminate",
+      "meaning": "dispatch or consumer entry may have occurred but terminal effect is not proved",
+      "recovery": "query the original observer and AuthBus reservation; do not fetch the secret or call the consumer"
+    },
+    {
+      "state": "ConsumerSucceeded",
+      "meaning": "consumer success and receipt digest are durable; settlement or local final commit may remain",
+      "recovery": "settle the original reservation idempotently and commit Succeeded"
+    },
+    {
+      "state": "ConsumerNotApplied",
+      "meaning": "the original observer supplied immutable negative evidence",
+      "recovery": "settle the original reservation as Rejected with zero observed cost and commit Failed"
+    },
+    {
+      "state": "ProviderFailed",
+      "meaning": "a deterministic provider error and terminal evidence are durable",
+      "recovery": "settle the original reservation with the recorded charging policy and commit Failed"
+    },
+    {
+      "state": "Succeeded",
+      "meaning": "consumer success and AuthBus settlement are both recorded",
+      "recovery": "return historical receipt only"
+    },
+    {
+      "state": "Failed",
+      "meaning": "an immutable terminal negative outcome and its settlement/abort proof are recorded",
+      "recovery": "return historical terminal failure only"
+    },
+    {
+      "state": "DispatchAttempted",
+      "meaning": "legacy schema-3 conservative state",
+      "recovery": "look up and bind the original reservation, then migrate to Reserved or DispatchFenced without redispatch"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "consume_kv_v2",
+      "symbol": "BaoClient::consume_kv_v2",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "class": "trusted_low_level_legacy_read"
+    },
+    {
+      "operation": "consume_kv_v2_with_authbus",
+      "symbol": "BaoFinalUseHost::consume_kv_v2_with_authbus",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "registered_durable_product_ingress"
+    },
+    {
+      "operation": "reconcile_consumption",
+      "symbol": "BaoFinalUseHost::reconcile_consumption",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "observer_only_restart_reconciliation"
+    },
+    {
+      "operation": "reservation_by_operation",
+      "symbol": "AuthBusAuthorityHost::reservation_by_operation",
+      "path": "codex-rs/hepta-authbus/src/host.rs",
+      "class": "read_only_recovery_projection"
+    },
+    {
+      "operation": "durable_consumption_transitions",
+      "symbol": "DurableLeaseRegistryV1",
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+      "class": "json_reference_owner"
+    },
+    {
+      "operation": "lease_lifecycle_reference",
+      "symbol": "DurableLeaseRegistryV1",
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "class": "json_reference_owner"
+    }
+  ],
+  "sourceAnchors": [
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+      "mustContain": ["Claimed", "Reserved", "DispatchFenced", "record_provider_failure", "observe_consumption_not_applied"]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "mustContain": ["consume_kv_v2_with_authbus", "reconcile_consumption", "NotAppliedWithEvidence", "reservation_by_operation"]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authbus_saga.rs",
+      "mustContain": ["mark_dispatch_attempted", "dispatch_fenced", "provider_terminal"]
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/operation_lookup.rs",
+      "mustContain": ["reservation_by_operation", "authbus_quota_reservation_archive"]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+      "mustContain": ["claimed_reserved_and_dispatch_fenced_are_distinct_durable_states", "deterministic_provider_failure_is_immutable_and_terminal", "proved_not_applied_settles_as_terminal_negative_without_reentry"]
+    }
+  ],
+  "candidateIdentity": {
+    "binding": "external_ci_attestation",
+    "requiredFields": [
+      "sourceCommitSha",
+      "sourceTreeSha",
+      "syntheticMergeSha",
+      "syntheticMergeTreeSha",
+      "toolchain",
+      "os",
+      "architecture",
+      "dependencyLockSha256",
+      "providerBinarySha256",
+      "manifestSha256"
+    ],
+    "selfReferentialCommitInDocument": false
+  }
+}
