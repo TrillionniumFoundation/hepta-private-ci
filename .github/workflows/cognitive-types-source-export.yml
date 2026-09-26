@@ -3,7 +3,7 @@ name: cognitive-types-source-export
 on:
   push:
     branches:
-      - codex/cognitive-types-production-hardening-20260926
+      - codex/cognitive-types-source-snapshot-20260926
     paths:
       - .github/workflows/cognitive-types-source-export.yml
   workflow_dispatch:
@@ -18,19 +18,15 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-      - name: Stage review sources
+      - name: Stage exact review sources
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/cognitive-types-source
-          cp --parents \
+          mkdir -p /tmp/cognitive-types-source/repository
+          git archive --format=tar HEAD \
             Cargo.toml Cargo.lock rust-toolchain.toml \
             codex-rs/Cargo.toml \
-            codex-rs/hepta-cognitive-types/BUILD.bazel \
-            codex-rs/hepta-cognitive-types/Cargo.toml \
-            codex-rs/hepta-cognitive-types/src/*.rs \
-            codex-rs/hepta-cognitive-types/fuzz/Cargo.toml \
-            codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/*.rs \
+            codex-rs/hepta-cognitive-types \
             codex-rs/hepta-cognitive-store/Cargo.toml \
             codex-rs/hepta-cognitive-store/src/v2.rs \
             codex-rs/hepta-cognitive-store/src/v2_tests.rs \
@@ -39,13 +35,14 @@ jobs:
             codex-rs/hepta-operations/Cargo.toml \
             codex-rs/hepta-operations/src/destination_dedupe.rs \
             codex-rs/hepta-operations/src/durable_store.rs \
-            codex-rs/state/src/*.rs \
-            docs/modules/cognitive.types/TECHNICAL.md \
-            docs/modules/cognitive.types/IMPLEMENTATION_MAP.json \
+            codex-rs/state/src \
+            docs/modules/cognitive.types \
+            qualification/cognitive-types-v1 \
             qualification/module-execution-dossiers/detail/cognitive.types.md \
             scripts/hepta-hnmf.py \
             .github/workflows/hnmf-qualification.yml \
-            /tmp/cognitive-types-source/
+            .github/cognitive-types-hardening \
+            | tar -xf - -C /tmp/cognitive-types-source/repository
           git rev-parse HEAD > /tmp/cognitive-types-source/EXACT_HEAD
           git rev-parse HEAD^{tree} > /tmp/cognitive-types-source/EXACT_TREE
           sha256sum /tmp/cognitive-types-source/EXACT_HEAD /tmp/cognitive-types-source/EXACT_TREE \
