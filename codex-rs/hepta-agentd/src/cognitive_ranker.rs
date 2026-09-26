@@ -8,6 +8,8 @@
 use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
 use codex_hepta_bellman_operator::TabularPayloadError;
@@ -108,6 +110,51 @@ pub(crate) fn verified_fixture_current_view(
         .map_err(|error| error.to_string())
 }
 
+/// Monotonic product counters for learned-ranker application and degradation.
+///
+/// These counters expose no artifact bytes or query content. Operators should
+/// alert on increases in `current_view_failures`, `revalidation_failures`,
+/// `prediction_failures` and `ranker_unavailable`, and should track the ratio of
+/// `unsupported_abstentions` to successful `rankings_applied`.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct CognitiveRankerMetricsV1 {
+    pub rankings_applied: u64,
+    pub unsupported_abstentions: u64,
+    pub current_view_failures: u64,
+    pub revalidation_failures: u64,
+    pub prediction_failures: u64,
+    pub ranker_unavailable: u64,
+    pub identity_rejections: u64,
+    pub input_rejections: u64,
+}
+
+#[derive(Debug, Default)]
+struct CognitiveRankerCountersV1 {
+    rankings_applied: AtomicU64,
+    unsupported_abstentions: AtomicU64,
+    current_view_failures: AtomicU64,
+    revalidation_failures: AtomicU64,
+    prediction_failures: AtomicU64,
+    ranker_unavailable: AtomicU64,
+    identity_rejections: AtomicU64,
+    input_rejections: AtomicU64,
+}
+
+impl CognitiveRankerCountersV1 {
+    fn snapshot(&self) -> CognitiveRankerMetricsV1 {
+        CognitiveRankerMetricsV1 {
+            rankings_applied: self.rankings_applied.load(Ordering::Relaxed),
+            unsupported_abstentions: self.unsupported_abstentions.load(Ordering::Relaxed),
+            current_view_failures: self.current_view_failures.load(Ordering::Relaxed),
+            revalidation_failures: self.revalidation_failures.load(Ordering::Relaxed),
+            prediction_failures: self.prediction_failures.load(Ordering::Relaxed),
+            ranker_unavailable: self.ranker_unavailable.load(Ordering::Relaxed),
+            identity_rejections: self.identity_rejections.load(Ordering::Relaxed),
+            input_rejections: self.input_rejections.load(Ordering::Relaxed),
+        }
+    }
+}
+
 /// A host-selected, generation-bound read-only ranking consumer. Replacing the
 /// model requires an explicit new host/configuration, not a candidate's score.
 pub struct PinnedCognitiveRanker {
@@ -117,6 +164,7 @@ pub struct PinnedCognitiveRanker {
     model: LoadedTabularOperatorV1,
     current: Arc<dyn CurrentCognitiveRegistry>,
     cache: Mutex<Option<RevalidatingCandidate>>,
+    metrics: CognitiveRankerCountersV1,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -182,6 +230,7 @@ impl PinnedCognitiveRanker {
             model,
             current,
             cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
+            metrics: CognitiveRankerCountersV1::default(),
         };
         value.revalidate()?;
         Ok(value)
@@ -260,28 +309,58 @@ impl PinnedCognitiveRanker {
         )
     }
 
+    #[must_use]
+    pub fn metrics(&self) -> CognitiveRankerMetricsV1 {
+        self.metrics.snapshot()
+    }
+
     pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64) -> Result<(), String> {
         if owner != &self.owner || generation != self.body_generation {
+            self.metrics
+                .identity_rejections
+                .fetch_add(1, Ordering::Relaxed);
             return Err("ranking host belongs to another agent generation".to_string());
         }
         Ok(())
     }
 
     fn with_current<T>(&self, consume: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
-        let mut cache = self
-            .cache
-            .lock()
-            .map_err(|_| "ranker lock poisoned".to_string())?;
+        let mut cache = match self.cache.lock() {
+            Ok(cache) => cache,
+            Err(_) => {
+                self.metrics
+                    .ranker_unavailable
+                    .fetch_add(1, Ordering::Relaxed);
+                return Err("ranker lock poisoned".to_string());
+            }
+        };
         let Some(mut candidate) = cache.take() else {
+            self.metrics
+                .ranker_unavailable
+                .fetch_add(1, Ordering::Relaxed);
             return Err("ranker unavailable; explicit reload required".to_string());
         };
         // Keep the cache absent on witness errors, panics and failed refreshes.
         // The provider cannot inject a bare file/receipt: the artifact authority
         // must first issue an opaque verified CURRENT view.
-        let current = self.current.current()?;
-        let result = candidate
-            .with_current(current, |_| consume())
-            .map_err(|error| error.to_string())??;
+        let current = match self.current.current() {
+            Ok(current) => current,
+            Err(error) => {
+                self.metrics
+                    .current_view_failures
+                    .fetch_add(1, Ordering::Relaxed);
+                return Err(error);
+            }
+        };
+        let result = match candidate.with_current(current, |_| consume()) {
+            Ok(result) => result?,
+            Err(error) => {
+                self.metrics
+                    .revalidation_failures
+                    .fetch_add(1, Ordering::Relaxed);
+                return Err(error.to_string());
+            }
+        };
         *cache = Some(candidate);
         Ok(result)
     }
@@ -299,25 +378,53 @@ impl PinnedCognitiveRanker {
     ) -> Result<CognitiveRankObservation, String> {
         self.require_identity(owner, generation)?;
         if items.len() > 1024 {
+            self.metrics
+                .input_rejections
+                .fetch_add(1, Ordering::Relaxed);
             return Err("ranking candidates exceed cognitive read bound".to_string());
         }
-        let sensor = cognitive_sensor_id(query)?;
+        let sensor = match cognitive_sensor_id(query) {
+            Ok(sensor) => sensor,
+            Err(error) => {
+                self.metrics
+                    .input_rejections
+                    .fetch_add(1, Ordering::Relaxed);
+                return Err(error);
+            }
+        };
         self.with_current(|| {
             let mut scored = Vec::with_capacity(items.len());
             for (index, item) in items.iter().enumerate() {
-                match self.model.predict(&sensor, &cognitive_action_id(item)?) {
+                let action = match cognitive_action_id(item) {
+                    Ok(action) => action,
+                    Err(error) => {
+                        self.metrics
+                            .prediction_failures
+                            .fetch_add(1, Ordering::Relaxed);
+                        return Err(error);
+                    }
+                };
+                match self.model.predict(&sensor, &action) {
                     Ok(prediction) => scored.push((index, prediction.value.raw())),
                     // Partial support abstains from this downstream policy
                     // decision rather than silently assigning a fabricated
                     // propensity to a partially observed action set.
                     Err(TabularPayloadError::UnsupportedCell) => {
+                        self.metrics
+                            .unsupported_abstentions
+                            .fetch_add(1, Ordering::Relaxed);
                         return Ok(CognitiveRankObservation {
                             policy_digest: self.policy_digest,
                             propensity: ProbabilityQ32::ONE,
                             applied: false,
                         });
                     }
-                    Err(error) => return Err(error.to_string()),
+                    Err(error) => {
+                        self.metrics
+                            .prediction_failures
+                            .fetch_add(1, Ordering::Relaxed);
+                        return Err(error.to_string());
+                    }
                 }
             }
             scored.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
@@ -325,12 +432,60 @@ impl PinnedCognitiveRanker {
             for (destination, (source, _)) in scored.into_iter().enumerate() {
                 items[destination] = original[source].clone();
             }
+            self.metrics
+                .rankings_applied
+                .fetch_add(1, Ordering::Relaxed);
             Ok(CognitiveRankObservation {
                 policy_digest: self.policy_digest,
                 propensity: ProbabilityQ32::ONE,
                 applied: true,
             })
         })
+    }
+}
+
+#[cfg(test)]
+mod metric_tests {
+    use super::*;
+
+    #[test]
+    fn ranker_metrics_snapshot_is_monotonic_and_reason_specific() {
+        let counters = CognitiveRankerCountersV1::default();
+        counters.rankings_applied.fetch_add(2, Ordering::Relaxed);
+        counters
+            .unsupported_abstentions
+            .fetch_add(3, Ordering::Relaxed);
+        counters
+            .current_view_failures
+            .fetch_add(5, Ordering::Relaxed);
+        counters
+            .revalidation_failures
+            .fetch_add(7, Ordering::Relaxed);
+        counters
+            .prediction_failures
+            .fetch_add(11, Ordering::Relaxed);
+        counters
+            .ranker_unavailable
+            .fetch_add(13, Ordering::Relaxed);
+        counters
+            .identity_rejections
+            .fetch_add(17, Ordering::Relaxed);
+        counters
+            .input_rejections
+            .fetch_add(19, Ordering::Relaxed);
+        assert_eq!(
+            counters.snapshot(),
+            CognitiveRankerMetricsV1 {
+                rankings_applied: 2,
+                unsupported_abstentions: 3,
+                current_view_failures: 5,
+                revalidation_failures: 7,
+                prediction_failures: 11,
+                ranker_unavailable: 13,
+                identity_rejections: 17,
+                input_rejections: 19,
+            }
+        );
     }
 }
 
