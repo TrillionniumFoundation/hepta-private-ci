@@ -1,0 +1,82 @@
+name: context-compiler-security-stage-once
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-security-staging-20260927
+    paths:
+      - .github/workflows/context-compiler-security-stage-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout security staging branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/context-compiler-security-staging-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Apply memory-only request lifecycle and redaction
+        id: verify
+        continue-on-error: true
+        shell: bash
+        env:
+          LOG_DIR: ${{ runner.temp }}/context-compiler-security
+        run: |
+          mkdir -p "$LOG_DIR"
+          exec > >(tee "$LOG_DIR/security-stage.log") 2>&1
+          set -uo pipefail
+          set +e
+          git config user.name "hepta-context-compiler-bot"
+          git config user.email "hepta-context-compiler-bot@users.noreply.github.com"
+          python3 scripts/apply_context_compiler_security_staging.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo fmt --all); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo metadata --format-version 1 >/dev/null); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo test --locked -p codex-hepta-context-compiler); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo test --locked -p codex-hepta-intelligence provider_bound_prompt); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo test --locked -p codex-hepta-agentd provider_bound_prompt_runtime); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then (cd codex-rs && cargo clippy --locked -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings); rc=$?; fi
+          if [ "$rc" -eq 0 ]; then git diff --check; rc=$?; fi
+          if [ "$rc" -eq 0 ]; then
+            git add -A
+            git commit -m "security(context.compiler): keep raw request bytes memory-only"
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            git push origin HEAD:codex/context-compiler-security-staging-20260927
+            rc=$?
+          fi
+          echo "$rc" > "$LOG_DIR/exit-code.txt"
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+
+      - name: Upload security staging evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: context-compiler-security-${{ github.sha }}
+          path: ${{ runner.temp }}/context-compiler-security
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce security staging result
+        if: always()
+        shell: bash
+        env:
+          EXIT_CODE: ${{ steps.verify.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          test -n "$EXIT_CODE"
+          test "$EXIT_CODE" = "0"
