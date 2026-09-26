@@ -50,4 +50,6 @@ pub use replay::ReplayCacheV1;
 pub use replay::ReplayError;
 
 #[cfg(test)]
+mod attempt_tests;
+#[cfg(test)]
 mod tests;
