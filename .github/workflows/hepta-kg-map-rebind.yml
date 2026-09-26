@@ -1,0 +1,64 @@
+name: Rebind knowledge.graph implementation map
+
+on:
+  push:
+    branches: [work/product-convergence-20260923]
+    paths:
+      - ".github/workflows/hepta-kg-map-rebind.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-map-rebind
+  cancel-in-progress: false
+
+jobs:
+  rebind:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain)"
+
+      - name: Refresh and verify knowledge.graph map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module knowledge.graph \
+            --expected-sha "$GITHUB_SHA" \
+            --expected-tree "$(git rev-parse "$GITHUB_SHA^{tree}")"
+          git diff --check
+
+      - name: Commit exact binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/hepta-kg-map-rebind.yml
+          git config user.name "Hepta KG Convergence Bot"
+          git config user.email "hepta-kg-convergence@users.noreply.github.com"
+          git add -A
+          git commit -s -m "docs(knowledge.graph): rebind exact qualified source"
+          FINAL_SHA="$(git rev-parse HEAD)"
+          FINAL_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module knowledge.graph \
+            --expected-sha "$FINAL_SHA" \
+            --expected-tree "$FINAL_TREE"
+          test -z "$(git status --porcelain)"
+          git push origin HEAD:work/product-convergence-20260923
