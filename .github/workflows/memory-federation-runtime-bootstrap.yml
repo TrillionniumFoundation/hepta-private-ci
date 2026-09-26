@@ -107,6 +107,9 @@ jobs:
       - name: Rebind implementation map
         run: |
           set -euo pipefail
+          SOURCE_BASE="$(python3 -c 'import json; print(json.load(open("docs/modules/memory.federation/IMPLEMENTATION_MAP.json", encoding="utf-8"))["sourceBase"]["commit"])')"
+          test -n "$SOURCE_BASE"
+          git fetch --no-tags --depth=1 origin "$SOURCE_BASE"
           python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
           git diff --check
           git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
