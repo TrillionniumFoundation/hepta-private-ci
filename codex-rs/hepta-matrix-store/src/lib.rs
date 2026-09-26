@@ -6,10 +6,16 @@
 
 #![forbid(unsafe_code)]
 
+mod claim;
 mod dispatch;
 mod model;
 mod store;
 
+pub use claim::MatrixAttemptFailureClass;
+pub use claim::MatrixDispatchAttemptEvent;
+pub use claim::MatrixDispatchAttemptEventKind;
+pub use claim::MatrixFencedOutboxClaim;
+pub use claim::MatrixOutboxAuthorityWitness;
 pub use codex_hepta_matrix_protocol::MatrixEventId;
 pub use codex_hepta_matrix_protocol::MatrixRoomId;
 pub use codex_hepta_matrix_protocol::MatrixTransactionId;
