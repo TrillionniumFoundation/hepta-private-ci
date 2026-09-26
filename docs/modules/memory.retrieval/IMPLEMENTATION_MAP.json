@@ -1,162 +1,49 @@
 {
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
-  "sourceBase": {
-    "commit": "beaca76a4ecbd393c01c6547fb1e9b02ed0e59a5",
-    "tree": "cc835868b672e9f526c683706caab6138313229a"
-  },
+  "sourceBase": {"commit": "beaca76a4ecbd393c01c6547fb1e9b02ed0e59a5", "tree": "cc835868b672e9f526c683706caab6138313229a"},
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
   "owner": "cognitive-platform",
   "deputy": "performance",
   "technicalGuide": "docs/modules/memory.retrieval/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-memory-retrieval"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-memory-retrieval"
-  ],
-  "sourceRoot": [
-    "codex-rs/hepta-memory-retrieval"
-  ],
+  "declaredRoots": ["codex-rs/hepta-memory-retrieval"],
+  "resolvedRoots": ["codex-rs/hepta-memory-retrieval"],
+  "sourceRoot": ["codex-rs/hepta-memory-retrieval"],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_product_context_source_composed_qualification_pending",
-  "productionWriterState": "read_only_learning_receipt_sink_external",
+  "productCallerState": "atomic_lifecycle_bound_agentd_source_candidate_qualification_pending",
+  "productionWriterState": "read_only_retrieval_protected_context_control_durable_witness_external",
   "operations": [
-    {
-      "operation": "build_candidate_union",
-      "designOperation": "policy_admitted_candidate_union",
-      "nativeSymbol": "build_candidate_union",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound_v2.rs",
-      "state": "source_implemented_not_product_qualified",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/generation_bound_semantic_tests.rs"
-      ],
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "recall",
-      "designOperation": "policy_admitted_recall",
-      "nativeSymbol": "recall",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound_v2.rs",
-      "state": "source_implemented_not_product_qualified",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/generation_bound_semantic_tests.rs"
-      ],
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "settle_engram",
-      "designOperation": "bounded_hnmf_settle",
-      "nativeSymbol": "settle_engram",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram_v2.rs",
-      "state": "source_implemented_not_product_qualified",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/engram_semantic_tests.rs"
-      ],
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "recall_with_engram",
-      "designOperation": "generation_bound_hnmf_recall",
-      "nativeSymbol": "recall_with_engram",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram_v2.rs",
-      "state": "source_implemented_not_product_qualified",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/engram_semantic_tests.rs"
-      ],
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "generate_vector_batch_v1",
-      "designOperation": "owner_bound_vector_generation",
-      "nativeSymbol": "generate_vector_batch_v1",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/vector_owner.rs",
-      "state": "source_implemented_product_composition_pending",
-      "authority": "none",
-      "tests": [],
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "observe_retrieval_assignment",
-      "designOperation": "retrieval_assignment_observation",
-      "nativeSymbol": "observe_retrieval_assignment",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/decision.rs",
-      "state": "source_implemented_learning_sink_composed",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-retrieval/src/decision_tests.rs"
-      ],
-      "mappingClass": "owner_native",
-      "delegatedCallees": [
-        "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs"
-      ],
-      "sourcePathExists": true
-    }
+    {"operation": "build_candidate_union", "designOperation": "policy_admitted_candidate_union", "nativeSymbol": "build_candidate_union", "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound_v2.rs", "state": "source_implemented_semantic_migration_incomplete", "authority": "none", "tests": ["codex-rs/hepta-memory-retrieval/src/generation_bound_semantic_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": [], "sourcePathExists": true},
+    {"operation": "recall", "designOperation": "policy_admitted_recall", "nativeSymbol": "recall", "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound_v2.rs", "state": "source_implemented_not_product_qualified", "authority": "none", "tests": ["codex-rs/hepta-memory-retrieval/src/generation_bound_semantic_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": [], "sourcePathExists": true},
+    {"operation": "settle_engram", "designOperation": "bounded_hnmf_settle", "nativeSymbol": "settle_engram", "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram_v2.rs", "state": "source_implemented_not_product_qualified", "authority": "none", "tests": ["codex-rs/hepta-memory-retrieval/src/engram_semantic_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": [], "sourcePathExists": true},
+    {"operation": "recall_with_engram", "designOperation": "generation_bound_hnmf_recall", "nativeSymbol": "recall_with_engram", "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram_v2.rs", "state": "source_implemented_not_product_qualified", "authority": "none", "tests": ["codex-rs/hepta-memory-retrieval/src/engram_semantic_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": [], "sourcePathExists": true},
+    {"operation": "generate_vector_batch_v1", "designOperation": "owner_bound_precomputed_vector_generation", "nativeSymbol": "generate_vector_batch_v1", "sourcePath": "codex-rs/hepta-memory-retrieval/src/vector_owner.rs", "state": "source_candidate_real_encoder_composition_pending", "authority": "none", "tests": [], "mappingClass": "owner_native", "delegatedCallees": [], "sourcePathExists": true},
+    {"operation": "observe_retrieval_assignment", "designOperation": "retrieval_assignment_observation", "nativeSymbol": "observe_retrieval_assignment", "sourcePath": "codex-rs/hepta-memory-retrieval/src/decision.rs", "state": "source_implemented_learning_sink_composed_not_actual_use_proof", "authority": "none", "tests": ["codex-rs/hepta-memory-retrieval/src/decision_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": ["codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs"], "sourcePathExists": true},
+    {"operation": "acquire_context", "designOperation": "atomic_payload_lifecycle_lease_observation", "nativeSymbol": "acquire_context", "sourcePath": "codex-rs/hepta-agentd/src/product_retrieval_context.rs", "state": "source_candidate_native_qualification_pending", "authority": "none", "tests": ["codex-rs/hepta-agentd/src/product_retrieval_context_tests.rs", "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": [], "sourcePathExists": true},
+    {"operation": "product_context_control", "designOperation": "protected_epoch_cas_rotation_renewal_terminal_revocation", "nativeSymbol": "ProductRetrievalContextControlV1", "sourcePath": "codex-rs/hepta-agentd/src/product_retrieval_context.rs", "state": "in_process_control_source_candidate_not_durable_registry", "authority": "protected_context_owner_only", "tests": ["codex-rs/hepta-agentd/src/product_retrieval_context_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": [], "sourcePathExists": true},
+    {"operation": "recover_product_with_witness", "designOperation": "independently_witnessed_context_recovery", "nativeSymbol": "recover_product_with_witness", "sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs", "state": "source_candidate_durable_witness_adapter_not_composed", "authority": "protected_context_owner_only", "tests": ["codex-rs/hepta-agentd/src/product_retrieval_context_tests.rs"], "mappingClass": "owner_native", "delegatedCallees": ["codex-rs/hepta-agentd/src/product_retrieval_context.rs"], "sourcePathExists": true}
   ],
   "productCallers": [
-    {
-      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "nativeSymbol": "read_with_retrieval_context_and_learning",
-      "state": "explicit_generation_bound_retrieval_and_final_revalidation"
-    },
-    {
-      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
-      "nativeSymbol": "CurrentMemoryRetrievalContext::product",
-      "state": "leased_epoch_fenced_product_context_source_candidate"
-    }
+    {"sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs", "nativeSymbol": "read_with_retrieval_context_and_learning", "state": "atomic_lifecycle_bound_retrieval_and_final_revalidation"},
+    {"sourcePath": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs", "nativeSymbol": "CurrentMemoryRetrievalContext::product_with_control", "state": "protected_composition_root_reader_control_split"}
   ],
   "repositoryControlledGaps": [
-    "Obtain green exact-head and ordered-parent synthetic-merge receipts for this exact source observation.",
-    "Add an authenticated deployed encoder/index artifact owner and qualify its calibrated OOD distribution on a named host.",
-    "Complete compatibility, shadow, canary and required runtime delivery dispatch with rollback rehearsal.",
-    "Add full Agentd end-to-end concurrency, owner-write-contention, provider-rotation and learning-append measurements."
+    "Carry explicit owner proposition/polarity evidence through candidates, aggregation, canonical receipts and selections; the legacy accessor still infers stance from channels.",
+    "Obtain green exact-head and ordered-parent synthetic-merge tests and strict lint/format checks for the final source; do not reuse parent receipts.",
+    "Compose a protected durable checkpoint writer and independently current recovery witness with process/crash/restore tests.",
+    "Compose a deployed real encoder/index owner and independently calibrate OOD on a named host.",
+    "Complete compatibility/shadow/canary/required delivery dispatch, cohort evidence and rollback rehearsal.",
+    "Instrument and measure all nine Agentd stages, actual resource counters, contention and final-use/learning agreement.",
+    "Archive accepted raw measurements in an approved long-term immutable evidence owner."
   ],
-  "externalEvidenceGates": [
-    "independent non-author semantic approval",
-    "approved named target-host end-to-end SLO receipt",
-    "operator canary and rollback acceptance",
-    "activation and release authority"
-  ],
-  "claimBoundary": {
-    "nativeSourceMappingComplete": true,
-    "implementedOperationMappingComplete": true,
-    "sourceRootPresent": true,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false
-  },
+  "externalEvidenceGates": ["authorized independent non-author current-head human approval", "named-host end-to-end acceptance", "operator canary and rollback acceptance", "server-side required-check and bypass-policy enforcement", "activation and release authority"],
+  "claimBoundary": {"nativeSourceMappingComplete": true, "implementedOperationMappingComplete": true, "sourceRootPresent": true, "productionImplementation": false, "productExecutionProved": false, "independentAcceptance": false, "activation": false, "release": false},
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
-  "observedAtHead": {
-    "commit": "beaca76a4ecbd393c01c6547fb1e9b02ed0e59a5",
-    "tree": "cc835868b672e9f526c683706caab6138313229a"
-  },
-  "observedSourcePaths": [
-    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
-    "codex-rs/Cargo.lock",
-    "codex-rs/Cargo.toml",
-    "codex-rs/hepta-agentd/src/cognitive_context.rs",
-    "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
-    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
-    "codex-rs/hepta-memory-retrieval",
-    "qualification/memory-retrieval/BASELINES/github-hosted-v1.json",
-    "scripts/verify_memory_retrieval_slo.py"
-  ]
+  "observedAtHead": {"commit": "cf03b2691b899e9b44af727a481dbc27d1793554", "tree": "ea3ed976f3c2ec3e7149672bccf54619fa9eac4a"},
+  "observedSourcePaths": ["codex-rs", "scripts", ".github/workflows", "docs/modules/memory.retrieval", "qualification/memory-retrieval"],
+  "exactHeadObservation": {"generator": "scripts/capture_memory_retrieval_source.py", "schema": "hepta.memory-retrieval.source-observation.v1", "meaning": "live checkout commit/tree/ordered parents and dependency objects; separate from this historical map observation", "qualificationPassed": false},
+  "requiredHostedChecks": ["memory.retrieval source and review required", "memory.retrieval native required"],
+  "serverEnforcementVerified": false
 }

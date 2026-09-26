@@ -1,52 +1,45 @@
 # memory.retrieval threat model
 
-## Protected assets
+## Assets and trust domains
 
-- exact memory record/revision/content identity;
-- Lane C generation vector and owner frontiers;
-- model, tokenizer, encoder, template and tool-schema identities;
-- retrieval policy and HNMF snapshot;
-- selected and actually delivered candidate identities;
-- learning assignment and exposure receipts.
+Protect exact record/revision/content identity, the coherent Lane C cut, external artifact and policy identities, lifecycle epochs/leases, selected and delivered subsets, and durable assignment/actual-use evidence. SQLite, knowledge projection, encoder/index, current-context control and learning ledger remain separate owners. An unkeyed digest proves neither issuer identity nor freshness.
 
-## Trust domains
+The composition root may install a provider and retain its control capability. Request code receives only the reader. Public test/provider trait implementations are not automatically authenticated production owners. No new authority is granted by retrieval receipts.
 
-The SQLite cognitive store, vector encoder/index owner, knowledge-graph projection, Agentd product-context owner and learning ledger are separate owners. A digest proves integrity and identity binding; it does not by itself prove issuer authenticity. Authentication must come from owner-only capability construction or a verified signature/registry boundary.
+## Candidate poisoning and resource amplification
 
-## Principal threats and controls
+Apply raw-input integrity and hard capacity bounds before semantic filtering. Disabled or below-floor evidence must not satisfy coverage or poison admitted OOD/conflict decisions. Bound candidates, vector dimensions, graph nodes/edges, steps/hops, active populations, output bytes and diagnostic logs. A resource-bound constructor is not a measured CPU/RSS SLO.
 
-### Candidate poisoning
+## Contradiction amplification: still open
 
-A low-score or disabled-channel candidate must not force global OOD or contradiction abstention. Safety evaluation is restricted to the policy-admitted set. Owner generation, exact snapshot binding and final source revalidation prevent stale or invented records from becoming delivered context.
+The original owner adapter grouped contradiction-support outputs by observation digest. The current compatibility wrapper infers polarity from channel names and can form a Cartesian product of merged channels and groups. Those are not logical proposition/polarity facts. The repair must preserve explicit owner-issued proposition, stance, scope/time identity and source binding through aggregation and canonical receipts. Same-side reports and cross-channel duplicates must not create conflicts. This remains an activation blocker; do not claim it is resolved merely because a typed accessor exists.
 
-### Contradiction amplification
+Zero-weight graph edges must have no activation, traversal or contradiction effect. Actual opposite-polarity evidence must still trigger the declared safety policy; avoiding false abstention must not silently suppress genuine conflicts.
 
-Grouping all contradiction-support records under one request digest can create false conflicts. Proposition and polarity are explicit; same-side support is not a contradiction. Zero-weight contradiction edges are inert.
+## Generation substitution and lifecycle ABA
 
-### Generation substitution
+Payload-only equality misses renewal or same-payload rotation. Product `acquire_context` therefore returns payload, lifecycle binding and lease from one read lock. The binding includes owner/body, epoch, lease, revoked disposition and complete context digest. Agentd uses that binding for read receipts and checks it again after asynchronous gaps and before final-use acceptance. A→B→A payload changes do not restore an earlier epoch.
 
-A provider may attempt to combine a current memory cut with an old model, policy or engram. `RetrievalExecutionContextV1` and the product context state digest bind all identities. Rotation is epoch-fenced and `current()` is checked before publication and final use.
+Separate diagnostic accessors are not a transaction. A malicious compatibility provider can implement a weaker default; that surface must not be approved as a product lifecycle without an independently reviewed implementation.
 
-### Revocation race
+## Capability escalation and revocation
 
-An in-flight request can observe a context before revocation. Agentd reloads the current context before response publication. The product provider validates its lease and state digest on each call; revocation removes the context and advances the epoch.
+The product read trait no longer overrides mutation methods. Rotation, renewal and revocation require the private-field control handle retained by the trusted owner. Compare-and-swap epochs prevent concurrent control writers from both committing the same predecessor. Revocation is terminal and retry-idempotent. No public 'force' operation bypasses an epoch mismatch.
 
-### Receipt forgery
+## Clock and recovery attacks
 
-Self-consistent unkeyed digests are not issuer authentication. Public constructors validate structure, while product composition must restrict owner receipt creation to authenticated owner adapters. Cross-process receipts require signatures or MACs bound to owner key epoch, scope, purpose and generation.
+Leases have a hard five-minute ceiling and both wall/monotonic expiration checks. Backward wall-clock movement fails closed rather than extending validity. Expired providers cannot be resurrected by renewal.
 
-### Resource exhaustion
+A self-consistent old checkpoint may predate revocation. Self-hash recovery is rejected. Witnessed recovery compares the exact latest epoch/digest from an independent owner for the same owner/body. The witness adapter must authenticate its source and resist local restore. The in-process provider does not implement the durable witness, cross-process fencing or atomic checkpoint/witness publication; their composition and crash tests remain open.
 
-All candidate, node, synapse, hop, step, dimension and result counts are bounded. Vector snapshot validation is linear in the bounded snapshot. Qualification includes ceiling probes and RSS/CPU thresholds.
+## Receipt and qualification forgery
 
-### Rollback and stale recovery
+Strict SLO parsing rejects duplicate keys/phases, Boolean-as-integer metrics, non-finite values, missing/extraneous phases, inconsistent percentiles/outcome denominators and empty profiles. It binds raw logs, thresholds and exact clean source/tree. Microbenchmark receipts cannot satisfy the E2E schema. Structural hashes are not independent measurement signatures.
 
-Recovery accepts an independently retained state digest and exact epoch. A non-revoked recovered context also requires a future lease and validates the complete execution context. Durable deployment must keep recovery receipts outside the Agent-home rollback domain.
+Production promotion requires a current, non-draft PR, an authorized non-author human approval of that exact head, and successful qualification. Stale, dismissed, bot or self-approval is insufficient. Server-side required checks and anti-bypass policy must be installed by repository administration; naming a workflow 'required' does not install protection.
 
-## Residual risks before activation
+## Exposure and residual risk
 
-- complete four-mode runtime dispatch is not yet accepted;
-- calibrated OOD distributions are owner/model dependent;
-- cross-process generator receipt authentication remains a composition obligation;
-- full concurrent end-to-end Agentd SLO evidence and fault-injection acceptance remain external gates;
-- branch protection and independent review are repository governance controls, not properties of the Rust crate.
+Enumeration, HNMF selection, response preparation, publication, native-started attachment and actual model use are distinct. A ledger append is not proof of consumption. Any production consumer must retain independently verifiable final-use evidence and reconcile non-delivery without rewriting history.
+
+Still open: explicit owner contradiction metadata; calibrated deployed encoder/index; four-mode delivery dispatch; durable witness/recovery publication; concurrent complete-pipeline SLO and actual-use tests; independent named-host acceptance and server-side governance configuration. Keep production, execution-proved, acceptance, activation and release claims false until their evidence exists.

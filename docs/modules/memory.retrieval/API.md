@@ -1,59 +1,60 @@
 # memory.retrieval API reference
 
-Status: source candidate. This reference does not grant activation or release authority.
+Status: implementation candidate, not an activation or release authorization. Read this together with [TECHNICAL.md](TECHNICAL.md), [POLICY_REFERENCE.md](POLICY_REFERENCE.md) and [OPERATIONS.md](OPERATIONS.md).
 
-## Trust boundary
+## Ownership and caller contract
 
-`memory.retrieval` is a read-only deterministic decision component. It does not own memory persistence, model release, encoder deployment, clocks, network effects, or learning-ledger durability. Every externally generated candidate batch must be tied to an exact Lane C generation and a named owner receipt before recall.
+The retrieval crate is a bounded, deterministic, read-only decision component. The canonical SQLite owner retains memory/index persistence; external owners retain model, encoder and policy provenance; the learning ledger owns assignment durability. No unkeyed receipt authenticates its issuer. Requests must not mint current generations, choose arbitrary product thresholds or acquire lifecycle write authority.
 
-## Core entry points
+`compile_cue` binds objective, approved context, request, snapshot and cue-profile digests. `RetrievalGeneratorReceiptV1::new` records generator identity, generation vector, owner generation, count and completeness. `GeneratedCandidateInputV1::new` canonicalizes batches and checks count agreement. `build_candidate_union`, `recall`, `settle_engram` and `recall_with_engram` apply deterministic admission and bounded HNMF decisions. `observe_retrieval_assignment` records enumerated/legal/selected sets; completeness alone is not causal identifiability.
 
-### Candidate generation
+`generate_vector_batch_v1` operates on supplied, bounded fixed-point vectors with exact record/model/generation identities. It is not a text encoder, deployed index service, calibrated OOD model or proof of product composition.
 
-- `compile_cue`: creates a generation-bound `MemoryCueV1` from objective, approved-context, request, snapshot and cue-profile digests.
-- `RetrievalGeneratorReceiptV1::new`: seals generator identity, generation vector, owner generation, candidate count and completeness.
-- `GeneratedCandidateInputV1::new`: canonicalizes named generator batches and proves candidate/receipt count agreement.
-- `generate_vector_batch_v1`: validates a sealed vector-index snapshot and query, applies model/generation/OOD bounds, deterministically ranks records and emits the `EncoderVector` batch.
+## Product read and control capabilities
 
-### Recall
+The trusted composition root calls:
 
-- `build_candidate_union`: canonicalizes per-record channel evidence.
-- `recall`: applies policy admission, safety checks, score ordering and result limits.
-- `settle_engram`: executes bounded recurrent HNMF dynamics.
-- `recall_with_engram`: combines admitted retrieval evidence with HNMF support and returns a receipt.
-- `observe_retrieval_assignment`: records enumerated, legal, selected and omitted identities without claiming causal identification.
+```rust,ignore
+let (reader, control) = <dyn CurrentMemoryRetrievalContext>::product_with_control(
+    owner, body_generation, validated_context, lease_expires_unix_ms,
+)?;
+// Give request code only `reader`. Retain `control` in the protected owner.
+```
 
-## Product context capability
+`product(...)` returns only the reader and deliberately drops the control capability. The read trait retains legacy lifecycle mutation method names for source compatibility, but the product reader rejects `rotate_context`, `renew_context` and `revoke_context`. Real mutations use `ProductRetrievalContextControlV1::rotate`, `renew` and `revoke` with an expected epoch. Its internal provider field is private.
 
-`CurrentMemoryRetrievalContext` supplies the exact current `RetrievalExecutionContextV1`. The Agentd-owned implementation is constructed with `<dyn CurrentMemoryRetrievalContext>::product(...)` and supports:
+`acquire_context(owner, body_generation)` returns **one atomic observation**:
 
-- `lifecycle_epoch()`
-- `lease_expires_unix_ms()`
-- `context_state_digest()`
-- `rotate_context(expected_epoch, ...)`
-- `renew_context(expected_epoch, ...)`
-- `revoke_context(expected_epoch)`
-- `<dyn CurrentMemoryRetrievalContext>::recover_product(...)`
+| Value | Meaning |
+| --- | --- |
+| `RetrievalExecutionContextV1` | Validated model/tokenizer/encoder/policy/engram/generation payload |
+| `Digest32` lifecycle binding | Owner, body, epoch, lease, revoked disposition and payload commitment |
+| `Option<u64>` lease deadline | Product wall-clock deadline; `None` is legacy compatibility, not durable-lease evidence |
 
-All lifecycle mutations are epoch-fenced. Every `current()` call revalidates identity, lease, state digest and the full generation vector. Revocation and expiry fail closed.
+The product provider acquires all three under one read lock. Do not assemble a request binding from separate `current()`, `lifecycle_epoch()` and `lease_expires_unix_ms()` reads. Separate accessors are diagnostic, not an atomic transaction.
 
-## Invariants
+Agentd keeps the lifecycle binding in its read receipt, bounds execution by the provider lease, and reloads the binding before publication and final-use acceptance. Same-payload renewal or rotation invalidates previous read receipts. A compatibility provider's default `acquire_context` retains payload-only semantics; it must not be represented as a qualified product lifecycle.
 
-1. Zero activation never creates support.
-2. `minimum_activation` is strictly positive.
-3. A zero-weight synapse is structurally present but semantically inert.
-4. Confidence is activation-weighted.
-5. OOD and contradiction decisions use only the policy-admitted set.
-6. Contradiction identity binds proposition and polarity; two records on the same side are corroboration, not a contradiction.
-7. Input order cannot change canonical unions, recall ordering or receipts.
-8. Generator receipt count equals the emitted candidate count.
-9. Vector candidates bind exact model and generation identities and retain owner-supplied OOD values.
-10. Final text exposure remains subject to exact revision/content/source revalidation in Agentd.
+## Lifecycle and recovery
 
-## Errors
+The maximum in-process lease is 300,000 milliseconds. Both wall-clock expiry and a monotonic deadline are enforced. Wall-clock regression relative to acquisition fails closed. Expiry cannot be repaired by renewing the expired object. Rotation and renewal increment the epoch with checked arithmetic. Rotation rejects a regressing authority epoch. Revocation is terminal, clears the payload, sets lease to zero, and accepts an exact retry of the completed revocation.
 
-Validation errors are fail-closed and must not be converted into empty successful recall. Capacity exhaustion is represented by `LimitReached`; owner unavailability is represented by `Unavailable`; neither may be mislabeled as exhaustive enumeration.
+`ProductRetrievalContextSnapshotV1::validate` checks structure, context and hash. This is **not** a freshness proof. Historical `recover_product(...)` therefore rejects recovery. `recover_product_with_witness(snapshot, witness)` requires a `RetrievalRecoveryWitnessV1` supplied by the independently protected current owner and compares the exact latest epoch and state digest. The witness implementation must not read the same rollbackable snapshot it is checking.
+
+The in-process provider does not implement durable checkpoint publication or an external registry. Cross-process anti-rollback/recovery is incomplete until those owners and their fault-injection tests are composed.
+
+## Decision invariants and outstanding semantic boundary
+
+Positive activation, bounded dynamics, inert zero-weight synapses, activation-weighted confidence, admitted-set safety checks, deterministic ordering and count agreement are intended invariants and have source tests. Test execution and qualification must be recorded for the exact source.
+
+**The current legacy contradiction wrapper still infers polarity from retrieval channels.** Its `ContradictionEvidenceV1` accessor is not owner-issued proposition/polarity evidence. In particular, merging channel sets must not be confused with merging logical assertions. Removing this inference and carrying explicit owner evidence through candidate, union, canonical digest and selection is still an activation blocker; the presence of an accessor or a same-side fixture does not close it.
+
+## Errors, completeness and evidence
+
+Validation errors must not become successful empty recall. `LimitReached` and unavailable generators do not prove exhaustive enumeration. Only policy-admitted evidence may influence decision safety, but malformed or over-capacity raw input still requires bounded validation before filtering.
+
+Assignment, prepared response, published response, native-started attachment and actual model consumption are distinct events. A successful ledger append or `context_exposed` field is not independent proof of final consumption. Consumers must verify the exact receipt and actual-use evidence.
 
 ## Compatibility
 
-V1 public types remain available. Semantic corrections use versioned receipt domains where the digest meaning changed. Callers must not compare V1 and V2 digest domains as interchangeable identities.
+No registered wire ID or authority is added here. Product lifecycle state uses the `hepta.agentd.product-retrieval-context.v2` digest domain. Old lifecycle digests are not interchangeable with new bindings. Legacy reader implementations retain a compatibility default; product deployments must explicitly qualify their override. The old self-hash recovery factory now fails closed intentionally.

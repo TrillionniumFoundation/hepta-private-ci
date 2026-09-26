@@ -1,0 +1,102 @@
+name: Memory retrieval source and review governance
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft, edited]
+  pull_request_review:
+    types: [submitted, dismissed]
+  push:
+    branches: [main, work/memory-retrieval-semantic-product-convergence-20260926]
+    paths: ['codex-rs/**', 'scripts/**', '.github/workflows/**', 'docs/**', 'qualification/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  governance:
+    name: memory.retrieval source and review required
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    env:
+      SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Observe the exact current checkout and strict claim types
+        id: claims
+        run: |
+          set -euo pipefail
+          python scripts/capture_memory_retrieval_source.py --source-sha "$SOURCE" --source-tree "$(git rev-parse HEAD^{tree})" --output "$RUNNER_TEMP/retrieval-source-observation.json"
+          python - <<'PY'
+          import os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          from verify_memory_retrieval_slo import loads
+          from verify_memory_retrieval_promotion import is_promoted
+          mapping = loads(Path('docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('promotion=' + str(is_promoted(mapping)).lower() + '\n')
+          PY
+      - name: Read current PR reviews and reviewer permissions from GitHub
+        id: review
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        env:
+          PROMOTION: ${{ steps.claims.outputs.promotion }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const source = process.env.SOURCE;
+            let observed = {};
+            let reviewSource = source;
+            if (process.env.PROMOTION === 'true') {
+              let number = context.payload.pull_request?.number;
+              if (!number) {
+                const associated = await github.paginate(github.rest.repos.listPullRequestsAssociatedWithCommit, {
+                  ...context.repo, commit_sha: source, per_page: 100
+                });
+                const merged = associated.filter(pr => pr.merged_at && pr.merge_commit_sha === source);
+                if (merged.length !== 1) throw new Error('promotion requires one current or exact merged PR');
+                number = merged[0].number;
+              }
+              const {data: pr} = await github.rest.pulls.get({...context.repo, pull_number: number});
+              if (context.payload.pull_request && pr.head.sha !== source) throw new Error('stale PR-head event');
+              if (!context.payload.pull_request && pr.merge_commit_sha !== source) throw new Error('wrong merged source');
+              const reviews = await github.paginate(github.rest.pulls.listReviews, {
+                ...context.repo, pull_number: number, per_page: 100
+              });
+              const permissions = {};
+              for (const login of [...new Set(reviews.map(review => review.user?.login).filter(Boolean))]) {
+                const {data: permission} = await github.rest.repos.getCollaboratorPermissionLevel({
+                  ...context.repo, username: login
+                });
+                permissions[login] = permission.permission;
+              }
+              reviewSource = pr.head.sha;
+              observed = {pull_request: pr, reviews, permissions, qualified_source: source};
+            }
+            fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'retrieval-review-observation.json'), JSON.stringify(observed));
+            core.setOutput('review-source', reviewSource);
+      - name: Require independent exact-head approval for any production promotion
+        env:
+          REVIEW_SOURCE: ${{ steps.review.outputs.review-source }}
+        run: |
+          python scripts/verify_memory_retrieval_promotion.py --map docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json --github-observation "$RUNNER_TEMP/retrieval-review-observation.json" --source-sha "$REVIEW_SOURCE"
+      - name: Verify no source changed while checking governance
+        run: |
+          set -euo pipefail
+          python scripts/capture_memory_retrieval_source.py --source-sha "$SOURCE" --source-tree "$(git rev-parse HEAD^{tree})" --verify "$RUNNER_TEMP/retrieval-source-observation.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-retrieval-governance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/retrieval-source-observation.json
+            ${{ runner.temp }}/retrieval-review-observation.json
+          if-no-files-found: error
+          retention-days: 90

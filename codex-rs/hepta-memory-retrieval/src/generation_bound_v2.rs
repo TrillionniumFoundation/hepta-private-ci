@@ -1,11 +1,9 @@
 //! Policy-admitted generation-bound recall semantics.
 //!
-//! The original V1 structures remain wire-compatible. This module wraps the
-//! legacy constructors and validators, but changes decision semantics so OOD,
-//! channel coverage and contradiction checks are evaluated only over the
-//! policy-admitted set. Contradiction groups are proposition digests; polarity
-//! is derived from the evidence channel (`ContradictionSupport` opposes, every
-//! other admitted channel supports). Same-side evidence never conflicts.
+//! Legacy native structures are retained. This compatibility wrapper restricts
+//! OOD and channel coverage to the admitted set. Its legacy contradiction
+//! accessor still infers stance from channels and is NOT explicit owner-issued
+//! proposition/polarity evidence; that migration remains an activation blocker.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -15,9 +13,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 
-mod legacy {
-    include!("generation_bound.rs");
-}
+#[path = "generation_bound.rs"]
+mod legacy;
 
 pub use legacy::CandidateUnionEntryV1;
 pub use legacy::CandidateUnionV1;
@@ -98,7 +95,12 @@ pub fn build_candidate_union(
     policy: &RetrievalPolicyV1,
     candidates: Vec<RetrievalChannelCandidateV1>,
 ) -> Result<CandidateUnionV1, RecallErrorV1> {
-    policy.validate()?;
+    // Bound the raw vector before cloning or filtering it. Disabled channels
+    // cannot smuggle unbounded input or bypass structural/generation checks.
+    if candidates.len() > MAX_GENERATION_BOUND_CANDIDATES {
+        return Err(RecallErrorV1::CandidateLimitExceeded);
+    }
+    legacy::build_candidate_union(cue, policy, candidates.clone())?;
     let weights = policy
         .channel_weights
         .iter()
@@ -109,7 +111,7 @@ pub fn build_candidate_union(
         .filter(|candidate| {
             weights
                 .get(&candidate.channel)
-                .map_or(true, |weight| *weight > FixedQ32::ZERO)
+                .is_none_or(|weight| *weight > FixedQ32::ZERO)
         })
         .collect();
     legacy::build_candidate_union(cue, policy, candidates)
