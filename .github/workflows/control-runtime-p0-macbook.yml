@@ -1,0 +1,116 @@
+name: Control runtime P0 trusted MacBook gate
+
+on:
+  push:
+    branches:
+      - control-runtime-production-closure-v1
+    paths:
+      - "scripts/control_runtime_p0_fixups.py"
+      - "scripts/run_control_runtime_p0_fixups.py"
+      - ".github/workflows/control-runtime-p0-macbook.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-runtime-p0-trusted-macbook-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply-and-prove:
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Check out exact push source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+
+      - name: Bind trusted host and source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = push
+          test "$GITHUB_REF" = refs/heads/control-runtime-production-closure-v1
+          test "$RUNNER_NAME" = macbook-pro
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree}
+          rustc --version
+          cargo --version
+          sw_vers
+          uname -a
+
+      - name: Apply literal-safe P0 source closure
+        run: python3 scripts/run_control_runtime_p0_fixups.py
+
+      - name: Format and validate generated diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cd ..
+          git diff --check
+          git diff --stat
+
+      - name: Locked all-target compilation
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo check --locked --all-targets \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd
+
+      - name: Package and request-integrity regressions
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-control-plane --lib
+          cargo test --locked -p codex-hepta-agent-protocol --lib
+          cargo test --locked -p codex-hepta-agentd --lib cognitive_context
+
+      - name: Control NDU caller regressions
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-control-plane --lib planner_context
+          cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
+
+      - name: Strict Clippy and formatting
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-agentd \
+            -- -D warnings
+          cargo fmt --all -- --check
+
+      - name: Commit proven generated source atomically
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git config user.name hepta-control-runtime-bot
+          git config user.email control-runtime-bot@invalid
+          git add \
+            codex-rs/hepta-control-plane/src/planner_store.rs \
+            codex-rs/hepta-agent-protocol/src/lib.rs \
+            codex-rs/hepta-agentd/src/cognitive_context.rs \
+            codex-rs/hepta-agentd/src/cognitive_context_tests.rs \
+            codex-rs/hepta-agentd/src/cognitive_ranker.rs
+          if git diff --cached --quiet; then
+            echo "No generated source changes"
+            exit 0
+          fi
+          git commit -m "control.runtime: close monotonic final use and crash-safe writer locking"
+          git push origin HEAD:control-runtime-production-closure-v1
