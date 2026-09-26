@@ -14,6 +14,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod authbus_saga;
 mod final_use_host;
 mod https_consumer;
 mod lease_lifecycle;
