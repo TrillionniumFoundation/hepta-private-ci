@@ -1,0 +1,60 @@
+name: runtime.codex CI closure bootstrap
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-production-closure-20260926
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-ci-closure-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-test-commit:
+    if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-ci-closure]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.sha }}
+
+      - name: Apply required-gate and target-host evidence closure
+        run: python3 scripts/apply_runtime_codex_ci_closure.py
+
+      - name: Run evidence and fan-in tests
+        run: >-
+          python3 -m unittest -v
+          scripts.tests.test_runtime_codex_target_host_evidence
+          scripts.tests.test_wait_for_github_checks
+
+      - name: Validate workflow syntax and diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          ruby -e 'require "yaml"; ARGV.each { |path| YAML.load_file(path, aliases: true) }' \
+            .github/workflows/blocking-ci.yml \
+            .github/workflows/runtime-codex-target-host.yml
+          git diff --check
+
+      - name: Commit CI and target-host evidence closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/apply_runtime_codex_ci_closure.py
+          rm .github/workflows/runtime-codex-ci-closure-bootstrap.yml
+          git add -A
+          git diff --cached --check
+          git config user.name "OpenAI Codex"
+          git config user.email "noreply@openai.com"
+          git commit \
+            -m "runtime.codex: require exact qualification and fault evidence [runtime-codex-ci-closure]" \
+            -m "Fan the independent exact-head and synthetic-merge checks into the protected CI required result. Replace ad-hoc target-host metrics with a tested canonical evidence builder and require externally driven ACK-loss, event-lag, process-death, and Agentd-restart receipts with no replay or duplicate physical request." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          git push origin "HEAD:codex/runtime-codex-production-closure-20260926"
