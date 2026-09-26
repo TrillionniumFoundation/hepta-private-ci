@@ -1,0 +1,101 @@
+name: Kernel evidence hardening regressions
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-evidence/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'schema/migrations/sqlite/*qualification*'
+      - 'scripts/kernel_evidence*'
+      - 'scripts/tests/test_kernel_evidence*'
+      - '.github/workflows/hepta-kernel-evidence*'
+  push:
+    branches:
+      - codex/kernel-evidence-production-hardening-20260927
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-hardening-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regressions:
+    name: Kernel evidence hardening regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Preserve candidate source for reproducible diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evidence-hardening"
+          git rev-parse HEAD > "$RUNNER_TEMP/evidence-hardening/source-commit.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/evidence-hardening/source-tree.txt"
+          paths=()
+          for path in codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-authbus codex-rs/hepta-contracts codex-rs/hepta-types codex-rs/state codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/rust-toolchain.toml scripts .github schema docs/modules/kernel.evidence docs/lane-a-foundation/kernel.evidence qualification/kernel-evidence qualification/module-execution-dossiers/detail/kernel.evidence.md; do
+            if git cat-file -e "HEAD:$path" 2>/dev/null; then paths+=("$path"); fi
+          done
+          git archive --format=tar.gz --output="$RUNNER_TEMP/evidence-hardening/source.tar.gz" HEAD "${paths[@]}"
+          sha256sum "$RUNNER_TEMP/evidence-hardening/source.tar.gz" > "$RUNNER_TEMP/evidence-hardening/source.sha256"
+
+      - name: Upload exact-source diagnostic snapshot
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: kernel-evidence-hardening-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/evidence-hardening/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Run hardening Python regression suite
+        id: python_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/tests -p 'test_kernel_evidence*.py' -v 2>&1 | tee "$RUNNER_TEMP/evidence-hardening/python-tests.log"
+
+      - name: Set up Rust toolchain
+        id: toolchain
+        continue-on-error: true
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Test exact-source evidence crate
+        id: rust_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-evidence 2>&1 | tee "$RUNNER_TEMP/evidence-hardening/rust-tests.log"
+
+      - name: Upload hardening test diagnostics
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: kernel-evidence-hardening-results-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/evidence-hardening/*.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce hardening results
+        if: always()
+        env:
+          PYTHON_TESTS: ${{ steps.python_tests.outcome }}
+          TOOLCHAIN: ${{ steps.toolchain.outcome }}
+          RUST_TESTS: ${{ steps.rust_tests.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$PYTHON_TESTS" = success
+          test "$TOOLCHAIN" = success
+          test "$RUST_TESTS" = success
