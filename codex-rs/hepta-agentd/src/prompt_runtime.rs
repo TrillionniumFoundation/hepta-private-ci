@@ -36,6 +36,8 @@ use codex_hepta_codex_adapter::PromptRuntimeTerminalRecordV1;
 use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
 use codex_hepta_intelligence::PromptRegistryCompiledContextV2;
 use codex_hepta_intelligence::compile_prompt_registry_v2;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
 use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
@@ -43,7 +45,11 @@ use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 use codex_hepta_prompt_optimizer::consumer::PromptConsumerCapabilitiesV1;
 use codex_hepta_prompt_optimizer::consumer::enumerate_factors_for_consumer_v1;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
+use codex_hepta_prompt_registry::PromptFactor;
+use codex_hepta_prompt_registry::PromptFactorRelation;
+use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
+use codex_hepta_prompt_registry::RegistryReceipt;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::PromptDeliveryRejectReasonV1;
@@ -504,6 +510,7 @@ pub enum AgentdPromptPipelineError {
     Stage(AgentdPromptRuntimeError),
     FinalUseLease(PromptFinalUseLeaseError),
     FinalUseStore(PromptFinalUseStoreError),
+    Publisher(String),
 }
 
 impl fmt::Display for AgentdPromptPipelineError {
@@ -588,6 +595,90 @@ impl AgentdPromptPipelineOwner {
                 error.to_string(),
             ))
         })
+    }
+
+    /// Authenticated production writer for draft factor publication.
+    pub fn publish_factor(
+        &self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        factor: PromptFactor,
+    ) -> Result<RegistryReceipt, AgentdPromptPipelineError> {
+        self.registry
+            .lock()
+            .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
+            .register_factor_final_use(authority, signed, actor_id, scope_digest, factor)
+            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+    }
+
+    pub fn admit_factor(
+        &self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        factor_id: &StableId,
+        reviewed_scope_digest: Digest32,
+        evidence_digest: Digest32,
+    ) -> Result<RegistryReceipt, AgentdPromptPipelineError> {
+        self.registry
+            .lock()
+            .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
+            .admit_factor_final_use(
+                authority,
+                signed,
+                factor_id,
+                reviewed_scope_digest,
+                evidence_digest,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn publish_realization(
+        &self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        binding: PromptRealizationBindingV2,
+        payload: Vec<u8>,
+        supersedes_realization_id: Option<StableId>,
+    ) -> Result<RegistryReceipt, AgentdPromptPipelineError> {
+        self.registry
+            .lock()
+            .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
+            .register_realization_payload_final_use_v2(
+                authority,
+                signed,
+                actor_id,
+                scope_digest,
+                binding,
+                payload,
+                supersedes_realization_id,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+    }
+
+    pub fn publish_relation(
+        &self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        relation: PromptFactorRelation,
+    ) -> Result<RegistryReceipt, AgentdPromptPipelineError> {
+        self.registry
+            .lock()
+            .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
+            .register_factor_relation_final_use(
+                authority,
+                signed,
+                actor_id,
+                scope_digest,
+                relation,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.

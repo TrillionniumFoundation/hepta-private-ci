@@ -47,6 +47,8 @@ use crate::RegistryReceipt;
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
 use crate::final_use_realization_binding;
+use crate::final_use_register_factor_binding;
+use crate::final_use_register_relation_binding;
 use crate::final_use_retire_binding;
 use crate::final_use_revoke_binding;
 use crate::protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE;
@@ -142,6 +144,29 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.register_factor(factor))
     }
 
+    pub fn register_factor_final_use(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        factor: PromptFactor,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.ensure_available()?;
+        let expected = final_use_register_factor_binding(&factor, actor_id, scope_digest)
+            .map_err(DurableRegistryError::Admission)?;
+        let token = authority
+            .claim(signed, &expected)
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?;
+        authority
+            .with_verified_use(token, &expected, || {
+                self.commit(|registry| registry.register_factor(factor))
+            })
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?
+    }
+
     /// Register one governed factor relation in the same durable image
     /// as factors, realizations, lifecycle state and payload references.
     pub fn register_factor_relation(
@@ -149,6 +174,33 @@ impl DurablePromptRegistry {
         relation: PromptFactorRelation,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.commit(|registry| registry.register_factor_relation(relation))
+    }
+
+    pub fn register_factor_relation_final_use(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        relation: PromptFactorRelation,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.ensure_available()?;
+        let expected = final_use_register_relation_binding(
+            &relation,
+            actor_id,
+            scope_digest,
+        )
+        .map_err(DurableRegistryError::Admission)?;
+        let token = authority
+            .claim(signed, &expected)
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?;
+        authority
+            .with_verified_use(token, &expected, || {
+                self.commit(|registry| registry.register_factor_relation(relation))
+            })
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?
     }
 
     #[cfg(test)]
