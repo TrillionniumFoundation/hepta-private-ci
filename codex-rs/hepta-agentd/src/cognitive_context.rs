@@ -511,7 +511,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         if delivers_hnmf {
             appended?;
         } else if appended.is_err() {
-            tracing::warn!("shadow retrieval assignment append unavailable; no exposure recorded");
+            eprintln!("shadow retrieval assignment append unavailable; no exposure recorded");
         }
     }
     // Append completion is not a freshness fence. A prepared assignment does

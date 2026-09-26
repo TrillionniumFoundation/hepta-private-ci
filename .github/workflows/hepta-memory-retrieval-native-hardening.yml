@@ -1,7 +1,7 @@
 name: Memory retrieval native hardening
 
 on:
-  pull_request:
+  workflow_call:
   push:
     branches: [main, work/memory-retrieval-semantic-product-convergence-20260926]
     paths: ['codex-rs/**', 'scripts/**', '.github/workflows/**', 'docs/**', 'qualification/**', 'justfile', 'rust-toolchain*', '.cargo/**']

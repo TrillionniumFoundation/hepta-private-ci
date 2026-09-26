@@ -272,16 +272,31 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  retrieval-native:
+    uses: ./.github/workflows/hepta-memory-retrieval-native-hardening.yml
+    permissions:
+      contents: read
+
+  retrieval-governance:
+    uses: ./.github/workflows/hepta-memory-retrieval-governance.yml
+    permissions:
+      contents: read
+      pull-requests: read
+
   required:
     name: Architecture required
     if: ${{ always() }}
-    needs: qualification
+    needs: [qualification, retrieval-native, retrieval-governance]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require both exact-candidate lanes
+      - name: Require exact architecture retrieval and independent-review gates
         env:
           RESULT: ${{ needs.qualification.result }}
+          RETRIEVAL: ${{ needs.retrieval-native.result }}
+          GOVERNANCE: ${{ needs.retrieval-governance.result }}
         run: |
           test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          test "$RETRIEVAL" = success
+          test "$GOVERNANCE" = success
+          echo "All exact-candidate, retrieval freshness/native and applicable independent-review gates succeeded."
