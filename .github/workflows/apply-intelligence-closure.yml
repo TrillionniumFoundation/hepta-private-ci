@@ -5,70 +5,51 @@ on:
     branches:
       - codex/intelligence-control-product-closure
     paths:
-      - qualification/patches/intelligence-control-product-closure.patch
+      - scripts/apply-intelligence-control-product-closure.py
       - .github/workflows/apply-intelligence-closure.yml
+      - codex-rs/hepta-agentd/src/intelligence_invocation_registry.rs
+      - codex-rs/hepta-agentd/src/intelligence_learning_outbox.rs
+      - codex-rs/hepta-agentd/src/intelligence_learning_outbox_tests.rs
 
 permissions:
   contents: write
 
 concurrency:
   group: intelligence-control-closure-apply
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Check out exact feature branch
+      - name: Check out latest isolated branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: codex/intelligence-control-product-closure
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Apply reviewed source patch atomically
+      - name: Apply fail-closed source transform
         shell: bash
         run: |
           set -euo pipefail
-          patch=qualification/patches/intelligence-control-product-closure.patch
-          diagnostic=qualification/patches/INTELLIGENCE_CLOSURE_APPLY_FAILURE.txt
-          test -s "$patch"
-          rm -f "$diagnostic"
-          if ! git apply --recount --3way "$patch" 2>apply-error.txt; then
-            git reset --hard HEAD
-            {
-              echo "patch application failed at $(git rev-parse HEAD)"
-              echo
-              cat apply-error.txt
-              echo
-              echo "strict check output:"
-              git apply --recount --check --verbose "$patch" 2>&1 || true
-            } > "$diagnostic"
-            git config user.name "hepta-ci-bot"
-            git config user.email "hepta-ci-bot@users.noreply.github.com"
-            git add "$diagnostic"
-            git commit -m "ci(intelligence): retain closure apply diagnostics"
-            git push origin HEAD:codex/intelligence-control-product-closure
-            exit 1
-          fi
-          rm "$patch"
-          git add -A
+          python3 scripts/apply-intelligence-control-product-closure.py
 
-      - name: Format and verify patch hygiene
+      - name: Format and verify source hygiene
         shell: bash
         run: |
           set -euo pipefail
           cd codex-rs
           cargo fmt --all
           cd ..
-          git add -A
-          git diff --cached --check
+          git diff --check
 
-      - name: Commit exact source candidate
+      - name: Commit transformed source candidate
         shell: bash
         run: |
           set -euo pipefail
+          rm scripts/apply-intelligence-control-product-closure.py
           rm .github/workflows/apply-intelligence-closure.yml
           git add -A
           git config user.name "hepta-ci-bot"
