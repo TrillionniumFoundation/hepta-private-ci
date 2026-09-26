@@ -1,0 +1,62 @@
+name: Bootstrap control.engineering source snapshot
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-p0-p2-convergence-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git diff --quiet
+          git diff --cached --quiet
+          printf '%s\n' "${{ github.sha }}" > "$RUNNER_TEMP/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/source-tree.txt"
+      - name: Build bounded source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/control-engineering-source.tgz" \
+            tools/hepta-engineering-control \
+            docs/modules/control.engineering \
+            qualification/module-execution-dossiers \
+            scripts \
+            .github/workflows/hepta-consolidated-source.yml \
+            .github/workflows/control-engineering-quality.yml \
+            .github/workflows/bootstrap-control-engineering-phase1.yml \
+            2>/dev/null || {
+              # The final quality workflow may not exist until the phase-one patch
+              # has been materialized in the runner worktree.
+              tar -czf "$RUNNER_TEMP/control-engineering-source.tgz" \
+                tools/hepta-engineering-control \
+                docs/modules/control.engineering \
+                qualification/module-execution-dossiers \
+                scripts \
+                .github/workflows/hepta-consolidated-source.yml \
+                .github/workflows/bootstrap-control-engineering-phase1.yml
+            }
+      - name: Retain exact bounded source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-source-snapshot-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-source.tgz
+            ${{ runner.temp }}/source-sha.txt
+            ${{ runner.temp }}/source-tree.txt
+          if-no-files-found: error
+          retention-days: 7
