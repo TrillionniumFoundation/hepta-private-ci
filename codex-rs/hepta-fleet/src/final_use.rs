@@ -128,14 +128,13 @@ impl std::error::Error for FleetFinalUseError {}
 mod tests {
     use super::*;
     use crate::SystemFleetClock;
-    use std::sync::Arc;
 
     #[test]
     fn missing_durable_revocation_snapshot_fails_closed() {
         let directory = tempfile::tempdir().expect("tempdir");
         let state_root = directory.path().join("state");
         std::fs::create_dir(&state_root).expect("state root");
-        let mut owner = DurableFleetOwner::open_supervisor_state_root(
+        let owner = DurableFleetOwner::open_supervisor_state_root(
             &state_root,
             Arc::new(SystemFleetClock),
         )
