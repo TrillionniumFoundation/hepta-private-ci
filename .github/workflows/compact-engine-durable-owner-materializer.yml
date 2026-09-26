@@ -28,10 +28,10 @@ jobs:
       - name: Install repository Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
 
-      - name: Materialize, qualify, and publish durable owner
+      - name: Materialize ordinary source, then qualify it
         shell: bash
         env:
-          EXPECTED_PARENT: eeb5cf6ce8f342f12bbfa5983f9d56f2a278918d
+          EXPECTED_PARENT: 2406b60d29771d568d06b74a4767442b3410cef4
           REVIEWED_OWNER_HEAD: bbf80bcc5706e4d77fa360fbd3430d66a6da42af
           TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
           WORKFLOW_PATH: .github/workflows/compact-engine-durable-owner-materializer.yml
@@ -112,12 +112,7 @@ jobs:
           PY
 
           rm "$WORKFLOW_PATH"
-
           (cd codex-rs && cargo fmt --all)
-          (cd codex-rs && cargo check -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets)
-          (cd codex-rs && cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets)
-          (cd codex-rs && cargo test --locked -p codex-hepta-compact-engine -p codex-hepta-memory --lib)
-          (cd codex-rs && cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets -- -D warnings)
           git diff --check
 
           test ! -e "$WORKFLOW_PATH"
@@ -128,3 +123,8 @@ jobs:
           git add -u "$WORKFLOW_PATH"
           git commit -s -m 'feat(compact.engine): restore durable checkpoint owner'
           git push origin "HEAD:$TARGET_BRANCH"
+
+          (cd codex-rs && cargo check -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets)
+          (cd codex-rs && cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets)
+          (cd codex-rs && cargo test --locked -p codex-hepta-compact-engine -p codex-hepta-memory --lib)
+          (cd codex-rs && cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-memory --all-targets -- -D warnings)
