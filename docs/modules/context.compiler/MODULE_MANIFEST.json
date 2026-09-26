@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "module": "context.compiler",
+  "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "branch": "codex/context-compiler-v2-provider-closure-20260927",
+  "generatedBy": "scripts/generate_context_compiler_module_docs.py",
+  "status": {
+    "coreImplementation": "complete",
+    "productComposition": "partial",
+    "v2ProviderClosure": "incomplete",
+    "currentHeadQualification": "absent"
+  },
+  "statusRationale": {
+    "coreImplementation": "V2 compilation, verified admission, canonical byte coverage, typed snapshot successor, attachment, delivery preparation and provider evidence observation are implemented.",
+    "productComposition": "Prompt registry, hepta-intelligence, Agentd and the provider-policy extension consume context compiler outputs, but the strict provider-bound V2 preparation is not yet the only serving path.",
+    "v2ProviderClosure": "The provider host ABI exposes request digests but no qualified exact tokenizer over the final provider request bytes; strict attestation therefore fails closed until the host capability is supplied.",
+    "currentHeadQualification": "No immutable qualification receipt for the exact branch head may be claimed before the qualification workflow completes."
+  },
+  "artifacts": {
+    "technical": "docs/modules/context.compiler/TECHNICAL.md",
+    "implementationMap": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+    "executionDossier": "qualification/module-execution-dossiers/detail/context.compiler.md"
+  },
+  "sourceRoots": [
+    "codex-rs/hepta-context-compiler",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+    "codex-rs/ext/hepta-prompt/src/lib.rs",
+    "codex-rs/core/src/model_provider_policy"
+  ],
+  "publicSurface": [
+    "compile_v2",
+    "record_canonical_serialization_v2",
+    "build_attachment",
+    "verify_typed_admission_snapshot_successor_v2",
+    "prepare_delivery_from_successor_v2",
+    "verify_provider_request_coverage_v2",
+    "tokenize_verified_provider_request_v2",
+    "observe_delivery"
+  ],
+  "byteIdentities": [
+    {
+      "name": "canonical context bundle",
+      "owner": "context.compiler",
+      "material": "Selected realized context items plus canonical envelope and item headers.",
+      "digest": "CanonicalContextCoverageV2.payload_digest",
+      "securityMeaning": "Every byte is covered; selected item bytes are exact and framing is compiler-owned."
+    },
+    {
+      "name": "prompt fragments",
+      "owner": "hepta-intelligence / ext.hepta-prompt",
+      "material": "Developer-policy fragments projected from the canonical context for host composition.",
+      "digest": "PromptRuntimeAttachmentV1.source_binding_digest",
+      "securityMeaning": "Binds the product projection, but is not itself the complete provider request."
+    },
+    {
+      "name": "provider final request",
+      "owner": "provider host",
+      "material": "Exact bytes submitted after all provider/model framing and request construction.",
+      "digest": "VerifiedProviderRequestV2.request_digest",
+      "securityMeaning": "Exact-tokenizer input; must contain one canonical context segment and only approved typed framing."
+    },
+    {
+      "name": "provider wire semantic digest",
+      "owner": "core model-provider policy",
+      "material": "Secret-free canonical semantics of the physical provider send, excluding credentials and timing.",
+      "digest": "ModelProviderInvocationInput.wire_semantic_sha256",
+      "securityMeaning": "Binds transport semantics; it is not interchangeable with the final-request byte digest."
+    }
+  ],
+  "sequence": [
+    "registry/admission snapshot",
+    "compile_v2",
+    "canonical context serialization + complete segment coverage",
+    "build_attachment",
+    "fresh typed snapshot successor",
+    "prepare_delivery_from_successor_v2",
+    "provider host constructs exact final request",
+    "provider request coverage verification",
+    "exact tokenizer over final request bytes",
+    "provider submit using the attested request",
+    "provider terminal evidence",
+    "observe_delivery",
+    "durable ContextDeliveryReceiptV2"
+  ],
+  "qualification": {
+    "workflow": ".github/workflows/context-compiler-qualification.yml",
+    "receiptArtifact": "context-compiler-qualification-receipt",
+    "commands": [
+      "python3 scripts/generate_context_compiler_module_docs.py --check",
+      "cargo fmt --all -- --check",
+      "cargo test -p codex-hepta-context-compiler",
+      "cargo clippy -p codex-hepta-context-compiler --all-targets -- -D warnings",
+      "cargo deny check",
+      "bazel test //codex-rs/hepta-context-compiler:all",
+      "python3 scripts/hepta-readiness.py verify",
+      "python3 scripts/hepta-docs.py verify"
+    ]
+  },
+  "knownOpenItems": [
+    "Supply a qualified host tokenizer implementation for each provider/model profile.",
+    "Bind the host-generated final request coverage and tokenization attestation into the live provider-policy ABI.",
+    "Make ContextDeliveryPreparationV2 and ContextDeliveryReceiptV2 the sole Agentd serving and durable terminal path.",
+    "Produce an immutable successful qualification receipt for the exact branch head."
+  ]
+}
