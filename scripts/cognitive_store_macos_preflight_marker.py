@@ -1,2 +1,2 @@
-# Temporary marker: repaired exact-candidate preflight trigger.
-# Remove after the macOS compile preflight and permanent qualification are green.
+# Temporary marker: exact-candidate read-only qualification trigger.
+# Remove together with the macOS preflight after native qualification closes.
