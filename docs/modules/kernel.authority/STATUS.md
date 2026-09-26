@@ -4,7 +4,7 @@
 
 **Current state:** `source-hardened-repository-qualified-execution-pending`
 
-**Mapped source anchor:** `3b3ba0a4bbba4218fdd12ebce18946967daf0288` (`c40caf00b37e94adac1189eaf0971a6f806387ca`)
+**Mapped source anchor:** `b553bc49099ae3adfd2d4d1a20386fafe474afbf` (`0e2371f41e623eb50df5af9cb204d080deea72b2`)
 
 ## Claim boundary
 
