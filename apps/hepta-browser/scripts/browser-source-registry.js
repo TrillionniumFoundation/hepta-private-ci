@@ -34,6 +34,7 @@ const ACTIONS = [
 const EXECUTABLE_ACTIONS = ["navigate", "click", "type", "focus", "scroll", "wait"];
 const FAIL_CLOSED_ACTIONS = ["credential", "upload", "download"];
 const SOURCE_PATHS = [
+  "apps/hepta-browser/service-manifest.json",
   "apps/hepta-browser/src/action.js",
   "apps/hepta-browser/src/agentd-protocol.js",
   "apps/hepta-browser/src/agentd-service-main.js",
@@ -49,6 +50,7 @@ const SOURCE_PATHS = [
   "apps/hepta-browser/src/runtime-contract.js",
   "apps/hepta-browser/src/runtime-host.js",
   "apps/hepta-browser/src/runtime.js",
+  "apps/hepta-browser/src/verified-service-bootstrap.js",
   "apps/hepta-browser/src/worker-driver.js",
   "apps/hepta-browser/src/worker-protocol.js",
   "apps/hepta-browser/servo-worker/Cargo.toml",
@@ -93,6 +95,10 @@ function gitBlob(path) {
 const service = await text("apps/hepta-browser/src/agentd-service.js");
 const productionService = await text(
   "apps/hepta-browser/src/agentd-service-production-main.js",
+);
+const serviceManifest = await text("apps/hepta-browser/service-manifest.json");
+const serviceBootstrap = await text(
+  "apps/hepta-browser/src/verified-service-bootstrap.js",
 );
 const action = await text("apps/hepta-browser/src/action.js");
 const worker = await text("apps/hepta-browser/servo-worker/src/main.rs");
@@ -154,6 +160,11 @@ const markers = {
     productionLauncher.includes("cgroup.procs") &&
     productionLauncher.includes("memory.max") &&
     productionService.includes("linux-isolation-policy.v1"),
+  verifiedServiceClosure:
+    serviceManifest.includes("service-closure-manifest.v1") &&
+    serviceBootstrap.includes("EXPECTED_MANIFEST_SHA256") &&
+    serviceBootstrap.includes("gitBlobId") &&
+    serviceBootstrap.includes("await import"),
   longRunningAgentdOwner:
     browserdRust.includes("PersistentBrowserServoControl") &&
     browserdRust.includes("loop {") &&
@@ -161,6 +172,11 @@ const markers = {
   liveRevocationFeed:
     revocationRust.includes("update_revocations") &&
     browserServoRust.includes("BrowserRevocationFeed"),
+  redactedServiceMetrics:
+    browserdRust.includes("hepta.browser.service-metric.v1") &&
+    browserdRust.includes("elapsedMicros") &&
+    !browserdRust.includes("finalPayloadDigest\":") &&
+    !browserdRust.includes("typedAction\":"),
 };
 for (const [name, present] of Object.entries(markers)) {
   assert(present, `Browser capability marker ${name} is absent`);
@@ -190,8 +206,10 @@ const registry = {
     persistedReconciliation: markers.persistedReconciliation,
     monotonicJournalOwner: markers.monotonicJournalOwner,
     strongLinuxIsolation: markers.strongLinuxIsolation,
+    verifiedServiceClosure: markers.verifiedServiceClosure,
     longRunningAgentdOwner: markers.longRunningAgentdOwner,
     liveRevocationFeed: markers.liveRevocationFeed,
+    redactedServiceMetrics: markers.redactedServiceMetrics,
   },
   sourceBlobs,
 };
