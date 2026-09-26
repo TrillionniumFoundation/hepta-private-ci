@@ -104,22 +104,30 @@ jobs:
 
           Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
 
-      - name: Rebind implementation map
+      - name: Rebind implementation maps
         run: |
           set -euo pipefail
           git fetch --no-tags --unshallow origin feat/memory-federation-production-closure-20260926
           test "$(git rev-parse --is-shallow-repository)" = "false"
-          SOURCE_BASE="$(python3 -c 'import json; print(json.load(open("docs/modules/memory.federation/IMPLEMENTATION_MAP.json", encoding="utf-8"))["sourceBase"]["commit"])')"
-          test -n "$SOURCE_BASE"
-          git cat-file -e "$SOURCE_BASE^{commit}"
-          git merge-base --is-ancestor "$SOURCE_BASE" HEAD
-          python3 scripts/hepta-implementation-maps.py migrate --module memory.federation
-          git diff --check
-          git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
-          if ! git diff --cached --quiet; then
-            git commit -m "docs(memory.federation): rebind runtime closure source
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
 
-            Preserve execution, independent acceptance, activation, and release claims as false until exact-head and deterministic-merge receipts pass.
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module memory.federation \
+            --module kernel.operations \
+            --module runtime.supervisor \
+            --module runtime.agentd \
+            --module cognitive.store \
+            --module cognitive.read \
+            --module memory.retrieval \
+            --module knowledge.graph \
+            --module automation.taskflow
+
+          git diff --check
+          git add docs/modules/*/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(memory-federation): rebind shared runtime consumers
+
+            Rebind only modules whose implementation maps consume the Agentd or Memory source changed by this closure. Preserve execution, independent acceptance, activation, and release claims until their own qualification gates pass.
 
             Signed-off-by: Hepta Memory Federation Automation <hepta-memory-federation@users.noreply.github.com>"
           fi
