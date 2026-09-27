@@ -227,6 +227,13 @@ impl AgentdIntelligenceInvocationV1 {
 /// and therefore cannot substitute policy, model, artifact, trust, or
 /// currentness inputs.
 pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
+    /// Stable digest of the host-owned provider profile. The default is
+    /// deliberately invalid so capability advertisement fails closed for
+    /// incomplete legacy implementations.
+    fn profile_digest(&self) -> Digest32 {
+        Digest32::ZERO
+    }
+
     fn build(
         &self,
         identity: &AgentdIdentity,
@@ -270,7 +277,7 @@ fn validate_record_identity(
         || snapshot.fence_digest.to_string() != expected_fence
         || record.admission.deadline_unix_micros == 0
         || record.objective_function_v1_bytes.is_empty()
-        || required_digests.into_iter().any(Digest32::is_zero)
+        || required_digests.into_iter().any(|digest| digest.is_zero())
     {
         return Err(AgentdError::Invalid(
             "durable RunStart is not a current, complete, authority-free canonical identity"
