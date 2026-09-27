@@ -19,6 +19,7 @@ use crate::control::pending;
 use crate::control::pending::PendingControl;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
+use crate::lease::ProcessLeaseRemoval;
 use crate::lease::read_lease;
 use crate::lease::remove_lease;
 use crate::lease::validate_lease;
@@ -26,6 +27,7 @@ use crate::lease::write_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
+use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
@@ -36,6 +38,10 @@ mod adopted_release;
 #[cfg(test)]
 #[path = "recovery_control_tests.rs"]
 mod control_tests;
+
+#[cfg(test)]
+#[path = "launch_failure_tests.rs"]
+mod launch_tests;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn restore_release_state(
@@ -153,7 +159,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             logs_root: record.layout.logs_root().to_path_buf(),
             command: release.command().clone(),
         };
-        let mut spawned = match self.driver.spawn(&spec) {
+        let spawned = match self.driver.spawn(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
                 self.transition_without_runtime(
@@ -172,23 +178,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: release.release_id().clone(),
             identity: spawned.identity.clone(),
         };
-        if let Err(error) = write_lease(record.layout.run_root(), &lease) {
-            let _ = spawned.process.kill();
-            self.transition_without_runtime(
-                agent_id,
-                slot,
-                starting.generation,
-                AgentLifecycle::Failed,
-            )?;
-            return Err(error);
-        }
-        slot.last_command = Some(release.command().clone());
-        slot.active_release = Some(release);
+        // Own the acquired child before any fallible publication or cleanup.
+        // Selected release metadata changes only after publication succeeds.
         slot.runtime = Some(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
             spawn_generation: starting.generation,
-            release_id: lease.release_id,
+            release_id: lease.release_id.clone(),
             generation: starting.generation,
             phase: RuntimePhase::AwaitingHealth {
                 deadline: health_deadline,
@@ -197,6 +193,55 @@ impl<D: ProcessDriver> Supervisor<D> {
             fenced: false,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
+        if let Err(error) = write_lease(record.layout.run_root(), &lease) {
+            slot.exit_lease_removal = Some(ProcessLeaseRemoval::for_failed_publication(
+                record.layout.run_root(),
+                &lease,
+            ));
+            slot.pending_control = None;
+            slot.restart_pending = false;
+            slot.restart_not_before = None;
+            let termination = if let Some(runtime) = slot.runtime.as_mut() {
+                runtime.healthy = false;
+                runtime.fenced = true;
+                runtime.phase = RuntimePhase::Stopping { deadline: now };
+                let result = runtime.process.kill();
+                if result.is_ok() {
+                    runtime.phase = RuntimePhase::Killing;
+                }
+                result
+            } else {
+                unreachable!("freshly acquired child was installed above")
+            };
+            match termination {
+                Ok(()) => slot.event(starting.generation, SupervisorEventKind::KillRequested),
+                Err(fault) => slot.event(
+                    starting.generation,
+                    SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+                ),
+            }
+            match self.registry.compare_and_transition(
+                agent_id,
+                starting.generation,
+                AgentLifecycle::Failed,
+            ) {
+                Ok(failed) => {
+                    if let Some(runtime) = slot.runtime.as_mut() {
+                        runtime.generation = failed.generation;
+                    }
+                    slot.event(failed.generation, SupervisorEventKind::Lifecycle(AgentLifecycle::Failed));
+                }
+                Err(fault) => slot.event(
+                    starting.generation,
+                    SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+                ),
+            }
+            // A failed kill or lifecycle CAS never drops the only handle. The
+            // original publication error stays the operation's failure result.
+            return Err(error);
+        }
+        slot.last_command = Some(release.command().clone());
+        slot.active_release = Some(release);
         Ok(())
     }
 

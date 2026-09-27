@@ -19,6 +19,7 @@ use crate::restart_budget::RestartBudgetError;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
+use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
@@ -47,6 +48,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 Err(error) => {
                     runtime.healthy = false;
                     slot.runtime = Some(runtime);
+                    // Main storage/probe failure does not abandon companion
+                    // containment. Retain both faults without masking the first.
+                    if let Err(companion) = self.tick_matrix_companion(agent_id, slot, now) {
+                        slot.event(0, SupervisorEventKind::DriverFault(bounded_message(companion.to_string())));
+                    }
                     return Err(error);
                 }
             };
@@ -152,9 +158,33 @@ impl<D: ProcessDriver> Supervisor<D> {
                 restart_fault: None,
             });
         }
+        if runtime.fenced {
+            // Already fenced ownership is sufficient for termination. Do not
+            // put a broken registry or failed probe ahead of emergency cleanup.
+            let termination = if matches!(runtime.phase, RuntimePhase::Killing) {
+                Ok(())
+            } else {
+                runtime.process.kill().map_err(|error| driver_error(agent_id, error)).map(|()| {
+                    runtime.phase = RuntimePhase::Killing;
+                    slot.event(runtime.generation, SupervisorEventKind::KillRequested);
+                })
+            };
+            let observation = runtime.process.poll(self.config.driver_poll_batch)
+                .map_err(|error| driver_error(agent_id, error))?;
+            self.push_logs(slot, observation.logs);
+            if let ProcessState::Exited(exit) = observation.state {
+                slot.observed_exit = Some(exit);
+                self.finalize_exit(agent_id, slot, runtime, exit)?;
+                slot.pending_control = None;
+                return Ok(RuntimeTickOutcome::Exited { restart_fault: None });
+            }
+            termination?;
+            return Ok(RuntimeTickOutcome::Keep);
+        }
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
+        let mut companion_fault = None;
         if registry_generation != runtime.generation && !runtime.fenced {
-            self.kill_matrix_now(agent_id, slot)?;
+            companion_fault = self.kill_matrix_now(agent_id, slot).err();
             // Logical fencing is immediate. A failed signal is not an
             // acknowledged Killing phase and must remain retryable.
             runtime.fenced = true;
@@ -227,9 +257,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.observed_exit = Some(exit);
             self.finalize_exit(agent_id, slot, runtime, exit)?;
             slot.pending_control = None;
-            return Ok(RuntimeTickOutcome::Exited { restart_fault });
+            return Ok(RuntimeTickOutcome::Exited {
+                restart_fault: restart_fault.or(companion_fault),
+            });
         }
         control_result?;
+        if let Some(error) = companion_fault {
+            return Err(error);
+        }
         if runtime.fenced || retrying {
             return Ok(RuntimeTickOutcome::Keep);
         }
@@ -353,12 +388,25 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: runtime.release_id.clone(),
             identity: runtime.identity.clone(),
         };
+        let unpublished_launch = slot.exit_lease_removal.as_ref()
+            .is_some_and(ProcessLeaseRemoval::is_unpublished_launch);
         let removal = slot.exit_lease_removal.get_or_insert_with(|| {
             ProcessLeaseRemoval::new(record.layout.run_root(), &lease)
         });
         removal.finish(record.layout.run_root(), &lease)?;
         let mut generation = runtime.generation;
-        if !fenced {
+        if unpublished_launch
+            && record.lifecycle.generation == runtime.generation
+            && record.lifecycle.lifecycle == AgentLifecycle::Starting
+        {
+            // The initial failure CAS may have failed. Retrying this exact
+            // generation after exit must not leave a false live Starting state.
+            let failed = self.registry.compare_and_transition(
+                agent_id, runtime.generation, AgentLifecycle::Failed,
+            )?;
+            generation = failed.generation;
+            slot.event(generation, SupervisorEventKind::Lifecycle(AgentLifecycle::Failed));
+        } else if !fenced {
             let target = match record.lifecycle.lifecycle {
                 AgentLifecycle::Starting
                     if matches!(runtime.phase, RuntimePhase::AwaitingHealth { .. }) =>
