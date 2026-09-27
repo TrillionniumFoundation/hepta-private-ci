@@ -84,18 +84,6 @@ jobs:
             exit 1
           }
           touch "$HOME/.desktop-commander-device/recovery-20260927.ok"
-          for run_id in 36109602681 36110169120 36110343439 36110391328; do
-            code=$(curl -sS -o "/tmp/cancel-$run_id.txt" -w '%{http_code}' \
-              -X POST \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel")
-            case "$code" in
-              202|409) ;;
-              *) cat "/tmp/cancel-$run_id.txt" || true ;;
-            esac
-          done
 
       - name: Read-only capability snapshot
         shell: bash
@@ -104,3 +92,59 @@ jobs:
           uname -a
           if command -v adb >/dev/null 2>&1; then adb devices -l || true; fi
           if command -v nvidia-smi >/dev/null 2>&1; then nvidia-smi --query-gpu=name --format=csv,noheader || true; fi
+
+  lan-recovery:
+    name: LAN recovery via ${{ matrix.runner }}
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.number == 1005 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'ops/desktop-commander-recover-main-20260925'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: rog
+            labels: '["self-hosted","linux","x64","rog"]'
+          - runner: pocket4
+            labels: '["self-hosted","linux","x64","pocket4"]'
+          - runner: macbook
+            labels: '["self-hosted","macOS","ARM64","macbook"]'
+    runs-on: ${{ fromJSON(matrix.labels) }}
+    timeout-minutes: 8
+    steps:
+      - name: Restart the exact Desktop Commander service over an existing trusted SSH route
+        shell: bash
+        env:
+          EXPECTED_REPOSITORY: TrillionniumFoundation/hepta-private-ci
+          EXPECTED_HEAD_REF: ops/desktop-commander-recover-main-20260925
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "$EXPECTED_REPOSITORY"
+          test "$PR_HEAD_REF" = "$EXPECTED_HEAD_REF"
+          test "$PR_HEAD_REPO" = "$EXPECTED_REPOSITORY"
+          remote_script='set -euo pipefail
+          dc_bin="$HOME/.npm-global/node_modules/.bin/desktop-commander"
+          test -x "$dc_bin"
+          mkdir -p "$HOME/.desktop-commander-device"
+          log="$HOME/.desktop-commander-device/recovery-20260927-lan.log"
+          pkill -TERM -f "desktop-commander.*remote|dist/index.js.*remote" 2>/dev/null || true
+          sleep 3
+          env -u RUNNER_TRACKING_ID -u GITHUB_ACTIONS setsid -f "$dc_bin" remote >"$log" 2>&1
+          sleep 15
+          pgrep -af "desktop-commander.*remote|dist/index.js.*remote" >/dev/null
+          touch "$HOME/.desktop-commander-device/recovery-20260927-lan.ok"'
+          for target in desktop qian-qi qian-qi.local desktop.local; do
+            if ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=yes \
+              "$target" "bash -lc $(printf %q "$remote_script")"; then
+              exit 0
+            fi
+            if ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=yes \
+              "qian-qi@$target" "bash -lc $(printf %q "$remote_script")"; then
+              exit 0
+            fi
+          done
+          echo 'No pre-authorized LAN SSH route reached the desktop executor.' >&2
+          exit 1
