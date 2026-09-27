@@ -112,17 +112,81 @@ Python tests use explicit doubles; Rust tests exercise the existing owner store
 across close/reopen. Neither is a real-model, live-browser, power-loss or kill-9
 qualification. A missing/failed native result remains missing/failed.
 
-The next native boundary must carry bounded **semantic source inputs** through
-inference control. Existing `NeuronFeatureRequestV1` carries numeric features;
-it must not silently acquire text semantics. Current `PinnedCognitiveRanker`
-loads an independently selected tabular artifact. Do not bypass that selector or
-instantiate this script as an unrestricted Agentd model server. Native integration
-still needs versioned semantic input/output, durable reservation and exact-result
-replay, source/registry currentness at final use, artifact approval and revocation,
-then real task data on fixed hardware. The advisory callback here is not a sealed
-capability and cannot supply any of those permissions.
+The native semantic input/output boundary below is now source-implemented.
+Existing `NeuronFeatureRequestV1` still carries numeric features and is unchanged.
+Current `PinnedCognitiveRanker` loads an independently selected tabular artifact.
+Do not bypass that selector or instantiate this script as an unrestricted Agentd
+model server. Product integration still needs a qualified concrete transport,
+durable reservation and exact-result replay, source/registry currentness at final
+use, artifact approval/revocation, then real task data on fixed hardware. The
+advisory callback here is not a sealed capability and cannot supply permissions.
 
 Controlled computer effects and stateful topology cutover remain with their
 existing owners. No arbitrary process-memory writes, automatic computer actions,
 writer replacement, force merge, evaluator change or production activation are
 added. Full five-stage completion requires their separate executable evidence.
+
+## Native semantic data profile and worker extension
+
+`codex-rs/hepta-infer-core/src/semantic_retrieval.rs` owns the new bounded
+`SemanticRetrievalRequestV1` and reply decoder. `hepta_retrieval_wire.py` is the
+matching leaf codec. Requests use magic `HPTARQ` followed by version byte 1 and
+zero; replies use `HPTARS` with the same version bytes. Integers are big endian,
+strings have u32 byte lengths and digests are raw SHA-256. There is no native
+pointer, machine code, command line, authority token or arbitrary JSON field in
+the wire. The whole frame is bounded to 64 KiB; query/source text is bounded to
+2048 UTF-8 bytes, with 1..15 distinct sources and positive bounded revisions.
+The request binds the exact supplied source order. Probabilities have a distinct
+canonical order: abstain, then source IDs sorted by ASCII. Their integer ppm
+mass is exactly one million. Neither a prediction nor its wire hash authorizes
+an action or independently proves the model ran.
+
+The request carries operation/workspace/generation, objective/observation/bundle
+identities and an absolute Unix-millisecond deadline. The loaded model manifest's
+model digest must equal the selected bundle digest for this profile. The result
+binds the exact full request bytes, bundle, complete prediction vector and
+observed token/latency values; request/bundle/shape drift rejects. Existing JSON
+experiment digests retain their old meaning and are not replaced by wire hashes.
+
+`InferenceWorker::run_semantic_retrieval` calls an explicitly supplied
+`SemanticRetrievalDriver` through the existing loaded handle, grant validation,
+active-request map and per-model active count. Its maximum_tokens is a total
+input-plus-output token bound. Error, malformed output, missing measurement or
+observed budget overrun retains the active identity instead of permitting replay
+or unload. Pre-entry cancellation has a distinct error and is checked only after
+an existing unknown request has been ruled out. The driver trait is not a
+sandbox or durable result store. No production implementation of its transport
+or Agentd startup selection is supplied by this profile.
+
+The Python leaf entry point reads one complete binary frame from stdin, checks
+it before loading a pinned model, scores once and writes one binary reply. It
+has no retry/fallback loop. For a separately admitted request/model environment:
+
+```sh
+python3 scripts/hepta_laya_worker.py --model-root /absolute/model \
+  --bundle /tmp/laya-bundle.json --bundle-digest <PRINTED_SHA256> \
+  < /absolute/request.bin > /tmp/reply.bin
+```
+
+The host must close stdin, bound wall time, isolate/terminate the process, measure
+resources and revalidate current sources/artifacts before consuming the result.
+The Python currentness callback only describes immutable supplied bytes; it is
+not a live revocation oracle. Startup/loading costs, device attestation, token
+reservation persistence, authenticated negative outcomes and cross-process
+reconciliation remain host work, not claims inferred from a successful frame.
+
+Focused checks (native execution must actually succeed before claiming a pass):
+
+```sh
+python3 -m unittest -v scripts.tests.test_hepta_retrieval_wire
+cd codex-rs
+just test --locked -p codex-hepta-infer-core --lib semantic_retrieval::tests
+just test --locked -p codex-hepta-infer-worker-host --test model_worker_lifecycle
+```
+
+The Python suite has 23 tests, including exhaustive frame-prefix truncation,
+Unicode/byte limits, scope/ordering drift, mutation, expiry, no retry and three
+actual subprocess pre-model rejection cases. The Rust suites add nine native
+wire conformance cases and twenty worker lifecycle cases using deterministic
+fixtures, not weights. Execution of one language is not proof that the other
+compiled or that real model/device/retention performance was measured.

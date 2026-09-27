@@ -15,6 +15,14 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[path = "semantic_worker.rs"]
+mod semantic_worker;
+
+pub use semantic_worker::DriverSemanticRetrievalReplyV1;
+pub use semantic_worker::SemanticRetrievalCallV1;
+pub use semantic_worker::SemanticRetrievalDriver;
+pub use semantic_worker::SemanticRetrievalExecutionV1;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
@@ -124,6 +132,7 @@ pub enum Error {
     GrantRevoked,
     ModelCapacity,
     RequestCapacity,
+    RequestCancelled,
     ModelAlreadyLoaded,
     ModelNotLoaded,
     ModelQuarantined,
