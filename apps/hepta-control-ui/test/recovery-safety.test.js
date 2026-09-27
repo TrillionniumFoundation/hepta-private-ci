@@ -88,8 +88,21 @@ test("different tabs cannot overwrite each other's operation records", async () 
   const two = await ScopedRecoveryStore.create(options);
   await Promise.all([one.prepare(op("one")), two.prepare(op("two"))]);
   assert.deepEqual(one.load().operations.map(x => x.operationId).sort(), ["one", "two"]);
-  one.complete({ operationId: "one", state: "terminal" });
+  await one.complete({ ...op("one"), state: "terminal", terminalStatus: "succeeded" });
   assert.deepEqual(two.load().operations.map(x => x.operationId), ["two"]);
+});
+
+test("terminal cleanup retains a conflicting later identity", async () => {
+  const options = config(); const store = await ScopedRecoveryStore.create(options);
+  await store.prepare(op());
+  const key = options.storage.key(0); const stored = JSON.parse(options.storage.getItem(key));
+  stored.operation.semanticDigest = "d".repeat(64);
+  options.storage.setItem(key, JSON.stringify(stored));
+  await assert.rejects(
+    store.complete({ ...op(), state: "terminal", terminalStatus: "succeeded" }),
+    { code: C.STORAGE },
+  );
+  assert.equal(options.storage.length, 1);
 });
 
 test("concurrent same identity across tabs is admitted once and the loser must lookup", async () => {
@@ -137,13 +150,32 @@ test("corrupt recovery is retained for diagnosis, never cleared or adopted", asy
   assert.equal(options.storage.length, 1);
 });
 
-test("round-robin recovery reaches the tail despite 32 permanent pending entries", async () => {
-  const scheduler = new RecoveryScheduler(() => 100);
+test("round-robin recovery reaches the tail while pending entries are backed off", async () => {
+  let now = 100;
+  const scheduler = new RecoveryScheduler(() => now, { initialBackoffMs: 10, maxBackoffMs: 40 });
   const operations = Array.from({ length: 40 }, (_, i) => ({ ...op(`op-${String(i).padStart(3, "0")}`), state: "pending" }));
   const seen = new Set(); const lookup = async id => { seen.add(id); return { operationId: id, state: "pending" }; };
   await scheduler.run(operations, lookup); await scheduler.run(operations, lookup);
   assert.equal(seen.size, 40);
-  assert.equal(scheduler.metrics().observations, 64);
+  assert.equal(scheduler.metrics().observations, 40);
+  assert.ok(scheduler.metrics().deferredByBackoff >= 32);
+  now = 110; await scheduler.run(operations, lookup);
+  assert.equal(scheduler.metrics().observations, 72);
+});
+
+test("recovery applies bounded exponential per-operation backoff", async () => {
+  let now = 100; let lookups = 0;
+  const scheduler = new RecoveryScheduler(() => now, { initialBackoffMs: 10, maxBackoffMs: 40 });
+  const operations = [{ ...op(), state: "pending" }];
+  const lookup = async id => { lookups += 1; return { operationId: id, state: "pending" }; };
+  await scheduler.run(operations, lookup);
+  assert.equal(scheduler.metrics().nextEligibleAt, 110);
+  now = 109; assert.deepEqual(await scheduler.run(operations, lookup), []);
+  now = 110; await scheduler.run(operations, lookup);
+  assert.equal(lookups, 2);
+  assert.equal(scheduler.metrics().nextEligibleAt, 130);
+  now = 129; assert.deepEqual(await scheduler.run(operations, lookup), []);
+  assert.equal(scheduler.metrics().backoffEntries, 1);
 });
 
 test("one failed lookup is isolated and later operations are still queried", async () => {

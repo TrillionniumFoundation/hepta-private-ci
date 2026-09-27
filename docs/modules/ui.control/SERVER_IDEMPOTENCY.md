@@ -81,13 +81,17 @@ The backend exposes authenticated lookup by `operation_id` and `semantic_digest`
 
 A client seeing timeout, abort after dispatch, connection reset, malformed acknowledgement, or acknowledgement identity mismatch treats the submission as indeterminate and performs lookup. It does not generate a replacement operation ID and does not automatically resend.
 
+An authenticated `found: false` response is a final **non-admission disposition** for an unacknowledged local attempt. The client records `terminalStatus: not_accepted`, removes the pending identity from recovery storage under the same scoped cross-tab lock, and never reports runtime success or failure from that disposition. A later operator action requires a fresh confirmation and a fresh operation ID; the client must not silently resubmit the predecessor. If the same client already received an accepted acknowledgement and audit trace, `found: false` contradicts the durability contract; the client keeps the operation unresolved, emits an acknowledgement-mismatch failure, and retries lookup under bounded backoff rather than erasing the accepted identity.
+
+Pending and transiently failed lookups use bounded round-robin scheduling with per-operation exponential backoff. Backoff must not allow early permanent-pending records to starve later identities, and one poison lookup must not prevent unrelated operations from being queried.
+
 ## Generation fencing
 
 Before execution, the runtime owner revalidates the generation/revision contract or consumes a server-issued fence tied to the admitted record. Queue delay must not permit an operation admitted for an old generation to mutate a new owner generation.
 
 ## Terminality
 
-Only the runtime owner or its durable terminal observer may transition to a terminal state. Browser close, process restart, local pending eviction, request acknowledgement, or audit-log delivery is not terminal evidence.
+Only the runtime owner or its durable terminal observer may transition an **accepted** operation to a runtime terminal state. Browser close, process restart, local pending eviction, request acknowledgement, or audit-log delivery is not terminal evidence. The client-only `not_accepted` disposition records the authenticated absence of a durable admission record; it is not a runtime-owner outcome.
 
 ## Retention and replay
 
@@ -102,6 +106,7 @@ Production evidence must demonstrate:
 - digest conflict returns 409 with no side effect;
 - crash between admission and dispatch is recovered from the outbox;
 - accepted response loss is recovered by lookup;
+- a client crash after local persistence but before dispatch resolves through authenticated `found: false` without replay;
 - generation rollover fences delayed work;
 - backup/restore does not reopen operation IDs;
 - metrics and audit traces correlate one-to-one with ledger records.

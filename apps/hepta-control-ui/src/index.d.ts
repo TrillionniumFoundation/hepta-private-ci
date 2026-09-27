@@ -67,6 +67,9 @@ export interface RecoveryMetrics {
   readonly failures: number;
   readonly lastBatchDurationMs: number;
   readonly maxLookupWaitMs: number;
+  readonly deferredByBackoff: number;
+  readonly backoffEntries: number;
+  readonly nextEligibleAt: number | null;
 }
 export interface RuntimeClientView {
   readonly connected: boolean;

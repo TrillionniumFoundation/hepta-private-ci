@@ -32,7 +32,8 @@ The committed `apps/hepta-control-ui/package-lock.json` is part of the source id
 - stable authenticated identity across refresh;
 - coherent snapshot endpoint;
 - durable operation admission with unique ID/digest semantics;
-- operation lookup and terminal observation;
+- operation lookup that returns `found: false` only for authoritative durable non-admission;
+- terminal observation;
 - server-issued audit trace;
 - generation fencing at execution.
 
@@ -67,21 +68,23 @@ At minimum collect:
 - unique conflict count and identical replay count;
 - accepted-to-terminal latency by action and target;
 - indeterminate submission count and lookup recovery outcome;
-- pending ledger age and outbox backlog;
-- generation-fence rejection count;
+- authenticated `not_accepted` disposition count and accepted-acknowledgement/`found:false` contradiction count;
+- pending ledger age, maximum lookup wait, lookup latency, recovery-backoff deferrals, active backoff entries, and next eligible lookup time;
+- outbox backlog and generation-fence rejection count;
 - frontend error code count, including local recovery-storage degradation, without tokens or unrestricted reason text;
 - CSP violation reports and failed integrity/build-manifest checks.
 
-Suggested alerts should be calibrated from observed traffic rather than copied as unverified constants. Always alert on sustained ledger write failure, lookup failure, outbox growth, snapshot drift, authorization anomalies, or inability to revoke sessions.
+Suggested alerts should be calibrated from observed traffic rather than copied as unverified constants. Always alert on sustained ledger write failure, lookup failure, accepted-acknowledgement/lookup contradiction, recovery starvation, outbox growth, snapshot drift, authorization anomalies, or inability to revoke sessions.
 
 ## Incident handling
 
 1. Disable mutation routes or revoke the affected permission while keeping read-only diagnostics available where safe.
-2. Preserve operation ledger, audit traces, reverse-proxy logs, build receipt, exact dependency-lock digest, and exact deployed asset digest.
+2. Preserve operation ledger, scoped browser recovery records, audit traces, reverse-proxy logs, build receipt, exact dependency-lock digest, and exact deployed asset digest.
 3. Identify all indeterminate operations by operation ID; resolve through the ledger before any replay.
-4. Fence affected runtime generations if stale work may remain queued.
-5. Rotate sessions/CSRF material after identity or origin compromise.
-6. Restore mutation capability only after ledger, dispatcher, authorization, and header checks pass.
+4. Treat `found: false` after an accepted acknowledgement as a backend durability incident, not as safe non-admission.
+5. Fence affected runtime generations if stale work may remain queued.
+6. Rotate sessions/CSRF material after identity or origin compromise.
+7. Restore mutation capability only after ledger, dispatcher, authorization, and header checks pass.
 
 ## Rollback
 

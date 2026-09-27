@@ -147,9 +147,36 @@ export class OperationLedger {
   }
 
   markMissing(entry) {
-    entry.state = "indeterminate";
+    const completed = this.#completed.get(entry.operationId);
+    if (completed) return publicOperation(completed);
+    if (this.#pending.get(entry.operationId) !== entry) {
+      throw invalid("missing lookup references a stale local operation", {
+        operationId: entry.operationId,
+      });
+    }
+    if (entry.auditTraceId !== null) {
+      throw uiControlError(
+        UI_CONTROL_ERROR_CODES.ACK_MISMATCH,
+        "operation lookup contradicted an accepted acknowledgement",
+        {
+          retryable: true,
+          details: {
+            operationId: entry.operationId,
+            auditTraceId: entry.auditTraceId,
+          },
+        },
+      );
+    }
+    // `found:false` is authoritative non-admission for an unacknowledged
+    // attempt. It is not a runtime-owner terminal outcome.
+    entry.state = "terminal";
+    entry.terminalStatus = "not_accepted";
+    entry.auditTraceId = null;
+    entry.outcomeDigest = null;
     entry.updatedAt = this.#clock();
     entry.promise = Promise.resolve(publicOperation(entry));
+    this.#pending.delete(entry.operationId);
+    this.#rememberCompleted(entry);
     return publicOperation(entry);
   }
 

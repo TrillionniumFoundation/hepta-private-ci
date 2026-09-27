@@ -13,6 +13,13 @@ function snapshot(generation = 7) { return { sessionId: "session-1", connectionG
   modules: [{ id: "runtime.agentd", status: "ready", revision: 9, semanticDigest: "a".repeat(64) }] }; }
 function input(id = "operation-1") { return { operationId: id, action: "request_stop", targetId: "runtime.agentd",
   reason: "Maintenance", displayedRevision: 12 }; }
+function recoveryRecord(id = "operation-1") { return {
+  protocolVersion: "hepta.ui-control.v1", method: "runtime/stop", operationId: id,
+  semanticDigest: "c".repeat(64), action: "request_stop", targetId: "runtime.agentd",
+  reason: "Maintenance", sessionId: "session-1", connectionGeneration: 1,
+  generation: 7, displayedRevision: 12, snapshotDigest: "d".repeat(64),
+  state: "submitting", auditTraceId: null, createdAt: 1, updatedAt: 1,
+}; }
 async function setup(overrides = {}) {
   const state = { calls: 0, lookups: 0, records: new Map() };
   const transport = {
@@ -67,6 +74,25 @@ test("actual dispatch sees the recovery record already persisted, before any ack
   assert.equal(recovered.state, "pending"); assert.equal(replacement.state.calls, 0);
   assert.equal(replacement.state.lookups, 1);
   response.resolve(); await pending;
+});
+
+test("authenticated found:false resolves a pre-dispatch crash as not accepted", async () => {
+  let lookups = 0; const recovery = await store(); await recovery.prepare(recoveryRecord());
+  const { client, state } = await setup({ async lookup() { lookups += 1; return { found: false }; } });
+  client.restoreRecoveryState(recovery.load());
+  const resolved = await client.recoverOperation("operation-1");
+  assert.equal(resolved.state, "terminal"); assert.equal(resolved.terminalStatus, "not_accepted");
+  assert.equal(client.readView().pendingCount, 0); assert.equal(state.calls, 0); assert.equal(lookups, 1);
+  await recovery.complete(resolved); assert.equal(recovery.load().operations.length, 0);
+  assert.equal((await client.requestStop(input("operation-2"))).operationId, "operation-2");
+  assert.equal(state.calls, 1);
+});
+
+test("found:false after an accepted acknowledgement remains unresolved", async () => {
+  const { client } = await setup({ async lookup() { return { found: false }; } });
+  const accepted = await client.requestStop(input());
+  await assert.rejects(client.recoverOperation(accepted.operationId), { code: C.ACK_MISMATCH });
+  assert.equal(client.readView().pendingCount, 1); assert.equal(client.readView().completedCount, 0);
 });
 
 test("saving failure prevents real transport dispatch and retires the unsent local reservation", async () => {
