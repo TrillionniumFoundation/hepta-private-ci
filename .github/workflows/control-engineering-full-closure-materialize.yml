@@ -6,9 +6,12 @@ on:
       - codex/control-engineering-full-closure-20260927
     paths:
       - scripts/control_engineering_metadata.py
+      - scripts/control_engineering_quality_metadata.py
+      - scripts/control_engineering_blocking_ci.py
       - tools/hepta-engineering-control/**
       - docs/modules/control.engineering/**
       - .github/workflows/control-engineering-full-closure-materialize.yml
+      - .github/workflows/control-engineering-required.yml
   workflow_dispatch:
 
 permissions:
@@ -16,7 +19,7 @@ permissions:
 
 concurrency:
   group: control-engineering-full-closure-materialize
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   TARGET_BRANCH: codex/control-engineering-full-closure-20260927
@@ -24,8 +27,8 @@ env:
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -50,18 +53,24 @@ jobs:
           git config user.name "Hepta Control Engineering CI"
           git config user.email "hepta-control-engineering-ci@users.noreply.github.com"
 
-      - name: Materialize structural metadata
+      - name: Materialize structural metadata and blocking fan-in
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/control_engineering_metadata.py
+          python3 -m py_compile \
+            scripts/control_engineering_metadata.py \
+            scripts/control_engineering_quality_metadata.py \
+            scripts/control_engineering_blocking_ci.py
           python3 scripts/control_engineering_metadata.py sync-structure
+          python3 scripts/control_engineering_quality_metadata.py sync
+          python3 scripts/control_engineering_blocking_ci.py sync
           if ! git diff --quiet; then
             git add \
               docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
               docs/modules/control.engineering/COMPONENTS.json \
-              docs/modules/control.engineering/TRACEABILITY.json
-            git commit -m "docs(control.engineering): register production-state boundaries"
+              docs/modules/control.engineering/TRACEABILITY.json \
+              .github/workflows/blocking-ci.yml
+            git commit -m "docs(control.engineering): register state, quality and blocking boundaries"
           fi
 
       - name: Rebind exact source blobs and generate current status
@@ -82,6 +91,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/control_engineering_metadata.py check
+          python3 scripts/control_engineering_quality_metadata.py check
+          python3 scripts/control_engineering_blocking_ci.py check
           python3 scripts/hepta-implementation-maps.py verify \
             --module control.engineering \
             --expected-sha "$(git rev-parse HEAD)" \
@@ -97,12 +108,14 @@ jobs:
           set -euo pipefail
           python3 -m compileall -q \
             scripts/control_engineering_metadata.py \
+            scripts/control_engineering_quality_metadata.py \
+            scripts/control_engineering_blocking_ci.py \
             tools/hepta-engineering-control/control_engineering_v2 \
             tools/hepta-engineering-control/test_*.py
           python3 -B -m unittest discover -v \
             -s tools/hepta-engineering-control -p 'test_*.py'
 
-      - name: Push verified metadata commits
+      - name: Push verified materialization commits
         shell: bash
         run: |
           set -euo pipefail

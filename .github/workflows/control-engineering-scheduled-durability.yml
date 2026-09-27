@@ -1,0 +1,93 @@
+name: control.engineering scheduled durability profile
+
+on:
+  schedule:
+    - cron: '17 3 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-engineering-scheduled-durability
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  HEPTA_REQUIRE_STRONG_SANDBOX: "1"
+
+jobs:
+  durability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare real sandbox host
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Bind exact clean main identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = main
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'SOURCE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'SOURCE_TREE=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
+      - name: Run long bounded contention, growth and crash-reopen profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.stress_profile \
+              --database "$RUNNER_TEMP/control-engineering-soak.sqlite3" \
+              --source-commit "$SOURCE_SHA" \
+              --source-tree "$SOURCE_TREE" \
+              --workers 8 --records 20000 --reopen-cycles 500 \
+              --output "$RUNNER_TEMP/control-engineering-soak.json"
+      - name: Rehearse backup, restore and rollback material
+        shell: bash
+        run: |
+          set -euo pipefail
+          predecessor="$(printf '%s' "$SOURCE_SHA:$SOURCE_TREE" | sha256sum | cut -d' ' -f1)"
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.recovery_rehearsal \
+              --database "$RUNNER_TEMP/control-engineering-soak.sqlite3" \
+              --backup "$RUNNER_TEMP/control-engineering-soak-backup.sqlite3" \
+              --source-commit "$SOURCE_SHA" \
+              --source-tree "$SOURCE_TREE" \
+              --predecessor-artifact-digest "$predecessor" \
+              --output "$RUNNER_TEMP/control-engineering-recovery.json"
+      - name: Measure strong-sandbox, lock, WAL and disk-full behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.qualification_profile \
+              --repository "$GITHUB_WORKSPACE" \
+              --iterations 25 \
+              --sandbox-mode strong \
+              --output "$RUNNER_TEMP/control-engineering-host-profile.json"
+      - name: Retain durability evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-durability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-soak.json
+            ${{ runner.temp }}/control-engineering-recovery.json
+            ${{ runner.temp }}/control-engineering-host-profile.json
+          if-no-files-found: warn
+          retention-days: 90
