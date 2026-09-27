@@ -2,7 +2,9 @@ name: channel.matrix bootstrap export
 
 on:
   push:
-    branches: [codex/channel-matrix-convergence-20260925]
+    branches:
+      - codex/channel-matrix-convergence-20260925
+      - codex/channel-matrix-full-closure-20260927
   pull_request:
     branches: [main]
   workflow_dispatch: {}
