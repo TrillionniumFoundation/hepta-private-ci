@@ -1,21 +1,67 @@
 //! Host-owned currentness for generation-bound memory retrieval.
 //!
-//! Context content and publication lifecycle are different identities. The
-//! named Agentd caller uses acquire_context at acquisition, publication and
-//! final use. A renewal must invalidate old bindings even with identical text.
+//! Context content, publication lifecycle and delivery policy are different
+//! identities. The named Agentd caller acquires all three from host composition;
+//! request data cannot select a treatment arm or enlarge a shadow budget.
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::RetrievalExecutionContextV1;
+use codex_hepta_memory_retrieval::MAX_ENGRAM_NODES;
+use codex_hepta_memory_retrieval::MAX_ENGRAM_SETTLING_STEPS;
+use codex_hepta_memory_retrieval::MAX_ENGRAM_SYNAPSES;
+use codex_hepta_memory_retrieval::MAX_GENERATION_BOUND_CANDIDATES;
 use codex_hepta_types::Digest32;
 
+const DEFAULT_CANARY_THRESHOLD_PPM: u32 = 50_000;
+const DEFAULT_CANARY_COHORT_DOMAIN: &[u8] =
+    b"hepta.retrieval.default-canary-cohort.v1";
+
 /// Read capability supplied by trusted host composition, not by request data.
-/// Implementations authenticate their current owner independently, bound all
+/// Implementations authenticate their current owner independently, bind all
 /// blocking I/O, and fail closed on expiry, rollback or revocation. This port
 /// cannot publish, renew, rotate or revoke another owner's state.
 pub trait CurrentMemoryRetrievalContext: Send + Sync {
     /// Delivery arm is fixed by the host. Shadow observations are not exposure.
     fn delivers_hnmf(&self, _owner: &AgentId) -> bool {
         true
+    }
+
+    /// Version 1 preserves the historical fixed five-percent cohort. Version 2
+    /// uses the protected descriptor ppm/salt policy.
+    fn canary_policy_version(&self) -> u8 {
+        1
+    }
+
+    /// Host-owned canary allocation. One million means every owner; zero means
+    /// no owner. Product bootstrap v2 overrides this only from a pinned,
+    /// protected descriptor.
+    fn canary_threshold_ppm(&self) -> u32 {
+        DEFAULT_CANARY_THRESHOLD_PPM
+    }
+
+    /// Salt is part of the rollout identity so an owner cohort cannot be
+    /// silently reused across independent policy generations.
+    fn canary_cohort_salt(&self) -> Digest32 {
+        Digest32::of_bytes(DEFAULT_CANARY_COHORT_DOMAIN)
+    }
+
+    /// Shadow evaluation has a separate structural budget. Exceeding it skips
+    /// shadow work and preserves compatibility delivery; canary/required
+    /// delivery continues to use the independently validated product limits.
+    fn shadow_maximum_channel_candidates(&self) -> u32 {
+        u32::try_from(MAX_GENERATION_BOUND_CANDIDATES).unwrap_or(u32::MAX)
+    }
+
+    fn shadow_maximum_nodes(&self) -> usize {
+        MAX_ENGRAM_NODES
+    }
+
+    fn shadow_maximum_synapses(&self) -> usize {
+        MAX_ENGRAM_SYNAPSES
+    }
+
+    fn shadow_maximum_settling_steps(&self) -> u8 {
+        MAX_ENGRAM_SETTLING_STEPS
     }
 
     fn current(
