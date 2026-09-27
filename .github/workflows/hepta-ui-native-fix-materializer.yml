@@ -5,6 +5,7 @@ on:
     branches: [work/ui-native-integration-convergence-20260927]
     paths:
       - .github/workflows/hepta-ui-native-fix-materializer.yml
+      - scripts/hepta_ui_native_converge.py
 
 permissions:
   contents: write
@@ -32,163 +33,20 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Bind immutable materializer and reviewed lineage
+      - name: Bind reviewed lineage and immutable materializer
         run: |
           set -euo pipefail
           test "$(git branch --show-current)" = "$CANDIDATE_BRANCH"
           git merge-base --is-ancestor "$ANCESTOR_SHA" HEAD
           test -f .github/materializers/hepta-ui-native-integration-converge.yml.txt
+          test -f scripts/hepta_ui_native_converge.py
           test -z "$(git status --porcelain)"
 
-      - name: Materialize source closure and collapse stale workflow identities
+      - name: Materialize source closure
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import textwrap
-
-          source = Path('.github/materializers/hepta-ui-native-integration-converge.yml.txt').read_text(encoding='utf-8')
-          start_marker = "          python3 - <<'PY'\n"
-          end_marker = "\n          PY\n"
-          start = source.index(start_marker) + len(start_marker)
-          end = source.index(end_marker, start)
-          script = textwrap.dedent(source[start:end])
-
-          # Remove the accidental Actions expression token embedded in Python.
-          lines = script.splitlines()
-          matches = [i for i, line in enumerate(lines) if 'text = text.replace("ui-native-remediation-' in line]
-          if len(matches) != 1:
-              raise SystemExit(f'expected one concurrency replacement line, found {len(matches)}')
-          index = matches[0]
-          indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
-          lines[index] = indent + 'text = text.replace("ui-native-remediation-", "ui-native-convergence-", 1)'
-          script = '\n'.join(lines) + '\n'
-
-          # The historical current-source workflow does not contain the old
-          # acceptance branch token. Handle it explicitly after the audited
-          # materializer rather than weakening replace_once globally.
-          old = '''              ".github/workflows/hepta-ui-native-remediation.yml",
-              ".github/workflows/hepta-ui-native-remediation-format.yml",
-              ".github/workflows/hepta-ui-native-current-source.yml",
-'''
-          new = '''              ".github/workflows/hepta-ui-native-remediation.yml",
-              ".github/workflows/hepta-ui-native-remediation-format.yml",
-'''
-          if script.count(old) != 1:
-              raise SystemExit('workflow convergence list changed')
-          script = script.replace(old, new, 1)
-          compile(script, 'ui-native-convergence-materializer', 'exec')
-          exec(script, {'__name__': '__main__'})
-          PY
-
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          NEW = 'work/ui-native-integration-convergence-20260927'
-
-          def update(path, transform):
-              file = Path(path)
-              original = file.read_text(encoding='utf-8')
-              changed = transform(original)
-              if changed == original:
-                  raise SystemExit(f'expected convergence change in {path}')
-              file.write_text(changed, encoding='utf-8')
-
-          # Only the integration candidate may write regenerated identity state.
-          update('apps/hepta-native/tools/prepare_current_source.py', lambda text: re.sub(
-              r'WRITE_BRANCHES = \{.*?\}\nINTEGRATION_ROOTS',
-              'WRITE_BRANCHES = {BRANCH}\nINTEGRATION_ROOTS',
-              text,
-              count=1,
-              flags=re.S,
-          ))
-
-          # Preserve task-kind error invalidation even when the worker panics.
-          update('apps/hepta-native/src/ui.rs', lambda text: text.replace(
-              '''        if let Err(error) = task.join_worker() {
-            self.last_error = Some(error);
-            return;
-        }
-        match outcome {
-''',
-              '''        let outcome = match task.join_worker() {
-            Ok(()) => outcome,
-            Err(error) => Err(error),
-        };
-        match outcome {
-''',
-              1,
-          ))
-
-          def remediation(text):
-              text = re.sub(r'branches: \[[^\n]+\]', f'branches: [{NEW}, main]', text, count=1)
-              return text.replace('name: ui.native remediation required', 'name: ui.native convergence required', 1)
-          update('.github/workflows/hepta-ui-native-remediation.yml', remediation)
-
-          def formatter(text):
-              text = text.replace('name: ui.native remediation branch formatter', 'name: ui.native convergence formatter proposal', 1)
-              return re.sub(r'branches: \[[^\n]+\]', f'branches: [{NEW}]', text, count=1)
-          update('.github/workflows/hepta-ui-native-remediation-format.yml', formatter)
-
-          def current_source(text):
-              text = re.sub(r'on:\n  push:\n    branches: \[[^\n]+\]\n  workflow_dispatch:', 'on:\n  workflow_dispatch:', text, count=1)
-              text = text.replace("${{ github.event_name == 'push' && github.sha || 'work/ui-native-current-source-20260925' }}", NEW)
-              old = '''          git fetch --no-tags origin             refs/heads/work/ui-native-current-source-20260925:refs/remotes/origin/work/ui-native-current-source-20260925             refs/heads/main:refs/remotes/origin/main
-          candidate=$(git rev-parse HEAD)
-          if test "$EVENT_NAME" = push; then
-            test "$candidate" = "$EVENT_SHA"
-          else
-            test "$candidate" = "$(git rev-parse refs/remotes/origin/work/ui-native-current-source-20260925)"
-          fi
-          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
-          echo "base=$(git rev-parse refs/remotes/origin/main)" >> "$GITHUB_OUTPUT"
-'''
-              new = '''          candidate=$(git rev-parse HEAD)
-          base=a126987b84737dbc2ee2592442a314117bddb4a2
-          git cat-file -e "$base^{commit}"
-          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
-          echo "base=$base" >> "$GITHUB_OUTPUT"
-'''
-              if old not in text:
-                  raise SystemExit('current-source identity block changed')
-              return text.replace(old, new, 1)
-          update('.github/workflows/hepta-ui-native-current-source.yml', current_source)
-
-          def projections(text):
-              text = text.replace('      - work/ui-native-current-source-20260925', f'      - {NEW}', 1)
-              old = '''          git fetch --no-tags origin \\
-            refs/heads/main:refs/remotes/origin/main
-          base=$(git rev-parse refs/remotes/origin/main)
-'''
-              new = '''          base=a126987b84737dbc2ee2592442a314117bddb4a2
-          git cat-file -e "$base^{commit}"
-'''
-              if old not in text:
-                  raise SystemExit('projection merge base block changed')
-              return text.replace(old, new, 1)
-          update('.github/workflows/hepta-ui-native-projections.yml', projections)
-
-          def acceptance(text):
-              text = re.sub(
-                  r'on:\n  push:\n    branches: \[work/ui-native-acceptance-repair-20260927\]\n    paths:\n      - scripts/hepta_ui_native_acceptance_finish.py\n      - \.github/workflows/hepta-ui-native-acceptance-proposal.yml',
-                  'on:\n  workflow_dispatch:',
-                  text,
-                  count=1,
-              )
-              text = text.replace(
-                  "    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/ui-native-acceptance-repair-20260927'",
-                  '    if: false # historical exporter retained for audit; superseded by integration convergence',
-                  1,
-              )
-              return text.replace(
-                  'HEPTA_UI_NATIVE_WRITE_BRANCH: work/ui-native-acceptance-repair-20260927',
-                  f'HEPTA_UI_NATIVE_WRITE_BRANCH: {NEW}',
-                  1,
-              )
-          update('.github/workflows/hepta-ui-native-acceptance-proposal.yml', acceptance)
-          PY
-
+          python3 -m py_compile scripts/hepta_ui_native_converge.py
+          python3 scripts/hepta_ui_native_converge.py
           chmod +x scripts/hepta_ui_native_release_gates.py
           python3 -m py_compile \
             apps/hepta-native/tools/prepare_current_source.py \
@@ -224,7 +82,7 @@ jobs:
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
 
-      - name: Format, regenerate document projections and verify the global blocker is closed
+      - name: Format and regenerate document projections
         run: |
           set -euo pipefail
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
@@ -258,18 +116,22 @@ jobs:
           cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
             --locked --release --bins
 
-      - name: Commit source closure
+      - name: Commit final source closure
         id: source
         run: |
           set -euo pipefail
           git config user.name ui-native-convergence
           git config user.email ui-native-convergence@users.noreply.github.com
+          git rm \
+            .github/workflows/hepta-ui-native-fix-materializer.yml \
+            .github/materializers/hepta-ui-native-integration-converge.yml.txt \
+            scripts/hepta_ui_native_converge.py
           git add --all
           git diff --cached --check
           git commit -m 'fix(ui.native): converge supervised runtime and candidate truth'
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Regenerate exact source, implementation and module identities
+      - name: Regenerate exact identities
         env:
           HEPTA_UI_NATIVE_WRITE_BRANCH: work/ui-native-integration-convergence-20260927
         run: |
@@ -282,7 +144,7 @@ jobs:
           git diff --cached --check
           git commit -m 'docs(ui.native): bind integration convergence identities'
 
-      - name: Verify clean exact candidate before publication
+      - name: Verify clean candidate before publication
         run: |
           set -euo pipefail
           python3 apps/hepta-native/tools/prepare_current_source.py
@@ -295,13 +157,9 @@ jobs:
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
           test -z "$(git status --porcelain)"
 
-      - name: Retire one-shot sources and publish candidate
+      - name: Publish candidate
         run: |
           set -euo pipefail
-          git rm \
-            .github/workflows/hepta-ui-native-fix-materializer.yml \
-            .github/materializers/hepta-ui-native-integration-converge.yml.txt
-          git commit -m 'chore(ui.native): retire integration convergence materializers'
           git push origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
           {
             echo '### ui.native integration convergence'
@@ -309,5 +167,5 @@ jobs:
             echo "Source commit: \`${{ steps.source.outputs.sha }}\`"
             echo "Published candidate: \`$(git rev-parse HEAD)\`"
             echo
-            echo 'Release authority remains false; external gates remain explicit and unforgeable.'
+            echo 'Release authority remains false; external gates remain explicit.'
           } >> "$GITHUB_STEP_SUMMARY"
