@@ -1,0 +1,214 @@
+name: cognitive-types-full-closure-apply
+
+on:
+  push:
+    branches:
+      - codex/cognitive-types-full-closure-20260927
+    paths:
+      - .github/workflows/cognitive-types-full-closure-apply.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-types-full-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply compatible convergence deltas
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=a126987b84737dbc2ee2592442a314117bddb4a2
+          convergence=e3043fd1f69e95400f17dbdb85afce29ab619ba0
+          paths=(
+            codex-rs/hepta-cognitive-read/src/authoritative.rs
+            codex-rs/hepta-cognitive-read/src/lib.rs
+            codex-rs/hepta-cognitive-store/src/v2.rs
+            codex-rs/hepta-cognitive-types/src/lib.rs
+            codex-rs/hepta-cognitive-types/src/wire.rs
+          )
+          git diff --binary "$base" "$convergence" -- "${paths[@]}" > "$RUNNER_TEMP/convergence-compatible.patch"
+          git apply --3way --index "$RUNNER_TEMP/convergence-compatible.patch"
+
+      - name: Preserve hardened semantics and migrate receipt tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          # Keep the stronger selector-index model from the hardening line, but
+          # add semantic provenance uniqueness from the convergence review.
+          path = Path('codex-rs/hepta-cognitive-types/src/hnmf.rs')
+          text = path.read_text()
+          old = '''        let mut previous_provenance: Option<&ProvenanceRefV1> = None;
+          for provenance in &self.provenance {
+              provenance.validate()?;
+              if previous_provenance.is_some_and(|previous| previous >= provenance) {
+          '''
+          new = '''        let mut previous_provenance: Option<&ProvenanceRefV1> = None;
+          let mut provenance_identities = BTreeSet::new();
+          for provenance in &self.provenance {
+              provenance.validate()?;
+              if !provenance_identities.insert((&provenance.source_id, provenance.source_revision)) {
+                  return Err(HnmfContractError::DuplicateIdentity(
+                      "provenanceSourceRevision",
+                  ));
+              }
+              if previous_provenance.is_some_and(|previous| previous >= provenance) {
+          '''
+          if old in text:
+              text = text.replace(old, new, 1)
+          path.write_text(text)
+
+          # Migrate cross-crate tamper tests to checked constructors/accessors.
+          path = Path('codex-rs/hepta-cognitive-store/src/v2_tests.rs')
+          text = path.read_text()
+          old = '''    let write_intent = intent(&store, "intent:image:1", &value);
+              store
+                  .append_admitted(&Verifier, value, write_intent)
+                  .unwrap_or_else(|error| panic!("append: {error}"));
+              let image = store
+                  .export_image()
+                  .unwrap_or_else(|error| panic!("export: {error}"));
+
+              let mut wrong_intent = image.clone();
+              wrong_intent.journal[0].receipt.intent_id = id("intent:image:forged");
+              wrong_intent.image_digest = wrong_intent.compute_image_digest();
+              assert!(matches!(
+                  wrong_intent.validate(),
+                  Err(CognitiveStoreV2Error::JournalReceiptMismatch(_))
+              ));
+
+              let mut wrong_record = image;
+              wrong_record.journal[0].receipt.record_digest = digest("forged-record");
+              wrong_record.image_digest = wrong_record.compute_image_digest();
+              assert!(matches!(
+                  wrong_record.validate(),
+                  Err(CognitiveStoreV2Error::JournalRecordMismatch(_))
+              ));'''
+          new = '''    let write_intent = intent(&store, "intent:image:1", &value);
+              store
+                  .append_admitted(&Verifier, value, write_intent.clone())
+                  .unwrap_or_else(|error| panic!("append: {error}"));
+              let image = store
+                  .export_image()
+                  .unwrap_or_else(|error| panic!("export: {error}"));
+              let original_receipt = image.journal[0].receipt.clone();
+              let record_id = original_receipt
+                  .record_id()
+                  .cloned()
+                  .unwrap_or_else(|| panic!("committed receipt record id"));
+              let record_digest = original_receipt
+                  .record_digest()
+                  .unwrap_or_else(|| panic!("committed receipt record digest"));
+              let committed_frontier = original_receipt
+                  .committed_frontier()
+                  .unwrap_or_else(|| panic!("committed receipt frontier"));
+              let disposition = original_receipt
+                  .disposition()
+                  .unwrap_or_else(|| panic!("committed receipt disposition"));
+
+              let forged_intent = MemoryWriteIntentV1::new(
+                  id("intent:image:forged"),
+                  write_intent.candidate_digest(),
+                  write_intent.expected_snapshot().clone(),
+                  write_intent.writer_fence_digest(),
+                  write_intent.authorization_digest(),
+              )
+              .unwrap_or_else(|error| panic!("valid forged intent: {error}"));
+              let mut wrong_intent = image.clone();
+              wrong_intent.journal[0].receipt = MemoryWriteReceiptV1::committed(
+                  &forged_intent,
+                  original_receipt.snapshot_key().clone(),
+                  record_id.clone(),
+                  record_digest,
+                  committed_frontier,
+                  disposition,
+              )
+              .unwrap_or_else(|error| panic!("valid forged-intent receipt: {error}"));
+              wrong_intent.image_digest = wrong_intent.compute_image_digest();
+              assert!(matches!(
+                  wrong_intent.validate(),
+                  Err(CognitiveStoreV2Error::JournalReceiptMismatch(_))
+              ));
+
+              let mut wrong_record = image;
+              wrong_record.journal[0].receipt = MemoryWriteReceiptV1::committed(
+                  &write_intent,
+                  original_receipt.snapshot_key().clone(),
+                  record_id,
+                  digest("forged-record"),
+                  committed_frontier,
+                  disposition,
+              )
+              .unwrap_or_else(|error| panic!("valid forged-record receipt: {error}"));
+              wrong_record.image_digest = wrong_record.compute_image_digest();
+              assert!(matches!(
+                  wrong_record.validate(),
+                  Err(CognitiveStoreV2Error::JournalRecordMismatch(_))
+              ));'''
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one receipt tamper block, found {text.count(old)}')
+          text = text.replace(old, new)
+          old = '''    assert_eq!(
+                  result.shadow_receipt.record_digest,
+                  result.write_receipt.record_digest
+              );
+              assert_eq!(
+                  result.shadow_receipt.snapshot_vector_digest,
+                  result.write_receipt.snapshot_key.vector_digest
+              );'''
+          new = '''    assert_eq!(
+                  result.write_receipt.record_digest(),
+                  Some(result.shadow_receipt.record_digest)
+              );
+              assert_eq!(
+                  result.shadow_receipt.snapshot_vector_digest,
+                  result.write_receipt.snapshot_key().vector_digest
+              );'''
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one accessor block, found {text.count(old)}')
+          path.write_text(text.replace(old, new))
+
+          # Source navigation anchors are not execution evidence. Keep the
+          # registry verifier's fail-closed semantics after documentation merge.
+          path = Path('docs/modules/cognitive.types/IMPLEMENTATION_MAP.json')
+          data = json.loads(path.read_text())
+          data['sourceBaseSemantics'] = 'legacy_registry_baseline_only_not_exact_head_evidence'
+          path.write_text(json.dumps(data, indent=2) + '\n')
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git diff --check
+
+      - name: Commit and remove bootstrap workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for file in \
+            .github/workflows/cognitive-types-full-closure-apply.yml \
+            .github/workflows/cognitive-types-semantic-merge.yml \
+            .github/workflows/cognitive-types-integration-source-export.yml; do
+            test ! -f "$file" || git rm "$file"
+          done
+          git add codex-rs/hepta-cognitive-read/src/authoritative.rs \
+                  codex-rs/hepta-cognitive-read/src/lib.rs \
+                  codex-rs/hepta-cognitive-store/src/v2.rs \
+                  codex-rs/hepta-cognitive-store/src/v2_tests.rs \
+                  codex-rs/hepta-cognitive-types/src/hnmf.rs \
+                  codex-rs/hepta-cognitive-types/src/lib.rs \
+                  codex-rs/hepta-cognitive-types/src/wire.rs \
+                  docs/modules/cognitive.types/IMPLEMENTATION_MAP.json
+          git commit -m 'fix(cognitive.types): reconcile hardened contracts and canonical consumers'
+          git push origin HEAD:codex/cognitive-types-full-closure-20260927
