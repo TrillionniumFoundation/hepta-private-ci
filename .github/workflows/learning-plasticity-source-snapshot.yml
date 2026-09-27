@@ -27,17 +27,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          archive="${RUNNER_TEMP}/hepta-private-ci-source.tar.gz"
           tar \
             --exclude=.git \
             --exclude=target \
             --exclude='**/__pycache__' \
-            -czf hepta-private-ci-source.tar.gz .
+            --exclude=hepta-private-ci-source.tar.gz \
+            -czf "${archive}" .
       - name: Upload source snapshot
         uses: actions/upload-artifact@v4
         with:
           name: learning-plasticity-source-${{ github.sha }}
           path: |
-            hepta-private-ci-source.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-source.tar.gz
             SOURCE_SHA
             SOURCE_TREE
           retention-days: 3
