@@ -13,6 +13,8 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "local_control.rs"]
+pub mod local;
 #[path = "native_control.rs"]
 pub mod native;
 
@@ -173,6 +175,7 @@ pub struct DurableInferenceControl {
     file: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
+    local: local::LocalJournal,
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
@@ -199,6 +202,7 @@ impl DurableInferenceControl {
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
+        let mut local = local::LocalJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
@@ -228,11 +232,19 @@ impl DurableInferenceControl {
             }
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
+            } else if let Some(json) = line.strip_prefix(local::JOURNAL_PREFIX) {
+                local.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
+            if records.len() + native.records.len() + local.records.len() > capacity
+                || records
+                    .keys()
+                    .any(|id| native.records.contains_key(id) || local.records.contains_key(id))
+                || native
+                    .records
+                    .keys()
+                    .any(|id| local.records.contains_key(id))
             {
                 return Err(Error::CapacityExceeded);
             }
@@ -250,6 +262,7 @@ impl DurableInferenceControl {
             file,
             records,
             native,
+            local,
             capacity,
             journal_bytes,
             poisoned: false,
@@ -268,10 +281,14 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.native.records.contains_key(&request.request_id) {
+        if self.native.records.contains_key(&request.request_id)
+            || self.local.records.contains_key(&request.request_id)
+        {
             return Err(Error::Conflict);
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if self.records.len() + self.native.records.len() + self.local.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         let event = Event::Submit(request);
