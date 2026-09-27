@@ -1,0 +1,341 @@
+diff --git a/.github/workflows/hepta-ndu-recursion.yml b/.github/workflows/hepta-ndu-recursion.yml
+index 3d52ea4..53075f7 100644
+--- a/.github/workflows/hepta-ndu-recursion.yml
++++ b/.github/workflows/hepta-ndu-recursion.yml
+@@ -4,6 +4,14 @@ on:
+   pull_request:
+     paths:
+       - "codex-rs/hepta-ndu/**"
++      - "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle*.rs"
++      - "codex-rs/hepta-types/**"
++      - "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs"
++      - "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs"
++      - "codex-rs/Cargo.toml"
++      - "codex-rs/rust-toolchain.toml"
++      - "codex-rs/rustfmt.toml"
++      - "docs/modules/MODULE_DOCS.json"
+       - "codex-rs/hepta-agentd/src/ndu*.rs"
+       - "codex-rs/hepta-agentd/src/main.rs"
+       - "codex-rs/hepta-agentd/src/config.rs"
+@@ -48,6 +56,14 @@ on:
+       - main
+     paths:
+       - "codex-rs/hepta-ndu/**"
++      - "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle*.rs"
++      - "codex-rs/hepta-types/**"
++      - "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs"
++      - "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs"
++      - "codex-rs/Cargo.toml"
++      - "codex-rs/rust-toolchain.toml"
++      - "codex-rs/rustfmt.toml"
++      - "docs/modules/MODULE_DOCS.json"
+       - "codex-rs/hepta-agentd/src/ndu*.rs"
+       - "codex-rs/hepta-agentd/src/main.rs"
+       - "codex-rs/hepta-agentd/src/config.rs"
+diff --git a/codex-rs/hepta-agentd/src/ndu_control.rs b/codex-rs/hepta-agentd/src/ndu_control.rs
+index 8875d15..b344dbc 100644
+--- a/codex-rs/hepta-agentd/src/ndu_control.rs
++++ b/codex-rs/hepta-agentd/src/ndu_control.rs
+@@ -16,19 +16,54 @@ use super::replay::NduExternalReplayStoreErrorV2;
+ 
+ impl AgentdNduOwnerHostV1 {
+     pub(crate) fn control(
++        &self,
++        request: NduControlRequestV1,
++        live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
++    ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
++        self.control_inner(request, live_guard, now_unix_ms)
++    }
++
++    #[cfg(test)]
++    pub(super) fn control_with_test_clock(
++        &self,
++        request: NduControlRequestV1,
++        live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
++        clock: impl Fn() -> Result<u64, AgentdNduOwnerErrorV1>,
++    ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
++        self.control_inner(request, live_guard, clock)
++    }
++
++    fn control_inner(
+         &self,
+         request: NduControlRequestV1,
+         mut live_guard: impl FnMut() -> Result<(), AgentdNduOwnerErrorV1>,
++        clock: impl Fn() -> Result<u64, AgentdNduOwnerErrorV1>,
+     ) -> Result<NduControlResultV1, AgentdNduOwnerErrorV1> {
+         let encoded_len = serde_json::to_vec(&request)
+             .map_err(|_| AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-006"))?
+             .len();
+-        let now = now_unix_ms()?;
+-        if matches!(&request, NduControlRequestV1::ExternalAdmissionV2 { .. }) {
++        let admitted_at = clock()?;
++        let admission = if matches!(&request, NduControlRequestV1::ExternalAdmissionV2 { .. }) {
+             request
+-                .validate_external_admission_v2(encoded_len, now, &BTreeSet::new())
++                .validate_external_admission_v2(encoded_len, admitted_at, &BTreeSet::new())
+                 .map_err(AgentdNduOwnerErrorV1::Admission)?;
+-        }
++            Some(request.clone())
++        } else {
++            None
++        };
++        // Reuse the same canonical envelope validation at each physical entry.
++        // A valid grant does not extend the enclosing admission deadline.
++        let revalidate = |now| -> Result<(), AgentdNduOwnerErrorV1> {
++            if let Some(envelope) = &admission {
++                if now < admitted_at {
++                    return Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"));
++                }
++                envelope
++                    .validate_external_admission_v2(encoded_len, now, &BTreeSet::new())
++                    .map_err(AgentdNduOwnerErrorV1::Admission)?;
++            }
++            Ok(())
++        };
+ 
+         if matches!(&request, NduControlRequestV1::MetricsV1) {
+             live_guard()?;
+@@ -40,6 +75,8 @@ impl AgentdNduOwnerHostV1 {
+             feed.refresh(&self.authority)?;
+         }
+         owner.refresh_revocation_frontier(current_frontier(&self.authority)?)?;
++        let now = clock()?;
++        revalidate(now)?;
+ 
+         let (request, replay_key) = match request {
+             NduControlRequestV1::ExternalAdmissionV2 {
+@@ -82,7 +119,10 @@ impl AgentdNduOwnerHostV1 {
+                     .begin(key.clone(), binding_digest, deadline_unix_ms, now)
+                     .map_err(replay_store_error)?
+                 {
+-                    NduExternalReplayBeginV2::Cached(result) => return Ok(*result),
++                    NduExternalReplayBeginV2::Cached(result) => {
++                        revalidate(clock()?)?;
++                        return Ok(*result);
++                    }
+                     NduExternalReplayBeginV2::Fresh => {}
+                 }
+                 drop(replay);
+@@ -91,6 +131,9 @@ impl AgentdNduOwnerHostV1 {
+             ordinary => (ordinary, None),
+         };
+ 
++        // The durable replay reservation may itself have blocked on I/O.
++        // Expiry here leaves Pending for reconciliation; it is not a new try.
++        revalidate(clock()?)?;
+         let head = owner.journal_head_digest()?;
+         let result = match request {
+             NduControlRequestV1::MetricsV1 => Ok(metrics_result()),
+@@ -137,6 +180,12 @@ impl AgentdNduOwnerHostV1 {
+                                 )
+                             })?;
+                         }
++                        let now = clock().map_err(|_| {
++                            NduOwnerError::InvalidContext("external admission clock")
++                        })?;
++                        revalidate(now).map_err(|_| {
++                            NduOwnerError::InvalidContext("external admission expired at mutation entry")
++                        })?;
+                         Ok(())
+                     },
+                 )?;
+diff --git a/codex-rs/hepta-agentd/src/ndu_owner_tests.rs b/codex-rs/hepta-agentd/src/ndu_owner_tests.rs
+index f8c7f60..de9ceab 100644
+--- a/codex-rs/hepta-agentd/src/ndu_owner_tests.rs
++++ b/codex-rs/hepta-agentd/src/ndu_owner_tests.rs
+@@ -454,3 +454,87 @@ fn named_host_exposes_read_only_metrics_without_a_final_use_grant() -> TestResul
+     );
+     Ok(())
+ }
++
++
++#[test]
++fn external_deadline_is_rechecked_after_owner_wait_before_replay() -> TestResult<()> {
++    let fixture = fixture()?;
++    let request = external_admission(
++        &fixture.host, NduControlRequestV1::Context, "expire-at-lock", "expire-at-lock",
++    )?;
++    let (issued, deadline) = match &request {
++        NduControlRequestV1::ExternalAdmissionV2 {
++            issued_at_unix_ms, deadline_unix_ms, ..
++        } => (*issued_at_unix_ms, *deadline_unix_ms),
++        _ => return Err("expected external admission".into()),
++    };
++    let clock = std::cell::Cell::new(issued);
++    let result = fixture.host.control_with_test_clock(
++        request.clone(),
++        || { clock.set(deadline + 1); Ok(()) },
++        || Ok(clock.get()),
++    );
++    assert!(matches!(result, Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-004"))));
++    // Reset only the deterministic test clock: no replay reservation was made.
++    clock.set(issued);
++    assert!(matches!(
++        fixture.host.control_with_test_clock(request, || Ok(()), || Ok(clock.get()))?,
++        NduControlResultV1::Context { .. }
++    ));
++    Ok(())
++}
++
++#[test]
++fn external_deadline_is_rechecked_at_mutation_entry_without_effect() -> TestResult<()> {
++    let mut fixture = fixture()?;
++    let mutation = append("deadline-cut");
++    let wire = NduMutationV1 {
++        operation: NduMutationOperationV1::AppendPreference,
++        identity: *digest("deadline-cut-append").as_array(),
++        objective: *digest("objective").as_array(),
++        subject: *digest("subject").as_array(),
++        projection: *digest("deadline-cut-projection").as_array(),
++        expected_predecessor: None,
++    };
++    let prepared = fixture.host.control(NduControlRequestV1::Prepare {
++        mutation: wire.clone(), expected_head: [0; 32],
++    }, || Ok(()))?;
++    let binding = match prepared {
++        NduControlResultV1::Prepared { binding, .. } => binding,
++        _ => return Err("expected prepared binding".into()),
++    };
++    let mut grant = fixture.sign(&mutation, "deadline-cut-grant")?;
++    grant.grant.binding = binding;
++    grant.signature = fixture.signing.sign(&grant.grant.signing_bytes()?).to_bytes().to_vec();
++    let request = external_admission(&fixture.host, NduControlRequestV1::Apply {
++        mutation: wire, expected_head: [0; 32], grant,
++    }, "expire-at-effect", "expire-at-effect")?;
++    let (issued, deadline) = match &request {
++        NduControlRequestV1::ExternalAdmissionV2 {
++            issued_at_unix_ms, deadline_unix_ms, ..
++        } => (*issued_at_unix_ms, *deadline_unix_ms),
++        _ => return Err("expected external admission".into()),
++    };
++    let clock = std::cell::Cell::new(issued);
++    let calls = std::cell::Cell::new(0);
++    let result = fixture.host.control_with_test_clock(request.clone(), || {
++        calls.set(calls.get() + 1);
++        if calls.get() == 2 { clock.set(deadline + 1); }
++        Ok(())
++    }, || Ok(clock.get()));
++    assert_eq!(calls.get(), 2);
++    assert!(matches!(result, Err(AgentdNduOwnerErrorV1::Owner(
++        NduOwnerError::InvalidContext("external admission expired at mutation entry")
++    ))));
++    let outcome = fixture.host.control(NduControlRequestV1::Outcome {
++        identity: *digest("deadline-cut-append").as_array(),
++    }, || Ok(()))?;
++    assert_eq!(outcome, NduControlResultV1::Outcome { entry: None });
++    // A reserved operation is never re-admitted merely by resetting test time.
++    clock.set(issued);
++    assert!(matches!(
++        fixture.host.control_with_test_clock(request, || Ok(()), || Ok(clock.get())),
++        Err(AgentdNduOwnerErrorV1::Admission("NDU-ADMIT-010"))
++    ));
++    Ok(())
++}
+diff --git a/docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json b/docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json
+index cbe96d3..6b559e2 100644
+--- a/docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json
++++ b/docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json
+@@ -94,6 +94,14 @@
+         {
+           "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+           "symbol": "corrupt_image_and_symlink_fail_closed"
++        },
++        {
++          "path": "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
++          "symbol": "external_deadline_is_rechecked_after_owner_wait_before_replay"
++        },
++        {
++          "path": "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
++          "symbol": "external_deadline_is_rechecked_at_mutation_entry_without_effect"
+         }
+       ]
+     },
+@@ -144,6 +152,10 @@
+         {
+           "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+           "symbol": "current_artifact_and_independent_evidence_compose_to_deny_all_admission"
++        },
++        {
++          "path": "scripts/test_hepta_ndu_qualification.py",
++          "symbol": "test_core_executes_admission_and_lifecycle_without_skipping_failures"
+         }
+       ]
+     },
+diff --git a/docs/modules/utility.ndu/OPERATOR_RUNBOOK.md b/docs/modules/utility.ndu/OPERATOR_RUNBOOK.md
+index f46cd0b..49aefd7 100644
+--- a/docs/modules/utility.ndu/OPERATOR_RUNBOOK.md
++++ b/docs/modules/utility.ndu/OPERATOR_RUNBOOK.md
+@@ -29,9 +29,9 @@ Reject enrollment if any digest is zero, any path is non-canonical, group/other
+ 1. Verify the exact descriptor digest before parsing it.
+ 2. Verify Agentd identity and nonzero spawn generation.
+ 3. Authenticate and install the current signed revocation head.
+-4. Acquire the sole writer lock. `Busy` is an operational conflict, not a retry-success signal.
+-5. Reopen the journal with bounded metadata admission. Reject symlinks, non-regular files, oversized images, truncation, corruption and hash-chain drift.
+-6. Validate the frozen production policy, including `ValidatedScalarizationProfileV1`, before store open or mutation.
++4. Validate the frozen production policy, including `ValidatedScalarizationProfileV1`, before acquiring a writer lock or opening the store.
++5. Acquire the sole writer lock. `Busy` is an operational conflict, not a retry-success signal.
++6. Reopen the journal with bounded metadata admission. Reject symlinks, non-regular files, oversized images, truncation, corruption and hash-chain drift.
+ 7. Verify the stable owner binding and current host fence.
+ 8. Publish readiness only after the above steps and metrics exporter initialization succeed.
+ 
+@@ -178,3 +178,22 @@ has been wired. A local `backup_bytes()` export is never counted as off-host
+ backup success. The deployment exporter, alert destination, independently
+ governed backup service and target-host restore drill still require real
+ integration and external receipts.
++
++## Admission deadlines and qualification scope
++
++External V2 deadlines are revalidated after owner-lock/feed waits, after durable
++replay admission, before returning a cached response, and at physical mutation
++entry after the final lifecycle/feed guard. A longer-lived final-use grant does
++not extend its envelope. Detected clock regression fails closed. An expiry
++before replay admission consumes no replay slot; expiry after reservation leaves
++Pending and requires reconciliation by the original mutation identity. Do not
++turn a post-reservation timeout into a fresh ID or interpret it as authorization.
++
++Both core qualification lanes explicitly include `ndu_stochastic_admission` and
++`ndu_stochastic_lifecycle`; the independent-evaluation command runs the entire
++evaluator library, including convergence and well-posedness tests. These are
++executable signed-evidence and numerical-policy regression tests, not proof of
++an independently operated deployment evaluator or its real artifact dataset.
++The `ENOSPC`/`EROFS` source tests inject operating-system error numbers at the
++persistence boundary; they are not a physically full disk or mounted read-only
++production filesystem. Preserve this distinction in acceptance records.
+diff --git a/scripts/hepta-ndu-qualification.py b/scripts/hepta-ndu-qualification.py
+--- a/scripts/hepta-ndu-qualification.py
++++ b/scripts/hepta-ndu-qualification.py
+@@ -61,7 +61,10 @@ def commands(suite: str, sha: str, tree: str) -> list[tuple[str, Path, list[str]]]:
+             (
+                 "stochastic-admission",
+                 rust,
+-                test(CORE[2], "--lib", "-E", "test(ndu_stochastic_admission)"),
++                test(
++                    CORE[2], "--lib", "-E",
++                    "test(ndu_stochastic_admission) | test(ndu_stochastic_lifecycle)",
++                ),
+             ),
+             ("current-artifacts", rust, test(CORE[3], "--lib", "-E", "test(pinned)")),
+             (
+diff --git a/scripts/test_hepta_ndu_qualification.py b/scripts/test_hepta_ndu_qualification.py
+index 93e788c..5341bae 100644
+--- a/scripts/test_hepta_ndu_qualification.py
++++ b/scripts/test_hepta_ndu_qualification.py
+@@ -68,6 +68,18 @@ class ReceiptValidationTests(unittest.TestCase):
+         recipe = (runner.ROOT / "justfile").read_text()
+         self.assertIn("cargo nextest run --no-fail-fast", recipe)
+ 
++    def test_core_executes_admission_and_lifecycle_without_skipping_failures(self):
++        commands = {name: command for name, _, command in runner.commands("core", "a" * 40, "b" * 40)}
++        command = commands["stochastic-admission"]
++        expression = command[command.index("-E") + 1]
++        self.assertEqual(expression, "test(ndu_stochastic_admission) | test(ndu_stochastic_lifecycle)")
++        self.assertEqual(command[command.index("--no-tests") + 1], "fail")
++        self.assertEqual(command[command.index("--retries") + 1], "0")
++        evaluator = commands["independent-evaluation"]
++        self.assertIn("codex-hepta-intelligence-eval", evaluator)
++        self.assertIn("--lib", evaluator)
++        self.assertNotIn("-E", evaluator)
++
+     def test_valid_measurement_and_honest_performance_failure(self):
+         self.assertTrue(self.validate(self.fixture)["performancePassed"])
+         self.fixture["hotPath"].update(p99Micros=6000, targetPass=False)
