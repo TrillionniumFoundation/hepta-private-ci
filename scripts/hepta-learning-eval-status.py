@@ -9,10 +9,13 @@ import sys
 from pathlib import Path
 
 from hepta_rust_identifiers import contains_rust_identifier
+from hepta_learning_eval_projection import canonical, projection, replace_projection
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = ROOT / "docs/modules/learning.eval/CURRENT_STATUS.json"
 IMPLEMENTATION_MAP = ROOT / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
+DOCUMENTS = [ROOT / "docs/modules/learning.eval/TECHNICAL.md",
+             ROOT / "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"]
 EVAL_ROOT = ROOT / "codex-rs/hepta-intelligence-eval"
 SRC = "codex-rs/hepta-intelligence-eval/src/"
 LOW_LEVEL_V2 = "decide_with_signed_evidence_v2"
@@ -24,17 +27,25 @@ CALLERS = [
     {"kind": "sealed_product_qualification_consumer", "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs", "nativeSymbol": "run_evaluated_shadow_v1", "authority": "deny_all"},
 ]
 RECOVERY_OPERATIONS = [
-    ("AnchoredProductEvaluationAttemptJournalV1", "attempt_journal_anchor.rs", "attempt_journal_tests.rs"),
-    ("reconcile_product_attempt_holdout_v1", "attempt_recovery.rs", "recorded_runner_process_tests.rs"),
-    ("reconcile_product_attempt_publication_v1", "attempt_recovery.rs", "recorded_publication_tests.rs"),
-    ("RecordedPublicationSinkV1", "recorded_publication.rs", "recorded_publication_tests.rs"),
-    ("DurableProductEvaluationAttemptJournalV1", "attempt_durability.rs", "../../scripts/hepta-learning-eval-api-surface.sh"),
+    ("AnchoredProductEvaluationAttemptJournalV1", "attempt_journal_anchor.rs", SRC + "attempt_journal_tests.rs"),
+    ("reconcile_product_attempt_holdout_v1", "attempt_recovery.rs", SRC + "recorded_runner_process_tests.rs"),
+    ("reconcile_product_attempt_publication_v1", "attempt_recovery.rs", SRC + "recorded_publication_tests.rs"),
+    ("RecordedPublicationSinkV1", "recorded_publication.rs", SRC + "recorded_publication_tests.rs"),
+    ("DurableProductEvaluationAttemptJournalV1", "attempt_durability.rs", "scripts/hepta-learning-eval-api-surface.sh"),
+    ("RecordedProductEvaluationRunnerV1::reconcile_pending_page", "attempt_recovery.rs", SRC + "attempt_recovery_tests.rs"),
+    ("RecordedProductEvaluationRunnerV1::resume_decided_qualification", "attempt_publication_resume.rs", "scripts/hepta-learning-eval-api-surface.sh"),
+    ("RecordedProductEvaluationRunnerV1::resume_decided_outcome_qualification", "attempt_publication_resume.rs", "scripts/hepta-learning-eval-api-surface.sh"),
+    ("RecordedProductEvaluationRunnerV1::resume_decided_publication", "attempt_publication_resume.rs", SRC + "recorded_runner_process_tests.rs"),
+    ("freeze_product_outcome_plan_v1", "outcome_channels.rs", SRC + "outcome_tests.rs"),
+    ("product_outcome_inputs_digest_v1", "outcome_payload.rs", SRC + "outcome_tests.rs"),
+    ("RecordedProductEvaluationRunnerV1::evaluate_outcome_comparison", "outcome_runner.rs", SRC + "outcome_tests.rs"),
+    ("RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist", "outcome_runner.rs", SRC + "outcome_tests.rs"),
 ]
 REPOSITORY_GAPS = [
     "Execute formatting, compilation, tests, strict lint and coverage on the final exact source and ordered-parent merge tree.",
     "Persist and recover complete sealed evidence objects, not only their digests, across computation and publication crashes.",
-    "Bind each metric to a preregistered typed outcome channel, schema, unit, time window, subgroup and measured evidence.",
-    "Compose a real selected-host controller with authenticated independent anchor authority, provider, publication store and bounded recovery scheduling.",
+    "Complete signed outcome/recovery end-to-end tests and a downstream consumer of the sealed multi-outcome qualification receipt.",
+    "Compose a real selected-host controller with authenticated independent anchor authority, provider, publication store and persistent recovery cursors.",
     "Qualify near-capacity startup, backlog, checkpoint/rotation and sustained recovery on the selected storage topology.",
 ]
 
@@ -71,20 +82,25 @@ def verify_implementation_map(callers: list[dict]) -> None:
         "LockedFileProductEvaluationAttemptJournalV1", "LockedFileFinalHoldoutCasStoreV1::compact_into",
         "decide_with_signed_evidence_v2", "decide_with_signed_longitudinal_evidence_v3",
     } | {row[0] for row in RECOVERY_OPERATIONS}
-    operations = {row["nativeSymbol"]: row for row in value.get("operations", [])}
+    rows = value.get("operations", [])
+    operations = {row["nativeSymbol"]: row for row in rows}
+    if len(operations) != len(rows):
+        raise SystemExit("duplicate native operation identity")
     if required - operations.keys():
         raise SystemExit(f"missing mapped operations: {sorted(required - operations.keys())}")
     for symbol, source, test in RECOVERY_OPERATIONS:
         entry = operations[symbol]
         if entry.get("sourcePath") != SRC + source:
             raise SystemExit(f"incorrect source path for {symbol}")
-        require_token(SRC + source, symbol)
-        if source != "attempt_durability.rs" and SRC + test not in entry.get("tests", []):
-            raise SystemExit(f"missing recovery test mapping for {symbol}")
-    def identities(rows: list[dict]) -> set[tuple]:
-        return {(row.get("sourcePath"), row.get("nativeSymbol"), row.get("authority")) for row in rows}
+        require_token(SRC + source, symbol.rsplit("::", 1)[-1])
+        if test not in entry.get("tests", []) or not (ROOT / test).is_file():
+            raise SystemExit(f"missing recovery/outcome test mapping for {symbol}")
+    def identities(items: list[dict]) -> set[tuple]:
+        return {(row.get("sourcePath"), row.get("nativeSymbol"), row.get("authority")) for row in items}
     if identities(value.get("productCallers", [])) != identities(callers):
         raise SystemExit("implementation-map caller inventory differs from source inventory")
+    if value.get("repositoryControlledGaps") != REPOSITORY_GAPS:
+        raise SystemExit("implementation-map open obligations differ from canonical status")
     boundary = value.get("claimBoundary", {})
     for field in ("consumerBoundAdmissionComposed", "durableAttemptJournalImplemented", "publicationReconciliationImplemented", "verifiedCompactionImplemented"):
         if boundary.get(field) is not True:
@@ -95,13 +111,12 @@ def verify_implementation_map(callers: list[dict]) -> None:
 
 
 def expected_source_facts() -> dict:
-    # These values are emitted only after source_facts verifies the requirements.
-    # They describe lexical/materialization facts, not an execution receipt.
+    # Materialized/lexical facts only. No invocation or execution is inferred.
     return {
         "lowLevelDecisionPrimitivesCratePrivate": True,
         "externalLowLevelDecisionCallers": [],
         "externalRawProductRunnerCallers": [],
-        "productionRawRunnerBypassAbsent": True,
+        "externalRawRunnerReferencesAbsentInLexicalInventory": True,
         "consumerBoundAdmission": True,
         "idempotentPublicationReconciliation": True,
         "durableEvaluationAttemptJournal": True,
@@ -115,9 +130,24 @@ def expected_source_facts() -> dict:
             "independentAttemptAnchorProtocol": True,
             "writeAheadPublicationPhases": True,
             "boundedPendingDiscovery": True,
-            "readOnlyReconciliation": True,
+            "cursorAdvancesPastUnresolvedAttempts": True,
+            "fullHistoryValidation": True,
+            "externalOwnerReadOnlyReconciliation": True,
+            "decidedOnlyResumeReverifiesSignatures": True,
+            "unverifiedResumeHelperCratePrivate": True,
             "incrementalAppendAndStreamingReplay": True,
-            "processKillFixtureCutCount": 6,
+            "processKillFixtureCutCount": 7,
+            "executionStatus": "not_established_by_source_scan",
+        },
+        "outcomeSource": {
+            "typedFrozenChannelContracts": True,
+            "completePayloadDigestBinding": True,
+            "separateNativeChannelEstimates": True,
+            "singleConsumptionRecordedComposition": True,
+            "maximumChannels": 32,
+            "maximumBatchRows": 100000,
+            "downstreamConsumer": "requires_composition_and_execution_evidence",
+            "measurementAuthentication": "requires_selected_host_evidence",
             "executionStatus": "not_established_by_source_scan",
         },
     }
@@ -146,12 +176,24 @@ def source_facts() -> dict:
         ("attempt_journal.rs", "IntentPersisted"),
         ("attempt_journal.rs", "pending_page"),
         ("recorded_runner.rs", "J: DurableProductEvaluationAttemptJournalV1"),
+        ("recorded_runner.rs", '#[path = "outcome_runner.rs"]'),
+        ("recorded_publication.rs", '#[path = "attempt_publication_resume.rs"]'),
+        ("attempt_recovery.rs", "validated_history"),
+        ("attempt_recovery_tests.rs", "pending_cursor_advances_past_unresolved_attempts"),
+        ("attempt_recovery_tests.rs", "individually_valid_frames_cannot_be_spliced_across_attempts"),
+        ("attempt_publication_resume.rs", "pub(crate) fn resume_decided_publication"),
+        ("attempt_publication_resume.rs", "verify_decision"),
+        ("outcome_channels.rs", "const MAX_CHANNELS: usize = 32;"),
+        ("outcome_channels.rs", "const MAX_BATCH_ROWS: usize = 100_000;"),
+        ("outcome_tests.rs", "measured_channels_with_same_estimator_have_distinct_intervals_and_one_consumption"),
+        ("outcome_tests.rs", "swapping_payloads_without_changing_frozen_contracts_fails_after_consumption"),
         ("fenced_holdout_file.rs", "compact_into"),
     ]
     for path, token in required:
         require_token(SRC + path, token)
-    for stage in ("consume_before_attempt", "consumed_before_release", "computed_before_seal", "sealed_before_publication", "pending_before_write", "publication_ack_lost"):
+    for stage in ("consume_before_attempt", "consumed_before_release", "computed_before_seal", "sealed_before_publication", "decided_before_pending", "pending_before_write", "publication_ack_lost"):
         require_token(SRC + "recorded_runner_process_tests.rs", stage)
+    require_token("scripts/hepta-learning-eval-api-surface.sh", "E0624")
     require_token("codex-rs/hepta-intelligence-eval/tests/holdout_compaction.rs", "compaction_replays_nonempty_holdout_journal_without_semantic_drift")
     for symbol, module in ((LOW_LEVEL_V2, "signed_evaluation"), (LOW_LEVEL_V3, "longitudinal_time")):
         if f"pub use {module}::{symbol};" in lib or direct_external_callers(symbol):
@@ -191,27 +233,36 @@ def render() -> dict:
     }
 
 
-def canonical(value: dict) -> str:
-    return json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=("write", "verify", "print"))
     args = parser.parse_args()
     if args.command == "verify":
-        subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "scripts"),
-                        "-p", "test_hepta_rust_identifiers.py"], check=True)
-    rendered = canonical(render())
+        for pattern in ("test_hepta_rust_identifiers.py", "test_hepta_learning_eval_projection.py"):
+            subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "scripts"),
+                            "-p", pattern], check=True)
+    value = render()
+    rendered = canonical(value)
     if args.command == "print":
         print(rendered, end="")
-    elif args.command == "write":
+        return
+    block = projection(value)
+    replacements = {path: replace_projection(path.read_text(encoding="utf-8"), block) for path in DOCUMENTS}
+    if args.command == "write":
+        # Explicit authoring command only. Qualification always invokes verify.
         STATUS.write_text(rendered, encoding="utf-8")
-        print(STATUS.relative_to(ROOT))
-    elif not STATUS.is_file() or STATUS.read_text(encoding="utf-8") != rendered:
-        raise SystemExit("learning.eval status is stale; run python3 scripts/hepta-learning-eval-status.py write")
-    else:
-        print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "path": str(STATUS.relative_to(ROOT))}))
+        for path, content in replacements.items():
+            path.write_text(content, encoding="utf-8")
+        print(json.dumps({"written": [str(path.relative_to(ROOT)) for path in [STATUS, *DOCUMENTS]]}))
+        return
+    stale = []
+    if not STATUS.is_file() or STATUS.read_text(encoding="utf-8") != rendered:
+        stale.append(str(STATUS.relative_to(ROOT)))
+    stale.extend(str(path.relative_to(ROOT)) for path, content in replacements.items()
+                 if path.read_text(encoding="utf-8") != content)
+    if stale:
+        raise SystemExit(f"learning.eval source projections are stale: {stale}; author with hepta-learning-eval-status.py write")
+    print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "documentsChecked": len(DOCUMENTS)}))
 
 
 if __name__ == "__main__":
