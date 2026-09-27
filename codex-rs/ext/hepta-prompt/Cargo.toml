@@ -7,7 +7,7 @@ publish = false
 
 [lib]
 name = "codex_hepta_prompt_extension"
-path = "src/lib.rs"
+path = "src/root.rs"
 doctest = false
 
 [lints]
@@ -15,6 +15,7 @@ workspace = true
 
 [dependencies]
 codex-extension-api = { workspace = true }
+codex-hepta-contracts = { path = "../../hepta-contracts" }
 codex-hepta-types = { path = "../../hepta-types" }
 tokio = { workspace = true, features = ["sync"] }
 
