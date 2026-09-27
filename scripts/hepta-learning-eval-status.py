@@ -12,6 +12,8 @@ import argparse
 import json
 from pathlib import Path
 
+from hepta_rust_identifiers import contains_rust_identifier
+
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = ROOT / "docs/modules/learning.eval/CURRENT_STATUS.json"
 IMPLEMENTATION_MAP = ROOT / "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
@@ -33,13 +35,17 @@ def direct_external_callers(symbol: str) -> list[str]:
         if EVAL_ROOT in path.parents:
             continue
         text = path.read_text(encoding="utf-8")
-        if symbol in text:
+        if contains_rust_identifier(text, symbol):
             callers.append(path.relative_to(ROOT).as_posix())
     return callers
 
 
 def external_production_callers(symbol: str) -> list[str]:
-    """Find non-test product code that directly references a compatibility API."""
+    """Conservative lexical inventory; not a compiler-derived call graph.
+
+    Inline cfg(test) modules and macro bodies remain visible deliberately.
+    Positive/negative external compiler fixtures are a separate CI obligation.
+    """
     callers: list[str] = []
     rust_root = ROOT / "codex-rs"
     for path in sorted(rust_root.rglob("*.rs")):
@@ -53,7 +59,7 @@ def external_production_callers(symbol: str) -> list[str]:
         ):
             continue
         text = path.read_text(encoding="utf-8")
-        if symbol in text:
+        if contains_rust_identifier(text, symbol):
             callers.append(relative)
     return callers
 
