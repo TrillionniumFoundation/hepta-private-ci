@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   repair:
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 90
     steps:
       - name: Checkout repair branch
@@ -157,6 +157,7 @@ jobs:
         run: |
           set -euo pipefail
           for workflow in \
+            rust-ci.yml \
             kernel-authority-convergence.yml \
             kernel-authority-production-closure.yml \
             kernel-authority-status.yml
