@@ -8,6 +8,7 @@ use super::verify_evidence_membership;
 use super::verify_tabular_plan_binding;
 use crate::TabularOperatorPlanV1;
 use crate::WorldModelSampleV1;
+use crate::preflight_signed_tabular_v3;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_types::Digest32;
@@ -24,25 +25,13 @@ pub fn tabular_training_signing_payload_v2(
     receipt: &DatasetSnapshotReceiptV3,
     owner: &LedgerWriter,
 ) -> Result<Vec<u8>, BindingError> {
-    if plan.samples.is_empty() || plan.samples.len() > MAX_SIGNED_OPERATOR_ROWS {
+    // This must precede evidence-set allocation and row canonicalization.
+    preflight_signed_tabular_v3(plan)?;
+    if receipt.snapshot.source_record_digests.len() > MAX_SIGNED_OPERATOR_ROWS {
         return Err(BindingError::Bounds);
     }
     verify_tabular_plan_binding(plan, receipt)?;
     let mut bytes = canonical_tabular_row_semantics_v1(plan, receipt)?;
-    if plan.minimum_samples_per_cell == 0
-        || plan.minimum_samples_per_cell > MAX_SIGNED_OPERATOR_ROWS
-        || plan.sensor_ids.is_empty()
-        || plan.sensor_ids.len() > 4096
-        || plan.action_ids.is_empty()
-        || plan.action_ids.len() > 128
-        || plan
-            .sensor_ids
-            .len()
-            .checked_mul(plan.action_ids.len())
-            .is_none_or(|cells| cells > MAX_SIGNED_OPERATOR_ROWS)
-    {
-        return Err(BindingError::Bounds);
-    }
     bytes.extend_from_slice(&(plan.minimum_samples_per_cell as u64).to_be_bytes());
     let sensors = canonical_ids(&plan.sensor_ids, &mut bytes)?;
     let actions = canonical_ids(&plan.action_ids, &mut bytes)?;
@@ -67,7 +56,10 @@ pub fn world_model_training_signing_payload_v2(
     receipt: &DatasetSnapshotReceiptV3,
     owner: &LedgerWriter,
 ) -> Result<Vec<u8>, BindingError> {
-    if rows.is_empty() || rows.len() > MAX_SIGNED_OPERATOR_ROWS {
+    if rows.is_empty()
+        || rows.len() > MAX_SIGNED_OPERATOR_ROWS
+        || receipt.snapshot.source_record_digests.len() > MAX_SIGNED_OPERATOR_ROWS
+    {
         return Err(BindingError::Bounds);
     }
     verify_evidence_membership(

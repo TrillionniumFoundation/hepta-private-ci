@@ -149,6 +149,14 @@ pub use world_model::predict_transition;
 #[allow(unused_imports)]
 pub(crate) use world_model::predict_transition;
 
+mod terminal_v3;
+mod training_preflight;
+pub use terminal_v3::PreparedTerminalCellV3;
+pub use terminal_v3::VerifiedTerminalCellV3;
+pub use terminal_v3::fit_terminal_cell_verified_v3;
+pub use terminal_v3::prepare_terminal_cell_from_owner_v3;
+pub use training_preflight::preflight_signed_tabular_v3;
+
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
 

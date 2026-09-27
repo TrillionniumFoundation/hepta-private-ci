@@ -53,6 +53,10 @@ impl FrozenTerminalCellV1 {
     pub fn sample_count(&self) -> usize {
         self.plan.samples.len()
     }
+
+    pub(crate) fn plan(&self) -> &TabularOperatorPlanV1 {
+        &self.plan
+    }
 }
 
 #[derive(Debug)]
@@ -79,7 +83,8 @@ pub fn freeze_terminal_cell_from_owner_v1(
     mut profile: TerminalCellProfileV1,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
-    owner.revalidate_dataset_snapshot(dataset, now)?;
+    // Each supported episode needs a decision and an outcome. Check this
+    // necessary support budget before owner materialization or sorting.
     if dataset.snapshot.objective_digest != profile.objective_digest
         || profile.objective_digest.is_zero()
         || profile.run_snapshot_digest.is_zero()
@@ -89,9 +94,16 @@ pub fn freeze_terminal_cell_from_owner_v1(
         || profile.action_ids.is_empty()
         || profile.action_ids.len() > 128
         || dataset.snapshot.source_record_digests.len() > MAX_SOURCE_RECORDS
+        || profile
+            .action_ids
+            .len()
+            .checked_mul(profile.minimum_samples_per_action)
+            .and_then(|samples| samples.checked_mul(2))
+            .is_none_or(|records| records > dataset.snapshot.source_record_digests.len())
     {
         return Err(TerminalCellError::Unsupported("profile/dataset bounds"));
     }
+    owner.revalidate_dataset_snapshot(dataset, now)?;
     profile.action_ids.sort();
     if profile.action_ids.windows(2).any(|pair| pair[0] == pair[1]) {
         return Err(TerminalCellError::Unsupported("duplicate action"));
