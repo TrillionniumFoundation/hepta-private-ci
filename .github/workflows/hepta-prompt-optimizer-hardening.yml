@@ -5,10 +5,19 @@ on:
     paths:
       - 'codex-rs/hepta-prompt-optimizer/**'
       - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/hepta-learning-ledger/**'
+      - 'codex-rs/hepta-kg/**'
       - 'codex-rs/hepta-intelligence/src/prompt*'
+      - 'codex-rs/hepta-intelligence/src/lib.rs'
       - 'codex-rs/hepta-agentd/src/prompt*'
+      - 'codex-rs/hepta-agentd/src/lib.rs'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'docs/contracts/PROTOCOL_SCHEMAS.json'
       - 'docs/modules/prompt.optimizer/**'
       - 'scripts/hepta_prompt_optimizer*'
+      - '.github/actions/hepta-synthetic-merge/**'
       - '.github/workflows/hepta-prompt-optimizer-hardening.yml'
   workflow_dispatch:
 
@@ -69,9 +78,12 @@ jobs:
       fail-fast: false
       matrix:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
-    env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/prompt-native-${{ matrix.lane }}
     steps:
+      - name: Initialize isolated runner paths
+        run: |
+          set -euo pipefail
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/prompt-native-${{ matrix.lane }}" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/prompt-qualification"
       - name: Checkout exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -92,7 +104,6 @@ jobs:
       - name: Record tested Git identity
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/prompt-qualification"
           git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/prompt-qualification/identity.txt"
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha || env.SOURCE_SHA }}"
           git diff --check
@@ -174,3 +185,19 @@ jobs:
           path: ${{ runner.temp }}/prompt-qualification
           if-no-files-found: error
           retention-days: 7
+
+  qualification-result:
+    name: Prompt optimizer required
+    if: always()
+    needs: [source-diagnostics, native]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Require executed successful lanes
+        env:
+          SOURCE_RESULT: ${{ needs.source-diagnostics.result }}
+          NATIVE_RESULT: ${{ needs.native.result }}
+        run: |
+          set -euo pipefail
+          test "$SOURCE_RESULT" = success
+          test "$NATIVE_RESULT" = success
