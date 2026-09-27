@@ -18,7 +18,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 180
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           persist-credentials: true
@@ -33,13 +33,13 @@ jobs:
           rustc -Vv
           cargo -V
 
-      - name: Materialize registry-owned V3 into the exact provider spine
+      - name: Materialize current hardened V3 source
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/apply_context_compiler_v3_source.py
-          python3 scripts/apply_context_compiler_full_closure.py
-          python3 scripts/apply_context_compiler_hardening.py
+          python3 scripts/apply_context_compiler_current_closure.py
+          python3 scripts/generate_context_compiler_module_docs.py --write
 
       - name: Register property-test dependency
         shell: bash
@@ -50,36 +50,79 @@ jobs:
           workspace = Path('codex-rs/Cargo.toml')
           text = workspace.read_text()
           if 'proptest = ' not in text:
-              text = text.replace('pretty_assertions = "1.4.1"\n', 'pretty_assertions = "1.4.1"\nproptest = "1.9.0"\n', 1)
+              text = text.replace(
+                  'pretty_assertions = "1.4.1"\n',
+                  'pretty_assertions = "1.4.1"\nproptest = "1.9.0"\n',
+                  1,
+              )
           workspace.write_text(text)
           crate = Path('codex-rs/hepta-context-compiler/Cargo.toml')
           text = crate.read_text()
           if '[dev-dependencies]' not in text:
               text = text.rstrip() + '\n\n[dev-dependencies]\nproptest = { workspace = true }\n'
           elif 'proptest' not in text.split('[dev-dependencies]', 1)[1]:
-              text = text.replace('[dev-dependencies]\n', '[dev-dependencies]\nproptest = { workspace = true }\n', 1)
+              text = text.replace(
+                  '[dev-dependencies]\n',
+                  '[dev-dependencies]\nproptest = { workspace = true }\n',
+                  1,
+              )
           crate.write_text(text)
           PY
 
       - name: Format and refresh lockfile
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd codex-rs
-          cargo fmt --all
-          cargo metadata --format-version 1 > /dev/null
-
-      - name: Verify default and compatibility profiles
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-prompt-registry -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-extension-api -p codex-core -p codex-hepta-agentd -p codex-hepta-prompt-extension
+          cargo fmt --all
+          cargo metadata --format-version 1 > /dev/null
+
+      - name: Verify generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_context_compiler_module_docs.py --check
+          python3 scripts/test_context_compiler_state.py
+          python3 scripts/test_context_compiler_candidate.py
+          python3 scripts/test_context_compiler_execution.py
+
+      - name: Verify default product profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-context-compiler \
+            -p codex-hepta-intelligence \
+            -p codex-extension-api \
+            -p codex-core \
+            -p codex-hepta-agentd \
+            -p codex-hepta-prompt-extension
+
+      - name: Verify explicit legacy compatibility profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
           cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
           cargo test --locked -p codex-hepta-agentd --features legacy-prompt-context-v1
-          cargo clippy --locked -p codex-hepta-prompt-registry -p codex-hepta-context-compiler -p codex-hepta-intelligence -p codex-extension-api -p codex-core -p codex-hepta-agentd -p codex-hepta-prompt-extension --all-targets --all-features -- -D warnings
 
-      - name: Commit direct source
+      - name: Strict Clippy across product and compatibility profiles
+        working-directory: codex-rs
+        shell: bash
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-context-compiler
+          -p codex-hepta-intelligence
+          -p codex-extension-api
+          -p codex-core
+          -p codex-hepta-agentd
+          -p codex-hepta-prompt-extension
+          --all-targets --all-features -- -D warnings
+
+      - name: Commit direct source and retire one-shot machinery
         env:
           BRANCH: ${{ github.ref_name }}
         shell: bash
@@ -89,6 +132,8 @@ jobs:
           rm -f scripts/apply_context_compiler_v3_core.py
           rm -f scripts/apply_context_compiler_full_closure.py
           rm -f scripts/apply_context_compiler_hardening.py
+          rm -f scripts/apply_context_compiler_current_closure.py
+          rm -f scripts/remediate_context_compiler_closure.py
           rm -f .github/context-compiler-materialize-v3.trigger
           rm -f .github/workflows/context-compiler-v3-direct-source.yml
           rm -f .github/workflows/context-compiler-property-fix.yml
@@ -98,5 +143,5 @@ jobs:
           git config user.email "hepta-closure-bot@users.noreply.github.com"
           git add --all
           git diff --cached --check
-          git commit -m "feat(context.compiler): materialize V3 exact provider proof chain [context-source-fixed] [v3-materialized]"
+          git commit -m "feat(context.compiler): materialize current V3 exact provider path [context-source-fixed] [v3-materialized]"
           git push origin "HEAD:${BRANCH}"
