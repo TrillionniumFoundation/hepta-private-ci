@@ -11,6 +11,13 @@ use super::AgentdNeuronOwner;
 struct StubWitness;
 
 impl AnchorWitnessStore for StubWitness {
+    fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        if self.current()? != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        Ok(())
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         Ok(None)
     }

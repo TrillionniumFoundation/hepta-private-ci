@@ -481,7 +481,11 @@ pub fn canonical_checkpoint_v1(
         return Err(NeuronProtocolError::InvalidField("checkpoint lifetime"));
     }
     let checkpoint_id = digest_id("checkpoint", tick.checkpoint_after)?;
-    let predecessor_id = if tick.checkpoint_before.is_zero() {
+    let committed_predecessor = checkpoint.predecessor_digest();
+    if tick.checkpoint_before != committed_predecessor {
+        return Err(NeuronProtocolError::BindingMismatch("predecessor"));
+    }
+    let predecessor_id = if committed_predecessor.is_zero() {
         if checkpoint.sequence() != 1 {
             return Err(NeuronProtocolError::BindingMismatch("predecessor"));
         }
@@ -490,7 +494,7 @@ pub fn canonical_checkpoint_v1(
         if checkpoint.sequence() == 1 {
             return Err(NeuronProtocolError::BindingMismatch("predecessor"));
         }
-        Some(digest_id("checkpoint", tick.checkpoint_before)?)
+        Some(digest_id("checkpoint", committed_predecessor)?)
     };
     let value = NeuronCheckpointV1 {
         checkpoint_id,
