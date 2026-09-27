@@ -183,6 +183,13 @@ fn production_evidence_rejects_missing_external_receipts() {
 }
 
 #[test]
+fn production_evidence_rejects_excess_clock_uncertainty() {
+    let mut evidence = trust_evidence();
+    evidence.maximum_clock_uncertainty_ms = MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS + 1;
+    assert_eq!(evidence.validate(), Err(AuthorityTrustError::Invalid));
+}
+
+#[test]
 fn key_custody_evidence_rejects_missing_rotation_or_compromise_proof() {
     let mut evidence = custody_evidence("authority-root", [9; 32]);
     evidence.rotation_receipt_sha256 = [0; 32];
@@ -193,7 +200,7 @@ fn key_custody_evidence_rejects_missing_rotation_or_compromise_proof() {
 }
 
 #[test]
-fn bundle_rejects_live_domain_key_set_and_exportability_drift() {
+fn bundle_rejects_live_domain_key_set_exportability_and_clock_drift() {
     let frontier = Arc::new(MemoryProductionFrontier {
         current: Mutex::new(AuthorityLeaseFrontier::for_empty_epoch(7).unwrap()),
         trust_domain: "wrong-domain".into(),
@@ -247,6 +254,77 @@ fn bundle_rejects_live_domain_key_set_and_exportability_drift() {
         )
         .is_err()
     );
+
+    let frontier = Arc::new(MemoryProductionFrontier {
+        current: Mutex::new(AuthorityLeaseFrontier::for_empty_epoch(7).unwrap()),
+        trust_domain: "authority-root".into(),
+    });
+    let zero_clock = Arc::new(QualifiedClock {
+        now_unix_ms: 0,
+        trust_domain: "authority-root".into(),
+        uncertainty_ms: 10,
+    });
+    assert!(
+        ProductionAuthorityTrustBundle::new(
+            zero_clock,
+            frontier,
+            custody("authority-root", [9; 32]),
+            trust_evidence(),
+            custody_evidence("authority-root", [9; 32]),
+        )
+        .is_err()
+    );
+
+    let frontier = Arc::new(MemoryProductionFrontier {
+        current: Mutex::new(AuthorityLeaseFrontier::for_empty_epoch(7).unwrap()),
+        trust_domain: "authority-root".into(),
+    });
+    let uncertain_clock = Arc::new(QualifiedClock {
+        now_unix_ms: 2_000,
+        trust_domain: "authority-root".into(),
+        uncertainty_ms: MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS + 1,
+    });
+    let mut evidence = trust_evidence();
+    evidence.maximum_clock_uncertainty_ms = MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS;
+    assert!(
+        ProductionAuthorityTrustBundle::new(
+            uncertain_clock,
+            frontier,
+            custody("authority-root", [9; 32]),
+            evidence,
+            custody_evidence("authority-root", [9; 32]),
+        )
+        .is_err()
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn generic_production_registry_rejects_cross_domain_key_role() {
+    let initial = AuthorityLeaseFrontier::for_empty_epoch(7).unwrap();
+    let frontier = Arc::new(MemoryProductionFrontier {
+        current: Mutex::new(initial),
+        trust_domain: "authority-root".into(),
+    });
+    let bundle = ProductionAuthorityTrustBundle::new(
+        clock(),
+        frontier,
+        custody("final-use-issuer", [9; 32]),
+        trust_evidence(),
+        custody_evidence("final-use-issuer", [9; 32]),
+    )
+    .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    assert_eq!(
+        AuthorityLeaseRegistry::open_production_state_dir(
+            directory.path(),
+            "security-authority".into(),
+            &bundle,
+        )
+        .unwrap_err(),
+        AuthorityLeaseError::InvalidTrust
+    );
 }
 
 #[cfg(unix)]
@@ -260,9 +338,9 @@ fn complete_bundle_opens_generic_production_registry() {
     let bundle = ProductionAuthorityTrustBundle::new(
         clock(),
         frontier,
-        custody("authority-root", [9; 32]),
+        custody("authority-lease-owner", [9; 32]),
         trust_evidence(),
-        custody_evidence("authority-root", [9; 32]),
+        custody_evidence("authority-lease-owner", [9; 32]),
     )
     .unwrap();
     let directory = tempfile::tempdir().unwrap();
