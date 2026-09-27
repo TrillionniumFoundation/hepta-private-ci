@@ -34,7 +34,8 @@ PACKAGE_GROUPS = {
     "hepta-plasticity": {"learning", "lifecycle"},
     "hepta-intelligence": {"objective", "learning"},
     "hepta-intuition": {"objective", "learning"},
-    "hepta-neuron": {"learning"},
+    # Neuron commits depend on model receipts and generation recovery.
+    "hepta-neuron": {"inference", "learning", "lifecycle"},
     "hepta-ndu": {"objective", "learning"},
     "hepta-cognitive-read": {"learning"},
     "hepta-cognitive-store": {"learning", "lifecycle"},
