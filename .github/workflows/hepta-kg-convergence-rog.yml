@@ -1,8 +1,8 @@
-name: Execute exact knowledge.graph convergence candidate
+name: Execute exact knowledge.graph convergence candidate on ARM64
 
 on:
   push:
-    branches: [ops/kg-convergence-exact-8c33d2ab]
+    branches: [ops/kg-convergence-arm-8c33d2ab]
     paths:
       - '.github/workflows/hepta-kg-convergence-rog.yml'
 
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-exact-controller-8c33d2ab
+  group: hepta-kg-exact-controller-arm-8c33d2ab
   cancel-in-progress: true
 
 env:
@@ -21,9 +21,9 @@ jobs:
   apply:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.ref == 'refs/heads/ops/kg-convergence-exact-8c33d2ab' &&
+      github.ref == 'refs/heads/ops/kg-convergence-arm-8c33d2ab' &&
       github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -172,7 +172,7 @@ jobs:
           receipt['runnerName'] = os.environ['RUNNER_NAME']
           receipt['runnerOs'] = os.environ['RUNNER_OS']
           receipt['runnerArch'] = os.environ['RUNNER_ARCH']
-          receipt['hostClass'] = 'github-hosted-pre-main-assembly-nonqualifying'
+          receipt['hostClass'] = 'github-hosted-arm64-pre-main-assembly-nonqualifying'
           (directory / 'kernel-benchmark.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY
 
@@ -180,7 +180,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: knowledge-graph-exact-assembly-${{ github.run_id }}-${{ github.run_attempt }}
+          name: knowledge-graph-exact-arm64-assembly-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/kg-convergence-exact
           if-no-files-found: error
           retention-days: 90
