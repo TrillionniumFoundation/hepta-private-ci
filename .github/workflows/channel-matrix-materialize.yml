@@ -2,6 +2,7 @@ name: channel.matrix materialize
 
 # Manual recovery lane only. Push-triggered materialization is owned by
 # channel-matrix-bootstrap.yml so one exact branch head has one writer.
+# This file also records the reviewed closed-PR recovery trigger; no gate is bypassed.
 on:
   workflow_dispatch: {}
 
