@@ -2,7 +2,7 @@
 
 use super::*;
 
-struct AgentdIntelligenceWorkerV1<T> {
+pub(super) struct AgentdIntelligenceWorkerV1<T> {
     handle: tokio::task::JoinHandle<T>,
     timed_out: Arc<std::sync::atomic::AtomicBool>,
     finished: Arc<std::sync::atomic::AtomicBool>,
@@ -12,6 +12,22 @@ impl<T> AgentdIntelligenceWorkerV1<T> {
     fn mark_timed_out(&self) {
         self.timed_out
             .store(true, std::sync::atomic::Ordering::Release);
+    }
+
+    pub(super) fn abort(&self) {
+        self.handle.abort();
+    }
+}
+
+impl<T> std::future::Future for AgentdIntelligenceWorkerV1<T> {
+    type Output = Result<T, tokio::task::JoinError>;
+
+    fn poll(
+        mut self: std::pin::Pin<&mut Self>,
+        context: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        let this = self.as_mut().get_mut();
+        std::future::Future::poll(std::pin::Pin::new(&mut this.handle), context)
     }
 }
 
