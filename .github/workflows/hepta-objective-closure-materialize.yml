@@ -1,4 +1,4 @@
-# closure-trigger: durable-proof-and-evidence-pocket4-r5-20260927
+# closure-trigger: durable-proof-and-evidence-macbook-r6-20260927
 name: Hepta objective compiler closure materializer
 
 on:
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   materialize:
-    runs-on: [self-hosted, linux, x64, pocket4]
+    runs-on: [self-hosted, macOS, ARM64, macbook]
     timeout-minutes: 150
     env:
       TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
