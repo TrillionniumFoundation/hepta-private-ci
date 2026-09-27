@@ -33,7 +33,6 @@ jobs:
     env:
       CARGO_INCREMENTAL: "0"
       CARGO_NET_OFFLINE: "true"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/platform-wire-target-${{ github.run_id }}-${{ github.run_attempt }}
       EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
       HOST_PROFILE: ${{ inputs.host_profile }}
     steps:
@@ -43,6 +42,13 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
+
+      - name: Bind runner-local build directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_dir="$RUNNER_TEMP/platform-wire-target-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          printf 'CARGO_TARGET_DIR=%s\n' "$target_dir" >> "$GITHUB_ENV"
 
       - name: Verify trusted subject and pre-provisioned toolchain
         shell: bash
