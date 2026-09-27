@@ -1,5 +1,9 @@
 use super::*;
+use crate::final_use_control::FinalUseRevocationUpdate;
+use crate::final_use_control::SignedFinalUseRevocationUpdate;
+use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use std::collections::BTreeSet;
 use std::sync::Mutex;
 
 #[cfg(unix)]
@@ -156,8 +160,12 @@ fn custody_evidence(
 }
 
 fn clock() -> Arc<QualifiedClock> {
+    clock_at(2_000)
+}
+
+fn clock_at(now_unix_ms: u64) -> Arc<QualifiedClock> {
     Arc::new(QualifiedClock {
-        now_unix_ms: 2_000,
+        now_unix_ms,
         trust_domain: "authority-root".into(),
         uncertainty_ms: 10,
     })
@@ -173,6 +181,33 @@ fn custody(key_role: &str, key_set_sha256: [u8; 32]) -> Arc<QualifiedCustody> {
         revoked_before_generation: 1,
         exportable: false,
     })
+}
+
+fn verified_revocation_head(
+    head: &FinalUseRevocations,
+    issued_at_unix_ms: u64,
+    expires_at_unix_ms: u64,
+) -> VerifiedFinalUseRevocationHead {
+    let distributor = SigningKey::from_bytes(&[55; 32]);
+    let update = FinalUseRevocationUpdate::new(
+        "revocation-distributor".into(),
+        head.clone(),
+        issued_at_unix_ms,
+        expires_at_unix_ms,
+    );
+    let signed = SignedFinalUseRevocationUpdate {
+        signature: distributor
+            .sign(&update.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        update,
+    };
+    let verifier = FinalUseRevocationFeedVerifier::new(
+        "revocation-distributor".into(),
+        distributor.verifying_key().to_bytes(),
+    )
+    .unwrap();
+    VerifiedFinalUseRevocationHead::verify(&verifier, &signed, issued_at_unix_ms + 20).unwrap()
 }
 
 #[test]
@@ -356,7 +391,7 @@ fn complete_bundle_opens_generic_production_registry() {
 
 #[cfg(unix)]
 #[test]
-fn final_use_production_open_binds_exact_custodied_key_ring() {
+fn final_use_production_open_binds_exact_custodied_key_ring_and_verified_head() {
     let signer = SigningKey::from_bytes(&[41; 32]);
     let issuer_keys = vec![FinalUseIssuerTrustKey {
         key_id: "issuer-a".into(),
@@ -370,6 +405,7 @@ fn final_use_production_open_binds_exact_custodied_key_ring() {
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
+    let verified_head = verified_revocation_head(&head, 1_000, 3_000);
     let frontier = Arc::new(MemoryProductionFrontier {
         current: Mutex::new(FinalUseFrontier::for_initial_head(&head).unwrap()),
         trust_domain: "authority-root".into(),
@@ -388,7 +424,7 @@ fn final_use_production_open_binds_exact_custodied_key_ring() {
         directory.path(),
         "security-owner".into(),
         issuer_keys.clone(),
-        head,
+        &verified_head,
         &bundle,
     )
     .unwrap();
@@ -408,11 +444,51 @@ fn final_use_production_open_binds_exact_custodied_key_ring() {
             directory.path(),
             "security-owner".into(),
             wrong_keys,
-            FinalUseRevocations {
-                authority_epoch: 7,
-                revision: 1,
-                revoked_grant_ids: BTreeSet::new(),
-            },
+            &verified_head,
+            &bundle,
+        )
+        .unwrap_err(),
+        FinalUseError::InvalidTrust
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn production_open_rechecks_verified_head_freshness_on_the_protected_clock() {
+    let signer = SigningKey::from_bytes(&[41; 32]);
+    let issuer_keys = vec![FinalUseIssuerTrustKey {
+        key_id: "issuer-a".into(),
+        verifying_key: signer.verifying_key().to_bytes(),
+        not_before_authority_epoch: 1,
+        not_after_authority_epoch: 20,
+    }];
+    let key_set_sha256 = final_use_issuer_trust_sha256(&issuer_keys).unwrap();
+    let head = FinalUseRevocations {
+        authority_epoch: 7,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let verified_head = verified_revocation_head(&head, 2_000, 3_000);
+    let frontier = Arc::new(MemoryProductionFrontier {
+        current: Mutex::new(FinalUseFrontier::for_initial_head(&head).unwrap()),
+        trust_domain: "authority-root".into(),
+    });
+    let bundle = ProductionAuthorityTrustBundle::new(
+        clock_at(4_000),
+        frontier,
+        custody("final-use-issuer", key_set_sha256),
+        trust_evidence(),
+        custody_evidence("final-use-issuer", key_set_sha256),
+    )
+    .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    assert_eq!(
+        open_production_final_use_authority(
+            directory.path(),
+            "security-owner".into(),
+            issuer_keys,
+            &verified_head,
             &bundle,
         )
         .unwrap_err(),
