@@ -11,6 +11,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 
@@ -44,6 +45,33 @@ def git(root, *args):
     return result.stdout.strip()
 
 
+def remove_generated_python_caches(root: Path) -> None:
+    """Remove import-only cache artifacts before enforcing a clean source tree.
+
+    Qualification workflows dynamically import this module. Some Python builds can
+    materialize ``__pycache__`` between the workflow's clean-tree check and this
+    function call even when bytecode suppression is requested. Those cache files
+    are neither source inputs nor evidence. Remove only untracked Python cache
+    directories under the repository scripts tree; every tracked or non-cache
+    change remains a hard failure below.
+    """
+    scripts = root / "scripts"
+    if not scripts.is_dir():
+        return
+    for cache in scripts.rglob("__pycache__"):
+        relative = cache.relative_to(root).as_posix()
+        tracked = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "--error-unmatch", relative],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            check=False,
+        )
+        if tracked.returncode == 0:
+            raise RefreshError(f"refusing to remove tracked Python cache path: {relative}")
+        shutil.rmtree(cache)
+
+
 def unique_object(pairs):
     result = {}
     for key, value in pairs:
@@ -59,6 +87,7 @@ def refresh(root, head):
         raise RefreshError("an exact lowercase source commit is required")
     if git(root, "rev-parse", "HEAD") != head:
         raise RefreshError("requested source is not the current checkout")
+    remove_generated_python_caches(root)
     if git(root, "status", "--porcelain", "--untracked-files=normal"):
         raise RefreshError("commit all source changes before refreshing the map")
     mapping = json.loads((root / MAP).read_text(), object_pairs_hook=unique_object)
