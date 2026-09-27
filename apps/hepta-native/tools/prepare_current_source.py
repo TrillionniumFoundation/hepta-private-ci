@@ -16,8 +16,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/hepta-native"
 BASE = "7ddbfac88525196e7a4b31387ceae194958275f5"
-BRANCH = "work/ui-native-current-source-20260925"
-WRITE_BRANCHES = {BRANCH, "work/ui-native-remediation-20260927", "work/ui-native-closure-20260927"}
+BRANCH = "work/ui-native-operational-closure-20260927"
+WRITE_BRANCHES = {"work/ui-native-operational-closure-20260927", BRANCH, "work/ui-native-remediation-20260927", "work/ui-native-closure-20260927"}
 INTEGRATION_ROOTS = (
     ROOT / "codex-rs/hepta-native-gateway",
     ROOT / "codex-rs/hepta-private-state",
@@ -58,7 +58,7 @@ SOURCE_LOG_PATHS = tuple(
 
 
 def git(*args):
-    return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+    return subprocess.check_output(["git", *args], cwd=ROOT, text=True, encoding="utf-8", errors="strict").strip()
 
 
 def committed_blob(path):

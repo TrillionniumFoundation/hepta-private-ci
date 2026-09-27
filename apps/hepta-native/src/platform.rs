@@ -30,6 +30,30 @@ pub struct PermissionDecision {
 }
 
 pub trait PlatformAdapter: Send {
+    /// Adapter-specific, non-authorizing confirmation context. Test adapters
+    /// without filesystem effects may use None; the system adapter never does
+    /// so for a path operation.
+    fn confirmation_resource(
+        &self,
+        _payload: &PlatformPayload,
+    ) -> Result<Option<String>, ShellError> {
+        Ok(None)
+    }
+
+    fn invoke_confirmed(
+        &mut self,
+        key: &OperationKey,
+        payload: &PlatformPayload,
+        expected_resource: &Option<String>,
+    ) -> Result<PlatformObservation, ShellError> {
+        if self.confirmation_resource(payload)? != *expected_resource {
+            return Err(ShellError::Security(
+                "confirmed resource changed before effect entry".to_owned(),
+            ));
+        }
+        self.invoke(key, payload)
+    }
+
     fn permission(&self, payload: &PlatformPayload) -> Result<PermissionDecision, ShellError>;
 
     fn invoke(
@@ -115,6 +139,42 @@ impl SystemPlatformAdapter {
 }
 
 impl PlatformAdapter for SystemPlatformAdapter {
+    fn confirmation_resource(
+        &self,
+        payload: &PlatformPayload,
+    ) -> Result<Option<String>, ShellError> {
+        match payload {
+            PlatformPayload::OpenPath { path } | PlatformPayload::RevealPath { path } => {
+                Ok(Some(crate::resource::snapshot(path)?.digest))
+            }
+            _ => Ok(None),
+        }
+    }
+
+    fn invoke_confirmed(
+        &mut self,
+        key: &OperationKey,
+        payload: &PlatformPayload,
+        expected_resource: &Option<String>,
+    ) -> Result<PlatformObservation, ShellError> {
+        let snapshot = match payload {
+            PlatformPayload::OpenPath { path } | PlatformPayload::RevealPath { path } => {
+                Some(crate::resource::snapshot(path)?)
+            }
+            _ => None,
+        };
+        if snapshot.as_ref().map(|value| &value.digest) != expected_resource.as_ref() {
+            return Err(ShellError::Security(
+                "confirmed resource changed before OS entry".to_owned(),
+            ));
+        }
+        let result = self.invoke(key, payload);
+        // Keep the opened identity alive through dispatch/observation. This
+        // does not turn the path-only OS launcher into a descriptor consumer.
+        drop(snapshot);
+        result
+    }
+
     fn permission(&self, payload: &PlatformPayload) -> Result<PermissionDecision, ShellError> {
         payload.validate()?;
         let (allowed, reason) = match payload {

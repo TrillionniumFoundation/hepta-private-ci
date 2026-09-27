@@ -29,6 +29,8 @@ const DIGEST: &str = "1111111111111111111111111111111111111111111111111111111111
 #[derive(Default)]
 struct State {
     close_fails: bool,
+    snapshot_fails: bool,
+    invalid_snapshot_digest: bool,
     closes: usize,
     connects: usize,
     permission_fails: bool,
@@ -59,11 +61,20 @@ impl BackendAdapter for Backend {
     }
 
     fn runtime_status(&mut self) -> Result<AuthenticatedRuntimeStatus, ShellError> {
+        let state = self.state.lock().unwrap();
+        if state.snapshot_fails {
+            return Err(ShellError::Backend("injected refresh failure".to_owned()));
+        }
+        let body_digest = if state.invalid_snapshot_digest {
+            "invalid".to_owned()
+        } else {
+            DIGEST.to_owned()
+        };
         Ok(AuthenticatedRuntimeStatus {
             value: serde_json::json!({
                 "state": {"runtime_snapshot_generation": self.generations.pop_front().unwrap()}
             }),
-            body_digest: DIGEST.to_owned(),
+            body_digest,
         })
     }
 
@@ -229,7 +240,7 @@ fn raw_generation_regression_is_not_hidden_by_genesis_projection() {
     shell.refresh_runtime_view().unwrap();
     let error = shell.refresh_runtime_view().unwrap_err();
     assert!(error.to_string().contains("snapshot generation regressed"));
-    assert_eq!(shell.view().unwrap().revision, 1);
+    assert!(shell.view().is_none());
 }
 
 #[test]
@@ -371,4 +382,78 @@ fn rejected_backend_session_is_closed_before_connect_returns() {
     assert!(shell.session().is_none());
     assert!(shell.view().is_none());
     assert_eq!(state.lock().unwrap().closes, 1);
+}
+
+#[test]
+fn failed_refresh_invalidates_authority_without_reusing_display_revision() {
+    let temp = private_tempdir();
+    let state = Arc::new(Mutex::new(State::default()));
+    let mut shell = runtime(
+        temp.path().join("operations.json"),
+        state.clone(),
+        vec![7, 8],
+        false,
+    );
+    shell.connect_runtime(&manifest()).unwrap();
+    shell.refresh_runtime_view().unwrap();
+    let old_request = denied_request(&shell);
+    state.lock().unwrap().snapshot_fails = true;
+    assert!(shell.refresh_runtime_view().is_err());
+    assert!(shell.view().is_none());
+    assert!(
+        shell
+            .prepare_platform_binding("subject.test", "operation.test", &old_request.payload)
+            .is_err()
+    );
+    assert!(
+        shell
+            .request_platform_capability(old_request.clone())
+            .is_err()
+    );
+    assert_eq!(state.lock().unwrap().permission_calls, 0);
+    state.lock().unwrap().snapshot_fails = false;
+    let (new_view, _) = shell.refresh_runtime_view().unwrap();
+    assert_eq!(new_view.revision, 2);
+    assert!(shell.request_platform_capability(old_request).is_err());
+}
+
+#[test]
+fn invalid_digest_clears_view_but_retains_owner_generation_fence() {
+    let temp = private_tempdir();
+    let state = Arc::new(Mutex::new(State::default()));
+    let mut shell = runtime(
+        temp.path().join("operations.json"),
+        state.clone(),
+        vec![7, 8, 6, 9],
+        false,
+    );
+    shell.connect_runtime(&manifest()).unwrap();
+    shell.refresh_runtime_view().unwrap();
+    state.lock().unwrap().invalid_snapshot_digest = true;
+    assert!(shell.refresh_runtime_view().is_err());
+    assert!(shell.view().is_none());
+    state.lock().unwrap().invalid_snapshot_digest = false;
+    assert!(shell.refresh_runtime_view().is_err());
+    assert!(shell.view().is_none());
+    assert_eq!(shell.refresh_runtime_view().unwrap().0.revision, 2);
+}
+
+#[test]
+fn read_terminal_receipt_does_not_require_an_actionable_view() {
+    let temp = private_tempdir();
+    let state = Arc::new(Mutex::new(State::default()));
+    let mut shell = runtime(
+        temp.path().join("operations.json"),
+        state.clone(),
+        vec![7],
+        false,
+    );
+    shell.connect_runtime(&manifest()).unwrap();
+    shell.refresh_runtime_view().unwrap();
+    let request = denied_request(&shell);
+    let first = shell.request_platform_capability(request.clone()).unwrap();
+    state.lock().unwrap().snapshot_fails = true;
+    assert!(shell.refresh_runtime_view().is_err());
+    assert_eq!(shell.request_platform_capability(request).unwrap(), first);
+    assert_eq!(state.lock().unwrap().permission_calls, 1);
 }

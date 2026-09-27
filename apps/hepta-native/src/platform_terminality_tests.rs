@@ -16,7 +16,8 @@ fn launcher_failure_after_side_effect_stays_indeterminate() {
     let status = run_bounded_launcher(command, "test effect", &active).unwrap();
     assert!(!status.success());
     assert_eq!(std::fs::read_to_string(effect).unwrap(), "applied");
-    let adapter = SystemPlatformAdapter::new(PlatformPolicy::new(Vec::new(), false, false).unwrap());
+    let adapter =
+        SystemPlatformAdapter::new(PlatformPolicy::new(Vec::new(), false, false).unwrap());
     assert_eq!(
         adapter.launcher_observation(PlatformAction::OpenPath, status),
         PlatformObservation::indeterminate()
@@ -31,7 +32,8 @@ fn launcher_success_without_queryable_receipt_stays_indeterminate() {
     let active = Arc::new(AtomicUsize::new(0));
     let status = run_bounded_launcher(command, "test launch", &active).unwrap();
     assert!(status.success());
-    let adapter = SystemPlatformAdapter::new(PlatformPolicy::new(Vec::new(), false, false).unwrap());
+    let adapter =
+        SystemPlatformAdapter::new(PlatformPolicy::new(Vec::new(), false, false).unwrap());
     assert_eq!(
         adapter.launcher_observation(PlatformAction::Notify, status),
         PlatformObservation::indeterminate()

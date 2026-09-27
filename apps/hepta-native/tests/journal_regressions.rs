@@ -224,7 +224,7 @@ fn legacy_v2_journal_migrates_on_first_persisted_change() {
     journal.upsert(prepared()).unwrap();
     drop(journal);
     let state: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(state["schema"], "hepta.native-operation-journal.v4");
+    assert_eq!(state["schema"], "hepta.native-operation-journal.v5");
     assert_eq!(state["retired_operation_digests"], serde_json::json!([]));
 }
 
@@ -253,7 +253,8 @@ fn valid_json_content_corruption_is_detected_without_falling_back() {
     drop(journal);
     let backup = root.path().join("operations.json.previous");
     let checkpoint = std::fs::read(&backup).unwrap();
-    let mut state: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    let mut state: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
     state["operations"][0]["payload_digest"] = "9".repeat(64).into();
     let corrupted = serde_json::to_vec(&state).unwrap();
     std::fs::write(&path, &corrupted).unwrap();
@@ -298,4 +299,126 @@ fn exact_duplicate_does_not_create_a_new_checkpoint() {
     journal.upsert(record).unwrap();
     assert_eq!(std::fs::read(&path).unwrap(), before);
     assert!(!root.path().join("operations.json.previous").exists());
+}
+
+#[test]
+fn closing_observation_is_unknown_immutable_and_retired_without_replay() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    let record = OperationRecord {
+        phase: OperationPhase::Indeterminate,
+        ..prepared()
+    };
+    journal.upsert(record.clone()).unwrap();
+    let receipt = journal.close_observation(&record.key).unwrap();
+    assert!(!receipt.terminal_observed);
+    assert!(receipt.observation_closed);
+    assert_eq!(receipt.terminal_status, None);
+    assert_eq!(receipt.outcome_digest, None);
+    assert_eq!(journal.pending().count(), 0);
+    assert_eq!(journal.close_observation(&record.key).unwrap(), receipt);
+    assert!(journal.upsert(terminal()).is_err());
+    drop(journal);
+    let mut reopened = OperationJournal::open(&path).unwrap();
+    assert_eq!(reopened.find(&record.key).unwrap().receipt(), receipt);
+    reopened.compact_closed_history(0).unwrap();
+    drop(reopened);
+    let mut reopened = OperationJournal::open(&path).unwrap();
+    assert!(reopened.upsert(record.clone()).is_err());
+    assert!(
+        reopened
+            .ensure_not_retired(&record.endpoint_id, &record.key)
+            .is_err()
+    );
+}
+
+#[test]
+fn live_invocation_and_prepared_intent_cannot_be_archived() {
+    let root = private_tempdir();
+    let mut journal = OperationJournal::open(root.path().join("operations.json")).unwrap();
+    let record = prepared();
+    journal.upsert(record.clone()).unwrap();
+    assert!(journal.close_observation(&record.key).is_err());
+    journal
+        .upsert(OperationRecord {
+            phase: OperationPhase::Invoking,
+            ..record.clone()
+        })
+        .unwrap();
+    assert!(journal.close_observation(&record.key).is_err());
+    assert_eq!(journal.pending().count(), 1);
+}
+
+#[test]
+fn closed_unknown_batches_survive_restart_without_accumulating_pending_records() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let mut first = None;
+    for batch in 0..4 {
+        let mut journal = OperationJournal::open(&path).unwrap();
+        for index in 0..32 {
+            let mut record = prepared();
+            record.key.operation_id = format!("operation.{batch}.{index}");
+            record.phase = OperationPhase::Indeterminate;
+            if first.is_none() {
+                first = Some(record.clone());
+            }
+            journal.upsert(record.clone()).unwrap();
+            journal.close_observation(&record.key).unwrap();
+        }
+        journal.compact_closed_history(8).unwrap();
+        assert_eq!(journal.pending().count(), 0);
+        assert!(journal.all().len() <= 8);
+    }
+    let reopened = OperationJournal::open(&path).unwrap();
+    let first = first.unwrap();
+    assert!(
+        reopened
+            .ensure_not_retired(&first.endpoint_id, &first.key)
+            .is_err()
+    );
+    assert_eq!(reopened.capacity().retired_identities, 120);
+}
+
+#[test]
+fn v4_cannot_smuggle_v5_observation_closure() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    let record = OperationRecord {
+        phase: OperationPhase::Indeterminate,
+        ..prepared()
+    };
+    journal.upsert(record.clone()).unwrap();
+    journal.close_observation(&record.key).unwrap();
+    drop(journal);
+    let mut state: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    state["schema"] = "hepta.native-operation-journal.v4".into();
+    state["checksum"] = hepta_native::model::sha256_hex(
+        serde_json::to_vec(&(
+            &state["schema"],
+            &state["operations"],
+            &state["retired_operation_digests"],
+        ))
+        .unwrap(),
+    )
+    .into();
+    std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
+    assert!(OperationJournal::open(&path).is_err());
+}
+
+#[test]
+fn receipt_exposes_only_legal_observation_closure() {
+    let mut value = prepared();
+    assert!(!value.receipt().can_close_observation);
+    value.phase = OperationPhase::Invoking;
+    assert!(!value.receipt().can_close_observation);
+    value.phase = OperationPhase::Indeterminate;
+    assert!(value.receipt().can_close_observation);
+    value.phase = OperationPhase::ObservationClosed;
+    assert!(!value.receipt().can_close_observation);
+    assert!(!value.receipt().terminal_observed);
+    assert!(value.receipt().may_have_executed);
 }

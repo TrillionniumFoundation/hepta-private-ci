@@ -19,6 +19,14 @@ evidence = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(evidence)
 
 
+class GitEncodingTests(unittest.TestCase):
+    def test_git_uses_explicit_strict_utf8(self):
+        with patch.object(subprocess, "check_output", return_value="原生\n") as call:
+            self.assertEqual(evidence.git(Path("."), "log"), "原生")
+        self.assertEqual(call.call_args.kwargs["encoding"], "utf-8")
+        self.assertEqual(call.call_args.kwargs["errors"], "strict")
+
+
 class RustInventoryTests(unittest.TestCase):
     def test_comments_and_string_literals_are_not_exports(self):
         source = '''// pub fn fake() {}
@@ -174,26 +182,26 @@ class ActualCommandTests(unittest.TestCase):
 
     def test_real_success_writes_bound_receipt_outside_repository(self):
         self.assertEqual(self.run_check([sys.executable, "-c", "print('executed')"]), 0)
-        report = json.loads((self.out / "app_tests.json").read_text())
+        report = json.loads((self.out / "app_tests.json").read_text(encoding="utf-8"))
         self.assertEqual(report["sourceSha"], evidence.git(self.root, "rev-parse", "HEAD"))
         self.assertIn(b"executed", (self.out / "app_tests.log").read_bytes())
 
     def test_real_failure_is_not_hidden(self):
         self.assertEqual(self.run_check([sys.executable, "-c", "raise SystemExit(7)"]), 1)
-        self.assertEqual(json.loads((self.out / "app_tests.json").read_text())["exitCode"], 7)
+        self.assertEqual(json.loads((self.out / "app_tests.json").read_text(encoding="utf-8"))["exitCode"], 7)
 
     def test_missing_executable_records_failure(self):
         self.assertEqual(self.run_check([str(self.root / "does-not-exist")]), 1)
-        self.assertEqual(json.loads((self.out / "app_tests.json").read_text())["exitCode"], 127)
+        self.assertEqual(json.loads((self.out / "app_tests.json").read_text(encoding="utf-8"))["exitCode"], 127)
 
     def test_actual_timeout_fails(self):
         self.assertEqual(self.run_check([sys.executable, "-c", "import time; time.sleep(5)"], 1), 1)
-        self.assertTrue(json.loads((self.out / "app_tests.json").read_text())["timedOut"])
+        self.assertTrue(json.loads((self.out / "app_tests.json").read_text(encoding="utf-8"))["timedOut"])
 
     def test_mutated_source_cannot_get_success(self):
         code = "from pathlib import Path; Path('apps/hepta-native/src/model.rs').write_text('changed')"
         self.assertEqual(self.run_check([sys.executable, "-c", code]), 1)
-        self.assertFalse(json.loads((self.out / "app_tests.json").read_text())["sourceUnchanged"])
+        self.assertFalse(json.loads((self.out / "app_tests.json").read_text(encoding="utf-8"))["sourceUnchanged"])
 
     def test_second_observation_does_not_overwrite_first(self):
         self.run_check([sys.executable, "-c", "print('first')"])
@@ -203,7 +211,7 @@ class ActualCommandTests(unittest.TestCase):
 
     def test_inventory_changes_when_committed_source_changes(self):
         before = evidence.inventory(self.root)
-        self.model.write_text(self.model.read_text() + "pub fn added() {}\n#[test]\nfn actual_test() {}\n")
+        self.model.write_text(self.model.read_text(encoding="utf-8") + "pub fn added() {}\n#[test]\nfn actual_test() {}\n")
         with self.assertRaises(ValueError): evidence.inventory(self.root)
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "new source")

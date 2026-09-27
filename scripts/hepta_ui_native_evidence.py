@@ -49,7 +49,7 @@ def timestamp() -> str:
 
 
 def git(root: Path, *args: str) -> str:
-    return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
+    return subprocess.check_output(["git", *args], cwd=root, text=True, encoding="utf-8", errors="strict").strip()
 
 
 def require_clean(root: Path) -> None:
@@ -269,7 +269,7 @@ def seal(root: Path, args: argparse.Namespace) -> dict:
         if parents != [args.base, args.candidate]:
             raise ValueError("synthetic merge does not bind the ordered base and candidate")
     names = REQUIRED + (LINUX_REQUIRED if args.runner_os == "Linux" else ())
-    checks = [json.loads((args.checks / f"{name}.json").read_text()) for name in names]
+    checks = [json.loads((args.checks / f"{name}.json").read_text(encoding="utf-8")) for name in names]
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "")
     if not run_id.isdigit() or int(run_id) <= 0 or not attempt.isdigit() or int(attempt) <= 0:
@@ -284,7 +284,7 @@ def seal(root: Path, args: argparse.Namespace) -> dict:
     lock_paths = [APP + "Cargo.lock", "codex-rs/Cargo.lock"]
     inv = inventory(root)
     rust = subprocess.check_output(["rustc", "+1.95.0", "--version", "--verbose"],
-                                   cwd=root, text=True).strip()
+                                   cwd=root, text=True, encoding="utf-8", errors="strict").strip()
     image = {key: os.environ.get(key, "") for key in ("ImageOS", "ImageVersion", "RUNNER_ARCH")}
     if not all(image.values()):
         raise ValueError("runner image identity missing")

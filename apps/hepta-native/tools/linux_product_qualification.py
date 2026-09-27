@@ -170,7 +170,7 @@ def await_json(path, process, timeout=35):
         if process.poll() is not None:
             raise RuntimeError(f"product exited before readiness, code={process.returncode}; inspect logs")
         if path.exists():
-            value=json.loads(path.read_text())
+            value=json.loads(path.read_text(encoding="utf-8"))
             if value.get("process_id") == process.pid:
                 return value
         time.sleep(.05)
@@ -191,7 +191,7 @@ def main():
     runtime_dir=out/"session-runtime";runtime_dir.mkdir(mode=0o700)
     environment=dict(os.environ, HOME=str(home),XDG_CONFIG_HOME=str(home/".config"),XDG_DATA_HOME=str(home/".local/share"),XDG_RUNTIME_DIR=str(runtime_dir),LANG="C.UTF-8",LC_ALL="C.UTF-8")
     root=args.package_root.resolve()
-    package=json.loads((root/"unsigned-package-manifest.json").read_text())
+    package=json.loads((root/"unsigned-package-manifest.json").read_text(encoding="utf-8"))
     for relative, expected in package["binarySha256"].items():
         if hashlib.sha256((root/relative).read_bytes()).hexdigest()!=expected:
             raise RuntimeError("installed package binary does not match its retained digest")
@@ -229,12 +229,15 @@ def main():
         connection=json.loads(run([str(app),"--config",str(out/"config.json"),"--check-connection"],env=environment).stdout)
         starts=[]
         for iteration in range(2):
+            launch_started = time.perf_counter_ns()
             with (out/f"gui-{iteration}.log").open("w") as log:
                 gui=subprocess.Popen([str(app),"--config",str(out/"config.json")],env=environment,stdout=log,stderr=log)
             startup=await_json(state/"last-startup.json",gui)
+            readiness_observed = time.perf_counter_ns()
             if startup["session"]["session_id"]==connection["session"]["session_id"]:raise AssertionError("reused a prior session")
             windows=run(["xdotool","search","--sync","--onlyvisible","--pid",str(gui.pid)],env=environment).stdout.split()
             if not windows:raise AssertionError("normal product created no visible native window")
+            visible_observed = time.perf_counter_ns()
             window=windows[0]
             run(["xdotool","key","--window",window,"Tab","Tab","Shift+Tab"],env=environment)
             geometry=run(["xwininfo","-id",window],env=environment).stdout
@@ -242,11 +245,27 @@ def main():
             time.sleep(.25)
             if gui.poll() is not None:raise AssertionError("normal GUI exited during keyboard traversal")
             # WM_DELETE_WINDOW, not a test-profile exit flag.
+            status_fields = Path(f"/proc/{gui.pid}/status").read_text(encoding="utf-8")
+            rss_lines = [line for line in status_fields.splitlines() if line.startswith("VmRSS:")]
+            rss_kib = int(rss_lines[0].split()[1]) if rss_lines else None
+            close_started = time.perf_counter_ns()
             close_native_window(window)
             exit_code = gui.wait(timeout=10)
             if exit_code != 0:
                 raise RuntimeError(f"normal GUI close failed with exit code {exit_code}; inspect gui-{iteration}.log")
             startup["normal_close_exit_code"] = exit_code
+            startup["measurements"] = {
+                "schema": "hepta.native.ordinary-linux-measurement.v1",
+                "packageBinarySha256": package["binarySha256"],
+                "launchToReadinessMs": (readiness_observed-launch_started)/1_000_000,
+                "launchToVisibleWindowMs": (visible_observed-launch_started)/1_000_000,
+                "normalCloseMs": (time.perf_counter_ns()-close_started)/1_000_000,
+                "residentKiBAtObservation": rss_kib,
+                "sampleIndex": iteration,
+                "inputLatencyMeasured": False,
+                "soakMeasured": False,
+                "productionThresholdEvaluated": False,
+            }
             starts.append(startup)
             gui=None
         if starts[0]["session"]["session_id"]==starts[1]["session"]["session_id"]:raise AssertionError("restart reused session identity")

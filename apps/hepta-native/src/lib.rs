@@ -26,3 +26,5 @@ mod update_storage;
 pub mod fonts;
 pub mod launch_config;
 pub mod startup;
+
+mod resource;

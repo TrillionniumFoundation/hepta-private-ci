@@ -26,7 +26,9 @@ fn every_snapshot_failure_boundary_leaves_an_entire_old_or_new_file() {
         });
         assert!(result.is_err());
         let expected = match injected {
-            Boundary::Opened | Boundary::Written | Boundary::FileSynced => b"old committed snapshot",
+            Boundary::Opened | Boundary::Written | Boundary::FileSynced => {
+                b"old committed snapshot"
+            }
             Boundary::Replaced | Boundary::DirectorySynced => b"new committed snapshot",
         };
         assert_eq!(std::fs::read(&path).unwrap(), expected);

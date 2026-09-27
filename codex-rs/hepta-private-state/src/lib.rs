@@ -5,3 +5,6 @@ mod windows;
 
 #[cfg(windows)]
 pub use windows::PrivateStateDirectory;
+
+#[cfg(windows)]
+pub use windows::opened_resource_identity;

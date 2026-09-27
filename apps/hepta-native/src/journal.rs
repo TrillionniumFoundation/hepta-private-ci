@@ -21,6 +21,7 @@ use crate::private_state::PrivateStateRoot;
 const JOURNAL_SCHEMA_V2: &str = "hepta.native-operation-journal.v2";
 const JOURNAL_SCHEMA_V3: &str = "hepta.native-operation-journal.v3";
 const JOURNAL_SCHEMA_V4: &str = "hepta.native-operation-journal.v4";
+const JOURNAL_SCHEMA_V5: &str = "hepta.native-operation-journal.v5";
 const MAX_JOURNAL_BYTES: u64 = 8 * 1024 * 1024;
 const MAX_OPERATION_RECORDS: usize = 4096;
 const MAX_RETIRED_OPERATION_DIGESTS: usize = 32 * 1024;
@@ -31,6 +32,7 @@ pub enum OperationPhase {
     Prepared,
     Invoking,
     Indeterminate,
+    ObservationClosed,
     Terminal,
 }
 
@@ -75,7 +77,10 @@ impl OperationRecord {
                     ));
                 }
             }
-            OperationPhase::Prepared | OperationPhase::Invoking | OperationPhase::Indeterminate => {
+            OperationPhase::Prepared
+            | OperationPhase::Invoking
+            | OperationPhase::Indeterminate
+            | OperationPhase::ObservationClosed => {
                 if self.terminal_status.is_some() || self.outcome_digest.is_some() {
                     return Err(ShellError::State(
                         "non-terminal journal operation contains terminal evidence".to_owned(),
@@ -94,6 +99,13 @@ impl OperationRecord {
             terminal_status: self.terminal_status,
             outcome_digest: self.outcome_digest.clone(),
             terminal_observed: self.phase == OperationPhase::Terminal,
+            observation_closed: self.phase == OperationPhase::ObservationClosed,
+            can_close_observation: self.phase == OperationPhase::Indeterminate,
+            may_have_executed: self.phase != OperationPhase::Prepared
+                && !matches!(
+                    self.terminal_status,
+                    Some(TerminalStatus::Rejected | TerminalStatus::Quarantined)
+                ),
         }
     }
 }
@@ -113,7 +125,7 @@ impl JournalFile {
     fn checksum(&self) -> Result<String, ShellError> {
         // Detect accidental corruption, NOT a MAC or rollback-prevention authority.
         Ok(sha256_hex(serde_json::to_vec(&(
-            JOURNAL_SCHEMA_V4,
+            &self.schema,
             &self.operations,
             &self.retired_operation_digests,
         ))?))
@@ -121,13 +133,24 @@ impl JournalFile {
 
     fn verify_integrity(&self) -> Result<(), ShellError> {
         match self.schema.as_str() {
-            JOURNAL_SCHEMA_V4 if self.checksum.as_ref() == Some(&self.checksum()?) => Ok(()),
+            JOURNAL_SCHEMA_V4 | JOURNAL_SCHEMA_V5
+                if self.checksum.as_ref() == Some(&self.checksum()?) => Ok(()),
             JOURNAL_SCHEMA_V2 | JOURNAL_SCHEMA_V3 if self.checksum.is_none() => Ok(()),
             _ => Err(ShellError::State(
                 "journal checksum/schema failed; preserve evidence and reconcile, never restore an older snapshot automatically".to_owned(),
             )),
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct JournalCapacity {
+    pub active_records: usize,
+    pub active_limit: usize,
+    pub pending_records: usize,
+    pub closed_observations: usize,
+    pub retired_identities: usize,
+    pub retirement_limit: usize,
 }
 
 #[derive(Debug)]
@@ -209,6 +232,16 @@ impl OperationJournal {
         }
         let mut state: JournalFile = serde_json::from_slice(&bytes)?;
         state.verify_integrity()?;
+        if state.schema != JOURNAL_SCHEMA_V5
+            && state
+                .operations
+                .iter()
+                .any(|record| record.phase == OperationPhase::ObservationClosed)
+        {
+            return Err(ShellError::State(
+                "legacy journal contains v5 observation closure".to_owned(),
+            ));
+        }
         if state.schema == JOURNAL_SCHEMA_V2 && !state.retired_operation_digests.is_empty() {
             return Err(ShellError::State(
                 "legacy journal cannot contain a retirement frontier".to_owned(),
@@ -268,9 +301,12 @@ impl OperationJournal {
     }
 
     pub fn pending(&self) -> impl Iterator<Item = &OperationRecord> {
-        self.operations
-            .iter()
-            .filter(|record| record.phase != OperationPhase::Terminal)
+        self.operations.iter().filter(|record| {
+            !matches!(
+                record.phase,
+                OperationPhase::Terminal | OperationPhase::ObservationClosed
+            )
+        })
     }
 
     pub fn all(&self) -> &[OperationRecord] {
@@ -314,6 +350,9 @@ impl OperationJournal {
         self.ensure_healthy()?;
         record.validate()?;
         self.ensure_not_retired(&record.endpoint_id, &record.key)?;
+        if self.find(&record.key).is_none() && self.operations.len() >= MAX_OPERATION_RECORDS {
+            self.compact_closed_history(MAX_OPERATION_RECORDS / 2)?;
+        }
         let mut next = self.operations.clone();
         if let Some(index) = next.iter().position(|existing| existing.key == record.key) {
             let existing = &next[index];
@@ -332,7 +371,10 @@ impl OperationJournal {
             if existing == &record {
                 return Ok(());
             }
-            if existing.phase == OperationPhase::Terminal {
+            if matches!(
+                existing.phase,
+                OperationPhase::Terminal | OperationPhase::ObservationClosed
+            ) {
                 return Err(ShellError::State(
                     "terminal operation observation is immutable".to_owned(),
                 ));
@@ -360,12 +402,67 @@ impl OperationJournal {
         Ok(())
     }
 
+    /// End automatic observation, not the external operation. Never authorizes
+    /// replay and never manufactures terminal evidence. Repeating is harmless.
+    pub fn close_observation(&mut self, key: &OperationKey) -> Result<PlatformReceipt, ShellError> {
+        self.ensure_healthy()?;
+        let record = self.find(key).cloned().ok_or_else(|| {
+            ShellError::State("operation is missing or already retired".to_owned())
+        })?;
+        if record.phase == OperationPhase::ObservationClosed {
+            return Ok(record.receipt());
+        }
+        if record.phase != OperationPhase::Indeterminate {
+            return Err(ShellError::State(
+                "only an indeterminate observation can be archived".to_owned(),
+            ));
+        }
+        let closed = OperationRecord {
+            phase: OperationPhase::ObservationClosed,
+            ..record
+        };
+        let receipt = closed.receipt();
+        self.upsert(closed)?;
+        Ok(receipt)
+    }
+
+    pub fn capacity(&self) -> JournalCapacity {
+        JournalCapacity {
+            active_records: self.operations.len(),
+            active_limit: MAX_OPERATION_RECORDS,
+            pending_records: self.pending().count(),
+            closed_observations: self
+                .operations
+                .iter()
+                .filter(|record| record.phase == OperationPhase::ObservationClosed)
+                .count(),
+            retired_identities: self.retired_count(),
+            retirement_limit: MAX_RETIRED_OPERATION_DIGESTS,
+        }
+    }
+
     pub fn compact_terminal(&mut self, keep_latest: usize) -> Result<(), ShellError> {
+        self.compact_completed(keep_latest, false)
+    }
+
+    /// Includes unknown observations only after explicit durable closure.
+    pub fn compact_closed_history(&mut self, keep_latest: usize) -> Result<(), ShellError> {
+        self.compact_completed(keep_latest, true)
+    }
+
+    fn compact_completed(
+        &mut self,
+        keep_latest: usize,
+        include_closed: bool,
+    ) -> Result<(), ShellError> {
         self.ensure_healthy()?;
         let terminal_count = self
             .operations
             .iter()
-            .filter(|record| record.phase == OperationPhase::Terminal)
+            .filter(|record| {
+                record.phase == OperationPhase::Terminal
+                    || (include_closed && record.phase == OperationPhase::ObservationClosed)
+            })
             .count();
         let mut remaining_to_retire = terminal_count.saturating_sub(keep_latest);
         if remaining_to_retire == 0 {
@@ -376,7 +473,10 @@ impl OperationJournal {
         let mut next_retired = self.retired_operation_digests.clone();
         let mut retired_set: HashSet<String> = next_retired.iter().cloned().collect();
         for record in &self.operations {
-            if remaining_to_retire > 0 && record.phase == OperationPhase::Terminal {
+            if remaining_to_retire > 0
+                && (record.phase == OperationPhase::Terminal
+                    || (include_closed && record.phase == OperationPhase::ObservationClosed))
+            {
                 let digest = retirement_digest(&record.endpoint_id, &record.key)?;
                 if !retired_set.insert(digest.clone()) {
                     return Err(ShellError::State(
@@ -413,7 +513,7 @@ impl OperationJournal {
     ) -> Result<(), ShellError> {
         self.private_root.verify()?;
         let mut state = JournalFile {
-            schema: JOURNAL_SCHEMA_V4.to_owned(),
+            schema: JOURNAL_SCHEMA_V5.to_owned(),
             operations: operations.to_vec(),
             retired_operation_digests: retired_operation_digests.to_vec(),
             checksum: None,
@@ -485,9 +585,15 @@ fn phase_transition_allowed(from: OperationPhase, to: OperationPhase) -> bool {
             OperationPhase::Invoking | OperationPhase::Indeterminate | OperationPhase::Terminal
         ),
         OperationPhase::Indeterminate => {
-            matches!(to, OperationPhase::Indeterminate | OperationPhase::Terminal)
+            matches!(
+                to,
+                OperationPhase::Indeterminate
+                    | OperationPhase::ObservationClosed
+                    | OperationPhase::Terminal
+            )
         }
         OperationPhase::Terminal => to == OperationPhase::Terminal,
+        OperationPhase::ObservationClosed => to == OperationPhase::ObservationClosed,
     }
 }
 

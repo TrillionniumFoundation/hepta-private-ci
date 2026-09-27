@@ -326,6 +326,10 @@ impl HeptaNativeApp {
                 self.last_error = None;
             }
             Err(error) => {
+                if kind == UiTaskKind::Refresh {
+                    self.view_revision = None;
+                    self.operation_binding = None;
+                }
                 if kind == UiTaskKind::Execute {
                     self.operation_message = None;
                 } else if kind == UiTaskKind::StageUpdate {
@@ -454,6 +458,26 @@ impl HeptaNativeApp {
 
     fn operations_view(&mut self, ui: &mut egui::Ui) {
         ui.heading(self.locale.text("Native operations", "原生操作"));
+        if let Ok(runtime) = self.runtime.try_lock() {
+            let capacity = runtime.journal_capacity();
+            ui.label(format!(
+                "active={}/{} pending={} closed={} retired={}/{}",
+                capacity.active_records,
+                capacity.active_limit,
+                capacity.pending_records,
+                capacity.closed_observations,
+                capacity.retired_identities,
+                capacity.retirement_limit
+            ));
+            if capacity.active_records >= capacity.active_limit * 4 / 5
+                || capacity.retired_identities >= capacity.retirement_limit * 4 / 5
+            {
+                ui.label(self.locale.text(
+                    "Journal pressure: reconcile or close observations; NEVER delete the journal to retry.",
+                    "日志容量告警：请对账或结束观察；绝不能删除日志后重试。"
+                ));
+            }
+        }
         ui.label(self.locale.text(
             "The shell never signs its own authority. Prepare the exact binding, have the independent authority owner issue a SignedFinalUseGrant, then select that grant file for one final-use operation.",
             "壳层绝不会自行签发权限。先生成精确 binding，由独立 authority owner 签发 SignedFinalUseGrant，再选择该 grant 文件执行一次 final-use 操作。",
@@ -500,7 +524,7 @@ impl HeptaNativeApp {
         ui.horizontal(|ui| {
             if ui
                 .add_enabled(
-                    !busy,
+                    !busy && self.view_revision.is_some(),
                     egui::Button::new(
                         self.locale
                             .text("Prepare exact binding", "生成精确 binding"),
@@ -512,7 +536,7 @@ impl HeptaNativeApp {
             }
             if ui
                 .add_enabled(
-                    !busy,
+                    !busy && self.view_revision.is_some(),
                     egui::Button::new(
                         self.locale
                             .text("Execute with signed grant", "使用签名 grant 执行"),
@@ -549,6 +573,7 @@ impl HeptaNativeApp {
             ui.label(self.locale.text("No operation receipts.", "暂无操作回执。"));
             return;
         }
+        let mut close_observation = None;
         egui::ScrollArea::vertical().show(ui, |ui| {
             for receipt in self.operations.iter().rev() {
                 ui.group(|ui| {
@@ -562,9 +587,45 @@ impl HeptaNativeApp {
                         receipt.terminal_observed, receipt.terminal_status
                     ));
                     ui.label(format!("payload={}", receipt.payload_digest));
+                    if !receipt.terminal_observed && !receipt.may_have_executed {
+                        ui.label(
+                            self.locale
+                                .text("Prepared; not dispatched.", "已准备；尚未派发。"),
+                        );
+                    }
+                    if receipt.observation_closed {
+                        ui.label(self.locale.text(
+                            "Observation closed; outcome UNKNOWN; replay forbidden.",
+                            "已结束观察；执行结果仍未知；禁止重放。",
+                        ));
+                    } else if receipt.can_close_observation
+                        && ui
+                            .add_enabled(
+                                !busy,
+                                egui::Button::new(self.locale.text(
+                                    "End observation (may have executed)",
+                                    "结束观察（可能已执行）",
+                                )),
+                            )
+                            .clicked()
+                    {
+                        close_observation = Some(receipt.key.clone());
+                    }
                 });
             }
         });
+        if let Some(key) = close_observation {
+            let runtime = Arc::clone(&self.runtime);
+            self.start_task(UiTaskKind::Reconcile, move || {
+                let mut runtime = lock_runtime(&runtime)?;
+                runtime.close_operation_observation(&key)?;
+                // Retirement preserves the identity, not a fabricated outcome.
+                runtime.compact_closed_history(256)?;
+                Ok(UiTaskOutput::Reconcile {
+                    operations: runtime.operation_history(),
+                })
+            });
+        }
     }
 
     fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {

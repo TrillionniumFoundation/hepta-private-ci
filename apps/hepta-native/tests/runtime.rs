@@ -28,6 +28,7 @@ use hepta_native::platform::PermissionDecision;
 use hepta_native::platform::PlatformAdapter;
 use hepta_native::runtime::NativeShellRuntime;
 use hepta_native::security::KernelFinalUseGate;
+use hepta_native::security::PlatformConfirmationContext;
 use hepta_native::security::now_unix_ms;
 use hepta_native::security::platform_final_use_binding;
 use sha2::Digest as _;
@@ -193,9 +194,20 @@ fn signed_grant(
     payload: &PlatformPayload,
     grant_tag: u8,
 ) -> SignedFinalUseGrant {
-    let binding =
-        platform_final_use_binding(SUBJECT, session, operation_id, displayed_revision, payload)
-            .unwrap();
+    let binding = platform_final_use_binding(
+        SUBJECT,
+        session,
+        operation_id,
+        displayed_revision,
+        payload,
+        &PlatformConfirmationContext {
+            endpoint_manifest_digest: D1.to_owned(),
+            view_generation: 7,
+            view_digest: D2.to_owned(),
+            resource_digest: None,
+        },
+    )
+    .unwrap();
     let now = now_unix_ms().unwrap();
     let mut nonce = [0_u8; 32];
     getrandom::fill(&mut nonce).expect("test final-use nonce");
@@ -811,4 +823,136 @@ fn retired_operation_identity_is_rejected_before_permission_or_dispatch() {
     let state = platform_state.lock().unwrap();
     assert_eq!(state.permission_calls, 1);
     assert_eq!(state.invoke_calls, 1);
+}
+
+#[test]
+fn closed_unknown_operation_never_dispatches_again_even_after_retirement() {
+    let temp = private_tempdir();
+    let (gate, signing, _) = authority_fixture(&temp);
+    let state = Arc::new(Mutex::new(PlatformState {
+        invoke_indeterminate: true,
+        ..Default::default()
+    }));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.closed".to_owned(),
+        generation: 101,
+    };
+    let mut runtime = runtime_fixture(&temp, vec![session.clone()], state.clone(), gate);
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let request = request(
+        &signing,
+        &session,
+        "operation.closed",
+        1,
+        PlatformPayload::CopyText {
+            text: "not a retry".to_owned(),
+        },
+        41,
+    );
+    let first = runtime
+        .request_platform_capability(request.clone())
+        .unwrap();
+    assert!(!first.terminal_observed);
+    let closed = runtime.close_operation_observation(&first.key).unwrap();
+    assert!(closed.observation_closed);
+    assert!(!closed.terminal_observed);
+    assert_eq!(
+        runtime
+            .request_platform_capability(request.clone())
+            .unwrap(),
+        closed
+    );
+    runtime.reconcile_pending().unwrap();
+    assert_eq!(state.lock().unwrap().reconcile_calls, 0);
+    runtime.compact_closed_history(0).unwrap();
+    assert!(runtime.request_platform_capability(request).is_err());
+    assert_eq!(state.lock().unwrap().invoke_calls, 1);
+}
+
+#[derive(Debug)]
+struct ReceiptWriteFailure {
+    inner: MockPlatform,
+    path: std::path::PathBuf,
+}
+
+impl PlatformAdapter for ReceiptWriteFailure {
+    fn permission(&self, payload: &PlatformPayload) -> Result<PermissionDecision, ShellError> {
+        self.inner.permission(payload)
+    }
+    fn invoke(
+        &mut self,
+        key: &hepta_native::model::OperationKey,
+        payload: &PlatformPayload,
+    ) -> Result<PlatformObservation, ShellError> {
+        let observation = self.inner.invoke(key, payload)?;
+        // Effect returned, but terminal persistence is now impossible. The
+        // saved bytes are the actual durable Invoking fence, not a mock state.
+        std::fs::rename(&self.path, self.path.with_extension("fenced"))?;
+        std::fs::create_dir(&self.path)?;
+        Ok(observation)
+    }
+    fn reconcile(&mut self, record: &OperationRecord) -> Result<PlatformObservation, ShellError> {
+        self.inner.reconcile(record)
+    }
+}
+
+#[test]
+fn effect_return_then_receipt_write_failure_fences_and_recovers_without_replay() {
+    let temp = private_tempdir();
+    let (gate, signing, _) = authority_fixture(&temp);
+    let state = Arc::new(Mutex::new(PlatformState::default()));
+    let path = temp.path().join("operations.json");
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.ackloss".to_owned(),
+        generation: 102,
+    };
+    let mut runtime = NativeShellRuntime::new(
+        Box::new(MockBackend {
+            sessions: vec![session.clone()].into(),
+        }),
+        Box::new(ReceiptWriteFailure {
+            inner: MockPlatform {
+                state: state.clone(),
+            },
+            path: path.clone(),
+        }),
+        Some(gate.clone()),
+        OperationJournal::open(&path).unwrap(),
+    );
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let request = request(
+        &signing,
+        &session,
+        "operation.ackloss",
+        1,
+        PlatformPayload::CopyText {
+            text: "already applied once".to_owned(),
+        },
+        42,
+    );
+    assert!(
+        runtime
+            .request_platform_capability(request.clone())
+            .is_err()
+    );
+    std::fs::remove_dir(&path).unwrap();
+    std::fs::rename(path.with_extension("fenced"), &path).unwrap();
+    assert!(
+        runtime
+            .request_platform_capability(request.clone())
+            .is_err()
+    );
+    assert_eq!(state.lock().unwrap().invoke_calls, 1);
+    drop(runtime);
+    let mut reopened = runtime_fixture(&temp, vec![session], state.clone(), gate);
+    reopened.connect_runtime(&manifest()).unwrap();
+    let receipt = reopened.request_platform_capability(request).unwrap();
+    assert!(!receipt.terminal_observed);
+    assert!(receipt.may_have_executed);
+    assert_eq!(state.lock().unwrap().invoke_calls, 1);
+    assert!(state.lock().unwrap().reconcile_calls >= 1);
 }

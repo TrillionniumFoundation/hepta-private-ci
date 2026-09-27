@@ -104,7 +104,7 @@ class SourceIdentityTests(unittest.TestCase):
     def test_metadata_only_commit_does_not_change_source_identity(self):
         source_id = self.git('log', '-1', '--format=%H', '--', *source.SOURCE_LOG_PATHS)
         path = self.app / 'CURRENT_SOURCE.json'
-        path.write_text(path.read_text() + '\n')
+        path.write_text(path.read_text(encoding="utf-8") + '\n')
         self.commit('metadata only')
         self.assertEqual(source_id, self.git('log', '-1', '--format=%H', '--', *source.SOURCE_LOG_PATHS))
 

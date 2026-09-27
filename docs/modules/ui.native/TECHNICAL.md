@@ -8,7 +8,11 @@
 
 **Lane:** `LANE-B-RUNTIME`
 
-**Canonical candidate:** `work/ui-native-current-source-20260925`
+**Canonical candidate:** `work/ui-native-operational-closure-20260927`
+
+**Current protocol/evidence ledger:** [Operational closure](OPERATIONAL-CLOSURE-20260927.md).
+Request binding v2 and journal v5 are the current candidate protocols.
+The previous current-source branch remains an integration ancestor, not a current pass.
 
 **Status:** Rust product source composed; exact-head, merge, physical acceptance
 and release remain separately evidenced states.

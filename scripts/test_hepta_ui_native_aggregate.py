@@ -67,7 +67,7 @@ class AggregateTests(unittest.TestCase):
 
     def mutate(self, change, index=0):
         path = self.paths[index]
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
         change(data)
         path.write_text(json.dumps(data))
 
@@ -117,7 +117,7 @@ class AggregateTests(unittest.TestCase):
 
     def test_modified_retained_check(self):
         path = self.paths[0].parent / "checks/app_tests.json"
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
         data["exitCode"] = 1
         path.write_text(json.dumps(data))
         with self.assertRaises(ValueError): self.run_aggregate()
@@ -186,7 +186,7 @@ class DeterministicSubjectTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
             def git(*args):
-                return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
+                return subprocess.check_output(["git", *args], cwd=root, text=True, encoding="utf-8", errors="strict").strip()
             git("init", "--quiet")
             git("config", "user.name", "Fixture")
             git("config", "user.email", "fixture@example.invalid")

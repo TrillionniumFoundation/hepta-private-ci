@@ -162,13 +162,22 @@ impl fmt::Display for PlatformAction {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum PlatformPayload {
     OpenPath { path: PathBuf },
     RevealPath { path: PathBuf },
     CopyText { text: String },
     Notify { title: String, body: String },
+}
+
+impl fmt::Debug for PlatformPayload {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("PlatformPayload")
+            .field("action", &self.action())
+            .field("content", &"[REDACTED]")
+            .finish()
+    }
 }
 
 impl PlatformPayload {
@@ -244,6 +253,13 @@ pub struct PlatformReceipt {
     pub terminal_status: Option<TerminalStatus>,
     pub outcome_digest: Option<String>,
     pub terminal_observed: bool,
+    #[serde(default)]
+    pub observation_closed: bool,
+    /// Only an indeterminate phase can end automatic observation.
+    #[serde(default)]
+    pub can_close_observation: bool,
+    #[serde(default)]
+    pub may_have_executed: bool,
 }
 
 impl PlatformReceipt {
@@ -259,6 +275,9 @@ impl PlatformReceipt {
             terminal_status: None,
             outcome_digest: None,
             terminal_observed: false,
+            observation_closed: false,
+            can_close_observation: true,
+            may_have_executed: true,
         }
     }
 }

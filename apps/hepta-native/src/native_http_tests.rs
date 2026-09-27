@@ -21,7 +21,8 @@ fn ambiguous_or_oversized_framing_is_rejected() {
 
 #[test]
 fn status_line_has_one_unambiguous_grammar() {
-    let fields = "\r\nContent-Type: application/json\r\nContent-Length: 2\r\nX-Hepta-Response-MAC: tag";
+    let fields =
+        "\r\nContent-Type: application/json\r\nContent-Length: 2\r\nX-Hepta-Response-MAC: tag";
     for status in [
         "HTTP/1.1\t200 OK",
         "HTTP/1.1  200 OK",

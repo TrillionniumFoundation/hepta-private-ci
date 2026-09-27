@@ -356,12 +356,24 @@ impl KernelFinalUseGate {
     }
 }
 
+/// Immutable runtime context included in the authority's request signature.
+/// A context supplied by a caller is not authoritative: NativeShellRuntime
+/// independently reconstructs it immediately before admission.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PlatformConfirmationContext {
+    pub endpoint_manifest_digest: String,
+    pub view_generation: u64,
+    pub view_digest: String,
+    pub resource_digest: Option<String>,
+}
+
 pub fn platform_final_use_binding(
     subject_id: &str,
     session: &SessionIncarnation,
     operation_id: &str,
     displayed_revision: u64,
     payload: &PlatformPayload,
+    context: &PlatformConfirmationContext,
 ) -> Result<FinalUseBinding, ShellError> {
     validate_stable_id(subject_id, "final-use subject_id")?;
     validate_stable_id(operation_id, "final-use operation_id")?;
@@ -372,20 +384,41 @@ pub fn platform_final_use_binding(
             "displayed revision must be positive".to_owned(),
         ));
     }
+    validate_digest(
+        &context.endpoint_manifest_digest,
+        "endpoint manifest digest",
+    )?;
+    validate_digest(&context.view_digest, "view content digest")?;
+    if context.view_generation == 0 {
+        return Err(ShellError::InvalidInput(
+            "view generation must be positive".to_owned(),
+        ));
+    }
+    if let Some(digest) = &context.resource_digest {
+        validate_digest(digest, "resource identity digest")?;
+    }
     let payload_bytes = serde_json::to_vec(payload)?;
     let payload_sha256 = sha256_bytes(&payload_bytes);
     let payload_digest = sha256_hex(&payload_bytes);
     let destination_id = format!("ui.native.platform:{}", payload.action());
     validate_stable_id(&destination_id, "final-use destination_id")?;
-    let request_sha256 = sha256_bytes(
-        format!(
-            "hepta.ui.native.platform-request.v1|{subject_id}|{}|{}|{operation_id}|{}|{displayed_revision}|{payload_digest}",
-            session.session_id,
-            session.generation,
-            payload.action(),
-        )
-        .as_bytes(),
-    );
+    // A JSON tuple avoids delimiter ambiguities and makes the protocol change
+    // explicit. v1 grants do not authorize this v2 confirmation context.
+    let request_sha256 = sha256_bytes(serde_json::to_vec(&(
+        "hepta.ui.native.platform-request.v2",
+        subject_id,
+        &session.endpoint_id,
+        &context.endpoint_manifest_digest,
+        &session.session_id,
+        session.generation,
+        operation_id,
+        payload.action(),
+        displayed_revision,
+        context.view_generation,
+        &context.view_digest,
+        &context.resource_digest,
+        &payload_digest,
+    ))?);
     let scope_sha256 = sha256_bytes(
         format!(
             "hepta.ui.native.platform-scope.v1|{subject_id}|{destination_id}|{}|{payload_digest}",

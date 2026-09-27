@@ -14,6 +14,7 @@ use hepta_native::model::PlatformPayload;
 use hepta_native::model::SessionIncarnation;
 use hepta_native::model::sha256_hex;
 use hepta_native::security::KernelFinalUseGate;
+use hepta_native::security::PlatformConfirmationContext;
 use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::security::now_unix_ms;
@@ -151,8 +152,20 @@ fn kernel_final_use_binding_rejects_session_drift() {
         session_id: "session.2".to_owned(),
         generation: 9,
     };
-    let binding1 =
-        platform_final_use_binding("principal.1", &session1, "operation.1", 11, &payload).unwrap();
+    let binding1 = platform_final_use_binding(
+        "principal.1",
+        &session1,
+        "operation.1",
+        11,
+        &payload,
+        &PlatformConfirmationContext {
+            endpoint_manifest_digest: "1".repeat(64),
+            view_generation: 7,
+            view_digest: "2".repeat(64),
+            resource_digest: None,
+        },
+    )
+    .unwrap();
     let signed = signed_final_use_grant(
         &signing,
         "grant.binding",
@@ -161,8 +174,20 @@ fn kernel_final_use_binding_rejects_session_drift() {
     );
     let _permit = gate.claim_platform(&signed, binding1).unwrap();
 
-    let binding2 =
-        platform_final_use_binding("principal.1", &session2, "operation.1", 11, &payload).unwrap();
+    let binding2 = platform_final_use_binding(
+        "principal.1",
+        &session2,
+        "operation.1",
+        11,
+        &payload,
+        &PlatformConfirmationContext {
+            endpoint_manifest_digest: "1".repeat(64),
+            view_generation: 7,
+            view_digest: "2".repeat(64),
+            resource_digest: None,
+        },
+    )
+    .unwrap();
     let error = gate.claim_platform(&signed, binding2).unwrap_err();
     assert!(error.to_string().contains("BindingMismatch"));
 }
@@ -186,9 +211,20 @@ fn kernel_final_use_reloads_revocation_before_os_entry() {
         session_id: "session.1".to_owned(),
         generation: 9,
     };
-    let binding =
-        platform_final_use_binding("principal.1", &session, "operation.revoked", 11, &payload)
-            .unwrap();
+    let binding = platform_final_use_binding(
+        "principal.1",
+        &session,
+        "operation.revoked",
+        11,
+        &payload,
+        &PlatformConfirmationContext {
+            endpoint_manifest_digest: "1".repeat(64),
+            view_generation: 7,
+            view_digest: "2".repeat(64),
+            resource_digest: None,
+        },
+    )
+    .unwrap();
     let signed = signed_final_use_grant(
         &signing,
         "grant.revoked",
@@ -638,4 +674,43 @@ fn signed_endpoint_manifest_binds_gateway_address_and_keyring_account() {
     tampered.address = "127.0.0.1:7374".to_owned();
     let error = tampered.verify(&keys).unwrap_err();
     assert!(error.to_string().contains("digest mismatch"));
+}
+
+#[test]
+fn confirmation_binding_commits_every_runtime_context_axis() {
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.1".to_owned(),
+        generation: 1,
+    };
+    let payload = PlatformPayload::CopyText {
+        text: "private contents".to_owned(),
+    };
+    let context = PlatformConfirmationContext {
+        endpoint_manifest_digest: "1".repeat(64),
+        view_generation: 7,
+        view_digest: "2".repeat(64),
+        resource_digest: Some("3".repeat(64)),
+    };
+    let original =
+        platform_final_use_binding("subject.1", &session, "operation.1", 1, &payload, &context)
+            .unwrap();
+    let mut variants = vec![context.clone(); 4];
+    variants[0].endpoint_manifest_digest = "4".repeat(64);
+    variants[1].view_generation += 1;
+    variants[2].view_digest = "4".repeat(64);
+    variants[3].resource_digest = Some("4".repeat(64));
+    for changed in variants {
+        let next =
+            platform_final_use_binding("subject.1", &session, "operation.1", 1, &payload, &changed)
+                .unwrap();
+        assert_ne!(original.request_sha256, next.request_sha256);
+    }
+    let mut other = session.clone();
+    other.endpoint_id = "runtime.other".to_owned();
+    let next =
+        platform_final_use_binding("subject.1", &other, "operation.1", 1, &payload, &context)
+            .unwrap();
+    assert_ne!(original.request_sha256, next.request_sha256);
+    assert!(!format!("{payload:?}").contains("private contents"));
 }

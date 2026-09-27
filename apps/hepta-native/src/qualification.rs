@@ -38,6 +38,7 @@ use crate::platform::PlatformAdapter;
 use crate::private_state::PrivateStateRoot;
 use crate::runtime::NativeShellRuntime;
 use crate::security::KernelFinalUseGate;
+use crate::security::PlatformConfirmationContext;
 use crate::security::TrustedKeySet;
 use crate::security::now_unix_ms;
 use crate::security::platform_final_use_binding;
@@ -256,6 +257,16 @@ fn write_authority_config(
     Ok(path)
 }
 
+fn qualification_context() -> Result<PlatformConfirmationContext, ShellError> {
+    let value = serde_json::json!({"status":"ok", "state":{"runtime_snapshot_generation":7}});
+    Ok(PlatformConfirmationContext {
+        endpoint_manifest_digest: manifest().manifest_digest,
+        view_generation: 7,
+        view_digest: sha256_hex(serde_json::to_vec(&value)?),
+        resource_digest: None,
+    })
+}
+
 fn signed_grant(
     signing: &SigningKey,
     grant_id: &str,
@@ -264,8 +275,14 @@ fn signed_grant(
     displayed_revision: u64,
     payload: &PlatformPayload,
 ) -> Result<SignedFinalUseGrant, ShellError> {
-    let binding =
-        platform_final_use_binding(SUBJECT, session, operation_id, displayed_revision, payload)?;
+    let binding = platform_final_use_binding(
+        SUBJECT,
+        session,
+        operation_id,
+        displayed_revision,
+        payload,
+        &qualification_context()?,
+    )?;
     let now = now_unix_ms()?;
     let grant = FinalUseGrant {
         schema_version: 1,
@@ -482,6 +499,7 @@ pub fn run_packaged_e2e() -> Result<PackagedQualificationReceipt, ShellError> {
         "operation.revoked",
         view_two.revision,
         &payload,
+        &qualification_context()?,
     )?;
     let revoked_grant = signed_grant(
         &signing,

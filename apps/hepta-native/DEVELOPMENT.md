@@ -1,5 +1,10 @@
 # ui.native current-source development guide
 
+Current candidate: `work/ui-native-operational-closure-20260927`. See
+[the operational protocol and evidence ledger](../../docs/modules/ui.native/OPERATIONAL-CLOSURE-20260927.md)
+for request binding v2, journal v5, migration, unknown-outcome archival and remaining release gates.
+Historical commands below remain valid unless that ledger explicitly supersedes a protocol.
+
 ## 1. Candidate identity and claim boundary
 
 The single convergence candidate is

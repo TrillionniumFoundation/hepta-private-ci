@@ -1,5 +1,8 @@
 # ui.native remediation implementation and acceptance ledger
 
+Latest continuation: [operational closure ledger](OPERATIONAL-CLOSURE-20260927.md).
+This earlier ledger is historical scope, not the current candidate qualification result.
+
 Date: 2026-09-27
 Review baseline: `b9c6a7c3f55b3bde9c7a04542eaf4b9934f7ecc0`
 Continuation: `work/ui-native-remediation-20260927`

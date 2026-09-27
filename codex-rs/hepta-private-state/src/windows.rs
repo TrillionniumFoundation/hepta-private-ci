@@ -741,6 +741,28 @@ fn wide_os(value: &std::ffi::OsStr) -> io::Result<Vec<u16>> {
     Ok(result)
 }
 
+/// Read an already-opened file identity without conferring private-state trust
+/// or effect authority. The borrowed handle remains owned by the caller.
+pub fn opened_resource_identity(file: &std::fs::File) -> std::io::Result<[u64; 8]> {
+    let info = file_info(file.as_raw_handle() as HANDLE)?;
+    if info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "resource is a reparse point",
+        ));
+    }
+    Ok([
+        u64::from(info.dwVolumeSerialNumber),
+        u64::from(info.nFileIndexHigh),
+        u64::from(info.nFileIndexLow),
+        u64::from(info.nFileSizeHigh),
+        u64::from(info.nFileSizeLow),
+        u64::from(info.ftLastWriteTime.dwHighDateTime),
+        u64::from(info.ftLastWriteTime.dwLowDateTime),
+        u64::from(info.dwFileAttributes),
+    ])
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

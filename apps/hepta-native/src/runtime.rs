@@ -20,6 +20,7 @@ use crate::model::validate_digest;
 use crate::model::validate_stable_id;
 use crate::platform::PlatformAdapter;
 use crate::security::KernelFinalUseGate;
+use crate::security::PlatformConfirmationContext;
 use crate::security::platform_final_use_binding;
 
 pub struct NativeShellRuntime {
@@ -30,6 +31,8 @@ pub struct NativeShellRuntime {
     session: Option<SessionIncarnation>,
     view: Option<RuntimeView>,
     last_snapshot_generation: Option<u64>,
+    displayed_revision: u64,
+    manifest: Option<EndpointManifest>,
 }
 
 impl NativeShellRuntime {
@@ -47,6 +50,8 @@ impl NativeShellRuntime {
             session: None,
             view: None,
             last_snapshot_generation: None,
+            displayed_revision: 0,
+            manifest: None,
         }
     }
 
@@ -60,6 +65,8 @@ impl NativeShellRuntime {
         // survive a failed reconnect and appear to belong to the next session.
         self.view = None;
         self.last_snapshot_generation = None;
+        self.displayed_revision = 0;
+        self.manifest = None;
         if let Some(previous) = self.session.take() {
             self.backend.close(&previous)?;
         }
@@ -81,10 +88,13 @@ impl NativeShellRuntime {
             return Err(error);
         }
         self.session = Some(session.clone());
+        self.manifest = Some(manifest.clone());
         if let Err(error) = self.reconcile_pending() {
             self.session = None;
             self.view = None;
             self.last_snapshot_generation = None;
+            self.displayed_revision = 0;
+            self.manifest = None;
             if let Err(close_error) = self.backend.close(&session) {
                 return Err(ShellError::Backend(format!(
                     "{error}; failed recovery session cleanup failed: {close_error}"
@@ -115,6 +125,7 @@ impl NativeShellRuntime {
                 ));
             }
         }
+        self.displayed_revision = view.revision;
         self.view = Some(view.clone());
         Ok(PresentationState {
             session_id: session.session_id.clone(),
@@ -131,6 +142,9 @@ impl NativeShellRuntime {
         &mut self,
     ) -> Result<(PresentationState, serde_json::Value), ShellError> {
         let session = self.require_session()?.clone();
+        // Retain the high-water marks, not the operation authority of the last
+        // presentation. Every error below leaves the runtime non-actionable.
+        self.view = None;
         let observed = self.backend.runtime_status()?;
         validate_digest(&observed.body_digest, "backend.runtime_status_digest")?;
         let observed_generation = observed
@@ -155,13 +169,10 @@ impl NativeShellRuntime {
         let generation = observed_generation.max(1);
         // Grants bind displayed_revision. Never reuse a revision when the
         // upstream generation changes within the same session incarnation.
-        let revision = match &self.view {
-            Some(previous) => previous
-                .revision
-                .checked_add(1)
-                .ok_or_else(|| ShellError::State("runtime view revision overflow".to_owned()))?,
-            _ => 1,
-        };
+        let revision = self
+            .displayed_revision
+            .checked_add(1)
+            .ok_or_else(|| ShellError::State("runtime view revision overflow".to_owned()))?;
         let view = RuntimeView {
             session_id: session.session_id,
             session_generation: session.generation,
@@ -183,7 +194,16 @@ impl NativeShellRuntime {
     ) -> Result<FinalUseBinding, ShellError> {
         let session = self.require_session()?;
         let view = self.require_view()?;
-        platform_final_use_binding(subject_id, session, operation_id, view.revision, payload)
+        self.journal.ensure_healthy()?;
+        let context = self.confirmation_context(payload)?;
+        platform_final_use_binding(
+            subject_id,
+            session,
+            operation_id,
+            view.revision,
+            payload,
+            &context,
+        )
     }
 
     pub fn request_platform_capability(
@@ -192,20 +212,16 @@ impl NativeShellRuntime {
     ) -> Result<PlatformReceipt, ShellError> {
         self.journal.ensure_healthy()?;
         let session = self.require_session()?.clone();
-        let view = self.require_view()?.clone();
         validate_stable_id(&request.subject_id, "subject_id")?;
         validate_stable_id(&request.operation_id, "operation_id")?;
         request.payload.validate()?;
         let action = request.payload.action();
         let payload_digest = request.payload.digest()?;
-        let binding = platform_final_use_binding(
-            &request.subject_id,
-            &session,
-            &request.operation_id,
-            request.displayed_revision,
-            &request.payload,
-        )?;
-        let binding_digest = crate::model::sha256_hex(serde_json::to_vec(&binding)?);
+        // For an existing identity, compare the original signed intent rather
+        // than rebuilding it against today's view. Reading an old receipt is
+        // permitted without a fresh view; starting/resuming an effect is not.
+        let binding_digest =
+            crate::model::sha256_hex(serde_json::to_vec(&request.grant.grant.binding)?);
         let grant_digest = crate::model::sha256_hex(serde_json::to_vec(&request.grant)?);
         let key = OperationKey::new(&session, &request.operation_id)?;
         self.journal
@@ -225,7 +241,9 @@ impl NativeShellRuntime {
                 ));
             }
             match existing.phase {
-                OperationPhase::Terminal => return Ok(existing.receipt()),
+                OperationPhase::Terminal | OperationPhase::ObservationClosed => {
+                    return Ok(existing.receipt());
+                }
                 OperationPhase::Invoking | OperationPhase::Indeterminate => {
                     return self.reconcile_record(existing);
                 }
@@ -233,11 +251,21 @@ impl NativeShellRuntime {
             }
         }
 
+        let view = self.require_view()?.clone();
         if request.displayed_revision != view.revision {
             return Err(ShellError::State(
                 "platform request was confirmed against a stale runtime view".to_owned(),
             ));
         }
+        let context = self.confirmation_context(&request.payload)?;
+        let binding = platform_final_use_binding(
+            &request.subject_id,
+            &session,
+            &request.operation_id,
+            request.displayed_revision,
+            &request.payload,
+            &context,
+        )?;
         let prepared = OperationRecord {
             endpoint_id: session.endpoint_id.clone(),
             key: key.clone(),
@@ -302,7 +330,10 @@ impl NativeShellRuntime {
         };
         self.journal.upsert(invoking.clone())?;
 
-        match final_use.with_platform_use(permit, || self.platform.invoke(&key, &request.payload)) {
+        match final_use.with_platform_use(permit, || {
+            self.platform
+                .invoke_confirmed(&key, &request.payload, &context.resource_digest)
+        }) {
             Ok(Ok(observation)) => self.finish_observation(invoking, observation),
             Ok(Err(_error)) => {
                 let indeterminate = OperationRecord {
@@ -350,7 +381,7 @@ impl NativeShellRuntime {
                 OperationPhase::Invoking | OperationPhase::Indeterminate => {
                     receipts.push(self.reconcile_record(record)?);
                 }
-                OperationPhase::Terminal => {}
+                OperationPhase::Terminal | OperationPhase::ObservationClosed => {}
             }
         }
         Ok(receipts)
@@ -388,6 +419,21 @@ impl NativeShellRuntime {
             .collect()
     }
 
+    pub fn close_operation_observation(
+        &mut self,
+        key: &OperationKey,
+    ) -> Result<PlatformReceipt, ShellError> {
+        self.journal.close_observation(key)
+    }
+
+    pub fn journal_capacity(&self) -> crate::journal::JournalCapacity {
+        self.journal.capacity()
+    }
+
+    pub fn compact_closed_history(&mut self, keep_latest: usize) -> Result<(), ShellError> {
+        self.journal.compact_closed_history(keep_latest)
+    }
+
     pub fn compact_terminal_history(&mut self, keep_latest: usize) -> Result<(), ShellError> {
         self.journal.compact_terminal(keep_latest)
     }
@@ -396,6 +442,8 @@ impl NativeShellRuntime {
         // Presentation is invalid even when transport cleanup cannot finish.
         self.view = None;
         self.last_snapshot_generation = None;
+        self.displayed_revision = 0;
+        self.manifest = None;
         if let Some(session) = self.session.take() {
             self.backend.close(&session)?;
         }
@@ -474,6 +522,22 @@ impl NativeShellRuntime {
         let receipt = terminal.receipt();
         self.journal.upsert(terminal)?;
         Ok(receipt)
+    }
+
+    fn confirmation_context(
+        &self,
+        payload: &crate::model::PlatformPayload,
+    ) -> Result<PlatformConfirmationContext, ShellError> {
+        let view = self.require_view()?;
+        let manifest = self.manifest.as_ref().ok_or_else(|| {
+            ShellError::State("native endpoint manifest is unavailable".to_owned())
+        })?;
+        Ok(PlatformConfirmationContext {
+            endpoint_manifest_digest: manifest.manifest_digest.clone(),
+            view_generation: view.generation,
+            view_digest: view.digest.clone(),
+            resource_digest: self.platform.confirmation_resource(payload)?,
+        })
     }
 
     fn require_session(&self) -> Result<&SessionIncarnation, ShellError> {
