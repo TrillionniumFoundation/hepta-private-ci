@@ -38,7 +38,8 @@ impl DurableInferenceControl {
     /// Apply fresh signed terminal/usage evidence to a historical execution.
     /// The original dispatch lease may have expired, but every historical
     /// identity and the current receipt signature is re-verified before this
-    /// method is called.
+    /// method is called. The durable pre-effect quota remains authoritative for
+    /// settlement even after its dispatch window expires.
     pub fn reconcile_native_recovery(
         &mut self,
         request_id: &str,
@@ -61,6 +62,10 @@ impl DurableInferenceControl {
         {
             return Err(Error::InvalidTransition);
         }
+        let binding = record
+            .execution_binding
+            .as_ref()
+            .ok_or(Error::InvalidIdentity("native execution binding"))?;
         let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
         let dispatch_digest = native_dispatch_digest(dispatch)?;
         let receipt = verified.receipt();
@@ -72,6 +77,12 @@ impl DurableInferenceControl {
             || receipt.provider_id != dispatch.model_provider
             || receipt.model_digest != plan.model_digest()
             || receipt.execution_authority_epoch != plan.execution_authority_epoch()
+            || receipt
+                .observed_output_tokens
+                .is_some_and(|value| value > binding.maximum_output_tokens)
+            || receipt
+                .usage_microunits
+                .is_some_and(|value| value > binding.maximum_cost_microunits)
         {
             return Err(Error::AssignmentMismatch);
         }
