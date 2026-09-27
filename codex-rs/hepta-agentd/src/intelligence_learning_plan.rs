@@ -19,6 +19,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::AgentdIntelligenceLearningHostV1;
+use crate::AgentdIntelligenceRuntimeMetricsV1;
 use crate::IntelligenceLearningBindingV1;
 use crate::IntelligenceLearningErrorV1;
 use crate::IntelligenceLearningStateV1;
@@ -44,6 +45,7 @@ pub struct AgentdIntelligenceDecisionPlanV1 {
     candidate_ids: Vec<StableId>,
     completeness: CandidateSetCompletenessReceiptV1,
     evidence_provider: Arc<dyn AgentdIntelligenceDecisionEvidenceProviderV1>,
+    metrics: Option<Arc<AgentdIntelligenceRuntimeMetricsV1>>,
 }
 
 impl AgentdIntelligenceDecisionPlanV1 {
@@ -82,7 +84,15 @@ impl AgentdIntelligenceDecisionPlanV1 {
             candidate_ids,
             completeness,
             evidence_provider,
+            metrics: None,
         })
+    }
+
+    pub(crate) fn attach_runtime_metrics(
+        &mut self,
+        metrics: Arc<AgentdIntelligenceRuntimeMetricsV1>,
+    ) {
+        self.metrics = Some(metrics);
     }
 
     fn prepare(
@@ -167,13 +177,17 @@ impl AgentdIntelligenceDecisionPlanV1 {
         now: u64,
     ) -> Result<IntelligenceLearningStatusV1, IntelligenceLearningErrorV1> {
         let decision = self.prepare(prepared, now)?;
-        learning_host.enqueue_decision(
+        let status = learning_host.enqueue_decision(
             decision.binding,
             decision.expected_predecessor,
             decision.decision,
             decision.evidence,
             now,
-        )
+        )?;
+        if let Some(metrics) = self.metrics.as_ref() {
+            metrics.record_learning_state(&status.state);
+        }
+        Ok(status)
     }
 }
 
