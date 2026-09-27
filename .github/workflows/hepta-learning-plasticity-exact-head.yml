@@ -1,0 +1,216 @@
+name: Hepta learning.plasticity exact-head qualification
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-plasticity/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-runtime/**'
+      - 'docs/modules/learning.plasticity/**'
+      - 'docs/readiness/PROTOCOLS.json'
+      - 'scripts/hepta-learning-plasticity-status.py'
+      - 'scripts/test_learning_plasticity_contract.py'
+      - '.github/workflows/hepta-learning-plasticity-exact-head.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-plasticity/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-runtime/**'
+      - 'docs/modules/learning.plasticity/**'
+      - 'docs/readiness/PROTOCOLS.json'
+      - 'scripts/hepta-learning-plasticity-status.py'
+      - 'scripts/test_learning_plasticity_contract.py'
+      - '.github/workflows/hepta-learning-plasticity-exact-head.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: learning-plasticity-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+
+jobs:
+  exact-head:
+    name: learning.plasticity exact-head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install native prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+
+      - name: Verify grammar-to-plasticity contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/test_learning_plasticity_contract.py \
+            2>&1 | tee "$RUNNER_TEMP/contract-test.log"
+
+      - name: Verify formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check 2>&1 | tee "$RUNNER_TEMP/cargo-fmt.log"
+
+      - name: Test plasticity core and product adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-plasticity \
+            2>&1 | tee "$RUNNER_TEMP/plasticity-test.log"
+          cargo test -p codex-hepta-intelligence plasticity \
+            2>&1 | tee "$RUNNER_TEMP/intelligence-plasticity-test.log"
+
+      - name: Test Agentd process and lifetime path
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-agentd plasticity \
+            2>&1 | tee "$RUNNER_TEMP/agentd-plasticity-test.log"
+
+      - name: Test live structural canary recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-runtime \
+            authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics \
+            2>&1 | tee "$RUNNER_TEMP/runtime-canary-test.log"
+
+      - name: Strict lint affected owners
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets --all-features -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/cargo-clippy.log"
+
+      - name: Verify generated module documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived --check \
+            2>&1 | tee "$RUNNER_TEMP/module-docs.log"
+          python3 scripts/hepta-docs.py verify \
+            2>&1 | tee "$RUNNER_TEMP/docs-verify.log"
+
+      - name: Generate expiring exact-head status
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-plasticity-status.py \
+            --output "$RUNNER_TEMP/learning-plasticity-exact-head.json" \
+            --receipt contract="$RUNNER_TEMP/contract-test.log" \
+            --receipt fmt="$RUNNER_TEMP/cargo-fmt.log" \
+            --receipt plasticity="$RUNNER_TEMP/plasticity-test.log" \
+            --receipt intelligence="$RUNNER_TEMP/intelligence-plasticity-test.log" \
+            --receipt agentd="$RUNNER_TEMP/agentd-plasticity-test.log" \
+            --receipt runtime-canary="$RUNNER_TEMP/runtime-canary-test.log" \
+            --receipt clippy="$RUNNER_TEMP/cargo-clippy.log" \
+            --receipt module-docs="$RUNNER_TEMP/module-docs.log" \
+            --receipt docs="$RUNNER_TEMP/docs-verify.log"
+
+      - name: Retain exact-head receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: learning-plasticity-exact-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/learning-plasticity-exact-head.json
+            ${{ runner.temp }}/*-test.log
+            ${{ runner.temp }}/cargo-*.log
+            ${{ runner.temp }}/module-docs.log
+            ${{ runner.temp }}/docs-verify.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  synthetic-merge:
+    name: learning.plasticity deterministic synthetic merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Create deterministic synthetic merge
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+          git config user.name 'Hepta qualification'
+          git config user.email 'qualification@invalid.local'
+          export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+          export GIT_COMMITTER_DATE='2000-01-01T00:00:00Z'
+          git merge --no-ff --no-edit "$HEAD_SHA"
+          git show -s --format='%H %T %P' HEAD | tee "$RUNNER_TEMP/synthetic-merge-identity.log"
+
+      - name: Install native prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+
+      - name: Verify synthetic merge contracts and owners
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/test_learning_plasticity_contract.py \
+            2>&1 | tee "$RUNNER_TEMP/synthetic-contract.log"
+          cargo test -p codex-hepta-plasticity \
+            2>&1 | tee "$RUNNER_TEMP/synthetic-plasticity.log"
+          cargo test -p codex-hepta-agentd plasticity \
+            2>&1 | tee "$RUNNER_TEMP/synthetic-agentd.log"
+          python3 scripts/hepta-module-docs.py refresh-derived --check \
+            2>&1 | tee "$RUNNER_TEMP/synthetic-docs.log"
+
+      - name: Generate synthetic-merge status
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-plasticity-status.py \
+            --output "$RUNNER_TEMP/learning-plasticity-synthetic-merge.json" \
+            --receipt merge-identity="$RUNNER_TEMP/synthetic-merge-identity.log" \
+            --receipt contract="$RUNNER_TEMP/synthetic-contract.log" \
+            --receipt plasticity="$RUNNER_TEMP/synthetic-plasticity.log" \
+            --receipt agentd="$RUNNER_TEMP/synthetic-agentd.log" \
+            --receipt docs="$RUNNER_TEMP/synthetic-docs.log"
+
+      - name: Retain synthetic merge receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: learning-plasticity-synthetic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/learning-plasticity-synthetic-merge.json
+            ${{ runner.temp }}/synthetic-*.log
+          if-no-files-found: warn
+          retention-days: 14
