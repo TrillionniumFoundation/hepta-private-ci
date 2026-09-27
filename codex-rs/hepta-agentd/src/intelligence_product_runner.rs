@@ -106,7 +106,7 @@ impl AgentdIntelligenceProductRunnerV1 {
     // The permit belongs to the worker, not the request future. Aborting a
     // running spawn_blocking task cannot stop its computation; releasing its
     // permit on request timeout would allow unbounded abandoned work.
-    fn spawn_owner_work<F, T>(
+    pub(super) fn spawn_owner_work<F, T>(
         &self,
         work: F,
     ) -> Result<AgentdIntelligenceWorkerV1<T>, AgentdIntelligenceProductError>
