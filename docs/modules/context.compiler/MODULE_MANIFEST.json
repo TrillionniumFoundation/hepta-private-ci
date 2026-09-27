@@ -1,13 +1,9 @@
 {
-  "schemaVersion": 4,
+  "schemaVersion": 2,
   "module": "context.compiler",
-  "generated": {
-    "manifest": "docs/modules/context.compiler/MODULE_MANIFEST.json",
-    "manifestSha256": "f15a6b933050094662b25c31a1b645072bd7584d985db4263d361e7688280a2f",
-    "generator": "scripts/generate_context_compiler_module_docs.py",
-    "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "integrationBranch": "codex/context-compiler-provider-closure-final-20260927"
-  },
+  "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
+  "integrationBranch": "codex/context-compiler-provider-closure-final-20260927",
+  "generatedBy": "scripts/generate_context_compiler_module_docs.py",
   "baselineStatus": {
     "coreImplementation": "complete",
     "productComposition": "partial",
@@ -25,6 +21,11 @@
     "productComposition": "The registry, hepta-intelligence, Agentd, ext.hepta-prompt, Core, and codex-api compose one fail-closed exact-body path; the physical send is released only after durable pre-send evidence exists.",
     "v2ProviderClosure": "The exact encoded provider body is framed by a qualified provider/model policy, tokenized by a binary/vocabulary identity bound to the model profile, submitted without reconstruction, and reconciled into a durable ContextDeliveryReceiptV2.",
     "currentHeadQualification": "Source state never self-asserts qualification. Only a successful immutable receipt whose headSha equals the reviewed Git commit changes the external qualification judgment."
+  },
+  "artifacts": {
+    "technical": "docs/modules/context.compiler/TECHNICAL.md",
+    "implementationMap": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+    "executionDossier": "qualification/module-execution-dossiers/detail/context.compiler.md"
   },
   "sourceRoots": [
     "codex-rs/hepta-context-compiler/src/provider_closure.rs",
@@ -93,7 +94,7 @@
       "securityMeaning": "Binds transport semantics and terminal evidence; it is intentionally distinct from the byte-for-byte final-request digest."
     }
   ],
-  "targetSequence": [
+  "sequence": [
     "registry/admission snapshot",
     "compile_v2",
     "canonical context serialization",
@@ -130,11 +131,6 @@
     "registry → compiler → exact encoded body → provider terminal → durable receipt integration",
     "property-generated deterministic coverage and mutation fail-closed corpus"
   ],
-  "productComposition": {
-    "state": "complete",
-    "singlePhysicalPath": "codex-api exact encoded body -> qualified framing/tokenizer -> Agentd durable pre-send -> same-body HTTP send -> terminal receipt",
-    "legacyEvidencePolicy": "V1 records may be retained for migration and audit but do not satisfy V2 provider closure."
-  },
   "qualification": {
     "workflow": ".github/workflows/context-compiler-qualification.yml",
     "receiptArtifact": "context-compiler-qualification-receipt-<head-sha>",

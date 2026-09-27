@@ -1,57 +1,138 @@
-# context.compiler: implementation design
+<!-- GENERATED FILE: edit MODULE_MANIFEST.json and run scripts/generate_context_compiler_module_docs.py --write. -->
+# Execution dossier: `context.compiler`
 
-Parent: `docs/modules/context.compiler/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: verified V2 admission, exact final-payload tokenization, attach/pre-dispatch revocation revalidation, canonical mandatory-group provenance, opaque dispatch preparation and canonical provider-invocation evidence validation are implemented in native source. The compiler does not perform provider/model/network effects. Production caller composition, authoritative verifier qualification, runtime provider-owner authority wiring and independent acceptance remain separate and are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+## 1. Evidence identity
 
-## 1. Source and work envelope
+- Reviewed base SHA: `a126987b84737dbc2ee2592442a314117bddb4a2`
+- Integration branch: `codex/context-compiler-provider-closure-final-20260927`
+- Manifest SHA-256: `f15a6b933050094662b25c31a1b645072bd7584d985db4263d361e7688280a2f`
+- Generator: `scripts/generate_context_compiler_module_docs.py`
+- Qualification workflow: `.github/workflows/context-compiler-qualification.yml`
+- Receipt artifact: `context-compiler-qualification-receipt-<head-sha>`
 
-Roots: `codex-rs/hepta-context-compiler`.
-Packages: `CTX-1-CONTEXT-COMPILER`.
+## 2. State transition
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+### Review baseline
 
-## 2. Public operations and contract details
+| Dimension | State | Evidence-based interpretation |
+|---|---|---|
+| Core implementation | **complete** | Review baseline before this closure branch. |
+| Product composition | **partial** | Review baseline before this closure branch. |
+| V2 provider closure | **incomplete** | Review baseline before this closure branch. |
+| Current-head qualification | **absent** | Review baseline before this closure branch. |
 
-Normative V2 native flow: `verify_admission_snapshot_v2(snapshot, verifier) -> VerifiedAdmissionSnapshotV2`; `verify_admission_snapshot_successor_v2(snapshot, predecessor, verifier) -> VerifiedAdmissionSnapshotV2`; `verify_admission_v2(record, verified_snapshot, verifier) -> VerifiedAdmissionV2`; `compile_v2(request) -> CompiledContextV2`; `record_serialization(compiled, model_profile, realizations, serializer, tokenizer) -> SerializedContextV2`; `build_attachment(compiled, serialization, model_profile, current_snapshot) -> ContextAttachmentV2`; `prepare_delivery_v2(compiled, serialization, attachment, model_profile, current_snapshot) -> ContextDeliveryPreparationV2`; runtime/provider owner consumes current final-use authority and sends the exact payload through the canonical `ProviderRequestBinding`, whose provider-owned exact-attempt witness is authenticated against the current preparation by the independent delivery verifier; `observe_delivery(preparation, attachment, serialization, model_profile, provider_receipt, delivery_verifier) -> ContextDeliveryReceiptV2`. Admission snapshots are scope- and authority-domain-bound, verifier-authenticated complete cumulative revocation sets; successor verification binds the predecessor and forbids revocation resurrection. The compilation receipt binds candidate/admission/model/group/truncation provenance. Serialization binds actual selected bytes, final payload bytes and exact tokenizer count. Attachment and preparation each revalidate current admission/revocation state. Delivery observation validates canonical provider request/attempt/terminal evidence without granting this compiler provider authority. V1 compilation entrypoints remain compatibility surfaces; compilation alone is never physical delivery. The verified V2 compiler-to-runtime path is an in-process typed Rust handoff. The registered wire-V2 context receipt carries legacy V1 semantics only and enforces canonical producer `context.compiler`; it is not a serialization of the verified V2 proof chain.
+### Candidate source state
 
-## 3. State records and transaction design
+| Dimension | State | Evidence-based interpretation |
+|---|---|---|
+| Core implementation | **complete** | V2 compilation, verified admission, compiler-owned canonical serialization, typed snapshot succession, attachment, exact request proof, delivery observation, and deny-all proof objects are implemented. |
+| Product composition | **complete** | The registry, hepta-intelligence, Agentd, ext.hepta-prompt, Core, and codex-api compose one fail-closed exact-body path; the physical send is released only after durable pre-send evidence exists. |
+| V2 provider closure | **complete** | The exact encoded provider body is framed by a qualified provider/model policy, tokenized by a binary/vocabulary identity bound to the model profile, submitted without reconstruction, and reconciled into a durable ContextDeliveryReceiptV2. |
+| Current-head qualification | **absent** | Source state never self-asserts qualification. Only a successful immutable receipt whose headSha equals the reviewed Git commit changes the external qualification judgment. |
 
-No authoritative store or model-call handle. `VerifiedAdmissionV2` is produced only through the verifier boundary and binds item id, role, content/source/generation digests, request scope, verifier-authenticated secret classification, verifier identity, expiry and the snapshot/revocation epoch at verification. Secret classification has no candidate-side override: a record classified as secret is rejected during admission verification. `SerializedContextV2` contains the actual final payload bytes plus a receipt binding the realization manifest, serializer/template/tool-schema identity and exact tokenizer result. `ContextAttachmentV2` binds the current verified admission snapshot used for attachment. `ContextDeliveryPreparationV2` binds the exact payload, provider/model profile and current pre-dispatch admission snapshot. `ContextDeliveryReceiptV2` binds that preparation to a validated `ProviderInvocationReceipt`, provider request/attempt/terminal digests and independently verified provider evidence. Raw assets are realized only after digest/admission checks; every compiler-owned proof object remains deny-all. The physical provider effect belongs to the runtime/provider owner and must consume its own current final-use authority.
+The transition from partial/incomplete to source-complete is justified by the exact encoded-body
+observer, compiler-owned serialization, qualified framing, real tokenizer execution, durable
+pre-send fencing, provider terminal reconciliation, and crash-recovery tests. Qualification remains
+absent until a receipt for the exact candidate SHA is green.
 
-## 4. Deterministic algorithm and scheduling
+## 3. Implemented controls
 
-Verify the admission snapshot and every admission record through one request-bound verifier identity; reserve non-tradable instruction/schema/evidence floors; canonicalize and digest mandatory groups; select optional evidence by deterministic value-per-token with stable ties; stop before the candidate budget is exceeded. Then verify the actual bytes for every selected item, serialize them through the exact profile-bound serializer, run the exact tokenizer over the final serialized payload bytes, and fail closed if framing/template/tool overhead exceeds the token budget. Revalidate current admission/revocation state at attachment and again when issuing the pre-dispatch witness. The runtime/provider owner must carry the exact payload digest into its provider invocation before the effect call and derive its normal provider-owned exact-attempt witness. The independent delivery verifier must authenticate that witness against the current preparation. If mandatory floors cannot fit, any realized bytes drift, current revocation is newer, the provider input binding differs, provider witness/preparation authentication fails, or provider/model identity differs, refuse rather than truncate authority or fabricate delivery. Record the heuristic and lack of global optimality.
+- The strict serializer is compiler-owned; product callers cannot certify arbitrary prepared payload bytes.
+- Every final request contains exactly one canonical context bundle and all remaining bytes are accepted only by a qualified provider/model framing verifier.
+- Tokenizer identity binds provider, model, declared profile tokenizer, executable digest, version digest, vocabulary digest, and normalization-policy digest.
+- The exact encoded body observed before transport is the tokenizer input and the physical HTTP body; no post-proof reconstruction is permitted.
+- Delivery preparation consumes a typed monotone snapshot successor whose predecessor is the attachment-bound snapshot.
+- A pre-send record is durably persisted before the exact request is released to transport.
+- An unresolved durable pre-send survives restart and blocks blind replay; terminal retries are idempotent only for an identical normalized terminal observation.
+- Provider terminal evidence binds the provider intent, wire-semantic digest, final-request proof, preparation, and deny-all authority receipt.
 
-## 5. Capacity and performance profile
+## 4. Product-path finding
 
-Pilot product targets remain <=128 prompt factors and <=512 evidence candidates, but native verified-V2 safety ceilings are 4096 candidates, 256 mandatory groups, 4096 aggregate mandatory references, 4096 cumulative revoked admission ids, 1 MiB raw bytes per item, 16 MiB aggregate realized bytes, 1,000,000 tokens and 16 MiB final serialized payload. Exceeding a native ceiling fails closed. At most one tokenizer pass per immutable segment plus bounded composition overhead. Measure final token count, truncation, placement, allocations and p99 compilation.
+The product path is no longer a parallel V1 reconstruction:
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+```mermaid
+flowchart TD
+    N0["registry/admission snapshot"]
+    N1["compile_v2"]
+    N0 --> N1
+    N2["canonical context serialization"]
+    N1 --> N2
+    N3["build_attachment"]
+    N2 --> N3
+    N4["fresh typed snapshot successor"]
+    N3 --> N4
+    N5["prepare_delivery_from_successor_v2"]
+    N4 --> N5
+    N6["host constructs exact encoded provider request"]
+    N5 --> N6
+    N7["qualified provider framing verification"]
+    N6 --> N7
+    N8["exact tokenizer over final request bytes"]
+    N7 --> N8
+    N9["durable pre-send claim"]
+    N8 --> N9
+    N10["provider submit using the attested bytes"]
+    N9 --> N10
+    N11["provider terminal evidence"]
+    N10 --> N11
+    N12["observe_final_provider_delivery_v2"]
+    N11 --> N12
+    N13["durable ContextDeliveryReceiptV2"]
+    N12 --> N13
+```
 
-## 6. Concrete verification cases
+The codex-api endpoint encodes the canonical JSON body once. The observer receives that exact byte
+buffer, Agentd completes fresh final-use verification and durable proof, and the endpoint submits
+the same encoded object. The terminal callback carries the exact provider attempt into
+`observe_final_provider_delivery_v2` and the durable V2 receipt store.
 
-- CTX-01: a well-formed admission record is insufficient unless the configured verifier accepts it; role/content/source/generation, request scope and secret classification cannot be rewritten after verification, cross-scope reuse is rejected, and a verifier-authenticated secret admission is rejected before compilation.
-- CTX-02: a tiny context budget preserves mandatory fields or explicitly refuses compilation; final serializer framing overhead is also checked against the real token budget.
-- CTX-03: compile-to-attach and attach-to-pre-dispatch revocation changes fail closed against a newer verified snapshot; snapshot scope/authority domain cannot drift, successor snapshots cannot remove a previously revoked admission, snapshot epoch/time cannot roll back, and admission is expired when `observed_unix_ms >= expires_unix_ms`.
-- CTX-04: actual selected bytes must match compiled content digests, the final payload is tokenized after serialization, and provider invocation evidence whose `ephemeral_input_sha256` differs from that exact payload cannot receive a delivered receipt.
-- CTX-05: canonical mandatory-group definitions are digest-bound even when two policies happen to select the same item set.
-- CTX-06: a delivered receipt requires a valid canonical provider invocation/terminal receipt, independent provider-evidence verification, exact provider/model identity, exact payload binding, and provider-owned `ephemeral_input_witness_sha256` authenticated against the current pre-dispatch preparation. `Delivered` does not mean exactly-once external execution.
-- CTX-07: revocation ids, mandatory references and raw candidate/realization bytes exceeding their native ceilings fail closed before packing or serialization.
+## 5. Byte-identity audit
 
-Native unit tests exercise these source-level oracles. Product execution, concrete adapter authenticity and independent target-host evidence remain separate qualification requirements.
+| Object | Owner | Exact material | Digest / witness | Security meaning |
+|---|---|---|---|---|
+| canonical context bundle | context.compiler | Compiler-owned JSON envelope containing selected realized items, explicit roles, IDs, content digests, and exact content. | `ContextSerializationReceiptV2.payload_digest` | The selected context is deterministic and cannot be replaced by a caller-supplied prepared payload on the strict product path. |
+| prompt fragments | hepta-intelligence / ext.hepta-prompt | Typed product projection inserted into the host request builder. | `PromptRuntimeAttachmentV1.source_binding_digest` | Useful for product composition and migration, but never accepted as proof of the final provider body. |
+| provider final request | codex-api encoded-body boundary | Exact canonical JSON bytes after all provider/model request construction and before compression or signing. | `FinalProviderRequestProofV2.provider_request_digest` | The qualified tokenizer, framing verifier, durable pre-send claim, and physical HTTP send all consume this same byte string. |
+| provider wire semantic digest | Core model-provider policy | Secret-free canonical semantics of the physical provider attempt, including provider, endpoint, transport, model, request kind, and logical input binding. | `ModelProviderInvocationInput.wire_semantic_sha256` | Binds transport semantics and terminal evidence; it is intentionally distinct from the byte-for-byte final-request digest. |
 
-## 7. Integration, rollback and capability ceiling
+Acceptance is byte-identity based. The canonical bundle, fragments, final request, and wire
+semantics remain distinct objects with distinct owners and digest domains.
 
-Native Codex attachment is the consumer contract; no direct provider path. C1 tests stale citation and contradiction preservation under maximum context pressure. Rollback restores compatible profiles and invalidates caches instead of reusing a stale compiled prompt.
+## 6. Crash, retry, and terminal audit
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+- Pre-send evidence is persisted and fsynced before transport release.
+- A process restart does not reconstruct authority from a stored digest.
+- An unresolved durable pre-send blocks blind replay for the attempt and turn.
+- A repeated terminal callback is idempotent only for an identical normalized observation.
+- A conflicting terminal or re-armed terminal attempt fails closed.
+- Durable state is bounded, schema-checked, private, locked, atomically replaced, and directory
+  synced.
 
-## 8. Current native implementation
+## 7. Expected exact-head test evidence
 
-- **Normative V2 entrypoints:** `verify_admission_snapshot_v2`, `verify_admission_snapshot_successor_v2`, `verify_admission_v2`, `compile_v2`, `record_serialization`, `build_attachment`, `prepare_delivery_v2` and `observe_delivery` in [codex-rs/hepta-context-compiler/src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs). V2 requires verifier-produced typed admission evidence for every candidate, exact-byte tokenization receipts, canonical mandatory-group provenance, selected-byte realization checks, final-payload exact tokenization, attachment/pre-dispatch revocation revalidation, and canonical provider-invocation evidence validation. Compilation, serialization, attachment, preparation and delivery proof artifacts are construction-closed to external callers. The provider owner must bind the exact payload SHA-256 into `ProviderRequestBinding.ephemeral_input_sha256` and derive its normal exact-attempt `ephemeral_input_witness_sha256`; `observe_delivery` rejects payload/provider/model drift and requires the independent provider-evidence verifier to authenticate the provider-owned witness against the current preparation. No V2 entrypoint performs a provider/model/network effect.
-- **Compatibility entrypoints:** `compile` in [src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs), `compile_with_requirements` in [src/requirements.rs](../../../codex-rs/hepta-context-compiler/src/requirements.rs), and `compile_candidate_bound` in [src/candidate_bound.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound.rs). These preserve earlier source consumers but are not the normative V2 proof chain.
-- **State and recovery:** The compiler remains stateless. Authenticity and current revocation are represented by verifier-authenticated, scope/authority-domain-bound complete cumulative snapshots. Successor verification binds predecessor identity and rejects revocation resurrection; bounded snapshot overflow fails closed. Serialization retains actual payload bytes only in the caller-owned in-memory object; preparation/delivery receipts retain digests, current snapshot lineage and provider evidence. Any stale/expired/revoked admission, realization drift, final token overflow, provider-input drift, provider witness/preparation authentication failure or provider/model mismatch fails closed.
-- **Trusted adapter boundary:** `ContextAdmissionVerifierV2`, `ExactTokenizerV2`, `ContextSerializerV2` and `ContextProviderDeliveryVerifierV2` are explicit integration trust seams. Their identities are digest-bound into the request/receipts, but this library does not independently prove a malicious adapter honest. Product qualification must bind concrete implementations to the authoritative admission service, exact provider tokenizer/serializer/template/tool schema and persisted/authenticated provider evidence. The actual runtime/provider adapter is a separate authority boundary and must consume the repository-standard final-use token immediately before physical dispatch.
-- **Source tests:** [src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs), [src/requirements_tests.rs](../../../codex-rs/hepta-context-compiler/src/requirements_tests.rs), and [src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs). V2 tests cover verifier rejection, scope/authority-domain binding, cumulative no-resurrection snapshots, revocation/mandatory/raw-byte ceilings, role binding, revocation TOCTOU, mandatory-group provenance, realization-byte drift, exact final token counts, serializer overhead overflow, provider payload/witness/provider-model mismatch, independent provider-evidence rejection, indeterminate terminal preservation and revocation after attachment.
-- **Implementation and operating references:** [codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md](../../../codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md), [docs/modules/context.compiler/TECHNICAL.md](../../../docs/modules/context.compiler/TECHNICAL.md), and [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
-- **Remaining work:** Compose and qualify the concrete product caller plus authoritative admission verifier, exact provider tokenizer/serializer and runtime provider adapter; make that adapter consume current `VerifiedUseToken`, bind the exact serialized payload into the canonical provider request, and expose authenticated provider evidence that links its provider-owned exact-attempt witness to the compiler preparation; qualify the independent provider-evidence resolver/store; collect exact-head/synthetic-merge and independent target-host evidence; then separately perform activation, operator acceptance, promotion and release. A source-level delivery receipt proves consistency with authenticated provider evidence, not exactly-once external execution.
+- canonical serializer golden and adversarial prepared-payload rejection
+- Unicode, embedded control bytes, large request, and exact JSON escaping
+- segment-map gaps, overlaps, duplicate context, wrong model, and unqualified framing
+- tokenizer binary/version/vocabulary/normalization/profile identity mismatch
+- real subprocess tokenizer receiving the exact Unicode/control-byte provider body
+- snapshot reset, time rollback, revocation-epoch rollback, and revocation resurrection
+- crash/reopen unresolved pre-send blocking, retry idempotency, and terminal conflict
+- registry → compiler → exact encoded body → provider terminal → durable receipt integration
+- property-generated deterministic coverage and mutation fail-closed corpus
+
+The exact-head receipt must include the command line, working directory, exit status, duration, log
+SHA-256, source/tree identity, toolchain versions, truth-file hashes, and clean-worktree result for
+every required command.
+
+## 8. Remaining operational conditions
+
+- Exact-head qualification remains absent in source until the external workflow publishes a passing receipt bound to that Git SHA.
+- Deployment must provision an approved tokenizer executable, vocabulary, provider/model identity, normalization policy, and profile digest; missing or mismatched capabilities fail closed.
+- Historical V1 receipt data may be retained for migration and audit, but it is not accepted as V2 provider-closure evidence.
+
+## 9. Reviewer decision
+
+The source candidate closes the previously identified serializer, framing, tokenizer, snapshot
+lineage, physical-send, crash-retry, and terminal-receipt gaps. It is suitable for protected-branch
+review. It is **not** represented as release-qualified until the external exact-head artifact passes
+and branch-required CI and architecture checks are green.
