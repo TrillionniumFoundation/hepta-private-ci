@@ -155,9 +155,10 @@ pub(super) fn observe_event(
                     (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
                 }
                 AdapterStatus::Failed => (NativeRunStatus::Failed, NativeBoundaryStatus::Failed),
-                AdapterStatus::Interrupted => {
-                    (NativeRunStatus::Interrupted, NativeBoundaryStatus::Interrupted)
-                }
+                AdapterStatus::Interrupted => (
+                    NativeRunStatus::Interrupted,
+                    NativeBoundaryStatus::Interrupted,
+                ),
                 _ => return Err("nonterminal adapter status for turn/completed".to_string()),
             };
             let correlation = receipt
