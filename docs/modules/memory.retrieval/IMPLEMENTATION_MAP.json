@@ -147,9 +147,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the exact observed source snapshot, including package tests, all-target Clippy, formatting and clean source.",
-    "Compose and independently qualify the signed leased provider and external monotonic frontier owner at the real Agentd process bootstrap. The bounded loopback client is source implemented; the binary still does not bootstrap it automatically.",
-    "Implement and qualify mode-bound shadow/canary dispatch at both Agentd request and final-use boundaries; the current process selectors remain compatibility and hnmf-required.",
+    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the exact observed source snapshot, including package tests, all-target Clippy, formatting and clean source. The merge must use the main fetched for that run, not a stale PR event base.",
+    "Compose and independently qualify the signed leased provider and external monotonic frontier owner at the real Agentd process bootstrap. The bounded loopback client and atomic signed lifecycle read are source implemented; the ordinary binary still does not bootstrap them automatically.",
+    "Execute native four-mode and signed-renewal/final-use regressions on this exact candidate. Compatibility/shadow/canary/required dispatch is source composed; protected configurable rollout ownership, isolated shadow resource budgets and measured rollback remain unfinished.",
     "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence.",
     "Instrument and execute the complete nine-stage Agentd E2E workload matrix with actual allocation, SQLite, CPU/RSS and contention counters against independently approved SLO limits.",
     "Import the original historical ZIP and new raw E2E samples into independently retained content-addressed storage. The checked-in historical summary is not complete raw-archive retention."
@@ -192,15 +192,18 @@
     "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_provider.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_provider_core.rs",
-    "codex-rs/hepta-agentd/src/cognitive_retrieval_transport.rs"
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_transport.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_lease.rs",
+    "codex-rs/hepta-agentd/src/retrieval_product_mode.rs"
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "4058bd91c9a09ca01468d3c8da1e4833bc16eef8",
-    "tree": "70e2c475b941e5a2d71a250c0d026d1495707e11"
+    "commit": "caa7b433985736d3d7dedbb3315703105ecda29b",
+    "tree": "576c76134d572d9b13d95d909065e9f302332c5c"
   },
   "observedSourcePaths": [
     ".cargo",
+    ".github",
     ".github/workflows",
     ".github/workflows/blocking-ci.yml",
     ".github/workflows/hepta-memory-retrieval-convergence.yml",
@@ -220,8 +223,12 @@
     "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_lease.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_provider_core.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_signed_delivery_tests.rs",
     "codex-rs/hepta-agentd/src/config.rs",
     "codex-rs/hepta-agentd/src/config_tests.rs",
+    "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
     "codex-rs/hepta-cognitive-read",
@@ -252,8 +259,10 @@
     "qualification/memory-retrieval",
     "qualification/memory-retrieval/TARGET_HOST.md",
     "scripts",
+    "scripts/hepta_memory_retrieval_candidate.py",
     "scripts/hepta_memory_retrieval_qualification.py",
-    "scripts/hepta_memory_retrieval_slo.py"
+    "scripts/hepta_memory_retrieval_slo.py",
+    "scripts/tests/test_hepta_memory_retrieval_candidate.py"
   ],
   "canonicalCognitiveRecallMigration": {
     "state": "shadow_adapter_source_candidate",
@@ -275,7 +284,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs",
-      "object": "116be5f21a15ef89c031225bb772e47b57f37797"
+      "object": "ecb8bbefb7d6e123ee2381f8526cf2cb58b3346b"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
@@ -283,7 +292,11 @@
     },
     {
       "path": "scripts",
-      "object": "391289541232a7566f4ce9e0b70b3ea78be837fa"
+      "object": "00fbed89b5bbe9dde6c90b01ecfe643ec0ed502e"
+    },
+    {
+      "path": ".github",
+      "object": "bd9886c281990ceee53ec4b12c4a301b96e7be62"
     },
     {
       "path": "justfile",
