@@ -398,16 +398,20 @@ mod tests {
         fn append(
             &mut self,
             _transition: ProductEvaluationAttemptTransitionV1,
-        ) -> Result<ProductEvaluationAttemptReceiptV1, ProductEvaluationAttemptJournalErrorV1>
-        {
+        ) -> Result<
+            ProductEvaluationAttemptReceiptV1,
+            ProductEvaluationAttemptJournalErrorV1,
+        > {
             Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate)
         }
 
         fn latest(
             &mut self,
             _attempt_id: &StableId,
-        ) -> Result<Option<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1>
-        {
+        ) -> Result<
+            Option<ProductEvaluationAttemptReceiptV1>,
+            ProductEvaluationAttemptJournalErrorV1,
+        > {
             Ok(None)
         }
     }
