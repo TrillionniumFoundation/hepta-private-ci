@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.ui-control.gate-map.v1",
+  "module": "ui.control",
+  "sourceManifest": "qualification/ui-control/UI_CONTROL_MANIFEST.json",
+  "stages": {
+    "designDefined": {
+      "repositoryState": "defined_by_manifest",
+      "passAuthority": "tracked manifest and generated status projection"
+    },
+    "codePresent": {
+      "repositoryState": "present_in_authoritative_candidate",
+      "passAuthority": "exact candidate tree"
+    },
+    "sourceTestsPassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "passAuthority": "exact-SHA qualification receipt"
+    },
+    "browserTestsPassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "passAuthority": "exact-SHA Chromium/Firefox/WebKit and axe receipt"
+    },
+    "mergeTreePassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "passAuthority": "deterministic synthetic-merge receipt"
+    },
+    "realBackendPassed": {
+      "repositoryState": "external_evidence_absent",
+      "passAuthority": "real Agentd/backend qualification receipt"
+    },
+    "productionDeploymentApproved": {
+      "repositoryState": "external_authority_absent",
+      "passAuthority": "deployment and release authority"
+    }
+  },
+  "immutableOrdering": [
+    "designDefined",
+    "codePresent",
+    "sourceTestsPassed",
+    "browserTestsPassed",
+    "mergeTreePassed",
+    "realBackendPassed",
+    "productionDeploymentApproved"
+  ],
+  "outcomeAuthority": {
+    "repositoryReceipts": "hepta.ui-control.qualification-receipt.v2",
+    "realBackend": "hepta.ui-control.real-backend-receipt.v1",
+    "deploymentSecurity": "hepta.ui-control.deployment-security-receipt.v1",
+    "productionApproval": "external deployment and release authority"
+  }
+}

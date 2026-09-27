@@ -11,8 +11,9 @@ on:
       - "qualification/ui-control/**"
       - "qualification/module-execution-dossiers/detail/ui.control.md"
       - "scripts/ui-control-artifacts.mjs"
+      - "scripts/ui-control-status.mjs"
       - "scripts/hepta-lane-b-path-guard.py"
-      - "scripts/test_hepta_lane_b_path_guard.py"
+      - "scripts/test_hepta_lane-b-path-guard.py"
       - ".github/workflows/ui-control-qualification.yml"
   pull_request:
     paths:
@@ -21,6 +22,7 @@ on:
       - "qualification/ui-control/**"
       - "qualification/module-execution-dossiers/detail/ui.control.md"
       - "scripts/ui-control-artifacts.mjs"
+      - "scripts/ui-control-status.mjs"
       - "scripts/hepta-lane-b-path-guard.py"
       - "scripts/test_hepta_lane_b_path_guard.py"
       - ".github/workflows/ui-control-qualification.yml"
@@ -112,6 +114,7 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/ui-control-artifacts.mjs --check
+          node scripts/ui-control-status.mjs --check
           python3 scripts/hepta-lane-b-path-guard.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_path_guard.py
           python3 scripts/hepta-lane-b-path-guard.py verify
@@ -122,6 +125,8 @@ jobs:
       - name: Emit exact-head qualification receipt
         working-directory: ${{ env.UI_CONTROL_APP }}
         env:
+          UI_CONTROL_CANDIDATE_KIND: source-head
+          UI_CONTROL_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           UI_CONTROL_DEPENDENCY_LOCK: passed
           UI_CONTROL_LINT: passed
           UI_CONTROL_UNIT: passed
@@ -151,13 +156,10 @@ jobs:
             echo
             echo "- SHA: \`$(git rev-parse HEAD)\`"
             echo "- Tree: \`$(git rev-parse HEAD^{tree})\`"
-            echo '- Exact dependency lock: passed'
-            echo '- Unit/concurrency: passed'
-            echo '- Package/contract: passed'
+            echo '- Source tests: passed'
             echo '- Chromium/Firefox/WebKit: passed'
             echo '- axe/keyboard/focus: passed'
-            echo '- Lane B truth: passed'
-            echo '- Production deployment and independent acceptance: not claimed'
+            echo '- Merge-tree, real-backend, and production-deployment stages: not claimed by this job'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload immutable qualification evidence
@@ -173,10 +175,10 @@ jobs:
           retention-days: 30
 
   synthetic-merge:
-    name: deterministic synthetic merge / core requalification
+    name: deterministic synthetic merge / full browser requalification
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Check out pull-request head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -206,6 +208,21 @@ jobs:
           author-email: ui-control-qualification@users.noreply.github.com
           message: Synthetic ui.control merge
 
+      - name: Bind synthetic-merge identity
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p ui-control-evidence
+          {
+            printf 'sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'source_sha=%s\n' "${{ github.event.pull_request.head.sha }}"
+            printf 'base_sha=%s\n' "${{ steps.base.outputs.sha }}"
+          } > ui-control-evidence/source.txt
+
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
@@ -217,21 +234,93 @@ jobs:
         run: |
           set -euo pipefail
           test -f package-lock.json
+          sha256sum package-lock.json > ../../ui-control-evidence/dependency-lock.sha256
           npm ci --ignore-scripts --no-audit --no-fund
+          npm ls --all --json > ../../ui-control-evidence/npm-resolution.json
 
-      - name: Requalify merged core and truth projections
-        env:
-          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+      - name: Requalify merged source, contract, and build
+        working-directory: ${{ env.UI_CONTROL_APP }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          npm run lint --prefix apps/hepta-control-ui
-          npm test --prefix apps/hepta-control-ui
-          npm run test:contract --prefix apps/hepta-control-ui
-          npm run build --prefix apps/hepta-control-ui
+          npm run lint
+          npm test
+          npm run test:contract
+          npm pack --dry-run --json > ../../ui-control-evidence/package-dry-run.json
+          npm run build
+
+      - name: Install Playwright browser engines for merge candidate
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Requalify merged Chromium, Firefox, WebKit, keyboard, focus, and axe
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        env:
+          CI: "1"
+        run: npm run test:e2e
+
+      - name: Verify merged generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
           node scripts/ui-control-artifacts.mjs --check
+          node scripts/ui-control-status.mjs --check
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_path_guard.py
           python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
           python3 scripts/hepta-lane-b-truth.py verify
+
+      - name: Emit synthetic-merge qualification receipt
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        env:
+          UI_CONTROL_CANDIDATE_KIND: synthetic-merge
+          UI_CONTROL_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          UI_CONTROL_BASE_SHA: ${{ steps.base.outputs.sha }}
+          UI_CONTROL_DEPENDENCY_LOCK: passed
+          UI_CONTROL_LINT: passed
+          UI_CONTROL_UNIT: passed
+          UI_CONTROL_CONTRACT: passed
+          UI_CONTROL_BUILD: passed
+          UI_CONTROL_E2E: passed
+          UI_CONTROL_AXE: passed
+          UI_CONTROL_LANE_B_GUARD: passed
+          UI_CONTROL_DOCS: passed
+        run: npm run receipt -- ../../ui-control-evidence/receipt.json
+
+      - name: Copy merged browser build manifest
+        run: cp apps/hepta-control-ui/dist/build-manifest.json ui-control-evidence/build-manifest.json
+
+      - name: Verify merged tracked tree remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Publish synthetic-merge qualification summary
+        shell: bash
+        run: |
+          {
+            echo '## ui.control synthetic-merge qualification'
+            echo
+            echo "- Merge SHA: \`$(git rev-parse HEAD)\`"
+            echo "- Merge tree: \`$(git rev-parse HEAD^{tree})\`"
+            echo '- Source tests: passed'
+            echo '- Chromium/Firefox/WebKit: passed'
+            echo '- axe/keyboard/focus: passed'
+            echo '- Real-backend and production-deployment stages: not claimed by this job'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload immutable synthetic-merge evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-synthetic-merge-${{ steps.merge.outputs.sha }}
+          path: |
+            ui-control-evidence/
+            apps/hepta-control-ui/playwright-report/
+            apps/hepta-control-ui/test-results/
+          if-no-files-found: warn
+          retention-days: 30

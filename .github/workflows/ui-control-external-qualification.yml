@@ -1,0 +1,155 @@
+name: ui.control external deployment qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact candidate commit SHA to qualify
+        required: true
+        type: string
+      run_real_backend:
+        description: Execute disposable-target Agentd/backend mutation scenarios
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-control-external-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+
+env:
+  UI_CONTROL_APP: apps/hepta-control-ui
+
+jobs:
+  deployment-security:
+    name: observed HTTPS / CSP / CSRF / CORS / cookie qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Validate candidate input
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          mkdir -p ui-control-external-evidence
+          printf 'sha=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > ui-control-external-evidence/source.txt
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
+      - name: Build exact locked browser artifact
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run lint
+          npm test
+          npm run test:contract
+          npm run build
+
+      - name: Probe selected HTTPS deployment
+        env:
+          HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
+          HEPTA_UI_CONTROL_COOKIE: ${{ secrets.HEPTA_UI_CONTROL_COOKIE }}
+          HEPTA_UI_CONTROL_CSRF_TOKEN: ${{ secrets.HEPTA_UI_CONTROL_CSRF_TOKEN }}
+        run: node qualification/ui-control/deployment-security.mjs ui-control-external-evidence/deployment-security-receipt.json
+
+      - name: Upload deployment-security evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-deployment-security-${{ inputs.candidate_sha }}
+          path: ui-control-external-evidence/
+          if-no-files-found: error
+          retention-days: 90
+
+  real-backend:
+    name: real Agentd/backend durability, recovery, and authority qualification
+    if: ${{ inputs.run_real_backend }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Validate candidate input
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          mkdir -p ui-control-real-backend-evidence
+          printf 'sha=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > ui-control-real-backend-evidence/source.txt
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
+      - name: Install exact locked dependencies
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Materialize independently retained Agentd chaos evidence
+        env:
+          CHAOS_EVIDENCE_JSON: ${{ secrets.HEPTA_UI_CONTROL_CHAOS_EVIDENCE_JSON }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CHAOS_EVIDENCE_JSON"
+          printf '%s' "$CHAOS_EVIDENCE_JSON" > "$RUNNER_TEMP/ui-control-agentd-chaos-evidence.json"
+
+      - name: Exercise real Agentd/backend semantics
+        env:
+          HEPTA_UI_CONTROL_BASE_URL: ${{ secrets.HEPTA_UI_CONTROL_BASE_URL }}
+          HEPTA_UI_CONTROL_COOKIE: ${{ secrets.HEPTA_UI_CONTROL_COOKIE }}
+          HEPTA_UI_CONTROL_CSRF_TOKEN: ${{ secrets.HEPTA_UI_CONTROL_CSRF_TOKEN }}
+          HEPTA_UI_CONTROL_SECONDARY_COOKIE: ${{ secrets.HEPTA_UI_CONTROL_SECONDARY_COOKIE }}
+          HEPTA_UI_CONTROL_SECONDARY_CSRF_TOKEN: ${{ secrets.HEPTA_UI_CONTROL_SECONDARY_CSRF_TOKEN }}
+          HEPTA_UI_CONTROL_TARGET_ID: ${{ secrets.HEPTA_UI_CONTROL_TARGET_ID }}
+          HEPTA_UI_CONTROL_CHAOS_EVIDENCE: ${{ runner.temp }}/ui-control-agentd-chaos-evidence.json
+          HEPTA_UI_CONTROL_ALLOW_MUTATION: I_UNDERSTAND_THIS_USES_A_DISPOSABLE_QUALIFICATION_TARGET
+        run: node qualification/ui-control/real-backend-contract.mjs ui-control-real-backend-evidence/real-backend-receipt.json
+
+      - name: Upload real-backend evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-real-backend-${{ inputs.candidate_sha }}
+          path: ui-control-real-backend-evidence/
+          if-no-files-found: error
+          retention-days: 90

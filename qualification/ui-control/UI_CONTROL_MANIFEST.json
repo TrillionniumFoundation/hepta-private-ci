@@ -32,6 +32,36 @@
     "independentAcceptance": "absent",
     "releaseAuthorization": "absent"
   },
+  "verificationStages": {
+    "designDefined": {
+      "repositoryState": "defined_by_manifest",
+      "passAuthority": "tracked manifest and generated status projection"
+    },
+    "codePresent": {
+      "repositoryState": "present_in_authoritative_candidate",
+      "passAuthority": "exact candidate tree"
+    },
+    "sourceTestsPassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "passAuthority": "exact-SHA qualification receipt"
+    },
+    "browserTestsPassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "passAuthority": "exact-SHA Chromium/Firefox/WebKit and axe receipt"
+    },
+    "mergeTreePassed": {
+      "repositoryState": "not_stored_as_source_truth",
+      "passAuthority": "deterministic synthetic-merge receipt"
+    },
+    "realBackendPassed": {
+      "repositoryState": "external_evidence_absent",
+      "passAuthority": "real Agentd/backend qualification receipt"
+    },
+    "productionDeploymentApproved": {
+      "repositoryState": "external_authority_absent",
+      "passAuthority": "deployment and release authority"
+    }
+  },
   "publicApi": [
     "RuntimeClient",
     "SameOriginHttpTransport",

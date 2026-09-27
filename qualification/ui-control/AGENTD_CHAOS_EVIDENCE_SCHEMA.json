@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.agentd-chaos-evidence.v1",
+  "title": "ui.control Agentd crash/recovery evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidateCommit",
+    "candidateTree",
+    "backendDeploymentDigest",
+    "executedAt",
+    "executor",
+    "cases",
+    "rawEvidenceDigest"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hepta.ui-control.agentd-chaos-evidence.v1"
+    },
+    "candidateCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "candidateTree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "backendDeploymentDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "executor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "operationId",
+          "observedRecordCount",
+          "observedSideEffectCount",
+          "rawEvidenceDigest"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "crash-before-admission-commit",
+              "crash-after-admission-before-dispatch",
+              "crash-after-dispatch-before-terminal-observation",
+              "restart-reconciles-terminal-state"
+            ]
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed"
+            ]
+          },
+          "operationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 192
+          },
+          "observedRecordCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "observedSideEffectCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "terminalStatus": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "rawEvidenceDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "rawEvidenceDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
