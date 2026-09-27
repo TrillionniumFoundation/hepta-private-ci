@@ -40,6 +40,53 @@ jobs:
         run: |
           set -euo pipefail
           python3 .github/scripts/kernel_authority_verified_head_migration.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          trust_path = Path('codex-rs/hepta-contracts/src/authority_trust.rs')
+          trust = trust_path.read_text(encoding='utf-8')
+          old = '''    fn head_at(&self, now_unix_ms: u64) -> Result<FinalUseRevocations, FinalUseError> {
+                  if now_unix_ms < self.issued_at_unix_ms || now_unix_ms >= self.expires_at_unix_ms {
+                      return Err(FinalUseError::InvalidTrust);
+                  }
+                  Ok(self.head.clone())
+              }'''
+          new = '''    fn head_at(
+                  &self,
+                  now_unix_ms: u64,
+                  maximum_uncertainty_ms: u64,
+              ) -> Result<FinalUseRevocations, FinalUseError> {
+                  let definitely_live_after = self
+                      .issued_at_unix_ms
+                      .saturating_add(maximum_uncertainty_ms);
+                  let possibly_expired_at = now_unix_ms.saturating_add(maximum_uncertainty_ms);
+                  if now_unix_ms < definitely_live_after
+                      || possibly_expired_at >= self.expires_at_unix_ms
+                  {
+                      return Err(FinalUseError::InvalidTrust);
+                  }
+                  Ok(self.head.clone())
+              }'''
+          if old not in trust:
+              raise SystemExit('verified-head uncertainty function anchor drifted')
+          trust = trust.replace(old, new, 1)
+          old_call = '    let head = verified_head.head_at(now_unix_ms)?;'
+          new_call = '''    let head = verified_head.head_at(
+                  now_unix_ms,
+                  bundle.clock.maximum_uncertainty_ms(),
+              )?;'''
+          if trust.count(old_call) != 2:
+              raise SystemExit('verified-head uncertainty call anchors drifted')
+          trust = trust.replace(old_call, new_call)
+          trust_path.write_text(trust, encoding='utf-8')
+
+          tests_path = Path('codex-rs/hepta-contracts/src/authority_trust_tests.rs')
+          tests = tests_path.read_text(encoding='utf-8')
+          if tests.count('clock_at(4_000),') != 1:
+              raise SystemExit('uncertainty boundary test anchor drifted')
+          tests = tests.replace('clock_at(4_000),', 'clock_at(2_995),', 1)
+          tests_path.write_text(tests, encoding='utf-8')
+          PY
           cd codex-rs
           cargo fmt -p codex-hepta-contracts -p codex-hepta-agentd
           cargo fmt --check -p codex-hepta-contracts -p codex-hepta-agentd
