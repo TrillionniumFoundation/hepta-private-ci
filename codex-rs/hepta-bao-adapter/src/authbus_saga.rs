@@ -18,17 +18,31 @@ use crate::BaoClient;
 use crate::BaoClientError;
 use crate::BaoSecretReceipt;
 
+/// Durable stage acknowledgements owned by the registered host. A later hook
+/// is never called unless the preceding external transition has committed.
+pub(crate) struct BaoSagaCallbacks<R, D, T, P, C> {
+    pub(crate) reserved: R,
+    pub(crate) dispatch_fenced: D,
+    pub(crate) provider_terminal: T,
+    pub(crate) prepare_delivery: P,
+    pub(crate) consumer: C,
+}
+
 pub(crate) async fn consume_kv_v2_with_authbus_saga<E: BaoAuthBusEvidenceProvider>(
     client: &BaoClient,
     authbus: &AuthBusAuthorityHost,
     read: BaoAuthorizedReadV1<'_>,
     evidence: &mut E,
-    mut reserved: impl FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
-    mut dispatch_fenced: impl FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
-    provider_terminal: impl FnOnce(BaoClientError, Digest32) -> Result<(), BaoAuthBusError>,
-    prepare_delivery: impl FnOnce(&BaoSecretReceipt) -> Result<(), ()>,
-    consumer: impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), ()>,
+    callbacks: BaoSagaCallbacks<
+        impl FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
+        impl FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
+        impl FnOnce(BaoClientError, Digest32) -> Result<(), BaoAuthBusError>,
+        impl FnOnce(&BaoSecretReceipt) -> Result<(), ()>,
+        impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), ()>,
+    >,
 ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+    let BaoSagaCallbacks { mut reserved, mut dispatch_fenced,
+        provider_terminal, prepare_delivery, consumer } = callbacks;
     let BaoAuthorizedReadV1 {
         admission,
         authority,
@@ -49,8 +63,14 @@ pub(crate) async fn consume_kv_v2_with_authbus_saga<E: BaoAuthBusEvidenceProvide
     let scope = Digest32::from_array(binding.scope_sha256);
     let effect_digest = client.authbus_effect_digest(request, &admission.operation_id)?;
 
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("trusted_time.before");
     let observed = evidence.trusted_time()?;
     let time = authbus.observe_trusted_time_attestation(&observed).await?;
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("trusted_time.after");
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("authorize.before");
     let decision = authbus
         .authorize(
             &principal,
@@ -60,6 +80,10 @@ pub(crate) async fn consume_kv_v2_with_authbus_saga<E: BaoAuthBusEvidenceProvide
             time.clone(),
         )
         .await?;
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("authorize.after");
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("reserve.before");
     let reservation = authbus
         .reserve(
             &decision,
@@ -74,11 +98,19 @@ pub(crate) async fn consume_kv_v2_with_authbus_saga<E: BaoAuthBusEvidenceProvide
             time,
         )
         .await?;
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("reserve.after");
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("reservation_bind.before");
     reserved(&reservation)?;
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("reservation_bind.after");
 
     let dispatch_time = authbus
         .observe_trusted_time_attestation(&evidence.trusted_time()?)
         .await?;
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("dispatch_fence.before");
     let dispatched = authbus
         .mark_dispatch_attempted(
             &reservation.reservation_id,
@@ -87,7 +119,13 @@ pub(crate) async fn consume_kv_v2_with_authbus_saga<E: BaoAuthBusEvidenceProvide
             dispatch_time,
         )
         .await?;
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("dispatch_fence.after");
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("local_fence.before");
     dispatch_fenced(&dispatched)?;
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("local_fence.after");
 
     let provider = client
         .consume_kv_v2_guarded(authority, grant, request, prepare_delivery, consumer)

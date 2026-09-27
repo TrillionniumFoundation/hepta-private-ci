@@ -22,13 +22,17 @@ use std::sync::Arc;
 use serde::Deserialize;
 use serde::Serialize;
 
+#[path = "consumption_execution.rs"]
+mod execution;
+
 #[path = "consumption_lifecycle.rs"]
 mod consumption;
 pub use consumption::{BaoConsumptionOperationV1, BaoConsumptionStateV1, BaoSecretReceipt};
 
 const LEGACY_SCHEMA_VERSION: u32 = 1;
 const PREVIOUS_SCHEMA_VERSION: u32 = 2;
-const SCHEMA_VERSION: u32 = 3;
+const SCHEMA_VERSION: u32 = 4;
+const CONSUMPTION_SCHEMA_VERSION: u32 = 3;
 const MAX_RECORDS: usize = 65_536;
 const MAX_METADATA_BYTES: usize = 16 * 1024;
 const MAX_STORE_BYTES: usize = 8 * 1024 * 1024;
@@ -170,10 +174,11 @@ impl LeaseRegistryPersistenceV1 for FsLeaseRegistryPersistenceV1 {
 
 pub struct DurableLeaseRegistryV1 {
     path: PathBuf,
-    lock: File,
+    lock: Arc<File>,
     state: StoredRegistryV1,
     persistence: Arc<dyn LeaseRegistryPersistenceV1>,
     fenced: bool,
+    executions: execution::ExecutionSet,
 }
 
 impl std::fmt::Debug for DurableLeaseRegistryV1 {
@@ -329,10 +334,11 @@ impl DurableLeaseRegistryV1 {
         }
         Ok(Self {
             path,
-            lock,
+            lock: Arc::new(lock),
             state,
             persistence,
             fenced: false,
+            executions: execution::ExecutionSet::default(),
         })
     }
 
@@ -856,11 +862,9 @@ impl DurableLeaseRegistryV1 {
     }
 }
 
-impl Drop for DurableLeaseRegistryV1 {
-    fn drop(&mut self) {
-        let _ = File::unlock(&self.lock);
-    }
-}
+// The OS lock is released when the last Arc<File> closes. An in-flight
+// consumption guard retains that file even if its registry owner is dropped;
+// an explicit unlock here would invalidate the guard's cross-process exclusion.
 
 fn new_operation(
     operation_id: String,
@@ -1000,20 +1004,23 @@ fn migrate_state(mut state: StoredRegistryV1) -> Result<StoredRegistryV1, LeaseR
     }
     if !matches!(
         state.schema_version,
-        LEGACY_SCHEMA_VERSION | PREVIOUS_SCHEMA_VERSION
+        LEGACY_SCHEMA_VERSION | PREVIOUS_SCHEMA_VERSION | CONSUMPTION_SCHEMA_VERSION
     ) {
         return Err(LeaseRegistryErrorV1::CorruptState);
     }
+    let needs_legacy_lease_requalification = state.schema_version < CONSUMPTION_SCHEMA_VERSION;
     state.schema_version = SCHEMA_VERSION;
     state.revision = state.revision.max(1);
+    consumption::migrate_schema_three_consumptions(&mut state.consumptions)?;
     for operation in state.operations.values_mut() {
         // An old mutable lease row is not the original operation result. Neither
         // a singleton nor the current generation proves a lost historical fact.
-        if matches!(
-            operation.state,
-            LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
-        ) || (operation.kind != LeaseOperationKindV1::Issue
-            && operation.expected_generation.is_none())
+        if needs_legacy_lease_requalification
+            && (matches!(
+                operation.state,
+                LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
+            ) || (operation.kind != LeaseOperationKindV1::Issue
+                && operation.expected_generation.is_none()))
         {
             operation.legacy_binding_incomplete = true;
         }
@@ -1293,7 +1300,7 @@ fn encode_state(
     let consumption_reserve = state
         .consumptions
         .values()
-        .filter(|row| row.state != BaoConsumptionStateV1::Succeeded)
+        .filter(|row| !matches!(row.state, BaoConsumptionStateV1::Succeeded | BaoConsumptionStateV1::Failed))
         .count()
         .checked_mul(4096)
         .ok_or(LeaseRegistryErrorV1::CapacityExceeded)?;
