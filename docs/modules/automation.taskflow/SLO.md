@@ -1,6 +1,6 @@
 # automation.taskflow runtime SLO contract
 
-These objectives govern operations; they do not weaken durable correctness.
+This schema-v19 SLO applies to the durable V1 scheduler, recovery lanes, external-effect bridge and the bounded Neural Circuit runtime slice. These objectives govern operations; they do not weaken durable correctness.
 
 | Signal | Default objective | Breach action |
 |---|---:|---|
