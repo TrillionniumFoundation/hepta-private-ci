@@ -1,0 +1,49 @@
+name: Temporary neuron runtime exact source export
+
+on:
+  push:
+    branches:
+      - codex/neuron-runtime-durable-closure-v1
+    paths:
+      - .github/workflows/neuron-runtime-source-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-runtime-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree} | tee source-identity.txt
+          git status --porcelain=v1
+      - name: Retain editable source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-runtime-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            source-identity.txt
+            justfile
+            codex-rs
+            docs/modules/neuron.runtime
+            docs/readiness/NEURON_RUNTIME_EXECUTION.md
+            qualification/module-execution-dossiers/detail/neuron.runtime.md
+            scripts/ci
+            .github/workflows/neuron-runtime-source-synthesis.yml
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 1
