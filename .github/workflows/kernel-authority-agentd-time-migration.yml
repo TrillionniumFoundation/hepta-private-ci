@@ -6,13 +6,15 @@ on:
       - work/kernel-authority-convergence-20260925
     paths:
       - '.github/workflows/kernel-authority-agentd-time-migration.yml'
+      - '.github/scripts/kernel_authority_verified_head_migration.py'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
   group: kernel-authority-verified-head-migration
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   migrate:
