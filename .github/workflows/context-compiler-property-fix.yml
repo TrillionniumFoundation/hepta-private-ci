@@ -17,7 +17,7 @@ jobs:
   fix-and-verify:
     if: ${{ !contains(github.event.head_commit.message || '', '[context-source-fixed]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -147,6 +147,94 @@ jobs:
           path.write_text(text)
           PY
 
+      - name: Activate strict V3 authority and product modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def insert_after(path: str, marker: str, addition: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              if addition in text:
+                  return
+              if text.count(marker) != 1:
+                  raise SystemExit(f"{path}: activation marker drifted: {marker!r}")
+              file.write_text(text.replace(marker, marker + addition, 1))
+
+          insert_after(
+              "codex-rs/hepta-prompt-registry/src/lib.rs",
+              "mod admission;\n",
+              "mod context_authority;\n",
+          )
+          insert_after(
+              "codex-rs/hepta-prompt-registry/src/lib.rs",
+              "pub use admission::VerifiedAdmission;\n",
+              "pub use context_authority::PromptContextAuthorityAdmissionV3;\n"
+              "pub use context_authority::PromptContextAuthorityErrorV3;\n"
+              "pub use context_authority::PromptContextAuthoritySnapshotV3;\n"
+              "pub use context_authority::PromptContextAuthoritySuccessorV3;\n"
+              "pub use context_authority::prompt_context_authority_verifier_digest_v3;\n",
+          )
+
+          insert_after(
+              "codex-rs/hepta-intelligence/src/lib.rs",
+              "mod prompt_pipeline;\n",
+              "mod prompt_product_v3;\n",
+          )
+          insert_after(
+              "codex-rs/hepta-intelligence/src/lib.rs",
+              "pub use prompt_pipeline::prepare_prompt_delivery_v1;\n",
+              "pub use prompt_product_v3::PreparedPromptDeliveryV3;\n"
+              "pub use prompt_product_v3::PromptExactTokenizerV3;\n"
+              "pub use prompt_product_v3::PromptExecutionProfileV3;\n"
+              "pub use prompt_product_v3::PromptProductV3Error;\n"
+              "pub use prompt_product_v3::PromptRegistryCompilationRequestV3;\n"
+              "pub use prompt_product_v3::PromptRegistryCompiledContextV3;\n"
+              "pub use prompt_product_v3::PromptTokenizerIdentityV3;\n"
+              "pub use prompt_product_v3::compile_prompt_registry_v3;\n"
+              "pub use prompt_product_v3::observe_prompt_delivery_v3;\n"
+              "pub use prompt_product_v3::prepare_prompt_delivery_v3;\n",
+          )
+
+          insert_after(
+              "codex-rs/ext/hepta-prompt/src/lib.rs",
+              "mod exact_body;\n",
+              "mod v3;\n",
+          )
+          insert_after(
+              "codex-rs/ext/hepta-prompt/src/lib.rs",
+              "pub use exact_body::PromptRuntimeExactAttemptV2;\n",
+              "pub use v3::PromptRuntimeContextV3;\n"
+              "pub use v3::PromptRuntimeDispatchFutureV3;\n"
+              "pub use v3::PromptRuntimeDispatchRecordV3;\n"
+              "pub use v3::PromptRuntimeFinalUseFutureV3;\n"
+              "pub use v3::PromptRuntimeFinalUseProofV3;\n"
+              "pub use v3::PromptRuntimeFinalUseRequestV3;\n"
+              "pub use v3::PromptRuntimeHostErrorV3;\n"
+              "pub use v3::PromptRuntimeHostV3;\n"
+              "pub use v3::PromptRuntimePrepareFutureV3;\n"
+              "pub use v3::PromptRuntimePrepareRequestV3;\n"
+              "pub use v3::PromptRuntimeRecordFutureV3;\n"
+              "pub use v3::PromptRuntimeTerminalRecordV3;\n"
+              "pub use v3::PromptRuntimeV3Error;\n"
+              "pub use v3::install_prompt_runtime_v3;\n",
+          )
+
+          insert_after(
+              "codex-rs/hepta-agentd/src/lib.rs",
+              "mod prompt_runtime;\n",
+              "mod prompt_product_v3;\n",
+          )
+          insert_after(
+              "codex-rs/hepta-agentd/src/lib.rs",
+              "pub use prompt_runtime::PromptRuntimeStageDisposition;\n",
+              "pub use prompt_product_v3::AgentdPromptProductErrorV3;\n"
+              "pub use prompt_product_v3::AgentdPromptProductOwnerV3;\n",
+          )
+          PY
+
       - name: Refresh workspace lock and format
         working-directory: codex-rs
         shell: bash
@@ -156,12 +244,26 @@ jobs:
           cargo metadata --format-version 1 > /dev/null
           cargo fmt --all
 
+      - name: Compile strict V3 modules
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-prompt-registry
+          cargo check --locked -p codex-hepta-intelligence
+          cargo check --locked -p codex-hepta-prompt-extension
+          cargo check --locked -p codex-hepta-agentd
+
       - name: Verify corrected context closure
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo test --locked -p codex-hepta-context-compiler
+          cargo test --locked -p codex-hepta-prompt-registry --lib
+          cargo test --locked -p codex-hepta-intelligence prompt_product_v3 --lib
+          cargo test --locked -p codex-hepta-prompt-extension v3 --lib
+          cargo test --locked -p codex-hepta-agentd prompt_product_v3 --lib
           cargo test --locked -p codex-hepta-agentd exact_context_delivery --lib
 
       - name: Commit verified source and lock corrections
@@ -174,10 +276,14 @@ jobs:
           git add \
             codex-rs/Cargo.lock \
             codex-rs/hepta-context-compiler/src/provider_closure.rs \
-            codex-rs/hepta-agentd/src/exact_context_delivery.rs
+            codex-rs/hepta-agentd/src/exact_context_delivery.rs \
+            codex-rs/hepta-prompt-registry/src/lib.rs \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/ext/hepta-prompt/src/lib.rs \
+            codex-rs/hepta-agentd/src/lib.rs
           if git diff --cached --quiet; then
-            echo "Source and lock are already materialized."
+            echo "Source, module registration, and lock are already materialized."
             exit 0
           fi
-          git commit -m "fix(context.compiler): materialize deterministic closure corpus and lock [context-source-fixed]"
+          git commit -m "fix(context.compiler): activate strict V3 authority modules [context-source-fixed]"
           git push origin HEAD:codex/context-compiler-full-closure-review-20260927
