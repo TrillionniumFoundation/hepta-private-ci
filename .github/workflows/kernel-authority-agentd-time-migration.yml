@@ -92,10 +92,27 @@ jobs:
           if tests.count(import_anchor) != 1:
               raise SystemExit('verified-head test import anchor drifted')
           tests = tests.replace(import_anchor, explicit_imports, 1)
-          if tests.count('clock_at(4_000),') != 1:
-              raise SystemExit('uncertainty boundary test anchor drifted')
-          tests = tests.replace('clock_at(4_000),', 'clock_at(2_995),', 1)
-          tests_path.write_text(tests, encoding='utf-8')
+          boundary_anchor = (
+              'fn production_open_rechecks_verified_head_freshness_'
+              'on_the_protected_clock() {'
+          )
+          if tests.count(boundary_anchor) != 1:
+              raise SystemExit('uncertainty boundary function anchor drifted')
+          boundary_at = tests.index(boundary_anchor)
+          prefix = tests[:boundary_at]
+          boundary = tests[boundary_at:]
+          expiry_anchor = 'verified_revocation_head(&head, 2_000, 3_000)'
+          if boundary.count(expiry_anchor) != 1:
+              raise SystemExit('uncertainty boundary head anchor drifted')
+          boundary = boundary.replace(
+              expiry_anchor,
+              'verified_revocation_head(&head, 2_000, 2_005)',
+              1,
+          )
+          if boundary.count('clock_at(4_000),') != 1:
+              raise SystemExit('uncertainty boundary clock anchor drifted')
+          boundary = boundary.replace('clock_at(4_000),', 'clock_at(2_000),', 1)
+          tests_path.write_text(prefix + boundary, encoding='utf-8')
           PY
           cd codex-rs
           cargo fmt -p codex-hepta-contracts -p codex-hepta-agentd
