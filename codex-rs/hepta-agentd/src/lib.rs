@@ -214,6 +214,7 @@ pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v1;
 pub use plasticity_runtime::PlasticityRuntimeBootstrapV1;
 pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
+pub use plasticity_runtime::PlasticityRuntimeMetricsSnapshotV1;
 pub use plasticity_runtime::PlasticityRuntimeOwnerV1;
 pub use plasticity_runtime::plasticity_runtime_channel_v1;
 pub use plasticity_self_iteration::SelfIterationParameterReceiptV1;
