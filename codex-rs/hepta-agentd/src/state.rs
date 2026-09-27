@@ -583,11 +583,24 @@ impl AgentdState {
             self.intelligence_product.get(),
             self.intelligence_invocation.get(),
         ) else {
+            if self.intuition_policy.get().is_some() {
+                return Err(AgentdError::Protocol(
+                    "agentd.intuition.service.canonical_composition_required".to_string(),
+                ));
+            }
             return Ok(None);
         };
 
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
+        let crate::AgentdIntelligenceInvocationV1 {
+            request,
+            inputs,
+            intuition_product,
+        } = invocation;
+        let episode_id = request.run_id.clone();
+        let run_snapshot_digest = request.snapshot.digest();
+        let intuition_request = inputs.intuition_request.clone();
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -599,13 +612,29 @@ impl AgentdState {
             .composition()
             .clone();
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_for_composition(&composition, request, inputs)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(
                     "canonical intelligence preparation failed: {error}"
                 ))
             })?;
+
+        // The compatibility advisory stage is not a product decision. A
+        // configured product host must independently authenticate the
+        // current profile/runtime evidence and commit any selected Decision
+        // before the outcome can cross run admission.
+        let policy_now = self.require_current_run_start(record)?;
+        let _authenticated_intuition =
+            crate::intuition_policy_serving::authenticate_canonical_intuition(
+                self,
+                intuition_product,
+                intuition_request,
+                episode_id,
+                run_snapshot_digest,
+                &outcome,
+                policy_now,
+            )?;
 
         match outcome {
             crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
