@@ -47,7 +47,7 @@ For each logical send:
 - `attempt > 0`, `lease_epoch = attempt`, and attempts are monotonic;
 - terminality belongs to the stable transaction: any exact matching entered-use proof from an attempt not newer than the observed dispatch attempt can qualify the server echo;
 - each attempt has one immutable random claim capability and at most one immutable authority witness;
-- grant ID, request/scope/payload digests, authority epoch and revocation frontier are bound to the exact attempt;
+- grant ID, request/scope/payload digests, authority epoch, revocation frontier and absolute expiry are bound to the exact attempt;
 - exact duplicate observations are idempotent; semantic drift is a conflict.
 
 ## 3. Allowed transitions
@@ -58,7 +58,7 @@ For each logical send:
 | queued | bounded claim | claimed | new attempt/lease, random capability digest, `claimed` event |
 | claimed | durable final-use verification | authorized | witness digest, revocation-head digest, grant identity, `authorized` event |
 | authorized | durable intent before final entry | dispatching | exact live token/lease, `dispatching` event |
-| dispatching | final revocation check and token entry | entered-use proof | immutable proof bound to claim, authority, scope and canonical content |
+| dispatching | final revocation/expiry check and token entry | entered-use proof | immutable proof bound to claim, authority, scope and canonical content |
 | entered-use proof | sealed SDK permit polls transport | accepted/indeterminate/failed | typed physical-boundary observation; event ID is not terminal success |
 | dispatching | timeout/reset/unknown response | indeterminate | typed failure class and optional retry hint |
 | dispatching | proven pre-effect permanent rejection | failed | no earlier accepted evidence and `permanently_rejected` event |
@@ -76,7 +76,8 @@ For each logical send:
 - Unknown effects never receive a new transaction ID and are never converted to failure merely because retries are exhausted.
 - A later rejection cannot erase an earlier accepted or unknown effect.
 - Terminal states never reopen. Redaction is monotonic and cannot resurrect content.
-- Cancellation, expiry and revocation before physical entry produce zero network calls. The same conditions after entry are uncertainty, not remote failure.
+- Cancellation, expiry and revocation before kernel final-use entry produce zero network calls and may release the exact live claim.
+- Kernel final-use entry is itself monotone: after it succeeds, proof-persistence acknowledgement loss, absolute grant expiry, revocation/frontier change, transport identity drift, canonical payload drift, permit-construction failure, cancellation or lease expiry must carry the entered proof forward and preserve the same transaction as `Indeterminate`; none may be rewritten as a pre-entry cancel/revoke.
 
 ## 5. Final-use ordering
 
@@ -87,16 +88,17 @@ claim fenced outbox
 -> recompute canonical final-use request
 -> obtain independently signed grant
 -> kernel claim burns single-use nonce
--> persist authority witness
+-> persist authority witness and absolute grant expiry
 -> persist dispatching phase
--> refresh authenticated revocation frontier
+-> refresh authenticated revocation frontier and check grant expiry
 -> enter verified use with exact token/binding
 -> persist the non-constructible entered-use proof under the live claim
+-> recheck absolute grant expiry, revocation frontier, transport identity and canonical payload
 -> construct the opaque MatrixSendPermit
--> create and poll the lazy Matrix transport future
+-> repeat the same checks on every lazy Matrix transport poll
 ```
 
-Entered-use proof persistence occurs before the transport future exists and therefore before any network effect. After the future is created, no unrelated persistence await precedes its first poll. The physical deadline is strictly shorter than the remaining lease.
+Entered-use proof persistence occurs before the transport future exists and therefore before any network effect. After the future is created, no unrelated persistence await precedes its first poll. The physical deadline is strictly shorter than the remaining lease. Because the proof write can commit while its acknowledgement is lost, any fault after kernel entry is conservatively reconciled as an entered unknown effect even when the adapter was not demonstrably polled.
 
 ## 6. Transaction boundaries
 
@@ -119,7 +121,7 @@ The durable dispatch ledger also uses attempt CAS. Random capability fencing pro
 | after capability claim, before grant | active claim expires; next attempt mints a new token |
 | after kernel nonce burn, before witness commit | nonce remains burned; no effect; retry uses a fresh grant |
 | after witness, before dispatching | exact claim can only be canceled/revoked/expired or resumed under its lease |
-| after token entry, before proof commit | token remains consumed; no network effect; retry requires a fresh grant |
+| after token entry, before proof commit or proof acknowledgement | token remains consumed; the write outcome may be unknown, so the attempt cannot be downgraded to pre-entry release and retains the stable transaction for recovery/reconciliation |
 | after proof commit, before transport poll | entered intent remains durable; no success is fabricated and reconciliation keeps the transaction unresolved |
 | after adapter entry, before response | indeterminate; retain stable transaction |
 | after a later retry claim but before its adapter entry | a delayed matching server echo is qualified by the earlier entered-use proof and atomically closes the newer claim without another send |
