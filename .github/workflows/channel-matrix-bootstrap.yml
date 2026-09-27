@@ -9,8 +9,11 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
+# Candidate validation is deliberately read-only. The separately named manual
+# channel-matrix-materialize workflow is the only recovery lane allowed to
+# write repository contents.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: channel-matrix-bootstrap-${{ github.event.pull_request.number || github.ref }}
@@ -21,84 +24,14 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
-      - name: Checkout exact branch head
+      - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
-      - name: Materialize reviewed source patch
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        id: materialize
-        env:
-          TARGET_REF: ${{ github.event.pull_request.head.ref || github.ref_name }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          out="$RUNNER_TEMP/channel-matrix-bootstrap"
-          mkdir -p "$out"
-          : > "$out/patch-apply.log"
-          patch_dir=.github/channel-matrix-local-patch
-          if [ ! -d "$patch_dir" ]; then
-            echo 'applied=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          orig_baseline="$RUNNER_TEMP/channel-matrix-existing-orig.txt"
-          find . -name '*.orig' -print | sort > "$orig_baseline"
-          for part in "$patch_dir"/part-*; do
-            candidate="$RUNNER_TEMP/$(basename "$part").patch"
-            cat "$part" > "$candidate"
-            printf '\n' >> "$candidate"
-            status=0
-            patch -p1 -N < "$candidate" >>"$out/patch-apply.log" 2>&1 || status=$?
-            if [ "$status" -ne 0 ]; then
-              reject_list="$RUNNER_TEMP/rejects-$(basename "$part").txt"
-              find . -name '*.rej' -print | sort > "$reject_list"
-              if [ ! -s "$reject_list" ]; then
-                cat "$out/patch-apply.log" >&2
-                exit "$status"
-              fi
-              while IFS= read -r reject; do
-                case "$reject" in
-                  ./docs/modules/channel.matrix/*.rej)
-                    printf 'prose drift retained for current-source rewrite: %s\n' \
-                      "$reject" >>"$out/patch-apply.log"
-                    ;;
-                  *)
-                    cat "$out/patch-apply.log" >&2
-                    cat "$reject" >&2
-                    exit "$status"
-                    ;;
-                esac
-              done < "$reject_list"
-              while IFS= read -r reject; do
-                rm -f "$reject"
-              done < "$reject_list"
-            fi
-
-            # BSD patch may create .orig backups on fuzzy/rejected hunks. Delete
-            # only backups created by this run; vendored tracked .orig files are
-            # part of the exact source tree and must remain untouched.
-            orig_after="$RUNNER_TEMP/channel-matrix-orig-after.txt"
-            find . -name '*.orig' -print | sort > "$orig_after"
-            comm -13 "$orig_baseline" "$orig_after" | while IFS= read -r backup; do
-              test -n "$backup" && rm -f "$backup"
-            done
-          done
-
-          git rm -r "$patch_dir"
-          git add -A
-          git diff --cached --check
-          git config user.name 'channel.matrix convergence bot'
-          git config user.email 'channel-matrix@users.noreply.github.com'
-          git commit -m 'channel.matrix: materialize reviewed closure patch'
-          git push origin "HEAD:${TARGET_REF}"
-          echo 'applied=true' >> "$GITHUB_OUTPUT"
-
-      - name: Reject staged source from external forks
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+      - name: Reject staged recovery source
         shell: bash
         run: |
           set -euo pipefail
@@ -111,6 +44,7 @@ jobs:
           set -uo pipefail
           out="$RUNNER_TEMP/channel-matrix-bootstrap"
           mkdir -p "$out"
+          : > "$out/patch-apply.log"
           cp codex-rs/Cargo.lock "$out/Cargo.lock.before"
           status=0
           (
@@ -177,24 +111,6 @@ jobs:
           path: ${{ runner.temp }}/channel-matrix-bootstrap/
           if-no-files-found: error
           retention-days: 14
-
-      - name: Commit verified scoped lockfile
-        if: github.event_name != 'pull_request'
-        env:
-          TARGET_REF: ${{ github.ref_name }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          status="$(cat "$RUNNER_TEMP/channel-matrix-bootstrap/check-status.txt")"
-          if [ "$status" -ne 0 ] || git diff --quiet -- codex-rs/Cargo.lock; then
-            exit 0
-          fi
-          git add codex-rs/Cargo.lock
-          git diff --cached --check
-          git config user.name 'channel.matrix convergence bot'
-          git config user.email 'channel-matrix@users.noreply.github.com'
-          git commit -m 'channel.matrix: refresh verified scoped lockfile'
-          git push origin "HEAD:${TARGET_REF}"
 
       - name: Propagate scoped result
         if: always()
