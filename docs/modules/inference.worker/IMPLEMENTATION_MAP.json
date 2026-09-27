@@ -8,12 +8,8 @@
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
   "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
-  "declaredRoots": [
-    "codex-rs/hepta-infer-worker-host"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-infer-worker-host"
-  ],
+  "declaredRoots": ["codex-rs/hepta-infer-worker-host"],
+  "resolvedRoots": ["codex-rs/hepta-infer-worker-host"],
   "stateOwnerDisposition": "Owns live provider client handles and experimental process-local resource counters; persistent request/slot/observation facts remain in inference.control. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes. Local resources are not yet durably composed.",
   "terminalObserverDisposition": "The hosted native-app-server profile observes matching turn events and exact thread-history reconciliation. The feature-gated local driver is injected; its observations do not prove physical weights/device behavior.",
   "operations": [
@@ -27,18 +23,17 @@
         "buildTarget": "codex-hepta-infer-worker-host::model_worker"
       },
       "delegatedCallees": [],
-      "tests": [
-        {
-          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-          "kind": "manifest_and_resource_binding",
-          "command": "just test -p codex-hepta-infer-worker-host --lib"
-        }
-      ],
+      "tests": [{
+        "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+        "kind": "manifest_and_resource_binding",
+        "command": "just test -p codex-hepta-infer-worker-host --lib"
+      }],
       "sourceSemantics": "Experimental-local-model feature only outside unit tests. Validates unverified local policy and manifest shape, reserves aggregate resident capacity before driver entry, and retains/fences uncertain allocation. This is not a verified grant, real artifact loader, OS/device enforcement or production caller.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "a9348ed531773ac78bc48538e40585ee659cbad2"
     },
     {
       "designOperation": "run",
@@ -81,7 +76,8 @@
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "7b24c3215653858323cdf8e77ab30e8dcb9441bf"
     },
     {
       "designOperation": "unload",
@@ -93,18 +89,17 @@
         "buildTarget": "codex-hepta-infer-worker-host::model_worker"
       },
       "delegatedCallees": [],
-      "tests": [
-        {
-          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-          "kind": "drain_and_unload",
-          "command": "just test -p codex-hepta-infer-worker-host --lib"
-        }
-      ],
+      "tests": [{
+        "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+        "kind": "drain_and_unload",
+        "command": "just test -p codex-hepta-infer-worker-host --lib"
+      }],
       "sourceSemantics": "Experimental cleanup borrows the retained handle, refuses active requests, preserves handle/capacity and fences on unload failure, and releases resident capacity only after observed success. Cleanup remains legal after expiry/revocation; it never unfences the generation. Physical drain is still the driver owner's obligation.",
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "a9348ed531773ac78bc48538e40585ee659cbad2"
     }
   ],
   "repositoryControlledGaps": [
@@ -143,7 +138,35 @@
   "owner": "inference-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
-  "sourceRoot": [
+  "sourceRoot": ["codex-rs/hepta-infer-worker-host"],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "763755cf1a39d39b81b632f08b90b4e8afb5c0a8",
+    "tree": "3481d1310db3e10e95b95b74df4c21eaed055ef1"
+  },
+  "observedSourcePaths": [
+    "codex-rs/.config/nextest.toml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-infer-core",
     "codex-rs/hepta-infer-worker-host"
+  ],
+  "sourceObjects": [
+    {"path": "codex-rs/.config/nextest.toml", "object": "677d1658487935a0ab08623c256ee0b5b49c5cc2"},
+    {"path": "codex-rs/Cargo.lock", "object": "cd6650b68a815d69038166b7de50c2857f358641"},
+    {"path": "codex-rs/Cargo.toml", "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"},
+    {"path": "codex-rs/hepta-agentd", "object": "14f2ddf76185095e8663ae5addbef76e344205d8"},
+    {"path": "codex-rs/hepta-infer-core", "object": "ca880ac86066ad28cace3cbf8a1d192d8f22843b"},
+    {"path": "codex-rs/hepta-infer-core/src/native_control.rs", "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"},
+    {"path": "codex-rs/hepta-infer-worker-host", "object": "4ada8999e457e0a68d8751c9d9d3e6743b9b6ba8"},
+    {"path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs", "object": "a9348ed531773ac78bc48538e40585ee659cbad2"},
+    {"path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs", "object": "83b8e3b4a3759bd14cc060dca85bc50d146837d6"},
+    {"path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs", "object": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0"},
+    {"path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs", "object": "ed58f4cd04b49bef21cca15eef8f4910b56032fa"},
+    {"path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs", "object": "7b24c3215653858323cdf8e77ab30e8dcb9441bf"},
+    {"path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs", "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"},
+    {"path": "docs/modules/inference.worker/TECHNICAL.md", "object": "bf708011a2296f27d4598322964eb576c3d7ca28"}
   ]
 }
