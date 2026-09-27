@@ -90,6 +90,8 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
     "codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs": {
         "required": (
             "RuntimeCodexScheduleReservationV1",
+            "pub(crate) fn install_agentd_supervisor<",
+            "pub(crate) fn install_agentd_supervisor_with_limits",
             "try_reserve_owned",
             "Semaphore::new",
             "JoinSet::new",
@@ -99,7 +101,10 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
             "fenced_unresolved == 0",
         ),
         "ordered": (),
-        "forbidden": (),
+        "forbidden": (
+            "pub fn install_agentd_supervisor<",
+            "pub fn install_agentd_supervisor_with_limits",
+        ),
     },
     "codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs": {
         "required": (
@@ -147,6 +152,9 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
         "required": (
             'OSES = ("ubuntu-latest", "macos-latest")',
             '"product-process"',
+            '"queue_capacity_product"',
+            '"runtime_shutdown_outcomes"',
+            '"two_agent_turn_recovery"',
             '"strict-clippy"',
             '"read-only-profile"',
             '"missing required OS/suite receipt"',
