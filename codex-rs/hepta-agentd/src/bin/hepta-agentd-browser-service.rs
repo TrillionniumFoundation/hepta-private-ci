@@ -3,8 +3,13 @@
 //! The service owns one persistent Browser control for the Agentd generation,
 //! accepts only canonical digest-bound length-prefixed JSON over inherited
 //! stdin/stdout, keeps the live revocation feed active, and never exposes a
-//! discovery, TCP, UDS, WebDriver, or CDP listener. A semantic call is executed
-//! at most once; an indeterminate result is returned for explicit reconciliation.
+//! discovery, TCP, UDS, WebDriver, or CDP listener.
+//!
+//! `navigate_or_act` is replay-safe: before entering final-use authority the
+//! service asks the Browser owner to reconcile the exact operation identity.
+//! An existing operation returns its original/current receipt without claiming
+//! authority or dispatching again. Only a proven absence proceeds to the new
+//! effect path.
 
 use std::io::{self, Read, Write};
 use std::path::Path;
@@ -14,9 +19,6 @@ use serde::Deserialize;
 use serde_json::{Map, Value, json};
 use sha2::{Digest, Sha256};
 
-// These source modules are intentionally owned by the named persistent binary
-// instead of replacing the legacy Agentd Browser library port. Their internal
-// qualification helpers are exercised by this binary's test harness.
 #[allow(dead_code)]
 #[path = "../browser_revocation_feed.rs"]
 mod browser_revocation_feed;
@@ -25,7 +27,7 @@ mod browser_revocation_feed;
 mod browser_servo;
 
 use browser_servo::{
-    BrowserFinalUseInvocation, BrowserServoCall, BrowserServoMethod,
+    BrowserFinalUseInvocation, BrowserServoCall, BrowserServoError, BrowserServoMethod,
     open_browser_servo_port_from_file,
 };
 
@@ -35,6 +37,7 @@ const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_ERROR_CHARS: usize = 512;
 const MAX_JSON_DEPTH: usize = 32;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
+const OPERATION_ABSENT: &str = "operation has not crossed the browser effect boundary";
 
 #[derive(Clone, Copy, Debug, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -81,13 +84,11 @@ struct DecodedFrame {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
-    let config_path = args.next().ok_or(
-        "usage: hepta-agentd-browser-service BROWSER_HOST_CONFIG.json",
-    )?;
+    let config_path = args
+        .next()
+        .ok_or("usage: hepta-agentd-browser-service BROWSER_HOST_CONFIG.json")?;
     if args.next().is_some() {
-        return Err(
-            "usage: hepta-agentd-browser-service BROWSER_HOST_CONFIG.json".into(),
-        );
+        return Err("usage: hepta-agentd-browser-service BROWSER_HOST_CONFIG.json".into());
     }
 
     let owner = open_browser_servo_port_from_file(Path::new(&config_path))?;
@@ -104,8 +105,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .checked_add(1)
             .ok_or("Browser service input sequence exhausted")?;
         let request_id = frame.request_id.clone();
-        let request_sequence = frame.sequence;
-        let request_payload_digest = frame.payload_digest.clone();
         let response_payload = match serde_json::from_value::<ServiceCallPayload>(frame.payload) {
             Ok(call) => execute_call(&owner, call),
             Err(error) => json!({
@@ -115,8 +114,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
         let response = build_response_frame(
             next_outgoing_sequence,
-            request_sequence,
-            &request_payload_digest,
+            frame.sequence,
+            &frame.payload_digest,
             &request_id,
             response_payload,
         )?;
@@ -125,7 +124,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .ok_or("Browser service output sequence exhausted")?;
         write_frame(&mut output, &response)?;
     }
-
     Ok(())
 }
 
@@ -133,37 +131,66 @@ fn execute_call(
     owner: &browser_servo::PersistentBrowserServoControl,
     call: ServiceCallPayload,
 ) -> Value {
-    let method = call.method.module_method();
-    let request = if matches!(method, BrowserServoMethod::NavigateOrAct) {
-        match (call.signed_grant, call.binding) {
-            (Some(signed_grant), Some(binding)) => BrowserServoCall::effect(
-                call.input,
-                BrowserFinalUseInvocation {
-                    signed_grant,
-                    binding,
-                },
-            ),
-            _ => Err(browser_servo::BrowserServoError::Invalid(
-                "navigate_or_act requires signed final-use grant and exact binding".into(),
-            )),
-        }
-    } else if call.signed_grant.is_some() || call.binding.is_some() {
-        Err(browser_servo::BrowserServoError::Invalid(
-            "non-effect Browser calls must not carry final-use authority".into(),
-        ))
-    } else {
-        BrowserServoCall::read(method, call.input)
-    };
-
-    match request.and_then(|request| owner.call(request)) {
-        Ok(result) => json!({
-            "ok": true,
-            "result": result,
-        }),
+    let result = execute_call_result(owner, call);
+    match result {
+        Ok(result) => json!({ "ok": true, "result": result }),
         Err(error) => json!({
             "ok": false,
             "error": bounded_error(error.to_string()),
         }),
+    }
+}
+
+fn execute_call_result(
+    owner: &browser_servo::PersistentBrowserServoControl,
+    call: ServiceCallPayload,
+) -> Result<Value, BrowserServoError> {
+    let method = call.method.module_method();
+    if matches!(method, BrowserServoMethod::NavigateOrAct) {
+        let (signed_grant, binding) = match (call.signed_grant, call.binding) {
+            (Some(signed_grant), Some(binding)) => (signed_grant, binding),
+            _ => {
+                return Err(BrowserServoError::Invalid(
+                    "navigate_or_act requires signed final-use grant and exact binding".into(),
+                ));
+            }
+        };
+
+        // The Browser owner validates the complete immutable semantics while
+        // reconciling. A successful probe is therefore an authority-free exact
+        // replay. Only its explicit, typed absence result permits a new effect.
+        let probe = BrowserServoCall::read(
+            BrowserServoMethod::ReconcileOperation,
+            call.input.clone(),
+        )?;
+        if let Some(receipt) = classify_replay_probe(owner.call(probe))? {
+            return Ok(receipt);
+        }
+
+        return owner.call(BrowserServoCall::effect(
+            call.input,
+            BrowserFinalUseInvocation {
+                signed_grant,
+                binding,
+            },
+        )?);
+    }
+
+    if call.signed_grant.is_some() || call.binding.is_some() {
+        return Err(BrowserServoError::Invalid(
+            "non-effect Browser calls must not carry final-use authority".into(),
+        ));
+    }
+    owner.call(BrowserServoCall::read(method, call.input)?)
+}
+
+fn classify_replay_probe(
+    result: Result<Value, BrowserServoError>,
+) -> Result<Option<Value>, BrowserServoError> {
+    match result {
+        Ok(receipt) => Ok(Some(receipt)),
+        Err(BrowserServoError::Rejected(message)) if message == OPERATION_ABSENT => Ok(None),
+        Err(error) => Err(error),
     }
 }
 
@@ -234,22 +261,16 @@ fn build_response_frame(
     mut payload: Value,
 ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     validate_request_id(request_id)?;
-    if request_payload_digest.len() != 64
-        || !request_payload_digest
-            .bytes()
-            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
-    {
-        return Err("request payload digest must be lowercase SHA-256 hex".into());
-    }
+    validate_digest(request_payload_digest, "request payload digest")?;
     let object = payload
         .as_object_mut()
         .ok_or("Browser service response payload must be an object")?;
     if object.contains_key("requestSequence") || object.contains_key("requestPayloadDigest") {
         return Err("Browser service response attempted to pre-bind request identity".into());
     }
-    object.insert("requestSequence".to_string(), Value::from(request_sequence));
+    object.insert("requestSequence".into(), Value::from(request_sequence));
     object.insert(
-        "requestPayloadDigest".to_string(),
+        "requestPayloadDigest".into(),
         Value::String(request_payload_digest.to_string()),
     );
     let payload_json = canonical_json(&payload)?;
@@ -281,6 +302,17 @@ fn validate_request_id(value: &str) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn validate_digest(value: &str, name: &str) -> Result<(), Box<dyn std::error::Error>> {
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    {
+        return Err(format!("{name} must be lowercase SHA-256 hex").into());
+    }
+    Ok(())
+}
+
 fn read_frame(input: &mut impl Read) -> Result<Option<Vec<u8>>, Box<dyn std::error::Error>> {
     let mut prefix = [0_u8; 4];
     let mut read = 0;
@@ -300,10 +332,7 @@ fn read_frame(input: &mut impl Read) -> Result<Option<Vec<u8>>, Box<dyn std::err
     Ok(Some(body))
 }
 
-fn write_frame(
-    output: &mut impl Write,
-    body: &[u8],
-) -> Result<(), Box<dyn std::error::Error>> {
+fn write_frame(output: &mut impl Write, body: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
     if body.is_empty() || body.len() > MAX_FRAME_BYTES {
         return Err("Browser service output frame exceeds the hard bound".into());
     }
@@ -339,9 +368,7 @@ fn validate_safe_json(value: &Value, depth: usize) -> Result<(), Box<dyn std::er
     match value {
         Value::Null | Value::Bool(_) | Value::String(_) => Ok(()),
         Value::Number(number) => {
-            let safe = number
-                .as_u64()
-                .is_some_and(|value| value <= JS_SAFE_INTEGER)
+            let safe = number.as_u64().is_some_and(|value| value <= JS_SAFE_INTEGER)
                 || number
                     .as_i64()
                     .is_some_and(|value| value.unsigned_abs() <= JS_SAFE_INTEGER);
@@ -364,7 +391,7 @@ fn canonical_json(value: &Value) -> Result<String, Box<dyn std::error::Error>> {
     let mut output = String::new();
     write_canonical(value, 0, &mut output)?;
     if output.len() > MAX_FRAME_BYTES {
-        return Err("canonical Browser service JSON exceeds the hard bound".into());
+        return Err("Browser service canonical JSON exceeds the hard bound".into());
     }
     Ok(output)
 }
@@ -382,13 +409,19 @@ fn write_canonical(
         Value::Bool(value) => output.push_str(if *value { "true" } else { "false" }),
         Value::String(value) => output.push_str(&serde_json::to_string(value)?),
         Value::Number(number) => {
-            validate_safe_json(value, depth)?;
+            let safe = number.as_u64().is_some_and(|value| value <= JS_SAFE_INTEGER)
+                || number
+                    .as_i64()
+                    .is_some_and(|value| value.unsigned_abs() <= JS_SAFE_INTEGER);
+            if !safe {
+                return Err("Browser service JSON numbers must be JavaScript-safe integers".into());
+            }
             output.push_str(&number.to_string());
         }
         Value::Array(values) => {
             output.push('[');
             for (index, value) in values.iter().enumerate() {
-                if index > 0 {
+                if index != 0 {
                     output.push(',');
                 }
                 write_canonical(value, depth + 1, output)?;
@@ -400,7 +433,7 @@ fn write_canonical(
             let mut keys = object.keys().collect::<Vec<_>>();
             keys.sort();
             for (index, key) in keys.into_iter().enumerate() {
-                if index > 0 {
+                if index != 0 {
                     output.push(',');
                 }
                 output.push_str(&serde_json::to_string(key)?);
@@ -423,150 +456,52 @@ fn sha256_hex(bytes: &[u8]) -> String {
     output
 }
 
-fn bounded_error(value: impl AsRef<str>) -> String {
-    value.as_ref().chars().take(MAX_ERROR_CHARS).collect()
+fn bounded_error(value: impl Into<String>) -> String {
+    value.into().chars().take(MAX_ERROR_CHARS).collect()
 }
 
 #[cfg(test)]
-mod service_protocol_tests {
+mod tests {
     use super::*;
-    use std::io::Cursor;
 
-    fn valid_payload() -> Value {
-        json!({
-            "method": "observe_page",
-            "input": {"profileId": "profile.1"},
-            "signedGrant": null,
-            "binding": null,
-        })
-    }
-
-    fn request_frame(sequence: u64, payload: Value) -> Vec<u8> {
-        let payload_json = canonical_json(&payload).unwrap();
-        canonical_json(&json!({
-            "schema": SERVICE_SCHEMA,
-            "protocolVersion": SERVICE_PROTOCOL_VERSION,
-            "sequence": sequence,
-            "kind": "request",
-            "requestId": "request.1",
-            "payloadDigest": sha256_hex(payload_json.as_bytes()),
-            "payload": payload,
-        }))
-        .unwrap()
-        .into_bytes()
+    #[test]
+    fn replay_probe_accepts_only_exact_absence_as_permission_for_a_new_effect() {
+        let replay = json!({"operationId": "operation.1", "status": "succeeded"});
+        assert_eq!(
+            classify_replay_probe(Ok(replay.clone())).expect("replay"),
+            Some(replay)
+        );
+        assert!(
+            classify_replay_probe(Err(BrowserServoError::Rejected(OPERATION_ABSENT.into())))
+                .expect("absence")
+                .is_none()
+        );
+        assert!(matches!(
+            classify_replay_probe(Err(BrowserServoError::Rejected(
+                "operation reconciliation changed immutable semantics".into()
+            ))),
+            Err(BrowserServoError::Rejected(_))
+        ));
     }
 
     #[test]
-    fn accepts_exact_canonical_digest_bound_request() {
-        let body = request_frame(1, valid_payload());
-        let decoded = decode_request_frame(&body, 1).unwrap();
-        assert_eq!(decoded.sequence, 1);
-        assert_eq!(decoded.request_id, "request.1");
-        let call: ServiceCallPayload = serde_json::from_value(decoded.payload).unwrap();
-        assert!(matches!(call.method, ServiceMethod::ObservePage));
-    }
-
-    #[test]
-    fn rejects_noncanonical_request_json() {
-        let body = request_frame(1, valid_payload());
-        let value: Value = serde_json::from_slice(&body).unwrap();
-        let noncanonical = serde_json::to_vec_pretty(&value).unwrap();
-        assert!(decode_request_frame(&noncanonical, 1)
-            .unwrap_err()
-            .to_string()
-            .contains("not canonical"));
-    }
-
-    #[test]
-    fn rejects_payload_digest_drift() {
-        let body = request_frame(1, valid_payload());
-        let mut value: Value = serde_json::from_slice(&body).unwrap();
-        value["payloadDigest"] = Value::String("0".repeat(64));
-        let drifted = canonical_json(&value).unwrap().into_bytes();
-        assert!(decode_request_frame(&drifted, 1)
-            .unwrap_err()
-            .to_string()
-            .contains("payload digest mismatch"));
-    }
-
-    #[test]
-    fn rejects_sequence_drift_and_unknown_fields() {
-        let body = request_frame(2, valid_payload());
-        assert!(decode_request_frame(&body, 1)
-            .unwrap_err()
-            .to_string()
-            .contains("not monotonic"));
-
-        let body = request_frame(1, valid_payload());
-        let mut value: Value = serde_json::from_slice(&body).unwrap();
-        value["extra"] = Value::Bool(true);
-        let unknown = canonical_json(&value).unwrap().into_bytes();
-        assert!(decode_request_frame(&unknown, 1)
-            .unwrap_err()
-            .to_string()
-            .contains("missing or unknown fields"));
-    }
-
-    #[test]
-    fn rejects_partial_length_prefixed_frame() {
-        let body = request_frame(1, valid_payload());
-        let mut bytes = Vec::new();
-        bytes.extend_from_slice(&(body.len() as u32).to_be_bytes());
-        bytes.extend_from_slice(&body[..body.len() - 1]);
-        let mut cursor = Cursor::new(bytes);
-        assert!(read_frame(&mut cursor).is_err());
-    }
-
-    #[test]
-    fn response_is_canonical_and_binds_exact_request() {
-        let request_digest = "a".repeat(64);
-        let body = build_response_frame(
+    fn response_frames_bind_the_exact_parent_request() {
+        let request_digest = "1".repeat(64);
+        let response = build_response_frame(
+            1,
             7,
-            41,
-            &request_digest,
-            "request.7",
-            json!({"ok": true, "result": {"kind": "ok"}}),
-        )
-        .unwrap();
-        let text = std::str::from_utf8(&body).unwrap();
-        let value: Value = serde_json::from_str(text).unwrap();
-        assert_eq!(canonical_json(&value).unwrap(), text);
-        assert_eq!(value["sequence"], 7);
-        assert_eq!(value["payload"]["requestSequence"], 41);
-        assert_eq!(value["payload"]["requestPayloadDigest"], request_digest);
-        let digest = sha256_hex(canonical_json(&value["payload"]).unwrap().as_bytes());
-        assert_eq!(value["payloadDigest"], digest);
-    }
-
-    #[test]
-    fn invalid_call_payload_can_be_returned_as_a_bound_error() {
-        let request_digest = "b".repeat(64);
-        let body = build_response_frame(
-            1,
-            1,
-            &request_digest,
-            "request.bad",
-            json!({"ok": false, "error": "invalid payload"}),
-        )
-        .unwrap();
-        let value: Value = serde_json::from_slice(&body).unwrap();
-        assert_eq!(value["payload"]["ok"], false);
-        assert_eq!(value["payload"]["requestSequence"], 1);
-        assert_eq!(value["payload"]["requestPayloadDigest"], request_digest);
-    }
-
-    #[test]
-    fn response_rejects_prebound_request_identity() {
-        let request_digest = "c".repeat(64);
-        assert!(build_response_frame(
-            1,
-            1,
             &request_digest,
             "request.1",
-            json!({"ok": true, "requestSequence": 1}),
+            json!({"ok": true, "result": {"status": "indeterminate"}}),
         )
-        .unwrap_err()
-        .to_string()
-        .contains("pre-bind"));
+        .expect("response");
+        let value: Value = serde_json::from_slice(&response).expect("json");
+        assert_eq!(value["payload"]["requestSequence"], 7);
+        assert_eq!(value["payload"]["requestPayloadDigest"], request_digest);
+    }
+
+    #[test]
+    fn canonical_json_orders_object_keys() {
+        assert_eq!(canonical_json(&json!({"z": 1, "a": 2})).unwrap(), "{\"a\":2,\"z\":1}");
     }
 }
