@@ -1,0 +1,183 @@
+name: Control runtime exact qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Exact integration base commit (not a branch name)
+        required: true
+        default: a126987b84737dbc2ee2592442a314117bddb4a2
+        type: string
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-control-plane/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-ndu/**'
+      - 'docs/modules/control.runtime/**'
+      - 'scripts/hepta-control-runtime*'
+      - '.github/workflows/hepta-control-runtime-exact.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: control-runtime (${{ matrix.package }}, ${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ndu, control-plane, agentd]
+        lane: [source-head, synthetic-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+      LANE: ${{ matrix.lane }}
+      PACKAGE: codex-hepta-${{ matrix.package }}
+      CARGO_BUILD_JOBS: '2'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CARGO_INCREMENTAL: '0'
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and deterministic merge parents
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          if [ "$LANE" = synthetic-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Exact control-runtime qualification; no activation authority' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+          fi
+          mkdir -p "$RUNNER_TEMP/control-runtime-evidence"
+          echo "EVIDENCE=$RUNNER_TEMP/control-runtime-evidence" >> "$GITHUB_ENV"
+          echo "EXECUTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "EXECUTED_TREE=$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
+      - name: Preserve reviewable exact source snapshot
+        if: matrix.package == 'control-plane' && matrix.lane == 'source-head'
+        run: git archive --format=tar.gz -o "$RUNNER_TEMP/control-runtime-source.tar.gz" HEAD codex-rs scripts docs/modules/control.runtime .github/workflows AGENTS.md
+      - name: Retain exact source snapshot
+        if: matrix.package == 'control-plane' && matrix.lane == 'source-head'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-source-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/control-runtime-source.tar.gz
+          retention-days: 7
+          if-no-files-found: error
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends pkg-config libssl-dev libsqlite3-dev protobuf-compiler cmake
+          python3 -m venv "$RUNNER_TEMP/control-schema"
+          "$RUNNER_TEMP/control-schema/bin/pip" install --disable-pip-version-check --no-deps --only-binary=:all: -r scripts/hepta/qualification-requirements.txt
+          "$RUNNER_TEMP/control-schema/bin/pip" check
+          echo "$RUNNER_TEMP/control-schema/bin" >> "$GITHUB_PATH"
+      - name: Install pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute independent checks and retain every command result
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -uo pipefail
+          failures=0
+          record() {
+            local label="$1"; shift
+            printf '%s\n' "$*" > "$EVIDENCE/$label.command.txt"
+            timeout --signal=TERM --kill-after=30s 15m "$@" > "$EVIDENCE/$label.stdout.txt" 2> "$EVIDENCE/$label.stderr.txt"
+            local rc=$?
+            printf '%s\n' "$rc" > "$EVIDENCE/$label.exit-code.txt"
+            printf '%s: exit %s\n' "$label" "$rc" | tee -a "$GITHUB_STEP_SUMMARY"
+            if [ "$rc" -ne 0 ]; then
+              failures=$((failures + 1))
+              tail -n 100 "$EVIDENCE/$label.stdout.txt"
+              tail -n 100 "$EVIDENCE/$label.stderr.txt"
+              echo "::error title=$label failed::See the exact-run per-command artifact (exit $rc)."
+            fi
+          }
+          record lock python3 ../scripts/verify_cargo_lock.py
+          record policy python3 ../scripts/hepta-ndu-source-policy.py
+          record formatting cargo fmt --package "$PACKAGE" -- --check
+          record compilation cargo check --locked --all-targets -p "$PACKAGE"
+          record regression cargo nextest run --locked -p "$PACKAGE" --no-fail-fast
+          record doctests cargo test --locked -p "$PACKAGE" --doc
+          record clippy cargo clippy --locked --all-targets -p "$PACKAGE" -- -D warnings
+          if [ "$PACKAGE" = codex-hepta-control-plane ]; then
+            record ndu-caller cargo test --locked -p "$PACKAGE" --lib planner_ndu
+            record context-caller cargo test --locked -p "$PACKAGE" --lib planner_context
+            record maturity python3 ../scripts/hepta-control-runtime-maturity.py --check
+          fi
+          if [ "$PACKAGE" = codex-hepta-ndu ]; then
+            export HEPTA_NDU_HOST_ID="github-hosted-ubuntu-24.04-x86_64"
+            export HEPTA_NDU_FS_PROFILE="$(stat -f -c %T "$RUNNER_TEMP")"
+            export HEPTA_NDU_RUSTC="$(rustc --version)"
+            export HEPTA_NDU_CLK_TCK="$(getconf CLK_TCK)"
+            export HEPTA_NDU_RECEIPT_PATH="$EVIDENCE/named-host.json"
+            export HEPTA_NDU_SOURCE_SHA="$EXECUTED_SHA"
+            export HEPTA_NDU_SOURCE_TREE="$EXECUTED_TREE"
+            export HEPTA_NDU_QUALIFICATION_LANE="$LANE"
+            record named-host cargo run --locked --release -p "$PACKAGE" --bin ndu-named-host-qualification
+          fi
+          record clean git diff --exit-code
+          test "$failures" -eq 0
+      - name: Bind evidence to this run attempt and exact executed tree
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, platform, subprocess
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'control-runtime-evidence'
+          root.mkdir(exist_ok=True)
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+          results = []
+          for status in sorted(root.glob('*.exit-code.txt')):
+              name = status.name.removesuffix('.exit-code.txt')
+              results.append({'name': name, 'exitCode': int(status.read_text()),
+                  'command': (root / (name + '.command.txt')).read_text().strip(),
+                  'stdoutSha256': digest(root / (name + '.stdout.txt')),
+                  'stderrSha256': digest(root / (name + '.stderr.txt'))})
+          required = {'lock', 'policy', 'formatting', 'compilation', 'regression', 'doctests', 'clippy', 'clean'}
+          if os.environ['PACKAGE'] == 'codex-hepta-control-plane':
+              required |= {'ndu-caller', 'context-caller', 'maturity'}
+          if os.environ['PACKAGE'] == 'codex-hepta-ndu':
+              required.add('named-host')
+          data = {'schema': 'hepta.control-runtime.command-evidence.v1',
+              'sourceSha': os.environ['SOURCE_SHA'], 'baseSha': os.environ['BASE_SHA'],
+              'executedSha': os.environ.get('EXECUTED_SHA'), 'executedTree': os.environ.get('EXECUTED_TREE'),
+              'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'lane': os.environ['LANE'], 'package': os.environ['PACKAGE'], 'host': platform.platform(),
+              'rustc': subprocess.run(['rustc', '--version'], capture_output=True, text=True).stdout.strip(),
+              'missingCommands': sorted(required - {r['name'] for r in results}), 'commands': results,
+              'passed': bool(results) and required <= {r['name'] for r in results} and all(r['exitCode'] == 0 for r in results),
+              'independentAcceptance': False, 'activation': False, 'release': False}
+          (root / 'receipt.json').write_text(json.dumps(data, indent=2) + '\n')
+          print(json.dumps(data, indent=2))
+          PY
+      - name: Retain commands even on failure or cancellation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-${{ matrix.package }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/control-runtime-evidence/
+          retention-days: 30
+          if-no-files-found: error
