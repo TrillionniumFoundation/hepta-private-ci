@@ -37,7 +37,24 @@ jobs:
             exit 0
           fi
           cat "$patch_dir"/part-* > "$RUNNER_TEMP/channel-matrix-local.patch"
-          git apply --index --whitespace=error-all "$RUNNER_TEMP/channel-matrix-local.patch"
+
+          # Prefer an exact index/worktree application. If strict context
+          # matching is disturbed only by formatting or adjacent reviewed
+          # changes, fall back to Git's blob-identity-backed three-way apply.
+          # The patch records old blob ids from this exact candidate, so a
+          # three-way conflict still fails closed rather than guessing.
+          if git apply --check --index --whitespace=nowarn \
+              "$RUNNER_TEMP/channel-matrix-local.patch"; then
+            git apply --index --whitespace=nowarn \
+              "$RUNNER_TEMP/channel-matrix-local.patch"
+          elif git apply --reverse --check --whitespace=nowarn \
+              "$RUNNER_TEMP/channel-matrix-local.patch"; then
+            echo "reviewed patch is already present; removing staging payload"
+          else
+            git apply --3way --index --whitespace=nowarn \
+              "$RUNNER_TEMP/channel-matrix-local.patch"
+          fi
+
           git rm -r "$patch_dir"
           (
             cd codex-rs
