@@ -14,15 +14,27 @@ const digests = {
 
 const heldResponseReleases = new Set();
 
-function holdAcceptedResponse() {
-  return new Promise(resolve => heldResponseReleases.add(resolve));
+function holdAcceptedResponse(request, response) {
+  return new Promise(resolve => {
+    let settled = false;
+    const release = () => {
+      if (settled) return;
+      settled = true;
+      heldResponseReleases.delete(release);
+      request.off("aborted", release);
+      response.off("close", release);
+      resolve();
+    };
+    heldResponseReleases.add(release);
+    request.once("aborted", release);
+    response.once("close", release);
+  });
 }
 
 function releaseHeldResponses() {
-  const count = heldResponseReleases.size;
-  for (const release of heldResponseReleases) release();
-  heldResponseReleases.clear();
-  return count;
+  const releases = [...heldResponseReleases];
+  for (const release of releases) release();
+  return releases.length;
 }
 
 const state = {
@@ -158,7 +170,7 @@ async function api(request, response, url) {
     };
     state.operations.set(input.operationId, observation);
     if (input.reason.includes("HOLD_RESPONSE")) {
-      await holdAcceptedResponse();
+      await holdAcceptedResponse(request, response);
       if (response.destroyed || response.writableEnded) return;
     }
     if (input.reason.includes("AMBIGUOUS")) {
