@@ -83,7 +83,20 @@ def check() -> None:
         )
     require(
         WORKER_CLI,
-        ("NativeJournalWriterActor::spawn", "actor.shutdown().await"),
+        (
+            "NativeJournalWriterActor::spawn",
+            "actor.shutdown().await",
+            '"--profile" if value == "native-app-server" => {}',
+            "The sole release profile is native-app-server and is selected by default.",
+        ),
+        failures,
+    )
+    forbid(
+        WORKER_CLI,
+        (
+            "native_profile_selected",
+            "--profile native-app-server must be selected explicitly",
+        ),
         failures,
     )
     require(
