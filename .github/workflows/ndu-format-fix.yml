@@ -1,4 +1,4 @@
-name: NDU one-shot exact baseline repair
+name: NDU bounded formatter and source evidence
 
 on:
   push:
@@ -12,74 +12,82 @@ permissions:
 
 concurrency:
   group: ndu-one-shot-rustfmt
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  repair-and-push:
+  repair-and-export:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-22.04
-    timeout-minutes: 30
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.sha }}
+      TARGET_BRANCH: codex/utility-ndu-production-hardening-20260926
     steps:
-      - name: Check out exact branch
+      - name: Check out immutable source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: codex/utility-ndu-production-hardening-20260926
+          ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
-
-      - name: Reuse audited exact repair block
+      - name: Format only the two repaired files and refresh typed source objects
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          (
+            cd codex-rs
+            rustfmt --edition 2024 --config-path rustfmt.toml \
+              hepta-control-plane/tests/runtime_retirement_dependencies.rs \
+              hepta-agentd/src/plasticity_learning_producer.rs
+          )
+          git add -- codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs codex-rs/hepta-agentd/src/plasticity_learning_producer.rs
+          python3 scripts/hepta_ndu_map_integrity.py --rebind-index
+          git add -- docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
           python3 - <<'PY'
-          from pathlib import Path
-          import textwrap
-
-          workflow = Path('.github/workflows/ndu-baseline-autofix.yml').read_text(encoding='utf-8')
-          marker = "          python3 - <<'PY'\n"
-          start = workflow.index(marker) + len(marker)
-          end = workflow.index("\n          PY\n", start)
-          source = textwrap.dedent(workflow[start:end])
-          exec(compile(source, 'ndu-baseline-autofix.py', 'exec'), {})
+          import subprocess
+          allowed = {
+              'codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs',
+              'codex-rs/hepta-agentd/src/plasticity_learning_producer.rs',
+              'docs/modules/utility.ndu/IMPLEMENTATION_MAP.json',
+          }
+          changed = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z']).decode().strip('\0').split('\0')) - {''}
+          if not changed <= allowed:
+              raise SystemExit(f'unexpected formatter changes: {sorted(changed - allowed)}')
+          if subprocess.check_output(['git', 'diff', '--name-only']):
+              raise SystemExit('unstaged changes outside bounded repair')
           PY
-
-      - name: Canonically format exact qualification packages
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt \
-            --package codex-hepta-ndu \
-            --package codex-hepta-intelligence-eval \
-            --package codex-hepta-intelligence \
-            --package codex-hepta-learning-artifacts \
-            --package codex-hepta-learning-ledger \
-            --package codex-hepta-shadow-qualification \
-            --package codex-hepta-agentd \
-            --package codex-hepta-agent-protocol \
-            --package codex-hepta-contracts \
-            --package codex-hepta-control-plane
-
-      - name: Validate lockfile fallback tests
-        run: python3 scripts/test_verify_cargo_lock.py
-
-      - name: Commit exact repairs
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
+          git diff --cached --check
           git config user.name hepta-qualification
           git config user.email qualification@invalid
-          git add \
-            codex-rs/hepta-agent-protocol/src/ndu.rs \
-            codex-rs/hepta-agentd/src \
-            codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs \
-            codex-rs/hepta-ndu/src \
-            scripts/verify_cargo_lock.py \
-            scripts/test_verify_cargo_lock.py
-          if git diff --cached --quiet; then
-            echo "no repairs required"
-            exit 0
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix(ndu): format strict regression fixtures and rebind source evidence'
           fi
-          git commit -m "fix(ndu): restore strict source and lint qualification"
-          git push origin HEAD:codex/utility-ndu-production-hardening-20260926
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$EXPECTED_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+      - name: Validate exact closed-world map and retain source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ndu-source-inspection"
+          mkdir -p "$out"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py > "$out/closed-world.json"
+          git archive --format=tar.gz -o "$out/source.tar.gz" HEAD \
+            codex-rs/hepta-ndu codex-rs/hepta-agentd codex-rs/hepta-agent-protocol \
+            codex-rs/hepta-contracts codex-rs/hepta-control-plane \
+            codex-rs/hepta-intelligence codex-rs/hepta-intelligence-eval \
+            codex-rs/hepta-learning-artifacts codex-rs/hepta-learning-ledger \
+            codex-rs/hepta-types codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            codex-rs/rust-toolchain.toml codex-rs/rustfmt.toml \
+            docs/modules docs/readiness/NDU_SYSTEM_EXECUTION.md docs/learning/NDU_FBSDE_SPEC.md \
+            scripts justfile .github/workflows/hepta-ndu-recursion.yml
+          git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
+          sha256sum "$out/source.tar.gz" > "$out/source.tar.gz.sha256"
+          test -z "$(git status --porcelain)"
+      - name: Retain bounded repair and source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-source-inspection-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-source-inspection
+          if-no-files-found: error
+          retention-days: 7
