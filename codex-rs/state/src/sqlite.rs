@@ -303,6 +303,10 @@ impl SqliteConfig {
             .journal_mode(SqliteJournalMode::Wal)
             .synchronous(SqliteSynchronous::Full)
             .foreign_keys(true)
+            // REPLACE performs an implicit DELETE. Its delete triggers run only
+            // with recursive triggers enabled; do not depend on build defaults.
+            // Set this on connection creation so every pool reconnect is fenced.
+            .pragma("recursive_triggers", "ON")
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
