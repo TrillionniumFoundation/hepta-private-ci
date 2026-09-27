@@ -5,56 +5,50 @@ on:
     paths:
       - CALLERS.toml
       - codex-rs/hepta-automation/**
-      - codex-rs/hepta-agentd/src/automation*
-      - codex-rs/hepta-agentd/src/state_control.rs
-      - codex-rs/hepta-agentd/src/runtime.rs
-      - codex-rs/hepta-agentd/Cargo.toml
+      - codex-rs/hepta-agentd/**
       - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
+      - codex-rs/app-server-client/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
       - docs/modules/automation.taskflow/**
       - docs/readiness/LANE_B_*.md
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - qualification/lane-b/LANE_B_NATIVE_CLOSURE.md
-      - scripts/automation_taskflow_contract.py
-      - scripts/test_automation_taskflow_contract.py
-      - scripts/verify_automation_taskflow_acceptance.py
-      - scripts/test_verify_automation_taskflow_acceptance.py
-      - codex-rs/Cargo.lock
-      - .github/workflows/automation-taskflow-focused.yml
-      - .github/workflows/automation-taskflow-selected-host.yml
-      - .github/workflows/automation-taskflow-independent-acceptance.yml
-      - .github/workflows/automation-taskflow-format-bootstrap.yml
-      - .github/workflows/automation-taskflow-map-rebind-final.yml
+      - scripts/*automation*taskflow*.py
+      - scripts/test_automation_recovery_sweeps.py
+      - scripts/hepta_ci_exec.py
+      - scripts/hepta_ci_v8.py
+      - justfile
+      - .github/workflows/automation-taskflow-*.yml
       - .github/workflows/blocking-ci.yml
   push:
     branches: [main]
     paths:
       - CALLERS.toml
       - codex-rs/hepta-automation/**
-      - codex-rs/hepta-agentd/src/automation*
-      - codex-rs/hepta-agentd/src/state_control.rs
-      - codex-rs/hepta-agentd/src/runtime.rs
-      - codex-rs/hepta-agentd/Cargo.toml
+      - codex-rs/hepta-agentd/**
       - codex-rs/hepta-agent-protocol/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
+      - codex-rs/app-server-client/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
       - docs/modules/automation.taskflow/**
       - docs/readiness/LANE_B_*.md
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - qualification/lane-b/LANE_B_NATIVE_CLOSURE.md
-      - scripts/automation_taskflow_contract.py
-      - scripts/test_automation_taskflow_contract.py
-      - scripts/verify_automation_taskflow_acceptance.py
-      - scripts/test_verify_automation_taskflow_acceptance.py
-      - codex-rs/Cargo.lock
-      - .github/workflows/automation-taskflow-focused.yml
-      - .github/workflows/automation-taskflow-selected-host.yml
-      - .github/workflows/automation-taskflow-independent-acceptance.yml
-      - .github/workflows/automation-taskflow-format-bootstrap.yml
-      - .github/workflows/automation-taskflow-map-rebind-final.yml
+      - scripts/*automation*taskflow*.py
+      - scripts/test_automation_recovery_sweeps.py
+      - scripts/hepta_ci_exec.py
+      - scripts/hepta_ci_v8.py
+      - justfile
+      - .github/workflows/automation-taskflow-*.yml
       - .github/workflows/blocking-ci.yml
   workflow_call:
   workflow_dispatch:
@@ -62,20 +56,28 @@ on:
 permissions:
   contents: read
 
+# A reusable invocation must not cancel the standalone or blocking caller.
 concurrency:
-  group: automation-taskflow-focused-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: automation-taskflow-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   focused:
-    name: schema-v19 runtime closure
+    name: TaskFlow exact-source qualification
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout exact candidate
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -85,99 +87,45 @@ jobs:
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
+          toolchain: "1.95.0"
           components: clippy,rustfmt
 
-      - name: Verify schema, documentation, acceptance and product-call truth
-        shell: bash
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Prepare native prerequisites
         run: |
-          set -euo pipefail
-          python3 scripts/automation_taskflow_contract.py self-test
-          python3 -m unittest -v \
-            scripts/test_automation_taskflow_contract.py \
-            scripts/test_verify_automation_taskflow_acceptance.py
-          git diff --check
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
 
-      - name: Verify Rust formatting
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+      - name: Resolve verified V8 prerequisites
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
 
-      - name: Compile automation owners and Agentd
-        working-directory: codex-rs
-        run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets
+      # Executes schema/document verification, test_verify_automation_taskflow_acceptance.py,
+      # cargo fmt --check, locked compile, cargo clippy -D warnings, default and
+      # structural tests, native recovery regressions, product and Bazel gates.
+      # The contract remains required; its failure no longer hides native diagnostics.
+      - name: Run real commands and retain their individual outcomes
+        run: python3 scripts/automation_taskflow_commands.py --output-dir "$RUNNER_TEMP/automation-taskflow-records"
 
-      - name: Strict Clippy
-        working-directory: codex-rs
-        run: cargo clippy -p codex-hepta-automation -p codex-hepta-agentd --all-targets --all-features -- -D warnings
-
-      - name: Test durable automation, migrations and Neural Circuit runtime
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test -p codex-hepta-operations
-          cargo test -p codex-hepta-automation
-          cargo test -p codex-hepta-automation --features taskflow-structural-qualification
-          cargo test -p codex-hepta-automation --test durable_causal_chain
-          cargo test -p codex-hepta-automation migration_convergence
-
-      - name: Test Agentd product composition
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test -p codex-hepta-agentd --lib
-          cargo test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers
-
-      - name: Verify TaskFlow Bazel qualification targets
-        shell: bash
-        run: |
-          set -euo pipefail
-          bazel test --test_output=errors \
-            //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
-            //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test
-
-      - name: Create exact command receipt
+      - name: Verify qualification did not mutate source
         if: always()
-        shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          import subprocess
-          from pathlib import Path
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
 
-          def git(*args: str) -> str:
-              return subprocess.check_output(["git", *args], text=True).strip()
-
-          receipt = {
-              "schema": "hepta.automation-taskflow.command-receipt.v1",
-              "commit": git("rev-parse", "HEAD"),
-              "tree": git("rev-parse", "HEAD^{tree}"),
-              "runnerOs": os.environ.get("RUNNER_OS"),
-              "runnerArch": os.environ.get("RUNNER_ARCH"),
-              "runId": os.environ.get("GITHUB_RUN_ID"),
-              "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-              "commands": [
-                  "python3 scripts/automation_taskflow_contract.py self-test",
-                  "python3 -m unittest scripts/test_verify_automation_taskflow_acceptance.py",
-                  "cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check",
-                  "cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets",
-                  "cargo clippy -p codex-hepta-automation -p codex-hepta-agentd --all-targets --all-features -- -D warnings",
-                  "cargo test -p codex-hepta-automation",
-                  "cargo test -p codex-hepta-agentd --lib",
-                  "bazel test TaskFlow qualification targets"
-              ]
-          }
-          path = Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-command-receipt.json"
-          path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-          PY
-
-      - name: Retain exact command receipt
+      - name: Retain exact command records and logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: automation-taskflow-receipt-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/automation-taskflow-command-receipt.json
+          path: ${{ runner.temp }}/automation-taskflow-records/
           if-no-files-found: error
           retention-days: 30
