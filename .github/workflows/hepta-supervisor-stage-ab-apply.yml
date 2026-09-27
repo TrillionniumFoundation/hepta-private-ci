@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: runtime-supervisor-stage-ab-apply-arm
+  group: runtime-supervisor-stage-ab-apply-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -178,6 +178,7 @@ jobs:
             .github/runtime-supervisor-stage-a.py \
             .github/runtime-supervisor-stage-a.py.bz2.b64 \
             .github/runtime-supervisor-stage-b.py.bz2.b64.00 \
+            .github/runtime-supervisor-stage-b.py.bz2.b64.01 \
             .github/workflows/hepta-supervisor-stage-a-apply.yml \
             .github/workflows/hepta-supervisor-stage-ab-apply.yml
           git commit -m "runtime.supervisor: bind restart lineage and companion containment"
