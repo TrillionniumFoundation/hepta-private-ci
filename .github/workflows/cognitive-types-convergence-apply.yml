@@ -1,0 +1,213 @@
+name: cognitive-types-convergence-apply
+
+on:
+  push:
+    branches:
+      - codex/cognitive-types-v1-convergence-20260927
+    paths:
+      - scripts/apply-cognitive-types-stage1.py
+      - .github/workflows/cognitive-types-convergence-apply.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-types-convergence-apply
+  cancel-in-progress: false
+
+jobs:
+  apply-and-qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      BRANCH: codex/cognitive-types-v1-convergence-20260927
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Apply cognitive.types convergence patch
+        run: python3 scripts/apply-cognitive-types-stage1.py
+
+      - name: Format changed Rust sources
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Verify cross-language vectors
+        run: |
+          python3 qualification/cognitive-types-v1/verify_vectors.py
+          node --experimental-strip-types qualification/cognitive-types-v1/verify_vectors.ts
+
+      - name: Targeted check
+        working-directory: codex-rs
+        run: |
+          cargo check --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-operations \
+            -p codex-state
+
+      - name: Targeted tests
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-cognitive-types
+          cargo test -p codex-hepta-cognitive-store
+          cargo test -p codex-hepta-operations
+
+      - name: Strict targeted Clippy
+        working-directory: codex-rs
+        run: |
+          cargo clippy --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-operations \
+            -p codex-state \
+            -- -D warnings
+
+      - name: Verify formatting and diff hygiene
+        run: |
+          cd codex-rs
+          cargo fmt --all -- --check
+          cd ..
+          git diff --check
+
+      - name: Create clean candidate commit
+        id: candidate
+        run: |
+          set -euo pipefail
+          rm -f scripts/apply-cognitive-types-stage1.py
+          rm -f .github/workflows/cognitive-types-convergence-apply.yml
+          git add -A
+          git reset --soft "$BASE_SHA"
+          git config user.name "openai-codex"
+          git config user.email "codex@openai.com"
+          git commit -m "feat(cognitive.types): close canonical V1 convergence gaps"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Requalify exact candidate commit
+        run: |
+          set -euo pipefail
+          test "$(git status --porcelain | wc -l)" -eq 0
+          cd codex-rs
+          cargo fmt --all -- --check
+          cargo check --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-operations \
+            -p codex-state
+          cargo test -p codex-hepta-cognitive-types
+          cargo test -p codex-hepta-cognitive-store
+          cargo test -p codex-hepta-operations
+          cargo clippy --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-operations \
+            -p codex-state \
+            -- -D warnings
+          cd ..
+          python3 qualification/cognitive-types-v1/verify_vectors.py
+          node --experimental-strip-types qualification/cognitive-types-v1/verify_vectors.ts
+
+      - name: Qualify deterministic synthetic merge
+        id: merge
+        run: |
+          set -euo pipefail
+          candidate="$(git rev-parse HEAD)"
+          git fetch origin main
+          git switch --detach "$candidate"
+          git merge --no-ff --no-edit origin/main
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+          cd codex-rs
+          cargo check --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-operations \
+            -p codex-state
+          cargo test -p codex-hepta-cognitive-types
+          cargo test -p codex-hepta-cognitive-store
+          cargo test -p codex-hepta-operations
+          cargo clippy --all-targets \
+            -p codex-hepta-cognitive-types \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-operations \
+            -p codex-state \
+            -- -D warnings
+          cd ..
+          git switch "$BRANCH"
+          git reset --hard "$candidate"
+
+      - name: Build immutable qualification receipt
+        env:
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+          CANDIDATE_TREE: ${{ steps.candidate.outputs.tree }}
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+          MERGE_TREE: ${{ steps.merge.outputs.tree }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+          from datetime import datetime, timezone
+
+          def output(*args):
+              return subprocess.check_output(args, text=True).strip()
+
+          receipt = {
+              "schema": "hepta.cognitive-types.qualification-receipt.v1",
+              "schemaVersion": 1,
+              "status": "PASS",
+              "baseCommit": os.environ["BASE_SHA"],
+              "candidateCommit": os.environ["CANDIDATE_SHA"],
+              "candidateTree": os.environ["CANDIDATE_TREE"],
+              "syntheticMergeCommit": os.environ["MERGE_SHA"],
+              "syntheticMergeTree": os.environ["MERGE_TREE"],
+              "rustc": output("rustc", "--version"),
+              "cargo": output("cargo", "--version"),
+              "workflowRunId": os.environ["GITHUB_RUN_ID"],
+              "workflowRunAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "generatedAtUtc": datetime.now(timezone.utc).isoformat(),
+              "commands": [
+                  "cargo fmt --all -- --check",
+                  "cargo check --all-targets -p codex-hepta-cognitive-types -p codex-hepta-cognitive-store -p codex-hepta-operations -p codex-state",
+                  "cargo test -p codex-hepta-cognitive-types",
+                  "cargo test -p codex-hepta-cognitive-store",
+                  "cargo test -p codex-hepta-operations",
+                  "cargo clippy --all-targets -p codex-hepta-cognitive-types -p codex-hepta-cognitive-store -p codex-hepta-operations -p codex-state -- -D warnings",
+                  "python3 qualification/cognitive-types-v1/verify_vectors.py",
+                  "node --experimental-strip-types qualification/cognitive-types-v1/verify_vectors.ts",
+              ],
+          }
+          path = pathlib.Path("/tmp/cognitive-types-qualification")
+          path.mkdir(parents=True, exist_ok=True)
+          (path / "receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload immutable qualification receipt
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-v1-qualification-${{ steps.candidate.outputs.sha }}
+          path: /tmp/cognitive-types-qualification/receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish clean candidate branch
+        run: |
+          set -euo pipefail
+          git push --force-with-lease origin "HEAD:$BRANCH"
