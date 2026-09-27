@@ -7,36 +7,30 @@ on:
     paths:
       - ".github/scripts/cognitive_read_converge.py.xz.b64.*"
       - ".github/workflows/cognitive-read-one-shot.yml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/scripts/cognitive_read_converge.py.xz.b64.*"
-      - ".github/workflows/cognitive-read-one-shot.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-source-writer-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: cognitive-read-source-writer-${{ github.ref_name }}
   cancel-in-progress: true
 
 env:
   PYTHONPATH: scripts
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  SOURCE_SHA: ${{ github.sha }}
   TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
 
 jobs:
   materialize:
     name: Materialize and atomically push cognitive.read source candidate
-    runs-on: macos-14
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.SOURCE_SHA }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -46,8 +40,9 @@ jobs:
           set -euo pipefail
           git config user.name 'Cognitive Read Convergence'
           git config user.email 'cognitive-read-convergence@users.noreply.github.com'
-          test "$(git branch --show-current)" = "$TARGET_BRANCH" || git switch -C "$TARGET_BRANCH"
+          test "$(git branch --show-current)" = "$TARGET_BRANCH"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse "origin/$TARGET_BRANCH")" = "$SOURCE_SHA"
           git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
             > .github/workflows/cognitive-read-qualification.yml
 
