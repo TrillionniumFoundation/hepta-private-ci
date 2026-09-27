@@ -35,6 +35,41 @@ class ReceiptTests(unittest.TestCase):
                 (root / "worker.xml").write_text(invalid)
                 self.assertFalse(read_junit(root)[1])
 
+    def test_failed_nextest_report_retains_executed_cases_and_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("infer_core", "worker", "agentd"):
+                (root / f"{name}.xml").write_text(
+                    '<testsuites tests="2" failures="1" errors="0">'
+                    '<testsuite tests="2" failures="1" disabled="0">'
+                    '<testcase name="passed"/>'
+                    '<testcase name="failed"><failure>diagnostic</failure></testcase>'
+                    '</testsuite></testsuites>'
+                )
+            evidence, passed = read_junit(root)
+            self.assertFalse(passed)
+            self.assertEqual(evidence["worker"]["status"], "failed")
+            self.assertEqual(evidence["worker"]["tests"], 2)
+            self.assertEqual(evidence["worker"]["failures"], 1)
+            self.assertEqual(evidence["worker"]["failing_cases"], ["failed"])
+            self.assertEqual(len(evidence["worker"]["sha256"]), 64)
+
+    def test_counter_drift_and_entity_expansion_cannot_become_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("infer_core", "worker", "agentd"):
+                (root / f"{name}.xml").write_text('<testsuite tests="1"><testcase/></testsuite>')
+            for raw in (
+                '<testsuite tests="48"><testcase/></testsuite>',
+                '<testsuite failures="-1"><testcase/></testsuite>',
+                '<testsuite disabled="1"><testcase/></testsuite>',
+                '<!DOCTYPE a [<!ENTITY x "expanded">]><testsuite><testcase>&x;</testcase></testsuite>',
+                '<unexpected><testcase/></unexpected>',
+            ):
+                with self.subTest(raw=raw):
+                    (root / "worker.xml").write_text(raw)
+                    self.assertFalse(read_junit(root)[1])
+
 
 class CandidateIntegrationTests(unittest.TestCase):
     """Exercise real Git identity/dirty-tree checks using synthetic JUnit fixtures.

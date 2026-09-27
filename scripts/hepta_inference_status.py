@@ -34,6 +34,11 @@ def summarize(outcomes: dict) -> tuple[dict, bool]:
 
 
 def read_junit(directory: Path) -> tuple[dict, bool]:
+    """Keep failed observations; reject malformed or contradictory reports.
+
+    A legitimate failed nextest report is evidence of failure, not zero tests.
+    Root/suite counters overlap, so never add their totals together.
+    """
     evidence = {}
     for name in ("infer_core", "worker", "agentd"):
         path = directory / f"{name}.xml"
@@ -44,29 +49,45 @@ def read_junit(directory: Path) -> tuple[dict, bool]:
                     raw = stream.read(32 * 1024 * 1024 + 1)
                 if len(raw) > 32 * 1024 * 1024:
                     raise ValueError("JUnit receipt exceeds 32 MiB")
+                item["sha256"] = hashlib.sha256(raw).hexdigest()
+                if b"<!DOCTYPE" in raw.upper() or b"<!ENTITY" in raw.upper():
+                    raise ValueError("JUnit DTD/entity declarations are prohibited")
                 root = ET.fromstring(raw)
-                for suite in (root, *root.iter("testsuite")):
-                    for field in ("failures", "errors", "skipped"):
-                        declared = int(suite.get(field, "0"))
-                        if declared < 0:
-                            raise ValueError("negative JUnit counter")
-                        if declared > 0:
-                            raise ValueError("JUnit declares non-passing cases")
+                if root.tag not in ("testsuites", "testsuite"):
+                    raise ValueError("unexpected JUnit root")
                 cases = list(root.iter("testcase"))
-                item = {
-                    "status": "observed",
-                    "sha256": hashlib.sha256(raw).hexdigest(),
-                    "tests": len(cases),
-                    "failures": sum(
-                        case.find("failure") is not None or case.find("error") is not None
-                        for case in cases
-                    ),
-                    "skipped": sum(case.find("skipped") is not None for case in cases),
-                }
-                if next(root.iter("error"), None) is not None or next(root.iter("failure"), None) is not None:
+                if len(cases) > 100_000:
+                    raise ValueError("JUnit test count exceeds its bound")
+                failed = [case for case in cases
+                          if case.find("failure") is not None or case.find("error") is not None]
+                item.update(
+                    status="observed", tests=len(cases), failures=len(failed),
+                    skipped=sum(case.find("skipped") is not None for case in cases),
+                    failing_cases=[case.get("name", "")[:256] for case in failed[:32]],
+                )
+                # Include a root testsuite once, not twice.
+                suites = [node for node in root.iter()
+                          if node.tag in ("testsuites", "testsuite")]
+                for suite in suites:
+                    suite_cases = list(suite.iter("testcase"))
+                    for field in ("tests", "failures", "errors", "skipped", "disabled"):
+                        value = suite.get(field)
+                        if value is None:
+                            continue
+                        if not re.fullmatch(r"[0-9]+", value) or len(value) > 12:
+                            raise ValueError("invalid JUnit counter")
+                        declared = int(value)
+                        if field == "tests" and declared != len(suite_cases):
+                            raise ValueError("JUnit test count disagrees with test cases")
+                        if field != "tests" and declared:
+                            item["status"] = "failed"
+                if any(node.tag in ("failure", "error", "skipped") for node in root.iter()):
                     item["status"] = "failed"
-            except (OSError, ValueError, ET.ParseError):
+                if not cases:
+                    item["status"] = "empty"
+            except (OSError, ValueError, ET.ParseError) as error:
                 item["status"] = "invalid"
+                item["diagnostic"] = str(error)[:256]
         evidence[name] = item
     passed = all(
         item["status"] == "observed" and item["tests"] > 0
