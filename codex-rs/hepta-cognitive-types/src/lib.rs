@@ -12,8 +12,8 @@ pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
 pub mod shared_experience;
-pub mod wire;
 mod shared_wire;
+pub mod wire;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
