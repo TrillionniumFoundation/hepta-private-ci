@@ -1,0 +1,38 @@
+name: Export learning.eval exact source
+
+on:
+  push:
+    branches:
+      - fix/learning-eval-full-convergence-20260926
+    paths:
+      - .github/workflows/learning-eval-source-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Archive exact tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git archive --format=tar.gz --output=hepta-private-ci-${GITHUB_SHA}.tar.gz HEAD
+          sha256sum hepta-private-ci-${GITHUB_SHA}.tar.gz > hepta-private-ci-${GITHUB_SHA}.tar.gz.sha256
+      - name: Upload exact tree
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-source-${{ github.sha }}
+          path: |
+            hepta-private-ci-${{ github.sha }}.tar.gz
+            hepta-private-ci-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
