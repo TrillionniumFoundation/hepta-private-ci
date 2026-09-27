@@ -36,9 +36,9 @@ HPTC semantic commitment and can bind the exact V1 digest as an explicit
 migration witness. There is no silent V1 reinterpretation.
 
 Runtime topology HPTC binds every candidate and delta semantic field. The stored
-candidate digest is derived. Delta and related-module sets use strictly
-increasing `StableId` order; duplicate, self and non-canonical producers fail.
-The product codec returns a validated wrapper.
+candidate digest is derived. Delta and related-module sets have one canonical
+representation: strictly increasing `StableId` order; duplicate, self and
+non-canonical producers fail. The product codec returns a validated wrapper.
 
 The three manifests use private native fields, bounded constructors and HPTC
 semantic digests. Their strict schemas and cross-language vectors distinguish
