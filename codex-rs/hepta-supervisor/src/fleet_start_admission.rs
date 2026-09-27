@@ -285,7 +285,7 @@ mod tests {
         format!("{byte:02x}").repeat(32)
     }
 
-    fn profile() -> FleetStartTrustProfileV1 {
+    fn test_profile() -> FleetStartTrustProfileV1 {
         FleetStartTrustProfileV1 {
             schema_version: FLEET_START_TRUST_PROFILE_SCHEMA_VERSION,
             local_node_id: "node-a".into(),
@@ -310,7 +310,7 @@ mod tests {
 
     #[test]
     fn profile_requires_local_node_inside_closed_trust_set() {
-        let mut profile = profile();
+        let mut profile = test_profile();
         profile.local_node_id = "node-b".into();
         assert!(matches!(
             profile.validate(),
@@ -320,11 +320,12 @@ mod tests {
 
     #[test]
     fn profile_rejects_uppercase_or_duplicate_keys() {
-        let mut profile = profile();
+        let mut profile = test_profile();
         profile.distributor_keys[0].verifying_key_hex = "AA".repeat(32);
         assert!(profile.validate().is_err());
-        let mut profile = profile();
-        profile.nodes[0].keys.push(profile.nodes[0].keys[0].clone());
+        let mut profile = test_profile();
+        let duplicate = profile.nodes[0].keys[0].clone();
+        profile.nodes[0].keys.push(duplicate);
         assert!(profile.validate().is_err());
     }
 }
