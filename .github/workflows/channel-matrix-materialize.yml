@@ -1,8 +1,14 @@
 name: channel.matrix materialize
 
-# Explicit manual recovery lane only. It may write a dedicated Matrix recovery
-# branch after static verification; normal push/PR qualification is read-only.
+# Explicit recovery lane only. It may write a dedicated Matrix recovery branch
+# after static verification; normal push/PR qualification is read-only. A
+# staged patch under the closed path below triggers one atomic materialization.
 on:
+  push:
+    branches:
+      - codex/channel-matrix-full-closure-20260927
+    paths:
+      - '.github/channel-matrix-local-patch/**'
   workflow_dispatch: {}
 
 permissions:
@@ -92,6 +98,7 @@ jobs:
               docs/modules/channel.matrix/* | \
               scripts/*channel_matrix* | \
               scripts/tests/test_channel_matrix* | \
+              .github/channel-matrix-local-patch/* | \
               .github/workflows/channel-matrix-*.yml | \
               codex-rs/Cargo.lock | codex-rs/Cargo.toml | MODULE.bazel.lock)
                 ;;
