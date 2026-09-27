@@ -13,6 +13,7 @@ on:
       - "docs/modules/intelligence.control/**"
       - "qualification/module-execution-dossiers/detail/intelligence.control.md"
       - "scripts/hepta-intelligence-control-status.py"
+      - "scripts/hepta-intelligence-control-requirements.py"
       - "scripts/hepta_ci_v8.py"
       - "scripts/hepta_ci_exec.py"
       - ".github/workflows/hepta-intelligence-control.yml"
@@ -29,6 +30,7 @@ on:
       - "docs/modules/intelligence.control/**"
       - "qualification/module-execution-dossiers/detail/intelligence.control.md"
       - "scripts/hepta-intelligence-control-status.py"
+      - "scripts/hepta-intelligence-control-requirements.py"
       - "scripts/hepta_ci_v8.py"
       - "scripts/hepta_ci_exec.py"
       - ".github/workflows/hepta-intelligence-control.yml"
@@ -54,7 +56,7 @@ jobs:
   qualification:
     name: intelligence.control (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 75
     env:
       HEPTA_CI_LANE: ${{ matrix.lane }}
     strategy:
@@ -147,6 +149,9 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
 
+      - name: Verify explicit requirement traceability
+        run: python3 scripts/hepta-intelligence-control-requirements.py --check
+
       - name: Check formatting
         working-directory: codex-rs
         run: >-
@@ -172,6 +177,15 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-command-records/agentd-default-tests.json"
           -- cargo test --locked -p codex-hepta-agentd --lib
 
+      - name: Test physical App Server intelligence boundary
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/physical-tests.json"
+          -- cargo test --locked -p codex-hepta-infer-worker-host --lib
+
       - name: Test explicitly classified qualification-only learning surface
         working-directory: codex-rs
         env:
@@ -182,14 +196,15 @@ jobs:
           -- cargo test --locked -p codex-hepta-agentd --lib
           --features qualification-legacy-learning-write
 
-      - name: Compile all Agentd targets
+      - name: Compile all Agentd and physical-boundary targets
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
         run: >-
           python3 ../scripts/hepta_ci_exec.py
-          --output "$RUNNER_TEMP/intelligence-command-records/agentd-all-targets.json"
-          -- cargo check --locked -p codex-hepta-agentd --all-targets
+          --output "$RUNNER_TEMP/intelligence-command-records/all-targets.json"
+          -- cargo check --locked -p codex-hepta-agentd
+          -p codex-hepta-infer-worker-host --all-targets
 
       - name: Strict lint intelligence product packages
         working-directory: codex-rs
@@ -199,7 +214,8 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/intelligence-command-records/clippy.json"
           -- cargo clippy --locked -p codex-hepta-intelligence
-          -p codex-hepta-agentd --all-targets -- -D warnings
+          -p codex-hepta-agentd -p codex-hepta-infer-worker-host
+          --all-targets -- -D warnings
 
       - name: Generate exact executed truth
         shell: bash
