@@ -13,6 +13,8 @@ use codex_hepta_types::StableId;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+use crate::AgentdIntelligenceDecisionPlanV1;
+use crate::AgentdIntelligenceLearningHostV1;
 use crate::AgentdIntelligenceOwnerInputsV1;
 use crate::agentd_objective_fence;
 
@@ -166,19 +168,43 @@ pub struct AgentdIntelligenceInvocationV1 {
     pub request: CanonicalIntelligenceRunRequestV1,
     pub inputs: AgentdIntelligenceOwnerInputsV1,
     run_start: AgentdRunStartBindingV1,
+    decision_plan: Option<AgentdIntelligenceDecisionPlanV1>,
 }
 
 impl AgentdIntelligenceInvocationV1 {
+    /// Compatibility constructor for focused source tests. Product capability
+    /// advertisement requires `new_product` and a durable learning host.
     pub fn new(
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
         request: CanonicalIntelligenceRunRequestV1,
         inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<Self, AgentdError> {
+        Self::construct(identity, record, request, inputs, None)
+    }
+
+    pub fn new_product(
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        decision_plan: AgentdIntelligenceDecisionPlanV1,
+    ) -> Result<Self, AgentdError> {
+        Self::construct(identity, record, request, inputs, Some(decision_plan))
+    }
+
+    fn construct(
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        decision_plan: Option<AgentdIntelligenceDecisionPlanV1>,
+    ) -> Result<Self, AgentdError> {
         let value = Self {
             request,
             inputs,
             run_start: AgentdRunStartBindingV1::from_record(identity, record)?,
+            decision_plan,
         };
         value.validate(identity, record)?;
         Ok(value)
@@ -192,7 +218,7 @@ impl AgentdIntelligenceInvocationV1 {
         self.run_start.validate_record(identity, record)?;
         let snapshot = &record.snapshot;
         if self.request.run_id != snapshot.run_id
-            || self.request.run_id != *self.run_start.run_id()
+            || &self.request.run_id != self.run_start.run_id()
             || self.request.snapshot.objective_digest() != snapshot.objective_digest
             || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
             || self.request.snapshot.body_generation().get() != snapshot.generation
@@ -215,8 +241,14 @@ impl AgentdIntelligenceInvocationV1 {
         CanonicalIntelligenceRunRequestV1,
         AgentdIntelligenceOwnerInputsV1,
         AgentdRunStartBindingV1,
+        Option<AgentdIntelligenceDecisionPlanV1>,
     ) {
-        (self.request, self.inputs, self.run_start)
+        (
+            self.request,
+            self.inputs,
+            self.run_start,
+            self.decision_plan,
+        )
     }
 }
 
@@ -224,7 +256,7 @@ impl AgentdIntelligenceInvocationV1 {
 ///
 /// Implementations are host-owned and must derive current stage inputs from
 /// their authoritative owners. Request/wire callers cannot provide this object
-/// and therefore cannot substitute policy, model, artifact, trust, or
+/// and therefore cannot substitute policy, model, artifact, trust, learning or
 /// currentness inputs.
 pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
     /// Stable digest of the host-owned provider profile. The default is
@@ -232,6 +264,12 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
     /// incomplete legacy implementations.
     fn profile_digest(&self) -> Digest32 {
         Digest32::ZERO
+    }
+
+    /// Product learning owner attached to this exact provider profile. A
+    /// provider without it remains a compatibility/source-test profile.
+    fn learning_host(&self) -> Option<std::sync::Arc<AgentdIntelligenceLearningHostV1>> {
+        None
     }
 
     fn build(
