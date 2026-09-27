@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'codex-rs/hepta-infer-worker-host/python/**'
+      - 'codex-rs/hepta-bellman-operator/python/**'
+      - 'codex-rs/hepta-intelligence-eval/python/**'
       - 'codex-rs/hepta-infer-worker-host/src/semantic*.rs'
       - 'codex-rs/hepta-infer-worker-host/src/model_worker.rs'
       - 'codex-rs/hepta-infer-core/src/semantic*.rs'
@@ -12,6 +14,8 @@ on:
     branches: [main]
     paths:
       - 'codex-rs/hepta-infer-worker-host/python/**'
+      - 'codex-rs/hepta-bellman-operator/python/**'
+      - 'codex-rs/hepta-intelligence-eval/python/**'
       - 'codex-rs/hepta-infer-worker-host/src/semantic*.rs'
       - 'codex-rs/hepta-infer-worker-host/src/model_worker.rs'
       - 'codex-rs/hepta-infer-core/src/semantic*.rs'
@@ -89,6 +93,11 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-infer-worker-host/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-contracts.log"
+      - name: Numerical trainer and paired-metric tests (not Laya weight evidence)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-bellman-operator/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-training-contracts.log"
+          "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-intelligence-eval/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-metrics-contracts.log"
       - name: Real pinned checkpoint load and bounded read-only predictions
         run: |
           set -euo pipefail
@@ -96,6 +105,13 @@ jobs:
           set --
           if [[ "$RUNNER_OS" == "Linux" ]]; then set -- --supervised; fi
           "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py "$@" --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
+      - name: Real frozen-Laya features and private scorer training
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-bellman-operator/python/laya_training_smoke.py --prepared "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-training-smoke.log"
       - name: Require actual model observations on this tested tree
         env:
           TESTED: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
@@ -118,6 +134,27 @@ jobs:
           assert observation['weights_parameters'] > 100_000_000
           assert observation['production_composition'] is False
           assert observation['held_out_efficacy'] is False
+          training = json.loads((root / 'training-report.json').read_text())
+          assert training['success'] is True
+          assert training['source_sha'] == run['source_sha']
+          assert training['tested_sha'] == run['tested_sha']
+          assert training['tested_tree'] == run['tested_tree']
+          assert training['real_model_forward_calls'] == 16
+          assert training['actual_input_tokens'] > 0
+          assert training['fit']['steps'] == 16
+          assert training['fit']['delta_norm'] > 0
+          assert training['fit']['candidate_head_digest'] != training['fit']['baseline_head_digest']
+          assert training['selected_parameters_unchanged'] is True
+          assert training['synthetic_labels_and_logical_times'] is True
+          assert training['held_out_efficacy'] is False
+          assert training['independent_acceptance'] is False
+          assert training['artifact_adoption'] is False
+          assert training['cost_seconds']['total'] < training['total_budget_seconds']
+          import hashlib
+          assert hashlib.sha256((root / 'candidate-head.safetensors').read_bytes()).hexdigest() == training['fit']['payload_sha256']
+          for split in ('future', 'retention'):
+              assert training['paired_metrics'][split]['rows'] == 4
+              assert training['paired_metrics'][split]['final_holdout_consumed'] is False
           if os.environ['RUNNER_OS'] == 'Linux':
               process = json.loads((root / 'process-observation.json').read_text())
               assert process['transport']['eligible_reply'] is True
@@ -140,6 +177,10 @@ jobs:
             ${{ runner.temp }}/laya-torch-install.json
             ${{ runner.temp }}/laya-environment.txt
             ${{ runner.temp }}/laya-contracts.log
+            ${{ runner.temp }}/laya-training-contracts.log
+            ${{ runner.temp }}/laya-metrics-contracts.log
+            ${{ runner.temp }}/laya-training-smoke.log
+            ${{ runner.temp }}/laya-smoke/candidate-head.safetensors
             ${{ runner.temp }}/laya-smoke.log
             ${{ runner.temp }}/laya-smoke/*.json
           if-no-files-found: error
