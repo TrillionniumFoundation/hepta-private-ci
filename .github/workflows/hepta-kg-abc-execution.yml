@@ -110,9 +110,10 @@ jobs:
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           fi
 
-          # Bind the committed objects, not an uncommitted formatter overlay.
-          # The map cannot bind its own future blob; only its source manifest is
-          # changed in this second ordinary commit. Claim flags remain false.
+          # Bind only existing registered native/composition surfaces. The new
+          # supplementary docs are versioned in the candidate tree and linked
+          # from TECHNICAL.md, not masqueraded as code ownership surfaces.
+          # The map cannot bind its own future blob. Claim flags remain false.
           python3 - <<'PY'
           import importlib.util
           import json
@@ -130,12 +131,6 @@ jobs:
           row = json.loads(original, object_pairs_hook=maps.unique_keys)
           assert row['module'] == 'knowledge.graph'
           assert row['declaredRoots'] == ['codex-rs/hepta-kg']
-          additions = {
-              'docs/modules/knowledge.graph/QUERY_BUDGET_20260928.md',
-              'qualification/knowledge-graph/WRITER_SELECTION.md',
-          }
-          row['compositionRoots'] = sorted(set(row['compositionRoots']) | additions)
-          row['observedSourcePaths'] = sorted(set(row['observedSourcePaths']) | additions)
           current = maps.current_source_base()
           current_objects = maps.current_source_objects(row)
           if current_objects != row['sourceObjects']:
