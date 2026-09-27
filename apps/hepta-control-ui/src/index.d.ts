@@ -1,17 +1,5 @@
-export type RuntimeStatus =
-  | "ready"
-  | "degraded"
-  | "quarantined"
-  | "recovering"
-  | "unavailable";
-
-export type OperationAction =
-  | "request_start"
-  | "request_quarantine"
-  | "request_reconcile"
-  | "request_retry"
-  | "request_rollback"
-  | "request_stop";
+export type RuntimeStatus = "ready" | "degraded" | "quarantined" | "recovering" | "unavailable";
+export type OperationAction = "request_start" | "request_quarantine" | "request_reconcile" | "request_retry" | "request_rollback" | "request_stop";
 
 export interface RuntimeModuleProjection {
   readonly id: string;
@@ -19,20 +7,17 @@ export interface RuntimeModuleProjection {
   readonly revision: number;
   readonly semanticDigest: string;
 }
-
 export interface RuntimeProjection {
   readonly generation: number;
   readonly revision: number;
   readonly modules: readonly RuntimeModuleProjection[];
 }
-
 export interface RuntimeSnapshot extends RuntimeProjection {
   readonly sessionId: string;
   readonly connectionGeneration: number;
   readonly semanticDigest: string;
   readonly observedAt: string | null;
 }
-
 export interface OperationIntent {
   readonly action: OperationAction;
   readonly targetId: string;
@@ -40,7 +25,16 @@ export interface OperationIntent {
   readonly displayedRevision: number;
   readonly reason: string;
 }
-
+export interface ConfirmationContext extends OperationIntent {
+  readonly sessionId: string;
+  readonly identityId: string;
+  readonly permissionRevision: number;
+  readonly connectionGeneration: number;
+  readonly snapshotDigest: string;
+  readonly targetRevision: number;
+  readonly targetDigest: string;
+  readonly operationId: string;
+}
 export interface OperationInput {
   readonly operationId: string;
   readonly action?: OperationAction;
@@ -49,8 +43,8 @@ export interface OperationInput {
   readonly reason: string;
   readonly semanticDigest?: string;
   readonly signal?: AbortSignal;
+  readonly confirmation?: ConfirmationContext;
 }
-
 export interface OperationView {
   readonly operationId: string;
   readonly semanticDigest: string;
@@ -66,8 +60,14 @@ export interface OperationView {
   readonly terminalStatus: string | null;
   readonly outcomeDigest: string | null;
   readonly authorityGranted: false;
+  readonly recoveryError?: string;
 }
-
+export interface RecoveryMetrics {
+  readonly observations: number;
+  readonly failures: number;
+  readonly lastBatchDurationMs: number;
+  readonly maxLookupWaitMs: number;
+}
 export interface RuntimeClientView {
   readonly connected: boolean;
   readonly authenticated: boolean;
@@ -84,8 +84,10 @@ export interface RuntimeClientView {
   readonly indeterminateCount: number;
   readonly completed: readonly OperationView[];
   readonly completedCount: number;
+  readonly recoveryMetrics: RecoveryMetrics;
+  readonly pendingMaxAgeMs: number;
+  readonly snapshotAgeMs: number | null;
 }
-
 export interface UiControlTransport {
   connect(manifest: object, options?: { signal?: AbortSignal }): Promise<object>;
   readSnapshot(input: object, options?: { signal?: AbortSignal }): Promise<object>;
@@ -95,6 +97,7 @@ export interface UiControlTransport {
   revoke?(session: object, options?: { signal?: AbortSignal }): Promise<void>;
   close(session: object, options?: { signal?: AbortSignal }): Promise<void>;
 }
+export type RecoveryPersistence = (record: Readonly<Record<string, unknown>>, options: { signal?: AbortSignal }) => Promise<void | { discardRejected?: () => Promise<void> }>;
 
 export const UI_CONTROL_ERROR_CODES: Readonly<Record<string, string>>;
 export class UiControlError extends Error {
@@ -107,7 +110,6 @@ export class UiControlError extends Error {
 export function isUiControlError(value: unknown, code?: string): value is UiControlError;
 export function uiControlError(code: string, message: string, options?: object): UiControlError;
 export function asUiControlError(value: unknown, code?: string, message?: string, options?: object): UiControlError;
-
 export const DEFAULT_CANONICAL_LIMITS: Readonly<Record<string, number>>;
 export function canonicalJson(value: unknown, limits?: object): string;
 export function parseCanonicalJson(text: string, options?: object): unknown;
@@ -117,7 +119,6 @@ export function assertCanonicalText(value: unknown, label: string, options?: obj
 export function assertSafeInteger(value: unknown, label: string, options?: object): number;
 export function assertSha256(value: unknown, label: string, options?: object): string;
 export function assertStableIdentifier(value: unknown, label: string, options?: object): string;
-
 export const RUNTIME_STATUSES: readonly RuntimeStatus[];
 export const OPERATION_ACTIONS: readonly OperationAction[];
 export function projectRuntime(runtime: RuntimeProjection): RuntimeProjection;
@@ -126,17 +127,12 @@ export function buildOperationIntent(input: OperationIntent): OperationIntent;
 export function digestOperationIntent(intent: OperationIntent): Promise<string>;
 export function projectRuntimeFromLocalCanonicalJson(text: string): RuntimeProjection;
 export function buildLocalOperationProposalFromCanonicalJson(text: string): OperationIntent;
-
 export const UI_CONTROL_PROTOCOL_VERSION: string;
 export const UI_CONTROL_PERMISSIONS: Readonly<Record<"READ" | "REQUEST" | "START" | "STOP", string>>;
 export class RuntimeClient {
-  constructor(options: {
-    transport: UiControlTransport;
-    maxPending?: number;
-    clock?: () => number;
-    protocolVersion?: string;
-  });
+  constructor(options: { transport: UiControlTransport; maxPending?: number; clock?: () => number; protocolVersion?: string });
   readonly connected: boolean;
+  setRecoveryPersistence(persist: RecoveryPersistence | null): void;
   connect(manifest: object, options?: { signal?: AbortSignal }): Promise<RuntimeClientView>;
   refreshSession(options?: { signal?: AbortSignal }): Promise<RuntimeClientView>;
   revokeSession(options?: { signal?: AbortSignal }): Promise<void>;
@@ -147,13 +143,12 @@ export class RuntimeClient {
   requestStart(input: OperationInput): Promise<OperationView>;
   requestStop(input: OperationInput): Promise<OperationView>;
   recoverOperation(operationId: string, options?: { signal?: AbortSignal }): Promise<OperationView>;
-  recoverPending(options?: { signal?: AbortSignal; limit?: number }): Promise<readonly OperationView[]>;
+  recoverPending(options?: { signal?: AbortSignal; limit?: number; concurrency?: number }): Promise<readonly OperationView[]>;
   reconcile(observation: object): OperationView;
   exportRecoveryState(): object;
   restoreRecoveryState(state: object): RuntimeClientView;
   close(options?: { signal?: AbortSignal }): Promise<object>;
 }
-
 export class SameOriginHttpTransport implements UiControlTransport {
   constructor(options?: object);
   connect(manifest: object, options?: object): Promise<object>;
@@ -164,7 +159,6 @@ export class SameOriginHttpTransport implements UiControlTransport {
   revoke(session: object, options?: object): Promise<void>;
   close(session: object, options?: object): Promise<void>;
 }
-
 export class SessionProvider {
   constructor(options: object);
   subscribe(listener: (event: object) => void): () => void;
@@ -173,13 +167,8 @@ export class SessionProvider {
   revoke(options?: object): Promise<void>;
   stop(): void;
 }
-
 export function normalizeSnapshot(snapshot: object, session: object): Promise<RuntimeSnapshot>;
-export function validateSnapshotTransition(
-  previous: RuntimeSnapshot | null,
-  next: RuntimeSnapshot,
-): RuntimeSnapshot;
-
+export function validateSnapshotTransition(previous: RuntimeSnapshot | null, next: RuntimeSnapshot): RuntimeSnapshot;
 export function createControlConsole(options: object): Readonly<{
   start(options?: object): Promise<void>;
   render(): void;
