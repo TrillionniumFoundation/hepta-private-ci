@@ -8,6 +8,7 @@ use tempfile::TempDir;
 use crate::EVIDENCE_DATABASE_LINEAGE;
 use crate::EvidenceCandidateV1;
 use crate::EvidenceClaimClassV1;
+use crate::EvidenceError;
 use crate::EvidenceId;
 use crate::EvidenceIssuerRoleV1;
 use crate::EvidenceReceiptKindV1;
@@ -193,4 +194,48 @@ async fn cursor_query_uses_the_candidate_claim_sequence_index() {
         details.contains("idx_qualification_evidence_candidate_claim"),
         "unexpected query plan for {EVIDENCE_DATABASE_LINEAGE}: {details}"
     );
+}
+
+#[tokio::test]
+async fn cursor_page_rejects_well_formed_but_substituted_payload_digest() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+        .await
+        .expect("open evidence store");
+    insert_rows(&store, 1).await;
+
+    let original = store
+        .query_qualification_claim_page(
+            &candidate(),
+            EvidenceClaimClassV1::MandatoryTests,
+            None,
+            1,
+        )
+        .await
+        .expect("untampered page must be readable");
+    assert_eq!(original.evidence.len(), 1);
+    assert_eq!(
+        original.evidence[0].payload_sha256,
+        Sha256Digest::for_bytes(b"{\"index\":1}")
+    );
+
+    // Model a corrupt projection without dropping production denial triggers or
+    // changing the canonical envelope. A syntactically valid digest must not
+    // pass the page decoder merely because its hexadecimal encoding is valid.
+    let forged_digest = Sha256Digest::for_bytes(b"substituted page payload");
+    let row = sqlx::query(
+        "SELECT seq, evidence_id, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id,
+                ? AS payload_sha256, envelope_sha256, predecessor_evidence_id,
+                target_evidence_id, observed_at_ms, expires_at_ms, envelope_json
+         FROM qualification_evidence WHERE evidence_id = ?",
+    )
+    .bind(forged_digest.as_str())
+    .bind("evidence:paging:0001")
+    .fetch_one(&store.pool)
+    .await
+    .expect("construct corrupt page projection");
+    let result = super::decode_reference(&row, &candidate(), EvidenceClaimClassV1::MandatoryTests);
+    assert!(matches!(result, Err(EvidenceError::Corrupt(_))));
+    store.close().await;
 }
