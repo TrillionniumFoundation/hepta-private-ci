@@ -21,6 +21,7 @@ import time
 from hepta_retrieval_wire import MAX_FRAME, decode_reply, decode_request
 from laya_binary import OwnerDeadline
 from laya_retrieval import Rejected
+from laya_process_group import EXITED_LEADER_ONLY, SIGNALLED, signal_owned_group
 
 MAX_DIAGNOSTIC_BYTES = 8192
 CLEANUP_SECONDS = 2.0
@@ -76,7 +77,8 @@ class ProcessFailure(RuntimeError):
 def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
     """Keep the unreaped leader as the process-group identity until signalling.
 
-    If signalling fails, DO NOT wait/poll/reap: another process could otherwise
+    If signalling fails without a verified exited-singleton observation, DO NOT
+    wait/poll/reap: another process could otherwise
     reuse that group number before a later cleanup attempt. This is a trusted
     exclusive-reaper protocol, not protection against a concurrent foreign reaper.
     """
@@ -90,7 +92,7 @@ def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
     try:
         if child.returncode is not None:
             raise ChildProcessError("child was reaped outside its owner")
-        os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        exited = os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
     except ChildProcessError:
         observation["cleanup_error"] = "ChildOwnershipLost"
         return
@@ -100,11 +102,14 @@ def _cleanup_owned_child(child: subprocess.Popen, observation: dict) -> None:
         return
     observation["cleanup_stage"] = "signal_group"
     try:
-        os.killpg(child.pid, signal.SIGKILL)
-        observation["group_kill_sent"] = True
-    except ProcessLookupError:
-        # No current group exists; the still-owned leader may now be reaped.
-        pass
+        disposition = signal_owned_group(child, exited)
+        if disposition == SIGNALLED:
+            observation["group_kill_sent"] = True
+        if disposition == EXITED_LEADER_ONLY:
+            observation["group_exited_leader_only"] = True
+    except ChildProcessError:
+        observation["cleanup_error"] = "ChildOwnershipLost"
+        return
     except OSError as error:
         observation["cleanup_error"] = type(error).__name__
         observation["cleanup_errno"] = error.errno
@@ -173,7 +178,8 @@ def _exchange(command: list[str], request_wire: bytes, deadline: OwnerDeadline,
         "operation_id": request["operation_id"], "deadline_ms": request["deadline_ms"],
         "spawned": False, "direct_child_exit_observed": False, "returncode": None,
         "direct_child_reaped": False,
-        "group_kill_sent": False, "cleanup_error": None, "cleanup_stage": None,
+        "group_kill_sent": False, "group_exited_leader_only": False,
+        "cleanup_error": None, "cleanup_stage": None,
         "cleanup_errno": None, "input_bytes_written": 0,
         "stdout_bytes": 0, "stderr_bytes": 0, "stderr_sha256": None,
         "reply_sha256": None, "eligible_reply": False, "retry_allowed": False,

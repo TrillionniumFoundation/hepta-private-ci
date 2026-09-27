@@ -86,9 +86,17 @@ class CleanupTests(unittest.TestCase):
         self.assertFalse(observed["retry_allowed"])
 
     def test_wait_timeout_retains_identity_after_signal_and_can_reconcile(self):
-        with patch.object(subprocess.Popen, "wait", side_effect=subprocess.TimeoutExpired("fixture", 1)):
-            with self.assertRaises(ProcessFailure) as caught:
-                self.execute("sys.stdin.buffer.read()")
+        # Keep the leader live until cancellation so this is genuinely a signal
+        # test on Darwin too, not an assertion that a zombie received SIGKILL.
+        cancel = threading.Event()
+        timer = threading.Timer(0.15, cancel.set)
+        timer.start()
+        try:
+            with patch.object(subprocess.Popen, "wait", side_effect=subprocess.TimeoutExpired("fixture", 1)):
+                with self.assertRaises(ProcessFailure) as caught:
+                    self.execute("sys.stdin.buffer.read()\ntime.sleep(5)", cancel=cancel)
+        finally:
+            timer.join()
         failure = caught.exception
         self.addCleanup(failure.reconcile_cleanup)
         self.assertTrue(failure.observation["group_kill_sent"])
