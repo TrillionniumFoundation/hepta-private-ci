@@ -1,4 +1,4 @@
-# closure-trigger: durable-proof-and-evidence-rog-r2-20260927
+# closure-trigger: durable-proof-and-evidence-desktop-r3-20260927
 name: Hepta objective compiler closure materializer
 
 on:
@@ -20,9 +20,9 @@ jobs:
   materialize:
     runs-on:
       - self-hosted
-      - linux
+      - desktop
       - x64
-      - rog
+      - linux
     timeout-minutes: 150
     env:
       TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
