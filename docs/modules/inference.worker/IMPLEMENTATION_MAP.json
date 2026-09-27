@@ -8,8 +8,12 @@
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
   "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
-  "declaredRoots": ["codex-rs/hepta-infer-worker-host"],
-  "resolvedRoots": ["codex-rs/hepta-infer-worker-host"],
+  "declaredRoots": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
   "stateOwnerDisposition": "Owns live provider client handles and experimental process-local resource counters; persistent request/slot/observation facts remain in inference.control. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes. Local resources are not yet durably composed.",
   "terminalObserverDisposition": "The hosted native-app-server profile observes matching turn events and exact thread-history reconciliation. The feature-gated local driver is injected; its observations do not prove physical weights/device behavior.",
   "operations": [
@@ -23,11 +27,13 @@
         "buildTarget": "codex-hepta-infer-worker-host::model_worker"
       },
       "delegatedCallees": [],
-      "tests": [{
-        "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-        "kind": "manifest_and_resource_binding",
-        "command": "just test -p codex-hepta-infer-worker-host --lib"
-      }],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+          "kind": "manifest_and_resource_binding",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        }
+      ],
       "sourceSemantics": "Experimental-local-model feature only outside unit tests. Validates unverified local policy and manifest shape, reserves aggregate resident capacity before driver entry, and retains/fences uncertain allocation. This is not a verified grant, real artifact loader, OS/device enforcement or production caller.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
@@ -58,6 +64,13 @@
           "symbol": "pub fn settle_native(",
           "buildTarget": "codex-hepta-infer-core::durable_control::native",
           "ownerModule": "inference.control"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+          "symbol": "pub(super) fn observe_event(",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server",
+          "ownerModule": "inference.worker"
         }
       ],
       "tests": [
@@ -70,9 +83,14 @@
           "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
           "kind": "matching_native_events_and_usage",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+          "kind": "completion_only_delta_summary_identity_and_bounds",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the private Agent/App Server once, and commits matching terminal/output/optional-token observations. Reopen is exact-history reconcile-only; duplicate requests never issue another turn/start. Missing-history resolution and later trusted usage reconciliation remain open.",
+      "sourceSemantics": "Reserves through durable inference.control, calls the private Agent/App Server once, and commits matching terminal/output/optional-token observations. Bounded per-item assembly merges deltas, complete messages and terminal summaries without duplication or silent output loss. Reopen is exact-history reconcile-only; duplicate requests never issue another turn/start. Permanent missing-history and later trusted usage resolution remain open.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -89,11 +107,13 @@
         "buildTarget": "codex-hepta-infer-worker-host::model_worker"
       },
       "delegatedCallees": [],
-      "tests": [{
-        "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-        "kind": "drain_and_unload",
-        "command": "just test -p codex-hepta-infer-worker-host --lib"
-      }],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+          "kind": "drain_and_unload",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        }
+      ],
       "sourceSemantics": "Experimental cleanup borrows the retained handle, refuses active requests, preserves handle/capacity and fences on unload failure, and releases resident capacity only after observed success. Cleanup remains legal after expiry/revocation; it never unfences the generation. Physical drain is still the driver owner's obligation.",
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
@@ -103,11 +123,11 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Complete kernel-verified local resource grants/manifests/input/handle boundaries and a live async cancellation/deadline driver; current local policy and clock remain unverified and experimental.",
+    "Sealed kernel-verified local grant, manifest, immutable input and trusted deadline preparation is implemented in local_admission.rs. It is not connected to the synchronous compatibility worker and cannot enter a physical effect. Complete inference.control-owned dispatch proof, attested handle, real artifact descriptors and the async live-cancellation/deadline driver before local production execution.",
     "Compose local exact operation identity, grant witness, physical handle dispatch, duplicate conflict and restart reconciliation through the existing inference.control owner; process-local accounting is not durable deduplication.",
     "Implement/prove actual local weights, tokenizer, runtime, device and OS-observed aggregate memory enforcement before claiming isolated inference.",
-    "Exact App Server thread-history reconciliation is implemented. Missing-history resolution and later trusted token-usage reconciliation remain open; unknown usage and transport loss never imply zero usage or safe replay.",
-    "Obtain successful exact-head and merge-candidate qualification and resolve inherited derived-projection and owner/lifecycle failures; source presence and a workflow definition are not passing evidence."
+    "Exact App Server thread-history reconciliation and a redacted no-effect diagnostic snapshot are implemented. Permanent missing-history resolution, authenticated later token-usage amendments, configurable acknowledgement grace and complete durable age/metrics remain open. Unknown usage and transport loss never imply zero usage or safe replay.",
+    "Require successful final exact-head and merge-candidate qualification on Linux/macOS. Retained predecessor evidence has inference.control 29/29, Agentd 169/169 and worker 61/62 on a macOS merge candidate; the output repair has not yet been proved by that historical run. Global stale observations and non-ancestor implementation-map anchors remain repository-controlled blockers."
   ],
   "externalEvidenceGates": [
     "identified real weights/tokenizer/runtime/device",
@@ -138,12 +158,14 @@
   "owner": "inference-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
-  "sourceRoot": ["codex-rs/hepta-infer-worker-host"],
+  "sourceRoot": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
   "mappingSourceIdentityMode": "exact_blob",
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "763755cf1a39d39b81b632f08b90b4e8afb5c0a8",
-    "tree": "3481d1310db3e10e95b95b74df4c21eaed055ef1"
+    "commit": "cf7d43d460b5fb642f76a948f0eef34cd5754a67",
+    "tree": "66a14e83f7b9c8f5079e1c38b46fcadb3a34bff1"
   },
   "observedSourcePaths": [
     "codex-rs/.config/nextest.toml",
@@ -154,19 +176,69 @@
     "codex-rs/hepta-infer-worker-host"
   ],
   "sourceObjects": [
-    {"path": "codex-rs/.config/nextest.toml", "object": "677d1658487935a0ab08623c256ee0b5b49c5cc2"},
-    {"path": "codex-rs/Cargo.lock", "object": "cd6650b68a815d69038166b7de50c2857f358641"},
-    {"path": "codex-rs/Cargo.toml", "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"},
-    {"path": "codex-rs/hepta-agentd", "object": "14f2ddf76185095e8663ae5addbef76e344205d8"},
-    {"path": "codex-rs/hepta-infer-core", "object": "ca880ac86066ad28cace3cbf8a1d192d8f22843b"},
-    {"path": "codex-rs/hepta-infer-core/src/native_control.rs", "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"},
-    {"path": "codex-rs/hepta-infer-worker-host", "object": "4ada8999e457e0a68d8751c9d9d3e6743b9b6ba8"},
-    {"path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs", "object": "a9348ed531773ac78bc48538e40585ee659cbad2"},
-    {"path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs", "object": "83b8e3b4a3759bd14cc060dca85bc50d146837d6"},
-    {"path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs", "object": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0"},
-    {"path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs", "object": "ed58f4cd04b49bef21cca15eef8f4910b56032fa"},
-    {"path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs", "object": "7b24c3215653858323cdf8e77ab30e8dcb9441bf"},
-    {"path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs", "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"},
-    {"path": "docs/modules/inference.worker/TECHNICAL.md", "object": "bf708011a2296f27d4598322964eb576c3d7ca28"}
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "object": "677d1658487935a0ab08623c256ee0b5b49c5cc2"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "cd6650b68a815d69038166b7de50c2857f358641"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd",
+      "object": "2334be7aa133e85dd836ba9eb317499528afe582"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core",
+      "object": "ca880ac86066ad28cace3cbf8a1d192d8f22843b"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host",
+      "object": "a29a6a67504ccbc6f3df7c2f93a85bfb287c1742"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "object": "a9348ed531773ac78bc48538e40585ee659cbad2"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "object": "83b8e3b4a3759bd14cc060dca85bc50d146837d6"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "abcc06d61b61a7c5bf82b828df0e6c4fdd3b6334"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "7a25a2299be55af3b87bc3b9b0be14ef213a02e6"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "object": "134726079de62cf57b139b85c4520fe4fc3d2a5f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+      "object": "bea56ee387ae180283fb6d30038a8b8b865a4e4e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "object": "7b24c3215653858323cdf8e77ab30e8dcb9441bf"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"
+    },
+    {
+      "path": "docs/modules/inference.worker/TECHNICAL.md",
+      "object": "bf708011a2296f27d4598322964eb576c3d7ca28"
+    }
   ]
 }
