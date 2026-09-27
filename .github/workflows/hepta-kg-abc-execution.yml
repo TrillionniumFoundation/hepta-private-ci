@@ -135,10 +135,10 @@ jobs:
             runner: macos-14
           - profile: product
             lane: source-head
-            runner: ubuntu-24.04
+            runner: ubuntu-22.04
           - profile: product
             lane: base-merge
-            runner: ubuntu-24.04
+            runner: ubuntu-22.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
