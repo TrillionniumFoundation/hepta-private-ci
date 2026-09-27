@@ -81,6 +81,36 @@
       ]
     },
     {
+      "id": "INTEL-AUTHORITY-MANIFEST-ANTI-ROLLBACK",
+      "statement": "A canonical profile reads the signed authority manifest through one bounded handle and admits it only behind an independently retained monotonic epoch and exact same-epoch digest witness outside the Agent home/run rollback domain.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+          "symbol": "pub struct IntelligenceAuthorityRollbackGuardV1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+          "symbol": "fn read_authority_file_bounded"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "symbol": "fn require_canonical_intelligence_runner"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+          "name": "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+          "class": "product"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+          "name": "canonical_intelligence_requires_external_durable_rollback_witness",
+          "class": "product"
+        }
+      ]
+    },
+    {
       "id": "INTEL-DURABLE-LEARNING-CURRENT-TIME",
       "statement": "Persisted event time is historical data; every first application and replay revalidates evidence and principals at a fresh product-owned current time.",
       "sources": [
@@ -244,6 +274,8 @@
     "zero_propensity_selection_is_rejected",
     "running_generation_differs_from_spawn_and_is_admitted",
     "forged_generation_or_fence_is_rejected_before_mutation",
+    "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+    "canonical_intelligence_requires_external_durable_rollback_witness",
     "recovery_uses_current_time_not_persisted_admission_time",
     "governed_clock_is_injectable",
     "operation_ids_are_kind_separated_and_stable",
