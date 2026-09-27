@@ -1,0 +1,211 @@
+name: Platform wire fuzz qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "docs/lane-a-foundation/platform.wire/**"
+      - "docs/modules/platform.wire/**"
+      - ".github/workflows/platform-wire-fuzz.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "docs/lane-a-foundation/platform.wire/**"
+      - "docs/modules/platform.wire/**"
+      - ".github/workflows/platform-wire-fuzz.yml"
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+    inputs:
+      duration_seconds:
+        description: Sustained fuzz duration in seconds (60..1800)
+        required: false
+        default: "300"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-fuzz-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FUZZ_TOOLCHAIN: nightly-2026-09-20
+  CARGO_FUZZ_VERSION: "0.12.0"
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  fuzz:
+    name: Exact-source libFuzzer qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact source and install pinned fuzz toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+          rustup toolchain install "$FUZZ_TOOLCHAIN" --profile minimal --component llvm-tools-preview
+          cargo +"$FUZZ_TOOLCHAIN" install cargo-fuzz --locked --version "$CARGO_FUZZ_VERSION"
+          cargo +"$FUZZ_TOOLCHAIN" fuzz --version
+          rustc +"$FUZZ_TOOLCHAIN" --version --verbose
+
+      - name: Seed deterministic protocol corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          corpus="codex-rs/hepta-wire/fuzz/corpus/decode_frames"
+          artifacts="codex-rs/hepta-wire/fuzz/artifacts/decode_frames"
+          mkdir -p "$corpus" "$artifacts" .hepta-evidence
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("codex-rs/hepta-wire/fuzz/corpus/decode_frames")
+          vector = json.loads(
+              Path("docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json").read_text()
+          )
+          (root / "hpta-v2-canonical").write_bytes(bytes.fromhex(vector["frameHex"]))
+          (root / "hptn-current").write_bytes(bytes.fromhex(
+              "4850544e00010200000000000000000700010002"
+          ))
+          (root / "truncated-header").write_bytes(b"HPTA\x00\x02")
+          (root / "empty").write_bytes(b"")
+          PY
+
+      - name: Check fuzz harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +"$FUZZ_TOOLCHAIN" check \
+            --manifest-path codex-rs/hepta-wire/fuzz/Cargo.toml \
+            --all-targets
+
+      - name: Resolve bounded fuzz duration
+        id: duration
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$GITHUB_EVENT_NAME" in
+            pull_request) seconds=60 ;;
+            schedule) seconds=900 ;;
+            workflow_dispatch) seconds='${{ inputs.duration_seconds }}' ;;
+            *) seconds=120 ;;
+          esac
+          [[ "$seconds" =~ ^[0-9]+$ ]]
+          if (( seconds < 60 || seconds > 1800 )); then
+            echo "duration must be within 60..1800 seconds" >&2
+            exit 2
+          fi
+          echo "seconds=$seconds" >> "$GITHUB_OUTPUT"
+
+      - name: Run bounded libFuzzer session
+        id: fuzz_run
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs/hepta-wire
+          cargo +"$FUZZ_TOOLCHAIN" fuzz run decode_frames \
+            fuzz/corpus/decode_frames \
+            -- \
+            -max_total_time="${{ steps.duration.outputs.seconds }}" \
+            -timeout=10 \
+            -rss_limit_mb=2048 \
+            -artifact_prefix=fuzz/artifacts/decode_frames/
+
+      - name: Write exact-source fuzz receipt
+        if: always()
+        env:
+          FUZZ_OUTCOME: ${{ steps.fuzz_run.outcome }}
+          FUZZ_SECONDS: ${{ steps.duration.outputs.seconds }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          def tree_digest(path: Path) -> tuple[str, int]:
+              digest = hashlib.sha256()
+              count = 0
+              if path.exists():
+                  for item in sorted(p for p in path.rglob("*") if p.is_file()):
+                      relative = item.relative_to(path).as_posix().encode()
+                      body = item.read_bytes()
+                      digest.update(len(relative).to_bytes(4, "big"))
+                      digest.update(relative)
+                      digest.update(len(body).to_bytes(8, "big"))
+                      digest.update(body)
+                      count += 1
+              return digest.hexdigest(), count
+
+          corpus_digest, corpus_files = tree_digest(
+              Path("codex-rs/hepta-wire/fuzz/corpus/decode_frames")
+          )
+          artifact_digest, artifact_files = tree_digest(
+              Path("codex-rs/hepta-wire/fuzz/artifacts/decode_frames")
+          )
+          receipt = {
+              "schema": "hepta.platform-wire.fuzz-receipt.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True
+              ).strip(),
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "target": "decode_frames",
+              "engine": "libFuzzer",
+              "sanitizer": "address",
+              "toolchain": os.environ["FUZZ_TOOLCHAIN"],
+              "cargo_fuzz_version": os.environ["CARGO_FUZZ_VERSION"],
+              "duration_seconds": int(os.environ["FUZZ_SECONDS"]),
+              "status": "passed" if os.environ["FUZZ_OUTCOME"] == "success" else "failed",
+              "corpus_sha256": corpus_digest,
+              "corpus_files": corpus_files,
+              "artifact_sha256": artifact_digest,
+              "artifact_files": artifact_files,
+          }
+          if receipt["source_sha"] != receipt["tested_sha"]:
+              raise SystemExit("fuzz receipt source mismatch")
+          Path(".hepta-evidence/platform-wire-fuzz.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+
+      - name: Retain corpus, crash artifacts and receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-wire-fuzz-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: |
+            .hepta-evidence/platform-wire-fuzz.json
+            codex-rs/hepta-wire/fuzz/corpus/decode_frames
+            codex-rs/hepta-wire/fuzz/artifacts/decode_frames
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce fuzz outcome
+        if: always()
+        shell: bash
+        run: test '${{ steps.fuzz_run.outcome }}' = success
