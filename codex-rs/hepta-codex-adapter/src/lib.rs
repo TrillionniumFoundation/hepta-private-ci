@@ -34,6 +34,18 @@ pub use codex_hepta_types::PromptDeliveryObservationV1;
 pub use codex_hepta_types::PromptDeliveryRejectReasonV1;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2;
 
+pub use runtime_prompt::ContextCompilerRuntimeAttachmentMetadataV2;
+pub use runtime_prompt::ContextCompilerRuntimeAttachmentV2;
+pub use runtime_prompt::ContextCompilerRuntimeDispatchFutureV2;
+pub use runtime_prompt::ContextCompilerRuntimeDispatchV2;
+pub use runtime_prompt::ContextCompilerRuntimeFinalUseFutureV2;
+pub use runtime_prompt::ContextCompilerRuntimeFinalUseV2;
+pub use runtime_prompt::ContextCompilerRuntimeHostErrorV2;
+pub use runtime_prompt::ContextCompilerRuntimeHostV2;
+pub use runtime_prompt::ContextCompilerRuntimePrepareFutureV2;
+pub use runtime_prompt::ContextCompilerRuntimePrepareRequestV2;
+pub use runtime_prompt::ContextCompilerRuntimeRecordFutureV2;
+pub use runtime_prompt::ContextCompilerRuntimeTerminalV2;
 pub use runtime_prompt::PromptRuntimeAttachmentV1;
 pub use runtime_prompt::PromptRuntimeDeveloperFragmentV1;
 pub use runtime_prompt::PromptRuntimeDispatchFuture;
@@ -41,6 +53,7 @@ pub use runtime_prompt::PromptRuntimeDispatchRecordV1;
 pub use runtime_prompt::PromptRuntimeError;
 pub use runtime_prompt::PromptRuntimeHost;
 pub use runtime_prompt::PromptRuntimeHostError;
+pub use runtime_prompt::PromptRuntimeMode;
 pub use runtime_prompt::PromptRuntimePrepareFuture;
 pub use runtime_prompt::PromptRuntimePrepareRequest;
 pub use runtime_prompt::PromptRuntimeRecordFuture;
@@ -444,91 +457,41 @@ pub fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn adapt_turn_completed(
-    intent: &CodexOperationIntent,
-    expected_turn_id: &StableId,
-    notification: &TurnCompletedNotification,
-) -> Result<CodexAdapterReceipt, Error> {
-    validate_intent_static(intent)?;
-    let thread_id = StableId::new(notification.thread_id.clone())
-        .map_err(|_| Error::InvalidObservationIdentity("thread"))?;
-    let turn_id = StableId::new(notification.turn.id.clone())
-        .map_err(|_| Error::InvalidObservationIdentity("turn"))?;
-    if thread_id != intent.thread_id {
-        return Err(Error::CorrelationMismatch("thread"));
+fn validate_intent_static(intent: &CodexOperationIntent) -> Result<(), Error> {
+    for (label, digest) in [
+        ("payload", intent.payload_digest),
+        ("lease payload", intent.lease_payload_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(Error::EmptyDigest(label));
+        }
     }
-    if &turn_id != expected_turn_id {
-        return Err(Error::CorrelationMismatch("turn"));
+    if intent.method_id.as_str() == TURN_START_METHOD_ID {
+        validate_app_server_binding(intent)?;
     }
-    let outcome = match &notification.turn.status {
-        TurnStatus::Completed => TerminalOutcome::Completed,
-        TurnStatus::Failed => TerminalOutcome::Failed,
-        TurnStatus::Interrupted => TerminalOutcome::Interrupted,
-        TurnStatus::InProgress => return Err(Error::NonTerminalObservation),
-    };
-    let encoded = serde_json::to_vec(notification).map_err(|_| Error::ObservationEncodingFailed)?;
-    let response_digest = Digest32::of_bytes(&encoded);
-    if response_digest.is_zero() {
-        return Err(Error::EmptyDigest("terminal response"));
-    }
-    let status = match outcome {
-        TerminalOutcome::Completed => AdapterStatus::Succeeded,
-        TerminalOutcome::Failed => AdapterStatus::Failed,
-        TerminalOutcome::Interrupted => AdapterStatus::Interrupted,
-    };
-    let retry_posture = match outcome {
-        TerminalOutcome::Interrupted => RetryPosture::ReconcileSameOperation,
-        TerminalOutcome::Completed | TerminalOutcome::Failed => RetryPosture::Never,
-    };
-    let request_digest = request_digest(intent);
-    let correlation_digest =
-        terminal_correlation_digest(request_digest, &turn_id, outcome, response_digest);
-    Ok(receipt(
-        intent,
-        request_digest,
-        Some(turn_id),
-        Some(correlation_digest),
-        status,
-        retry_posture,
-        Some(response_digest),
-    ))
+    Ok(())
 }
 
-fn validate_intent_static(intent: &CodexOperationIntent) -> Result<(), Error> {
-    if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
-        return Err(Error::EmptyDigest("payload"));
+fn validate_app_server_binding(intent: &CodexOperationIntent) -> Result<(), Error> {
+    let binding = intent
+        .app_server_binding
+        .as_ref()
+        .ok_or(Error::ProductBindingRequired)?;
+    if binding.source_admission_digest.is_zero()
+        || binding.user_input_digest.is_zero()
+        || binding.codex_home_digest.is_zero()
+        || binding.connection_id == 0
+    {
+        return Err(Error::EmptyDigest("app server binding"));
     }
-    if intent.payload_digest != intent.lease_payload_digest {
-        return Err(Error::PayloadBindingMismatch);
+    if binding.protocol_id.as_str() != APP_SERVER_V2_PROTOCOL_ID {
+        return Err(Error::UnsupportedProtocol);
     }
-    if intent.deadline_ms == 0 {
-        return Err(Error::DeadlineExpired);
-    }
-    if let Some(binding) = &intent.app_server_binding {
-        if binding.source_admission_digest.is_zero() {
-            return Err(Error::EmptyDigest("source admission"));
-        }
-        if binding.codex_home_digest.is_zero() {
-            return Err(Error::EmptyDigest("codex home"));
-        }
-        if binding.user_input_digest.is_zero() {
-            return Err(Error::EmptyDigest("user input"));
-        }
-        if binding.connection_id == 0 {
-            return Err(Error::InvalidObservationIdentity("connection"));
-        }
-        if binding.protocol_id.as_str() != APP_SERVER_V2_PROTOCOL_ID {
-            return Err(Error::UnsupportedProtocol);
-        }
-        if binding.app_server_version.is_empty()
-            || binding.app_server_version.len() > MAX_APP_SERVER_VERSION_BYTES
-            || binding
-                .app_server_version
-                .bytes()
-                .any(|b| b.is_ascii_control())
-        {
-            return Err(Error::InvalidAppServerVersion);
-        }
+    if binding.app_server_version.is_empty()
+        || binding.app_server_version.len() > MAX_APP_SERVER_VERSION_BYTES
+        || binding.app_server_version.as_bytes().contains(&0)
+    {
+        return Err(Error::InvalidAppServerVersion);
     }
     Ok(())
 }
@@ -550,11 +513,103 @@ fn validate_product_transport_binding(
     if server_version != Some(binding.app_server_version.as_str()) {
         return Err(Error::CorrelationMismatch("app server version"));
     }
-    let codex_home = codex_home.ok_or(Error::CorrelationMismatch("codex home"))?;
-    if Digest32::of_bytes(codex_home.as_bytes()) != binding.codex_home_digest {
+    let observed_home = codex_home.ok_or(Error::CorrelationMismatch("codex home"))?;
+    if Digest32::of_bytes(observed_home.as_bytes()) != binding.codex_home_digest {
         return Err(Error::CorrelationMismatch("codex home"));
     }
     Ok(())
+}
+
+fn adapt_turn_completed(
+    intent: &CodexOperationIntent,
+    expected_turn_id: &StableId,
+    completed: &TurnCompletedNotification,
+) -> Result<CodexAdapterReceipt, Error> {
+    let observed_turn_id = StableId::new(completed.turn.id.clone())
+        .map_err(|_| Error::InvalidObservationIdentity("turn"))?;
+    if &observed_turn_id != expected_turn_id {
+        return Err(Error::CorrelationMismatch("turn"));
+    }
+    let outcome = match completed.turn.status {
+        TurnStatus::Completed => TerminalOutcome::Completed,
+        TurnStatus::Failed => TerminalOutcome::Failed,
+        TurnStatus::Interrupted => TerminalOutcome::Interrupted,
+        TurnStatus::InProgress => return Err(Error::NonTerminalObservation),
+    };
+    let response_digest = terminal_response_digest(completed)?;
+    let request_digest = request_digest(intent);
+    let correlation_digest =
+        terminal_correlation_digest(request_digest, &observed_turn_id, outcome, response_digest);
+    let status = match outcome {
+        TerminalOutcome::Completed => AdapterStatus::Succeeded,
+        TerminalOutcome::Failed => AdapterStatus::Failed,
+        TerminalOutcome::Interrupted => AdapterStatus::Interrupted,
+    };
+    let retry_posture = match outcome {
+        TerminalOutcome::Interrupted => RetryPosture::ReconcileSameOperation,
+        TerminalOutcome::Completed | TerminalOutcome::Failed => RetryPosture::Never,
+    };
+    Ok(receipt(
+        intent,
+        request_digest,
+        Some(observed_turn_id),
+        Some(correlation_digest),
+        status,
+        retry_posture,
+        Some(response_digest),
+    ))
+}
+
+fn terminal_response_digest(completed: &TurnCompletedNotification) -> Result<Digest32, Error> {
+    let bytes = serde_json::to_vec(&completed.turn).map_err(|_| Error::ObservationEncodingFailed)?;
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn reconciled_turn_response_digest(
+    observed: &RemoteAppServerObservedResponse<ThreadReadResponse>,
+    turn: &codex_app_server_protocol::Thread,
+) -> Result<Digest32, Error> {
+    let mut bytes = b"hepta.codex.adapter.reconciled-turn.v1".to_vec();
+    push_text(&mut bytes, observed.method());
+    push_text(&mut bytes, observed.server_version().unwrap_or_default());
+    push_text(&mut bytes, observed.codex_home().unwrap_or_default());
+    bytes.extend_from_slice(&observed.connection_id().to_be_bytes());
+    bytes.extend_from_slice(
+        &serde_json::to_vec(turn).map_err(|_| Error::ObservationEncodingFailed)?,
+    );
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn server_error_digest(error: &JSONRPCErrorError) -> Digest32 {
+    let mut bytes = b"hepta.codex.adapter.server-error.v1".to_vec();
+    bytes.extend_from_slice(&error.code.to_be_bytes());
+    push_text(&mut bytes, &error.message);
+    match &error.data {
+        None => bytes.push(0),
+        Some(data) => {
+            bytes.push(1);
+            bytes.extend_from_slice(&serde_json::to_vec(data).unwrap_or_default());
+        }
+    }
+    Digest32::of_bytes(&bytes)
+}
+
+fn terminal_correlation_digest(
+    request_digest: Digest32,
+    turn_id: &StableId,
+    outcome: TerminalOutcome,
+    response_digest: Digest32,
+) -> Digest32 {
+    let mut bytes = b"hepta.codex.adapter.terminal.v3".to_vec();
+    bytes.extend_from_slice(request_digest.as_array());
+    push_id(&mut bytes, turn_id);
+    bytes.push(match outcome {
+        TerminalOutcome::Completed => 0,
+        TerminalOutcome::Failed => 1,
+        TerminalOutcome::Interrupted => 2,
+    });
+    bytes.extend_from_slice(response_digest.as_array());
+    Digest32::of_bytes(&bytes)
 }
 
 fn receipt(
@@ -580,125 +635,15 @@ fn receipt(
     }
 }
 
-fn terminal_correlation_digest(
-    request_digest: Digest32,
-    turn_id: &StableId,
-    outcome: TerminalOutcome,
-    response_digest: Digest32,
-) -> Digest32 {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.codex.adapter.terminal-correlation.v2");
-    bytes.extend_from_slice(request_digest.as_array());
-    push_id(&mut bytes, turn_id);
-    bytes.push(match outcome {
-        TerminalOutcome::Completed => 1,
-        TerminalOutcome::Failed => 2,
-        TerminalOutcome::Interrupted => 3,
-    });
-    bytes.extend_from_slice(response_digest.as_array());
-    Digest32::of_bytes(&bytes)
+fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
+    push_text(bytes, id.as_str());
 }
 
-fn reconciled_turn_response_digest(
-    observed: &RemoteAppServerObservedResponse<ThreadReadResponse>,
-    turn: &codex_app_server_protocol::Turn,
-) -> Result<Digest32, Error> {
-    let encoded_turn = serde_json::to_vec(turn).map_err(|_| Error::ObservationEncodingFailed)?;
-    let encoded_request_id =
-        serde_json::to_vec(observed.request_id()).map_err(|_| Error::ObservationEncodingFailed)?;
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.codex.adapter.reconciled-turn.v1");
-    push_text(&mut bytes, observed.method());
-    push_bytes(&mut bytes, &encoded_request_id);
-    bytes.extend_from_slice(&observed.connection_id().to_be_bytes());
-    push_text(
-        &mut bytes,
-        observed.server_version().ok_or(Error::CorrelationMismatch(
-            "reconciliation app server version",
-        ))?,
-    );
-    push_text(
-        &mut bytes,
-        observed
-            .codex_home()
-            .ok_or(Error::CorrelationMismatch("reconciliation codex home"))?,
-    );
-    push_bytes(&mut bytes, &encoded_turn);
-    Ok(Digest32::of_bytes(&bytes))
-}
-
-fn server_error_digest(error: &JSONRPCErrorError) -> Digest32 {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.codex.adapter.server-error.v1");
-    bytes.extend_from_slice(&error.code.to_be_bytes());
-    push_text(&mut bytes, &error.message);
-    if let Some(data) = &error.data
-        && let Ok(encoded) = serde_json::to_vec(data)
-    {
-        push_bytes(&mut bytes, &encoded);
-    }
-    Digest32::of_bytes(&bytes)
-}
-
-/// Emits the runtime-owned prompt delivery observation only after the caller
-/// supplies the exact bytes that crossed the Codex request boundary.
-///
-/// This adapter does not submit the request itself. It fails closed unless the
-/// supplied bytes match the expected compilation attachment digest and the
-/// caller reports a terminal delivered/rejected disposition.
-pub fn observe_prompt_delivery_bytes_v1(
-    input: PromptDeliveryBoundaryInputV1,
-    submitted_payload: &[u8],
-) -> Result<PromptDeliveryObservationV1, Error> {
-    if input.expected_payload_digest.is_zero() {
-        return Err(Error::EmptyDigest("expected prompt payload"));
-    }
-    let provider_request_digest = Digest32::of_bytes(submitted_payload);
-    if provider_request_digest != input.expected_payload_digest {
-        return Err(Error::PayloadBindingMismatch);
-    }
-    if !input.terminal_observed {
-        return Err(Error::PromptDeliveryNotTerminal);
-    }
-
-    let observation = PromptDeliveryObservationV1 {
-        compilation_id: input.compilation_id,
-        provider_request_digest,
-        delivered: input.delivered,
-        rejected_reason: input.rejected_reason,
-        observed_token_positions: input.observed_token_positions,
-        truncation_observed: input.truncation_observed,
-    };
-    observation
-        .validate()
-        .map_err(map_prompt_delivery_contract_error)?;
-    Ok(observation)
-}
-
-fn map_prompt_delivery_contract_error(error: PromptDeliveryErrorV1) -> Error {
-    match error {
-        PromptDeliveryErrorV1::InvalidDisposition => Error::InvalidPromptDeliveryDisposition,
-        PromptDeliveryErrorV1::TokenPositionLimitExceeded => Error::TokenPositionLimitExceeded,
-        PromptDeliveryErrorV1::NonCanonicalTokenPositions => Error::NonCanonicalTokenPositions,
-        other => Error::PromptDeliveryContract(other),
-    }
-}
-
-fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    push_bytes(bytes, value.as_str().as_bytes());
-}
 fn push_text(bytes: &mut Vec<u8>, value: &str) {
-    push_bytes(bytes, value.as_bytes());
-}
-fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) {
-    let length = u32::try_from(value.len()).unwrap_or(u32::MAX);
-    bytes.extend_from_slice(&length.to_be_bytes());
-    bytes.extend_from_slice(value);
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
-#[cfg(test)]
-#[path = "deadline_digest_tests.rs"]
-mod deadline_digest_tests;
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
