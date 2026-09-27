@@ -1,0 +1,248 @@
+//! Bounded streaming replay and incremental file append for the attempt owner.
+use std::collections::BTreeMap;
+use std::fs::File;
+use std::fs::TryLockError;
+use std::io;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
+
+use super::*;
+
+const MAGIC: &[u8; 8] = b"HEPTAT01";
+const HEADER: u64 = 72;
+const MAX_BYTES: u64 = 64 * 1024 * 1024;
+const MAX_FRAME: usize = 1024;
+
+pub struct LockedFileProductEvaluationAttemptJournalV1 {
+    file: File,
+    binding: Digest32,
+    attempts: AttemptEvents,
+    plan_owners: BTreeMap<[u8; 32], StableId>,
+    length: u64,
+    event_count: usize,
+    state_digest: Digest32,
+    poisoned: bool,
+}
+
+impl LockedFileProductEvaluationAttemptJournalV1 {
+    pub fn create(mut file: File, binding: Digest32) -> Result<Self, ProductEvaluationAttemptJournalErrorV1> {
+        acquire(&file, binding)?;
+        if file.metadata().map_err(io_error)?.len() != 0 {
+            return Err(ProductEvaluationAttemptJournalErrorV1::AlreadyInitialized);
+        }
+        let mut header = MAGIC.to_vec();
+        header.extend_from_slice(binding.as_array());
+        header.extend_from_slice(Digest32::of_bytes(&header).as_array());
+        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
+        file.write_all(&header).and_then(|()| file.sync_all())
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
+        Ok(Self {
+            file, binding, attempts: BTreeMap::new(), plan_owners: BTreeMap::new(),
+            length: HEADER, event_count: 0,
+            state_digest: Digest32::of_bytes(&header), poisoned: false,
+        })
+    }
+
+    /// Compatibility/source recovery only; production uses recover_with_anchor
+    /// through the independently anchored owner. No tail is silently truncated.
+    pub fn recover(file: File, binding: Digest32) -> Result<Self, ProductEvaluationAttemptJournalErrorV1> {
+        Self::replay(file, binding, None)
+    }
+
+    pub fn recover_with_anchor(file: File, binding: Digest32, minimum: ProductEvaluationAttemptAnchorV1) -> Result<Self, ProductEvaluationAttemptJournalErrorV1> {
+        if minimum.binding != binding || minimum.state_digest.is_zero() {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Binding);
+        }
+        Self::replay(file, binding, Some(minimum))
+    }
+
+    fn replay(mut file: File, binding: Digest32, minimum: Option<ProductEvaluationAttemptAnchorV1>) -> Result<Self, ProductEvaluationAttemptJournalErrorV1> {
+        acquire(&file, binding)?;
+        let length = file.metadata().map_err(io_error)?.len();
+        if length > MAX_BYTES {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Capacity);
+        }
+        if length < HEADER {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+        }
+        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
+        let mut header = [0u8; HEADER as usize];
+        file.read_exact(&mut header).map_err(io_error)?;
+        if &header[..8] != MAGIC || &header[8..40] != binding.as_array()
+            || &header[40..] != Digest32::of_bytes(&header[..40]).as_array()
+        {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+        }
+        let mut state_digest = Digest32::of_bytes(&header);
+        let mut anchor_seen = match minimum {
+            Some(anchor) if anchor.event_count == 0 => anchor.state_digest == state_digest,
+            None => true,
+            Some(_) => false,
+        };
+        let mut attempts = BTreeMap::new();
+        let mut plan_owners = BTreeMap::new();
+        let mut cursor = HEADER;
+        let mut event_count = 0usize;
+        while cursor < length {
+            if length - cursor < 4 || event_count >= MAX_EVENTS {
+                return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+            }
+            let mut raw = [0u8; 4];
+            file.read_exact(&mut raw).map_err(io_error)?;
+            let count = u32::from_be_bytes(raw) as usize;
+            if !(1..=MAX_FRAME).contains(&count) || length - cursor - 4 < count as u64 + 32 {
+                return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+            }
+            let mut payload = vec![0u8; count];
+            let mut checksum = [0u8; 32];
+            file.read_exact(&mut payload).and_then(|()| file.read_exact(&mut checksum)).map_err(io_error)?;
+            if &checksum != Digest32::of_bytes(&payload).as_array() {
+                return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+            }
+            let transition = decode_transition(&payload)?;
+            let (receipt, appended) = preview_transition(&attempts, &plan_owners, transition)?;
+            if !appended {
+                return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+            }
+            install_transition(&mut attempts, &mut plan_owners, &receipt);
+            event_count += 1;
+            state_digest = advance_digest(state_digest, event_count, &payload);
+            if let Some(anchor) = minimum
+                && anchor.event_count == event_count as u64
+            {
+                anchor_seen = anchor.state_digest == state_digest;
+            }
+            cursor += 4 + count as u64 + 32;
+        }
+        if !anchor_seen || file.metadata().map_err(io_error)?.len() != length {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
+        }
+        Ok(Self { file, binding, attempts, plan_owners, length, event_count, state_digest, poisoned: false })
+    }
+
+    #[must_use]
+    pub const fn byte_len(&self) -> u64 { self.length }
+    #[must_use]
+    pub const fn event_count(&self) -> usize { self.event_count }
+    #[must_use]
+    pub const fn binding(&self) -> Digest32 { self.binding }
+
+    pub fn anchor(&self) -> Result<ProductEvaluationAttemptAnchorV1, ProductEvaluationAttemptJournalErrorV1> {
+        if self.poisoned {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
+        }
+        Ok(ProductEvaluationAttemptAnchorV1 { binding: self.binding, event_count: self.event_count as u64, state_digest: self.state_digest })
+    }
+}
+
+impl ProductEvaluationAttemptJournalV1 for LockedFileProductEvaluationAttemptJournalV1 {
+    fn append(&mut self, transition: ProductEvaluationAttemptTransitionV1) -> Result<ProductEvaluationAttemptReceiptV1, ProductEvaluationAttemptJournalErrorV1> {
+        if self.poisoned {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
+        }
+        match self.file.metadata() {
+            Ok(metadata) if metadata.len() == self.length => {}
+            _ => {
+                self.poisoned = true;
+                return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
+            }
+        }
+        // Validate only the addressed attempt. Never clone the global history.
+        let (receipt, appended) = preview_transition(&self.attempts, &self.plan_owners, transition.clone())?;
+        if !appended { return Ok(receipt); }
+        if self.event_count >= MAX_EVENTS {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Capacity);
+        }
+        let payload = encode_transition(&transition)?;
+        let next_length = self.length.checked_add(4 + payload.len() as u64 + 32)
+            .filter(|value| *value <= MAX_BYTES).ok_or(ProductEvaluationAttemptJournalErrorV1::Capacity)?;
+        let mut frame = (payload.len() as u32).to_be_bytes().to_vec();
+        frame.extend_from_slice(&payload);
+        frame.extend_from_slice(Digest32::of_bytes(&payload).as_array());
+        if self.file.seek(SeekFrom::Start(self.length)).and_then(|_| self.file.write_all(&frame))
+            .and_then(|()| self.file.sync_all()).is_err()
+        {
+            self.poisoned = true;
+            return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
+        }
+        install_transition(&mut self.attempts, &mut self.plan_owners, &receipt);
+        self.length = next_length;
+        self.event_count += 1;
+        self.state_digest = advance_digest(self.state_digest, self.event_count, &payload);
+        Ok(receipt)
+    }
+
+    fn latest(&mut self, attempt_id: &StableId) -> Result<Option<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
+        self.anchor()?;
+        Ok(self.attempts.get(attempt_id).and_then(|events| events.last()).cloned())
+    }
+
+    fn history(&mut self, attempt_id: &StableId) -> Result<Vec<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
+        self.anchor()?;
+        Ok(self.attempts.get(attempt_id).cloned().unwrap_or_default())
+    }
+
+    fn pending(&mut self, after: Option<&StableId>, limit: usize) -> Result<Vec<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
+        self.anchor()?;
+        pending_page(&self.attempts, after, limit)
+    }
+}
+
+fn advance_digest(previous: Digest32, count: usize, payload: &[u8]) -> Digest32 {
+    let mut bytes = b"hepta.learning-eval.attempt-stream.v1".to_vec();
+    bytes.extend_from_slice(previous.as_array());
+    bytes.extend_from_slice(&(count as u64).to_be_bytes());
+    bytes.extend_from_slice(Digest32::of_bytes(payload).as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn encode_transition(transition: &ProductEvaluationAttemptTransitionV1) -> Result<Vec<u8>, ProductEvaluationAttemptJournalErrorV1> {
+    transition.validate()?;
+    let id = transition.attempt_id.as_str().as_bytes();
+    let length = u16::try_from(id.len()).map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?;
+    let mut bytes = Vec::with_capacity(2 + id.len() + 97);
+    bytes.extend_from_slice(&length.to_be_bytes());
+    bytes.extend_from_slice(id);
+    bytes.extend_from_slice(transition.plan_digest.as_array());
+    bytes.push(transition.phase.tag());
+    bytes.extend_from_slice(transition.holdout_record_digest.as_array());
+    bytes.extend_from_slice(transition.terminal_digest.as_array());
+    if bytes.len() > MAX_FRAME { return Err(ProductEvaluationAttemptJournalErrorV1::Capacity); }
+    Ok(bytes)
+}
+
+fn decode_transition(payload: &[u8]) -> Result<ProductEvaluationAttemptTransitionV1, ProductEvaluationAttemptJournalErrorV1> {
+    if payload.len() < 99 { return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt); }
+    let length = usize::from(u16::from_be_bytes([payload[0], payload[1]]));
+    if payload.len() != 99 + length { return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt); }
+    let end = 2 + length;
+    let id = std::str::from_utf8(&payload[2..end]).map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?;
+    let digest = |bytes: &[u8]| -> Result<Digest32, ProductEvaluationAttemptJournalErrorV1> {
+        Ok(Digest32::from_array(bytes.try_into().map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?))
+    };
+    let transition = ProductEvaluationAttemptTransitionV1 {
+        attempt_id: StableId::new(id).map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?,
+        plan_digest: digest(&payload[end..end + 32])?,
+        phase: ProductEvaluationAttemptPhaseV1::from_tag(payload[end + 32])?,
+        holdout_record_digest: digest(&payload[end + 33..end + 65])?,
+        terminal_digest: digest(&payload[end + 65..end + 97])?,
+    };
+    transition.validate()?;
+    Ok(transition)
+}
+
+fn acquire(file: &File, binding: Digest32) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
+    if binding.is_zero() { return Err(ProductEvaluationAttemptJournalErrorV1::Binding); }
+    if !file.metadata().map_err(io_error)?.file_type().is_file() { return Err(ProductEvaluationAttemptJournalErrorV1::NotRegular); }
+    match file.try_lock() {
+        Ok(()) => Ok(()),
+        Err(TryLockError::WouldBlock) => Err(ProductEvaluationAttemptJournalErrorV1::Busy),
+        Err(TryLockError::Error(error)) => Err(io_error(error)),
+    }
+}
+
+fn io_error(error: io::Error) -> ProductEvaluationAttemptJournalErrorV1 {
+    ProductEvaluationAttemptJournalErrorV1::Io(error.kind())
+}

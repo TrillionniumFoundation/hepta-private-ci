@@ -1,12 +1,9 @@
 {
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
-  "sourceBase": {
-    "commit": "5af2fb13ef19e316ebb071c30f746a2e1b3734d2",
-    "tree": "83d4b44ee94304c8409f473a5123170e3bae40df"
-  },
+  "sourceBase": {"commit": "97b9127d91f851f6daaef78bd5916cf15fe405bc", "tree": "4477dd913aae0c66f8a157cd8dabf1eddad0468a"},
   "sourceBaseStatus": "current_candidate_baseline",
-  "sourceBaseSemantics": "The source base is the committed candidate immediately before the map-only rebind. Repository consumers are mapped, while target-host product composition remains externally unproved.",
+  "sourceBaseSemantics": "Pre-recovery-change baseline; exact candidate qualification is provided only by commit-addressed CI. A later map-only rebind identifies the completed source candidate.",
   "mappingSourceIdentityMode": "path_only",
   "sourceIdentityPolicy": "legacy_shared_batch",
   "laneId": "LANE-E-LEARNING",
@@ -14,308 +11,47 @@
   "owner": "learning-platform",
   "deputy": "qualification-plane",
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-intelligence-eval"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-intelligence-eval"
-  ],
-  "sourceRoot": [
-    "codex-rs/hepta-intelligence-eval"
-  ],
+  "declaredRoots": ["codex-rs/hepta-intelligence-eval"],
+  "resolvedRoots": ["codex-rs/hepta-intelligence-eval"],
+  "sourceRoot": ["codex-rs/hepta-intelligence-eval"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
   "productionWriterState": "source_contracts_implemented_target_host_binding_external",
   "operations": [
-    {
-      "operation": "estimate_ope",
-      "designOperation": "estimate_ope",
-      "nativeSymbol": "estimate_ope",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ope.rs",
-      "state": "source_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/ope_tests.rs"
-      ],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "estimate_cluster_intervals",
-      "designOperation": "estimate_cluster_intervals",
-      "nativeSymbol": "estimate_cluster_intervals",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
-      "state": "source_implemented_sealed_receipt",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
-          "symbol": "estimate_ope"
-        }
-      ]
-    },
-    {
-      "operation": "estimate_sequential",
-      "designOperation": "estimate_sequential",
-      "nativeSymbol": "estimate_sequential",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
-      "state": "source_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs"
-      ],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "evaluate_temporal_holdout",
-      "designOperation": "evaluate_temporal_holdout",
-      "nativeSymbol": "evaluate_temporal_holdout",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
-      "state": "source_implemented_sealed_receipt",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
-          "symbol": "fit_temporal_fold"
-        },
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
-          "symbol": "estimate_cluster_intervals"
-        }
-      ]
-    },
-    {
-      "operation": "freeze_product_evaluation_plan_v1",
-      "designOperation": "freeze_product_evaluation_plan_v1",
-      "nativeSymbol": "freeze_product_evaluation_plan_v1",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-      "state": "source_product_plan_freeze_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
-          "symbol": "freeze_cross_fold_plan_v2"
-        }
-      ]
-    },
-    {
-      "operation": "product_temporal_comparison_compatibility",
-      "designOperation": "product_temporal_comparison_compatibility",
-      "nativeSymbol": "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-      "state": "source_compatibility_product_composition_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
-          "symbol": "FencedFinalHoldoutOwnerV1::consume"
-        },
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
-          "symbol": "evaluate_temporal_holdout"
-        }
-      ]
-    },
-    {
-      "operation": "recorded_product_temporal_comparison",
-      "designOperation": "recorded_product_temporal_comparison",
-      "nativeSymbol": "RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/recorded_runner.rs",
-      "state": "source_production_evaluation_ingress_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/attempt_journal.rs",
-        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-          "symbol": "ProductEvaluationRunnerV1::evaluate_temporal_comparison"
-        },
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/attempt_journal.rs",
-          "symbol": "ProductEvaluationAttemptJournalV1::append"
-        }
-      ]
-    },
-    {
-      "operation": "recorded_product_signed_qualification",
-      "designOperation": "recorded_product_signed_qualification",
-      "nativeSymbol": "RecordedProductEvaluationRunnerV1::qualify_and_persist",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/recorded_runner.rs",
-      "state": "source_production_qualification_ingress_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
-        "codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-          "symbol": "ProductEvaluationRunnerV1::qualify_and_persist"
-        },
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/reconciled_sink.rs",
-          "symbol": "ReconciledProductQualificationSinkV1::persist"
-        }
-      ]
-    },
-    {
-      "operation": "consumer_bound_signed_admission",
-      "designOperation": "consumer_bound_signed_admission",
-      "nativeSymbol": "admit_signed_eligibility_v2",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/signed_admission.rs",
-      "state": "source_consumer_bound_admission_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/signed_admission.rs",
-        "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
-        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
-          "symbol": "decide_with_signed_evidence_v2"
-        }
-      ]
-    },
-    {
-      "operation": "reconciled_product_qualification_publication",
-      "designOperation": "reconciled_product_qualification_publication",
-      "nativeSymbol": "ReconciledProductQualificationSinkV1::persist",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/reconciled_sink.rs",
-      "state": "source_idempotent_publication_reconciliation_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/reconciled_sink.rs"
-      ],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "durable_product_evaluation_attempt_journal",
-      "designOperation": "durable_product_evaluation_attempt_journal",
-      "nativeSymbol": "LockedFileProductEvaluationAttemptJournalV1",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/attempt_journal.rs",
-      "state": "source_durable_attempt_lifecycle_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/attempt_journal.rs"
-      ],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "fenced_final_holdout_consume",
-      "designOperation": "fenced_final_holdout_consume",
-      "nativeSymbol": "FencedFinalHoldoutOwnerV1::consume",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
-      "state": "source_linearizable_fenced_owner_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
-          "symbol": "FinalHoldoutCasStoreV1::compare_and_swap"
-        }
-      ]
-    },
-    {
-      "operation": "locked_file_final_holdout_cas_store",
-      "designOperation": "locked_file_final_holdout_cas_store",
-      "nativeSymbol": "LockedFileFinalHoldoutCasStoreV1",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
-      "state": "source_concrete_cas_recovery_backend_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs"
-      ],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "locked_file_final_holdout_compaction",
-      "designOperation": "locked_file_final_holdout_compaction",
-      "nativeSymbol": "LockedFileFinalHoldoutCasStoreV1::compact_into",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
-      "state": "source_verified_copy_compaction_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs"
-      ],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "signed_v2_admission_primitive",
-      "designOperation": "signed_v2_admission_primitive",
-      "nativeSymbol": "decide_with_signed_evidence_v2",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
-      "state": "source_crate_internal_signed_verification_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
-        "codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs"
-      ],
-      "sourcePathExists": true
-    },
-    {
-      "operation": "signed_v3_longitudinal_admission_primitive",
-      "designOperation": "signed_v3_longitudinal_admission_primitive",
-      "nativeSymbol": "decide_with_signed_longitudinal_evidence_v3",
-      "sourcePath": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
-      "state": "source_crate_internal_observed_time_verification_implemented",
-      "authority": "deny_all",
-      "tests": [
-        "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs"
-      ],
-      "sourcePathExists": true
-    }
+    {"operation":"estimate_ope","designOperation":"estimate_ope","nativeSymbol":"estimate_ope","sourcePath":"codex-rs/hepta-intelligence-eval/src/ope.rs","state":"source_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/ope_tests.rs"],"sourcePathExists":true},
+    {"operation":"estimate_cluster_intervals","designOperation":"estimate_cluster_intervals","nativeSymbol":"estimate_cluster_intervals","sourcePath":"codex-rs/hepta-intelligence-eval/src/ope_confidence.rs","state":"source_implemented_sealed_receipt","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/ope.rs","symbol":"estimate_ope"}]},
+    {"operation":"estimate_sequential","designOperation":"estimate_sequential","nativeSymbol":"estimate_sequential","sourcePath":"codex-rs/hepta-intelligence-eval/src/sequential.rs","state":"source_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/sequential_tests.rs"],"sourcePathExists":true},
+    {"operation":"evaluate_temporal_holdout","designOperation":"evaluate_temporal_holdout","nativeSymbol":"evaluate_temporal_holdout","sourcePath":"codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs","state":"source_implemented_sealed_receipt","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/temporal_fold.rs","symbol":"fit_temporal_fold"},{"path":"codex-rs/hepta-intelligence-eval/src/ope_confidence.rs","symbol":"estimate_cluster_intervals"}]},
+    {"operation":"freeze_product_evaluation_plan_v1","designOperation":"freeze_product_evaluation_plan_v1","nativeSymbol":"freeze_product_evaluation_plan_v1","sourcePath":"codex-rs/hepta-intelligence-eval/src/product_runner.rs","state":"source_product_plan_freeze_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/metric_roles.rs","symbol":"freeze_cross_fold_plan_v2"}]},
+    {"operation":"product_temporal_comparison_compatibility","designOperation":"product_temporal_comparison_compatibility","nativeSymbol":"ProductEvaluationRunnerV1::evaluate_temporal_comparison","sourcePath":"codex-rs/hepta-intelligence-eval/src/product_runner.rs","state":"source_explicit_compatibility_feature_only","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs","symbol":"FencedFinalHoldoutOwnerV1::consume"},{"path":"codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs","symbol":"evaluate_temporal_holdout"}]},
+    {"operation":"recorded_product_temporal_comparison","designOperation":"recorded_product_temporal_comparison","nativeSymbol":"RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison","sourcePath":"codex-rs/hepta-intelligence-eval/src/recorded_runner.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/recorded_runner_tests.rs","codex-rs/hepta-intelligence-eval/src/recorded_runner_process_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/product_runner.rs","symbol":"ProductEvaluationRunnerV1::evaluate_temporal_comparison"},{"path":"codex-rs/hepta-intelligence-eval/src/attempt_journal.rs","symbol":"ProductEvaluationAttemptJournalV1::append"}]},
+    {"operation":"recorded_product_signed_qualification","designOperation":"recorded_product_signed_qualification","nativeSymbol":"RecordedProductEvaluationRunnerV1::qualify_and_persist","sourcePath":"codex-rs/hepta-intelligence-eval/src/recorded_runner.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/recorded_publication_tests.rs","codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/product_runner.rs","symbol":"ProductEvaluationRunnerV1::qualify_and_persist"},{"path":"codex-rs/hepta-intelligence-eval/src/recorded_publication.rs","symbol":"RecordedPublicationSinkV1::persist"}]},
+    {"operation":"consumer_bound_signed_admission","designOperation":"consumer_bound_signed_admission","nativeSymbol":"admit_signed_eligibility_v2","sourcePath":"codex-rs/hepta-intelligence-eval/src/signed_admission.rs","state":"source_consumer_bound_admission_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/signed_admission.rs","codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs","codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs","symbol":"decide_with_signed_evidence_v2"}]},
+    {"operation":"reconciled_product_qualification_publication","designOperation":"reconciled_product_qualification_publication","nativeSymbol":"ReconciledProductQualificationSinkV1::persist","sourcePath":"codex-rs/hepta-intelligence-eval/src/reconciled_sink.rs","state":"source_idempotent_publication_reconciliation_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/reconciled_sink.rs","codex-rs/hepta-intelligence-eval/src/recorded_publication_tests.rs"],"sourcePathExists":true},
+    {"operation":"durable_product_evaluation_attempt_journal","designOperation":"durable_product_evaluation_attempt_journal","nativeSymbol":"LockedFileProductEvaluationAttemptJournalV1","sourcePath":"codex-rs/hepta-intelligence-eval/src/attempt_journal_file.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/attempt_journal_tests.rs","codex-rs/hepta-intelligence-eval/src/recorded_runner_process_tests.rs"],"sourcePathExists":true},
+    {"operation":"fenced_final_holdout_consume","designOperation":"fenced_final_holdout_consume","nativeSymbol":"FencedFinalHoldoutOwnerV1::consume","sourcePath":"codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs","state":"source_linearizable_fenced_owner_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs"],"sourcePathExists":true,"delegatedCallees":[{"path":"codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs","symbol":"FinalHoldoutCasStoreV1::compare_and_swap"}]},
+    {"operation":"locked_file_final_holdout_cas_store","designOperation":"locked_file_final_holdout_cas_store","nativeSymbol":"LockedFileFinalHoldoutCasStoreV1","sourcePath":"codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs","state":"source_concrete_cas_recovery_backend_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs"],"sourcePathExists":true},
+    {"operation":"locked_file_final_holdout_compaction","designOperation":"locked_file_final_holdout_compaction","nativeSymbol":"LockedFileFinalHoldoutCasStoreV1::compact_into","sourcePath":"codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs","state":"source_verified_copy_compaction_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/tests/holdout_compaction.rs"],"sourcePathExists":true},
+    {"operation":"signed_v2_admission_primitive","designOperation":"signed_v2_admission_primitive","nativeSymbol":"decide_with_signed_evidence_v2","sourcePath":"codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs","state":"source_crate_internal_signed_verification_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/closure_tests.rs","codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs"],"sourcePathExists":true},
+    {"operation":"signed_v3_longitudinal_admission_primitive","designOperation":"signed_v3_longitudinal_admission_primitive","nativeSymbol":"decide_with_signed_longitudinal_evidence_v3","sourcePath":"codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs","state":"source_crate_internal_observed_time_verification_implemented","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs"],"sourcePathExists":true},
+    {"operation":"AnchoredProductEvaluationAttemptJournalV1","designOperation":"AnchoredProductEvaluationAttemptJournalV1","nativeSymbol":"AnchoredProductEvaluationAttemptJournalV1","sourcePath":"codex-rs/hepta-intelligence-eval/src/attempt_journal_anchor.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/attempt_journal_tests.rs"],"sourcePathExists":true},
+    {"operation":"reconcile_product_attempt_holdout_v1","designOperation":"reconcile_product_attempt_holdout_v1","nativeSymbol":"reconcile_product_attempt_holdout_v1","sourcePath":"codex-rs/hepta-intelligence-eval/src/attempt_recovery.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/recorded_runner_process_tests.rs"],"sourcePathExists":true},
+    {"operation":"reconcile_product_attempt_publication_v1","designOperation":"reconcile_product_attempt_publication_v1","nativeSymbol":"reconcile_product_attempt_publication_v1","sourcePath":"codex-rs/hepta-intelligence-eval/src/attempt_recovery.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/recorded_publication_tests.rs"],"sourcePathExists":true},
+    {"operation":"RecordedPublicationSinkV1","designOperation":"RecordedPublicationSinkV1","nativeSymbol":"RecordedPublicationSinkV1","sourcePath":"codex-rs/hepta-intelligence-eval/src/recorded_publication.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["codex-rs/hepta-intelligence-eval/src/recorded_publication_tests.rs"],"sourcePathExists":true},
+    {"operation":"DurableProductEvaluationAttemptJournalV1","designOperation":"DurableProductEvaluationAttemptJournalV1","nativeSymbol":"DurableProductEvaluationAttemptJournalV1","sourcePath":"codex-rs/hepta-intelligence-eval/src/attempt_durability.rs","state":"source_candidate_execution_unverified","authority":"deny_all","tests":["scripts/hepta-learning-eval-api-surface.sh"],"sourcePathExists":true}
   ],
   "productCallers": [
-    {
-      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
-      "nativeSymbol": "AgentdEvaluationSessionV1::evaluate",
-      "state": "source_consumer_bound_admission_implemented",
-      "surface": "admit_signed_eligibility_v2",
-      "authority": "deny_all"
-    },
-    {
-      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
-      "state": "source_consumer_bound_admission_implemented",
-      "surface": "admit_signed_eligibility_v2",
-      "authority": "deny_all"
-    },
-    {
-      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-      "nativeSymbol": "run_evaluated_shadow_v1",
-      "state": "source_sealed_product_qualification_consumer_implemented",
-      "surface": "ProductQualificationReceiptV1",
-      "authority": "deny_all"
-    }
+    {"sourcePath":"codex-rs/hepta-agentd/src/intelligence_evaluation.rs","nativeSymbol":"AgentdEvaluationSessionV1::evaluate","state":"source_consumer_bound_admission_implemented","surface":"admit_signed_eligibility_v2","authority":"deny_all"},
+    {"sourcePath":"codex-rs/hepta-intelligence/src/plasticity_product.rs","nativeSymbol":"propose_authenticated_parameter_plasticity_v1","state":"source_consumer_bound_admission_implemented","surface":"admit_signed_eligibility_v2","authority":"deny_all"},
+    {"sourcePath":"codex-rs/hepta-intelligence/src/evaluated_shadow.rs","nativeSymbol":"run_evaluated_shadow_v1","state":"source_sealed_product_qualification_consumer_implemented","surface":"ProductQualificationReceiptV1","authority":"deny_all"}
   ],
   "repositoryControlledGaps": [
-    "Obtain passing exact-head and ordered-parent synthetic-merge Lane E artifacts for the final immutable candidate.",
-    "Obtain a passing focused learning.eval convergence artifact with compiler API checks, fault matrix, storage profile and at least 85 percent library line coverage."
+    "Execute formatting, compilation, tests, strict lint and coverage on the final exact source and ordered-parent merge tree.",
+    "Persist and recover complete sealed evidence objects, not only their digests, across computation and publication crashes.",
+    "Bind each metric to a preregistered typed outcome channel, schema, unit, time window, subgroup and measured evidence.",
+    "Compose a real selected-host controller with authenticated independent anchor authority, provider, publication store and bounded recovery scheduling.",
+    "Qualify near-capacity startup, backlog, checkpoint/rotation and sustained recovery on the selected storage topology."
   ],
   "externalEvidenceGates": [
     "authenticated target-host binding for trust, publication, attempt-journal and final-holdout namespaces",
@@ -325,43 +61,27 @@
     "selection, canary, promotion, activation and release authorization"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
-    "implementedOperationMappingComplete": true,
-    "sourceRootPresent": true,
-    "productAdapterComposed": false,
-    "consumerBoundAdmissionComposed": true,
-    "durableAttemptJournalImplemented": true,
-    "publicationReconciliationImplemented": true,
-    "verifiedCompactionImplemented": true,
-    "concreteLocalCasBackend": true,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "targetHostQualified": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false
+    "nativeSourceMappingComplete":true,"implementedOperationMappingComplete":true,"sourceRootPresent":true,
+    "productAdapterComposed":false,"consumerBoundAdmissionComposed":true,"durableAttemptJournalImplemented":true,
+    "publicationReconciliationImplemented":true,"verifiedCompactionImplemented":true,"concreteLocalCasBackend":true,
+    "productionImplementation":false,"productExecutionProved":false,"targetHostQualified":false,
+    "independentAcceptance":false,"activation":false,"release":false
   },
   "currentQualificationTruth": {
-    "productionContract": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
-    "nativeMapping": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
-    "generatedStatus": "docs/modules/learning.eval/CURRENT_STATUS.json",
-    "targetHostContract": "docs/modules/learning.eval/TARGET_HOST_QUALIFICATION.md",
-    "laneEMatrix": "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
-    "traceability": "qualification/lane-e/TEST_TRACEABILITY.json",
-    "laneEWorkflow": ".github/workflows/hepta-lane-e-gap-closure.yml",
-    "focusedWorkflow": ".github/workflows/hepta-learning-eval-convergence.yml",
-    "laneEArtifactSchema": "hepta.learning-eval.qualification-evidence.v1",
-    "focusedArtifactSchema": "hepta.learning-eval.convergence-evidence.v1"
+    "productionContract":"codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+    "nativeMapping":"codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
+    "generatedStatus":"docs/modules/learning.eval/CURRENT_STATUS.json",
+    "targetHostContract":"docs/modules/learning.eval/TARGET_HOST_QUALIFICATION.md",
+    "recoveryContract":"codex-rs/hepta-intelligence-eval/RECOVERY_CONTRACT.md",
+    "laneEMatrix":"docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+    "traceability":"qualification/lane-e/TEST_TRACEABILITY.json",
+    "laneEWorkflow":".github/workflows/hepta-lane-e-gap-closure.yml",
+    "focusedWorkflow":".github/workflows/hepta-learning-eval-convergence.yml",
+    "laneEArtifactSchema":"hepta.learning-eval.qualification-evidence.v1",
+    "focusedArtifactSchema":"hepta.learning-eval.convergence-evidence.v1"
   },
   "exactCandidateIdentitySource": {
-    "workflows": [
-      ".github/workflows/hepta-lane-e-gap-closure.yml",
-      ".github/workflows/hepta-learning-eval-convergence.yml"
-    ],
-    "requiredStates": [
-      "exact_head_pass",
-      "ordered_parent_synthetic_merge_pass",
-      "focused_convergence_pass"
-    ]
+    "workflows":[".github/workflows/hepta-lane-e-gap-closure.yml",".github/workflows/hepta-learning-eval-convergence.yml"],
+    "requiredStates":["exact_head_pass","ordered_parent_synthetic_merge_pass","focused_convergence_pass"]
   }
 }

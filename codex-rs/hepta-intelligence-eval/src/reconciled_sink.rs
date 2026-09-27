@@ -24,7 +24,7 @@ pub struct ProductQualificationPublicationRequestV1 {
 }
 
 impl ProductQualificationPublicationRequestV1 {
-    fn new(
+    pub(crate) fn new(
         execution_digest: Digest32,
         decision: &SignedEvaluationDecisionV1,
     ) -> Result<Self, ProductEvidenceSinkErrorV1> {
@@ -219,9 +219,11 @@ impl<S: ProductQualificationPublicationStoreV1> ProductQualificationEvidenceSink
             if pending != &request {
                 return Err(ProductEvidenceSinkErrorV1::Indeterminate);
             }
-            if let Some(publication) = self.reconcile_pending()? {
-                return Ok(publication);
-            }
+            // Absence does not settle an accepted-or-unknown write.
+            // Never turn a read-based reconciliation into a fresh write.
+            return self
+                .reconcile_pending()?
+                .ok_or(ProductEvidenceSinkErrorV1::Indeterminate);
         }
         if let Some(publication) = self.load_matching(&request)? {
             self.pending = None;
