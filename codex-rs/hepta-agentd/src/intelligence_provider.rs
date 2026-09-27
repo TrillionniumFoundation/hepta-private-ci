@@ -3,13 +3,12 @@
 //! The provider is a bounded registry of one-shot builders installed by the
 //! product composition owner. Request bytes can select only a previously
 //! registered durable run id; they cannot inject owner profiles, model state,
-//! trust material or currentness facts.
+//! trust material, learning authority or currentness facts.
 
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -19,7 +18,7 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceInvocationProviderV1;
 use crate::AgentdIntelligenceInvocationV1;
-use crate::AgentdIntelligenceOwnerInputsV1;
+use crate::AgentdIntelligenceLearningHostV1;
 use crate::AgentdIntelligenceProductRunnerV1;
 
 const MAX_PENDING_CANONICAL_INVOCATIONS: usize = 256;
@@ -28,13 +27,8 @@ type InvocationFactory = Box<
     dyn FnOnce(
             &AgentdIdentity,
             &RunStartRecordV1,
-        ) -> Result<
-            (
-                CanonicalIntelligenceRunRequestV1,
-                AgentdIntelligenceOwnerInputsV1,
-            ),
-            AgentdError,
-        > + Send,
+        ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>
+        + Send,
 >;
 
 /// Bounded concrete implementation of the canonical invocation-provider seam.
@@ -44,11 +38,29 @@ type InvocationFactory = Box<
 /// freshly derived owner inputs; stale in-memory material is never reused.
 pub struct AgentdIntelligenceInvocationRegistryV1 {
     profile_digest: Digest32,
+    learning_host: Option<Arc<AgentdIntelligenceLearningHostV1>>,
     pending: Mutex<BTreeMap<StableId, InvocationFactory>>,
 }
 
 impl AgentdIntelligenceInvocationRegistryV1 {
+    /// Compatibility/source-test registry. It cannot advertise the canonical
+    /// product capability because no product learning owner is attached.
     pub fn new(profile_digest: Digest32) -> Result<Self, AgentdError> {
+        Self::construct(profile_digest, None)
+    }
+
+    /// Complete product registry with restart-reconciled Decision/Outcome owner.
+    pub fn new_product(
+        profile_digest: Digest32,
+        learning_host: Arc<AgentdIntelligenceLearningHostV1>,
+    ) -> Result<Self, AgentdError> {
+        Self::construct(profile_digest, Some(learning_host))
+    }
+
+    fn construct(
+        profile_digest: Digest32,
+        learning_host: Option<Arc<AgentdIntelligenceLearningHostV1>>,
+    ) -> Result<Self, AgentdError> {
         if profile_digest.is_zero() {
             return Err(AgentdError::Invalid(
                 "canonical intelligence provider profile digest must be non-zero".to_string(),
@@ -56,6 +68,7 @@ impl AgentdIntelligenceInvocationRegistryV1 {
         }
         Ok(Self {
             profile_digest,
+            learning_host,
             pending: Mutex::new(BTreeMap::new()),
         })
     }
@@ -65,13 +78,8 @@ impl AgentdIntelligenceInvocationRegistryV1 {
         F: FnOnce(
                 &AgentdIdentity,
                 &RunStartRecordV1,
-            ) -> Result<
-                (
-                    CanonicalIntelligenceRunRequestV1,
-                    AgentdIntelligenceOwnerInputsV1,
-                ),
-                AgentdError,
-            > + Send
+            ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>
+            + Send
             + 'static,
     {
         let mut pending = self.pending.lock().map_err(|_| {
@@ -118,11 +126,20 @@ impl AgentdIntelligenceInvocationRegistryV1 {
             })?
             .len())
     }
+
+    #[must_use]
+    pub fn product_ready(&self) -> bool {
+        self.learning_host.is_some() && !self.profile_digest.is_zero()
+    }
 }
 
 impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegistryV1 {
     fn profile_digest(&self) -> Digest32 {
         self.profile_digest
+    }
+
+    fn learning_host(&self) -> Option<Arc<AgentdIntelligenceLearningHostV1>> {
+        self.learning_host.clone()
     }
 
     fn build(
@@ -145,8 +162,9 @@ impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegi
                     record.snapshot.run_id
                 ))
             })?;
-        let (request, inputs) = factory(identity, record)?;
-        AgentdIntelligenceInvocationV1::new(identity, record, request, inputs)
+        let invocation = factory(identity, record)?;
+        invocation.validate(identity, record)?;
+        Ok(invocation)
     }
 }
 
@@ -159,6 +177,12 @@ pub fn compose_canonical_intelligence_profile_v1(
     runner: Arc<AgentdIntelligenceProductRunnerV1>,
     provider: Arc<AgentdIntelligenceInvocationRegistryV1>,
 ) -> Result<AgentdConfig, AgentdError> {
+    if !provider.product_ready() {
+        return Err(AgentdError::Invalid(
+            "canonical intelligence product profile requires a durable learning owner"
+                .to_string(),
+        ));
+    }
     let config = config.with_intelligence_product_runner(runner)?;
     config.with_intelligence_invocation_provider(provider)
 }
@@ -172,6 +196,7 @@ mod tests {
         assert!(AgentdIntelligenceInvocationRegistryV1::new(Digest32::ZERO).is_err());
         let registry = AgentdIntelligenceInvocationRegistryV1::new(Digest32::of_bytes(b"profile"))
             .expect("registry");
+        assert!(!registry.product_ready());
         let run_id = StableId::new("run.provider").expect("run id");
         registry
             .register(run_id.clone(), |_, _| {
