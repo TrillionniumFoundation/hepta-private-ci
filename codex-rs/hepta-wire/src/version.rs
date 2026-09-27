@@ -90,7 +90,9 @@ impl WireCapabilities {
 ///
 /// Version numbers are stored as raw u16 values so a newer peer can advertise
 /// future versions without an older peer accidentally assigning them meaning.
-/// Negotiation selects only versions implemented locally.
+/// Negotiation selects only versions implemented locally. Known
+/// version-scoped capabilities must be coherent with the advertised known
+/// versions at both construction and decode time.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NegotiationOffer {
     versions: Vec<u16>,
@@ -113,6 +115,7 @@ impl NegotiationOffer {
         }
         versions.sort_unstable();
         versions.dedup();
+        validate_offer_coherence(&versions, capabilities)?;
         Ok(Self {
             versions,
             capabilities,
@@ -197,11 +200,33 @@ impl NegotiationOffer {
         if versions.windows(2).any(|pair| pair[0] >= pair[1]) {
             return Err(NegotiationError::NonCanonicalVersions);
         }
+        validate_offer_coherence(&versions, capabilities)?;
         Ok(Self {
             versions,
             capabilities,
         })
     }
+}
+
+/// Reject a known version-scoped capability when no advertised known or
+/// future version can provide it. Unknown future versions remain opaque: an
+/// older peer must not invent their semantics, so an offer containing a future
+/// version is admitted and the capability is still filtered from any selected
+/// known version that does not provide it.
+fn validate_offer_coherence(
+    versions: &[u16],
+    capabilities: WireCapabilities,
+) -> Result<(), NegotiationError> {
+    let has_v2_or_future = versions
+        .iter()
+        .any(|version| *version >= WireVersion::V2.as_u16());
+    if capabilities.contains(WireCapabilities::METADATA_BOUND_DIGEST) && !has_v2_or_future {
+        return Err(NegotiationError::IncoherentCapability {
+            capability: WireCapabilities::METADATA_BOUND_DIGEST.bits(),
+            minimum_version: WireVersion::V2.as_u16(),
+        });
+    }
+    Ok(())
 }
 
 /// Immutable result of `negotiate`; consumers cannot replace the selected
@@ -319,6 +344,10 @@ pub enum NegotiationError {
     InvalidVersion(u16),
     Reserved(u8),
     UnknownCapabilities(u64),
+    IncoherentCapability {
+        capability: u64,
+        minimum_version: u16,
+    },
     LengthMismatch,
     NonCanonicalVersions,
     NoCommonVersion,
@@ -349,6 +378,13 @@ impl fmt::Display for NegotiationError {
             Self::UnknownCapabilities(bits) => {
                 write!(formatter, "unknown wire capability bits 0x{bits:016x}")
             }
+            Self::IncoherentCapability {
+                capability,
+                minimum_version,
+            } => write!(
+                formatter,
+                "wire capability 0x{capability:016x} requires advertised version {minimum_version} or newer"
+            ),
             Self::LengthMismatch => formatter.write_str("wire negotiation length mismatch"),
             Self::NonCanonicalVersions => {
                 formatter.write_str("wire versions must be strictly increasing")
