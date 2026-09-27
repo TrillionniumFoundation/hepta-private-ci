@@ -8,11 +8,12 @@ import {
   EffectAdmissionBrowserDriver,
   ParentFinalUseAuthority,
 } from "./agentd-service.js";
+import { DurableEvidenceBrowserDriver } from "./durable-evidence-driver.js";
 import { EffectScopedNetworkDriver } from "./effect-network-driver.js";
 import { FileBrowserOperationJournal } from "./journal.js";
 import { RedactingObservationBrowserDriver } from "./observation-redactor.js";
-import { BrowserProfileHost } from "./runtime.js";
 import { createFilePersistedEffectReconciler } from "./persisted-reconciler.js";
+import { BrowserProfileHost } from "./runtime.js";
 import {
   LinuxBubblewrapLauncher,
   PooledSubprocessBrowserDriver,
@@ -72,6 +73,9 @@ const authority = new ParentFinalUseAuthority(channel);
 const maxProfiles = optionalPositiveInteger("HEPTA_BROWSER_MAX_PROFILES", 16);
 const reconciliationRoot = process.env.HEPTA_BROWSER_RECONCILIATION_ROOT;
 const profileRoot = requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT");
+const journal = new FileBrowserOperationJournal(
+  requiredAbsolutePath("HEPTA_BROWSER_JOURNAL_PATH"),
+);
 const subprocessPool = new PooledSubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
   workerDigest: requiredDigest("HEPTA_BROWSER_WORKER_SHA256"),
@@ -141,16 +145,17 @@ const networkDriver = new EffectScopedNetworkDriver({
 const redactingDriver = new RedactingObservationBrowserDriver({
   driver: networkDriver,
 });
-const driver = new EffectAdmissionBrowserDriver({
+const admissionDriver = new EffectAdmissionBrowserDriver({
   driver: redactingDriver,
   containmentTimeoutMs: optionalPositiveInteger(
     "HEPTA_BROWSER_CONTAINMENT_TIMEOUT_MS",
     10_000,
   ),
 });
-const journal = new FileBrowserOperationJournal(
-  requiredAbsolutePath("HEPTA_BROWSER_JOURNAL_PATH"),
-);
+const driver = new DurableEvidenceBrowserDriver({
+  driver: admissionDriver,
+  journal,
+});
 const host = new BrowserProfileHost({
   driver,
   authority,
