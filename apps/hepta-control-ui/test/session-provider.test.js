@@ -42,6 +42,16 @@ function fakeClient(overrides = {}) {
   };
 }
 
+test("start adopts an already-connected client without reconnecting", async () => {
+  const client = fakeClient();
+  client.state.connected = true;
+  const provider = new SessionProvider({ client, endpointManifest: {} });
+  const view = await provider.start();
+  assert.equal(view.connected, true);
+  assert.equal(client.state.connectCount, 0);
+  provider.stop();
+});
+
 test("concurrent start callers share one connection attempt", async () => {
   const gate = deferred();
   const events = [];

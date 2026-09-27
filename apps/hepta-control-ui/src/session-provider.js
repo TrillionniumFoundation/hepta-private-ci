@@ -79,7 +79,9 @@ export class SessionProvider {
 
   async #startOnce(epoch, signal) {
     try {
-      await this.#client.connect(this.#manifest, { signal });
+      if (!this.#client.readView().connected) {
+        await this.#client.connect(this.#manifest, { signal });
+      }
     } catch (error) {
       if (this.#active && epoch === this.#epoch) {
         this.#active = false;

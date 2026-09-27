@@ -65,6 +65,9 @@ export function createControlConsole({
 
   let timer = null;
   let destroyed = false;
+  let started = false;
+  let startPromise = null;
+  let lifecycleEpoch = 0;
   let inFlight = false;
   let pendingAction = null;
   let dialogTrigger = null;
@@ -411,22 +414,62 @@ export function createControlConsole({
     render();
   });
 
-  return Object.freeze({
-    async start({ signal } = {}) {
-      clearError();
-      restoreRecovery();
-      try {
-        await sessionProvider.start({ signal });
-        await refresh({ propagate: true });
+  function assertLifecycleActive(epoch, phase) {
+    if (destroyed || epoch !== lifecycleEpoch) {
+      throw new UiControlError(
+        UI_CONTROL_ERROR_CODES.ABORTED,
+        `ui.control console was destroyed while ${phase}`,
+        {
+          retryable: true,
+          details: { phase },
+        },
+      );
+    }
+  }
+
+  async function startOnce(signal, epoch) {
+    clearError();
+    restoreRecovery();
+    try {
+      await sessionProvider.start({ signal });
+      assertLifecycleActive(epoch, "establishing its session");
+      await refresh({ propagate: true });
+      assertLifecycleActive(epoch, "refreshing its first runtime view");
+      if (timer === null) {
         timer = setInterval(() => {
           refresh().catch(showError);
         }, pollIntervalMs);
-        announce("ui.control console connected.");
-      } catch (error) {
-        showError(error);
-        throw error;
       }
+      started = true;
+      announce("ui.control console connected.");
       render();
+    } catch (error) {
+      if (!destroyed) showError(error);
+      throw error;
+    }
+  }
+
+  return Object.freeze({
+    start({ signal } = {}) {
+      if (destroyed) {
+        return Promise.reject(
+          new UiControlError(
+            UI_CONTROL_ERROR_CODES.ABORTED,
+            "ui.control console cannot restart after destroy",
+            { details: { phase: "start" } },
+          ),
+        );
+      }
+      if (started) return Promise.resolve();
+      if (startPromise) return startPromise;
+
+      const epoch = lifecycleEpoch;
+      const attempt = startOnce(signal, epoch);
+      startPromise = attempt;
+      attempt.finally(() => {
+        if (startPromise === attempt) startPromise = null;
+      }).catch(() => {});
+      return attempt;
     },
 
     render,
@@ -434,6 +477,8 @@ export function createControlConsole({
     async destroy() {
       if (destroyed) return;
       destroyed = true;
+      started = false;
+      lifecycleEpoch += 1;
       if (timer !== null) clearInterval(timer);
       timer = null;
       unsubscribe();
