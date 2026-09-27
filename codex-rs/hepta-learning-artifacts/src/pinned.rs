@@ -223,7 +223,30 @@ impl RevalidatingCandidate {
         current: VerifiedCurrentRegistryViewV1,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        self.with_verified_registry(current.receipt, current.registry, consume)
+        self.with_current_result(Ok(current), consume)
+    }
+
+    /// Include current-view acquisition failures in the same fail-closed
+    /// boundary. Callers must forward errors rather than retain a previously
+    /// verified view. An error never runs the consumer and permanently closes
+    /// this cache. A later successful old view cannot revive it.
+    pub fn with_current_result<T>(
+        &mut self,
+        current: Result<VerifiedCurrentRegistryViewV1, PinnedCandidateLoadError>,
+        consume: impl FnOnce(&[u8]) -> T,
+    ) -> Result<T, PinnedCandidateLoadError> {
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        match current {
+            Ok(current) => {
+                self.with_verified_registry(current.receipt, current.registry, consume)
+            }
+            Err(error) => {
+                self.unavailable = true;
+                Err(error)
+            }
+        }
     }
 
     fn with_verified_registry<T>(
@@ -273,8 +296,14 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
-        self.with_verified_registry(current, registry, consume)
+        // Exercise the same acquisition-error boundary as production callers.
+        // The test-only view does not claim authentication or runtime authority.
+        let view = read_registry_snapshot(snapshot, current)
+            .map(|registry| {
+                VerifiedCurrentRegistryViewV1::new(current, registry, Digest32::ZERO, Digest32::ZERO)
+            })
+            .map_err(PinnedCandidateLoadError::from);
+        self.with_current_result(view, consume)
     }
 }
 
