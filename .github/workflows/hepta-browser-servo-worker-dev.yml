@@ -32,6 +32,8 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
 
 concurrency:
   group: hepta-browser-servo-worker-dev-${{ github.event.pull_request.number || github.ref }}
@@ -243,6 +245,7 @@ jobs:
               'sameRunnerByteIdenticalBuilds': True,
               'reproducibleIndependentBuilds': False,
               'independentRunnerBuildCount': 1,
+              'signedProvenanceRequiredForDeployment': True,
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
               'realBrowserE2E': json.loads((root / 'real-browser-e2e.json').read_text()),
@@ -251,6 +254,54 @@ jobs:
           (root / 'build-receipt.json').write_text(json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
           PY
           sha256sum worker-evidence/build-receipt.json | tee worker-evidence/build-receipt.json.sha256
+
+      - name: Sign primary worker build provenance
+        if: github.ref == 'refs/heads/main'
+        id: primary-provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: worker-evidence/hepta-servo-worker
+
+      - name: Sign primary worker SPDX 2.3 SBOM
+        if: github.ref == 'refs/heads/main'
+        id: primary-sbom
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: worker-evidence/hepta-servo-worker
+          sbom-path: worker-evidence/hepta-servo-worker.spdx.json
+
+      - name: Preserve signed attestation bundles and identities
+        if: github.ref == 'refs/heads/main'
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.primary-provenance.outputs.bundle-path }}
+          PROVENANCE_ID: ${{ steps.primary-provenance.outputs.attestation-id }}
+          PROVENANCE_URL: ${{ steps.primary-provenance.outputs.attestation-url }}
+          SBOM_BUNDLE: ${{ steps.primary-sbom.outputs.bundle-path }}
+          SBOM_ID: ${{ steps.primary-sbom.outputs.attestation-id }}
+          SBOM_URL: ${{ steps.primary-sbom.outputs.attestation-url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$PROVENANCE_BUNDLE"
+          test -s "$SBOM_BUNDLE"
+          cp "$PROVENANCE_BUNDLE" worker-evidence/build-provenance-attestation.jsonl
+          cp "$SBOM_BUNDLE" worker-evidence/sbom-attestation.jsonl
+          python3 - <<'PY'
+          import json, os, pathlib
+          summary = {
+              'schema': 'hepta.browser.servo-attestation-summary.v1',
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'signerWorkflow': 'TrillionniumFoundation/hepta-private-ci/.github/workflows/hepta-browser-servo-worker-dev.yml',
+              'provenanceAttestationId': os.environ['PROVENANCE_ID'],
+              'provenanceAttestationUrl': os.environ['PROVENANCE_URL'],
+              'sbomAttestationId': os.environ['SBOM_ID'],
+              'sbomAttestationUrl': os.environ['SBOM_URL'],
+          }
+          pathlib.Path('worker-evidence/attestation-summary.json').write_text(
+              json.dumps(summary, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
 
       - name: Preserve primary worker evidence
         if: always()
