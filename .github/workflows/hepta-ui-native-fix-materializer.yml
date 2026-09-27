@@ -1,4 +1,4 @@
-name: repair ui.native convergence materializer
+name: ui.native integration convergence executor
 
 on:
   push:
@@ -10,38 +10,153 @@ permissions:
   contents: write
 
 concurrency:
-  group: ui-native-fix-materializer-20260927
+  group: ui-native-integration-convergence-executor-20260927
   cancel-in-progress: false
 
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  CARGO_TARGET_DIR: ${{ github.workspace }}/apps/hepta-native/target
+  CANDIDATE_BRANCH: work/ui-native-integration-convergence-20260927
+  ANCESTOR_SHA: 709aab0b61f2484b7f5c1efadee96fb14fc5cd31
+
 jobs:
-  repair:
-    runs-on: ubuntu-24.04
+  converge:
+    runs-on: macos-15
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: work/ui-native-integration-convergence-20260927
           fetch-depth: 0
           persist-credentials: true
-      - name: Remove the accidental expression token from Python source
+
+      - name: Bind the inert materializer to the reviewed candidate lineage
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "$CANDIDATE_BRANCH"
+          git merge-base --is-ancestor "$ANCESTOR_SHA" HEAD
+          test -f .github/materializers/hepta-ui-native-integration-converge.yml.txt
+          test -z "$(git status --porcelain)"
+
+      - name: Extract and execute the audited Python materializer
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('.github/workflows/hepta-ui-native-integration-converge.yml')
-          lines = path.read_text(encoding='utf-8').splitlines()
+          import textwrap
+
+          source = Path('.github/materializers/hepta-ui-native-integration-converge.yml.txt').read_text(encoding='utf-8')
+          start_marker = "          python3 - <<'PY'\n"
+          end_marker = "\n          PY\n"
+          start = source.index(start_marker) + len(start_marker)
+          end = source.index(end_marker, start)
+          script = textwrap.dedent(source[start:end])
+          lines = script.splitlines()
           matches = [i for i, line in enumerate(lines) if 'text = text.replace("ui-native-remediation-' in line]
           if len(matches) != 1:
               raise SystemExit(f'expected one concurrency replacement line, found {len(matches)}')
-          lines[matches[0]] = '                  text = text.replace("ui-native-remediation-", "ui-native-convergence-", 1)'
-          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          lines[matches[0]] = '    text = text.replace("ui-native-remediation-", "ui-native-convergence-", 1)'
+          script = '\n'.join(lines) + '\n'
+          compile(script, 'ui-native-convergence-materializer', 'exec')
+          exec(script, {'__name__': '__main__'})
           PY
+          chmod +x scripts/hepta_ui_native_release_gates.py
+          python3 -m py_compile \
+            apps/hepta-native/tools/prepare_current_source.py \
+            scripts/hepta_ui_native_release_gates.py \
+            scripts/test_hepta_ui_native_release_gates.py
+          python3 scripts/hepta_ui_native_release_gates.py audit
+          python3 -m unittest -v scripts.test_hepta_ui_native_release_gates
           git diff --check
-      - name: Publish repaired materializer and retire this fixer
+
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Format and validate generated document projections
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          python3 scripts/hepta-module-docs.py verify
+          git diff --check
+
+      - name: Strict native lint, tests and release binaries
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets --all-features -- -D warnings
+          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets
+          cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state \
+            --all-targets --all-features --no-deps -- -D warnings
+          cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-native-gateway \
+            -p codex-hepta-contracts \
+            -p codex-hepta-private-state \
+            --all-targets --all-features
+          cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --release --bins
+
+      - name: Commit source and document convergence
+        id: source
         run: |
           set -euo pipefail
           git config user.name ui-native-convergence
           git config user.email ui-native-convergence@users.noreply.github.com
-          git rm .github/workflows/hepta-ui-native-fix-materializer.yml
-          git add .github/workflows/hepta-ui-native-integration-converge.yml
-          git commit -m 'fix(ci): make convergence materializer parseable'
-          git push origin HEAD:refs/heads/work/ui-native-integration-convergence-20260927
+          git add --all
+          git diff --cached --check
+          git commit -m 'fix(ui.native): converge supervised runtime and candidate truth'
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate exact source, implementation and module identities
+        env:
+          HEPTA_UI_NATIVE_WRITE_BRANCH: work/ui-native-integration-convergence-20260927
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py --write-fingerprints
+          python3 apps/hepta-native/tools/prepare_current_source.py --sync-metadata
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-module-docs.py refresh-indexes
+          git add --all
+          git diff --cached --check
+          git commit -m 'docs(ui.native): bind integration convergence identities'
+
+      - name: Verify clean exact candidate before publication
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta-module-docs.py refresh-indexes --check
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/test_hepta_module_registry.py
+          python3 scripts/hepta_ui_native_release_gates.py audit
+          python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          git diff --exit-code
+
+      - name: Retire one-shot sources and publish candidate
+        run: |
+          set -euo pipefail
+          git rm \
+            .github/workflows/hepta-ui-native-fix-materializer.yml \
+            .github/materializers/hepta-ui-native-integration-converge.yml.txt
+          git commit -m 'chore(ui.native): retire integration convergence materializers'
+          git push origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+          {
+            echo '### ui.native integration convergence'
+            echo
+            echo "Source commit: \`${{ steps.source.outputs.sha }}\`"
+            echo "Published candidate: \`$(git rev-parse HEAD)\`"
+            echo
+            echo 'Release authority remains false; external gates are recorded in RELEASE_GATES.json.'
+          } >> "$GITHUB_STEP_SUMMARY"
