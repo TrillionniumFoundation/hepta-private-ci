@@ -1,5 +1,6 @@
 name: Prompt registry operational closure bootstrap
 
+# Re-run on the current exact PR head after the predecessor was cancelled by later pushes.
 on:
   push:
     branches: [codex/prompt-registry-remediation-20260927]
