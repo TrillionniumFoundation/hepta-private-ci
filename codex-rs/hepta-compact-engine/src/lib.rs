@@ -75,3 +75,6 @@ pub use trust_registry::MAX_COMPACTION_TRUST_ENTRIES_V1;
 pub use trust_registry::MAX_COMPACTION_TRUST_MANIFEST_BYTES_V1;
 pub use trust_registry::SignedCompactionTrustManifestV1;
 pub use trust_registry::VerifiedCompactionTrustRegistryV1;
+
+#[cfg(test)]
+mod product_e2e_tests;
