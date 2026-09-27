@@ -32,8 +32,10 @@ receipt consumption remain separate from a complete product serving host.
 
 The API checker selects the exact rlib and feature set from Cargo JSON, requires
 specific negative compiler diagnostics, and checks that an in-memory journal
-cannot satisfy the default durable capability. Compatibility numerical tests are
-retained explicitly; they do not prove the default production boundary.
+cannot satisfy the default durable capability. It checks the public verified
+recovery methods and rejects access to the crate-private unverified publication
+helper. Compatibility numerical tests are retained explicitly; they do not prove
+the default production boundary.
 
 ## Persistent lifecycle
 
@@ -45,16 +47,16 @@ not permission to re-execute.
 
 The successful phase chain is:
 
-```
+```text
 IntentPersisted -> HoldoutConsumed -> ComparisonSealed
-               -> QualificationDecided -> PublicationPending -> Published
+ComparisonSealed -> QualificationDecided -> PublicationPending -> Published
 ```
 
-The arrow from `ComparisonSealed` continues to `QualificationDecided`; it is not
-a shortcut from intent to qualification. Known pre-consumption rejection can
-terminate as `RejectedBeforeHoldout`; a known post-consumption evaluation error
-can terminate as `Failed`. Uncertain owner commits keep the intent discoverable.
-Comparison sealing is not publication completion.
+The second line continues the first; it does not consume another holdout. Known
+pre-consumption rejection can terminate as `RejectedBeforeHoldout`; a known
+post-consumption evaluation error can terminate as `Failed`. Uncertain owner
+commits keep the intent discoverable. Comparison sealing is not publication
+completion.
 
 Phase payloads preserve the existing transition fields and original wire tags
 0/1/2. Intent uses `holdout_record_digest` for the actual owner namespace and
@@ -90,11 +92,23 @@ files are not independent-host evidence. Legacy journals containing multiple
 attempt IDs for the same plan require audited migration; they are not silently
 rewritten or granted new release rights.
 
-## Read-only recovery and publication outbox boundary
+## Reconciliation and publication outbox boundary
 
 `history` and lexicographic `pending(after, limit)` make unresolved work
 rediscoverable without an in-memory exception object. Page size is 1..1024.
-The host must persist scheduling cursors and implement fair bounded polling.
+`RecordedProductEvaluationRunnerV1::reconcile_pending_page` validates inventory
+ordering and advances its cursor even past unresolved attempts. A full page
+returns its last attempted identity; `None` ends the sweep. The host must retain
+the cursor across invocations, restart a later sweep, and exclude concurrent
+live-attempt recovery. A poisoned/indeterminate journal aborts the sweep.
+This is a bounded recovery primitive, not a deployed scheduling service.
+
+Recovery requires the default durable journal capability and validates every
+historical frame against the state reducer: attempt identity, sequence, legal
+phase transitions, plan/holdout binding, predecessor/event digests and agreement
+with the latest pointer. Individually valid frames from different histories
+cannot be spliced into an accepted recovery history. This complements, and does
+not replace, the independent global anti-rollback anchor.
 
 `reconcile_product_attempt_holdout_v1` reads the authoritative holdout namespace
 recorded in the intent, validates/replays it, and associates an existing exact
@@ -102,48 +116,95 @@ plan consumption. It has no provider release, estimator, holdout CAS or retry
 capability. Missing or conflicting evidence remains unresolved. A replaced
 attempt journal cannot bypass `IdempotentReplay` rejection at provider release.
 
-`RecordedPublicationSinkV1` persists the exact canonical request in decided and
-pending phases before touching the evidence store. The recorded qualifier
+`RecordedPublicationSinkV1` persists the exact canonical request digest in decided
+and pending phases before touching the evidence store. The recorded qualifier
 requires a matching sealed attempt/plan/holdout/execution. An uncertain write
 cannot be retried by re-entering qualification. The reconciled sink also refuses
 to turn a pending read returning absence into a new compare-and-publish.
 
 `reconcile_product_attempt_publication_v1` loads by the historical execution
 identity, validates the record and preregistered request digest, and appends
-`Published` only for that exact result. It never issues a publication write.
-Absence is not proof that an accepted-or-unknown request was never submitted.
+`Published` only for that exact result. A recovered `QualificationDecided` with
+an already committed matching publication first records `PublicationPending`.
+These reconciliation functions read the external owners and mutate only the
+attempt journal; they are not literally read-only diagnostics. They never issue
+a publication write. Absence leaves the preexisting phase unchanged and is not
+proof that an accepted-or-unknown request was never submitted.
+
+For the distinct crash after `QualificationDecided` but before `PublicationPending`,
+`resume_decided_qualification` and `resume_decided_outcome_qualification` accept
+the original complete sealed receipt and signed evidence. They recheck current
+signature trust, expiry, revocation and V2/V3 scope, bind the full single- or
+multi-outcome execution to the journal, and require the same canonical request.
+Only then may they acknowledge Pending and perform the first publication.
+The raw `resume_decided_publication` helper is crate-private. Public recovery
+does not trust a caller-supplied signed-decision struct as verification.
+
+These methods reject Pending and Published before touching the sink. They return
+an authority-free attempt receipt, not a fresh qualification or activation token.
+A crash after Pending remains a read-reconciliation case, even if it happened
+before the actual store write. Safe automated recovery of that ambiguous cut
+requires an owned submission-state protocol; it is not guessed from absence.
+
+## Typed measured outcome composition
+
+`freeze_product_outcome_plan_v1` freezes a complete, bounded outcome-channel set:
+metric/channel identity, schema, unit, normalization, subgroup, measurement
+window, provenance commitment, input digest and both temporal plans. The
+`FinalOutcomeHoldoutProviderV1` releases the complete batch only after the same
+single authoritative consumption used by the recorded runner.
+
+`evaluate_outcome_comparison` validates each channel's exact payload and paired
+candidate/baseline measurements, computes native estimates separately, and seals
+the complete multi-outcome digest before returning. Partial, relabelled,
+substituted or duplicate payloads are rejected. The private carrier cannot be
+extracted by another crate to qualify placeholder one-stream metrics.
+`qualify_outcomes_and_persist` verifies the derived full outcome bundle and uses
+the same durable publication phases. The existing single-stream API is retained
+for its distinct contract, not represented as multiple independent results.
+
+Source tests include two measured channels using the same IPS estimator but
+different intervals, one consumption, swapped-payload rejection, semantic
+mutation coverage and order-independent payload hashing. These commitments do
+not authenticate the external measurement custodian or establish real privacy,
+retention, unlearning or future-calendar performance. The outcome qualification
+receipt is not yet a demonstrated deployed downstream consumer integration.
 
 ## Fault tests and their limits
 
 `recorded_runner_process_tests.rs` spawns an isolated test child and actually
-kills that child at six boundaries: committed consume before attempt record;
+kills that child at seven boundaries: committed consume before attempt record;
 consumed before provider release; computation complete before sealing; sealed
-before qualification; pending before publication; publication committed before
-acknowledgement. Recovery reopens real file owners, checks retained anchors and
-proves no provider re-release or duplicate publication in the fixture.
+before qualification; decided before pending; pending before publication;
+publication committed before acknowledgement. Recovery reopens real file owners,
+checks retained anchors and tests no provider re-release or duplicate publication.
+The decided cut also checks rejection of changed authentication and allows only
+the first publication for the original fixture request.
 
 The publication cuts isolate the native publication adapter; the synthetic
-signed-decision fixture is not proof of signature verification. Existing signed
-E2E tests remain a separate obligation. `attempt_journal_tests.rs` adds complete
-old-prefix restoration and accepted-but-unknown anchor cases. These are test
-sources until a fixed-tree execution artifact proves their results.
+signed-decision fixture is not proof of signature verification or complete
+artifact persistence. Existing signed E2E tests and public signature-recovery
+qualification remain separate obligations. `attempt_recovery_tests.rs` covers
+history splicing, missing predecessors, stale latest pointers, decided recovery,
+page bounds and cursor fairness. `attempt_journal_tests.rs` and the acknowledgement
+integration tests cover complete old-prefix restoration and uncertain anchors.
+These are test sources until a fixed-tree execution artifact proves their results.
 
 ## Explicit remaining work
 
-The full three-phase delivery is not complete. A digest journal does not store
-or reconstruct complete sealed estimator/signed-evidence objects. A crash after
-calculation and before sealing stays safely unresolved without reusing holdout
-data, but automatic artifact recovery/terminal retirement still needs an owned
-content store and protocol. Pending-before-write recovery deliberately does not
-blindly resubmit; a future resume protocol must first resolve submission state.
-
-V1 metric sources still select IPS/SNIPS/DR from one outcome stream. They are not
-independent cost/privacy/retention channels. Typed per-channel schemas, units,
-windows, subgroups, provenance and a complete measured outcome join remain open.
+A digest journal does not store or reconstruct complete sealed estimator and
+signed-evidence objects. A crash after calculation and before sealing stays
+safely unresolved without reusing holdout data, but automatic artifact recovery
+or terminal retirement still needs the owned content store and protocol. The
+verified resume methods require recoverable originals and do not pretend that
+this store has been implemented. Pending-before-write recovery deliberately
+does not blindly resubmit.
 
 No real selected-host controller, authenticated independent anchor authority,
 long-horizon capacity qualification, real future calendar observations,
 independent outcome provenance, retention/privacy/unlearning/power evidence or
 production release is asserted by this candidate. Final source and ordered-parent
 merge qualification must include formatting, compilation, tests, strict lint,
-coverage and read-only commit-addressed artifacts before acceptance.
+coverage and read-only commit-addressed artifacts before acceptance. Source
+ownership, source tests, executed tests, target-host evidence and independent
+acceptance remain separate facts.
