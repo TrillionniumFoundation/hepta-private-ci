@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import os
+import stat
 import tempfile
 import unittest
 from pathlib import Path
@@ -62,7 +63,27 @@ class BootstrapTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "bundle.json"
             bootstrap.atomic_write(path, value)
-            self.assertEqual(os.stat(path).st_mode & 0o777, 0o600)
+            self.assertEqual(bootstrap.load_json(path), value)
+            self.assertTrue(stat.S_ISREG(path.stat().st_mode))
+            if os.name == "posix":
+                self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+
+    def test_atomic_write_replaces_existing_bundle_without_temp_leak(self):
+        first = bootstrap.envelope(self.payload, self.key)
+        second_payload = bootstrap.transition(
+            self.payload,
+            "revoked",
+            details={"reason": "replace atomically"},
+            now=102,
+        )
+        second = bootstrap.envelope(second_payload, self.key)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "bundle.json"
+            bootstrap.atomic_write(path, first)
+            bootstrap.atomic_write(path, second)
+            self.assertEqual(bootstrap.load_json(path), second)
+            self.assertEqual([entry.name for entry in root.iterdir()], ["bundle.json"])
 
     def test_activation_requires_committed_cut_advancing_canary(self):
         with self.assertRaises(ValueError):
