@@ -20,6 +20,7 @@ use crate::AgentdIntelligenceInvocationProviderV1;
 use crate::AgentdIntelligenceInvocationV1;
 use crate::AgentdIntelligenceLearningHostV1;
 use crate::AgentdIntelligenceProductRunnerV1;
+use crate::AgentdIntelligenceRuntimeMetricsSnapshotV1;
 use crate::AgentdIntelligenceRuntimeMetricsV1;
 
 const MAX_PENDING_CANONICAL_INVOCATIONS: usize = 256;
@@ -158,9 +159,11 @@ impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegi
     }
 
     fn learning_host(&self) -> Option<Arc<AgentdIntelligenceLearningHostV1>> {
-        self.is_product_ready()
-            .then(|| self.learning_host.as_ref().map(Arc::clone))
-            .flatten()
+        if self.is_product_ready() {
+            self.learning_host.as_ref().map(Arc::clone)
+        } else {
+            None
+        }
     }
 
     fn runtime_metrics(&self) -> Option<Arc<AgentdIntelligenceRuntimeMetricsV1>> {
@@ -204,6 +207,72 @@ impl AgentdIntelligenceInvocationProviderV1 for AgentdIntelligenceInvocationRegi
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AgentdCanonicalIntelligenceStatusV1 {
+    pub profile_digest: Digest32,
+    pub pending_invocations: usize,
+    pub learning_backlog: usize,
+    pub worker_capacity: usize,
+    pub worker_available: usize,
+    pub metrics: AgentdIntelligenceRuntimeMetricsSnapshotV1,
+}
+
+/// Retainable host handle for one atomically composed canonical product profile.
+/// It is the single operational source for profile identity, bounded queue,
+/// learning reconciliation backlog, worker saturation and stage metrics.
+#[derive(Clone)]
+pub struct AgentdCanonicalIntelligenceRuntimeProfileV1 {
+    runner: Arc<AgentdIntelligenceProductRunnerV1>,
+    provider: Arc<AgentdIntelligenceInvocationRegistryV1>,
+}
+
+impl AgentdCanonicalIntelligenceRuntimeProfileV1 {
+    pub fn new(
+        runner: Arc<AgentdIntelligenceProductRunnerV1>,
+        provider: Arc<AgentdIntelligenceInvocationRegistryV1>,
+    ) -> Result<Self, AgentdError> {
+        if !provider.product_ready()? {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence product profile requires a durable learning owner, bounded registry and metrics"
+                    .to_string(),
+            ));
+        }
+        Ok(Self { runner, provider })
+    }
+
+    pub fn compose(&self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
+        let config =
+            config.with_intelligence_product_runner(Arc::clone(&self.runner))?;
+        config.with_intelligence_invocation_provider(Arc::clone(&self.provider))
+    }
+
+    pub fn status(&self) -> Result<AgentdCanonicalIntelligenceStatusV1, AgentdError> {
+        let learning_host = self.provider.learning_host().ok_or_else(|| {
+            AgentdError::Invalid(
+                "canonical intelligence product profile lost its learning owner".to_string(),
+            )
+        })?;
+        let learning_backlog = learning_host.backlog().map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical intelligence learning backlog is unavailable: {error}"
+            ))
+        })?;
+        Ok(AgentdCanonicalIntelligenceStatusV1 {
+            profile_digest: self.provider.profile_digest(),
+            pending_invocations: self.provider.pending_len()?,
+            learning_backlog,
+            worker_capacity: self.runner.worker_capacity(),
+            worker_available: self.runner.worker_available(),
+            metrics: self.provider.metrics.snapshot(),
+        })
+    }
+
+    #[must_use]
+    pub fn provider(&self) -> Arc<AgentdIntelligenceInvocationRegistryV1> {
+        Arc::clone(&self.provider)
+    }
+}
+
 /// Install the canonical intelligence product as an all-or-none profile.
 ///
 /// Callers cannot attach only the runner and later advertise a half-composed
@@ -213,14 +282,7 @@ pub fn compose_canonical_intelligence_profile_v1(
     runner: Arc<AgentdIntelligenceProductRunnerV1>,
     provider: Arc<AgentdIntelligenceInvocationRegistryV1>,
 ) -> Result<AgentdConfig, AgentdError> {
-    if !provider.product_ready()? {
-        return Err(AgentdError::Invalid(
-            "canonical intelligence product profile requires a durable learning owner, bounded registry and metrics"
-                .to_string(),
-        ));
-    }
-    let config = config.with_intelligence_product_runner(runner)?;
-    config.with_intelligence_invocation_provider(provider)
+    AgentdCanonicalIntelligenceRuntimeProfileV1::new(runner, provider)?.compose(config)
 }
 
 #[cfg(test)]
