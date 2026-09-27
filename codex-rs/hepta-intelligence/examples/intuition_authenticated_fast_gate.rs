@@ -195,7 +195,7 @@ fn fixture(candidate_count: usize) -> Fixture {
         policy_generation: PolicyGeneration::new(1).expect("generation"),
     };
     let assignment = AssignmentCommitmentV2::Deterministic {
-        assignment_distribution_digest: canonical_assignment_distribution_digest_v2(&request)
+        distribution_digest: canonical_assignment_distribution_digest_v2(&request)
             .expect("distribution"),
     };
 
