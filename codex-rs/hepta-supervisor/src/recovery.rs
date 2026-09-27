@@ -349,6 +349,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         let recovery_control = durable_control.or(lifecycle_control);
         let mut control_fault = None;
+        let mut recovery_fault = None;
         match self
             .driver
             .adopt(&spec)
@@ -395,50 +396,50 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Adoption::Missing => {
                 remove_lease(record.layout.run_root(), &lease)?;
-                let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
+                let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
                         slot,
                         record.lifecycle.generation,
                         AgentLifecycle::Failed,
-                    )?;
-                    AgentLifecycle::Failed
+                    )?
                 } else {
-                    record.lifecycle.lifecycle
+                    record.lifecycle.generation
                 };
                 control_intent::reconcile_absent(
                     record.layout.run_root(),
                     agent_id,
-                    terminal_lifecycle,
+                    self.record(agent_id)?.lifecycle.lifecycle,
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanMissing);
+                slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
-                remove_lease(record.layout.run_root(), &lease)?;
-                let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
+                // Rejection proves only that this daemon could not establish the
+                // exact process identity. It does not prove process absence and
+                // therefore cannot authorize lease deletion, terminal control
+                // reconciliation, replacement launch or a signal to the PID.
+                let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
                         slot,
                         record.lifecycle.generation,
                         AgentLifecycle::Failed,
-                    )?;
-                    AgentLifecycle::Failed
+                    )?
                 } else {
-                    record.lifecycle.lifecycle
+                    record.lifecycle.generation
                 };
-                control_intent::reconcile_absent(
-                    record.layout.run_root(),
-                    agent_id,
-                    terminal_lifecycle,
-                )
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanRejected);
+                slot.event(generation, SupervisorEventKind::OrphanRejected);
+                recovery_fault = Some(SupervisorError::UnresolvedLease(agent_id.clone()));
             }
         }
-        // A main-process signal failure must not skip companion adoption.
+        // A main-process signal or identity failure must not skip companion
+        // adoption. Each owned process remains independently recoverable.
         self.recover_matrix_companion(agent_id, slot, record, now)?;
         if let Some(error) = control_fault {
+            return Err(error);
+        }
+        if let Some(error) = recovery_fault {
             return Err(error);
         }
         Ok(())
