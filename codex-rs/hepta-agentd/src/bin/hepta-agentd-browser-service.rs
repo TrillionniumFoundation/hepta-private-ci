@@ -75,6 +75,7 @@ struct ServiceCallPayload {
 struct DecodedFrame {
     sequence: u64,
     request_id: String,
+    payload_digest: String,
     payload: Value,
 }
 
@@ -103,16 +104,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .checked_add(1)
             .ok_or("Browser service input sequence exhausted")?;
         let request_id = frame.request_id.clone();
+        let request_sequence = frame.sequence;
+        let request_payload_digest = frame.payload_digest.clone();
         let response_payload = match serde_json::from_value::<ServiceCallPayload>(frame.payload) {
             Ok(call) => execute_call(&owner, call),
             Err(error) => json!({
-                "requestSequence": frame.sequence,
                 "ok": false,
                 "error": bounded_error(format!("invalid Browser service request: {error}")),
             }),
         };
         let response = build_response_frame(
             next_outgoing_sequence,
+            request_sequence,
+            &request_payload_digest,
             &request_id,
             response_payload,
         )?;
@@ -153,12 +157,10 @@ fn execute_call(
 
     match request.and_then(|request| owner.call(request)) {
         Ok(result) => json!({
-            "requestSequence": 0,
             "ok": true,
             "result": result,
         }),
         Err(error) => json!({
-            "requestSequence": 0,
             "ok": false,
             "error": bounded_error(error.to_string()),
         }),
@@ -219,34 +221,42 @@ fn decode_request_frame(
     Ok(DecodedFrame {
         sequence,
         request_id: request_id.to_string(),
+        payload_digest: payload_digest.to_string(),
         payload,
     })
 }
 
 fn build_response_frame(
-    sequence: u64,
+    response_sequence: u64,
+    request_sequence: u64,
+    request_payload_digest: &str,
     request_id: &str,
     mut payload: Value,
 ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     validate_request_id(request_id)?;
+    if request_payload_digest.len() != 64
+        || !request_payload_digest
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    {
+        return Err("request payload digest must be lowercase SHA-256 hex".into());
+    }
     let object = payload
         .as_object_mut()
         .ok_or("Browser service response payload must be an object")?;
-    // execute_call cannot know the parent frame sequence. Bind it here and
-    // reject an internal attempt to smuggle another request sequence.
-    let request_sequence = object
-        .get("requestSequence")
-        .and_then(Value::as_u64)
-        .unwrap_or(0);
-    if request_sequence != 0 {
-        return Err("Browser service internal response sequence was already set".into());
+    if object.contains_key("requestSequence") || object.contains_key("requestPayloadDigest") {
+        return Err("Browser service response attempted to pre-bind request identity".into());
     }
-    object.insert("requestSequence".to_string(), Value::from(sequence));
+    object.insert("requestSequence".to_string(), Value::from(request_sequence));
+    object.insert(
+        "requestPayloadDigest".to_string(),
+        Value::String(request_payload_digest.to_string()),
+    );
     let payload_json = canonical_json(&payload)?;
     let frame = json!({
         "schema": SERVICE_SCHEMA,
         "protocolVersion": SERVICE_PROTOCOL_VERSION,
-        "sequence": sequence,
+        "sequence": response_sequence,
         "kind": "response",
         "requestId": request_id,
         "payloadDigest": sha256_hex(payload_json.as_bytes()),
@@ -508,18 +518,55 @@ mod service_protocol_tests {
     }
 
     #[test]
-    fn response_is_canonical_and_binds_request_sequence() {
+    fn response_is_canonical_and_binds_exact_request() {
+        let request_digest = "a".repeat(64);
         let body = build_response_frame(
             7,
+            41,
+            &request_digest,
             "request.7",
-            json!({"requestSequence": 0, "ok": true, "result": {"kind": "ok"}}),
+            json!({"ok": true, "result": {"kind": "ok"}}),
         )
         .unwrap();
         let text = std::str::from_utf8(&body).unwrap();
         let value: Value = serde_json::from_str(text).unwrap();
         assert_eq!(canonical_json(&value).unwrap(), text);
-        assert_eq!(value["payload"]["requestSequence"], 7);
+        assert_eq!(value["sequence"], 7);
+        assert_eq!(value["payload"]["requestSequence"], 41);
+        assert_eq!(value["payload"]["requestPayloadDigest"], request_digest);
         let digest = sha256_hex(canonical_json(&value["payload"]).unwrap().as_bytes());
         assert_eq!(value["payloadDigest"], digest);
+    }
+
+    #[test]
+    fn invalid_call_payload_can_be_returned_as_a_bound_error() {
+        let request_digest = "b".repeat(64);
+        let body = build_response_frame(
+            1,
+            1,
+            &request_digest,
+            "request.bad",
+            json!({"ok": false, "error": "invalid payload"}),
+        )
+        .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(value["payload"]["ok"], false);
+        assert_eq!(value["payload"]["requestSequence"], 1);
+        assert_eq!(value["payload"]["requestPayloadDigest"], request_digest);
+    }
+
+    #[test]
+    fn response_rejects_prebound_request_identity() {
+        let request_digest = "c".repeat(64);
+        assert!(build_response_frame(
+            1,
+            1,
+            &request_digest,
+            "request.1",
+            json!({"ok": true, "requestSequence": 1}),
+        )
+        .unwrap_err()
+        .to_string()
+        .contains("pre-bind"));
     }
 }
