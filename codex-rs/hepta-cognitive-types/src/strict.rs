@@ -114,15 +114,12 @@ impl ValidateStrictV1 for SynapseV1 {
         {
             return Err(HnmfContractError::Conflict("synapse relation/weight sign"));
         }
-        match self.plasticity_class {
-            PlasticityClassV1::Fixed if self.eligibility_ppm != 0 => {
-                Err(HnmfContractError::Conflict("fixed synapse eligibility"))
-            }
-            PlasticityClassV1::EligibilityGated if self.eligibility_ppm == 0 => {
-                Err(HnmfContractError::Conflict("gated synapse eligibility"))
-            }
-            _ => Ok(()),
+        if matches!(self.plasticity_class, PlasticityClassV1::Fixed)
+            && self.eligibility_ppm != 0
+        {
+            return Err(HnmfContractError::Conflict("fixed synapse eligibility"));
         }
+        Ok(())
     }
 }
 
@@ -171,10 +168,11 @@ impl ValidateStrictV1 for PlasticityBatchV1 {
         }
         for proposal in &self.weight_proposals {
             let negative = proposal.relation.is_negative();
-            if proposal.old_weight_q16 == 0
-                || proposal.new_weight_q16 == 0
-                || (negative && (proposal.old_weight_q16 >= 0 || proposal.new_weight_q16 >= 0))
-                || (!negative && (proposal.old_weight_q16 <= 0 || proposal.new_weight_q16 <= 0))
+            if proposal.new_weight_q16 == 0
+                || (negative
+                    && (proposal.old_weight_q16 > 0 || proposal.new_weight_q16 >= 0))
+                || (!negative
+                    && (proposal.old_weight_q16 < 0 || proposal.new_weight_q16 <= 0))
             {
                 return Err(HnmfContractError::Conflict(
                     "plasticity relation/weight sign",
