@@ -728,7 +728,7 @@ impl QualificationEvidenceStore<'_> {
             } else {
                 None
             };
-        transaction.commit().await.map_err(classifyx_error)?;
+        transaction.commit().await.map_err(classify_sqlx_error)?;
         current_trust.validate_store(self.store)?;
         if rows.is_empty() {
             return Ok(EvidenceDispositionV1::Missing);
@@ -1090,7 +1090,7 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
     envelope.validate().map_err(|error| {
         EvidenceError::Corrupt(format!("qualification envelope invalid: {error}"))
     })?;
-    let canonical = canonical_json(envelope)?;
+    let canonical = canonical_json(&envelope)?;
     if canonical.as_slice() != envelope_json.as_bytes() {
         return Err(EvidenceError::Corrupt(
             "qualification evidence envelope is not canonical JSON".to_string(),
