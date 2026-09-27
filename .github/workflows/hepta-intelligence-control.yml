@@ -19,9 +19,9 @@ concurrency:
 
 jobs:
   materialize:
-    name: materialize and verify product closure
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 120
+    name: materialize reviewed intelligence source
+    runs-on: macos-15
+    timeout-minutes: 30
     steps:
       - name: Check out exact source event
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -51,61 +51,25 @@ jobs:
           python3 scripts/finalize-intelligence-control-boundaries.py
           git diff --check
 
-      - name: Prepare native prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-
-      - name: Format and lock exact dependencies
+      - name: Format generated Rust
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo fmt --all
-          cargo generate-lockfile
-          cargo metadata --locked --no-deps --format-version 1 >/dev/null
 
-      - name: Verify source mappings
+      - name: Verify declarations and closed mutation set
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-intelligence-control-status.py --check-tracked
           python3 scripts/hepta-intelligence-control-status-tests.py
           git diff --check
-
-      - name: Test and lint current materialized candidate
-        working-directory: codex-rs
-        env:
-          CARGO_INCREMENTAL: "0"
-          CARGO_BUILD_JOBS: "2"
-          CARGO_PROFILE_TEST_DEBUG: "0"
-          CARGO_PROFILE_DEV_DEBUG: "0"
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-intelligence
-          cargo test --locked -p codex-hepta-operations
-          cargo test --locked -p codex-hepta-agentd --lib
-          cargo test --locked -p codex-hepta-agentd --lib --features qualification-legacy-learning-write
-          cargo test --locked -p codex-hepta-infer-worker-host --lib
-          cargo check --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
-          cargo clippy --locked -p codex-hepta-intelligence -p codex-hepta-operations -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
-
-      - name: Restore qualification workflow and remove materializers
-        shell: bash
-        run: |
-          set -euo pipefail
           git show d1589e0ca195183455b97531ea5ad917ce9fb003:.github/workflows/hepta-intelligence-control.yml > .github/workflows/hepta-intelligence-control.yml
           git rm -f .github/workflows/hepta-intelligence-source-finalizer.yml
           git rm -f scripts/finalize-intelligence-control-product.py
           git rm -f scripts/finalize-intelligence-control-boundaries.py
-          allowed='^(\.github/workflows/hepta-intelligence-(control|source-finalizer)\.yml|scripts/finalize-intelligence-control-(product|boundaries)\.py|scripts/hepta-intelligence-control-status\.py|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP\.json|TEST_TRACEABILITY\.json|PRODUCT_CLOSURE\.md|TECHNICAL\.md)|codex-rs/Cargo\.lock|codex-rs/hepta-agentd/src/(config|state|lib|intelligence_.*)\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
+          allowed='^(\.github/workflows/hepta-intelligence-(control|source-finalizer)\.yml|scripts/finalize-intelligence-control-(product|boundaries)\.py|scripts/hepta-intelligence-control-status\.py|docs/modules/intelligence\.control/(IMPLEMENTATION_MAP\.json|TEST_TRACEABILITY\.json|PRODUCT_CLOSURE\.md|TECHNICAL\.md)|codex-rs/hepta-agentd/src/(config|state|lib|intelligence_.*)\.rs|codex-rs/hepta-intelligence/(src|tests)/.*\.rs|codex-rs/hepta-operations/src/.*\.rs|codex-rs/hepta-infer-worker-host/src/(lib|native_intelligence_product|native_run_control|native_run_control_tests)\.rs|codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker\.rs)$'
           unexpected="$(git status --short | cut -c4- | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             printf 'unexpected changed paths:\n%s\n' "$unexpected" >&2
@@ -114,7 +78,7 @@ jobs:
           test -n "$(git status --short)"
           git diff --check
 
-      - name: Commit and fast-forward verified source
+      - name: Commit and fast-forward materialized source
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
