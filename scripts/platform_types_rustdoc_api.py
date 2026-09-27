@@ -49,12 +49,11 @@ class _Normalizer:
 
     Public paths are compared independently. Parent items intentionally do not
     recursively absorb implementation blocks, module/trait item rosters, or the
-    complete signature of a referenced public type: doing so would turn an
-    additive method or an unrelated referenced-type change into a cascade of
-    false breaking changes. Public fields, variants, functions, methods and
-    associated items retain their own paths or are represented directly by the
-    enclosing type's field/variant roster, so removals and type substitutions
-    remain fail-closed.
+    complete signature of a separately public referenced type: doing so would
+    turn an additive method or unrelated impl change into a cascade of false
+    breaking changes. Fields and variants are owned semantic children of their
+    enclosing type, so their signatures remain embedded even when rustdoc does
+    not assign them an independent public path.
     """
 
     ID_SINGLE_KEYS = frozenset({"id"})
@@ -128,10 +127,21 @@ class _Normalizer:
             return None
         if isinstance(value, bool) or not isinstance(value, (int, str)):
             return self.normalize(value)
-        # A reference is identified by its stable path only. The referred public
-        # item is fingerprinted independently, preventing unrelated impl changes
-        # from cascading into every function or field that names that type.
+        # A separately referenced type is identified by its stable path. That
+        # item is fingerprinted independently, so an additive impl does not
+        # mutate every function or field that merely names the type.
         return {"item": self._label(str(value))}
+
+    def _owned_reference(self, value: Any) -> Any:
+        if value is None:
+            return None
+        if isinstance(value, bool) or not isinstance(value, (int, str)):
+            return self.normalize(value)
+        item_id = str(value)
+        return {
+            "item": self._label(item_id),
+            "signature": self.item_signature(item_id),
+        }
 
     def item_signature(self, item_id: str) -> Any:
         if item_id in self.memo:
@@ -155,7 +165,7 @@ class _Normalizer:
         if key in self.ID_SINGLE_KEYS:
             return self._reference(value)
         if key in self.ID_LIST_KEYS and isinstance(value, list):
-            return [self._reference(item) for item in value]
+            return [self._owned_reference(item) for item in value]
         if isinstance(value, list):
             return [self.normalize(item) for item in value]
         if isinstance(value, dict):
