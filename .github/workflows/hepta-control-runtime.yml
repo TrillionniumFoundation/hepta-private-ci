@@ -1,0 +1,252 @@
+name: Hepta control runtime qualification (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-control-plane/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-ndu/**'
+      - 'codex-rs/Cargo.*'
+      - 'docs/modules/control.runtime/**'
+      - 'qualification/module-execution-dossiers/detail/control.runtime.md'
+      - 'scripts/hepta-control-runtime-*'
+      - '.github/workflows/hepta-control-runtime.yml'
+  push:
+    branches: [main, codex/control-runtime-hardening-20260927]
+    paths:
+      - 'codex-rs/hepta-control-plane/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-ndu/**'
+      - 'codex-rs/Cargo.*'
+      - 'docs/modules/control.runtime/**'
+      - 'qualification/module-execution-dossiers/detail/control.runtime.md'
+      - 'scripts/hepta-control-runtime-*'
+      - '.github/workflows/hepta-control-runtime.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 18 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: Control runtime (${{ matrix.lane }} / ${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON((github.event_name == 'pull_request' || github.ref == 'refs/heads/codex/control-runtime-hardening-20260927') && '["source-head","base-merge"]' || '["source-head"]') }}
+        suite: [control, agentd, ndu]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_TARGET_DIR: ${{ runner.temp }}/control-runtime-target
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve the observed current base
+        id: base
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$BASE_SHA^{commit}"
+          echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+      - name: Construct the deterministic two-parent candidate
+        id: merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.base.outputs.sha }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || 'branch-qualification' }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Freeze tested identity and host observations
+        id: identity
+        env:
+          CANDIDATE_SHA: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          echo "TESTED_SHA=$CANDIDATE_SHA" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/control-runtime-records"
+          {
+            git rev-parse HEAD HEAD^{tree}
+            git rev-list --parents -n 1 HEAD
+            uname -a
+            stat -f -c %T "$RUNNER_TEMP"
+            git hash-object scripts/hepta_ci_exec.py .github/workflows/hepta-control-runtime.yml
+          } > "$RUNNER_TEMP/control-runtime-records/identity-host.txt"
+      - name: Validate lockfile and source policy without source repair
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        shell: bash
+        run: |
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/lockfile.json" -- python3 scripts/verify_cargo_lock.py || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/ndu-source-policy.json" -- python3 scripts/hepta-ndu-source-policy.py || status=1
+          exit "$status"
+      - name: Check maturity projections and exact observed source
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'control' }}
+        shell: bash
+        run: |
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/status-tests.json" --minimum-tests 11 -- python3 scripts/hepta-control-runtime-state-tests.py -v || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/status-source.json" -- python3 scripts/hepta-control-runtime-state.py --check --verify-source || status=1
+          exit "$status"
+      - name: Prepare Agentd native test prerequisites
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'agentd' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Install existing shell-test prerequisite
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'agentd' }}
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash at the existing integration-test path
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'agentd' }}
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve existing verified V8 prerequisites
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'agentd' }}
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Read-only package formatting
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          SUITE: ${{ matrix.suite }}
+        shell: bash
+        run: |
+          case "$SUITE" in
+            control) PACKAGE=codex-hepta-control-plane ;;
+            agentd) PACKAGE=codex-hepta-agentd ;;
+            ndu) PACKAGE=codex-hepta-ndu ;;
+            *) exit 2 ;;
+          esac
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/format.json" -- cargo fmt -p "$PACKAGE" -- --check
+      - name: Locked all-target compilation
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          SUITE: ${{ matrix.suite }}
+        shell: bash
+        run: |
+          case "$SUITE" in
+            control) packages=(-p codex-hepta-control-plane) ;;
+            agentd) packages=(-p codex-hepta-agentd) ;;
+            ndu) packages=(-p codex-hepta-ndu -p codex-hepta-intelligence-eval -p codex-hepta-intelligence -p codex-hepta-learning-artifacts -p codex-hepta-learning-ledger -p codex-hepta-shadow-qualification) ;;
+            *) exit 2 ;;
+          esac
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/compile.json" --timeout-seconds 1800 -- cargo check --locked --all-targets "${packages[@]}"
+      - name: Control package and named caller regressions
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'control' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          status=0
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/control-package.json" --minimum-tests 1 --timeout-seconds 1800 -- cargo test --locked -p codex-hepta-control-plane --all-targets --no-fail-fast || status=1
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/control-context.json" --minimum-tests 1 -- cargo test --locked -p codex-hepta-control-plane --lib planner_context || status=1
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/control-ndu.json" --minimum-tests 1 -- cargo test --locked -p codex-hepta-control-plane --lib planner_ndu || status=1
+          exit "$status"
+      - name: Agentd package and guarded product-path regressions
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'agentd' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          status=0
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/agentd-context.json" --minimum-tests 1 --timeout-seconds 1800 -- cargo test --locked -p codex-hepta-agentd --lib cognitive_context || status=1
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/agentd-receipts.json" --minimum-tests 12 -- cargo test --locked -p codex-hepta-agentd --lib context_receipts || status=1
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/agentd-package.json" --minimum-tests 1 --timeout-seconds 1800 -- cargo test --locked -p codex-hepta-agentd --all-targets --no-fail-fast || status=1
+          exit "$status"
+      - name: NDU owner and consumer regressions with individual receipts
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'ndu' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          status=0
+          record() {
+            local name="$1"
+            shift
+            python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/$name.json" --minimum-tests 1 --timeout-seconds 1200 -- "$@" || status=1
+          }
+          record ndu-package cargo test --locked -p codex-hepta-ndu --all-targets --no-fail-fast
+          record ndu-evaluation cargo test --locked -p codex-hepta-intelligence-eval --lib
+          record ndu-admission cargo test --locked -p codex-hepta-intelligence --lib ndu_stochastic_admission
+          record ndu-artifacts cargo test --locked -p codex-hepta-learning-artifacts --lib pinned
+          record ndu-ledger cargo test --locked -p codex-hepta-learning-ledger --lib signed_evidence
+          record ndu-shadow cargo test --locked -p codex-hepta-shadow-qualification value_learning
+          exit "$status"
+      - name: Strict lint independently of regression outcome
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          SUITE: ${{ matrix.suite }}
+        shell: bash
+        run: |
+          case "$SUITE" in
+            control) packages=(-p codex-hepta-control-plane) ;;
+            agentd) packages=(-p codex-hepta-agentd) ;;
+            ndu) packages=(-p codex-hepta-ndu -p codex-hepta-intelligence-eval -p codex-hepta-intelligence -p codex-hepta-learning-artifacts -p codex-hepta-learning-ledger -p codex-hepta-shadow-qualification) ;;
+            *) exit 2 ;;
+          esac
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/clippy.json" --timeout-seconds 1800 -- cargo clippy --locked --all-targets "${packages[@]}" -- -D warnings
+      - name: Named-host NDU qualification independently of other suites
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && matrix.suite == 'ndu' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_NDU_HOST_ID="github-hosted-ubuntu-24.04-$(uname -m)"
+          export HEPTA_NDU_FS_PROFILE="$(stat -f -c %T "$RUNNER_TEMP")"
+          export HEPTA_NDU_RUSTC="$(rustc --version)"
+          export HEPTA_NDU_CLK_TCK="$(getconf CLK_TCK)"
+          export HEPTA_NDU_RECEIPT_PATH="$RUNNER_TEMP/control-runtime-records/ndu-named-host.json"
+          export HEPTA_NDU_SOURCE_SHA="$TESTED_SHA"
+          export HEPTA_NDU_SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          export HEPTA_NDU_QUALIFICATION_LANE=source-head
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then export HEPTA_NDU_QUALIFICATION_LANE=synthetic-merge; fi
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/ndu-named-host-command.json" --timeout-seconds 1800 -- cargo run --locked --release -p codex-hepta-ndu --bin ndu-named-host-qualification
+          python3 -m json.tool "$HEPTA_NDU_RECEIPT_PATH" > /dev/null
+      - name: Preserve exact tracked source and lockfile
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        shell: bash
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/clean-source.json" -- bash -c 'git diff --check && git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=normal)"'
+      - name: Retain immutable actual command records and raw logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}-${{ matrix.suite }}
+          path: ${{ runner.temp }}/control-runtime-records
+          retention-days: 30
+          if-no-files-found: error
