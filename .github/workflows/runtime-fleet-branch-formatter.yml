@@ -1,0 +1,49 @@
+name: runtime.fleet branch formatter
+
+on:
+  push:
+    branches:
+      - runtime-fleet/durable-owner-v1
+    paths:
+      - ".github/workflows/runtime-fleet-branch-formatter.yml"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-supervisor/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-fleet-branch-formatter
+  cancel-in-progress: false
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: runtime-fleet/durable-owner-v1
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Format runtime.fleet source only
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-fleet --package codex-hepta-supervisor
+
+      - name: Commit formatter output
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          if test -z "$(git status --porcelain -- codex-rs/hepta-fleet codex-rs/hepta-supervisor)"; then
+            echo "No formatter changes"
+            exit 0
+          fi
+          git config user.name "runtime.fleet formatter"
+          git config user.email "runtime-fleet-formatter@users.noreply.github.com"
+          git add codex-rs/hepta-fleet codex-rs/hepta-supervisor
+          git commit -m "runtime.fleet: format durable owner sources"
+          git push origin HEAD:runtime-fleet/durable-owner-v1
