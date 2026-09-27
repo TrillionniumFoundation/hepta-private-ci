@@ -116,8 +116,17 @@ V2 adds `RegistrySnapshotIdentityV1 { generation, registry_digest }` and binds:
 
 The V2 receipt fields are private. `verify` reconstructs conversion and
 admission from the source signal, target schema and supplied registry and
-requires complete receipt equality. Authentication, publication and
-anti-rollback of a registry generation remain product-owner responsibilities.
+requires complete receipt equality, but deliberately treats the generation in
+the receipt as self-contained integrity evidence rather than freshness.
+
+An owner that requires anti-rollback pins its current
+`RegistrySnapshotIdentityV1` independently and calls `verify_for_snapshot`.
+That verifier first proves the supplied registry bytes match the pinned digest,
+then requires exact generation/digest equality with the receipt before
+recomputing the full conversion. A valid receipt from an older generation or a
+different registry digest therefore fails closed. Authentication, publication
+and advancement of the pinned current snapshot remain product-owner
+responsibilities.
 
 ## 6. Strict transport limits
 

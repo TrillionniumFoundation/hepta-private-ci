@@ -59,6 +59,19 @@ impl RegistrySnapshotIdentityV1 {
     pub const fn registry_digest(self) -> Digest32 {
         self.registry_digest
     }
+
+    /// Verify that the supplied immutable registry is exactly the content
+    /// snapshot named by this identity. Generation monotonicity remains an
+    /// owner policy; callers must compare against their pinned current snapshot.
+    pub fn verify_registry(
+        self,
+        registry: &ContractRegistryV1,
+    ) -> Result<(), NumericRegistryV2Error> {
+        if registry.registry_digest()? != self.registry_digest {
+            return Err(NumericRegistryV2Error::RegistrySnapshotMismatch);
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -114,6 +127,10 @@ impl RegisteredNumericConversionReceiptV2 {
         self.authority
     }
 
+    /// Recompute the receipt against the registry generation embedded in the
+    /// receipt itself. This proves internal integrity, not freshness. Product
+    /// owners that require anti-rollback must call `verify_for_snapshot` with
+    /// their independently pinned current snapshot identity.
     pub fn verify(
         &self,
         source: &NumericSignalV1,
@@ -130,6 +147,24 @@ impl RegisteredNumericConversionReceiptV2 {
             return Err(NumericRegistryV2Error::ReceiptMismatch);
         }
         Ok(output)
+    }
+
+    /// Verify against an owner-pinned exact snapshot. This closes the replay
+    /// gap left by self-contained verification: a valid receipt from an older
+    /// generation or another registry digest cannot be accepted for the
+    /// current owner generation.
+    pub fn verify_for_snapshot(
+        &self,
+        source: &NumericSignalV1,
+        target: &NumericSignalSchemaV1,
+        registry: &ContractRegistryV1,
+        expected_snapshot: RegistrySnapshotIdentityV1,
+    ) -> Result<NumericSignalV1, NumericRegistryV2Error> {
+        expected_snapshot.verify_registry(registry)?;
+        if self.registry_snapshot != expected_snapshot {
+            return Err(NumericRegistryV2Error::RegistrySnapshotMismatch);
+        }
+        self.verify(source, target, registry)
     }
 }
 
@@ -269,6 +304,7 @@ pub enum NumericRegistryV2Error {
     EmptyDigest(&'static str),
     InvalidTypeIdentity,
     ReceiptMismatch,
+    RegistrySnapshotMismatch,
     Canonical(CanonicalDigestError),
 }
 
@@ -382,6 +418,39 @@ mod tests {
         assert_eq!(
             receipt.verify(&source, &target, &registry),
             Err(NumericRegistryV2Error::ReceiptMismatch)
+        );
+    }
+
+    #[test]
+    fn v2_owner_pinned_snapshot_rejects_generation_and_digest_rollback() {
+        let (registry, source, target) = fixture();
+        let generation = Generation::new(7).expect("generation");
+        let (_, receipt) =
+            rescale_signal_registered_v2(&source, &target, &registry, generation)
+                .expect("registered conversion");
+        let current = receipt.registry_snapshot();
+        receipt
+            .verify_for_snapshot(&source, &target, &registry, current)
+            .expect("current snapshot");
+
+        let later = RegistrySnapshotIdentityV1::from_registry(
+            Generation::new(8).expect("generation"),
+            &registry,
+        )
+        .expect("later snapshot");
+        assert_eq!(
+            receipt.verify_for_snapshot(&source, &target, &registry, later),
+            Err(NumericRegistryV2Error::RegistrySnapshotMismatch)
+        );
+
+        let wrong_digest = RegistrySnapshotIdentityV1::new(
+            generation,
+            Digest32::of_bytes(b"different-registry"),
+        )
+        .expect("snapshot");
+        assert_eq!(
+            receipt.verify_for_snapshot(&source, &target, &registry, wrong_digest),
+            Err(NumericRegistryV2Error::RegistrySnapshotMismatch)
         );
     }
 }
