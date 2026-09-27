@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   snapshot:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -34,7 +34,7 @@ jobs:
           mkdir -p "$ROOT"
           git rev-parse HEAD HEAD^{tree} > "$ROOT/source-identity.txt"
           git archive --format=tar.gz --prefix=hepta-private-ci/ -o "$ROOT/source.tar.gz" HEAD
-          sha256sum "$ROOT/source.tar.gz" > "$ROOT/source.tar.gz.sha256"
+          shasum -a 256 "$ROOT/source.tar.gz" > "$ROOT/source.tar.gz.sha256"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
