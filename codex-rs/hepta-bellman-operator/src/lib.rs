@@ -2,7 +2,9 @@
 //!
 //! `train` is a compatibility target builder, not a production trainer. The
 //! owner-bound V3 trainers require opaque inputs issued from an authenticated
-//! ledger owner. Structural V1/V2 algorithms remain qualification utilities.
+//! ledger owner. Structural V1/V2 fitters are only exported with the explicit
+//! `qualification-unverified-input` compatibility feature. Product callers
+//! cannot pass a plain plan or deserialize a verified token.
 //! No API here activates an artifact, selects itself, or grants authority.
 #![forbid(unsafe_code)]
 
@@ -47,18 +49,42 @@ pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
 pub use authenticated::validate_applicability_with_signed_evidence_v2;
 pub use dataset_bound::MAX_SIGNED_OPERATOR_ROWS;
 pub use dataset_bound::OperatorDatasetBindingError;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use dataset_bound::VerifiedTabularOperatorPlanV2;
 pub use dataset_bound::VerifiedTabularOperatorPlanV3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::VerifiedWorldModelDatasetV2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use dataset_bound::VerifiedWorldModelDatasetV2;
 pub use dataset_bound::VerifiedWorldModelDatasetV3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::fit_tabular_operator_verified_v2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use dataset_bound::fit_tabular_operator_verified_v2;
 pub use dataset_bound::fit_tabular_operator_verified_v3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::fit_transition_model_verified_v2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use dataset_bound::fit_transition_model_verified_v2;
 pub use dataset_bound::fit_transition_model_verified_v3;
 pub use dataset_bound::tabular_training_signing_payload_v2;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::verify_tabular_operator_plan_v2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use dataset_bound::verify_tabular_operator_plan_v2;
 pub use dataset_bound::verify_tabular_operator_plan_v3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use dataset_bound::verify_world_model_dataset_v2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use dataset_bound::verify_world_model_dataset_v2;
 pub use dataset_bound::verify_world_model_dataset_v3;
 pub use dataset_bound::world_model_training_signing_payload_v2;
 pub use learned::LearnedOperatorError;
@@ -67,11 +93,27 @@ pub use learned::TabularOperatorCellV1;
 pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned::fit_tabular_operator;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use learned::fit_tabular_operator;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned::predict_tabular_operator;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned_strict::fit_tabular_operator_strict_v2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use learned_strict::fit_tabular_operator_strict_v2;
+#[cfg(feature = "qualification-unverified-input")]
 pub use learned_strict::predict_tabular_operator_indexed_v2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use learned_strict::predict_tabular_operator_indexed_v2;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
 pub use reference::BellmanReferencePlanV1;
@@ -96,8 +138,16 @@ pub use world_model::TransitionEstimateV1;
 pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
+#[cfg(feature = "qualification-unverified-input")]
 pub use world_model::fit_transition_model;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use world_model::fit_transition_model;
+#[cfg(feature = "qualification-unverified-input")]
 pub use world_model::predict_transition;
+#[cfg(not(feature = "qualification-unverified-input"))]
+#[allow(unused_imports)]
+pub(crate) use world_model::predict_transition;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;

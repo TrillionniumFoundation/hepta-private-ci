@@ -9,17 +9,19 @@ use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+#[cfg(test)]
 use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
 use codex_hepta_bellman_operator::TabularPayloadError;
+#[cfg(test)]
 use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+#[cfg(test)]
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 #[cfg(test)]
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+#[cfg(test)]
 use codex_hepta_learning_artifacts::load_pinned_candidate;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
@@ -30,6 +32,12 @@ use crate::CognitiveContextItem;
 #[path = "cognitive_ranker_cache.rs"]
 mod candidate_cache;
 use candidate_cache::with_exclusive_candidate;
+#[path = "cognitive_ranker_admission.rs"]
+mod admission;
+pub use admission::CurrentRankerAdmission;
+pub use admission::RankerAdmissionSnapshotV2;
+use admission::EvaluatedUse;
+use admission::RankerModel;
 
 /// The artifact authority, not the model or a caller-supplied receipt,
 /// determines currentness. Implementations must return an opaque view issued
@@ -118,7 +126,8 @@ pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
     policy_digest: Digest32,
-    model: LoadedTabularOperatorV1,
+    model: RankerModel,
+    admission: Option<EvaluatedUse>,
     current: Arc<dyn CurrentCognitiveRegistry>,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
@@ -153,6 +162,7 @@ pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, Stri
 }
 
 impl PinnedCognitiveRanker {
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn load(
         owner: AgentId,
@@ -183,85 +193,13 @@ impl PinnedCognitiveRanker {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
-            model,
+            model: RankerModel::Fixture(model),
+            admission: None,
             current,
             cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
         };
         value.revalidate()?;
         Ok(value)
-    }
-
-    /// Load a candidate only after independent longitudinal evaluation and a
-    /// separately authenticated selector have admitted the exact artifact.
-    /// The opaque selection token cannot be fabricated from registry metadata.
-    #[allow(clippy::too_many_arguments)]
-    pub fn load_evaluated(
-        owner: AgentId,
-        body_generation: u64,
-        snapshot: File,
-        payload: File,
-        selected: PinnedCandidateSpec,
-        model_pin: TabularPayloadPinV1,
-        current: Arc<dyn CurrentCognitiveRegistry>,
-        selection: &VerifiedSelfEvolutionSelectionV1,
-    ) -> Result<Self, String> {
-        let receipt = selection.receipt();
-        if body_generation != receipt.candidate_generation.get()
-            || selected.manifest.artifact_id != receipt.candidate_id
-            || selected.manifest.generation != receipt.candidate_generation
-            || selected.manifest.content_digest != receipt.candidate_artifact_digest
-            || selected.manifest.objective_digest != receipt.objective_digest
-            || selected.manifest.support_digest != receipt.dataset_digest
-        {
-            return Err(
-                "selected ranker does not match independently admitted candidate".to_string(),
-            );
-        }
-        Self::load(
-            owner,
-            body_generation,
-            snapshot,
-            payload,
-            selected,
-            model_pin,
-            current,
-        )
-    }
-
-    /// Reload the exact predecessor only after an independent evaluator has
-    /// admitted rollback for the selected candidate. Rollback restores bytes,
-    /// not the old runtime generation or a revoked current witness.
-    #[allow(clippy::too_many_arguments)]
-    pub fn load_evaluated_rollback(
-        owner: AgentId,
-        body_generation: u64,
-        snapshot: File,
-        payload: File,
-        selected: PinnedCandidateSpec,
-        model_pin: TabularPayloadPinV1,
-        current: Arc<dyn CurrentCognitiveRegistry>,
-        rollback: &VerifiedSelfEvolutionRollbackV1,
-    ) -> Result<Self, String> {
-        let receipt = rollback.selection().receipt();
-        if body_generation != rollback.rollback_generation().get()
-            || selected.manifest.artifact_id != receipt.predecessor_id
-            || selected.manifest.generation != receipt.predecessor_generation
-            || selected.manifest.content_digest != receipt.predecessor_artifact_digest
-            || selected.manifest.objective_digest != receipt.objective_digest
-        {
-            return Err(
-                "rollback ranker does not match independently admitted predecessor".to_string(),
-            );
-        }
-        Self::load(
-            owner,
-            body_generation,
-            snapshot,
-            payload,
-            selected,
-            model_pin,
-            current,
-        )
     }
 
     pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64) -> Result<(), String> {
@@ -277,6 +215,9 @@ impl PinnedCognitiveRanker {
             // authority must first issue an opaque verified CURRENT view.
             // Both owner I/O and immutable model lookups run outside the mutex.
             let current = self.current.current()?;
+            if let Some(admission) = &self.admission {
+                admission.revalidate(&current)?;
+            }
             candidate
                 .with_current(current, |_| consume())
                 .map_err(|error| error.to_string())?
@@ -334,3 +275,7 @@ impl PinnedCognitiveRanker {
 #[cfg(test)]
 #[path = "cognitive_ranker_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "cognitive_ranker_evaluated_tests.rs"]
+mod evaluated_tests;
