@@ -12,18 +12,6 @@ on:
       - '.github/workflows/*wire*'
       - '.github/workflows/lane-a-foundation.yml'
       - 'docs/modules/MODULES.json'
-  push:
-    branches: [codex/platform-wire-final-convergence-20260925]
-    paths:
-      - 'codex-rs/hepta-*/**'
-      - 'codex-rs/Cargo.*'
-      - 'docs/lane-a-foundation/**'
-      - 'docs/modules/platform.wire/**'
-      - 'scripts/*wire*'
-      - 'scripts/*lane_a*'
-      - '.github/workflows/*wire*'
-      - '.github/workflows/lane-a-foundation.yml'
-      - 'docs/modules/MODULES.json'
   workflow_dispatch:
 
 permissions:
@@ -50,7 +38,8 @@ jobs:
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
-      HEPTA_CI_LANE: ${{ matrix.lane }}
+      WIRE_LANE: ${{ matrix.lane }}
+      HEPTA_CI_LANE: ${{ matrix.lane == 'synthetic-merge' && 'base-merge' || 'source-head' }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -67,7 +56,8 @@ jobs:
           fi
           git cat-file -e "$BASE_SHA^{commit}"
           echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
-          echo "RECORDS=$RUNNER_TEMP/wire-$HEPTA_CI_LANE-$GITHUB_RUN_ID" >> "$GITHUB_ENV"
+          echo "RECORDS=$RUNNER_TEMP/wire-$WIRE_LANE-$GITHUB_RUN_ID" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/wire-build-$WIRE_LANE" >> "$GITHUB_ENV"
       - name: Construct deterministic ordered merge
         if: matrix.lane == 'synthetic-merge'
         uses: ./.github/actions/hepta-synthetic-merge
@@ -78,7 +68,20 @@ jobs:
           author-name: Hepta Wire CI
           author-email: hepta-wire-ci@users.noreply.github.com
           message: Synthetic platform.wire merge
+      - name: Bind the actual tested commit and execution lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          TESTED_SHA="$(git rev-parse HEAD)"
+          if [[ "$WIRE_LANE" = source-head ]]; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          else
+            test "$(git rev-list --parents -n 1 HEAD)" = "$TESTED_SHA $BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          fi
+          echo "TESTED_SHA=$TESTED_SHA" >> "$GITHUB_ENV"
       - name: Install repository toolchain
+        id: toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -97,52 +100,109 @@ jobs:
             shift 2
             python3 scripts/hepta_ci_exec.py --output "$RECORDS/$name.json" --minimum-tests "$minimum" -- "$@" || status=1
           }
-          record path-tests 6 python3 -m unittest discover -s scripts -p test_generate_lane_a_workflow_paths.py
+          record path-tests 10 python3 -m unittest discover -s scripts -p test_generate_lane_a_workflow_paths.py
           record path-drift 0 python3 scripts/generate_lane_a_workflow_paths.py check
           record lane-truth 0 python3 scripts/verify_lane_a_foundation.py verify
           record status-tests 0 python3 scripts/platform_wire_status.py self-test
+          record status-drift 0 python3 scripts/platform_wire_status.py check-doc
           record wire 41 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
+          record wire-doc 0 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --doc
           record ports 8 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-context-compiler -p codex-hepta-codex-adapter --lib wire::tests
           record cross-runtime 2 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-shadow-qualification --test cross_runtime_wire_session
           record gateway 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway --lib http_accept
           record strict-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets --no-deps -- -D warnings
-          record clean-diff 0 git diff --exit-code
+          record clean-diff 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
           echo "$status" > "$RECORDS/exit-code"
+          exit "$status"
+      - name: Validate command records and write a current-subject receipt
+        if: always()
+        env:
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
+          TOOLCHAIN_OUTCOME: ${{ steps.toolchain.outcome }}
+        shell: bash
+        run: |
           python3 - <<'PY'
-          import hashlib, json, os, platform, subprocess
+          import hashlib, json, os, platform, re, subprocess
+          from datetime import datetime, timezone
           from pathlib import Path
+          def run(*args):
+              try:
+                  return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
+              except (OSError, subprocess.CalledProcessError):
+                  return None
           def git(*args):
-              return subprocess.check_output(['git', *args], text=True).strip()
-          root = Path(os.environ['RECORDS'])
-          files = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file()}
-          source, base = os.environ['SOURCE_SHA'], os.environ['BASE_SHA']
+              return run('git', *args)
+          source, base = os.environ['SOURCE_SHA'], os.environ.get('BASE_SHA', '')
+          tested = git('rev-parse', 'HEAD')
+          tree = git('rev-parse', 'HEAD^{tree}')
+          parents = (git('show', '-s', '--format=%P', 'HEAD') or '').split()
+          root = Path(os.environ['RUNNER_TEMP']) / ('wire-'+os.environ['WIRE_LANE']+'-'+os.environ['GITHUB_RUN_ID'])
+          root.mkdir(parents=True, exist_ok=True)
+          expected = ['path-tests','path-drift','lane-truth','status-tests','status-drift','wire','wire-doc','ports','cross-runtime','gateway','strict-clippy','clean-diff']
+          errors = []
+          if os.environ.get('EXECUTION_OUTCOME') != 'success':
+              errors.append('execution step did not pass')
+          if os.environ.get('TESTED_SHA') != tested or re.fullmatch(r'[0-9a-f]{40}', tested or '') is None:
+              errors.append('tested subject was not bound')
+          if os.environ['WIRE_LANE'] == 'source-head':
+              if tested != source:
+                  errors.append('source-head identity mismatch')
+          elif parents != [base, source] or tree != git('merge-tree','--write-tree',base,source):
+              errors.append('ordered merge identity or recomputed tree mismatch')
+          records = {}
+          for name in expected:
+              path = root/(name+'.json')
+              try:
+                  record = json.loads(path.read_text())
+                  log_name = record.get('log_file', '')
+                  if not isinstance(log_name,str) or not log_name or Path(log_name).name != log_name:
+                      raise ValueError('missing or nonlocal raw log')
+                  log = root/log_name
+                  if log.is_symlink():
+                      raise ValueError('symlinked log')
+                  raw = log.read_bytes()
+                  if hashlib.sha256(raw).hexdigest() != record.get('log_sha256'):
+                      raise ValueError('raw log digest mismatch')
+                  if record.get('status') != 'passed' or record.get('command_exit_code') != 0:
+                      raise ValueError('command not passed')
+                  if record.get('source_sha') != source or record.get('tested_sha') != tested or record.get('lane') != os.environ['HEPTA_CI_LANE']:
+                      raise ValueError('command subject mismatch')
+                  for edge in ('before','after'):
+                      if record.get(edge,{}).get('commit') != tested or record.get(edge,{}).get('tree') != tree or record.get(edge,{}).get('dirty') is not False:
+                          raise ValueError('command clean-tree mismatch')
+                  records[name] = {'record': path.name, 'record_sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'log': log.name, 'log_sha256': record['log_sha256'], 'command': record['command'], 'command_exit_code': record['command_exit_code'], 'observed_passed_tests': record.get('observed_passed_tests',0)}
+              except (OSError,ValueError,TypeError,KeyError) as exc:
+                  errors.append(name+': '+str(exc))
+          infrastructure_invalid = not os.environ.get('TESTED_SHA') or os.environ.get('TOOLCHAIN_OUTCOME') != 'success' or os.environ.get('EXECUTION_OUTCOME') in ('skipped','cancelled','')
+          status = 'infrastructure_invalid' if infrastructure_invalid else ('failed' if errors else 'passed')
           receipt = {
-              'schema': 'hepta.platform-wire.exact-execution.v1',
-              'source_commit': source, 'source_tree': git('rev-parse', source+'^{tree}'),
-              'base_commit': base, 'base_tree': git('rev-parse', base+'^{tree}'),
-              'tested_commit': git('rev-parse', 'HEAD'), 'tested_tree': git('rev-parse', 'HEAD^{tree}'),
-              'tested_parents': git('show', '-s', '--format=%P', 'HEAD').split(),
-              'lane': os.environ['HEPTA_CI_LANE'],
-              'workflow_ref': os.environ['GITHUB_WORKFLOW_REF'],
-              'workflow_sha': os.environ['GITHUB_WORKFLOW_SHA'],
-              'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'schema': 'hepta.platform-wire.receipt.v2',
+              'kind': 'platform-wire-exact-head' if os.environ['WIRE_LANE'] == 'source-head' else 'platform-wire-synthetic-merge',
+              'source_sha': source, 'source_tree': git('rev-parse',source+'^{tree}'),
+              'base_sha': base, 'base_tree': git('rev-parse',base+'^{tree}') if base else None,
+              'tested_sha': tested, 'tested_tree': tree, 'tested_parents': parents,
+              'lane': os.environ['WIRE_LANE'], 'execution_lane': os.environ['HEPTA_CI_LANE'],
+              'workflow': os.environ['GITHUB_WORKFLOW'], 'workflow_ref': os.environ['GITHUB_WORKFLOW_REF'],
+              'workflow_sha': os.environ['GITHUB_WORKFLOW_SHA'], 'event': os.environ['GITHUB_EVENT_NAME'],
+              'run_id': int(os.environ['GITHUB_RUN_ID']), 'run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'generated_at': datetime.now(timezone.utc).isoformat(),
               'runner_image': os.environ.get('ImageOS'), 'runner_image_version': os.environ.get('ImageVersion'),
-              'runner': platform.platform(),
-              'rustc': subprocess.check_output(['rustc', '--version', '--verbose'], text=True),
-              'cargo': subprocess.check_output(['cargo', '--version'], text=True),
-              'file_sha256': files,
-              'status': 'passed' if (root/'exit-code').read_text().strip() == '0' else 'failed',
+              'runner': platform.platform(), 'rustc': run('rustc','--version','--verbose'), 'cargo': run('cargo','--version'),
+              'status': status, 'errors': errors, 'command_records': records,
               'independent_acceptance': False, 'activation': False, 'release': False,
           }
-          (root/'execution.json').write_text(json.dumps(receipt, indent=2, sort_keys=True)+'\n')
+          (root/'receipt.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file() and not p.is_symlink() and p.name != 'SHA256SUMS.json'}
+          (root/'SHA256SUMS.json').write_text(json.dumps(hashes,indent=2,sort_keys=True)+'\n')
+          print(json.dumps({'status':status,'source_sha':source,'tested_sha':tested,'errors':errors},indent=2))
+          raise SystemExit(0 if status == 'passed' else 1)
           PY
-          exit "$status"
       - name: Retain command records and raw logs even after failure
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: wire-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}
-          path: ${{ env.RECORDS }}
+          path: ${{ runner.temp }}/wire-${{ matrix.lane }}-${{ github.run_id }}
           if-no-files-found: warn
           retention-days: 90
       - name: Reject any source mutation

@@ -1,0 +1,144 @@
+name: Platform wire core source and merge
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-wire/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/hepta-native-gateway/src/http_accept.rs'
+      - 'codex-rs/Cargo.*'
+      - 'docs/lane-a-foundation/**'
+      - 'docs/modules/platform.wire/**'
+      - 'docs/modules/MODULES.json'
+      - 'scripts/*wire*'
+      - 'scripts/*lane_a*'
+      - 'scripts/hepta_ci_exec.py'
+      - '.github/workflows/platform-wire-core.yml'
+      - '.github/workflows/lane-a-foundation.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-core-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  core:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    name: Core ${{ matrix.lane }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct exact ordered merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
+          author-name: Hepta Wire CI
+          author-email: hepta-wire-ci@users.noreply.github.com
+          message: Synthetic platform.wire merge
+      - name: Bind tested source and install native prerequisites
+        id: setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/wire-core-build" >> "$GITHUB_ENV"
+          if ! command -v cc >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends build-essential pkg-config
+          fi
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -fsS https://sh.rustup.rs -o "$RUNNER_TEMP/rustup-init.sh"
+            sh "$RUNNER_TEMP/rustup-init.sh" -y --profile minimal --default-toolchain "$toolchain" --component clippy,rustfmt
+            export PATH="$HOME/.cargo/bin:$PATH"
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          else
+            rustup toolchain install "$toolchain" --profile minimal --component clippy,rustfmt
+            rustup default "$toolchain"
+          fi
+          rustc --version --verbose
+      - name: Run actual core package and isolated HTTP parser tests
+        id: tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/wire-core-evidence"
+          mkdir -p "$records"
+          status=0
+          record() {
+            local name="$1" minimum="$2"
+            shift 2
+            python3 scripts/hepta_ci_exec.py --output "$records/$name.json" --minimum-tests "$minimum" -- "$@" || status=1
+          }
+          record path-tests 10 python3 -m unittest discover -s scripts -p test_generate_lane_a_workflow_paths.py
+          record path-drift 0 python3 scripts/generate_lane_a_workflow_paths.py check
+          record lane-truth 0 python3 scripts/verify_lane_a_foundation.py verify
+          record status-drift 0 python3 scripts/platform_wire_status.py check-doc
+          record wire-core 41 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
+          record wire-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets --no-deps -- -D warnings
+          record http-parser-build 0 rustc --edition 2024 --test codex-rs/hepta-native-gateway/src/http_accept.rs -o "$RUNNER_TEMP/http-accept-tests"
+          record http-parser-tests 1 "$RUNNER_TEMP/http-accept-tests"
+          record clean-tree 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
+          exit "$status"
+      - name: Retain bounded core evidence with explicit scope
+        if: always()
+        env:
+          SETUP_OUTCOME: ${{ steps.setup.outcome }}
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, platform, subprocess
+          from pathlib import Path
+          def git(*args):
+              return subprocess.check_output(['git',*args],text=True).strip()
+          root = Path(os.environ['RUNNER_TEMP'])/'wire-core-evidence'
+          root.mkdir(parents=True,exist_ok=True)
+          files = {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file()}
+          source, base = os.environ['SOURCE_SHA'], os.environ['BASE_SHA']
+          receipt = {
+              'schema':'hepta.platform-wire.core-execution.v1',
+              'scope':'wire package all-targets + strict clippy + isolated HTTP parser; not integrated gateway/provider/target-host acceptance',
+              'source_sha':source,'source_tree':git('rev-parse',source+'^{tree}'),
+              'base_sha':base,'tested_sha':git('rev-parse','HEAD'),'tested_tree':git('rev-parse','HEAD^{tree}'),
+              'parents':git('show','-s','--format=%P','HEAD').split(),'lane':os.environ['HEPTA_CI_LANE'],
+              'workflow_sha':os.environ['GITHUB_WORKFLOW_SHA'],'workflow_ref':os.environ['GITHUB_WORKFLOW_REF'],
+              'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],
+              'runner':platform.platform(),'image':os.environ.get('ImageOS'),'image_version':os.environ.get('ImageVersion'),
+              'status':'infrastructure_invalid' if os.environ.get('SETUP_OUTCOME') != 'success' else ('passed' if os.environ.get('TEST_OUTCOME') == 'success' else 'failed'),
+              'files_sha256':files,'independent_acceptance':False,'activation':False,'release':False,
+          }
+          (root/'core-execution.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(receipt,indent=2,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: wire-core-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/wire-core-evidence/
+          retention-days: 90
+          if-no-files-found: error
