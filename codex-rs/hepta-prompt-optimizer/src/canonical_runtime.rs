@@ -34,6 +34,27 @@ pub struct PromptExerciseRequestV1 {
     pub current_verifier: LearningEvidenceVerifierV1,
 }
 
+impl PartialEq for PromptExerciseRequestV1 {
+    fn eq(&self, other: &Self) -> bool {
+        self.decision_boundary == other.decision_boundary
+            && self.current_state_digest == other.current_state_digest
+            && self.generation_vector_digest == other.generation_vector_digest
+            && self.model_tuple == other.model_tuple
+            && self.now_unix_ms == other.now_unix_ms
+            && self.wait_value_q32 == other.wait_value_q32
+            && self.policy == other.policy
+            && self.current_graph == other.current_graph
+            && self.current_verifier.trust_digest() == other.current_verifier.trust_digest()
+            && self.current_verifier.scope_digest() == other.current_verifier.scope_digest()
+            && self.current_verifier.objective_digest()
+                == other.current_verifier.objective_digest()
+            && self.current_verifier.authority_epoch()
+                == other.current_verifier.authority_epoch()
+    }
+}
+
+impl Eq for PromptExerciseRequestV1 {}
+
 pub fn exercise_v1(
     registry: &PromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
