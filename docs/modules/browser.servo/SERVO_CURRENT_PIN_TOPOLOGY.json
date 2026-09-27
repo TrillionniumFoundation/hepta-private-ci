@@ -5,7 +5,7 @@
     "repository": "servo/servo",
     "commit": "b5a1f5e6ec6f8685d40cd389802ced7abe4980f6",
     "predecessorCommit": "5cc5bd32d02619acdec5736055515e38c5840ce1",
-    "qualificationState": "candidate_lock_generation_pending_exact_head",
+    "qualificationState": "reviewed_committed_b5a1_lock_exact_head_qualification_pending",
     "upstreamDeltaCommits": 13
   },
   "decision": {
@@ -65,7 +65,7 @@
     "workerPool": "apps/hepta-browser/src/worker-driver.js::PooledSubprocessBrowserDriver",
     "maxProfilesDefault": 16,
     "persistentAgentdOwner": true,
-    "agentdControlTransport": "existing_private_agentd_uds",
+    "agentdControlTransport": "inherited_stdio_service_protocol",
     "egressBroker": "apps/hepta-browser/src/egress-broker.js::GrantScopedEgressBroker",
     "persistedReconciler": "apps/hepta-browser/src/persisted-reconciler.js::FilePersistedEffectReconciler",
     "workerTerminalSettlementPersisted": true,
@@ -122,7 +122,7 @@
     "requiresCrossProfileCookieIsolation": true,
     "requiresBoundedResourceSoak": true,
     "requiresReviewedCommittedCandidateLock": true,
-    "currentCandidateLockCommitted": false
+    "currentCandidateLockCommitted": true
   },
   "deploymentEvidenceGate": {
     "workflow": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
@@ -141,7 +141,7 @@
     "dispatchBoundaryAcknowledgementRequired": true,
     "longRunningAuthorityOwnerActivated": false,
     "longRunningAuthorityOwnerSourcePresent": true,
-    "agentdControlClient": "codex-rs/hepta-agentd/src/client.rs::browser_servo"
+    "agentdControlClient": "codex-rs/hepta-agentd/src/browser_servo_persistent.rs::PersistentBrowserServoControl"
   },
   "evidencePaths": [
     "third_party/servo-patches/MANIFEST.json",
@@ -165,9 +165,7 @@
     "docs/modules/browser.servo/SERVO_PIN_AUDIT.md"
   ],
   "openEvidence": [
-    "terminal-success exact-head generation of the b5a1 dependency lock candidate",
-    "review and commit the exact generated b5a1 Cargo.lock, then rerun the exact-head worker gate",
-    "terminal-success reproducible b5a1 worker artifact and SPDX-2.3 SBOM receipt",
+    "terminal-success exact-head locked b5a1 compile/test, real E2E, reproducibility and SBOM evidence",
     "trusted target-host Linux namespace/listener/egress/host-filesystem/public-DNS/HTTPS qualification",
     "retained cookie/localStorage/cache isolation, revocation-race and 32-cycle resource-soak evidence",
     "trusted current remote-system persisted-effect receipts for real business terminality",

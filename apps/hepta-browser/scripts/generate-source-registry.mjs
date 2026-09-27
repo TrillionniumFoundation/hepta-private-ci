@@ -19,6 +19,7 @@ const EXTRA_SOURCES = Object.freeze([
   "third_party/servo-patches/MANIFEST.json",
   ".github/workflows/blocking-ci.yml",
   ".github/workflows/hepta-browser-agentd-composition.yml",
+  ".github/workflows/hepta-browser-journal-scale.yml",
   ".github/workflows/hepta-browser-servo-worker-dev.yml",
   ".github/workflows/hepta-browser-servo-independent-rebuild.yml",
   ".github/workflows/hepta-browser-servo-deployment-qualification.yml",

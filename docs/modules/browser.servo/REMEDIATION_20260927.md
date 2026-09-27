@@ -139,6 +139,12 @@ The emitted smoke receipt records
 these executable assertions to remain present. Source presence is not a claim
 that the current exact build has passed them.
 
+### Bounded owner measurement and qualification fanout
+
+The existing journal owner now has an executable scale probe rather than a prose-only performance claim. `journal-scale-probe.js` drives 128 operations through dispatch, worker-admission, egress and terminal-observation transitions, records warm-path and restart statistics, compacts and reopens the same journal, and requires validated incremental-index reuse. It records hosted-runner latency but explicitly leaves performance qualification false.
+
+Browser candidate branches are qualified by pull-request events. Browser-specific workflow push triggers are main-only, eliminating duplicate candidate builds that previously consumed two hosted runners for the same source SHA. Main pushes remain independently qualified and signed where applicable.
+
 ## Relevant commits in this continuation
 
 | Commit | Published change |

@@ -3,7 +3,7 @@
 **Historical predecessor:** `84bcc9ac701874fa9819e5cdee06356b961d736c` (2026-09-04)  
 **Immediate predecessor candidate:** `5cc5bd32d02619acdec5736055515e38c5840ce1` (2026-09-18)  
 **Selected qualification candidate:** `b5a1f5e6ec6f8685d40cd389802ced7abe4980f6` (2026-09-19)  
-**Candidate state:** source-selected; b5a1 dependency lock generation/review/commit pending; exact-head locked qualification not yet established
+**Candidate state:** source-selected; exact reviewed b5a1 dependency lock committed; exact-head locked qualification not yet established
 
 ## 1. Current decision
 
@@ -19,14 +19,12 @@ Leaving that change outside the selected candidate would require an explicit
 compatibility justification; the current source instead absorbs it and
 restarts the lock/build/E2E/SBOM qualification chain.
 
-The committed worker `Cargo.lock` is still predecessor evidence. It does not
-contain the selected b5a1 Servo revision and must not be relabelled or patched
-by hand. The first exact-head worker run must generate the b5a1 candidate lock
-from the selected manifest, retain those exact bytes as evidence, and identify
-them as `generated-candidate`. After review, those exact bytes must be
-committed. Only a later exact-head run that reports
-`cargoLockCommitted=true` may establish locked compile/test, real-E2E,
-reproducibility and SBOM evidence for the selected candidate.
+The exact reviewed worker `Cargo.lock` is committed and contains the selected
+b5a1 Servo source identities. The earlier generated-candidate ceremony is
+historical provenance, not a current open step. A fresh exact-head run must
+still use the committed bytes with `--locked` throughout and report
+`cargoLockCommitted=true` before locked compile/test, real-E2E,
+reproducibility and SBOM evidence can be attributed to the selected candidate.
 
 No source selection, generated lock, CI definition or author statement is a
 qualified worker artifact, target-host receipt, operator acceptance, promotion
@@ -129,23 +127,21 @@ still performs end-to-end certificate validation inside the CONNECT tunnel.
 
 The selected Servo workspace and Hepta worker are qualified with the pinned
 Rust 1.88 toolchain declared by the worker workflow. Advancing from 5cc5 to b5a1
-changes the dependency graph, so the old lock cannot establish b5a1 inputs.
+changed the dependency graph; the predecessor lock could not establish b5a1
+inputs and has been replaced by the exact reviewed committed lock.
 
-Current lock ceremony:
+Current lock contract:
 
-1. exact-head worker workflow sees that the committed lock does not contain
-   b5a1;
-2. it preserves the predecessor lock as provenance, removes it from the build
-   input, and runs `cargo generate-lockfile` for the selected manifest;
-3. it records the generated lock bytes/digest in the worker evidence artifact;
-4. a reviewer inspects those exact bytes and commits them without regeneration
-   or substitution;
-5. a fresh exact-head worker run must recognize the lock as `committed`,
-   use `--locked` throughout, and emit `cargoLockCommitted=true` in the
-   build receipt.
+1. `apps/hepta-browser/servo-worker/Cargo.lock` is tracked and contains the
+   selected b5a1 source identities;
+2. the worker workflow rejects a missing, empty, untracked or wrong-pin lock;
+3. metadata, dependency-tree, compile, tests and release builds all use
+   `--locked` against those exact bytes;
+4. the final exact-head receipt must bind the lock digest and report
+   `cargoLockCommitted=true`.
 
-Until step 5 is terminal-success, the b5a1 artifact remains qualification
-pending.
+Until the current exact-head locked workflow is terminal-success, the b5a1
+artifact remains qualification pending.
 
 ## 6. Promotion oracle
 
