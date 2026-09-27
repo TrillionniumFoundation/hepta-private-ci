@@ -1,0 +1,60 @@
+name: runtime.codex stage2 issuer identity bootstrap
+
+on:
+  pull_request:
+    branches:
+      - runtime-codex/closure-20260927
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-stage2-identity-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply-reviewed-source:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'runtime-codex/closure-stage2-20260927'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact child candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned formatter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Apply exact source transform
+        run: python3 scripts/runtime_codex_stage2_identity_bootstrap.py
+
+      - name: Format and reject malformed patches
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-agentd
+          git diff --check
+
+      - name: Publish source-only child candidate
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          test "$HEAD_REF" = runtime-codex/closure-stage2-20260927
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'runtime.codex: bind final-use issuer to exact process instance' \
+            -m 'Pin Linux PID, process start time, executable digest, cgroup digest and boot-id digest, and revalidate the connected peer after the grant exchange. This is source hardening only; deployed identity and key custody remain external qualification gates.'
+          git push origin "HEAD:refs/heads/${HEAD_REF}"
