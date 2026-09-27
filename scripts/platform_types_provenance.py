@@ -18,13 +18,34 @@ PATHS = (
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-types",
     "codex-rs/hepta-wire",
+    "codex-rs/hepta-ndu/src/lib.rs",
+    "codex-rs/hepta-ndu/src/numeric_admission.rs",
+    "codex-rs/hepta-ndu/src/owner.rs",
+    "codex-rs/hepta-ndu/src/random_stream_owner.rs",
+    "codex-rs/hepta-supervisor/src/lib.rs",
+    "codex-rs/hepta-supervisor/src/module_runtime.rs",
+    "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
+    "codex-rs/hepta-codex-adapter/src/lib.rs",
+    "codex-rs/hepta-learning-ledger/src/ledger.rs",
     "docs/lane-a-foundation/platform.types",
     "docs/modules/platform.types",
     "qualification/module-execution-dossiers/detail/platform.types.md",
     "scripts/platform_types_*",
     "scripts/run_platform_types_*",
+    "scripts/test_platform_types_consumer_qualification.py",
+    "scripts/verify_platform_types_consumers.py",
     ".github/workflows/platform-types-*",
     ".github/workflows/lane-a-foundation.yml",
+)
+ROOTS = (
+    "codex-rs/hepta-types",
+    "codex-rs/hepta-wire",
+    "codex-rs/hepta-ndu",
+    "codex-rs/hepta-supervisor",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-learning-ledger",
+    "docs/lane-a-foundation/platform.types",
+    "docs/modules/platform.types",
 )
 
 
@@ -46,7 +67,10 @@ def git(*args: str, text: bool = True) -> str | bytes:
 def tracked_files() -> list[str]:
     raw = git("ls-files", "-z", "--", *PATHS, text=False)
     assert isinstance(raw, bytes)
-    return sorted(item.decode("utf-8") for item in raw.split(b"\0") if item)
+    files = sorted(item.decode("utf-8") for item in raw.split(b"\0") if item)
+    if not files:
+        raise CandidateBundleError("platform.types provenance path set is empty")
+    return files
 
 
 def blob_record(path: str) -> dict[str, Any]:
@@ -64,15 +88,10 @@ def blob_record(path: str) -> dict[str, Any]:
 
 
 def root_records() -> list[dict[str, str]]:
-    records = []
-    for path in (
-        "codex-rs/hepta-types",
-        "codex-rs/hepta-wire",
-        "docs/lane-a-foundation/platform.types",
-        "docs/modules/platform.types",
-    ):
-        records.append({"path": path, "treeSha1": str(git("rev-parse", f"HEAD:{path}"))})
-    return records
+    return [
+        {"path": path, "treeSha1": str(git("rev-parse", f"HEAD:{path}"))}
+        for path in ROOTS
+    ]
 
 
 def main() -> int:
@@ -87,22 +106,30 @@ def main() -> int:
     try:
         identity = exact_identity(args)
         files = [blob_record(path) for path in tracked_files()]
+        roots = root_records()
         value = {
-            "schema": "hepta.platform-types.git-provenance.v1",
-            "schemaVersion": 1,
+            "schema": "hepta.platform-types.git-provenance.v2",
+            "schemaVersion": 2,
             "candidateIdentity": identity,
             "candidateTreeSha1": str(git("rev-parse", "HEAD^{tree}")),
-            "roots": root_records(),
+            "roots": roots,
             "pathCount": len(files),
             "files": files,
             "status": "passed",
-            "claimBoundary": "exact Git identity only; not activation or external acceptance",
+            "claimBoundary": (
+                "exact Git identity for contracts, codecs, named owners, "
+                "consumers, documentation and qualification controls; not "
+                "activation or external acceptance"
+            ),
         }
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(
             json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
-        print(f"platform.types provenance: ok ({len(files)} exact blobs)")
+        print(
+            "platform.types provenance: ok "
+            f"({len(files)} exact blobs, {len(roots)} exact roots)"
+        )
         return 0
     except CandidateBundleError as error:
         print(f"platform.types provenance failed: {error}", file=sys.stderr)
