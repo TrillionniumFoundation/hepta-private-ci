@@ -23,6 +23,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             authority_verifier,
             evaluation_trust: None,
             intuition_policy: None,
+            neuron_seals: std::sync::Mutex::new(BTreeMap::new()),
         })
     }
 
@@ -72,6 +73,76 @@ impl AgentdIntelligenceProductRunnerV1 {
         }))
     }
 
+    pub(super) fn stage_neuron_seal(
+        &self,
+        run_id: &StableId,
+        seal: Option<crate::AgentdNeuronInvocationSealV1>,
+        expires_at_ms: u64,
+    ) -> Result<(), AgentdError> {
+        let now_ms = crate::authbus_ingress::now_ms()?;
+        if expires_at_ms <= now_ms {
+            return Err(AgentdError::GenerationFenced(
+                "canonical Neuron invocation expired before stage handoff".to_string(),
+            ));
+        }
+        if seal.as_ref().is_some_and(|seal| {
+            seal.invocation_digest().is_zero() || seal.output_digest().is_zero()
+        }) {
+            return Err(AgentdError::Protocol(
+                "canonical Neuron invocation seal has an invalid digest".to_string(),
+            ));
+        }
+        let mut pending = self.neuron_seals.lock().map_err(|_| {
+            AgentdError::Protocol("canonical Neuron handoff mutex is poisoned".to_string())
+        })?;
+        pending.retain(|_, value| value.expires_at_ms > now_ms);
+        if pending.contains_key(run_id.as_str()) {
+            return Err(AgentdError::Protocol(
+                "canonical Neuron invocation is already staged for this run".to_string(),
+            ));
+        }
+        if pending.len() >= MAX_PENDING_NEURON_INVOCATIONS {
+            return Err(AgentdError::Protocol(
+                "canonical Neuron invocation handoff capacity is exhausted".to_string(),
+            ));
+        }
+        pending.insert(
+            run_id.to_string(),
+            PendingNeuronInvocationSealV1 {
+                state: PendingNeuronInvocationStateV1::Ready(seal),
+                expires_at_ms,
+            },
+        );
+        Ok(())
+    }
+
+    fn take_neuron_seal(
+        &self,
+        run_id: &StableId,
+    ) -> Result<Option<crate::AgentdNeuronInvocationSealV1>, AgentdIntelligenceProductError> {
+        let now_ms = wall_clock_ms()?;
+        let mut handoffs = self
+            .neuron_seals
+            .lock()
+            .map_err(|_| AgentdIntelligenceProductError::NeuronInvocation)?;
+        let Some(pending) = handoffs.get_mut(run_id.as_str()) else {
+            return Ok(None);
+        };
+        if pending.expires_at_ms <= now_ms {
+            pending.state = PendingNeuronInvocationStateV1::Consumed;
+            return Err(AgentdIntelligenceProductError::NeuronInvocation);
+        }
+        match std::mem::replace(
+            &mut pending.state,
+            PendingNeuronInvocationStateV1::Consumed,
+        ) {
+            PendingNeuronInvocationStateV1::Ready(seal) => Ok(seal),
+            PendingNeuronInvocationStateV1::Consumed => {
+                Err(AgentdIntelligenceProductError::NeuronInvocation)
+            }
+        }
+    }
+
     pub async fn prepare(
         &self,
         coordinator: &crate::AgentRunCoordinator,
@@ -83,13 +154,33 @@ impl AgentdIntelligenceProductRunnerV1 {
             .await
     }
 
-    /// Run the seven-owner preparation against one frozen Agentd composition
-    /// without retaining the run-coordinator mutex across owner execution.
+    /// Direct compatibility callers have no staged typed Neuron result and
+    /// retain the historical pure sparse stage. The normal ObjectiveStart path
+    /// consumes the one-shot owner seal staged by `build_invocation`.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let neural_invocation_seal = self.take_neuron_seal(&request.run_id)?;
+        self.prepare_for_composition_with_neuron_seal(
+            composition,
+            request,
+            inputs,
+            neural_invocation_seal,
+        )
+        .await
+    }
+
+    /// Run the seven-owner preparation against one frozen Agentd composition
+    /// without retaining the run-coordinator mutex across owner execution.
+    async fn prepare_for_composition_with_neuron_seal(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
+        neural_invocation_seal: Option<crate::AgentdNeuronInvocationSealV1>,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let candidate_ids = request
             .legal_candidates
@@ -176,6 +267,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(
                 inputs,
+                neural_invocation_seal,
                 evaluation_session,
                 intuition_host,
                 intuition_current,
