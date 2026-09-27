@@ -5,6 +5,13 @@ import {
 
 const encoder = new TextEncoder();
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+const CANONICAL_LIMIT_KEYS = new Set([
+  "maxDepth",
+  "maxEntries",
+  "maxArrayLength",
+  "maxStringBytes",
+  "maxEncodedBytes",
+]);
 const BIDI_OR_INVISIBLE = /[\u061c\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u;
 const CONTROL_CHARACTER = /[\u0000-\u001f\u007f-\u009f]/u;
 const STABLE_IDENTIFIER = /^[A-Za-z0-9._:-]+$/u;
@@ -24,7 +31,28 @@ function invalid(message, details) {
   });
 }
 
+function hasLoneSurrogate(value) {
+  for (let index = 0; index < value.length; index += 1) {
+    const unit = value.charCodeAt(index);
+    if (unit >= 0xd800 && unit <= 0xdbff) {
+      const next = value.charCodeAt(index + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) return true;
+      index += 1;
+    } else if (unit >= 0xdc00 && unit <= 0xdfff) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function assertSafeInteger(value, label, { min = 0, max = Number.MAX_SAFE_INTEGER } = {}) {
+  if (
+    !Number.isSafeInteger(min) ||
+    !Number.isSafeInteger(max) ||
+    min > max
+  ) {
+    throw invalid(`${label} integer bounds are invalid`, { label, min, max });
+  }
   if (!Number.isSafeInteger(value) || value < min || value > max) {
     throw invalid(`${label} must be a safe integer in [${min}, ${max}]`, {
       label,
@@ -35,6 +63,7 @@ export function assertSafeInteger(value, label, { min = 0, max = Number.MAX_SAFE
 }
 
 export function assertStableIdentifier(value, label, { maxBytes = 128 } = {}) {
+  assertSafeInteger(maxBytes, `${label} maxBytes`, { min: 1, max: 1024 * 1024 });
   if (
     typeof value !== "string" ||
     value.length === 0 ||
@@ -63,22 +92,28 @@ export function assertSha256(value, label, { allowZero = false } = {}) {
 }
 
 export function assertCanonicalText(value, label, { maxBytes = 4096, allowEmpty = false } = {}) {
+  assertSafeInteger(maxBytes, `${label} maxBytes`, { min: 0, max: 16 * 1024 * 1024 });
   if (
     typeof value !== "string" ||
     (!allowEmpty && value.length === 0) ||
+    hasLoneSurrogate(value) ||
     encoder.encode(value).byteLength > maxBytes ||
     CONTROL_CHARACTER.test(value) ||
     BIDI_OR_INVISIBLE.test(value) ||
     value.normalize("NFC") !== value
   ) {
-    throw invalid(`${label} must be bounded NFC text without control or bidi characters`, {
-      label,
-    });
+    throw invalid(
+      `${label} must be bounded well-formed NFC text without control or bidi characters`,
+      { label },
+    );
   }
   return value;
 }
 
 function readPlainObject(value, label) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw invalid(`${label} must be a plain object`, { label });
+  }
   const prototype = Object.getPrototypeOf(value);
   if (prototype !== Object.prototype && prototype !== null) {
     throw invalid(`${label} must be a plain object`, { label });
@@ -96,6 +131,35 @@ function readPlainObject(value, label) {
     }
   }
   return descriptors;
+}
+
+function resolveCanonicalLimits(limits) {
+  const descriptors = readPlainObject(limits, "canonical limits");
+  for (const key of Object.keys(descriptors)) {
+    if (!CANONICAL_LIMIT_KEYS.has(key)) {
+      throw invalid("canonical limits contain an unknown field", { key });
+    }
+  }
+  const value = key => descriptors[key]?.value ?? DEFAULT_CANONICAL_LIMITS[key];
+  return Object.freeze({
+    maxDepth: assertSafeInteger(value("maxDepth"), "maxDepth", { min: 0, max: 64 }),
+    maxEntries: assertSafeInteger(value("maxEntries"), "maxEntries", {
+      min: 0,
+      max: 1_000_000,
+    }),
+    maxArrayLength: assertSafeInteger(value("maxArrayLength"), "maxArrayLength", {
+      min: 0,
+      max: 100_000,
+    }),
+    maxStringBytes: assertSafeInteger(value("maxStringBytes"), "maxStringBytes", {
+      min: 0,
+      max: 16 * 1024 * 1024,
+    }),
+    maxEncodedBytes: assertSafeInteger(value("maxEncodedBytes"), "maxEncodedBytes", {
+      min: 1,
+      max: 32 * 1024 * 1024,
+    }),
+  });
 }
 
 function normalize(value, state, depth, label) {
@@ -159,18 +223,33 @@ function normalize(value, state, depth, label) {
   });
 }
 
+// RFC 8785 orders property names lexicographically by UTF-16 code units.
+// JSON.stringify cannot be used for the object layer because it reorders
+// integer-like property names numerically. The supported data model is a
+// bounded, NFC, safe-integer subset of RFC 8785 / I-JSON.
+function serializeCanonical(value) {
+  if (value === null || typeof value === "boolean" || typeof value === "number") {
+    return JSON.stringify(value);
+  }
+  if (typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return `[${value.map(serializeCanonical).join(",")}]`;
+  }
+  const keys = Object.keys(value).sort();
+  return `{${keys
+    .map(key => `${JSON.stringify(key)}:${serializeCanonical(value[key])}`)
+    .join(",")}}`;
+}
+
 export function canonicalJson(value, limits = {}) {
-  const resolvedLimits = Object.freeze({
-    ...DEFAULT_CANONICAL_LIMITS,
-    ...limits,
-  });
+  const resolvedLimits = resolveCanonicalLimits(limits);
   const normalized = normalize(
     value,
     { limits: resolvedLimits, entries: 0 },
     0,
     "value",
   );
-  const encoded = JSON.stringify(normalized);
+  const encoded = serializeCanonical(normalized);
   if (encoder.encode(encoded).byteLength > resolvedLimits.maxEncodedBytes) {
     throw invalid("canonical JSON exceeds maximum encoded size", {
       maxEncodedBytes: resolvedLimits.maxEncodedBytes,
@@ -183,12 +262,13 @@ export function parseCanonicalJson(text, { label = "document", ...limits } = {})
   if (typeof text !== "string") {
     throw invalid(`${label} must be JSON text`, { label });
   }
+  assertCanonicalText(label, "document label", { maxBytes: 128 });
+  const resolvedLimits = resolveCanonicalLimits(limits);
   const bytes = encoder.encode(text).byteLength;
-  const maxEncodedBytes = limits.maxEncodedBytes ?? DEFAULT_CANONICAL_LIMITS.maxEncodedBytes;
-  if (bytes > maxEncodedBytes) {
+  if (bytes > resolvedLimits.maxEncodedBytes) {
     throw invalid(`${label} exceeds maximum encoded size`, {
       label,
-      maxEncodedBytes,
+      maxEncodedBytes: resolvedLimits.maxEncodedBytes,
     });
   }
   let value;
@@ -200,7 +280,7 @@ export function parseCanonicalJson(text, { label = "document", ...limits } = {})
       cause,
     });
   }
-  const canonical = canonicalJson(value, { ...limits, maxEncodedBytes });
+  const canonical = canonicalJson(value, resolvedLimits);
   if (canonical !== text) {
     throw invalid(`${label} must use exact canonical JSON encoding`, { label });
   }
