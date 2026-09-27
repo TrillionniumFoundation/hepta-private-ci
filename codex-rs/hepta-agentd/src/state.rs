@@ -31,6 +31,7 @@ use crate::RuntimeComposition;
 mod control;
 
 pub(crate) struct AgentdState {
+    pub(crate) context_plans: Mutex<crate::cognitive_context::ContextPlanningHostV1>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -127,6 +128,7 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            context_plans: Mutex::new(crate::cognitive_context::ContextPlanningHostV1::default()),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
@@ -509,10 +511,10 @@ impl AgentdState {
         Ok(DrainSnapshot {
             admission_closed: runtime.lifecycle == AgentLifecycle::Draining
                 && !runtime.app_server_ready
-                && !runtime.fenced,
+                && !fenced,
             running_turns,
             drained: runtime.lifecycle == AgentLifecycle::Draining
-                && !runtime.fenced
+                && !fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
                 && automation_blockers == 0,
