@@ -73,6 +73,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             inner: provider,
             journal,
             consumed_record_digest: None,
+            journal_error: None,
         };
         let result = self.inner.evaluate_temporal_comparison(
             product_plan,
@@ -81,7 +82,30 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             &mut recorded_provider,
         );
         let consumed = recorded_provider.consumed_record_digest;
+        let journal_error = recorded_provider.journal_error;
         drop(recorded_provider);
+
+        if let Some(journal_error) = journal_error {
+            let holdout_record_digest = consumed.ok_or(
+                RecordedProductEvaluationErrorV1::Invariant(
+                    "attempt journal failed without an observed holdout receipt",
+                ),
+            )?;
+            return match result {
+                Err(evaluation) => Err(
+                    RecordedProductEvaluationErrorV1::HoldoutConsumedButJournalFailed {
+                        attempt_id,
+                        plan_digest,
+                        holdout_record_digest,
+                        evaluation,
+                        journal: journal_error,
+                    },
+                ),
+                Ok(_) => Err(RecordedProductEvaluationErrorV1::Invariant(
+                    "attempt journal failure did not abort holdout release",
+                )),
+            };
+        }
 
         match result {
             Ok(receipt) => {
@@ -159,6 +183,7 @@ struct RecordedHoldoutProviderV1<'a, P, J> {
     inner: &'a mut P,
     journal: &'a mut J,
     consumed_record_digest: Option<Digest32>,
+    journal_error: Option<ProductEvaluationAttemptJournalErrorV1>,
 }
 
 impl<P: FinalHoldoutProviderV1, J: ProductEvaluationAttemptJournalV1> FinalHoldoutProviderV1
@@ -172,14 +197,20 @@ impl<P: FinalHoldoutProviderV1, J: ProductEvaluationAttemptJournalV1> FinalHoldo
         &mut self,
         receipt: &FinalHoldoutJournalReceiptV1,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
-        self.journal
-            .append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
+        // The authoritative owner has already consumed the holdout before this
+        // callback. Preserve that irreversible fact even when the attempt journal
+        // write is rejected or its commit status is unknown.
+        self.consumed_record_digest = Some(receipt.record_digest);
+        if let Err(error) = self.journal.append(
+            ProductEvaluationAttemptTransitionV1::holdout_consumed(
                 self.attempt_id.clone(),
                 self.plan_digest,
                 receipt.record_digest,
-            ))
-            .map_err(map_journal_to_provider)?;
-        self.consumed_record_digest = Some(receipt.record_digest);
+            ),
+        ) {
+            self.journal_error = Some(error);
+            return Err(map_journal_to_provider(error));
+        }
         self.inner.release_after_consumption(receipt)
     }
 }
@@ -213,6 +244,16 @@ fn evaluation_failure_digest(error: &ProductEvaluationError) -> Digest32 {
 pub enum RecordedProductEvaluationErrorV1 {
     Evaluation(ProductEvaluationError),
     Journal(ProductEvaluationAttemptJournalErrorV1),
+    /// The final holdout is irreversibly consumed, but the lifecycle journal did
+    /// not return a durable acknowledgement. Reopen/reconcile the journal using
+    /// the included attempt and digest coordinates before any operator action.
+    HoldoutConsumedButJournalFailed {
+        attempt_id: StableId,
+        plan_digest: Digest32,
+        holdout_record_digest: Digest32,
+        evaluation: ProductEvaluationError,
+        journal: ProductEvaluationAttemptJournalErrorV1,
+    },
     EvaluationAndJournal {
         evaluation: ProductEvaluationError,
         journal: ProductEvaluationAttemptJournalErrorV1,
