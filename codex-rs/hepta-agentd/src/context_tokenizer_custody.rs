@@ -3,7 +3,7 @@
 //! Production execution is host-owned. Agentd supplies exact provider-body
 //! bytes and receives an attested count bound to immutable executable and
 //! vocabulary objects. The interface exposes no mutable filesystem path and no
-//! model-name lookup or estimate fallback.
+//! model-name lookup, path reopen, token estimate, or provider-usage fallback.
 
 use std::fmt;
 
@@ -75,7 +75,7 @@ impl ImmutableTokenizerBundleIdentityV3 {
             self.bundle_digest,
         ]
         .into_iter()
-        .any(Digest32::is_zero)
+        .any(|digest| digest.is_zero())
             || self.object_generation == 0
             || self.bundle_digest != self.compute_digest()
         {
@@ -269,6 +269,7 @@ pub trait ImmutableTokenizerExecutorV3: Send + Sync {
 
     fn count_exact_body(
         &self,
+        bundle: &ImmutableTokenizerBundleIdentityV3,
         request: &ImmutableTokenizerExecutionRequestV3,
         exact_body: &[u8],
     ) -> Result<ImmutableTokenizerExecutionReceiptV3, String>;
@@ -308,28 +309,27 @@ impl std::error::Error for ImmutableTokenizerCustodyErrorV3 {}
 
 pub fn execute_immutable_tokenizer_v3(
     executor: &impl ImmutableTokenizerExecutorV3,
+    bundle: &ImmutableTokenizerBundleIdentityV3,
     request: &ImmutableTokenizerExecutionRequestV3,
     exact_body: &[u8],
 ) -> Result<ImmutableTokenizerExecutionReceiptV3, ImmutableTokenizerCustodyErrorV3> {
+    bundle.validate()?;
     if Digest32::of_bytes(exact_body) != request.exact_body_digest {
         return Err(ImmutableTokenizerCustodyErrorV3::BodyDigestMismatch);
     }
-    let bundle = executor
-        .bundle_identity(&StableId::new("provider-bound").map_err(|_| {
-            ImmutableTokenizerCustodyErrorV3::InvalidRequest
-        })?, &StableId::new("model-bound").map_err(|_| {
-            ImmutableTokenizerCustodyErrorV3::InvalidRequest
-        })?)
+    let resolved = executor
+        .bundle_identity(&bundle.provider_id, &bundle.model_id)
         .map_err(|_| ImmutableTokenizerCustodyErrorV3::HostRejected)?;
-    if bundle.bundle_digest() != request.bundle_digest
+    if resolved != *bundle
+        || bundle.bundle_digest() != request.bundle_digest
         || executor.executor_digest().is_zero()
     {
         return Err(ImmutableTokenizerCustodyErrorV3::ExecutorMismatch);
     }
     let receipt = executor
-        .count_exact_body(request, exact_body)
+        .count_exact_body(bundle, request, exact_body)
         .map_err(|_| ImmutableTokenizerCustodyErrorV3::HostRejected)?;
-    receipt.validate_for(request, &bundle)?;
+    receipt.validate_for(request, bundle)?;
     Ok(receipt)
 }
 
@@ -364,6 +364,41 @@ mod tests {
         .unwrap_or_else(|_| panic!("valid bundle"))
     }
 
+    struct FixtureExecutor {
+        bundle: ImmutableTokenizerBundleIdentityV3,
+    }
+
+    impl ImmutableTokenizerExecutorV3 for FixtureExecutor {
+        fn executor_digest(&self) -> Digest32 {
+            Digest32::of_bytes(b"executor")
+        }
+
+        fn bundle_identity(
+            &self,
+            _provider_id: &StableId,
+            _model_id: &StableId,
+        ) -> Result<ImmutableTokenizerBundleIdentityV3, String> {
+            Ok(self.bundle.clone())
+        }
+
+        fn count_exact_body(
+            &self,
+            bundle: &ImmutableTokenizerBundleIdentityV3,
+            request: &ImmutableTokenizerExecutionRequestV3,
+            _exact_body: &[u8],
+        ) -> Result<ImmutableTokenizerExecutionReceiptV3, String> {
+            ImmutableTokenizerExecutionReceiptV3::from_host(
+                request,
+                bundle,
+                self.executor_digest(),
+                8,
+                100,
+                101,
+            )
+            .map_err(|error| error.to_string())
+        }
+    }
+
     #[test]
     fn receipt_binds_exact_body_and_immutable_objects() {
         let bundle = bundle();
@@ -376,13 +411,13 @@ mod tests {
             1_000,
         )
         .unwrap_or_else(|_| panic!("valid request"));
-        let receipt = ImmutableTokenizerExecutionReceiptV3::from_host(
-            &request,
+        let receipt = execute_immutable_tokenizer_v3(
+            &FixtureExecutor {
+                bundle: bundle.clone(),
+            },
             &bundle,
-            Digest32::of_bytes(b"executor"),
-            8,
-            100,
-            101,
+            &request,
+            body,
         )
         .unwrap_or_else(|_| panic!("valid receipt"));
         assert_eq!(receipt.exact_body_digest, request.exact_body_digest);
@@ -391,7 +426,7 @@ mod tests {
     }
 
     #[test]
-    fn mutable_body_drift_is_rejected() {
+    fn mutable_body_and_object_drift_are_rejected() {
         let bundle = bundle();
         let request = ImmutableTokenizerExecutionRequestV3::new(
             id("attempt"),
@@ -402,32 +437,38 @@ mod tests {
         )
         .unwrap_or_else(|_| panic!("valid request"));
         assert_eq!(
-            execute_immutable_tokenizer_v3(&RejectingExecutor, &request, b"body-b"),
+            execute_immutable_tokenizer_v3(
+                &FixtureExecutor {
+                    bundle: bundle.clone(),
+                },
+                &bundle,
+                &request,
+                b"body-b",
+            ),
             Err(ImmutableTokenizerCustodyErrorV3::BodyDigestMismatch)
         );
-    }
-
-    struct RejectingExecutor;
-
-    impl ImmutableTokenizerExecutorV3 for RejectingExecutor {
-        fn executor_digest(&self) -> Digest32 {
-            Digest32::of_bytes(b"executor")
-        }
-
-        fn bundle_identity(
-            &self,
-            _provider_id: &StableId,
-            _model_id: &StableId,
-        ) -> Result<ImmutableTokenizerBundleIdentityV3, String> {
-            Ok(bundle())
-        }
-
-        fn count_exact_body(
-            &self,
-            _request: &ImmutableTokenizerExecutionRequestV3,
-            _exact_body: &[u8],
-        ) -> Result<ImmutableTokenizerExecutionReceiptV3, String> {
-            Err("unused".to_owned())
-        }
+        let drifted = ImmutableTokenizerBundleIdentityV3::new(
+            bundle.provider_id.clone(),
+            bundle.model_id.clone(),
+            bundle.tokenizer_profile_digest,
+            id("other-executable"),
+            Digest32::of_bytes(b"other-executable"),
+            bundle.vocabulary_object_id.clone(),
+            bundle.vocabulary_digest,
+            bundle.normalization_policy_digest,
+            bundle.template_revision_digest,
+            bundle.custody_authority_digest,
+            bundle.object_generation,
+        )
+        .unwrap_or_else(|_| panic!("valid drifted bundle"));
+        assert_eq!(
+            execute_immutable_tokenizer_v3(
+                &FixtureExecutor { bundle: drifted },
+                &bundle,
+                &request,
+                b"body-a",
+            ),
+            Err(ImmutableTokenizerCustodyErrorV3::ExecutorMismatch)
+        );
     }
 }
