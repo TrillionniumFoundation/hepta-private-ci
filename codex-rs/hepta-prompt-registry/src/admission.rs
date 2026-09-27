@@ -22,6 +22,8 @@ use serde::Serialize;
 
 use crate::FactorSource;
 use crate::PromptFactor;
+use crate::PromptFactorRelation;
+use crate::PromptFactorRelationKind;
 use crate::PromptRealizationBindingV2;
 
 const ADMISSION_DOMAIN: &[u8] = b"hepta.prompt-registry.admission.v1\0";
@@ -30,6 +32,12 @@ const FINAL_USE_DESTINATION: &str = "prompt.registry:admission";
 const FINAL_USE_RETIRE_DESTINATION: &str = "prompt.registry:retire";
 const FINAL_USE_REVOKE_DESTINATION: &str = "prompt.registry:revoke";
 const FINAL_USE_REALIZATION_DESTINATION: &str = "prompt.registry:realization";
+const FINAL_USE_REGISTER_FACTOR_DESTINATION: &str = "prompt.registry:register-factor";
+const FINAL_USE_REGISTER_RELATION_DESTINATION: &str = "prompt.registry:register-relation";
+const FINAL_USE_REGISTER_FACTOR_REQUEST_DOMAIN: &[u8] =
+    b"hepta.prompt-registry.final-use-register-factor.v1\0";
+const FINAL_USE_REGISTER_RELATION_REQUEST_DOMAIN: &[u8] =
+    b"hepta.prompt-registry.final-use-register-relation.v1\0";
 const FINAL_USE_REALIZATION_REQUEST_DOMAIN: &[u8] =
     b"hepta.prompt-registry.final-use-realization.v1\0";
 const FINAL_USE_RETIRE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-retire.v1\0";
@@ -280,6 +288,72 @@ impl<'a> FinalUseAdmissionAuthority<'a> {
             })
             .map_err(map_final_use_error)
     }
+}
+
+pub fn final_use_register_factor_binding(
+    factor: &PromptFactor,
+    actor_id: &StableId,
+    scope_digest: Digest32,
+) -> Result<FinalUseBinding, AdmissionError> {
+    if factor.source != FactorSource::GovernedInternal
+        || factor.lifecycle != crate::Lifecycle::Draft
+        || factor.content_digest.is_zero()
+        || scope_digest.is_zero()
+    {
+        return Err(AdmissionError::ScopeMismatch);
+    }
+    let mut request = FINAL_USE_REGISTER_FACTOR_REQUEST_DOMAIN.to_vec();
+    push_id(&mut request, &factor.factor_id);
+    push_id(&mut request, &factor.proposer_id);
+    push_id(&mut request, &factor.semantic_version);
+    push_text(&mut request, &factor.semantic_purpose);
+    push_text(&mut request, &factor.authority_class);
+    request.extend_from_slice(
+        &u32::try_from(factor.eligible_objective_dimensions.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
+    for dimension in &factor.eligible_objective_dimensions {
+        push_id(&mut request, dimension);
+    }
+    request.extend_from_slice(factor.content_digest.as_array());
+    Ok(FinalUseBinding {
+        subject_id: actor_id.to_string(),
+        destination_id: FINAL_USE_REGISTER_FACTOR_DESTINATION.to_owned(),
+        request_sha256: Digest32::of_bytes(&request).into_array(),
+        scope_sha256: scope_digest.into_array(),
+        payload_sha256: factor.content_digest.into_array(),
+    })
+}
+
+pub fn final_use_register_relation_binding(
+    relation: &PromptFactorRelation,
+    actor_id: &StableId,
+    scope_digest: Digest32,
+) -> Result<FinalUseBinding, AdmissionError> {
+    if relation.evidence_digest.is_zero()
+        || relation.left_factor_id >= relation.right_factor_id
+        || scope_digest.is_zero()
+    {
+        return Err(AdmissionError::ScopeMismatch);
+    }
+    let mut request = FINAL_USE_REGISTER_RELATION_REQUEST_DOMAIN.to_vec();
+    push_id(&mut request, &relation.relation_id);
+    push_id(&mut request, &relation.left_factor_id);
+    push_id(&mut request, &relation.right_factor_id);
+    request.push(match relation.kind {
+        PromptFactorRelationKind::Complements => 0,
+        PromptFactorRelationKind::Substitutes => 1,
+        PromptFactorRelationKind::Conflicts => 2,
+    });
+    request.extend_from_slice(relation.evidence_digest.as_array());
+    Ok(FinalUseBinding {
+        subject_id: actor_id.to_string(),
+        destination_id: FINAL_USE_REGISTER_RELATION_DESTINATION.to_owned(),
+        request_sha256: Digest32::of_bytes(&request).into_array(),
+        scope_sha256: scope_digest.into_array(),
+        payload_sha256: relation.evidence_digest.into_array(),
+    })
 }
 
 pub fn final_use_admission_binding(

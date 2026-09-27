@@ -1,0 +1,38 @@
+name: Prompt registry candidate snapshot
+
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths:
+      - .github/workflows/prompt-registry-candidate-snapshot.yml
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Archive only tracked files at the exact source SHA
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/prompt-registry-candidate"
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/prompt-registry-candidate/source.tar.gz"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/prompt-registry-candidate/source.ls-tree"
+          git rev-parse HEAD > "$RUNNER_TEMP/prompt-registry-candidate/source.sha"
+          sha256sum "$RUNNER_TEMP/prompt-registry-candidate/source.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-registry-candidate
+          if-no-files-found: error
+          retention-days: 3

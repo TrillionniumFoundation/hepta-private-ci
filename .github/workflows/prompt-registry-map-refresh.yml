@@ -1,0 +1,81 @@
+name: Prompt registry operational closure bootstrap
+
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths:
+      - "scripts/apply-prompt-registry-operations.py"
+      - ".github/workflows/prompt-registry-map-refresh.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-registry-operational-closure-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-slim
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact bootstrap source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Apply bounded operational closure
+        run: python3 scripts/apply-prompt-registry-operations.py
+
+      - name: Format and test prompt registry
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-prompt-registry
+          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture --test-threads=1
+          cargo test --locked -p codex-hepta-prompt-registry operational_ -- --ignored --nocapture --test-threads=1
+          cargo clippy --locked -p codex-hepta-prompt-registry --all-targets --no-deps -- -D warnings
+
+      - name: Validate generated Python and documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          compile(
+              Path("scripts/hepta-prompt-registry-map.py").read_text(encoding="utf-8"),
+              "scripts/hepta-prompt-registry-map.py",
+              "exec",
+          )
+          PY
+          python3 scripts/hepta-prompt-registry-map.py
+          python3 scripts/hepta-implementation-maps.py migrate --module prompt.registry
+          git checkout -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git diff --check
+
+      - name: Commit operational closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "prompt.registry: add operational checkpoint and qualification"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

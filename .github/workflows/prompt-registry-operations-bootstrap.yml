@@ -1,0 +1,103 @@
+name: Prompt registry operational closure bootstrap
+
+# Apply the reviewed source patch quickly; exact-head and synthetic-merge
+# qualification remain separate hard gates and retain all Rust validation.
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths:
+      - "scripts/apply-prompt-registry-operations.py"
+      - ".github/workflows/prompt-registry-operations-bootstrap.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-registry-operations-bootstrap-current
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact bootstrap source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Normalize reviewed bootstrap source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/apply-prompt-registry-operations.py")
+          text = path.read_text(encoding="utf-8")
+          replacements = {
+              "use std::fs::OpenOptions;\n": "#[cfg(unix)]\nuse std::fs::OpenOptions;\n",
+              "use std::io::Write;\n": "#[cfg(unix)]\nuse std::io::Write;\n",
+              "use std::path::Path;\nuse std::time::Instant;\n": "use std::path::Path;\n#[cfg(unix)]\nuse std::time::Instant;\n",
+              "use std::time::SystemTime;\n": "#[cfg(unix)]\nuse std::time::SystemTime;\n",
+              "use std::time::UNIX_EPOCH;\n": "#[cfg(unix)]\nuse std::time::UNIX_EPOCH;\n",
+              "use super::prepare_directory;\n": "#[cfg(unix)]\nuse super::prepare_directory;\n",
+              '"codex-rs/hepta-prompt-registry/src/durable.rs::tests",': '"codex-rs/hepta-prompt-registry/src/durable.rs",',
+              '"codex-rs/hepta-prompt-registry/src/durable_maintenance.rs::tests",': '"codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",',
+              '"codex-rs/hepta-prompt-registry/src/lib_tests.rs::final_use"': '"codex-rs/hepta-prompt-registry/src/lib_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/lib_tests.rs::relation"': '"codex-rs/hepta-prompt-registry/src/lib_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/lib_tests.rs::admission"': '"codex-rs/hepta-prompt-registry/src/lib_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::delivery"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::compatible"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
+              '"codex-rs/hepta-prompt-registry/src/v2_tests.rs::dereference"': '"codex-rs/hepta-prompt-registry/src/v2_tests.rs"',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f"missing reviewed bootstrap anchor: {old!r}")
+              text = text.replace(old, new)
+          path.write_text(text, encoding="utf-8")
+          compile(text, str(path), "exec")
+          PY
+
+      - name: Apply bounded operational closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply-prompt-registry-operations.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          generator = Path("scripts/hepta-prompt-registry-map.py")
+          compile(generator.read_text(encoding="utf-8"), str(generator), "exec")
+          profile = json.loads(
+              Path("qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json")
+              .read_text(encoding="utf-8")
+          )
+          row = next(item for item in profile["modules"] if item.get("module") == "prompt.registry")
+          if row.get("productTestsExecuted") is not False or row.get("deploymentQualified") is not False:
+              raise SystemExit("operational bootstrap must not assert product qualification")
+          PY
+          git diff --check
+
+      - name: Commit unqualified operational source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "prompt.registry: add operational checkpoint and qualification"
+          git fetch --no-tags origin "+refs/heads/${GITHUB_REF_NAME}:refs/remotes/origin/${GITHUB_REF_NAME}"
+          test "$(git rev-parse "refs/remotes/origin/${GITHUB_REF_NAME}")" = "${GITHUB_SHA}"
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"

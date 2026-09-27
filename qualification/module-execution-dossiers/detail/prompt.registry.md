@@ -1,52 +1,146 @@
-# prompt.registry: implementation design
+# prompt.registry: implementation and qualification dossier
 
-Parent: `docs/modules/prompt.registry/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: factor lifecycle and exact-model V2 realization lookup implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Parent: `docs/modules/prompt.registry/TECHNICAL.md`. Qualification lane:
+`prompt.registry` exact-head plus deterministic base-merge. Common execution
+semantics remain governed by `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
 
-## 1. Source and work envelope
+## 1. Claim boundary
 
-Roots: `codex-rs/hepta-prompt-registry`.
-Packages: `PIM-0-PROMPT-INTERVENTION-CONTRACTS`, `PIM-1-PROMPT-FACTOR-REGISTRY`.
+The current remediation candidate distinguishes five independent states:
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+| State | Value |
+| --- | --- |
+| source implemented | true |
+| source composed | true |
+| product activated | false |
+| independently accepted | false |
+| released | false |
 
-## 2. Public operations and contract details
+Source implementation and source composition do not grant deployment,
+external-effect, merge, acceptance or release authority. `productionReady` is
+false until current exact-head and base-merge qualification receipts are green
+and protected postmerge checks pass.
 
-`admit_factor(factor, reviewed_scope) -> FactorRevision`; `register_realization(factor_revision, model_profile, payload_digest) -> RealizationRevision`; `revoke_factor(id, reason, cutoff) -> LifecycleReceipt`; `read_compatible(snapshot, model_tuple, context_profile) -> FactorSet`. Factor semantics and model-specific realization text are separate identities. External content must undergo governed admission before becoming an instruction factor.
+## 2. Source and work envelope
 
-## 3. State records and transaction design
+Primary roots:
 
-`prompt_factor_registry` stores semantic factor ID, supported task classes, provenance and revision. `prompt_realization_registry` binds model/version/tokenizer/template/tool schema, locale, role, payload digest, token cost and expiry. `prompt_factor_lifecycle` stores proposed/admitted/revoked/retired transitions and supersession. Registry append and lifecycle publication are atomic for one owner revision; optimizer access is read-only.
+- `codex-rs/hepta-prompt-registry`
+- `codex-rs/hepta-prompt-optimizer`
+- Agentd prompt owner/runtime/final-use integration
+- `codex-rs/hepta-intelligence/src/prompt_delivery.rs`
+- `docs/modules/prompt.registry`
 
-## 4. Deterministic algorithm and scheduling
+The registry remains the authoritative prompt-factor owner. The optimizer is a
+read-only consumer. Agentd owns product composition and dispatch-time final-use
+fencing. No parallel authority or execution spine is introduced.
 
-Validate source trust and owner authorization; dedupe semantic factors without merging incompatible realizations; validate model/template compatibility and payload bounds; append immutable revisions; publish lifecycle. Readers freeze one registry generation and reject expired or revoked realizations at delivery revalidation. No registry insertion automatically selects a factor in a running request.
+## 3. Public operations and contract
 
-## 5. Capacity and performance profile
+The implemented contract separates semantic factor identity from
+model-specific realization identity. It includes governed factor registration
+and admission, relation registration, realization plus payload publication,
+retirement and terminal revocation, exact-model compatible enumeration,
+payload dereference and dispatch-time final-use validation.
 
-Pilot candidate read <=128 factors, realization payload <=64 KiB subject to model-context limits, support references <=64 per factor. Count tokenizer cost under the exact selected tokenizer rather than character length. Measure lookup, lifecycle propagation and model-version fanout.
+Model compatibility binds the complete model tuple, including model/version,
+tokenizer, template, tool schema, context profile and locale. Consumer
+capabilities filter unsupported roles before staging. Registry insertion does
+not automatically select or activate a factor in a running request.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+## 4. State, storage and recovery
 
-## 6. Concrete verification cases
+`DurablePromptRegistry` owns one bounded in-process image under an exclusive
+state-directory lock. The strict V4 semantic image durably includes factors,
+realizations, bindings, payload references, relations, supersession and
+lifecycle events. V1, V2, V3 and the transitional outer-V4/inner-V2 layout are
+migrated forward to strict V4; a validated strict-V4 reopen is read-only apart
+from trimming an unselected payload tail.
 
-- PREG-01: same factor with incompatible tokenizer/template is not delivered by implicit fallback.
-- PREG-02: untrusted page text cannot self-register as system instruction.
-- PREG-03: revocation between optimization and delivery invalidates the selected realization.
-- PREG-04: duplicate revision semantics are idempotent; changed payload under the same identity conflicts.
+New payload extents are synchronized before metadata publication. Metadata is
+written to a temporary file, synchronized, renamed and followed by directory
+synchronization. Failure after rename is treated as indeterminate durability:
+the writer is poisoned and must be reopened and reconciled instead of silently
+retrying over an outcome that may already be durable.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Revocation is terminal in the registry image. Frozen snapshots, payload
+dereference and final-use validation all re-check lifecycle state; the Agentd
+runtime carries a bounded final-use lease from staging to dispatch recording.
+That source-level fence is not, by itself, evidence that a deployed provider
+adapter has been activated or independently accepted.
 
-## 7. Integration, rollback and capability ceiling
+## 5. Capacity and performance contract
 
-KG holds rebuildable factor interactions; learning.ledger owns causal exposure/outcome, not this registry. Rollback may choose a compatible non-revoked predecessor, but never restore an old lifecycle snapshot before a revocation.
+The current canonical bounds include the registry record limit and a 64 KiB
+maximum realization payload. Storage remains bounded by the payload extent
+limit and metadata-size limit. These are safety ceilings, not scale evidence.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Payload-generation compaction/GC, unified logical-record/payload/byte quota,
+operational metrics, online consistent export/restore verification and
+1k/8k/16k measurements remain qualification work. No WAL, Merkle or incremental
+digest design is justified until those measurements exist.
 
-## 8. Current native implementation
+## 6. Required verification
 
-- **Implemented entrypoints:** `PromptRegistry` in [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs); `register_realization_v2` in [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs); `read_compatible_v2` in [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs). Factor lifecycle and exact-model V2 realization lookup implemented.
-- **State and recovery:** The registry uses bounded in-memory factor/realization maps with revision and terminal revocation cascade. V2 lookup checks the exact model tuple, active realization, expiry and required factors; snapshots bind content but do not add durable storage.
-- **Source tests:** [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs), [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/prompt.registry/TECHNICAL.md](../../../docs/modules/prompt.registry/TECHNICAL.md).
-- **Remaining work:** Connect authenticated admission/current revocation and durable owner publication/reopen; digest-only realizations do not prove that a model received their actual instructions.
+The module-specific workflow must execute both current source-head and a
+deterministic synthetic merge against the bound base. Each lane must prove:
+
+- formatting without source mutation;
+- registry unit and durable-recovery tests;
+- optimizer relation/capability integration tests;
+- Agentd prompt pipeline and final-use tests;
+- strict Clippy for owned packages;
+- Cargo closed-world source-graph validation;
+- protocol/schema and implementation-map validation.
+
+The emitted receipt binds run ID and attempt, lane, source/base/tested SHA,
+tested tree and owned source blob digests. Queued, skipped, cancelled,
+historical or unrelated results are not passes.
+
+Required product scenario:
+
+```text
+bootstrap
+→ authenticated factor registration/admission
+→ realization and payload publication
+→ candidate enumeration
+→ optimization
+→ compile and stage
+→ revoke before dispatch
+→ dispatch must fail closed
+→ restart
+→ revocation and failure remain effective
+```
+
+## 7. Current native implementation
+
+Implemented source includes:
+
+- core factor, realization, relation, lifecycle and snapshot semantics;
+- strict durable V4 relation persistence and legacy migration;
+- authenticated factor/realization/relation publication paths;
+- exact-model and consumer-capability compatible enumeration;
+- payload-digest verification and bounded dereference;
+- Agentd prompt owner/runtime composition;
+- dispatch-time final-use lease and durable final-use records;
+- included optimizer relation graph tests rather than an orphan source file.
+
+The machine-generated implementation map and qualification receipts, not this
+narrative, are authoritative for exact source identities and executed tests.
+
+## 8. Remaining work and non-claims
+
+Before any production-ready statement:
+
+1. make both exact-head and base-merge module qualification lanes green;
+2. commit the exact generated implementation map for the qualified candidate;
+3. complete the end-to-end revoke-before-dispatch and restart scenario;
+4. implement and qualify payload checkpoint/compaction/GC and unified quotas;
+5. add capacity/fsync metrics, consistent export/restore verification and the
+   named crash-injection matrix;
+6. run 1k/8k/16k measurements and record the decision on WAL/incremental
+   digest work;
+7. obtain independent product activation, acceptance and release decisions.
+
+No source change in this dossier self-accepts, self-merges, self-deploys or
+self-releases the module.

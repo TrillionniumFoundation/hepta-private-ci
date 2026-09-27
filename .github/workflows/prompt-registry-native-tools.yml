@@ -1,0 +1,74 @@
+name: Prompt registry fast source check
+
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths:
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - ".github/workflows/prompt-registry-native-tools.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prompt-registry-fast-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast-check:
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Install native compiler prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v sudo >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y build-essential pkg-config libssl-dev
+          else
+            apt-get update
+            apt-get install -y build-essential pkg-config libssl-dev
+          fi
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Check prompt-owned formatting
+        working-directory: codex-rs
+        run: |
+          cargo fmt --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer -- --check
+
+      - name: Compile registry and optimizer tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked --no-run \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer
+
+      - name: Run registry and optimizer tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -- --nocapture --test-threads=1
+
+      - name: Strict Clippy for registry and optimizer
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            --all-targets --no-deps -- -D warnings
