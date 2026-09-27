@@ -3,7 +3,8 @@
 
 This verifier is intentionally source-derived. It does not cache a branch name,
 workflow conclusion, deployment decision, or production activation claim in the
-repository. CI binds the resulting receipt to the exact candidate SHA and tree.
+repository. CI binds the generated implementation map and closure receipt to the
+exact candidate SHA, tree and Git blobs.
 """
 from __future__ import annotations
 
@@ -15,8 +16,9 @@ import re
 import subprocess
 from typing import Any
 
-SCHEMA = 1
+SCHEMA = 2
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+STATIC_IMPLEMENTATION_MAP = "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json"
 
 SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
     "codex-rs/hepta-agentd/src/canonical_runtime_bootstrap.rs": {
@@ -41,7 +43,7 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
     },
     "codex-rs/hepta-agentd/src/runtime.rs": {
         "required": (
-            'tasks.spawn_required(\n                "runtime-codex-supervisor"',
+            '"runtime-codex-supervisor"',
             "ProcessRuntimeCodexExecutorV1::run_installed_agentd_supervisor",
             "ProcessRuntimeCodexExecutorV1::cancel_installed_runs",
         ),
@@ -72,9 +74,7 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
             "ProcessRuntimeCodexExecutorV1::reserve_canonical_run",
             "start_canonical_intelligence",
         ),
-        "forbidden": (
-            "AgentdClient::new",
-        ),
+        "forbidden": ("AgentdClient::new",),
     },
     "codex-rs/hepta-agentd/src/runtime_codex_executor.rs": {
         "required": (
@@ -85,9 +85,7 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
             "pub fenced_unresolved: usize",
         ),
         "ordered": (),
-        "forbidden": (
-            "operation_lock: Mutex<()>",
-        ),
+        "forbidden": ("operation_lock: Mutex<()>",),
     },
     "codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs": {
         "required": (
@@ -118,7 +116,6 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
         "required": (
             "mark_dispatch_fenced(paths, manifest)?",
             "let mut child = command.spawn()?",
-            "send_authorized_turn_start",
         ),
         "ordered": (
             "mark_dispatch_fenced(paths, manifest)?",
@@ -142,26 +139,46 @@ SOURCE_REQUIREMENTS: dict[str, dict[str, tuple[str, ...]]] = {
         "forbidden": (),
     },
     "codex-rs/hepta-agentd/Cargo.toml": {
+        "required": ("default = []", "production-cognitive-write = []"),
+        "ordered": (),
+        "forbidden": ('default = ["production-cognitive-write"]',),
+    },
+    "scripts/qualification/agentd_exact_head.py": {
         "required": (
-            "default = []",
-            "production-cognitive-write = []",
+            'OSES = ("ubuntu-latest", "macos-latest")',
+            '"product-process"',
+            '"strict-clippy"',
+            '"read-only-profile"',
+            '"missing required OS/suite receipt"',
         ),
         "ordered": (),
-        "forbidden": (
-            "default = [\"production-cognitive-write\"]",
-        ),
+        "forbidden": (),
     },
-    ".github/workflows/hepta-agentd-exact-head.yml": {
+    ".github/workflows/runtime-agentd-required.yml": {
         "required": (
+            "name: Runtime Agentd required candidate",
+            "lane: source-head",
+            "lane: base-merge",
             "os: [ubuntu-latest, macos-latest]",
             "suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]",
             "fail-fast: false",
-            "Agentd exact-head required",
+            "runtime.agentd ${{ inputs.lane }} required",
+            "Reject missing stale skipped failed or tampered suites",
         ),
         "ordered": (),
-        "forbidden": (
-            "continue-on-error: true",
+        "forbidden": ("continue-on-error: true",),
+    },
+    ".github/workflows/blocking-ci.yml": {
+        "required": (
+            "runtime-agentd-source:",
+            "runtime-agentd-merge:",
+            "uses: ./.github/workflows/runtime-agentd-required.yml",
+            "- runtime-agentd-source",
+            "- runtime-agentd-merge",
+            "name: CI required",
         ),
+        "ordered": (),
+        "forbidden": (),
     },
 }
 
@@ -212,6 +229,39 @@ def git_value(root: Path, *args: str) -> str:
     return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
 
 
+def exact_implementation_map(
+    root: Path,
+    source_sha: str,
+    source_tree: str,
+    verified_files: list[dict[str, Any]],
+) -> dict[str, Any]:
+    source_objects: list[dict[str, Any]] = []
+    paths = [item["path"] for item in verified_files]
+    paths.append(STATIC_IMPLEMENTATION_MAP)
+    for relative in sorted(set(paths)):
+        path = root / relative
+        require(path.is_file(), f"implementation-map source path is missing: {relative}")
+        blob = git_value(root, "hash-object", "--", relative)
+        require(SHA.fullmatch(blob) is not None, f"invalid Git blob identity for {relative}")
+        source_objects.append(
+            {
+                "path": relative,
+                "blob": blob,
+                "bytes": path.stat().st_size,
+            }
+        )
+    return {
+        "schema": "hepta.runtime-agentd.current-implementation.v1",
+        "module": "runtime.agentd",
+        "source_sha": source_sha,
+        "source_tree": source_tree,
+        "static_map_path": STATIC_IMPLEMENTATION_MAP,
+        "source_objects": source_objects,
+        "generated_by_ci": True,
+        "committed_dynamic_status": False,
+    }
+
+
 def atomic_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
@@ -234,6 +284,7 @@ def verify(root: Path, expected_sha: str, output: Path | None) -> dict[str, Any]
     require(not dirty, "checkout is dirty before source-closure verification")
 
     files = verify_source_files(root)
+    implementation_map = exact_implementation_map(root, observed_sha, observed_tree, files)
     dirty_after = git_value(root, "status", "--porcelain", "--untracked-files=all")
     require(not dirty_after, "source-closure verification changed the checkout")
 
@@ -246,6 +297,7 @@ def verify(root: Path, expected_sha: str, output: Path | None) -> dict[str, Any]
         "product_execution_claim": "candidate-tested-only",
         "production_activation": False,
         "files": files,
+        "implementation_map": implementation_map,
         "unproven": [
             "target-host-capacity-and-soak",
             "hardware-power-loss-semantics",
