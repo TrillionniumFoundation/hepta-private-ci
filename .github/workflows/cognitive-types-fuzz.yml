@@ -1,0 +1,112 @@
+name: cognitive-types-fuzz
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-cognitive-types/src/**"
+      - "codex-rs/hepta-cognitive-types/fuzz/**"
+      - ".github/workflows/cognitive-types-fuzz.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-cognitive-types/src/**"
+      - "codex-rs/hepta-cognitive-types/fuzz/**"
+      - ".github/workflows/cognitive-types-fuzz.yml"
+  schedule:
+    - cron: "43 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-types-fuzz-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_TERM_COLOR: always
+
+jobs:
+  bounded-pr-fuzz:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install pinned nightly with sanitizer support
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: nightly-2026-09-20
+
+      - name: Install cargo-fuzz 0.13.2
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-fuzz@0.13.2
+
+      - name: Run bounded decoder fuzz session
+        working-directory: codex-rs/hepta-cognitive-types
+        run: >-
+          cargo +nightly-2026-09-20 fuzz run decode_contracts --
+          -max_total_time=180
+          -timeout=10
+          -rss_limit_mb=4096
+          -max_len=1049600
+          -print_final_stats=1
+
+      - name: Archive corpus and crashes
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-fuzz-${{ github.sha }}
+          path: |
+            codex-rs/hepta-cognitive-types/fuzz/corpus/decode_contracts
+            codex-rs/hepta-cognitive-types/fuzz/artifacts/decode_contracts
+          if-no-files-found: warn
+          retention-days: 14
+
+  scheduled-fuzz:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install pinned nightly with sanitizer support
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: nightly-2026-09-20
+
+      - name: Install cargo-fuzz 0.13.2
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-fuzz@0.13.2
+
+      - name: Run sustained decoder fuzz session
+        working-directory: codex-rs/hepta-cognitive-types
+        run: >-
+          cargo +nightly-2026-09-20 fuzz run decode_contracts --
+          -max_total_time=1800
+          -timeout=10
+          -rss_limit_mb=4096
+          -max_len=1049600
+          -print_final_stats=1
+
+      - name: Archive corpus and crashes
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: cognitive-types-fuzz-${{ github.sha }}
+          path: |
+            codex-rs/hepta-cognitive-types/fuzz/corpus/decode_contracts
+            codex-rs/hepta-cognitive-types/fuzz/artifacts/decode_contracts
+          if-no-files-found: warn
+          retention-days: 30
