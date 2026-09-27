@@ -11,3 +11,7 @@ include!("native_control_v2_control_b.rs");
 include!("native_control_v2_control_c.rs");
 include!("native_control_v2_journal.rs");
 include!("native_control_v2_helpers.rs");
+
+#[cfg(test)]
+#[path = "native_control_v2_tests.rs"]
+mod v2_tests;
