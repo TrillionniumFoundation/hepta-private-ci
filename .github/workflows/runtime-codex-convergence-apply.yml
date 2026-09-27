@@ -1,0 +1,46 @@
+name: runtime.codex convergence apply
+
+on:
+  push:
+    branches:
+      - runtime-codex/convergence-v1
+    paths:
+      - scripts/runtime-codex-converge.py
+      - .github/workflows/runtime-codex-convergence-apply.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-convergence-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: runtime-codex/convergence-v1
+      - name: Apply idempotent source migration
+        run: python3 scripts/runtime-codex-converge.py
+      - name: Format changed Rust sources
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Commit converged source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'No convergence changes remain.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          git commit -m 'runtime.codex: close cross-owner pre-effect abort protocol'
+          git push origin HEAD:runtime-codex/convergence-v1
