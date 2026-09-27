@@ -15,7 +15,7 @@ concurrency:
 jobs:
   apply-and-verify:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
       - name: Checkout exact bootstrap candidate
@@ -44,7 +44,7 @@ jobs:
       - name: Resolve verified sandboxed V8 artifacts
         uses: ./.github/actions/setup-rusty-v8
         with:
-          target: aarch64-unknown-linux-gnu
+          target: x86_64-unknown-linux-gnu
 
       - name: Apply closed-world runtime.codex convergence patch
         id: apply
