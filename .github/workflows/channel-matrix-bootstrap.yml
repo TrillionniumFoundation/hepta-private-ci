@@ -49,7 +49,7 @@ jobs:
           status=0
           (
             cd codex-rs
-            cargo check \
+            cargo check --locked \
               -p codex-hepta-matrix-protocol \
               -p codex-hepta-matrix-store \
               -p codex-hepta-matrix-sdk \
@@ -57,10 +57,14 @@ jobs:
           ) >"$out/cargo-check.log" 2>&1 || status=$?
           cp codex-rs/Cargo.lock "$out/Cargo.lock"
           git diff -- codex-rs/Cargo.lock > "$out/Cargo.lock.patch"
+          if ! cmp -s "$out/Cargo.lock.before" "$out/Cargo.lock"; then
+            echo "Cargo.lock changed during locked validation" >>"$out/cargo-check.log"
+            status=1
+          fi
           if [ "$status" -eq 0 ]; then
             (
               cd codex-rs
-              cargo test --no-fail-fast \
+              cargo test --locked --no-fail-fast \
                 -p codex-hepta-matrix-protocol \
                 -p codex-hepta-matrix-store \
                 -p codex-hepta-matrix-sdk \
@@ -75,6 +79,10 @@ jobs:
           ) >"$out/cargo-fmt.log" 2>&1 || status=$?
           python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' \
             >"$out/python-tests.log" 2>&1 || status=$?
+          if ! git diff --quiet -- codex-rs/Cargo.lock; then
+            echo "candidate lockfile drifted during validation" >>"$out/cargo-check.log"
+            status=1
+          fi
           printf '%s\n' "$status" > "$out/check-status.txt"
           exit 0
 
