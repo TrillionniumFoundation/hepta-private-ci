@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Retain candidate observations, never infer qualification from source presence.
+"""Retain exact-candidate observations; never infer qualification from source presence.
 
-Write outside the source tree: a commit cannot contain its own SHA. These are
-repository CI observations, not independent acceptance or production authority.
+Write to an artifact directory, not the source tree (a commit cannot contain its
+own SHA). These are repository CI observations, not independent acceptance.
 """
 from __future__ import annotations
 
@@ -17,12 +17,14 @@ import xml.etree.ElementTree as ET
 
 REQUIRED = (
     "candidate", "setup", "format", "infer_core", "worker", "agentd",
-    "binary", "all_targets", "clippy", "clean_tree",
+    "binary", "binary_smoke", "experimental", "all_targets", "clippy", "clean_tree",
 )
 RESULTS = {"success", "failure", "cancelled", "skipped", "not_run"}
 
 
 def summarize(outcomes: dict) -> tuple[dict, bool]:
+    if not isinstance(outcomes, dict):
+        outcomes = {}
     normalized = {}
     for name in REQUIRED:
         entry = outcomes.get(name, {})
@@ -38,10 +40,18 @@ def read_junit(directory: Path) -> tuple[dict, bool]:
         item = {"status": "missing", "tests": 0, "failures": 0, "skipped": 0}
         if path.is_file():
             try:
-                raw = path.read_bytes()
+                with path.open("rb") as stream:
+                    raw = stream.read(32 * 1024 * 1024 + 1)
                 if len(raw) > 32 * 1024 * 1024:
                     raise ValueError("JUnit receipt exceeds 32 MiB")
                 root = ET.fromstring(raw)
+                for suite in (root, *root.iter("testsuite")):
+                    for field in ("failures", "errors", "skipped"):
+                        declared = int(suite.get(field, "0"))
+                        if declared < 0:
+                            raise ValueError("negative JUnit counter")
+                        if declared > 0:
+                            raise ValueError("JUnit declares non-passing cases")
                 cases = list(root.iter("testcase"))
                 item = {
                     "status": "observed",
@@ -93,8 +103,9 @@ def main() -> int:
     else:
         identity_ok = tested_tree == git(root, "merge-tree", "--write-tree", base, source)
     tracked_clean = not git(root, "status", "--porcelain", "--untracked-files=no")
+    blob_rows = git(root, "ls-tree", "-r", source).splitlines()
     blobs = {}
-    for row in git(root, "ls-tree", "-r", source).splitlines():
+    for row in blob_rows:
         metadata, path = row.split("\t", 1)
         mode, kind, sha = metadata.split()
         if kind == "blob":
@@ -124,7 +135,9 @@ def main() -> int:
         "linux_result": result if platform == "Linux" else "not_observed",
         "macos_result": result if platform == "macOS" else "not_observed",
         "lib_test_result": {name: outcomes[name] for name in ("infer_core", "worker", "agentd")},
-        "binary_test_result": "not_run",
+        "binary_test_result": outcomes["binary_smoke"],
+        "binary_test_scope": "CLI help/argument/deny-path smoke only; not provider execution",
+        "experimental_feature_result": outcomes["experimental"],
         "binary_compile_result": outcomes["binary"],
         "all_target_check_result": outcomes["all_targets"],
         "clippy_result": outcomes["clippy"],

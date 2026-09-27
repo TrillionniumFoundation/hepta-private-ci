@@ -8,6 +8,7 @@ on:
       - 'codex-rs/Cargo.*'
       - 'codex-rs/.config/nextest.toml'
       - 'codex-rs/rust-toolchain.toml'
+      - 'codex-rs/rustfmt.toml'
       - 'docs/modules/inference.*/**'
       - 'docs/readiness/LANE_B_NATIVE_HOST.md'
       - 'qualification/module-execution-dossiers/**'
@@ -44,7 +45,7 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/inference-source-identity.txt"
           git archive --format=tar.gz --output="$RUNNER_TEMP/inference-source.tar.gz" HEAD
-      - name: Test fail-closed receipt generation
+      - name: Test fail-closed receipt generation and Git identity binding
         run: python3 -m unittest -v scripts.test_hepta_inference_status
       - name: Check derived projections without mutation
         if: ${{ !cancelled() }}
@@ -117,11 +118,21 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_workspace.py
           python3 scripts/hepta_ci_v8.py
-      - name: Check owner formatting
+      - name: Check owner formatting without changing source
         id: format
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd -- --check
+        run: |
+          set -o pipefail
+          cargo fmt -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd -- --check 2>&1 | tee "$RUNNER_TEMP/inference-evidence/rustfmt.log"
+      - name: Retain early formatting diagnosis
+        if: ${{ !cancelled() && steps.format.outcome == 'failure' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-format-${{ matrix.os }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/inference-evidence/rustfmt.log
+          retention-days: 3
+          if-no-files-found: error
       - name: Test inference.control library independently
         id: infer_core
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
@@ -152,6 +163,14 @@ jobs:
           rm -f target/nextest/local/junit.xml
           trap 'if test -f target/nextest/local/junit.xml; then cp target/nextest/local/junit.xml "$RUNNER_TEMP/inference-evidence/agentd.xml"; fi' EXIT
           just test --locked --lib -p codex-hepta-agentd --retries 0 --test-threads=1 2>&1 | tee "$RUNNER_TEMP/inference-evidence/agentd.log"
+      - name: Retain owner diagnostics before later build stages
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-libraries-${{ matrix.os }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/inference-evidence/
+          retention-days: 3
+          if-no-files-found: error
       - name: Compile all owner binaries
         id: binary
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
@@ -159,20 +178,52 @@ jobs:
         run: |
           set -o pipefail
           cargo build --locked --bins -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/inference-evidence/binary.log"
-      - name: Check all owner targets
+      - name: Exercise CLI help and denied admission as actual binary smoke tests
+        id: binary_smoke
+        if: ${{ !cancelled() && steps.binary.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          binary=target/debug/hepta-infer-worker
+          "$binary" --help > "$RUNNER_TEMP/inference-evidence/cli-help.txt"
+          grep -q -- '--reconcile-only' "$RUNNER_TEMP/inference-evidence/cli-help.txt"
+          if "$binary" --profile unsupported </dev/null > /dev/null 2> "$RUNNER_TEMP/inference-evidence/cli-invalid-profile.txt"; then
+            echo 'invalid profile was accepted' >&2
+            exit 1
+          fi
+          grep -q 'unsupported worker profile' "$RUNNER_TEMP/inference-evidence/cli-invalid-profile.txt"
+          if "$binary" --reconcile-only </dev/null > /dev/null 2> "$RUNNER_TEMP/inference-evidence/cli-explicit-profile.txt"; then
+            echo 'reconcile-only bypassed explicit profile selection' >&2
+            exit 1
+          fi
+          grep -q 'must be selected explicitly' "$RUNNER_TEMP/inference-evidence/cli-explicit-profile.txt"
+          if "$binary" --profile native-app-server </dev/null > /dev/null 2> "$RUNNER_TEMP/inference-evidence/cli-authority-required.txt"; then
+            echo 'missing authority configuration was accepted' >&2
+            exit 1
+          fi
+          grep -q -- '--final-use-authority-config is required' "$RUNNER_TEMP/inference-evidence/cli-authority-required.txt"
+      - name: Check default all-owner targets
         id: all_targets
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -o pipefail
           cargo check --locked --all-targets -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/inference-evidence/all-targets.log"
-      - name: Strict Clippy for all owners
-        id: clippy
+      - name: Check explicit experimental-local feature separately
+        id: experimental
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         working-directory: codex-rs
         run: |
           set -o pipefail
+          cargo check --locked --all-targets -p codex-hepta-infer-worker-host --features experimental-local-model 2>&1 | tee "$RUNNER_TEMP/inference-evidence/experimental.log"
+      - name: Strict Clippy for default owners and explicit local feature
+        id: clippy
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
           cargo clippy --locked --all-targets --no-deps -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd -- -D warnings 2>&1 | tee "$RUNNER_TEMP/inference-evidence/clippy.log"
+          cargo clippy --locked --all-targets --no-deps -p codex-hepta-infer-worker-host --features experimental-local-model -- -D warnings 2>&1 | tee "$RUNNER_TEMP/inference-evidence/clippy-experimental.log"
       - name: Require unchanged candidate
         id: clean_tree
         if: ${{ always() }}
