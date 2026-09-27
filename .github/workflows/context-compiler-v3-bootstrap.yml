@@ -3,14 +3,14 @@ name: context-compiler-v3-bootstrap
 on:
   push:
     branches:
-      - context-compiler-v2-product-closure
+      - codex/context-compiler-v3-materialized-20260927
 
 permissions:
   contents: write
 
 concurrency:
-  group: context-compiler-v3-bootstrap
-  cancel-in-progress: true
+  group: context-compiler-v3-materialized-20260927
+  cancel-in-progress: false
 
 jobs:
   apply-and-verify:
