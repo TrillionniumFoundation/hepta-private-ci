@@ -13,7 +13,8 @@ OUT="$3"
 TOOLCHAIN="${PLATFORM_TYPES_RUSTDOC_TOOLCHAIN:-${PLATFORM_TYPES_MIRI:-nightly-2026-09-20}}"
 MANIFEST="$ROOT/codex-rs/Cargo.toml"
 PACKAGE="codex-hepta-types"
-BASE_WORKTREE="$OUT/base-worktree"
+TEMP_ROOT="$(mktemp -d)"
+BASE_WORKTREE="$TEMP_ROOT/base"
 
 cd "$ROOT"
 test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
@@ -23,6 +24,7 @@ mkdir -p "$OUT"
 
 cleanup() {
   git worktree remove --force "$BASE_WORKTREE" >/dev/null 2>&1 || true
+  rm -rf "$TEMP_ROOT"
 }
 trap cleanup EXIT
 

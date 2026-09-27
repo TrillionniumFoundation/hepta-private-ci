@@ -49,8 +49,7 @@ class _Normalizer:
         self.document = document
         self.index: dict[str, Any] = index
         self.paths: dict[str, Any] = paths
-        self.root = str(root)
-        root_item = index[self.root]
+        root_item = index[root]
         if not isinstance(root_item, dict) or not isinstance(root_item.get("crate_id"), int):
             raise RustdocApiError("rustdoc root has no crate_id")
         self.crate_id = root_item["crate_id"]
@@ -59,7 +58,11 @@ class _Normalizer:
             if not isinstance(row, dict) or row.get("crate_id") != self.crate_id:
                 continue
             path = row.get("path")
-            if isinstance(path, list) and path and all(isinstance(part, str) for part in path):
+            if (
+                isinstance(path, list)
+                and len(path) > 1
+                and all(isinstance(part, str) for part in path)
+            ):
                 self.public_paths[str(item_id)] = "::".join(path)
         self.memo: dict[str, Any] = {}
         self.visiting: set[str] = set()
