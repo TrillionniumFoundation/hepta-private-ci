@@ -4,11 +4,17 @@ on:
   pull_request:
     paths:
       - 'codex-rs/hepta-infer-worker-host/python/**'
+      - 'codex-rs/hepta-infer-worker-host/src/semantic*.rs'
+      - 'codex-rs/hepta-infer-worker-host/src/model_worker.rs'
+      - 'codex-rs/hepta-infer-core/src/semantic*.rs'
       - '.github/workflows/hepta-laya-smoke.yml'
   push:
     branches: [main]
     paths:
       - 'codex-rs/hepta-infer-worker-host/python/**'
+      - 'codex-rs/hepta-infer-worker-host/src/semantic*.rs'
+      - 'codex-rs/hepta-infer-worker-host/src/model_worker.rs'
+      - 'codex-rs/hepta-infer-core/src/semantic*.rs'
       - '.github/workflows/hepta-laya-smoke.yml'
   workflow_dispatch:
 
@@ -119,3 +125,48 @@ jobs:
             ${{ runner.temp }}/laya-smoke/*.json
           if-no-files-found: error
           retention-days: 14
+
+  native-format:
+    name: Native bridge formatting diagnosis
+    runs-on: macos-15
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Format a disposable diagnostic copy, never the reviewed checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/bridge-format/copy"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/bridge-format/identity.txt"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/bridge-format/copy"
+          cd "$RUNNER_TEMP/bridge-format/copy/codex-rs"
+          rustfmt --version > "$RUNNER_TEMP/bridge-format/tool.txt"
+          cargo fmt -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+          tar -czf "$RUNNER_TEMP/bridge-format/formatted-components.tar.gz" hepta-infer-core hepta-infer-worker-host
+      - name: Check the actual candidate without mutation
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check 2>&1 | tee "$RUNNER_TEMP/bridge-format/check.log"
+      - name: Preserve reviewed source
+        if: ${{ always() }}
+        run: git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: bridge-format-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/bridge-format/identity.txt
+            ${{ runner.temp }}/bridge-format/tool.txt
+            ${{ runner.temp }}/bridge-format/check.log
+            ${{ runner.temp }}/bridge-format/formatted-components.tar.gz
+          if-no-files-found: error
+          retention-days: 3

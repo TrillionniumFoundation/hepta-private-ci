@@ -39,7 +39,7 @@
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
       "sourcePathExists": true,
-      "sourceBlob": "a9348ed531773ac78bc48538e40585ee659cbad2"
+      "sourceBlob": "6817fbbe4830c72e7351742bb09ab1b9ac4f1035"
     },
     {
       "designOperation": "run",
@@ -119,12 +119,44 @@
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
       "sourcePathExists": true,
-      "sourceBlob": "a9348ed531773ac78bc48538e40585ee659cbad2"
+      "sourceBlob": "6817fbbe4830c72e7351742bb09ab1b9ac4f1035"
+    },
+    {
+      "designOperation": "run_semantic_retrieval_durable",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-worker-host/src/semantic_worker.rs",
+        "symbol": "pub fn run_semantic_retrieval_durable(",
+        "buildTarget": "codex-hepta-infer-worker-host::model_worker"
+      },
+      "delegatedCallees": [
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-core/src/semantic_control.rs",
+          "symbol": "pub fn reserve_semantic_with_resources(",
+          "buildTarget": "codex-hepta-infer-core::durable_control::semantic",
+          "ownerModule": "inference.control"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/semantic_worker_tests.rs",
+          "kind": "durable_owner_with_counted_synthetic_driver",
+          "command": "just test --locked --lib -p codex-hepta-infer-worker-host --retries 0"
+        }
+      ],
+      "sourceSemantics": "Experimental feature only. Existing ResourceManager reserves workspace before driver entry; inference.control fsyncs the dispatch fence and complete result. Unknown/error/panic paths quarantine capacity. Historical lookup under a replacement worker neither loads nor invokes a model. Driver observations are injected, not device attestation or verified execution authority.",
+      "operation": "run_semantic_retrieval_durable",
+      "nativeSymbol": "pub fn run_semantic_retrieval_durable(",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/semantic_worker.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "24694ccd338f9840876aba1d66a4fc364be02d68"
     }
   ],
   "repositoryControlledGaps": [
     "Sealed kernel-verified local grant, manifest, immutable input and trusted deadline preparation is implemented in local_admission.rs. It is not connected to the synchronous compatibility worker and cannot enter a physical effect. Complete inference.control-owned dispatch proof, attested handle, real artifact descriptors and the async live-cancellation/deadline driver before local production execution.",
-    "Compose local exact operation identity, grant witness, physical handle dispatch, duplicate conflict and restart reconciliation through the existing inference.control owner; process-local accounting is not durable deduplication.",
+    "The experimental semantic profile now persists full operation/result and resource identity through inference.control and has source-level recovery tests. Complete the sealed verified-grant to physical driver handoff, OS-observed resource limits, real local model process and protected Neuron/Agentd consumer; there is no production composition claim.",
     "Implement/prove actual local weights, tokenizer, runtime, device and OS-observed aggregate memory enforcement before claiming isolated inference.",
     "Exact App Server thread-history reconciliation and a redacted no-effect diagnostic snapshot are implemented. Permanent missing-history resolution, authenticated later token-usage amendments, configurable acknowledgement grace and complete durable age/metrics remain open. Unknown usage and transport loss never imply zero usage or safe replay.",
     "Require successful final exact-head and merge-candidate qualification on Linux/macOS. Retained predecessor evidence has inference.control 29/29, Agentd 169/169 and worker 61/62 on a macOS merge candidate; the output repair has not yet been proved by that historical run. Global stale observations and non-ancestor implementation-map anchors remain repository-controlled blockers."
@@ -164,8 +196,8 @@
   "mappingSourceIdentityMode": "exact_blob",
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "cf7d43d460b5fb642f76a948f0eef34cd5754a67",
-    "tree": "66a14e83f7b9c8f5079e1c38b46fcadb3a34bff1"
+    "commit": "b8f14f42ce711ddd3a947be3e77e560849aab76d",
+    "tree": "c95a28b8b9e9e28ed2357132a5093e4209f46721"
   },
   "observedSourcePaths": [
     "codex-rs/.config/nextest.toml",
@@ -190,23 +222,51 @@
     },
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2334be7aa133e85dd836ba9eb317499528afe582"
+      "object": "881812f0a3660cdc678908fd5b2bbacc31442db4"
     },
     {
       "path": "codex-rs/hepta-infer-core",
-      "object": "ca880ac86066ad28cace3cbf8a1d192d8f22843b"
+      "object": "fe866187a198bc8aca2611cc632b4bb391cbd1c7"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control.rs",
       "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
     },
     {
+      "path": "codex-rs/hepta-infer-core/src/semantic_control.rs",
+      "object": "ee661270a929b60918d3d29d8a9f058f46172bee"
+    },
+    {
       "path": "codex-rs/hepta-infer-worker-host",
-      "object": "a29a6a67504ccbc6f3df7c2f93a85bfb287c1742"
+      "object": "4e4998bdf312bac39fa0e9c7284c0cfb0b1327de"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/SEMANTIC_RETRIEVAL.md",
+      "object": "ad317b4e6091b8a299214bf783e070c88e11d652"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/python/hepta_retrieval_wire.py",
+      "object": "fde892cb5d17e29a06da332dfe8ea18d33fb1875"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/python/laya_binary.py",
+      "object": "1904cf95ab05ea22c5d06f28c6cb85eb31438396"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/python/laya_smoke.py",
+      "object": "a85c222a4f78ed27a7c643b5bbe01ac2abfce0cc"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/python/test_hepta_retrieval_wire.py",
+      "object": "7867c4e642a3e04a21900f767491d425ce1bf24b"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/python/test_laya_binary.py",
+      "object": "fa61f87065c63c5c66f74dc542b29b57bb4f9dc0"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "object": "a9348ed531773ac78bc48538e40585ee659cbad2"
+      "object": "6817fbbe4830c72e7351742bb09ab1b9ac4f1035"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
@@ -235,6 +295,14 @@
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
       "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/semantic_worker.rs",
+      "object": "24694ccd338f9840876aba1d66a4fc364be02d68"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/semantic_worker_tests.rs",
+      "object": "f4570727ba2b60c6aacfbbfc7c4532b2e048cfad"
     },
     {
       "path": "docs/modules/inference.worker/TECHNICAL.md",
