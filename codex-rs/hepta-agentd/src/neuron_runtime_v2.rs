@@ -227,6 +227,9 @@ impl NeuronAdmissionGuard for BoundConfiguration<'_> {
     }
 }
 
+#[path = "neuron_artifact_admission_v2.rs"]
+mod artifact_admission;
+
 #[cfg(test)]
 #[path = "neuron_runtime_v2_tests.rs"]
 mod tests;
