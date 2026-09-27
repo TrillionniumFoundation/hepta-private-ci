@@ -158,7 +158,7 @@ root trees plus candidate SHA/tree are written into evidence. The old
 observation-base convention is not accepted as a substitute for exact blob
 identity.
 
-## 8. Qualification identities and receipts
+## 8. Qualification identities, review and receipts
 
 `source-head` and deterministic `synthetic-merge` are distinct candidate
 classes. Their receipts are non-interchangeable. Diagnostics are retained for
@@ -169,8 +169,16 @@ truth/catalog/consumer checks, provenance, rustdoc API compatibility, MSRV,
 native tests and lint, pinned Miri, bounded coverage-guided fuzz, and candidate
 document bundle generation.
 
-No receipt grants deployment, production activation, independent acceptance,
-promotion or release.
+Merge acceptance is a separate gate. The independent-review workflow requires
+a decisive `APPROVED` review bound to the exact current head SHA from a
+repository owner, member or collaborator who is neither the PR author nor an
+author or committer of any candidate commit. Stale approvals, bots, public
+outsiders, dismissed reviews and current changes-requested states fail closed.
+The retained review record is governance evidence, not a source qualification
+receipt.
+
+No receipt or review grants deployment, production activation, operator
+acceptance, promotion or release.
 
 ## 9. Reproduction
 
@@ -182,8 +190,10 @@ node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs
 python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py
 node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs
 bash scripts/run_platform_types_consumer_qualification.sh
+python3 scripts/test_platform_types_independent_review.py
 ```
 
 Any protocol field, semantic type, schema, validation rule, codec, public API or
 candidate identity change requires regenerated candidate evidence and both
-source-head and synthetic-merge qualification.
+source-head and synthetic-merge qualification. Any new candidate commit also
+invalidates a prior review approval for merge-gate purposes.
