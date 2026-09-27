@@ -1,0 +1,78 @@
+{
+  "authority": {
+    "deployment": false,
+    "merge": false,
+    "release": false,
+    "runtime": false
+  },
+  "externalGates": [
+    {
+      "gate": "independent current-head semantic review",
+      "state": "required_external"
+    },
+    {
+      "gate": "real distributed lease/fencing service and immutable audit publication",
+      "state": "required_external"
+    },
+    {
+      "gate": "role-separated HSM/KMS custody and external signature verification",
+      "state": "required_external"
+    },
+    {
+      "gate": "non-fixture CI completion and integration terminal observation",
+      "state": "required_external"
+    },
+    {
+      "gate": "authorized target deployment, canary, backup/restore and rollback rehearsal",
+      "state": "required_external"
+    },
+    {
+      "gate": "independently signed operator acceptance and later reviewed canonical production-state change",
+      "state": "required_external"
+    }
+  ],
+  "generatedFrom": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+  "implementation": {
+    "claimBoundary": {
+      "activation": false,
+      "implementedOperationMappingComplete": true,
+      "independentAcceptance": false,
+      "nativeSourceMappingComplete": true,
+      "productExecutionProved": false,
+      "productionImplementation": false,
+      "release": false,
+      "sourceRootPresent": true
+    },
+    "productCallerState": "repository_product_caller_dual_lane_and_post_merge_required_defined_external_acceptance_pending",
+    "productionImplementation": false,
+    "productionWriterState": "named_product_owner_composed_external_provider_activation_pending",
+    "sourceRootPresent": true
+  },
+  "module": "control.engineering",
+  "qualificationPolicy": {
+    "independentCurrentHeadApprovalRequired": true,
+    "mergeMethodForExactBlobChanges": "merge_commit",
+    "postMergeExactMainReceiptRequired": true,
+    "productCallerFailureBlocksCIRequired": true,
+    "pullRequestLanes": [
+      "source-head",
+      "base-merge"
+    ]
+  },
+  "schema": "hepta.control-engineering-status.v1",
+  "schemaVersion": 1,
+  "sourceBinding": {
+    "mappingSourceIdentityMode": "exact_blob",
+    "observationIdentityMode": "path_object_equivalence_v1",
+    "observedAtHead": {
+      "commit": "830394445ee232333d1092676c83060944ff0431",
+      "tree": "78837bfa6a47687d11861f0fbf8c2472bde856d5"
+    },
+    "sourceBase": {
+      "commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
+      "tree": "0cae5e6f633248513e343f7776a88bdad22cb19c"
+    },
+    "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  },
+  "statusDigest": "ecd5c86f9a5c16cce7cbab112ff185d4f3be48f6bb8bad98ef992730d7830afc"
+}
