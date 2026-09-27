@@ -1,0 +1,92 @@
+name: channel.matrix materialize
+
+on:
+  push:
+    branches: [codex/channel-matrix-convergence-20260925]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: channel-matrix-materialize-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Materialize, verify, and push one atomic commit
+        env:
+          TARGET_REF: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_dir=.github/channel-matrix-local-patch
+          if [ ! -d "$patch_dir" ]; then
+            echo 'No staged channel.matrix patch remains.'
+            exit 0
+          fi
+
+          for part in "$patch_dir"/part-*; do
+            candidate="$RUNNER_TEMP/$(basename "$part").patch"
+            cat "$part" > "$candidate"
+            printf '\n' >> "$candidate"
+            status=0
+            patch -p1 -N < "$candidate" || status=$?
+            if [ "$status" -ne 0 ]; then
+              reject_list="$RUNNER_TEMP/rejects-$(basename "$part").txt"
+              find . -name '*.rej' -print | sort > "$reject_list"
+              test -s "$reject_list"
+              while IFS= read -r reject; do
+                case "$reject" in
+                  ./docs/modules/channel.matrix/*.rej)
+                    echo "Retaining current prose for current-source rewrite: $reject"
+                    ;;
+                  *)
+                    cat "$reject" >&2
+                    exit "$status"
+                    ;;
+                esac
+              done < "$reject_list"
+              while IFS= read -r reject; do rm -f "$reject"; done < "$reject_list"
+            fi
+            find . -name '*.orig' -delete
+          done
+
+          git rm -r "$patch_dir"
+          git add -A
+          git diff --cached --check
+          git config user.name 'channel.matrix convergence bot'
+          git config user.email 'channel-matrix@users.noreply.github.com'
+          git commit -m 'channel.matrix: close durable send and recovery source gaps'
+
+          tested_sha="$(git rev-parse HEAD)"
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "$tested_sha" \
+            --output "$RUNNER_TEMP/channel-matrix-candidate.json"
+          python3 -m unittest discover -s scripts/tests \
+            -p 'test_channel_matrix*.py' -v
+          git status --porcelain --untracked-files=no | grep -q . && {
+            echo 'Verification mutated tracked source.' >&2
+            exit 1
+          }
+          git push origin "HEAD:${TARGET_REF}"
+
+      - name: Upload static materialization receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: channel-matrix-materialize-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-candidate.json
+          if-no-files-found: warn
+          retention-days: 14
