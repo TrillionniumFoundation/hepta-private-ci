@@ -9,13 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 def patch(path: str, old: str, new: str, *, required: bool = True) -> None:
     target = ROOT / path
     text = target.read_text(encoding="utf-8")
+    if old in text:
+        target.write_text(text.replace(old, new), encoding="utf-8")
+        return
     if new in text:
         return
-    if old not in text:
-        if required:
-            raise RuntimeError(f"missing patch marker in {path}: {old[:100]!r}")
-        return
-    target.write_text(text.replace(old, new), encoding="utf-8")
+    if required:
+        raise RuntimeError(f"missing patch marker in {path}: {old[:100]!r}")
 
 
 def patch_evidence() -> None:
