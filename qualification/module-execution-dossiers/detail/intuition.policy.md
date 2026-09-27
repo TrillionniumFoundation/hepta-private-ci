@@ -1,6 +1,6 @@
 # intuition.policy: implementation and execution dossier
 
-Parent: `docs/modules/intuition.policy/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
+Parent: `docs/modules/intuition.policy/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`. Operator procedures: `docs/modules/intuition.policy/OPERATIONS.md`.
 
 Status: **implemented source under qualification; product closure not yet established**. The calibrated kernel, bounded product contract, split runtime commitments, three-party admission, complete Agentd pins and host-owned learning-ledger path have source implementations. The presence of `intuition_policy_serving.rs` does not prove its invocation from the canonical module tree. The actual hook, exact-head and synthetic-merge execution, real process E2E and independent acceptance are separate facts. Pending composition scripts and workflow definitions cannot establish them.
 
@@ -16,6 +16,8 @@ Primary roots:
 - `codex-rs/hepta-learning-ledger`: durable authenticated Decision storage and independent witness.
 
 Packages: `INT-1-CALIBRATED-INTUITION-POLICY`, `codex-hepta-intelligence`, and the bounded `codex-hepta-agentd` consumer surface. No new execution authority, model owner, random-number owner, evaluator, or ledger implementation is introduced. Changes remain on the intuition closure branch; they do not activate a policy or merge another module's work.
+
+The tracked implementation map's `sourceBase` is a frozen inspected source mapping baseline, not an execution receipt or the self-referential commit containing that document. Current execution identity is taken only from the generated `command-record.json` fields `sourceSha`, `testedSha` and `testedTree`, together with run/attempt/job identity. Generated implementation maps and execution dossiers are artifact-local projections of that same command record; the recorder never modifies the tested checkout.
 
 ## 2. Public operations and contract details
 
@@ -71,11 +73,16 @@ Qualification definitions:
 - kernel fast gate: `codex-rs/hepta-intuition/examples/fast_gate.rs`;
 - authenticated gate: `codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs`;
 - exact command recorder: `scripts/intuition_qualify_exact.py`;
-- independent source/merge workflow: `.github/workflows/hepta-intuition-qualification.yml`.
+- independent artifact verifier: `scripts/intuition_accept_exact.py`;
+- selected-only writer and durable-ledger recorder: `scripts/intuition_ledger_exact.py`;
+- source/merge and separate independent-execution workflow: `.github/workflows/hepta-intuition-qualification.yml`;
+- mandatory selected-only/recovery workflow: `.github/workflows/hepta-intuition-ledger-qualification.yml`.
 
-The recorder captures actual exit codes, timestamps, durations, log hashes, checked-out SHA/tree, source/base identities, host/toolchain and Cargo.lock digest. Evidence is written outside the checkout, retained on failure, and accompanied by a final unchanged-tree check. It does not format, migrate, commit, push or sign acceptance.
+The recorder captures actual exit codes, timestamps, durations, log hashes, checked-out SHA/tree, source/base identities, host/toolchain and Cargo.lock digest. Evidence is written outside the checkout, retained on failure, and accompanied by a final unchanged-tree check. It does not format, migrate, commit, push or sign acceptance. The source-head CLI accepts `--source-commit "$(git rev-parse HEAD)"`. Stale output directories and zero-test passes are rejected; command timeouts terminate the compiler subprocess group and preserve a failure record.
 
-Measured p50/p95/p99 values must come from execution artifacts bound to a named source and host. Kernel latency and authentication-only latency are not a measurement of the combined Agentd request, signature checks, ledger persistence, witness and final admission path. That combined measurement remains a required production deliverable; no percentile is asserted in this dossier.
+Separate clean-runner independent execution must agree on the exact source/tree and Cargo.lock. The aggregate validates same-run repository/run/attempt identity, distinct job identity, complete ordered commands and hash-bound actual logs. It does not transform independent execution into semantic evaluator acceptance or production approval.
+
+Measured p50/p95/p99 values must come from execution artifacts bound to a named source and host. Kernel latency and authentication-only latency are not a measurement of the combined Agentd request, signature checks, ledger persistence, witness and final admission path. The ledger recorder also labels its benchmark as durable-ledger-only. Combined measurement remains a required production deliverable; no percentile is asserted in this dossier.
 
 ## 6. Concrete verification cases
 
@@ -87,12 +94,14 @@ Additional committed test sources include:
 - `intuition_policy_commit_boundary.rs`: ten changed complete-host pins under the same identity/generation/trust, qualification expiry despite a later-valid Decision signature, clock rollback, and a final sequence-one append proving rejected cases did not write;
 - host unit tests: eleven pin-binding mutations and prepared-time edge cases;
 - service unit tests: preserve the exact committed token after final-gate false/error, and retain it on success;
+- serving-profile tests: missing configuration defaults to Production, missing/legacy-only product hosts fail, non-production compatibility is explicit, invalid values reject, and a product build cannot select the test profile;
 - `scripts/intuition_golden_vectors.py`: independent Python reconstruction of five deterministic V2 digest encodings from the shared JSON fixture and 512 seeded scorer/assignment separation mutations;
+- `scripts/tests/test_intuition_exact.py` and `test_intuition_ledger_exact.py`: stale/mismatched evidence, log and command substitution, zero-test success, timeout/missing command, source mutation, distinct-job identity, and retained compiler failures;
 - the retained `cargo-fuzz` target and Rust golden tests.
 
-The Python encoder was exercised locally during the 2026-09-27 change with five matching digests and 512 passing owner-separation mutations. This narrow result does not establish a Rust build, final-SHA workflow success, randomized golden coverage, a real process E2E, or external acceptance.
+The Python encoder was exercised locally during the 2026-09-27 change with five matching digests and 512 passing owner-separation mutations. The later recorder hardening ran 26 Python unit tests successfully in the local working environment. These are narrow tool-level results; the recorder tests use explicitly labelled subprocess fixtures where applicable. They do not establish a Rust build, final-SHA workflow success, randomized golden coverage, a real process E2E, or external acceptance.
 
-Required remaining cases include actual process/request E2E, crash-at-boundary recovery, signed revocation and rollback across generation changes, late qualifier/principal expiration, concurrent append/retry failures, and combined target-host latency. Every claimed execution must identify its tested commit/tree and actual command outcome.
+Required remaining cases include actual process/request E2E, crash-at-boundary recovery, signed revocation and rollback across generation changes, late qualifier/principal expiration, concurrent append/retry failures, and combined target-host latency. Every claimed execution must identify its tested commit/tree and actual command outcome. V3 product and commit-boundary test targets are mandatory in ledger qualification; missing files no longer cause a silent skip.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -102,6 +111,7 @@ Required serving sequence:
 signed ObjectiveStart / durable RunStart
   -> host-owned canonical invocation provider
   -> seven-owner advisory pipeline
+  -> Production profile and product-host requirement
   -> authenticated V3 completeness/profile/runtime verification
   -> V4 product disposition and complete Agentd pin validation
   -> canonical/authenticated parity or explicit fail-closed routing
@@ -111,15 +121,17 @@ signed ObjectiveStart / durable RunStart
   -> run/context admission under its own authority
 ```
 
-The gate source defines explicit compatibility behavior: neither host nor product material permits historical advisory composition; exactly one being configured fails closed. This behavior is an implementation contract, not proof that the real serving hook already invokes it.
+The canonical gate reads `HEPTA_INTUITION_PROFILE` once per process. Missing configuration defaults to `production`; Production requires a product-ready V3 host and authenticated invocation material. A legacy-only host does not satisfy that requirement. The no-host/no-invocation historical advisory bypass now requires explicit `development` or a test-build-only `test` profile. Unknown, empty or malformed values reject. Exactly one of host/invocation being configured still fails closed in every profile. This is a source implementation contract, not proof of real-process execution or operator acceptance.
 
 Rollback must select a separately configured, still-qualified predecessor under a new admitted configuration/generation. A trusted evaluator signature alone cannot switch host-pinned semantics. Revocation, stop and old-generation fences must remain effective across frozen snapshots and prepared values. Their process-level tests and operator rehearsal remain required; immutable pins alone do not establish a live revocation controller.
+
+The operational runbook preserves ledger/witness/identity evidence during indeterminate recovery, requires isolated restore and qualified replay, and separates trust rotation, canary authorization and rollback. Its procedures are not evidence that an operator rehearsal or deployed audit/metrics integration has occurred.
 
 No generator self-acceptance, self-merge, self-promotion, or self-release is permitted. `ACCEPTANCE_TEMPLATE.json` contains no valid independent approval merely by existing in the repository.
 
 ## 8. Current native implementation and claim boundary
 
-Source surfaces include the calibrated/qualified/runtime/production policy files, authenticated V3 intelligence admission, Agentd host/service/gate/ingress, the implementation map, updated technical guide, independent golden encoder, adversarial tests and read-only qualification workflow.
+Source surfaces include the calibrated/qualified/runtime/production policy files, authenticated V3 intelligence admission, Agentd host/service/gate/ingress, the implementation map, technical guide and operational runbook, independent golden encoder, adversarial tests and read-only qualification workflow.
 
 Separate current states are:
 
@@ -128,13 +140,16 @@ Separate current states are:
 | Product policy/commitment/authentication/host source exists | implemented source |
 | Complete prepared profile and evidence-lifetime fences | implemented source; Rust execution unverified |
 | Sole host-held writer and direct durable fixture | implemented source; Rust execution unverified |
-| Canonical ObjectiveStart hook materialized and compile-reachable | not established by a pending script |
+| Default Production profile and no missing-host bypass | implemented source; Rust execution unverified |
+| Canonical ObjectiveStart hook materialized and compile-reachable | requires actual source/build evidence, not a pending script |
 | Actual Agentd process/request E2E | not established |
 | Exact source and synthetic-merge command outcomes | require current execution artifacts |
+| Separate independent execution | workflow and verifier implemented; current completion requires artifacts |
 | Independent evaluator acceptance | not established |
 | Operator target-host acceptance/canary | not established |
+| Deployed audit/exporter/dashboard/SLO and recovery rehearsal | not established |
 | Activation, promotion and release | not authorized by this branch |
 
-An aggregate workflow check named `Intuition required` exists in source. Whether branch protection requires it is a separate repository administration fact; this document does not claim that configuration was changed.
+An aggregate workflow check named `Intuition required` exists in source. Whether branch protection requires it is a separate repository administration fact; this document does not claim that configuration was changed. The four production completion predicates remain false in the tracked map and in single-run projections; a separate independent execution is not allowed to silently promote them.
 
 `score_legal_set` and `calibrate` remain upstream responsibilities. Generator/scorer owners produce bounded candidate/scoring facts and evaluators qualify calibration/OOD artifacts. The policy authenticates those facts and selects or abstains. Future in-crate scoring/calibration is a distinct ownership change requiring contract review, not an omitted implementation hidden by a completion flag.
