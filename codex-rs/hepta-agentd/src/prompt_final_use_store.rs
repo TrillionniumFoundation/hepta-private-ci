@@ -136,10 +136,7 @@ impl PromptFinalUseLeaseStore {
         })
     }
 
-    pub fn remove(
-        &self,
-        key: &PromptFinalUseKeyV1,
-    ) -> Result<bool, PromptFinalUseStoreError> {
+    pub fn remove(&self, key: &PromptFinalUseKeyV1) -> Result<bool, PromptFinalUseStoreError> {
         self.commit(|leases| Ok(leases.remove(key).is_some()))
     }
 
@@ -375,9 +372,7 @@ fn restore_lease(stored: StoredLease) -> Result<PromptFinalUseLeaseV1, PromptFin
             tokenizer_digest: Digest32::from_array(stored.model_tuple.tokenizer_digest),
             template_digest: Digest32::from_array(stored.model_tuple.template_digest),
             tool_schema_digest: Digest32::from_array(stored.model_tuple.tool_schema_digest),
-            context_profile_digest: Digest32::from_array(
-                stored.model_tuple.context_profile_digest,
-            ),
+            context_profile_digest: Digest32::from_array(stored.model_tuple.context_profile_digest),
             locale_id: parse_id(stored.model_tuple.locale_id)?,
         },
         issued_unix_ms: stored.issued_unix_ms,

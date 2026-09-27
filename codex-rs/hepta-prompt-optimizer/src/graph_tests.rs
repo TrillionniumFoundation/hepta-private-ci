@@ -105,15 +105,10 @@ fn graph() -> PromptFactorProjectionV1 {
         },
     )
     .expect("final-use authority");
-    let mut registry = DurablePromptRegistry::open_state_dir(
-        &temporary.path().join("registry"),
-        32,
-    )
-    .expect("durable registry");
-    for (index, factor_id) in ["factor:a", "factor:b", "factor:c"]
-        .into_iter()
-        .enumerate()
-    {
+    let mut registry =
+        DurablePromptRegistry::open_state_dir(&temporary.path().join("registry"), 32)
+            .expect("durable registry");
+    for (index, factor_id) in ["factor:a", "factor:b", "factor:c"].into_iter().enumerate() {
         register_admitted_factor(
             &mut registry,
             &authority,

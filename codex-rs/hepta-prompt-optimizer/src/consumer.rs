@@ -103,10 +103,8 @@ pub fn enumerate_factors_for_consumer_v1(
     }
 
     let capability_digest = capabilities.digest()?;
-    let selection_grammar_digest = bind_selection_grammar(
-        request.selection_grammar_digest,
-        capability_digest,
-    );
+    let selection_grammar_digest =
+        bind_selection_grammar(request.selection_grammar_digest, capability_digest);
     let snapshot = registry
         .snapshot_v2(request.generation_vector_digest, &request.model_tuple)
         .map_err(|error| ConsumerEnumerationError::Registry(format!("{error:?}")))?;

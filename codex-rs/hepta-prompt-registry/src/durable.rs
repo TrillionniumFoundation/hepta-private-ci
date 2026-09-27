@@ -191,12 +191,8 @@ impl DurablePromptRegistry {
         relation: PromptFactorRelation,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.ensure_available()?;
-        let expected = final_use_register_relation_binding(
-            &relation,
-            actor_id,
-            scope_digest,
-        )
-        .map_err(DurableRegistryError::Admission)?;
+        let expected = final_use_register_relation_binding(&relation, actor_id, scope_digest)
+            .map_err(DurableRegistryError::Admission)?;
         let token = authority
             .claim(signed, &expected)
             .map_err(map_final_use_error)
@@ -1331,9 +1327,7 @@ fn decode_binding_v2(
     })
 }
 
-fn decode_relation(
-    stored: StoredRelation,
-) -> Result<PromptFactorRelation, DurableRegistryError> {
+fn decode_relation(stored: StoredRelation) -> Result<PromptFactorRelation, DurableRegistryError> {
     Ok(PromptFactorRelation {
         relation_id: parse_id(stored.relation_id)?,
         left_factor_id: parse_id(stored.left_factor_id)?,
@@ -1427,9 +1421,7 @@ const fn relation_kind_code(value: PromptFactorRelationKind) -> u8 {
     }
 }
 
-fn decode_relation_kind(
-    value: u8,
-) -> Result<PromptFactorRelationKind, DurableRegistryError> {
+fn decode_relation_kind(value: u8) -> Result<PromptFactorRelationKind, DurableRegistryError> {
     match value {
         0 => Ok(PromptFactorRelationKind::Complements),
         1 => Ok(PromptFactorRelationKind::Substitutes),
@@ -1520,8 +1512,7 @@ impl Store {
             3 => {
                 let manifest: payloads::StoredV3 =
                     serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
-                let (payloads, state) =
-                    payloads::PayloadState::hydrate_v3(&store.root, manifest)?;
+                let (payloads, state) = payloads::PayloadState::hydrate_v3(&store.root, manifest)?;
                 store.payloads = payloads;
                 StoredAny::V2(state)
             }
@@ -1533,16 +1524,14 @@ impl Store {
                     .ok_or(DurableRegistryError::Corrupt)?;
                 if state_schema == u64::from(LEGACY_STORE_SCHEMA_V2) {
                     let manifest: payloads::StoredV3 =
-                        serde_json::from_value(value)
-                            .map_err(|_| DurableRegistryError::Corrupt)?;
+                        serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
                     let (payloads, state) =
                         payloads::PayloadState::hydrate_v3(&store.root, manifest)?;
                     store.payloads = payloads;
                     StoredAny::V2(state)
                 } else if state_schema == u64::from(STORE_SCHEMA_V4) {
                     let manifest: payloads::StoredV4 =
-                        serde_json::from_value(value)
-                            .map_err(|_| DurableRegistryError::Corrupt)?;
+                        serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
                     let (payloads, state) =
                         payloads::PayloadState::hydrate_v4(&store.root, manifest)?;
                     store.payloads = payloads;

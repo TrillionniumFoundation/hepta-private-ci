@@ -33,11 +33,11 @@ use codex_hepta_codex_adapter::PromptRuntimePrepareRequest;
 use codex_hepta_codex_adapter::PromptRuntimeRecordFuture;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalOutcomeV1;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalRecordV1;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
 use codex_hepta_intelligence::PromptRegistryCompiledContextV2;
 use codex_hepta_intelligence::compile_prompt_registry_v2;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
 use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
@@ -591,9 +591,7 @@ impl AgentdPromptPipelineOwner {
             },
         )
         .map_err(|error| {
-            AgentdPromptPipelineError::Stage(AgentdPromptRuntimeError::Adapter(
-                error.to_string(),
-            ))
+            AgentdPromptPipelineError::Stage(AgentdPromptRuntimeError::Adapter(error.to_string()))
         })
     }
 
@@ -671,13 +669,7 @@ impl AgentdPromptPipelineOwner {
         self.registry
             .lock()
             .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
-            .register_factor_relation_final_use(
-                authority,
-                signed,
-                actor_id,
-                scope_digest,
-                relation,
-            )
+            .register_factor_relation_final_use(authority, signed, actor_id, scope_digest, relation)
             .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
     }
 
@@ -855,17 +847,11 @@ impl AgentdPromptPipelineOwner {
 }
 
 fn final_use_store_host_error(error: PromptFinalUseStoreError) -> PromptRuntimeHostError {
-    PromptRuntimeHostError::new(
-        "agentd_prompt_final_use_store_error",
-        error.to_string(),
-    )
+    PromptRuntimeHostError::new("agentd_prompt_final_use_store_error", error.to_string())
 }
 
 fn final_use_lease_host_error(error: PromptFinalUseLeaseError) -> PromptRuntimeHostError {
-    PromptRuntimeHostError::new(
-        "agentd_prompt_final_use_lease_error",
-        error.to_string(),
-    )
+    PromptRuntimeHostError::new("agentd_prompt_final_use_lease_error", error.to_string())
 }
 
 fn terminal_clears_stage(record: &PromptRuntimeTerminalRecordV1) -> bool {

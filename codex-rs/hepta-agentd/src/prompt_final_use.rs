@@ -105,7 +105,10 @@ impl PromptFinalUseLeaseV1 {
             || self.issued_unix_ms == 0
             || self.valid_until_unix_ms <= self.issued_unix_ms
             || self.selections.is_empty()
-            || self.selections.windows(2).any(|window| window[0] >= window[1])
+            || self
+                .selections
+                .windows(2)
+                .any(|window| window[0] >= window[1])
         {
             return Err(PromptFinalUseLeaseError::InvalidShape);
         }

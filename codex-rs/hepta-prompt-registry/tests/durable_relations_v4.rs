@@ -126,8 +126,7 @@ fn schema_v4_persists_relations_and_reopens_with_exact_digest() {
     let temporary = tempfile::tempdir().expect("temporary directory");
     let expected_digest = populated_registry(temporary.path());
     let manifest: serde_json::Value = serde_json::from_slice(
-        &std::fs::read(temporary.path().join("registry/registry.json"))
-            .expect("read manifest"),
+        &std::fs::read(temporary.path().join("registry/registry.json")).expect("read manifest"),
     )
     .expect("parse manifest");
     assert_eq!(manifest["schema"].as_u64(), Some(4));
@@ -139,11 +138,8 @@ fn schema_v4_persists_relations_and_reopens_with_exact_digest() {
         1
     );
 
-    let reopened = DurablePromptRegistry::open_state_dir(
-        &temporary.path().join("registry"),
-        64,
-    )
-    .expect("reopen V4 registry");
+    let reopened = DurablePromptRegistry::open_state_dir(&temporary.path().join("registry"), 64)
+        .expect("reopen V4 registry");
     let current = reopened.registry().expect("authoritative reopened image");
     assert_eq!(current.snapshot_digest(), expected_digest);
     let graph = current.factor_graph_source_v1();
@@ -178,10 +174,7 @@ fn corrupt_relation_evidence_fails_closed_on_reopen() {
     file.write_all(&bytes).expect("write corrupt manifest");
     file.sync_all().expect("sync corrupt manifest");
 
-    let error = DurablePromptRegistry::open_state_dir(
-        &temporary.path().join("registry"),
-        64,
-    )
-    .expect_err("corrupt relation must fail closed");
+    let error = DurablePromptRegistry::open_state_dir(&temporary.path().join("registry"), 64)
+        .expect_err("corrupt relation must fail closed");
     assert!(matches!(error, DurableRegistryError::Corrupt));
 }
