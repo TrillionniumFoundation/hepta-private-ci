@@ -1,0 +1,48 @@
+name: Inference worker exact source snapshot
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/inference-worker-source-snapshot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-source-snapshot-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind and package the exact immutable source
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          ROOT="$RUNNER_TEMP/inference-worker-source"
+          mkdir -p "$ROOT"
+          git rev-parse HEAD HEAD^{tree} > "$ROOT/source-identity.txt"
+          git archive --format=tar.gz --prefix=hepta-private-ci/ -o "$ROOT/source.tar.gz" HEAD
+          sha256sum "$ROOT/source.tar.gz" > "$ROOT/source.tar.gz.sha256"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Upload exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/inference-worker-source/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
