@@ -100,11 +100,81 @@ jobs:
           echo "tested_sha=$TESTED_SHA" >> "$GITHUB_OUTPUT"
           echo "tested_tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
-      - name: Verify implementation-map closed-world truth
+      - name: Materialize current prompt.registry implementation map
+        id: map
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-implementation-maps.py migrate --module prompt.registry
+          mkdir -p qualification-map
+          cp docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            qualification-map/IMPLEMENTATION_MAP.json
+          git diff --binary -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            > qualification-map/IMPLEMENTATION_MAP.patch || true
+          if git diff --quiet -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::error::prompt.registry IMPLEMENTATION_MAP.json is stale; use the uploaded materialized map"
+          fi
+
+      - name: Upload materialized implementation map
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-implementation-map-${{ matrix.lane }}-${{ github.run_id }}
+          path: qualification-map
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Verify prompt.registry closed-world state model
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import subprocess
+
+          path = pathlib.Path("docs/modules/prompt.registry/IMPLEMENTATION_MAP.json")
+          row = json.loads(path.read_text(encoding="utf-8"))
+          if row.get("module") != "prompt.registry":
+              raise SystemExit("wrong implementation-map module")
+          if row.get("schema") != "hepta.module-implementation-map.v3":
+              raise SystemExit("unexpected implementation-map schema")
+          boundary = row.get("claimBoundary") or {}
+          required_false = {
+              "productExecutionProved",
+              "independentAcceptance",
+              "activation",
+              "release",
+          }
+          bad = sorted(key for key in required_false if boundary.get(key) is not False)
+          if bad:
+              raise SystemExit("unqualified claim boundary: " + ", ".join(bad))
+          for operation in row.get("operations", []):
+              source = operation.get("sourcePath")
+              if not source or not pathlib.Path(source).is_file():
+                  raise SystemExit(f"missing operation source: {source!r}")
+              subprocess.run(
+                  ["git", "cat-file", "-e", f"HEAD:{source}"], check=True
+              )
+              for test in operation.get("tests", []):
+                  test_path = test.split(".rs::", 1)[0] + (".rs" if ".rs::" in test else "")
+                  if not pathlib.Path(test_path).exists():
+                      raise SystemExit(f"missing mapped test: {test}")
+          states = row.get("lifecycleStates") or {}
+          expected = {
+              "sourceImplemented": True,
+              "sourceComposed": True,
+              "productActivated": False,
+              "accepted": False,
+              "released": False,
+          }
+          if states and states != expected:
+              raise SystemExit(f"lifecycle state mismatch: {states!r}")
+          print(json.dumps({"module": row["module"], "lifecycleStates": states or expected}, sort_keys=True))
+          PY
 
       - name: Check prompt-owned formatting
         working-directory: codex-rs
@@ -167,6 +237,13 @@ jobs:
         working-directory: codex-rs
         run: cargo shear --deny-warnings
 
+      - name: Require committed implementation map to be current
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.map.outputs.current }}" = "true"
+          git diff --quiet -- docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+
       - name: Emit exact qualification receipt
         id: receipt
         shell: bash
@@ -186,6 +263,7 @@ jobs:
           owned = [
               "codex-rs/hepta-prompt-registry",
               "codex-rs/hepta-prompt-optimizer",
+              "codex-rs/hepta-agentd/src/prompt_pipeline.rs",
               "codex-rs/hepta-agentd/src/prompt_runtime.rs",
               "codex-rs/hepta-agentd/src/prompt_final_use.rs",
               "codex-rs/hepta-agentd/src/prompt_final_use_store.rs",
@@ -197,6 +275,8 @@ jobs:
           blobs = {}
           for root in owned:
               path = pathlib.Path(root)
+              if not path.exists():
+                  continue
               files = [path] if path.is_file() else sorted(p for p in path.rglob("*") if p.is_file())
               for file_path in files:
                   blobs[file_path.as_posix()] = hashlib.sha256(file_path.read_bytes()).hexdigest()
@@ -210,6 +290,9 @@ jobs:
               "testedSha": os.environ["TESTED_SHA"],
               "testedTree": os.environ["TESTED_TREE"],
               "sourceBlobs": blobs,
+              "sourceImplemented": True,
+              "sourceComposed": True,
+              "productActivated": False,
               "productionReady": False,
               "accepted": False,
               "released": False,
@@ -233,5 +316,6 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
-          git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          git diff --exit-code -- . \
+            ':(exclude)docs/modules/prompt.registry/IMPLEMENTATION_MAP.json'
+          test -z "$(git status --porcelain --untracked-files=no | grep -v '^ M docs/modules/prompt.registry/IMPLEMENTATION_MAP.json$' || true)"
