@@ -13,6 +13,7 @@ import { EffectScopedNetworkDriver } from "./effect-network-driver.js";
 import { FileBrowserOperationJournal } from "./journal.js";
 import { RedactingObservationBrowserDriver } from "./observation-redactor.js";
 import { createFilePersistedEffectReconciler } from "./persisted-reconciler.js";
+import { ReplayProbeBrowserHost } from "./replay-probe-host.js";
 import { BrowserProfileHost } from "./runtime.js";
 import {
   LinuxBubblewrapLauncher,
@@ -156,7 +157,7 @@ const driver = new DurableEvidenceBrowserDriver({
   driver: admissionDriver,
   journal,
 });
-const host = new BrowserProfileHost({
+const owner = new BrowserProfileHost({
   driver,
   authority,
   journal,
@@ -166,6 +167,7 @@ const host = new BrowserProfileHost({
   ),
   maxActiveProfiles: maxProfiles,
 });
+const host = new ReplayProbeBrowserHost(owner);
 const service = new BrowserAgentdService({ host, channel, authority });
 
 try {
