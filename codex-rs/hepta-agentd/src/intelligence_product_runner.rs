@@ -101,7 +101,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             expires_at_ms,
         };
         match pending.get_mut(run_id.as_str()) {
-            Some(existing) => match existing.state {
+            Some(existing) => match &existing.state {
                 PendingNeuronInvocationStateV1::Ready(_) => {
                     return Err(AgentdError::Protocol(
                         "canonical Neuron invocation is already staged for this run".to_string(),
@@ -506,5 +506,68 @@ impl AgentdIntelligenceProductRunnerV1 {
         journal
             .append_qualification(pending.expected_predecessor, pending.event)
             .map_err(AgentdIntelligenceLedgerError::Ledger)
+    }
+}
+
+#[cfg(test)]
+mod neuron_handoff_tests {
+    use super::*;
+    use ed25519_dalek::SigningKey;
+
+    fn runner() -> AgentdIntelligenceProductRunnerV1 {
+        let root = tempfile::tempdir().expect("tempdir");
+        // `new` validates only the protected absolute path shape and verifier;
+        // the authority file is not opened by these handoff-only tests.
+        let authority_file = root.path().join("authority.json");
+        let signer = SigningKey::from_bytes(&[17; 32]);
+        AgentdIntelligenceProductRunnerV1::new(
+            authority_file,
+            IntelligenceAuthorityVerifierV1 {
+                signer_id: "test-authority".to_string(),
+                verifying_key: signer.verifying_key().to_bytes(),
+            },
+        )
+        .expect("runner")
+    }
+
+    fn future_expiry() -> u64 {
+        wall_clock_ms()
+            .expect("clock")
+            .checked_add(60_000)
+            .expect("expiry")
+    }
+
+    #[test]
+    fn exact_retry_requires_and_accepts_a_fresh_handoff() {
+        let runner = runner();
+        let run_id = StableId::new("run.neuron.retry").expect("run id");
+        runner
+            .stage_neuron_seal(&run_id, None, future_expiry())
+            .expect("initial handoff");
+        assert!(runner.take_neuron_seal(&run_id).expect("take").is_none());
+
+        // A retry cannot reuse the consumed entry; staging represents a new
+        // current-owner read and makes exactly one new consumption possible.
+        runner
+            .stage_neuron_seal(&run_id, None, future_expiry())
+            .expect("fresh retry handoff");
+        assert!(runner.take_neuron_seal(&run_id).expect("retry take").is_none());
+        assert!(matches!(
+            runner.take_neuron_seal(&run_id),
+            Err(AgentdIntelligenceProductError::NeuronInvocation)
+        ));
+    }
+
+    #[test]
+    fn concurrent_duplicate_cannot_replace_a_pending_handoff() {
+        let runner = runner();
+        let run_id = StableId::new("run.neuron.concurrent").expect("run id");
+        runner
+            .stage_neuron_seal(&run_id, None, future_expiry())
+            .expect("initial handoff");
+        let error = runner
+            .stage_neuron_seal(&run_id, None, future_expiry())
+            .expect_err("pending handoff must conflict");
+        assert!(error.to_string().contains("already staged"), "{error}");
     }
 }
