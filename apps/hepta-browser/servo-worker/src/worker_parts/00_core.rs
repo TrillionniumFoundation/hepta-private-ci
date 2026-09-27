@@ -307,12 +307,37 @@ impl Browser {
             .checked_add(1)
             .ok_or_else(|| "page generation exhausted".to_string())?;
 
+        // The private node handle must be stable across the authoritative
+        // observation itself. A preliminary snapshot discovers the bounded
+        // selectors, then the bridge binds engine-private node identities.
+        // We take the returned observation only after those handles exist and
+        // require the same actionable surface and exact node identities after
+        // the authoritative snapshot.
+        let preliminary_observation = self.evaluate_json(
+            semantic_snapshot_script(budget),
+            Duration::from_secs(5),
+        )?;
+        validate_safe_json(&preliminary_observation, 0)?;
+        let preliminary_surface_digest =
+            action_surface_digest(&preliminary_observation)?;
+        let preliminary_handles =
+            self.bind_action_handles(&preliminary_observation)?;
+        if self.navigation_epoch.load(Ordering::Acquire)
+            != navigation_epoch_before
+        {
+            return Err(
+                "document navigated while preparing private action handles"
+                    .to_string(),
+            );
+        }
+
         let semantic_observation = self.evaluate_json(
             semantic_snapshot_script(budget),
             Duration::from_secs(5),
         )?;
         validate_safe_json(&semantic_observation, 0)?;
-        let navigation_epoch_after = self.navigation_epoch.load(Ordering::Acquire);
+        let navigation_epoch_after =
+            self.navigation_epoch.load(Ordering::Acquire);
         if navigation_epoch_after != navigation_epoch_before {
             return Err("document navigated during semantic observation".to_string());
         }
@@ -320,10 +345,25 @@ impl Browser {
         if semantic_json.as_bytes().len() > budget {
             return Err("semantic observation exceeded observationBudget".to_string());
         }
+        if action_surface_digest(&semantic_observation)?
+            != preliminary_surface_digest
+        {
+            return Err(
+                "worker action surface drifted during semantic observation"
+                    .to_string(),
+            );
+        }
         let action_handles = self.bind_action_handles(&semantic_observation)?;
-        let navigation_epoch_bound = self.navigation_epoch.load(Ordering::Acquire);
+        let navigation_epoch_bound =
+            self.navigation_epoch.load(Ordering::Acquire);
         if navigation_epoch_bound != navigation_epoch_before {
             return Err("document navigated while binding private action handles".to_string());
+        }
+        if action_handles != preliminary_handles {
+            return Err(
+                "worker action target identity drifted during semantic observation"
+                    .to_string(),
+            );
         }
         let semantic_digest = sha256_hex(semantic_json.as_bytes());
         let document_digest = sha256_hex(

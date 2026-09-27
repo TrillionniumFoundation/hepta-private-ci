@@ -210,14 +210,6 @@ fn fixed_scroll(action: &Map<String, Value>) -> Result<String, String> {
     Ok(format!("(()=>{{window.scrollBy({x},{y});return true;}})()"))
 }
 
-fn json_string(action: &Map<String, Value>, name: &str) -> Result<String, String> {
-    let value = action
-        .get(name)
-        .and_then(Value::as_str)
-        .ok_or_else(|| format!("typedAction.{name} must be a string"))?;
-    serde_json::to_string(value).map_err(|error| error.to_string())
-}
-
 fn string_field<'a>(value: &'a Value, name: &str) -> Result<&'a str, String> {
     value
         .get(name)
@@ -268,4 +260,3 @@ fn observed_control<'a>(
     }
     Ok(None)
 }
-
