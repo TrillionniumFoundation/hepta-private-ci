@@ -1,0 +1,186 @@
+name: Hepta inference independent merge-tree acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'docs/modules/inference.control/**'
+      - 'qualification/module-execution-dossiers/detail/inference.control*'
+      - 'scripts/hepta-inference-control-*.py'
+      - 'scripts/hepta-implementation-maps.py'
+      - '.github/workflows/hepta-inference-independent-acceptance.yml'
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: Pull request whose current GitHub merge object is tested
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  independent-merge-tree:
+    name: Independent inference merge-tree technical acceptance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Resolve immutable PR identities
+        id: identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          INPUT_PR: ${{ inputs.pull_request_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_number="${EVENT_PR:-${INPUT_PR:-}}"
+          [[ "$pr_number" =~ ^[1-9][0-9]*$ ]]
+          observation="$(gh api "repos/$REPO/pulls/$pr_number")"
+          source_sha="$(jq -er '.head.sha' <<<"$observation")"
+          base_sha="$(jq -er '.base.sha' <<<"$observation")"
+          merge_sha="$(gh api "repos/$REPO/git/ref/pull/$pr_number/merge" --jq '.object.sha')"
+          for value in "$source_sha" "$base_sha" "$merge_sha"; do
+            [[ "$value" =~ ^[0-9a-f]{40}$ ]]
+          done
+          printf 'pr_number=%s\nsource_sha=%s\nbase_sha=%s\nmerge_sha=%s\n' \
+            "$pr_number" "$source_sha" "$base_sha" "$merge_sha" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ steps.identity.outputs.merge_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+
+      - name: Independently verify GitHub merge object
+        env:
+          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
+          BASE_SHA: ${{ steps.identity.outputs.base_sha }}
+          MERGE_SHA: ${{ steps.identity.outputs.merge_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+          mapfile -t parents < <(git show -s --format='%P' HEAD | tr ' ' '\n')
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          recomputed_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          test "$(git rev-parse HEAD^{tree})" = "$recomputed_tree"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Run independent repository and source checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-inference-control-current-state.py check
+          python3 scripts/hepta-inference-control-ownership.py check
+          python3 scripts/hepta-inference-control-actor-migrate.py check
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
+
+      - name: Run independent native test matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 >/dev/null
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-types
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core --test process_crash_recovery \
+            -- --nocapture --test-threads=1
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core --test recovery_after_expiry \
+            -- --nocapture --test-threads=1
+
+      - name: Run independent strict lint and format gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-types \
+            --all-targets --all-features -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-types \
+            -- --check
+
+      - name: Emit independent technical receipt
+        env:
+          PR_NUMBER: ${{ steps.identity.outputs.pr_number }}
+          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
+          BASE_SHA: ${{ steps.identity.outputs.base_sha }}
+          MERGE_SHA: ${{ steps.identity.outputs.merge_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-inference-independent"
+          mkdir -p "$out"
+          tree="$(git rev-parse HEAD^{tree})"
+          source_archive="$out/source-input.tar.gz"
+          git archive --format=tar "$MERGE_SHA" | gzip -1 > "$source_archive"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          out = Path(os.environ["RUNNER_TEMP"]) / "hepta-inference-independent"
+          archive = out / "source-input.tar.gz"
+          receipt = {
+              "schema": "hepta.inference-control-independent-technical-receipt.v1",
+              "schemaVersion": 1,
+              "module": "inference.control",
+              "pullRequestNumber": int(os.environ["PR_NUMBER"]),
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "baseSha": os.environ["BASE_SHA"],
+              "testedMergeSha": os.environ["MERGE_SHA"],
+              "testedMergeTree": os.popen("git rev-parse HEAD^{tree}").read().strip(),
+              "sourceArchiveSha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
+              "workflowRunId": os.environ.get("GITHUB_RUN_ID"),
+              "workflowRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "technicalChecksPassed": True,
+              "claims": {
+                  "independentGovernanceAcceptance": False,
+                  "activation": False,
+                  "promotion": False,
+                  "release": False,
+              },
+              "createdAt": datetime.now(timezone.utc).isoformat(),
+          }
+          (out / "receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Retain exact independent input and receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-inference-independent-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-inference-independent/*
+          if-no-files-found: error
+          retention-days: 30
