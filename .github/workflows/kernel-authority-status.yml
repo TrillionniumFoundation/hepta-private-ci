@@ -13,6 +13,7 @@ on:
       - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
       - 'codex-rs/hepta-agentd/src/browser_servo.rs'
       - 'qualification/kernel-authority/**'
+      - 'scripts/kernel_authority_status.py'
       - 'qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json'
       - 'qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json'
       - 'qa/b4-no-bypass/test_kernel_authority_closed_world.py'
@@ -30,6 +31,7 @@ on:
       - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
       - 'codex-rs/hepta-agentd/src/browser_servo.rs'
       - 'qualification/kernel-authority/**'
+      - 'scripts/kernel_authority_status.py'
       - 'qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json'
       - 'qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json'
       - 'qa/b4-no-bypass/test_kernel_authority_closed_world.py'
@@ -58,11 +60,11 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Verify generated status projections
+      - name: Verify canonical generated status projections
         shell: bash
         run: |
           set -euo pipefail
-          python3 qualification/kernel-authority/generate_status.py --check
+          python3 scripts/kernel_authority_status.py check
       - name: Verify closed extension API inventory
         shell: bash
         run: |
