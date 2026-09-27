@@ -182,6 +182,13 @@ jobs:
           git diff --cached --quiet && { echo 'map convergence produced no changes' >&2; exit 1; }
           git commit -m 'docs(cognitive.read): atomically rebind affected implementation maps'
 
+      - name: Publish inactive candidate before verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:$TARGET_BRANCH"
+          echo 'Published inactive Draft candidate; qualification claims remain false.' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Verify source, maps, lock, lint, tests, and fuzz targets
         shell: bash
         run: |
