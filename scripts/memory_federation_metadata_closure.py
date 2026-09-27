@@ -66,7 +66,10 @@ def patch_profile() -> None:
     profile = visit(data)
     if profile is None:
         raise SystemExit("memory.federation implementation profile not found")
-    profile["runtimeDocuments"] = [
+    native = profile.get("nativeImplementation")
+    if not isinstance(native, dict):
+        raise SystemExit("memory.federation native implementation profile is missing")
+    native["runtimeDocuments"] = [
         "docs/modules/memory.federation/TECHNICAL.md",
         "docs/modules/memory.federation/V2_HARDENING.md",
         "docs/modules/memory.federation/WIRE_PROTOCOL_V1.md",
@@ -74,7 +77,7 @@ def patch_profile() -> None:
         "docs/modules/memory.federation/OPERATIONS.md",
         "docs/modules/memory.federation/sequence.mmd",
     ]
-    profile["remainingWork"] = [
+    native["remainingWork"] = [
         "Physical two-real-host authenticated transport and partition qualification remains external.",
         "Target-host capacity, latency, overload and backpressure qualification remains external.",
         "Independent semantic/security acceptance and operator canary/promotion/release remain external.",
