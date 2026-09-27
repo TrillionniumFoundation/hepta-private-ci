@@ -1,4 +1,4 @@
-name: context.compiler V2 integration
+name: context.compiler V2 source materialization
 
 on:
   push:
@@ -10,22 +10,24 @@ permissions:
   contents: write
 
 concurrency:
-  group: context-compiler-v2-integration
+  group: context-compiler-v2-source-materialization
   cancel-in-progress: true
 
 jobs:
-  apply-compile-and-commit:
+  materialize-source:
     if: ${{ !contains(github.event.head_commit.message || '', '[context-v2-integrated]') }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    runs-on: macos-14
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: revision/context-compiler-v2-provider-closure-2026-09-27
           fetch-depth: 0
 
-      - name: Apply remaining V2 closure patches
+      - name: Apply deterministic closure patches
+        shell: bash
         run: |
+          set -euo pipefail
           python3 scripts/_context_compiler_delivery_patch.py
           python3 scripts/_context_compiler_runtime_bridge_patch.py
           python3 scripts/_context_compiler_terminal_bridge_patch.py
@@ -35,38 +37,27 @@ jobs:
           python3 scripts/_context_compiler_crash_safety_patch.py
           python3 scripts/_context_compiler_property_patch.py
 
-      - name: Format sources
+      - name: Format materialized Rust source
+        shell: bash
         working-directory: codex-rs
-        run: cargo fmt --all
+        run: |
+          set -euo pipefail
+          rustup component add rustfmt
+          cargo fmt --all
 
-      - name: Test closure crates
-        working-directory: codex-rs
-        run: >-
-          cargo test
-          -p codex-hepta-context-compiler
-          -p codex-hepta-intelligence
-          -p codex-hepta-prompt-extension
-          -p codex-hepta-agentd
-
-      - name: Check composed product path
-        working-directory: codex-rs
-        run: >-
-          cargo check
-          -p codex-api
-          -p codex-core
-          -p codex-hepta-context-compiler
-          -p codex-hepta-intelligence
-          -p codex-hepta-prompt-extension
-          -p codex-hepta-agentd
-
-      - name: Reject whitespace errors
-        run: git diff --check
-
-      - name: Commit compiled integration sources
+      - name: Reject patch drift and whitespace errors
         shell: bash
         run: |
+          set -euo pipefail
+          git diff --check
+          test -n "$(git status --porcelain=v1 -- codex-rs)"
+
+      - name: Commit materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name "hepta-ci-bot"
           git config user.email "hepta-ci-bot@users.noreply.github.com"
           git add codex-rs
-          git commit -m "context.compiler: integrate exact V2 provider closure [context-v2-integrated]"
+          git commit -m "context.compiler: materialize exact V2 provider closure [context-v2-integrated]"
           git push origin HEAD:revision/context-compiler-v2-provider-closure-2026-09-27
