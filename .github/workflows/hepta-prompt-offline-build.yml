@@ -34,7 +34,7 @@ jobs:
           rustfmt -V >> "$out/toolchain.txt"
           # Never archive CARGO_HOME wholesale: it may contain credentials.
           # The compiler sysroot contains public distribution files only.
-          tar -C "$(rustc --print sysroot)" -czf "$out/toolchain.tar.gz" bin lib libexec share/man share/doc/rust/licenses
+          tar -C "$(rustc --print sysroot)" -czf "$out/toolchain.tar.gz" bin lib
           curl --fail --location --proto '=https' --tlsv1.2 https://get.nexte.st/0.9.103/linux -o "$out/nextest.tar.gz"
           curl --fail --location --proto '=https' --tlsv1.2 https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz -o "$out/just.tar.gz"
           cargo_home="${CARGO_HOME:-$HOME/.cargo}"
