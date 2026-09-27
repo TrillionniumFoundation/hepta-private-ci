@@ -5,34 +5,42 @@ on:
     paths:
       - "codex-rs/hepta-intuition/**"
       - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-agentd/src/intuition_policy.rs"
-      - "codex-rs/hepta-agentd/src/intuition_policy_service.rs"
-      - "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
-      - "codex-rs/hepta-agentd/src/intelligence_ingress.rs"
-      - "codex-rs/hepta-agentd/src/state.rs"
-      - "codex-rs/hepta-agentd/tests/intuition_policy_product*.rs"
+      - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "scripts/intuition_*.py"
+      - "scripts/tests/test_intuition*.py"
       - "qualification/intuition.policy/**"
+      - "docs/modules/intuition.policy/**"
       - ".github/workflows/hepta-intuition-ledger-qualification.yml"
+      - ".github/actions/setup-ci/**"
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "codex-rs/hepta-intuition/**"
       - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-agentd/src/intuition_policy.rs"
-      - "codex-rs/hepta-agentd/src/intuition_policy_service.rs"
-      - "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
-      - "codex-rs/hepta-agentd/src/intelligence_ingress.rs"
-      - "codex-rs/hepta-agentd/src/state.rs"
-      - "codex-rs/hepta-agentd/tests/intuition_policy_product*.rs"
+      - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "scripts/intuition_*.py"
+      - "scripts/tests/test_intuition*.py"
       - "qualification/intuition.policy/**"
+      - "docs/modules/intuition.policy/**"
       - ".github/workflows/hepta-intuition-ledger-qualification.yml"
+      - ".github/actions/setup-ci/**"
+  merge_group:
+    types: [checks_requested]
   workflow_dispatch:
 
 permissions:
   contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
 
 concurrency:
   group: hepta-intuition-ledger-${{ github.event.pull_request.number || github.ref }}
@@ -42,10 +50,7 @@ jobs:
   exact-source-ledger:
     name: Intuition durable append and recovery
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    defaults:
-      run:
-        working-directory: codex-rs
+    timeout-minutes: 90
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -55,40 +60,24 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-      - name: Verify exact source identity
-        env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-      - name: Test idempotency, witness recovery and reopen
-        run: cargo test --locked -p codex-hepta-learning-ledger production
       - name: Test Agentd selected-only writer composition
-        run: |
-          cargo test --locked -p codex-hepta-agentd intuition_policy
-          cargo test --locked -p codex-hepta-agentd --test intuition_policy_product
-          if test -f hepta-agentd/tests/intuition_policy_product_v3.rs; then
-            cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
-          fi
-      - name: Measure signed durable append, rotation and reopen
         env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intuition-ledger-target
           HEPTA_TARGET_HOST_ID: github-actions-ubuntu-24.04-intuition
           HEPTA_LEDGER_RECORDS: "512"
           HEPTA_LEDGER_SEGMENT_RECORDS: "64"
-        run: cargo run --locked --release -p codex-hepta-learning-ledger --example target_host_qualification | tee ../intuition-ledger-target-host.json
-      - name: Record exact command identity
+        shell: bash
         run: |
-          printf '%s\n' \
-            "source_sha=$(git rev-parse HEAD)" \
-            "tree_sha=$(git rev-parse HEAD^{tree})" \
-            "runner=ubuntu-24.04" \
-            "rustc=$(rustc -Vv | tr '\n' ';')" \
-            "cargo=$(cargo -V)" \
-            > ../intuition-ledger-command-record.txt
-      - name: Retain ledger qualification evidence
+          set -euo pipefail
+          python3 scripts/intuition_ledger_exact.py \
+            --source-commit "$SOURCE_SHA" \
+            --evidence "$RUNNER_TEMP/intuition-ledger-evidence"
+      - name: Retain ledger success, failure and interrupted-command evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-ledger-${{ github.event.pull_request.head.sha || github.sha }}
-          path: |
-            intuition-ledger-target-host.json
-            intuition-ledger-command-record.txt
+          name: intuition-ledger-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-ledger-evidence/
           if-no-files-found: error
           retention-days: 90
