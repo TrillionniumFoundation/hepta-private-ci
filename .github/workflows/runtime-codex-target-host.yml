@@ -1,0 +1,170 @@
+name: runtime.codex target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full source commit to qualify
+        required: true
+        type: string
+      harness_sha256:
+        description: Approved SHA-256 of the externally administered qualification harness
+        required: true
+        type: string
+      canary_operation_prefix:
+        description: Unique non-secret prefix for the bounded canary cohort
+        required: true
+        type: string
+      confirmation:
+        description: Type RUN_REAL_RUNTIME_CODEX_EFFECTS to permit real provider traffic
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: runtime-codex-target-host-production
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: runtime.codex target-host
+    environment: runtime-codex-production-qualification
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - hepta-runtime-codex-qualified
+    timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      APPROVED_HARNESS_SHA256: ${{ inputs.harness_sha256 }}
+      CANARY_OPERATION_PREFIX: ${{ inputs.canary_operation_prefix }}
+      QUALIFIER_PATH: ${{ vars.RUNTIME_CODEX_TARGET_HARNESS_PATH }}
+    steps:
+      - name: Require explicit external-effect confirmation
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRMATION" = RUN_REAL_RUNTIME_CODEX_EFFECTS
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$APPROVED_HARNESS_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$CANARY_OPERATION_PREFIX" =~ ^[A-Za-z0-9._:-]{1,96}$ ]]
+
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Bind exact source and tree
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Verify independently administered harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$QUALIFIER_PATH"
+          python3 - <<'PY'
+          import os
+          import stat
+          from pathlib import Path
+
+          path = Path(os.environ["QUALIFIER_PATH"])
+          if not path.is_absolute() or path.is_symlink() or not path.is_file():
+              raise SystemExit("qualification harness must be an absolute non-symlink regular file")
+          metadata = path.stat()
+          if metadata.st_uid != 0 or metadata.st_mode & 0o022:
+              raise SystemExit("qualification harness must be root-owned and not group/world writable")
+          if not metadata.st_mode & stat.S_IXUSR:
+              raise SystemExit("qualification harness is not executable")
+          PY
+          actual="$(sha256sum "$QUALIFIER_PATH" | cut -d' ' -f1)"
+          test "$actual" = "$APPROVED_HARNESS_SHA256"
+
+      - name: Materialize protected receipt verification key
+        shell: bash
+        env:
+          RECEIPT_PUBLIC_KEY: ${{ secrets.RUNTIME_CODEX_TARGET_RECEIPT_PUBLIC_KEY_PEM }}
+        run: |
+          set -euo pipefail
+          test -n "$RECEIPT_PUBLIC_KEY"
+          umask 077
+          printf '%s\n' "$RECEIPT_PUBLIC_KEY" > "$RUNNER_TEMP/runtime-codex-target-receipt.pub"
+          openssl pkey -pubin -in "$RUNNER_TEMP/runtime-codex-target-receipt.pub" -noout
+
+      - name: Execute real issuer, provider, fault, performance and recovery qualification
+        id: harness
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/runtime-codex-target-evidence"
+          rm -rf "$evidence"
+          mkdir -p "$evidence"
+          "$QUALIFIER_PATH" \
+            --source-sha "$SOURCE_SHA" \
+            --source-tree "${{ steps.source.outputs.tree }}" \
+            --harness-sha256 "$APPROVED_HARNESS_SHA256" \
+            --canary-operation-prefix "$CANARY_OPERATION_PREFIX" \
+            --evidence-root "$evidence" \
+            --receipt "$evidence/receipt.json"
+
+      - name: Verify signed target-host receipt and closed claim boundary
+        id: verify
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/runtime-codex-target-evidence"
+          python3 scripts/runtime_codex_target_host_receipt.py \
+            "$evidence/receipt.json" \
+            --evidence-root "$evidence" \
+            --public-key "$RUNNER_TEMP/runtime-codex-target-receipt.pub" \
+            --source-sha "$SOURCE_SHA" \
+            --source-tree "${{ steps.source.outputs.tree }}" \
+            --harness-sha256 "$APPROVED_HARNESS_SHA256"
+
+      - name: Retain target-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: runtime-codex-target-host-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-codex-target-evidence/
+          if-no-files-found: error
+          retention-days: 90
+          include-hidden-files: true
+
+      - name: Attest independently signed target-host receipt
+        if: steps.harness.outcome == 'success' && steps.verify.outcome == 'success'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ runner.temp }}/runtime-codex-target-evidence/receipt.json
+
+      - name: Remove transient verification key
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/runtime-codex-target-receipt.pub"
+
+      - name: Enforce target-host qualification result
+        if: always()
+        env:
+          HARNESS_OUTCOME: ${{ steps.harness.outcome }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$HARNESS_OUTCOME" = success
+          test "$VERIFY_OUTCOME" = success
