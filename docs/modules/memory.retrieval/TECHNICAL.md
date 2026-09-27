@@ -14,278 +14,120 @@
 
 **Bootstrap work package:** `MEM-2-RETRIEVAL`
 
-This stable document is the implementation guide for `memory.retrieval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This is the current implementation entry point. Canonical JSON registries retain normative identity, ownership, contracts and authority. Source existence, source composition, exact-candidate execution, independent acceptance and production activation are separate facts. The predecessor guide is retained unchanged as [TECHNICAL_BASELINE.md](TECHNICAL_BASELINE.md), a historical reference, not the current process selector or implementation inventory.
 
 ## 1. Identity, mission and ownership
 
-Produce explainable, revalidated retrieval results on the local hot path without central synchronous RPC.
-
-The primary owner `cognitive-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `performance` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `domain`, kind `engine`, state model `read_only` and architecture role `execution_plant` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+Produce bounded, explainable, source-revalidated local retrieval. The core is a read-only domain execution plant. It does not own content, source facts, signing keys, a durable learning writer or a new execution spine. `cognitive-platform` owns implementation correctness; `performance` independently reviews resource and boundary changes.
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+The exclusive module root is `codex-rs/hepta-memory-retrieval`. `v2.rs` retains the complete-input compatibility receipt. `generator.rs` binds owner batches, channel ranks, generation and completeness. `generation_bound.rs`, `semantics.rs` and `engram.rs` implement canonical union, policy admission, explicit propositions, bounded graph dynamics and recall. `decision.rs` binds enumerated/legal/selected identities. `vector_owner.rs` is a typed owner/encoder/index integration surface, not proof of a deployed encoder.
 
-- `codex-rs/hepta-memory-retrieval`
+The SQLite adapter and assertion writer remain in `codex-rs/hepta-memory`; the signed process provider and consumer remain in `codex-rs/hepta-agentd`; assignment persistence remains in `learning.ledger`. Do not move their authority into this crate.
 
-Existing declared roots at this exact source snapshot:
-
-- `codex-rs/hepta-memory-retrieval`
-
-Non-authoritative implementation evidence roots:
-
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The source root now contains four complementary native surfaces: [v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs) preserves the complete-input integrity binding; [generator.rs](../../../codex-rs/hepta-memory-retrieval/src/generator.rs) owns cue compilation, authenticated generator-batch canonicalization and policy-relative completeness; [engram.rs](../../../codex-rs/hepta-memory-retrieval/src/engram.rs) owns bounded HNMF expansion/settling/competition; and [decision.rs](../../../codex-rs/hepta-memory-retrieval/src/decision.rs) emits generator-relative assignment observations. The durable SQLite adapter and explicit Agentd host live in their existing owner roots and do not move ownership into this crate. These are source candidates, not proof of activation, target-host performance, independent acceptance or release. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) for the exact implemented subset and evidence gates.
+[IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) records source objects and claim boundaries. A map-only observation commit must refer to the preceding exact code/document commit and preserve immutable `sourceBase` provenance. A map or workflow definition is not a passing execution receipt.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Direct dependencies:
+Direct dependencies remain `cognitive.read` and `knowledge.graph`. Authoritative write domains: none. Explicitly denied capabilities are `write_authority` and `central_rpc_hot_path`. Receipts retain `AuthorityPosture::DENY_ALL`.
 
-- `cognitive.read`
-- `knowledge.graph`
-
-Authoritative write domains:
-
-None.
-
-Explicitly denied capabilities:
-
-- `write_authority`
-- `central_rpc_hot_path`
-
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+No model output, request field, content digest or public struct is an authority credential. Only the trusted owner/host composition establishes batch provenance. Unknown critical fields, scope/revision drift, malformed generations and invalid bounds fail closed. Existing tombstone, source correction and revocation rules cannot be bypassed through a cache or restored answer.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The current path is owner cut and pre-top-four observation, exact binding, generator union, positive-score policy admission, HNMF recall, optional separately selected ranker, current source revalidation, bounded text materialization, context planning and learning-owner handoff. Explicit owner assertions are observed in the same SQLite transaction and evaluated across all admitted exact revisions; see [OWNER_PROPOSITIONS.md](OWNER_PROPOSITIONS.md).
 
-- `bounded input stage`
-- `deterministic algorithm core`
-- `generation publisher`
-- `checkpoint and recovery layer`
+HNMF operates on one immutable owner generation. Expansion, settling, sparse population competition, activation paths and contradiction disposition are bounded and deterministic. Zero activation produces no support; zero-weight edges are semantically inert. A conflict report is not an affirmative or negative assertion.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
-
-### Multiscale DecisionCell integration target
-
-Host the first read-only cooperating organ: channel allocation, candidate relevance, contradiction support, evidence sufficiency and stopping. Keep owner-generated bounded candidates and current source validation; cells cannot invent relevance inputs or silently truncate the evaluated set. Expose one stable evidence/coverage/cost port to callers.
-
-Use one circuit across sufficient, conflicting, unavailable-organ and exhausted-budget contexts. Keep stable evidence/coverage/cost ports; do not hard-code a separate workflow for every context. See the
-[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
-
-Required targeted tests: full bounded candidate ranking, missing channels, contradiction/OOD, stopping policy and add/retire behind unchanged public port.
-
-The shared contract and record design are in
-[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
-[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
-This target does not change the current native implementation, source status or
-product/activation evidence recorded below. No existing wire version is redefined.
-
-### Capacity, depth and learning evidence target
-
-Evaluate whether compact evidence/organ summaries lose distinctions or long-history dependencies needed downstream. A source reread is an explicit owner-validated operation with cost. Run capacity/depth sweeps on the same bounded candidate information and retain old-task tests.
-
-Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
-and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
-planned integration requirement, not a change to source or product status.
-
-### Shared-experience and isolated-Agent integration target
-
-Use Recall circuits for current evidence, not as an implicit training exporter. Preserve exact source roots, applicability/contradictions and observed delivery. Copied claims are not independent support; shared relevance scores cannot widen access or turn text into instructions.
-
-The target [HNMF contract](../../hnmf/TECHNICAL.md) and
-[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
-retain current source, wire and capability states.
+Multiscale DecisionCell/Recall circuits, shared-experience delivery and capacity/depth learning remain integration targets described by [DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md), [organ composition](../../cns/TECHNICAL.md), [HNMF](../../hnmf/TECHNICAL.md) and [longitudinal experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). Their existence does not upgrade current source or activation status.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Produced: `ModulePort::memory.retrieval::prompt.optimizer`.
 
-- `ModulePort::memory.retrieval::prompt.optimizer`
+Consumed: `DomainRead::knowledge_graph_projectionV1`, `DomainRead::prompt_factor_graph_projectionV1`, `ModulePort::cognitive.read::memory.retrieval` and `ModulePort::knowledge.graph::memory.retrieval`.
 
-Consumed contracts:
+[API.md](API.md) specifies native operations, strict decoding, errors and trust boundaries. The generation-bound legacy recall packet is not reinterpreted as the canonical cognitive recall wire. `adapt_generation_bound_recall_to_canonical_shadow_v1` remains shadow-only and requires an explicit exact identity bridge. Old digests/record IDs never become canonical event identities by relabelling.
 
-- `DomainRead::knowledge_graph_projectionV1`
-- `DomainRead::prompt_factor_graph_projectionV1`
-- `ModulePort::cognitive.read::memory.retrieval`
-- `ModulePort::knowledge.graph::memory.retrieval`
-
-Critical protocol schemas:
-
-None.
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The additive SQLite assertion contract is `structured_cognitive_propositions_v2`; legacy KG labels remain opaque. The ordinary bootstrap supports explicit v1/v2 descriptor semantics. V1 rejects v2 fields, including explicit null; V2 requires every rollout field. No partial-field fallback is allowed.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+This core has no durable facts or authoritative write domain. Its read-only domains are `knowledge_graph_projection` and `prompt_factor_graph_projection`.
 
-None.
+The existing SQLite owner writes explicit assertions using the same cited-source, memory revision, immutable KG facts and projection transaction. Correcting or deleting a source does not leave an independent proposition database behind. The new contract retains all claims and exact validity/source support. A future real extractor must be admitted through the production writer; an owner-backend API is not that admission proof.
 
-Read-only data dependencies:
-
-- `knowledge_graph_projection`
-- `prompt_factor_graph_projection`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The independent frontier owner retains current epoch/sequence outside Agent-home rollback. The checked-in client and parse cache do not implement or qualify that external durable authority. `learning.ledger` remains the sole assignment writer. Prepared context, published response, acknowledged consumer use and outcome observation must not be collapsed into one fact.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md).
+The core uses typed immutable input and no network or process-global state. SQLite observation is coherent within its owner transaction; final delivery still checks the current cut and selected record/source identities.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+The signed provider returns context, publication lifecycle and lease together. Combined installation/acquisition performs one fresh challenged frontier observation. Parsing may be cached by exact publication bytes; signature, native validation, current frontier and monotonic lease remain checked. Invalid or missing current input does not fall back to a cached payload.
+
+Current shadow ceilings are structural. Separate bounded scheduling, cancellation and measured CPU/RSS/allocation isolation remain unfinished and cannot be inferred from the four-mode enum or a node limit. Follow [shared concurrency requirements](../README.md#shared-concurrency-and-transactions).
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Distinguish malformed/stale input errors, unavailable owners, timed out work, explicit abstention, empty results and incomplete enumeration. `LimitReached` is not exhaustive absence. Required/selected-canary failures do not change the treatment arm. Optional shadow failure preserves the separately defined baseline but does not establish resource isolation.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+Restart obtains a fresh challenged frontier. A local cached file or self-hash is not a recovery witness. Rollback is an approved new host launch/publication at an advancing frontier, never decrementing sequence or copying an old cache. See [operations](OPERATIONS.md), [canary and rollback](CANARY_AND_ROLLBACK.md) and [shared recovery requirements](../README.md#shared-failure-and-recovery).
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+[THREAT_MODEL.md](THREAT_MODEL.md) is the specific threat inventory. Protect exact source provenance, scope/purpose, pinned keys, lifecycle, cohort ownership and qualification evidence. Do not log private query text, raw memory, signing keys or raw rollout salts.
 
-None.
-
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+The process bootstrap requires protected canonical bounded files outside Agent home. Existing path checks assume actual launcher/UID/sandbox protection; they are not an atomic descriptor-relative path walk. A same-UID Agent with unrestricted filesystem access is not a qualified deployment. Fresh challenges defeat captured-response replay, not a legitimately keyed frontier owner that restored its own monotonic state incorrectly.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) specifies the algorithm, enforced product ceilings and measurement obligations. The generation-bound path rejects more than 512 total generator candidate events, more than 16 recall selections, more than 4096 engram nodes, more than 32768 synapses, more than four settling steps or more than 64 active units per population. The current SQLite owner exposes seven bounded channels at at most 32 rows each (lexical, entity, generic graph, temporal, typed causal, typed procedural and typed contradiction support), for at most 224 raw owner events before union. The legacy V1/V2 sorter remains separately bounded for compatibility and must not be mistaken for the product HNMF profile. These are capacity invariants, not latency or efficiency measurements; p50/p95/p99, throughput, CPU, RSS/peak memory, allocation and SQLite/revalidation cost require a named target-host receipt.
+Hard ceilings: 512 raw candidate events, 16 core selections, 4096 engram nodes, 32768 synapses, four settling steps and 64 active nodes per population. The current SQLite profile observes seven channels of at most 32 rows each, at most 224 raw owner events. The Agentd context endpoint separately delivers at most four items subject to bytes and planning.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+Explicit assertion observation uses one parameterized batch query over exact observed revisions, not one additional SQL query per candidate. At most 128 claims per revision and 4096 per observation are accepted; overflow fails rather than truncates. The first implementation reconstructs the bounded canonical union for semantic admission; its cost is not hidden.
+
+[POLICY_REFERENCE.md](POLICY_REFERENCE.md) distinguishes the uncalibrated SQLite baseline from a measured risk policy. OOD zero and a threshold of one are not calibration. [VECTOR_OWNER.md](VECTOR_OWNER.md) describes the real encoder/index seam; a configuration without that owner keeps Vector disabled.
+
+Capacity invariants are not latency or efficiency measurements. [E2E_MEASUREMENT.md](E2E_MEASUREMENT.md) specifies the nine-stage contract, exact source/binary binding, failure traces and request-scoped counters. The complete native producer, approved workload/SLO and current-host measurements remain required.
 
 ## 11. Observability and operations
 
-Embed retrieval against an authorized coherent read cut. The real Agentd process profile is selected by `HEPTA_COGNITIVE_RETRIEVAL_MODE`: absence or `compatibility` preserves the compatibility path, while `hnmf-required` selects the fail-closed HNMF profile. The ordinary binary does not synthesize a current retrieval context; selecting `hnmf-required` without an externally composed authenticated `CurrentMemoryRetrievalContext` therefore rejects startup instead of falling back. The explicit HNMF host first obtains the Lane C cut, then observes the SQLite owner's bounded generator output before legacy top-four truncation. The owner adapter preserves channel rank and `Exhausted` versus `LimitReached` state and converts only owner-observed rows into generator batches. The durable SQLite KG owner reserves exact `Causes`, `ProcedureStep` and `Contradicts` relation vocabulary for independent causal, procedural and contradiction-support channels; generic GraphOneHop explicitly excludes those typed edges, so they cannot be double-counted or relabelled. A positive-weight retrieval policy channel without its owner batch, or with an owner batch explicitly marked `Unavailable`, fails closed; a saturated `LimitReached` channel remains explicitly incomplete. HNMF selection is followed by exact revision/content/source revalidation before materialization. Response byte/result limits, NDU context planning and optional learned reranking may narrow the final delivered subset; the learning-ledger bridge records that delivered subset separately from HNMF selection.
+The ordinary Agentd selector is `HEPTA_COGNITIVE_RETRIEVAL_MODE`: absent/`compatibility`, `hnmf-shadow`, `hnmf-canary`, or `hnmf-required`. Compatibility forbids an attached HNMF provider. All HNMF modes require a current provider at startup. Shadow delivers baseline only; canary uses host-fixed versioned owner cohorts; required and selected canary reject invalid current context rather than downgrade.
 
-Current operating and state-format references:
+Paired `--retrieval-bootstrap-descriptor` and `--retrieval-bootstrap-descriptor-digest` inputs compose the ordinary process. [PROCESS_BOOTSTRAP.md](PROCESS_BOOTSTRAP.md) and [ROLLOUT_POLICY.md](ROLLOUT_POLICY.md) specify exact field formats, raw-byte pins, signed publication, framing, v1 cohort continuity and complete v2 ppm/salt/shadow policy. Host-captured mode/policy and lifecycle bind final use. Request data cannot choose an arm, budget or key.
 
-- [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+Retain exact source/tree, binary/build identity, mode, descriptor/policy/publication digests, owner/body/epoch/sequence, completeness, omission, abstention and final-use failures. Existing deployment references are [LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md) and [LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Core source tests: `generation_bound_tests.rs`, `generator_tests.rs`, `engram_tests.rs`, `semantics_tests.rs`, `decision_tests.rs` and vector-owner tests. Owner/consumer tests: `cognitive_retrieval_adapter_tests.rs`, `cognitive_proposition_owner_tests.rs`, `cognitive_context_hnmf_tests.rs`, provider/acquisition/bootstrap/cache/transport tests and learning-ledger durable tests.
 
-- [generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs): deterministic union/recall ordering, hard result bounds, contradiction/OOD/generation failures and public-receipt validation.
-- [generator_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generator_tests.rs): generator permutation invariance, total 512-candidate ingress bound, channel-rank integrity, policy-relative owner coverage and cross-generation rebinding rejection.
-- [engram_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/engram_tests.rs): recurrent association, sparse population bounds, contradiction abstention, recomputed structural-forgery rejection and RET-04 no-intervention/no-recurrence/no-inhibition baselines.
-- [decision_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/decision_tests.rs): complete legal candidate-set and deterministic assignment binding.
-- [cognitive_retrieval_adapter_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs): real SQLite owner adaptation before top-four truncation, source completeness and Lane C retrieval-profile fencing.
-- [cognitive_context_hnmf_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs): explicit Agentd HNMF consumer and final owner-currentness behavior.
-- [runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs): explicit `Compatibility` versus `HnmfRequired` startup behavior; `Compatibility` rejects an attached HNMF context and `HnmfRequired` rejects a missing current retrieval context.
-- learning-ledger retrieval/durable tests: final delivered-set persistence is distinct from HNMF selection.
+In `codex-rs`, run `just test --locked -p codex-hepta-memory-retrieval -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger`, all-target checks, strict Clippy and repository formatting. Verify current source-head and ordered-parent current-main merge candidates. Missing, skipped, queued, cancelled and failed checks are not successful qualifications.
 
-In `codex-rs`, run `just test --locked -p codex-hepta-memory-retrieval -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger` for the focused cross-owner source candidate. The repository's consolidated source gate additionally executes ordered source/merge identities and strict all-target Clippy. `.github/workflows/hepta-memory-retrieval-qualification-host.yml` executes the three release-mode capacity probes and retains exact host/source/raw `/usr/bin/time -v` artifacts; a GitHub-hosted result is qualification-host evidence only and must not be relabeled as an approved production target-host receipt. Commands are invocations, not stored results; inspect the exact-candidate records for passes, failures and skips. Target-host performance and longitudinal task utility remain separate evidence classes.
-
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+The consolidated and retrieval-specific workflows retain exact-candidate results. Structural host probes and historical archives are not current-head end-to-end measurements. No fixture label, parser success, formatting pass or artifact existence proves native product execution or independent acceptance. See [shared verification](../README.md#shared-verification-and-qualification).
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+`MEM-2-RETRIEVAL` remains the bootstrap package. Development predecessor: `MEM-0-TYPES`. Activation predecessor: `MEM-1-STORE`. Preserve existing owners and implement through their explicit boundaries; ordinary authorized coding does not need a new deployment capability envelope.
 
-- `MEM-2-RETRIEVAL`
-
-The bootstrap package is `MEM-2-RETRIEVAL`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Advance source correctness/verification, then protected runtime/recovery and cancellation, then real measurement/calibration, then independently accepted rollout. Do not build a second architecture or use failing native checks as a reason to weaken gates. Current unfinished items are recorded in the implementation map and [owner-proposition amendment](OWNER_PROPOSITIONS.md).
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Agentd now makes retrieval mode explicit through `CognitiveRetrievalMode`: `Compatibility` retains the owner-ranked compatibility path and rejects an attached HNMF current-context provider, while `HnmfRequired` refuses startup unless a current authenticated retrieval-context provider is configured. After startup, provider currentness/revocation failures fail the request; the required profile never silently falls back to compatibility. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Source-composed four-mode routing and process bootstrap are not activation evidence. Require the protected launcher, durable independent frontier, real producer/consumer chain, calibrated selected profile and current target-host evidence. Vector is a separate explicit capability profile, not a renamed lexical score.
 
-Compatibility adapters are temporary and are not evidence for HNMF product execution. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Retiring a compatibility path requires migrated callers, current exact-candidate tests, rehearsed rollback and independent acceptance. Preserve historical receipts and old-wire interpretability. Mode/policy rollback uses an advancing authorized publication and does not erase unknown consumption.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation closure means accurate linked specifications and registry references. Source closure means implemented code, matching public boundaries and green current source/merge tests. Product execution needs the actual named consumer and durable lifecycle evidence. Acceptance, activation, promotion and release require their own independently governed receipts.
 
-For `memory.retrieval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `MEM-2-RETRIEVAL`
-
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
-- Owner/deputy: `cognitive-platform` / `performance`.
-- Allowed write paths:
-- `codex-rs/hepta-memory-retrieval/**`
-- Development predecessors:
-- `MEM-0-TYPES`
-- Activation predecessors:
-- `MEM-1-STORE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+`productionImplementation=false`, `productExecutionProved=false`, `independentAcceptance=false`, `activation=false`, `release=false` remain the present claim boundary. No document, source change or local validator grants runtime authority.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `memory.retrieval` to primary lane `LANE-C-MEMORY`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+Primary lane remains `LANE-C-MEMORY`. Required overlays: [RDY-SRC](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md), [RDY-PAR](../../readiness/PARALLEL_DEVELOPMENT.md) and [RDY-EMB](../../readiness/EMBODIED_RUNTIME_EXECUTION.md). Owned/consumed readiness protocols: none. Identify exact baseline, owned paths, mandatory tests, failure/rollback and unchanged authority before editing.
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `memory.retrieval` is implemented by work package `MEM-2-RETRIEVAL` in:
-
-- `codex-rs/hepta-memory-retrieval`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
-
-### Canonical HNMF recall migration
-
-The current `generation_bound::RecallPacketV1` remains the compatibility receipt during migration; it is **not** silently reinterpreted as `cognitive.types::hnmf_learning::RecallPacketV1`. `adapt_generation_bound_recall_to_canonical_shadow_v1` emits only a shadow canonical packet and requires an explicit bridge that binds the exact legacy cue/candidate-union/generation-vector digests plus every selected legacy record ID/revision/digest to an independently supplied canonical event identity/revision/digest. A legacy binary cue digest is never reused as the canonical JSON cue digest, and a legacy record ID is never inferred to be a canonical event ID. The adapter carries no attachment, model-call, writer, selection, promotion, or release authority. Product replacement remains false until downstream owner callsites have migrated and exact-candidate qualification is current.
+The declared source root exists and native operations can be inspected. This is a source-location statement, not a passing command result. `.github/workflows/hepta-consolidated-source.yml` and retrieval qualification workflows establish execution only when current receipts actually complete successfully. The canonical HNMF adapter remains a shadow migration surface until named downstream owners are migrated and independently qualified.
