@@ -24,6 +24,28 @@ function formatTime(timestamp) {
   }
 }
 
+function redactIdentifier(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  const input = String(value);
+  if (input.length <= 4) return "••••";
+  if (input.length <= 12) return `${input.slice(0, 4)}…${input.slice(-2)}`;
+  return `${input.slice(0, 8)}…${input.slice(-6)}`;
+}
+
+function redactDigest(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  const input = String(value);
+  if (input.length <= 24) return redactIdentifier(input);
+  return `${input.slice(0, 12)}…${input.slice(-8)}`;
+}
+
+function visibleError(error) {
+  if (error instanceof UiControlError) {
+    return `${error.code}: ${error.message}`;
+  }
+  return "UI_CONTROL_UNEXPECTED: An unexpected ui.control failure occurred.";
+}
+
 export function createControlConsole({
   document = globalThis.document,
   client,
@@ -77,15 +99,13 @@ export function createControlConsole({
   }
 
   function showError(error) {
-    const code = error instanceof UiControlError ? error.code : "UI_CONTROL_UNEXPECTED";
     elements.error.hidden = false;
-    elements.error.textContent = `${code}: ${error?.message ?? String(error)}`;
+    elements.error.textContent = visibleError(error);
     announce(elements.error.textContent);
   }
 
   function appendError(error) {
-    const code = error instanceof UiControlError ? error.code : "UI_CONTROL_UNEXPECTED";
-    const message = `${code}: ${error?.message ?? String(error)}`;
+    const message = visibleError(error);
     if (elements.error.hidden || elements.error.textContent.length === 0) {
       showError(error);
       return;
@@ -167,7 +187,12 @@ export function createControlConsole({
     }
     for (const module of view.snapshot.modules) {
       const row = document.createElement("tr");
-      for (const value of [module.id, module.status, module.revision, module.semanticDigest]) {
+      for (const value of [
+        module.id,
+        module.status,
+        module.revision,
+        redactDigest(module.semanticDigest),
+      ]) {
         const cell = document.createElement("td");
         cell.textContent = String(value);
         row.append(cell);
@@ -192,31 +217,35 @@ export function createControlConsole({
       const item = document.createElement("li");
       const label = document.createElement("span");
       label.textContent = [
-        operation.operationId,
+        redactIdentifier(operation.operationId),
         operation.state,
-        operation.auditTraceId ?? "audit pending",
+        redactIdentifier(operation.auditTraceId) || "audit pending",
         `generation ${operation.generation}`,
         `revision ${operation.displayedRevision}`,
-        `digest ${operation.semanticDigest}`,
+        `digest ${redactDigest(operation.semanticDigest)}`,
       ].join(" · ");
       item.append(label);
       if (operation.state === "indeterminate") {
         const recover = document.createElement("button");
         recover.type = "button";
         recover.textContent = "Recover operation";
-        recover.dataset.operationId = operation.operationId;
+        recover.setAttribute(
+          "aria-label",
+          `Recover operation ${redactIdentifier(operation.operationId)}`,
+        );
+        recover.disabled = destroyed || !view.connected;
         recover.addEventListener("click", async () => {
           clearError();
           recover.disabled = true;
           try {
             const result = await client.recoverOperation(operation.operationId);
-            announce(`Recovered ${result.operationId}: ${result.state}.`);
+            announce(`Recovered ${redactIdentifier(result.operationId)}: ${result.state}.`);
             persistRecovery();
             render();
           } catch (error) {
             showError(error);
           } finally {
-            recover.disabled = false;
+            recover.disabled = destroyed || !client.readView().connected;
           }
         });
         item.append(text(document, " "), recover);
@@ -236,13 +265,17 @@ export function createControlConsole({
     for (const operation of view.completed) {
       const item = document.createElement("li");
       item.textContent = [
-        operation.operationId,
+        redactIdentifier(operation.operationId),
         operation.terminalStatus ?? "terminal",
-        operation.auditTraceId ?? "audit unavailable",
+        operation.auditTraceId
+          ? redactIdentifier(operation.auditTraceId)
+          : "audit unavailable",
         `generation ${operation.generation}`,
         `revision ${operation.displayedRevision}`,
-        `digest ${operation.semanticDigest}`,
-        operation.outcomeDigest ? `outcome ${operation.outcomeDigest}` : "outcome unavailable",
+        `digest ${redactDigest(operation.semanticDigest)}`,
+        operation.outcomeDigest
+          ? `outcome ${redactDigest(operation.outcomeDigest)}`
+          : "outcome unavailable",
       ].join(" · ");
       elements.completed.append(item);
     }
@@ -251,7 +284,7 @@ export function createControlConsole({
   function render() {
     const view = client.readView();
     elements.connection.textContent = view.connected ? "Connected" : "Disconnected";
-    elements.session.textContent = view.sessionId ?? "—";
+    elements.session.textContent = redactIdentifier(view.sessionId);
     elements.identity.textContent = view.identityId ?? "—";
     elements.generation.textContent = view.snapshot?.generation ?? "—";
     elements.revision.textContent = view.snapshot?.revision ?? "—";
@@ -314,8 +347,8 @@ export function createControlConsole({
       `Target: ${targetId}`,
       `Generation: ${view.snapshot.generation}`,
       `Revision: ${view.snapshot.revision}`,
-      `Snapshot digest: ${view.snapshot.semanticDigest}`,
-      `Operation ID: ${pendingAction.operationId}`,
+      `Snapshot digest: ${redactDigest(view.snapshot.semanticDigest)}`,
+      `Operation ID: ${redactIdentifier(pendingAction.operationId)}`,
       `Reason: ${reason}`,
     ].join(". ");
     elements.dialog.showModal();
@@ -340,7 +373,9 @@ export function createControlConsole({
         result = await client.submitRequest(action);
       }
       announce(
-        `Submitted ${result.operationId}. Audit trace ${result.auditTraceId ?? "pending"}.`,
+        `Submitted ${redactIdentifier(result.operationId)}. Audit trace ${
+          result.auditTraceId ? redactIdentifier(result.auditTraceId) : "pending"
+        }.`,
       );
     } catch (error) {
       showError(error);

@@ -41,6 +41,8 @@
 | Prototype pollution / hostile JSON | Plain objects only, forbidden prototype keys, bounded depth/entries/bytes, safe integers, NFC text, control/bidi-invisible rejection. |
 | Response amplification or slow body | One-megabyte response bound and timeout coverage across both response headers and body consumption. |
 | Credential or token persistence | Credentials stay in HttpOnly cookies; CSRF token is not exported in recovery state; recovery state contains operation metadata only. |
+| DOM scraping or shoulder-surfing of correlation material | Render session, operation, audit-trace, snapshot, semantic, and outcome identifiers in a deterministic redacted form by default. Keep full values in authority-free client state and transport objects rather than DOM text, attributes, or live-region messages. The authenticated operator identity remains visible so the operator can detect account confusion. |
+| Unexpected exception reflection | Render raw messages only from the bounded typed error taxonomy. Replace unknown exception messages with a generic operator-safe failure while retaining the original cause outside the DOM. |
 | Local storage denial or corruption | Recovery persistence is best-effort, typed, and visible; storage failure cannot wedge the UI, authorize a request, or manufacture terminal state. |
 | Audit spoofing | Audit trace IDs are server-issued and validated; the client never synthesizes terminal success. |
 | Open redirect / cross-origin exfiltration | Transport URL must remain beneath the configured same-origin API base; redirects are rejected; referrer policy is `no-referrer`. |
@@ -73,6 +75,8 @@ Production may add nonce/hash-based script policy, Trusted Types, HSTS, and COEP
 ## Logging and privacy
 
 Logs may include operation ID, semantic digest, action, target, generation, revision, permission revision, backend result code, and audit trace ID. Logs must not include session cookies, CSRF tokens, bearer tokens, full identity assertions, or unrestricted operator-entered text. Reasons should be length-bounded and handled under the deployment's retention policy.
+
+The browser shell displays correlation identifiers only in redacted form. Full identifiers remain available to typed client-state and transport code for exact matching, recovery, and backend audit correlation; they are not copied into DOM text or attributes by the repository shell.
 
 ## Residual risks requiring external evidence
 
