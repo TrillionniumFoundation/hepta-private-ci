@@ -9,6 +9,8 @@ files, verifies the exact candidate, commits the resulting map, and pushes it.
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -29,11 +31,18 @@ def stage(message: str) -> None:
     print(f"FINALIZER_STAGE: {message}", flush=True)
 
 
+def command_environment() -> dict[str, str]:
+    environment = os.environ.copy()
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    return environment
+
+
 def run(*args: str, cwd: Path = ROOT, capture: bool = False) -> str:
     stage("run " + " ".join(args))
     completed = subprocess.run(
         list(args),
         cwd=cwd,
+        env=command_environment(),
         check=True,
         text=True,
         stdout=subprocess.PIPE if capture else None,
@@ -101,6 +110,17 @@ def remove_temporary_scripts() -> None:
         (ROOT / relative).unlink(missing_ok=True)
 
 
+def clean_python_artifacts() -> None:
+    stage("remove Python cache artifacts")
+    for cache in sorted(ROOT.rglob("__pycache__"), reverse=True):
+        if cache.is_dir():
+            shutil.rmtree(cache, ignore_errors=True)
+    for suffix in ("*.pyc", "*.pyo"):
+        for compiled in ROOT.rglob(suffix):
+            compiled.unlink(missing_ok=True)
+    shutil.rmtree(ROOT / ".pytest_cache", ignore_errors=True)
+
+
 def rebind_implementation_map() -> None:
     stage("rebind IMPLEMENTATION_MAP source objects")
     mapping: dict[str, Any] = json.loads(MAP.read_text(encoding="utf-8"))
@@ -135,7 +155,11 @@ def commit_candidate() -> str:
     run("git", "config", "user.name", "Hepta Cognitive CI")
     run("git", "config", "user.email", "hepta-cognitive-ci@users.noreply.github.com")
     run("git", "diff", "--cached", "--check")
-    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
+    if subprocess.run(
+        ["git", "diff", "--cached", "--quiet"],
+        cwd=ROOT,
+        env=command_environment(),
+    ).returncode != 0:
         run(
             "git",
             "commit",
@@ -145,15 +169,21 @@ def commit_candidate() -> str:
     return git("rev-parse", "HEAD")
 
 
+def require_clean(label: str) -> None:
+    clean_python_artifacts()
+    status = git("status", "--porcelain", "--untracked-files=all")
+    if status:
+        print(f"FINALIZER_DIRTY_{label}:\n{status}", flush=True)
+        raise RuntimeError(f"candidate is not clean at {label}")
+
+
 def verify_candidate(sha: str) -> None:
     stage("verify exact final candidate")
     tree = git("rev-parse", "HEAD^{tree}")
-    run(
-        "python",
-        "scripts/check-rust-module-inventory.py",
-        "codex-rs/hepta-cognitive-store/src",
-    )
-    run("python", "scripts/verify_cognitive_store_boundary.py")
+
+    # The exact-map verifier requires a pristine candidate; run it before any
+    # other helper that could create a local cache or diagnostic file.
+    require_clean("BEFORE_MAP")
     run(
         "python",
         "scripts/cognitive_store_map_verify.py",
@@ -162,6 +192,12 @@ def verify_candidate(sha: str) -> None:
         "--expected-tree",
         tree,
     )
+    run(
+        "python",
+        "scripts/check-rust-module-inventory.py",
+        "codex-rs/hepta-cognitive-store/src",
+    )
+    run("python", "scripts/verify_cognitive_store_boundary.py")
     run("python", "tools/cognitive-store-host-bootstrap/test_bootstrap.py")
     run(
         "cargo",
@@ -173,8 +209,7 @@ def verify_candidate(sha: str) -> None:
         cwd=ROOT / "codex-rs",
     )
     run("git", "diff", "--check")
-    if git("status", "--porcelain", "--untracked-files=normal"):
-        raise RuntimeError("final candidate is not clean")
+    require_clean("AFTER_VERIFY")
 
 
 def main() -> int:
@@ -182,6 +217,7 @@ def main() -> int:
         raise RuntimeError("finalizer is running on the wrong branch")
     normalize_boundary_verifier()
     remove_temporary_scripts()
+    clean_python_artifacts()
     rebind_implementation_map()
     sha = commit_candidate()
     verify_candidate(sha)
