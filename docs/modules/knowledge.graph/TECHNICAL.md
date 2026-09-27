@@ -312,3 +312,36 @@ The bootstrap source-location obligation for `knowledge.graph` is implemented by
 - `codex-rs/hepta-kg`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The cross-owner cognitive integration additionally depends on the `codex-hepta-memory` oracle/store tests and the Agentd product qualification suite; prompt-factor composition additionally depends on prompt.registry, the prompt-factor adapter tests and prompt.optimizer graph-consumer tests. These are source/test identities until an exact-candidate run records a passing receipt. The default Agentd crate profile now selects the scoped cognitive writer and fails closed when its store is unavailable, while ordinary Codex/App Server remains default-off. This receipt grants no model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Query closure candidate — 2026-09-27
+
+The durable writer still computes a complete bounded canonical generation per
+logical mutation. G14 storage is `revision_facts_v1`: immutable revision facts and
+generation receipts reconstruct each historical cut; new generations do not copy
+all `kg_nodes`/`kg_edges` rows. Storage compaction is not incremental computation.
+
+`VerifiedKnowledgeGenerationV2` validates an owned immutable generation once and
+indexes incident edges in original canonical order. The cognitive read adapter
+caches this view and the compact edge-support index once per scope/generation per
+owner SQLite transaction, across seeds and relation channels. It caches no
+cross-request authorization/currentness result. Temporal visibility is computed
+per query, and the persisted generation digest is checked on every seed use.
+
+The indexed path is compared against the independent full-scan selection path:
+complete request/result digests, edge order, selected supports and exact omission
+counts must agree. Unrelated edges are not scanned; only returned live supports
+are cloned. Exact omission counts still require visiting all incident matches.
+Validation and selection work counters distinguish one-time preparation from
+query work. Input seed/filter lengths are bounded by kernel limits; output-edge
+bounds do not imply a byte budget or a host-independent latency SLO.
+
+Generation validators reject duplicate `(source_id, source_revision)` supports,
+noncanonical node/edge order, digest drift and live dangling edges. Simultaneous
+revocation of an endpoint and its final edge support removes both atomically.
+
+See `qualification/knowledge-graph/QUERY_CLOSURE_20260927.md` for the candidate
+scope, executable checks, capacity layers, history probe and acceptance boundary.
+Source composition is not execution proof. All production/activation/acceptance
+claims remain false until exact-head and pinned-base candidate checks and the
+separate target-host/independent gates have succeeded.
