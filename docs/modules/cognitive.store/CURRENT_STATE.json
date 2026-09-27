@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.cognitive-store-current-state.v1",
+  "module": "cognitive.store",
+  "gates": {
+    "sourceChangesPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "targetHostQualified": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "invariants": [
+    {
+      "id": "CS-REC-001",
+      "invariant": "Recovery dispositions survive the Agentd boundary",
+      "sources": [
+        "codex-rs/hepta-agentd/src/error.rs",
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs::all_recovery_dispositions_preserve_type_and_error_source"
+      ],
+      "records": [
+        "recovery-boundary-tests.json"
+      ],
+      "scope": "Typed conversion and real product ingress; target host pending"
+    },
+    {
+      "id": "CS-WIT-001",
+      "invariant": "A stale witness cannot admit a post-commit restart",
+      "sources": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs::committed_child_exit_before_witness_update_rejects_stale_restart"
+      ],
+      "records": [
+        "recovery-boundary-tests.json"
+      ],
+      "scope": "Real child exit / SQLite; fixture authority only"
+    },
+    {
+      "id": "CS-PUB-001",
+      "invariant": "A possibly published candidate is retained as indeterminate",
+      "sources": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs::post_rename_publication_failure_is_indeterminate_and_retains_candidate"
+      ],
+      "records": [
+        "memory-tests.json"
+      ],
+      "scope": "Source reconciliation injection; real target-fsync injection pending"
+    },
+    {
+      "id": "CS-AUTH-001",
+      "invariant": "Revocation prevents later writes without rewriting committed history",
+      "sources": [
+        "codex-rs/hepta-agentd/src/cognitive_bootstrap.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_bootstrap.rs::signed_bootstrap_rotates_restarts_canaries_and_revokes_live",
+        "codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs::revocation_after_commit_preserves_cut_and_rejects_next_mutation"
+      ],
+      "records": [
+        "bootstrap-tests.json",
+        "recovery-boundary-tests.json"
+      ],
+      "scope": "Signed and live-verifier fixtures; independently administered signer pending"
+    },
+    {
+      "id": "CS-ROLL-001",
+      "invariant": "Re-admission uses a fresh grant-bound writer generation",
+      "sources": [
+        "codex-rs/hepta-cognitive-store/src/bootstrap.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_bootstrap.rs::signed_bootstrap_rotates_restarts_canaries_and_revokes_live",
+        "codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs::fresh_generation_reopens_reconciled_cut_without_replaying_memory"
+      ],
+      "records": [
+        "bootstrap-tests.json",
+        "recovery-boundary-tests.json"
+      ],
+      "scope": "Repository restart/rotation; selected-host rollback pending"
+    },
+    {
+      "id": "CS-LIFE-001",
+      "invariant": "History and tombstones survive reopen without treating deletion as erasure",
+      "sources": [
+        "codex-rs/hepta-memory/examples/cognitive_store_history_perf.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-memory/examples/cognitive_store_history_perf.rs"
+      ],
+      "records": [
+        "history-64-16.json",
+        "history-128-64.json"
+      ],
+      "scope": "Measured owner history; pruning and physical erasure not claimed"
+    },
+    {
+      "id": "CS-EVID-001",
+      "invariant": "Current source and all required execution records are independently checked",
+      "sources": [
+        "scripts/cognitive_store_map_verify.py",
+        "scripts/cognitive_qualification_manifest.py"
+      ],
+      "tests": [
+        "scripts/test_cognitive_store_map.py",
+        "scripts/test_cognitive_qualification_manifest.py"
+      ],
+      "records": [
+        "map-regressions.json",
+        "manifest-regressions.json"
+      ],
+      "scope": "Exact source objects, no inherited success"
+    }
+  ],
+  "externalEvidence": [
+    "Independent signer governance and retained current-cut witness outside the rollback domain.",
+    "Trusted reconciliation of a commit-to-witness publication gap, without deriving authority from a suspect backup.",
+    "Selected-host directory-fsync fault injection, canary, restart, rollback and SLO receipts.",
+    "Independent review, operator acceptance and release approval."
+  ]
+}

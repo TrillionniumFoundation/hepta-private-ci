@@ -270,9 +270,7 @@ impl AgentdProductionWriterHost {
             verifier.as_ref(),
         )
         .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!("recover production cognitive store: {error}"))
-        })?;
+        .map_err(AgentdError::CognitiveRecovery)?;
         let runtime_store = store.clone();
         let writer = Arc::new(
             ProductionDurableWriter::open_with_live_verifier(

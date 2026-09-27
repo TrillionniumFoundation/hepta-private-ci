@@ -4,6 +4,8 @@ This directory is the canonical entry point for the `cognitive.store` source can
 
 ## Current truth
 
+The machine-readable state is [CURRENT_STATE.json](CURRENT_STATE.json). Its generated [CURRENT_STATUS.md](CURRENT_STATUS.md) maps recovery, witness, publication, revocation, rollback, lifecycle and evidence invariants to exact sources and regression tests. [EXECUTION_DOSSIER.md](EXECUTION_DOSSIER.md) is generated from that state and the committed [QUALIFICATION_PLAN.json](QUALIFICATION_PLAN.json); neither generated document is a pass receipt.
+
 | Question | Current answer |
 |---|---|
 | Semantic owner | `codex-hepta-cognitive-store` |
@@ -51,15 +53,19 @@ No second database, dual writer or shadow authority is permitted.
 
 ## Source qualification
 
-The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It runs independent `source-head` and deterministic `base-merge` lanes and retains exact-SHA command records for:
+The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains the existing package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks, and adds typed product recovery, a real child exit between semantic commit and witness publication, default-feature compilation, map/evidence regressions, generated-state drift checks, and correction/tombstone history profiles.
 
-- cognitive-store semantic tests;
-- durable memory-owner tests;
-- Agentd product writer tests;
-- signed bootstrap, rotation, restart, canary and live revocation;
-- child-process crash/reopen;
-- 256-record and 16,384-record durable profiles;
-- all-target strict Clippy;
-- closed-world architecture and orphan-source verification.
+Each command records its own result rather than inheriting the status of an earlier step. Native preparation failure produces explicit `infrastructure_invalid` non-execution records. A v2 qualification manifest is emitted even when checks fail or are missing; only a complete terminal-success manifest bound to the exact tested commit/tree establishes execution. Artifact upload is not a qualification pass.
 
-A command shown in documentation is not evidence. Only a retained terminal-success manifest bound to the exact tested commit/tree establishes execution.
+## Updating source bindings
+
+`sourceBase` remains historical provenance. `sourceObjects` binds current source, delegated implementation trees, read/product callers, tests, and qualification inputs. The map itself is excluded to avoid recursive Git hashes. Commit source and metadata definitions before emitting a new map with:
+
+```sh
+python3 scripts/cognitive_store_map_generate.py \
+  --source-commit "$(git rev-parse HEAD)" > /tmp/cognitive-store-map.json
+```
+
+Review and commit the emitted map as a separate authoring change. Qualification never regenerates it, patches fixtures, deletes itself, or pushes source. `sourceBindingSnapshot` records the authored source commit; subsequent source drift is rejected, including a new file in a bound implementation tree.
+
+Generate state projections with `python3 scripts/cognitive_store_status.py --write` during authoring; CI runs only `--check`. Keep the detailed architecture and historical evidence intact. Repository fixtures do not replace independent witness retention, target-filesystem fault injection, governed signer operations, physical erasure, or release approval.

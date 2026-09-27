@@ -4,6 +4,7 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_cognitive_store::CognitiveRecoveryError;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionCognitiveMutationError;
@@ -35,6 +36,21 @@ pub enum AgentdError {
     ProductionCognitiveMutation(#[from] ProductionCognitiveMutationError),
     #[error(transparent)]
     CognitiveStore(#[from] DurableCognitiveStoreError),
+    /// Keep the recovery disposition and source at the product boundary.
+    /// Indeterminate requires reconciliation, not an ordinary open retry.
+    #[error("recover production cognitive store: {0}")]
+    CognitiveRecovery(#[from] CognitiveRecoveryError),
+}
+
+impl AgentdError {
+    /// Inspect recovery policy without parsing diagnostic text. This accessor
+    /// never grants a retry, a current-cut witness, or production authority.
+    pub fn cognitive_recovery_error(&self) -> Option<&CognitiveRecoveryError> {
+        match self {
+            Self::CognitiveRecovery(error) => Some(error),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug)]
