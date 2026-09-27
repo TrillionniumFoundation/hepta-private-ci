@@ -1,0 +1,116 @@
+name: Neuron exact repair once
+
+on:
+  push:
+    branches:
+      - codex/neuron-runtime-durable-closure-v1
+    paths:
+      - '.github/workflows/neuron-exact-repair-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neuron-exact-repair-once-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Repair the exact local dependency lock entry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path('codex-rs/hepta-infer-worker-host/Cargo.toml').read_text()
+          required = 'codex-hepta-neuron = { path = "../hepta-neuron" }'
+          if required not in manifest:
+              raise SystemExit('worker-host manifest no longer declares codex-hepta-neuron')
+
+          path = Path('codex-rs/Cargo.lock')
+          text = path.read_text()
+          marker = '[[package]]\nname = "codex-hepta-infer-worker-host"\n'
+          start = text.find(marker)
+          if start < 0:
+              raise SystemExit('worker-host lock package is missing')
+          end = text.find('\n[[package]]', start + len(marker))
+          if end < 0:
+              end = len(text)
+          block = text[start:end]
+          dependency = ' "codex-hepta-neuron",\n'
+          if dependency not in block:
+              needle = ' "codex-hepta-infer-core",\n'
+              if block.count(needle) != 1:
+                  raise SystemExit('worker-host infer-core dependency is not unique')
+              block = block.replace(needle, needle + dependency, 1)
+              text = text[:start] + block + text[end:]
+              path.write_text(text)
+
+          updated = path.read_text()
+          start = updated.find(marker)
+          end = updated.find('\n[[package]]', start + len(marker))
+          if end < 0:
+              end = len(updated)
+          final_block = updated[start:end]
+          if final_block.count(dependency) != 1:
+              raise SystemExit('worker-host neuron lock dependency is not exact')
+          PY
+
+      - name: Apply the repository-pinned formatter
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-neuron
+          cargo metadata --locked --format-version 1 --no-deps >/dev/null
+
+      - name: Validate and publish the bounded repair
+        env:
+          BRANCH: codex/neuron-runtime-durable-closure-v1
+          EXPECTED_HEAD: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+
+          allowed_exact = {
+              'codex-rs/Cargo.lock',
+              '.github/workflows/neuron-exact-repair-once.yml',
+          }
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only'], text=True
+          ).splitlines()
+          unexpected = [
+              path for path in changed
+              if path not in allowed_exact
+              and not (path.startswith('codex-rs/hepta-neuron/') and path.endswith('.rs'))
+          ]
+          if unexpected:
+              raise SystemExit('unexpected repair paths: ' + ', '.join(unexpected))
+          if 'codex-rs/Cargo.lock' not in changed:
+              raise SystemExit('Cargo.lock was not repaired')
+          PY
+
+          git rm .github/workflows/neuron-exact-repair-once.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/Cargo.lock codex-rs/hepta-neuron
+          git commit -m 'build(neuron): refresh locked dependency and pinned formatting'
+
+          git fetch origin "refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$BRANCH")" = "$EXPECTED_HEAD"
+          git push origin "HEAD:refs/heads/$BRANCH"
